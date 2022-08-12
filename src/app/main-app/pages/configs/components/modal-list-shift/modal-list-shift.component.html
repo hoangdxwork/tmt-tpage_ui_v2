@@ -14,20 +14,20 @@
             <tbody>
                 <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index" >
                     <tr>
-                        <td>{{ data.Id }}</td>
+                        <td>{{ index + 1 }}</td>
                         <td>{{ data.Name }}</td>
-                        <td>{{ data.FromHour }}</td>
-                        <td>{{ data.ToHour }}</td>
+                        <td>{{ data.FromHour | converseTime }}</td>
+                        <td>{{ data.ToHour | converseTime }}</td>
                         <td>
                             <div class="flex gap-x-2" >
                                 <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateShift(data)">
                                     <span class="flex items-center">
-                                        <i class="tdsi-edit-fill"></i>
+                                        <i class="tdsi-edit-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
                                 <button tds-button-icon color="secondary" size="sm" (click)="showModalRemove(data)">
                                     <span class="flex items-center">
-                                        <i class="tdsi-trash-fill"></i>
+                                        <i class="tdsi-trash-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
                             </div>
@@ -44,7 +44,7 @@
                 <span class="text-body-2 font-semibold">Thêm mới</span>
             </span>
         </button>
-        <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
+        <button tds-button class="w-[68px]" color="secondary" (click)="cancel()">Đóng</button>
     </div>
   </div>
 </tds-spin>

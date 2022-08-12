@@ -26,6 +26,7 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
 
   public onCommentSelected$ = new EventEmitter<any>();
   public onPostChanged$ = new EventEmitter<any>(); // Sự kiện thay đổi bài viết
+  public onLiveCampaignChange$ = new EventEmitter<any>(); // sự kiện khi thay đổi chiến dịch 
   private _dicPartnerSimplest$!: Observable<any>; // Danh sách trạng thái khách hàng hiện tại
   private _keyCachePartnerSimplest = "_dict_partner_simplest";
   fbPartnerSimplest: any = {};

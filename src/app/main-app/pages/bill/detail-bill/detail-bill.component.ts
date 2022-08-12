@@ -75,7 +75,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$),finalize(() => this.isLoading = false))
+    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
         delete res['@odata.context'];
 
@@ -119,7 +119,10 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         if(res.TeamId) {
           this.loadTeamById(res.TeamId);
         }
+
+        this.isLoading = false;
     }, error => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
     })
   }
@@ -209,13 +212,17 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       content: 'Bạn có muốn gửi vận đơn',
       onOk: () => {
           let model = { id: parseInt(that.id) }
+          this.isLoading = true;
 
           that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
               that.message.success('Xác nhận gửi vận đơn thành công!');
               that.loadData();
+
           }, error => {
+
             let err = error.error.message.split('Error:')?.[1];
             that.message.error(err ?? 'Gửi vận đơn thất bại');
+            this.isLoading = false;
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -332,7 +339,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               let obs: TDSSafeAny;
               switch (type) {
                 case "print":
-                  obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${that.id}`);
+                  obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${[parseInt(that.id)]}`);
                   break;
 
                 case "printship":
@@ -345,19 +352,17 @@ export class DetailBillComponent implements OnInit, OnDestroy{
                 default: break;
               }
 
-              if (TDSHelperObject.hasValue(obs)) {
+              if (obs) {
                 obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
                     that.printerService.printHtml(res);
-                    that.isProcessing = false;
-                    this.isLoading = false;
                 })
-              } else{
-                this.isProcessing = false;
-                this.isLoading = false;
               }
 
               this.loadData();
               this.loadInventoryIds();
+
+              that.isProcessing = false;
+              this.isLoading = false;
           }
         }, error => {
             this.isProcessing = false;

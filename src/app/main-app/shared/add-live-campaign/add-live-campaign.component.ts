@@ -1,4 +1,7 @@
-import { finalize } from 'rxjs/operators';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
+import { LiveCampaignModel } from './../../dto/live-campaign/odata-live-campaign.dto';
+import { finalize, mergeMap } from 'rxjs/operators';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
@@ -6,17 +9,19 @@ import { id } from 'date-fns/locale';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
-import { Observable } from 'rxjs';
+import { Observable, map, takeUntil } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { compareAsc, differenceInCalendarDays } from 'date-fns';
 
 @Component({
   selector: 'add-live-campaign',
-  templateUrl: './add-live-campaign.component.html'
+  templateUrl: './add-live-campaign.component.html',
+  providers: [TDSDestroyService]
 })
 export class AddLiveCampaignComponent implements OnInit {
 
@@ -35,7 +40,7 @@ export class AddLiveCampaignComponent implements OnInit {
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
 
   isLoading: boolean = false;
-  formCreateLiveCampaign!: FormGroup;
+  _form!: FormGroup;
 
   constructor(
     private modal: TDSModalService,
@@ -46,14 +51,18 @@ export class AddLiveCampaignComponent implements OnInit {
     private quickReplyService: QuickReplyService,
     private fastSaleOrderLineService: FastSaleOrderLineService,
     private message: TDSMessageService,
-  ) { }
+    private prepareHandler: PrepareAddCampaignHandler,
+    private destroy$: TDSDestroyService
+  ) {
+    this.createForm();
+   }
 
   get detailsFormGroups() {
-    return (this.formCreateLiveCampaign?.get("Details")) as FormArray;
+    return (this._form?.get("Details")) as FormArray;
   }
 
   ngOnInit(): void {
-    this.createForm();
+    
 
     this.loadData(this.id);
     this.loadUser();
@@ -61,14 +70,15 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   createForm() {
-    this.formCreateLiveCampaign = this.formBuilder.group({
+    this._form = this.formBuilder.group({
+      Id: [this.id],
       Details: this.formBuilder.array([]),
       Config: [null],
       Name: [null, Validators.required],
       Note: [null],
       ResumeTime: [0],
-      StartDate: [null],
-      EndDate: [null],
+      StartDate: [new Date()],
+      EndDate: [new Date()],
       Users: [null],
       Preliminary_Template: [null],
       ConfirmedOrder_Template: [null],
@@ -91,8 +101,8 @@ export class AddLiveCampaignComponent implements OnInit {
   loadData(id?: string) {
     if(id) {
       this.isLoading = true;
-      this.liveCampaignService.getDetailById(id)
-        .pipe(finalize(() => this.isLoading = false))
+      
+      this.liveCampaignService.getDetailById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
         .subscribe(res => {
           this.updateForm(res);
         });
@@ -102,15 +112,26 @@ export class AddLiveCampaignComponent implements OnInit {
   updateForm(data: any) {
     if(!this.isCopy) data.Id = undefined;
 
-    this.formCreateLiveCampaign.patchValue(data);
+    this._form.patchValue(data);
 
     this.initFormDetails(data.Details);
   }
 
+  onChangeDate(event:Date, type:number){
+    if(type == 0){
+      this._form.controls["StartDate"].setValue(event.toISOString());
+    }
+    if(type == 1){
+      this._form.controls["EndDate"].setValue(event.toISOString());
+    }
+  }
+
+  disabledDate = (current: Date): boolean => differenceInCalendarDays(current, new Date()) < 0;
+
   initFormDetails(details: any[]) {
     if(TDSHelperArray.hasListValue(details)) {
       details.forEach(detail => {
-        const control = <FormArray>this.formCreateLiveCampaign.controls['Details'];
+        const control = <FormArray>this._form.controls['Details'];
         control.push(this.initDetail(detail));
       });
     }
@@ -148,20 +169,22 @@ export class AddLiveCampaignComponent implements OnInit {
   removeDetail(index: number, detail: TDSSafeAny) {
     if(TDSHelperString.hasValueString(detail?.Id) && !this.isCopy) {
       this.isLoading = true;
-      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false)).subscribe(res => {
-        if(TDSHelperArray.hasListValue(res?.value)) {
-          this.message.error(Message.LiveCampaign.ErrorRemoveLine);
-        }
-        else {
-          const control = <FormArray>this.formCreateLiveCampaign.controls['Details'];
-          control.removeAt(index);
-        }
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-      });
+
+      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+      .subscribe(res => {
+          if(TDSHelperArray.hasListValue(res?.value)) {
+            this.message.error(Message.LiveCampaign.ErrorRemoveLine);
+          }
+          else {
+            const control = <FormArray>this._form.controls['Details'];
+            control.removeAt(index);
+          }
+        }, error => {
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        });
     }
     else {
-      const control = <FormArray>this.formCreateLiveCampaign.controls['Details'];
+      const control = <FormArray>this._form.controls['Details'];
       control.removeAt(index);
     }
   }
@@ -172,62 +195,65 @@ export class AddLiveCampaignComponent implements OnInit {
 
   onSave() {
     if(this.isCheckValue() === 1) {
-      let model = this.prepareModel();
-
+      let model = this.prepareHandler.prepareModel(this._form);
       this.isLoading = true;
-      this.liveCampaignService.create(model)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe(res => {
-          this.message.success(Message.InsertSuccess);
+      
+      if(this.id){
+        model.Id = this.id;
+
+        this.liveCampaignService.update(model,true).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+        .subscribe((res:LiveCampaignModel) => {
+
+          this.message.success(Message.UpdatedSuccess);
           this.onSuccess.emit(res);
+
+          this.onCannel();
         }, error => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         });
+
+      }else{
+        
+        this.liveCampaignService.create(model).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+        .subscribe((res:LiveCampaignModel) => {
+
+          this.message.success(Message.InsertSuccess);
+          this.onSuccess.emit(res);
+
+          this.onCannel();
+        }, error => {
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        });
+      }
+      
     }
-  }
-
-  prepareModel() {
-    let formValue = this.formCreateLiveCampaign.value;
-
-    let model = {} as any;
-
-    model.Config = formValue.Config?.value;
-    model.Name = formValue.Name;
-    model.Users = formValue.Users || [];
-    model.Note = formValue.Note;
-    model.ResumeTime = formValue.ResumeTime;
-    model.StartDate = formValue.StartDate;
-    model.EndDate = formValue.EndDate;
-    model.Preliminary_Template = formValue.Preliminary_Template;
-    model.ConfirmedOrder_Template = formValue.ConfirmedOrder_Template;
-    model.MinAmountDeposit = formValue.MinAmountDeposit;
-    model.MaxAmountDepositRequired = formValue.MaxAmountDepositRequired;
-    model.EnableQuantityHandling = formValue.EnableQuantityHandling;
-    model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
-    // model.IsShift = formValue.IsShift;
-
-    if (TDSHelperArray.hasListValue(formValue.Details)) {
-      formValue.Details.forEach((detail: any, index: number) => {
-        detail["Index"] = index;
-      });
-    }
-
-    model.Details = formValue.Details;
-
-    return model;
   }
 
   isCheckValue() {
-    let formValue = this.formCreateLiveCampaign.value;
+    let formValue = this._form.value;
 
-    let details = formValue.Details;
+    if(!TDSHelperString.hasValueString(formValue.Name)){
+      this.message.error('Vui lòng nhập tên chiến dịch');
 
-    if(TDSHelperArray.hasListValue(details)) {
-      let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price));
+      return 0;
+    }
+
+    if(TDSHelperArray.hasListValue(formValue.Details)) {
+      let find = formValue.Details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price));
+
       if(find > -1) {
         this.message.error(Message.LiveCampaign.ErrorNumberDetail);
+
         return 0;
       }
+    }
+    
+    let compare = compareAsc(new Date(formValue.StartDate).getTime(), new Date(formValue.EndDate).getTime());
+    
+    if(compare >= 0){
+      this.message.error('Vui lòng nhập thời gian Kết thúc lớn hơn thời gian Bắt đầu');
+
+      return 0;
     }
 
     return 1;
@@ -240,5 +266,4 @@ export class AddLiveCampaignComponent implements OnInit {
   onCannel() {
     this.modalRef.destroy(null);
   }
-
 }

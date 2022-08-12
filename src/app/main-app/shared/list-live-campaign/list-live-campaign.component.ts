@@ -1,4 +1,6 @@
-import { Observable } from 'rxjs';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { ReportLiveCampaignDTO } from './../../dto/live-campaign/report-livecampain-overview.dto';
+import { Observable, takeUntil } from 'rxjs';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { LiveCampaignService } from '../../services/live-campaign.service';
 import { FacebookPostItem, From } from '../../dto/facebook-post/facebook-post.dto';
@@ -18,7 +20,8 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
 
 @Component({
   selector: 'list-live-campaign',
-  templateUrl: './list-live-campaign.component.html'
+  templateUrl: './list-live-campaign.component.html',
+  providers: [TDSDestroyService]
 })
 export class ListLiveCampaignComponent implements OnInit {
 
@@ -51,6 +54,7 @@ export class ListLiveCampaignComponent implements OnInit {
     private oDataLiveCampaignService: ODataLiveCampaignService,
     private liveCampaignService: LiveCampaignService,
     private viewContainerRef: ViewContainerRef,
+    private destroy$: TDSDestroyService,
     private modal: TDSModalService
   ) { }
 
@@ -211,16 +215,21 @@ export class ListLiveCampaignComponent implements OnInit {
       return;
     }
 
-    const modal = this.modal.create({
-      title: `${name}`,
-      content: OverviewLiveCampaignComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        id: id
-      }
-    });
-
+    this.liveCampaignService.getReport(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.modal.create({
+          title: `${name}`,
+          content: OverviewLiveCampaignComponent,
+          size: "xl",
+          viewContainerRef: this.viewContainerRef,
+          componentParams:{
+            lstOfData: res as ReportLiveCampaignDTO
+          }
+        });
+      },
+      err => {
+        this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kế');
+      })
   }
 
   onCannel() {

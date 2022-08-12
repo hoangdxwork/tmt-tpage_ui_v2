@@ -7,7 +7,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
-import { TDSConversationsComponent } from './tds-conversations.component';
 import { TDSConversationItemComponent } from './tds-conversation-item.component';
 import { IconEmojiMartComponent } from '../emoji-mart/icon-emoji-mart.component';
 import { UploadImageModule } from '../upload-image/tpage-avatar-facebook/upload-image.module';
@@ -47,7 +46,6 @@ import { TDSConversationItemV2Component } from './tds-conversation-item-v2.compo
 import { ConversationInfopostItemComponent } from './component/conversation-infopost-item/conversation-infopost-item.component';
 
 const CMP =[
-  TDSConversationsComponent,
   TDSConversationsV2Component,
   TDSConversationItemComponent,
   TDSConversationItemV2Component,

@@ -1,4 +1,4 @@
-<div class="tdsi-message-template-line text-neutral-1-400 leading-none cursor-pointer text-body-2"
+<div class="tdsi-message-template-line text-neutral-1-400 leading-none text-xl cursor-pointer"
 tds-popover [(popoverVisible)]="isVisibleReply" (popoverVisibleChange)="changeVisible($event)"
 popoverTrigger="click"
 [popoverContent]="contentTemplate"></div>
@@ -23,7 +23,7 @@ popoverTrigger="click"
                 </tds-form-field>
         </div>
         <div class="flex flex-col divide-y divide-neutral-2-300 border-y border-neutral-2-300 divide-dotted border-dotted overflow-y-auto tds-custom-scroll">
-            <div *ngFor="let item of quickReplies" (click)="setTextquickReply(item)" class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+            <div *ngFor="let item of quickReplies" (click)="setTextquickReply(item)" class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50 text-body-2">
                 <span class="font-semibold">{{item.Name}}</span>
                 <div showMore [length]="50" [text]="item.BodyPlain | replacePartner: partner"></div>
                 <!-- <div [innerHTML]="item.BodyPlain | replacePartner: partner | safeHtml"></div> -->

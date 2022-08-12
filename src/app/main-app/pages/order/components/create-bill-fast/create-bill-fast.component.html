@@ -153,7 +153,7 @@
                               <!-- Số lượng -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1"
+                                  <tds-input-number [min]="1" [step]="1"
                                     (ngModelChange)="changeQuantityProduct($event, index, i)"
                                     [(ngModel)]="orderLines.ProductUOMQty" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>

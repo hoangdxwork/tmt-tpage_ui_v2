@@ -65,12 +65,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   isRefresh: boolean = false;
   isRefreshing: boolean = false;
   isProcessing:boolean = false;
-  isChanged: boolean = false;
   clickReload: number = 0;
   isCheckedAll: boolean = false;
   cacheChatbot: OnChatBotSignalRModel[] = [];
   orderCode: any;
-  checkCsidRouter = '';
+  checkCsidRouter: string = '';
 
   tagsChange!: ChatomniConversationTagDto[];
   currentOrderTab: number = 0;
@@ -93,7 +92,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private printerService: PrinterService,
     private chatomniMessageFacade: ChatomniMessageFacade,
     private modalService: TDSModalService,
-    private crmMatchingV2Service: CrmMatchingV2Service,
     private viewContainerRef: ViewContainerRef,
     private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService,
@@ -101,7 +99,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private chatomniEventEmiterService: ChatomniEventEmiterService) {
       super(crmService, activatedRoute, router);
   }
- 
+
   ngOnInit(): void {
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
@@ -129,12 +127,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if(exist){
           this.onChangeConversation(team);
       }
-      this.checkCsidRouter = localStorage.getItem(this.chatomniConversationService._keyCheckCsidRouter) || '';
-    })
 
-    // TODO: gán mã code load từ Tab Order
-    this.conversationOrderFacade.onPushLastOrderCode$.subscribe((code: any) => {
-        this.orderCode = code;
+      this.checkCsidRouter = localStorage.getItem(this.chatomniConversationService._keyCheckCsidRouter) || '';
     })
 
     this.hubEvents(); // các sự kiện realtime
@@ -145,46 +139,43 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   eventEmitter() {
+    // TODO: cập nhật tags
     this.chatomniEventEmiterService.tag_ConversationEmiter$.subscribe((res: ChatomniTagsEventEmitterDto)=>{
       if(res){
         let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
         this.lstOmcs[index].Tags = [...res.Tags];
         this.lstOmcs[index] = {...this.lstOmcs[index]}
-
-        this.cdRef.detectChanges();
       }
     })
 
+    // TODO: Cập nhật hội thoại cuối cùng
     this.chatomniEventEmiterService.last_Message_ConversationEmiter$.subscribe((res: ChatomniLastMessageEventEmitterDto)=>{
       if(res){
         let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
         this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
         this.lstOmcs[index] = {...this.lstOmcs[index]}
-
       }
+    })
+
+    // TODO: gán mã code load từ Tab Order
+    this.conversationOrderFacade.onPushLastOrderCode$.subscribe((code: any) => {
+      this.orderCode = code;
     })
   }
 
   spinLoading() {
-    // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
-    // this.chatomniMessageService.spinningLoadMessage$.pipe(takeUntil(this.destroy$)).subscribe((obs: boolean) => {
-    //   if(obs) {
-    //       this.isChanged = obs;
-    //       this.cdRef.markForCheck();
-    //   }
-    // })
   }
 
   onChangeConversation(team: any, queryObj?: any) {
     this.validateData();
+
     // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
         this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
+        if(this.dataSource$) {
+            this.loadConversations(this.dataSource$);
+        }
     })
-
-    if(this.dataSource$) {
-        this.loadConversations(this.dataSource$);
-    }
   }
 
   validateData() {
@@ -193,11 +184,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
-    if(this.isChanged || this.isProcessing){
+    if(this.isLoading || this.isProcessing){
         return;
     }
 
-    this.isProcessing = true;
+    this.isLoading = true;
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
 
         if (res && TDSHelperArray.hasListValue(res.Items)) {
@@ -207,6 +198,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstOmcs.filter(x => x.ConversationId == csid)[0] ;
             //TODO: kiểm tra khi chọn menu tin nhắn và bình luận, giữ item đang chọn
+
             let exitsTab = this.lstOmcs.filter(x => x.ConversationId == this.checkCsidRouter)[0] ;
             if (exits || exitsTab) {
                 this.setCurrentConversationItem(exits || exitsTab);
@@ -220,7 +212,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             this.validateData();
         }
 
-        this.isProcessing = false;
+        this.isLoading = false;
+
+      }, error => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
       })
   }
 
@@ -252,15 +248,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         return;
     }
 
-    // if (this.isChanged || this.isProcessing) {
-    //   return;
-    // }
-
-    // this.isChanged = true;
     delete this.omcs_Item;
-
     this.setCurrentConversationItem(item);
-    this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: any): number {
@@ -269,6 +258,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   nextData(event: any): any {
     if(event) {
+
       if (this.isProcessing) {
           return false;
       }
@@ -276,17 +266,20 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       this.isProcessing = true;
       this.ngZone.run(() => {
           this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryFilter);
-      })
 
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
+          this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
 
-          if(TDSHelperArray.hasListValue(res?.Items)) {
-              this.lstOmcs = [...res.Items];
-          }
+              if(TDSHelperArray.hasListValue(res?.Items)) {
+                  this.lstOmcs = [...res.Items];
+              }
 
-          this.isProcessing = false;
-      }, error => {
-          this.isProcessing = false;
+              this.isProcessing = false;
+
+              this.yiAutoScroll.scrollToElement('scrollConversation', 750);
+              this.cdRef.markForCheck();
+          }, error => {
+              this.isProcessing = false;
+          })
       })
     }
   }
@@ -309,12 +302,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.clickReload = 0;
 
         if (this.currentTeam) {
-          this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2)
-            .pipe(takeUntil(this.destroy$)).subscribe(res => {
-              //TODO: "Yêu cầu cập nhật thành công.
-          }, error => {
-              //TODO: Yêu cầu cập nhật thất bại.
-          });
+            this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe(res => {
+                  this.message.success('Yêu cầu cập nhật thành công');
+            }, error => {
+                  this.message.success('Yêu cầu cập nhật thất bại');
+            });
         }
     } else {
         this.onSubmitFilter({});
@@ -517,12 +509,12 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
                   }
                   // TODO: Lấy teamId của page
                   this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
-                    if(res){
-                       data.team = res[0];
-                    }
-                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
-                  }, err =>{
-                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+                      if(res){
+                        data.team = res[0];
+                      }
+                      this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+                    }, err =>{
+                      this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
                   })
                   // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
                 break;

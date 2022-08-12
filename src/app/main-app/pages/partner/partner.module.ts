@@ -67,6 +67,7 @@ import { ConversationOrderFacade } from '../../services/facades/conversation-ord
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
+import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 
 const SERVICES = [
   OdataPartnerService,
@@ -89,7 +90,8 @@ const SERVICES = [
   AttachmentDataFacade,
   AttachmentService,
   AttachmentState,
-  OdataProductService
+  OdataProductService,
+  ChatomniMessageService
 ]
 
 @NgModule({

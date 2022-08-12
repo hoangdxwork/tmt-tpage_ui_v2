@@ -75,18 +75,9 @@
                                     </div>
                                 </td>
                                 <td class="!align-top">
-                                    <div class="flex items-center gap-x-2">
+                                    <div class="flex gap-x-2">
                                         <div *ngFor="let item of listDataWeek" class=" w-[14.28%] flex flex-col">
-                                            <div class="flex justify-center">
-                                                <button (click)="openTag(user.Id, item.week, item.id)" tds-popover
-                                                    [popoverVisible]="indClickTag == user.Id && isChooseDayOfWeek == item.id && isChooseWeek == item.week" popoverTrigger="click"
-                                                    [popoverFooter]="footerAddTag" [popoverContent]="contentAddShifts" [popoverAutoClose]="false"
-                                                    [popoverBackdrop]="true">
-                                                    <span class="flex items-center text-primary-1">
-                                                        <i class="text-2xl leading-6 tdsi-plus-fill"></i>
-                                                    </span>
-                                                </button>
-                                            </div>
+
                                             <!-- <div class="flex flex-col gap-y-2" *ngIf="user?.UserShifts?.ShiftId == item.week">
                                                 <div class="flex w-full" *ngFor="let itemTag of user.UserShifts">
                                                     <div  class="flex w-full justify-center rounded px-5"
@@ -97,19 +88,33 @@
                                                 </div>
                                             </div> -->
                                             <div *ngFor="let userShifts of user?.UserShifts">
-                                                <div class="flex flex-col gap-y-2 mt-1" *ngIf="formatDate(userShifts.WorkingDay) == item.date">
-                                                    <div *ngFor="let shift of userShifts.Shifts" class="flex w-full justify-center rounded px-5"
-                                                        [ngClass]="userShifts.Id==1?'bg-blue-200 text-blue-500':(userShifts.Id==2?
-                                                        'bg-green-200 text-green-500':(userShifts.Id==3?
-                                                        'bg-orange-200 text-orange-500':'bg-indigo-200 text-indigo-500'))">
-                                                        <span>{{shift.Name}}</span>
-                                                    </div>
-                                                </div>
+                                              <div class="flex flex-col gap-y-2 mb-1" *ngIf="formatDate(userShifts.WorkingDay) == item.date">
+                                                  <div *ngFor="let shift of userShifts.Shifts" class="flex flex-col w-full justify-center items-center rounded px-5 py-1 font-semibold text-caption-2 relative group cursor-pointer"
+                                                      [ngClass]="shift.Name.toLowerCase()=='ca sáng'?'bg-blue-200 text-blue-500':(shift.Name.toLowerCase()=='ca chiều'?
+                                                      'bg-green-200 text-green-500':(shift.Name.toLowerCase()=='tăng ca'?
+                                                      'bg-orange-200 text-orange-500':'bg-indigo-200 text-indigo-500'))">
+                                                      <div class="group-hover:opacity-10">{{shift.Name}}</div>
+                                                      <div class="group-hover:opacity-10">({{ shift.FromHour }}-{{ shift.ToHour }})</div>
+                                                      <button class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
+                                                          Xóa
+                                                      </button>
+                                                  </div>
+                                              </div>
+                                            </div>
+                                            <div class="flex justify-center">
+                                              <button (click)="openTag(user.Id, item.week, item.id)" tds-popover
+                                                  [popoverVisible]="indClickTag == user.Id && isChooseDayOfWeek == item.id && isChooseWeek == item.week" popoverTrigger="click"
+                                                  [popoverFooter]="footerAddTag" [popoverContent]="contentAddShifts" [popoverAutoClose]="false"
+                                                  [popoverBackdrop]="true">
+                                                  <span class="flex items-center text-primary-1">
+                                                      <i class="text-2xl leading-6 tdsi-plus-fill"></i>
+                                                  </span>
+                                              </button>
                                             </div>
                                             <ng-template #contentAddShifts>
-                                              <div class="w-96">
+                                              <div class="w-[304px]">
                                                   <tds-form-field>
-                                                      <tds-select valueField="Id" textField="Name" placeholder='Chọn ca làm việc'
+                                                      <tds-select valueField="Id" textField="Name" placeholder='Chọn ca làm việc' [autoClose]="true"
                                                           [(ngModel)]="modelShifts" [allowClear]="true" [valuePrimitive]="false"
                                                           [data]="lstShifts" mode="multiple">
                                                       </tds-select>
@@ -117,13 +122,13 @@
                                               </div>
                                             </ng-template>
                                             <ng-template #footerAddTag>
-                                                <div class="flex justify-end pt-2">
-                                                    <button tds-button color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                                                <div class="flex justify-end pt-8">
+                                                    <button tds-button color="secondary" class="mr-2 w-[89px]" size="sm" (click)="closeTag()">
                                                         <span class="">
                                                             Đóng
                                                         </span>
                                                     </button>
-                                                    <button tds-button size="sm" (click)="assignTags(user, item.workingDay)">
+                                                    <button tds-button size="sm" class="w-[89px]" (click)="assignTags(user, item.workingDay)">
                                                         <span class="">
                                                             Lưu
                                                         </span>

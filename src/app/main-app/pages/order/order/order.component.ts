@@ -17,7 +17,6 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { Subject, fromEvent, Observable } from 'rxjs';
 import { takeUntil, finalize, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { EditOrderComponent } from '../components/edit-order/edit-order.component';
 import { CreateBillFastComponent } from '../components/create-bill-fast/create-bill-fast.component';
 import { CreateBillDefaultComponent } from '../components/create-bill-default/create-bill-default.component';
 import { Router } from '@angular/router';
@@ -25,7 +24,6 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
@@ -38,6 +36,7 @@ import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-or
 import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 // import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 
 @Component({
@@ -60,7 +59,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   lstStatusTypeExt!: Array<any>;
   mappingTeams: any[] = [];
   currentMappingTeam: any;
-  currentConversation!: ConversationMatchingItem;
+  currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;

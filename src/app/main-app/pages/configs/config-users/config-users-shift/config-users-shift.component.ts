@@ -66,7 +66,7 @@ export class ConfigUsersShiftComponent implements OnInit {
 
   loadUserShifts() {
     this.isLoading = true;
-   
+
     this.applicationUserService.getUserShifts()
       .pipe(finalize(() => {this.isLoading = false }))
       .subscribe(res => {
@@ -175,9 +175,10 @@ export class ConfigUsersShiftComponent implements OnInit {
     });
     modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe((result) => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-      }
+      // console.log('[afterClose] The result is:', result);
+      // if (TDSHelperObject.hasValue(result)) {
+      // }
+      this.loadShifts();
     });
   }
 }

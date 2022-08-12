@@ -45,37 +45,35 @@ export class UpdateShipmentDetailAshipHandler {
 
   public so_updateShipmentDetailAship(configsProviderDataSource: AshipGetInfoConfigProviderDto[], insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null, saleModel: FastSaleOrder_DefaultDTOV2) {
 
-    if (saleModel.ShipmentDetailsAship) {
-      saleModel.ShipmentDetailsAship.InsuranceInfo = insuranceInfo as any;
+    saleModel.ShipmentDetailsAship = {
+      InsuranceInfo: insuranceInfo as any,
+      ConfigsProvider: []
     }
 
-    if (saleModel.ShipmentDetailsAship) {
-      configsProviderDataSource.map(x => {
+    configsProviderDataSource.map(x => {
 
-        let item = {
-          ConfigName: x.ConfigName,
-          Type: x.Type,
-          InputType: x.InputType,
-          IsRequried: x.IsRequried,
-          IsHidden: x.IsHidden,
-          Description: x.Description,
-          DisplayName: x.DisplayName,
-          ConfigValue: x.ConfigValue,
+      let item = {
+        ConfigName: x.ConfigName,
+        Type: x.Type,
+        InputType: x.InputType,
+        IsRequried: x.IsRequried,
+        IsHidden: x.IsHidden,
+        Description: x.Description,
+        DisplayName: x.DisplayName,
+        ConfigValue: x.ConfigValue,
 
-          ConfigsValue: x.ConfigsValue ?
-            x.ConfigsValue.map(t => {
-              return {
-                Id: t.Id,
-                Name: t.Name,
-              }
-            }) : []
-        }
+        ConfigsValue: x.ConfigsValue ?
+          x.ConfigsValue.map(t => {
+            return {
+              Id: t.Id,
+              Name: t.Name,
+            }
+          }) : []
+      }
 
-          saleModel.ShipmentDetailsAship?.ConfigsProvider.push(item);
-        
-      })
-    }
-    
+        saleModel.ShipmentDetailsAship?.ConfigsProvider.push(item);
+    })
+
     return saleModel;
   }
 }

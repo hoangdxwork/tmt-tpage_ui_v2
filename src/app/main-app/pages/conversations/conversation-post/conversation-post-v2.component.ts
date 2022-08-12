@@ -173,6 +173,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   onchangeType(event: any) {
+    console.log(event)
     this.currentType = this.lstType.find(x => x.id === event);
     this.queryObj = this.onSetFilterObject();
     this.loadData(this.queryObj);
@@ -247,7 +248,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
         if(res && res.Items) {
 
-            this.lstObjects = [...res.Items];debugger
+            this.lstObjects = [...res.Items];
 
             if(TDSHelperArray.hasListValue(res.Items)){
                 let exits = res.Items.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
@@ -323,6 +324,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
               this.lstObjects = [...res.Items];
           }
 
+          this.yiAutoScroll.scrollToElement('scrollObjects', 750);
           this.isProcessing = false;
       }, error => {
           this.isProcessing = false;

@@ -1,9 +1,13 @@
+import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
+import { PrepareFacebookPostHandler } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
+import { FaceBookPostItemHandler } from './../../handler-v2/conversation-post/facebook-post-item.handler';
+import { ObjectFacebookPostEvent } from './../../handler-v2/conversation-post/object-facebook-post.event';
+import { LiveCampaignPostComponent } from './conversation-post/live-campaign-post/live-campaign-post.component';
 import { OdataSaleCouponProgramService } from 'src/app/main-app/services/mock-odata/odata-sale-coupon-program.service';
 import { AccountRegisterPaymentService } from './../../services/account-register-payment.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConversationsRoutingModule } from './conversations-routing.module';
-import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { MainSharedModule } from '../../shared/shared.module';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
@@ -141,6 +145,7 @@ import { ObjectFacebookPostComponent } from './conversation-post/objects/object-
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -200,11 +205,15 @@ const SERVICES = [
   ChatomniObjectService,
   ChatomniObjectFacade,
   ChatomniCommentFacade,
+  SO_PrepareFaseSaleOrderHandler,
+  ObjectFacebookPostEvent,
+  FaceBookPostItemHandler,
+  PrepareFacebookPostHandler,
+  PrepareAddCampaignHandler
 ]
 
 @NgModule({
   declarations: [
-    ConversationAllComponent,
     ConversationPostComponent,
     ModalImageStoreComponent,
     CurrentConversationItemComponent,
@@ -252,7 +261,8 @@ const SERVICES = [
     ConversationPostViewV3Component,
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
-    CommentFilterAllComponent
+    CommentFilterAllComponent,
+    LiveCampaignPostComponent
   ],
 
   imports: [

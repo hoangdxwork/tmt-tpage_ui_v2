@@ -31,7 +31,6 @@ import { MainSharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { TagService } from '../../services/tag.service';
 import { DuplicateUserComponent } from './components/duplicate-user/duplicate-user.component';
-import { EditOrderComponent } from './components/edit-order/edit-order.component';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { CreateBillFastComponent } from './components/create-bill-fast/create-bill-fast.component';
 import { CreateBillFastErrorComponent } from './components/create-bill-fast-error/create-bill-fast-error.component';
@@ -82,6 +81,8 @@ import { SO_ComputeCaclHandler } from '../../handler-v2/order-handler/compute-ca
 import { CalculateFeeAshipHandler } from '../../handler-v2/aship-v2/calcfee-aship.handler';
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { ConvertCustomersComponent } from './components/convert-customers/convert-customers.component';
+import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
+import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -115,7 +116,9 @@ const SERVICES = [
   SO_ComputeCaclHandler,
   CalculateFeeAshipHandler,
   CsOrder_SuggestionHandler,
-  OrderEvent
+  OrderEvent,
+  ChatomniMessageService,
+  SO_PrepareFaseSaleOrderHandler
 ]
 
 @NgModule({
@@ -126,7 +129,6 @@ const SERVICES = [
     ConfigColumnComponent,
     UpdateStatusOrderComponent,
     DuplicateUserComponent,
-    EditOrderComponent,
     CreateBillFastComponent,
     CreateBillFastErrorComponent,
     CreateBillDefaultComponent,

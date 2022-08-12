@@ -73,7 +73,7 @@ export interface ConversationMatchingItem {
   has_phone: boolean;
   has_address: boolean;
   has_order: boolean;
-  state: number | null; //StateChatbot
+  state?: number; //StateChatbot
   count_unread_messages: number;
   count_unread_comments: number;
   count_unread_activities: number;

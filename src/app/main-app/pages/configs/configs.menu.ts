@@ -2,7 +2,7 @@ import { TDSMenuDTO } from "tds-ui/menu";
 
 export const ConfigsMenu: Array<TDSMenuDTO> = [
     {
-        name: "Cấu hình chung",
+        name: "Cấu hình bán hàng",
         icon: "tdsi-gear-2-fill",
         link: '/configs',
         listChild:[
@@ -21,7 +21,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
       ]
     },
     {
-        name: "Thẻ hội thoại",
+        name: "Nhãn hội thoại",
         icon: "tdsi-tag-fill",
         link: '/configs/conversation-tags',
     },
@@ -84,7 +84,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
                 link: '/configs/pages/basic',
             },
             {
-                name: "Phân công hội thoại",
+                name: "Gắn thẻ",
                 link: '/configs/pages/divide-task',
             },
         ]

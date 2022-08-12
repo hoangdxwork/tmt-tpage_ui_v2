@@ -11,6 +11,7 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 
 @Component({
   selector: 'table-order-message',
@@ -33,7 +34,7 @@ export class TableOrderMessageComponent implements OnInit {
   openMessageByOrderId!: string;
   public mappingTeams: any[] = [];
   public currentMappingTeam: any;
-  currentConversation!: ConversationMatchingItem;
+  currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;

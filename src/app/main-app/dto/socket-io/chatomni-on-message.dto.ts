@@ -1,3 +1,4 @@
+import { ChatomniConversationMessageDto } from '../conversation-all/chatomni/chatomni-conversation';
 import { ChatomniMessageType } from './../conversation-all/chatomni/chatomni-data.dto';
 
 export interface ConversationSocketioDto {
@@ -57,6 +58,7 @@ export interface MessageSocketioDto {
   Data: any;
   CreatedTime: Date;
   ChannelCreatedTime: Date;
+  LatestMessage?: ChatomniConversationMessageDto;
 }
 
 export interface SocketioOnMessageDto {

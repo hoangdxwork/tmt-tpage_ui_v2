@@ -148,12 +148,12 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
         Telephone: null,
         Address: this._form.controls['Street'].value,
         ShortAddress: '',
-        CityCode: this._form.controls['City'].value.code,
-        CityName: this._form.controls['City'].value.name,
-        DistrictCode: this._form.controls['District'].value.code,
-        DistrictName: this._form.controls['District'].value.code,
-        WardCode: this._form.controls['Ward'].value.code,
-        WardName: this._form.controls['Ward'].value.code,
+        CityCode: this._form.controls['City'].value?.code,
+        CityName: this._form.controls['City'].value?.name,
+        DistrictCode: this._form.controls['District'].value?.code,
+        DistrictName: this._form.controls['District'].value?.name,
+        WardCode: this._form.controls['Ward'].value?.code,
+        WardName: this._form.controls['Ward'].value?.name,
         Score: 0
       }
 
@@ -162,7 +162,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   mappingStreet(){
-    let street = (this._form.controls['Ward'].value?.name ? (this._form.controls['Ward'].value.name + ', '): '') 
+    let street = (this._form.controls['Ward'].value?.name ? (this._form.controls['Ward'].value.name + ', '): '')
       + (this._form.controls['District'].value?.name ? (this._form.controls['District'].value.name + ', '): '')
       + (this._form.controls['City'].value?.name ? this._form.controls['City'].value?.name: '')
     this._form.controls['Street'].setValue(street);
@@ -175,7 +175,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
       this._form.controls['City'].setValue(event);
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
-      
+
       this.mappingStreet();
 
       let item: ResultCheckAddressDTO = {

@@ -1,0 +1,68 @@
+<div class="w-full h-full flex flex-col gap-y-4">
+    <div class="flex justify-between gap-x-2">
+      <tds-form-field class="w-full">
+        <input tdsInput placeholder="Tìm kiếm chiến dịch" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
+        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
+      <button tds-button color="primary" size="md" (click)="showModelCreateLiveCampaign()">
+        <span class="flex items-center">
+          <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+        </span>
+      </button>
+    </div>
+
+    <tds-tag *ngIf="currentLiveCampaign" status="bg-base-orange-50 text-base-orange-500">
+      <span class="flex items-center py-0.5 cursor-pointer max-w-[450px]">
+          <span class="text-body-2 font-regular flex-auto truncate mr-2">{{ currentLiveCampaign.Name }}</span>
+          <span class="text-neutral-1-400 font-regular text-sm w-fit">{{ currentLiveCampaign.DateCreated | date : "dd/MM/yyyy HH:mm" }}</span>
+      </span>
+    </tds-tag>
+
+    <div class="flex gap-x-3">
+      <button tds-button color="info" size="md" class="flex items-center" (click)="showModelOverViewLiveCampaign(currentLiveCampaign?.Id, currentLiveCampaign?.Name)">
+        <span class="flex items-center gap-x-2">
+          <i class="tdsi-eye-open-fill text-lg"></i> <span>Tổng quan chiến dịch</span>
+        </span>
+      </button>
+      <button tds-button color="primary" size="md" class="flex items-center" 
+          tds-tooltip
+          tooltipTitle="Chỉnh sửa chiến dịch"
+          (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)">
+        <span class="flex items-center gap-x-2">
+          <i class="tdsi-edit-fill text-lg"></i>
+        </span>
+      </button>
+      <button *ngIf="currentLiveCampaign" tds-button color="error" size="md" class="flex items-center" 
+          tds-tooltip
+          tooltipTitle="Bỏ chọn chiến dịch"
+          (click)="removeLiveCampaign()">
+        <span class="flex items-center gap-x-2">
+          <i class="tdsi-close-fill text-lg"></i>
+        </span>
+      </button>
+    </div>
+    <div class="pr-2 h-[calc(100vh-500px)] overflow-auto tds-custom-scroll">
+      <div class="flex flex-col gap-y-2">
+        <div *ngFor="let liveCampaign of lstFilter || lstOfData" class="border border-solid rounded-xl p-4 w-full h-full flex gap-x-2 cursor-pointer
+          hover:border-primary-1 hover:bg-primary-3" (click)="onSelectLiveCampaign(liveCampaign)"
+          [ngClass]="liveCampaign.Id == currentLiveCampaign?.Id  ? 'border-primary-1 bg-primary-3' : 'border-neutral-3-300'">
+          <div class="w-3/5 text-sm">
+            {{ liveCampaign.Name }}
+          </div>
+          <div class="w-1/5 text-sm text-neutral-1-400">
+            {{ liveCampaign.DateCreated | date : "dd/MM/yyyy HH:mm" }}
+          </div>
+          <div class="w-1/5 flex gap-x-6 justify-end items-center text-xl">
+            <i class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chi tiết'" (click)="showModelOverViewLiveCampaign(liveCampaign.Id, liveCampaign.Name)"></i>
+            <i class="tdsi-share-screen-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Sao chép'" (click)="showModelCopyLiveCampaign(liveCampaign.Id)"></i>
+            <i class="tdsi-edit-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chỉnh sửa'" (click)="showModelEditLiveCampaign(liveCampaign.Id)"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
+    <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCannel()">Đóng</button>
+    <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+  </div>

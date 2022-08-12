@@ -85,7 +85,7 @@ export class ConfigActivitiesComponent implements OnInit {
         sortFn:(a:TDSSafeAny, b:TDSSafeAny) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime()
       },
       {
-        name:'Trạng thái',
+        name:'Trạng thái xem',
         sortDirections: ['ascend', 'descend', null],
         sortOrder:null,
         sortFn:(a:boolean, b:boolean) => b ? 1 : -1
@@ -93,9 +93,8 @@ export class ConfigActivitiesComponent implements OnInit {
     ]
   }
 
-  doFilter(event:TDSSafeAny){
-    this.filterObj.searchText = event.target.value;
-
+  onSearch(event:TDSSafeAny){
+    this.filterObj.searchText = event.value;
     this.loadData(this.pageSize, this.pageIndex);
   }
 

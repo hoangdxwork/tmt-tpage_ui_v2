@@ -11,7 +11,7 @@
                     </button>
                     <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">PHÂN QUYỀN QUẢN LÝ PAGE</span>
                 </div>
-                <button tds-button color="primary" (click)="onSave()">
+                <button tds-button color="primary" (click)="onSave()" class="w-[72px]">
                     <span class="text-body-2 font-semibold">Lưu</span>
                 </button>
             </div>
@@ -21,7 +21,7 @@
                         [scroll]="{y:'auto'}">
                         <thead>
                             <tr>
-                                <th>Trang Facebook</th>
+                                <th class="text-center">Trang Facebook</th>
                                 <th width="75%">
                                     <div class="flex w-full">
                                         <div class="w-1/2">
@@ -42,7 +42,7 @@
                                         <div class="flex w-full h-full flex-col gap-x-2.5 justify-center items-center ">
                                             <!-- <tds-avatar class="bg-white  text-white" [size]="108" [tdsSrc]="data.urlImg"> -->
                                             <!-- </tds-avatar> -->
-                                            <tpage-avatar-facebook class="bg-white text-white" [fbid]="data?.Facebook_ASUserId" [token]="data?.Facebook_UserToken"
+                                            <tpage-avatar-facebook class="text-white" [fbid]="data?.Facebook_ASUserId" [token]="data?.Facebook_UserToken"
                                             [size]="108">
                                             </tpage-avatar-facebook>
                                             <div>
@@ -61,7 +61,7 @@
                                                 <div class="w-1/2">
                                                     <tds-form-field class="w-full">
                                                         <tds-select valueField="Id" textField="Name"
-                                                            placeholder='Chọn nhân viên' [(ngModel)]="child.Users"
+                                                            placeholder='Chọn nhân viên' [(ngModel)]="child.Users" [allowClear]="true"
                                                             (ngModelChange)="onModelChangePermission($event)"
                                                             [data]="lstUsers" mode="multiple" [valuePrimitive]="false">
                                                         </tds-select>

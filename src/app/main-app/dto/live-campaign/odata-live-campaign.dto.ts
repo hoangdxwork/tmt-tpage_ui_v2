@@ -28,6 +28,8 @@ export interface LiveCampaignModel {
   SumOrderWaitCheckOut: number;
   SumOrderCheckOut: number;
   SumOrderCancelCheckOut: number;
+  Users: any[],
+  Details: any[],
   IsShift?: any;
 }
 

@@ -95,23 +95,28 @@ export class ChatomniCommentService extends BaseSevice  {
         let url = this.urlNext  as string;
         return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
 
-        exist.Extras!.Objects = { ...res.Extras?.Objects};
-        exist.Items = [ ...exist.Items, ...res.Items ];
-        exist.Paging = { ...res.Paging };
+            if(res.Extras?.Objects) {
+              exist.Extras = {
+                  Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
+              }
+            }
 
-        // TODO nếu trùng urlNext thì xóa không cho load
-        if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
-            this.urlNext = res.Paging.UrlNext;
-        } else {
-            delete this.urlNext;
-        }
+            exist.Items = [ ...exist.Items, ...res.Items ];
+            exist.Paging = { ...res.Paging };
 
-        this.commentFacade.setData(id, exist);
+            // TODO nếu trùng urlNext thì xóa không cho load
+            if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
+                this.urlNext = res.Paging.UrlNext;
+            } else {
+                delete this.urlNext;
+            }
 
-        let result = this.commentFacade.getData(id);
-        return result; //tương đương this.chatomniDataSource[id]]
+            this.commentFacade.setData(id, exist);
 
-      }), shareReplay({ bufferSize: 1, refCount: true }));
+            let result = this.commentFacade.getData(id);
+            return result; //tương đương this.chatomniDataSource[id]]
+
+        }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 }

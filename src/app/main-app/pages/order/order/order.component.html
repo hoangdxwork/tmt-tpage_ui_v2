@@ -74,7 +74,7 @@
         <!-- TODO: Thao tác -->
         <div class="flex items-center gap-x-2 pr-4">
           <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
+              <input tdsInput placeholder="Mã, Tên khách hàng, SĐT" autocomplete="off"
                 [(ngModel)]="filterObj.searchText"
                 [tdsInputDebounce]="750"
                 (inputKeyup)="onSearch($event)"/>
@@ -372,9 +372,9 @@
         </div>
         <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
           <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
-            <shared-tds-conversations class="flex w-full h-full" [team]="currentMappingTeam?.team"
+            <shared-tds-conversations-v2 class="flex w-full h-full" [team]="currentMappingTeam?.team"
               [data]="currentConversation" [type]="'all'">
-            </shared-tds-conversations>
+            </shared-tds-conversations-v2>
           </div>
         </div>
       </div>

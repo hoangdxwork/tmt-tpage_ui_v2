@@ -22,7 +22,7 @@
                     class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
             </ng-template>
         </ng-template>
-        <!-- <container-element [ngSwitch]="mdbFbPost.status_type">
+        <container-element [ngSwitch]="mdbFbPost.status_type">
             <ng-container *ngSwitchCase="'added_video'">
                 <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
                     <div class="tdsi-video-camera-fill text-white leading-none"></div>
@@ -44,7 +44,7 @@
                     <div class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">LIVE</div>
                 </div>
             </ng-container>
-        </container-element> -->
+        </container-element>
     </div>
     <div class="flex items-center w-full">
         <div class="flex items-center gap-x-2 text-neutral-1-400">
@@ -125,7 +125,7 @@
                     </span>
                   </button>
                 </div>
-              </ng-template>
+            </ng-template>
         </div>
         <div *ngIf="mdbFbPost.live_campaign" class="flex">
             <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"

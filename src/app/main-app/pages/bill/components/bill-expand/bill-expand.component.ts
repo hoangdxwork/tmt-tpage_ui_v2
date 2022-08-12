@@ -1,10 +1,11 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { ExcelExportService } from './../../../../services/excel-export.service';
 import { PrinterService } from './../../../../services/printer.service';
 import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
 import { OdataFSOrderLinesV2, FSOrderLinesV2 } from './../../../../dto/fastsaleorder/fastsale-orderline.dto';
-import { Subject, finalize, takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
@@ -14,7 +15,8 @@ import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/messa
 
 @Component({
   selector: 'app-bill-expand',
-  templateUrl: './bill-expand.component.html'
+  templateUrl: './bill-expand.component.html',
+  providers: [TDSDestroyService]
 })
 export class BillExpandComponent implements OnInit, OnDestroy {
 
@@ -27,14 +29,13 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   logOrder: any;
   tabSelected = 'detail';
 
-  private destroy$ = new Subject<void>();
-
   constructor(
     private fSOService: FastSaleOrderService,
     private printerService: PrinterService,
     private excelExportService: ExcelExportService,
     private message: TDSMessageService,
     private modalService: TDSModalService,
+    private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
@@ -46,13 +47,14 @@ export class BillExpandComponent implements OnInit, OnDestroy {
 
   loadData() {
     this.isLoading = true;
+
     this.fSOService.getOrderLineData(this.dataItem.Id)
       .pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (res: OdataFSOrderLinesV2) => {
           this.lstOfData = res.value;
         }, error: (error) => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Tải dữ liệu thất bại');
+          this.message.error(`${error?.error?.message}` || 'Tải dữ liệu thất bại');
         }
       });
   }
@@ -121,7 +123,8 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     this.fSOService.getRegisterPayment({ ids: [Id] }).pipe(takeUntil(this.destroy$)).subscribe(
       (res) => {
         if(res) {
-          delete res['@odata.context']; console.log(res)
+          delete res['@odata.context'];
+
           this.modalService.create({
             title: 'Đăng ký thanh toán',
             size: 'lg',
@@ -133,7 +136,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
           });
         }
       }, err => {
-        this.message.error(err.error.message ?? 'Không tải được dữ liệu');
+        this.message.error(err?.error?.message || 'Không tải được dữ liệu');
       }
     )
   }
@@ -145,6 +148,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
 
   onLoadTab(tabName: string) {
     this.tabSelected = tabName;
+
     switch (tabName) {
       case 'detail':
         this.loadData();
@@ -153,10 +157,13 @@ export class BillExpandComponent implements OnInit, OnDestroy {
         break;
       case 'histories':
         this.logOrder = [];
+
         this.fSOService.getHistoryEditOrder(this.dataItem.Id).subscribe((res: any) => {
+
           res.value.forEach((obj: any) => {
             obj.JSONData = JSON.parse(obj.JSONData);
           });
+
           this.logOrder = res.value;
         })
         break;

@@ -14,13 +14,6 @@ import { TDSMessageService } from 'tds-ui/message';
 })
 export class ModalListShiftComponent implements OnInit {
 
-  listOfDataShift = [
-    { id: 1, name: 'Ca sáng', timeStart: '8h00', timeEnd: '12h00' },
-    { id: 2, name: 'Ca chiều', timeStart: '13h00', timeEnd: '17h30' },
-    { id: 3, name: 'Tăng ca', timeStart: '17h30', timeEnd: '20h00' },
-    { id: 4, name: 'Test', timeStart: '15h30', timeEnd: '17h00' },
-  ];
-
   lstShifts: ShiftDTO[] = [];
   isLoading: boolean = false;
 
@@ -38,13 +31,13 @@ export class ModalListShiftComponent implements OnInit {
 
   loadShifts() {
     this.applicationUserService.getShifts().subscribe(res => {
-      this.lstShifts = res.value;;
+      this.lstShifts = res.value;
     });
   }
 
   showModalAddShift() {
     const modal = this.modalService.create({
-      title: 'Thêm ca làm việc mới',
+      title: 'Thêm ca làm việc',
       content: ModalAddShiftComponent,
       size: "md",
       viewContainerRef: this.viewContainerRef,

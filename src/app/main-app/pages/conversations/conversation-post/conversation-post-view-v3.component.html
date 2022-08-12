@@ -1,7 +1,7 @@
 <div class="flex flex-col relative pr-1 py-1 h-full w-full text-body-2 text-neutral-1-900" *ngIf="data">
-    <div class="w-full h-full">
+    <div class="w-full h-full flex flex-col">
         <!-- Tổng quan bài viết-->
-        <div class="post-view bg-white h-auto w-full mb-1">
+        <div class="post-view bg-white flex flex-col w-full mb-1">
             <div class="flex flex-row justify-between p-2 border-b-3 border-neutral-3-200">
 
                 <!-- facebook -->
@@ -106,17 +106,17 @@
                 </div>
             </div>
 
-            <div class="post-block bg-white flex flex-col">
+            <div class="post-block bg-white flex flex-col w-full">
 
                 <!-- Facebook -->
-                <div class="post-body flex flex-row justify-between p-4" *ngIf="team.Type == 'Facebook'">
-                    <div class="flex flex-col justify-between gap-y-3">
+                <div class="post-body flex flex-row justify-between flex-auto p-4" *ngIf="team.Type == 'Facebook'">
+                    <div class="flex flex-col justify-between gap-y-3 w-3/4">
 
                         <div class="w-full flex flex-col gap-y-3">
                             <p class="text-title-1 font-semibold" *ngIf="(data.Data | facebookType).story"> {{(data.Data | facebookType).story}} </p>
-                            <div [innerHTML]="(data.Data | facebookType).message | safeHtml"></div>
+                            <div showMore [text]="(data.Data | facebookType).message" [length]="400"></div>
                             <p *ngIf="!(data.Data | facebookType).message && !(data.Data | facebookType).story" class="italic text-neutral-1-900 text-caption-1">(Chưa có nội dung tiêu đề)</p>
-                            <p class="description" *ngIf="(data.Data | facebookType).description">{{(data.Data | facebookType).description}}</p>
+                            <p class="description" *ngIf="(data.Data | facebookType).description" showMore [text]="(data.Data | facebookType).description" [length]="400"></p>
                         </div>
 
                         <div *ngIf="(data.Data | facebookType).live_campaign">
@@ -130,16 +130,48 @@
                         </div>
 
                         <div *ngIf="!(data.Data | facebookType).live_campaign">
-                            <tds-tag size="sm" status="bg-neutral-3-100 text-neutral-1-600">
+                            <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
+                                (click)="openTag(data.Id)"
+                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
+                                [popoverAutoClose]="false" [popoverContent]="contentAddtag" [popoverBackdrop]="true"
+                                popoverPlacement="right"
+                                status="bg-neutral-3-100 text-neutral-1-600">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                                     <span class="flex-auto truncate">Chọn chiến dịch</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                 </span>
                             </tds-tag>
+
+                            <ng-template #contentAddtag>
+                                <div class="w-[304px]">
+                                  <tds-form-field>
+                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
+                                        [(ngModel)]="currentLiveCampaign"
+                                        [allowClear]="true" [valuePrimitive]="false" [data]="availableCampaigns"
+                                        [autoClose]="true">
+                                    </tds-select>
+                                  </tds-form-field>
+                                </div>
+                            </ng-template>
+
+                            <ng-template #footerAddTag>
+                                <div class="flex justify-end pt-2">
+                                  <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-close-fill"></i>
+                                    </span>
+                                  </button>
+                                  <button tds-button-icon type="button" size="sm" color="primary" (click)="addNewCampaign()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-tick-fill"></i>
+                                    </span>
+                                  </button>
+                                </div>
+                            </ng-template>
                         </div>
 
                     </div>
-                    <div class="post-picture" *ngIf="(data.Data | facebookType).picture">
+                    <div class="post-picture w-1/4 flex justify-end" *ngIf="(data.Data | facebookType).picture">
                         <img [src]="(data.Data | facebookType).picture" class="rounded-xl h-[122px] object-cover" />
                     </div>
 

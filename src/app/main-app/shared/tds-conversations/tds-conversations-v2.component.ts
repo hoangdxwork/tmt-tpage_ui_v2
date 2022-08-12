@@ -1,6 +1,4 @@
 import { ChatomniStatus, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { MakeActivityItemWebHook } from './../../dto/conversation/make-activity.dto';
-import { ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -11,7 +9,7 @@ import { ModalImageStoreComponent } from '../../pages/conversations/components/m
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, Input, OnChanges, OnInit,
-  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding, Inject
 } from '@angular/core';
 
 import { Observable } from 'rxjs';
@@ -38,14 +36,12 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
 import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
-import { ModalPostComponent } from '../../pages/conversations/components/modal-post/modal-post.component';
 import { ChatomniMessageService } from '../../services/chatomni-service/chatomni-message.service';
-import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniConversationItemDto, ChatomniTagsEventEmitterDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
-import { Facebook_Graph_Post } from '../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'shared-tds-conversations-v2',
@@ -95,7 +91,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   tags: TDSSafeAny[] = [];
   keyFilterTag: string = '';
   isVisbleTag: boolean = false;
-  eventHandler!: Event;
   userLoggedId!: string;
 
   isEnableChatbot: boolean = false;
@@ -117,6 +112,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
     private ngZone: NgZone,
+    @Inject(DOCUMENT) private document: Document,
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
     private partnerService: PartnerService,
@@ -140,6 +136,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
     this.onRetryMessage();
     this.eventEmitter();
+
+    this.yiAutoScroll?.forceScrollDown();
   }
 
   eventEmitter(){
@@ -161,28 +159,25 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.initiateTimer();
   }
 
-  //TODO: data.id = data.psid
   loadMessages(data: ChatomniConversationItemDto): any {
     this.isLoading = true;
 
     this.ngZone.run(() => {
         this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
+
+        this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+            if(res) {
+                this.dataSource = { ...res };
+            }
+
+            this.isLoading = false;
+            this.cdRef.markForCheck();
+        }, error => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+            this.cdRef.markForCheck();
+        })
     })
-
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-        if(res) {
-            this.dataSource = res;
-        }
-
-        this.isLoading = false;
-        this.cdRef.detectChanges();
-
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-    })
-
-    this.yiAutoScroll?.forceScrollDown();
   }
 
   loadUser() {
@@ -213,9 +208,16 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     if(assign_user_id) {
       this.crmMatchingService.markSeen(this.pageId, this.data!.ConversationId, this.type, assign_user_id)
         .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
-            // Cập nhật count_unread
-            this.conversationEventFacade.updateMarkSeenBadge(this.pageId, this.type, this.data.ConversationId);
-            this.cdRef.markForCheck();
+
+              // Cập nhật count_unread
+              let model = {
+                  pageId: this.pageId,
+                  type: this.type,
+                  csid: this.data!.ConversationId
+              }
+
+              this.chatomniEventEmiter.updateMarkSeenBadge$.emit(model);
+              this.cdRef.markForCheck();
         }, error => {
             this.message.error(`markseen: ${error?.error?.message}`);
       })
@@ -258,7 +260,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     modal.componentInstance?.onSendProduct.subscribe(res=>{
       if(res){
-        this.onProductSelected(res);
+          this.onProductSelected(res);
       }
     })
   }
@@ -279,13 +281,13 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     this.activityMatchingService.addTemplateMessage(this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        that.activityDataFacade.messageServer(res);
-        that.conversationDataFacade.messageServer(res);
+
+        // that.activityDataFacade.messageServer(res);
+        // that.conversationDataFacade.messageServer(res);
 
         that.message.success('Gửi thành công sản phẩm');
        }, error=> {
           this.message.error('Gửi sản phẩm thất bại');
-          this.cdRef.markForCheck();
       })
   }
 
@@ -348,6 +350,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   validateData() {
+    (this.dataSource as any) = null;
+    (this.dataSource$ as any) = null;
     delete this.messageModel;
 
     this.isLoading = false;
@@ -361,35 +365,53 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       return;
     }
 
-    this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
-
     this.isProcessing = true;
     let id = `${this.team.Id}_${this.data.ConversationId}`;
 
     this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
+      this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
+
+      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+          if(res) {
+              this.dataSource.Extras = res.Extras;
+
+              this.dataSource.Items = [...res.Items];
+              this.dataSource.Paging = {...res.Paging};
+
+              this.srcollBehavior();
+          }
+
+          this.isProcessing = false;
+          this.cdRef.markForCheck();
+
+      }, error => {
+          this.isProcessing = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.markForCheck();
+      })
     })
+  }
 
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-        if(res) {
-            this.dataSource.Extras = res.Extras;
 
-            this.dataSource.Items = [...res.Items];
-            this.dataSource.Paging = {...res.Paging};
-        }
+  srcollBehavior() {
+    setTimeout(() => {
+      let element = this.document.getElementById('dataSourceScroll') as any;
 
-        this.isProcessing = false;
-        this.cdRef.detectChanges();
-
-    }, error => {
-        this.isProcessing = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-    })
+      if(element) {
+        const top = (element.scrollHeight / element.offsetHeight) * 100;
+        element?.scroll({
+            top: top,
+            behavior: 'smooth',
+        })
+      }
+    }, 500)
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-      (this.data as any) = {};
+
+      this.validateData();
+      (this.data as any) = null;
 
       this.data = changes["data"].currentValue;
       let object = {
@@ -484,22 +506,17 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       });
   }
 
-  onClickSender(event: TDSSafeAny) {
-    this.eventHandler = event;
+  onClickSender() {
     this.messageSendingToServer();
   }
 
   onEnter(event: any) {
-    this.eventHandler = event;
-    if (this.isLoadingSendMess) {
-      this.eventHandler.preventDefault();
-      this.eventHandler.stopImmediatePropagation();
-      return;
-    }
+
     if (this.isEnterSend) {
-      this.messageSendingToServer();
-    } else {
-      return
+        this.messageSendingToServer();
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
     }
   }
 
@@ -507,20 +524,16 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     let message = this.messageModel as string;
 
     if (!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)) {
-      this.eventHandler.preventDefault();
-      this.eventHandler.stopImmediatePropagation();
       return this.message.error('Hãy nhập nội dung cần gửi');
     }
 
     if (this.isLoadingSendMess) {
-      this.eventHandler.preventDefault();
-      this.eventHandler.stopImmediatePropagation();
       return;
     }
 
     this.isLoadingSendMess = true;
 
-    let activityFinal = this.dataSource.Items? this.dataSource.Items[this.dataSource.Items!.length-1]: null
+    let activityFinal = this.dataSource.Items ? this.dataSource.Items[this.dataSource.Items!.length - 1]: null
 
     if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === 12 || activityFinal?.Type === 91)) {
       if (this.type === 'all') {
@@ -597,15 +610,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.currentImage = null;
         this.uploadedImages = [];
         delete this.messageModel;
-
-        this.eventHandler.preventDefault();
-        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
 
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
-        this.eventHandler.preventDefault();
-        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
       })
   }
@@ -626,18 +634,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.uploadedImages = [];
         delete this.messageModel;
 
-        if(this.eventHandler){
-          this.eventHandler.preventDefault();
-          this.eventHandler.stopImmediatePropagation();
-        }
         this.cdRef.detectChanges();
 
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-        if(this.eventHandler){
-          this.eventHandler.preventDefault();
-          this.eventHandler.stopImmediatePropagation();
-        }
         this.cdRef.detectChanges();
       });
   }
@@ -672,11 +672,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.currentImage = null;
     delete this.messageModel;
     this.uploadedImages = [];
-
-    if(this.eventHandler){
-      this.eventHandler.preventDefault();
-      this.eventHandler.stopImmediatePropagation();
-    }
 
     this.yiAutoScroll?.forceScrollDown();
     this.cdRef.detectChanges();
@@ -843,9 +838,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
   }
 
-
   refreshRead() {
     this.validateData();
+    (this.data as any) = null;
     this.loadMessages(this.data);
   }
 
@@ -1021,7 +1016,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   // }
 
   ngAfterViewInit() {
-    this.yiAutoScroll?.forceScrollDown();
   }
 
   ngOnDestroy(): void {

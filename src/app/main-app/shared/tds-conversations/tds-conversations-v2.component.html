@@ -44,7 +44,7 @@
                             color="primary"  trigger="click"  tds-dropdown
                             [tdsDropdownMenu]="menu2" [placement]="'bottomRight'">
                             <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.AssignedTo ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
-                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo.UserName:''}}</span>
+                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo?.UserName:''}}</span>
                             <i class="tdsi-arrow-down-line"></i>
                         </button>
                         <tds-dropdown-menu #menu2="tdsDropdownMenu">
@@ -106,8 +106,8 @@
     <!-- main -->
     <tds-spin class="flex-auto h-full w-full flex overflow-hidden" [color]="'secondary'" tip="Loading..." [spinning]="isLoading" >
         <div class="h-full w-full overflow-y-auto tds-custom-scroll flex flex-col relative delay-100"
-            #scrollToIndex yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40" scroll-end="true"
-            (onScrollToTop)="nextData()">
+            #scrollToIndex  (onScrollToTop)="nextData()" id="dataSourceScroll"
+            yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40">
 
             <div class="absolute w-full flex justify-center z-10" *ngIf="isProcessing">
                 <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
@@ -117,8 +117,8 @@
                 <tds-empty notFoundContent="Không có nội dung"></tds-empty>
             </div>
 
-            <div *ngIf="dataSource && dataSource?.Items">
-                <ng-container *ngFor="let item of dataSource!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+            <div *ngIf="dataSource && dataSource?.Items" >
+                <div *ngFor="let item of dataSource!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex" >
                   <div *ngIf="item" @eventFadeState>
                     <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
                         <div class="w-full relative">
@@ -143,11 +143,11 @@
                             [type]="type" [partner]="partner"
                             [dataSource]="dataSource">
 
-                            <!-- [children]="dataSource.Extras!.children[item?.ObjectId]" --> chưa có
+                            <!-- [children]="dataSource.Extras!.children[item?.ObjectId]" chưa có -->
                         </tds-conversation-item-v2>
                     </ng-container>
                   </div>
-                </ng-container>
+                </div>
             </div>
 
         </div>
@@ -274,12 +274,12 @@
                   </div>
               </div>
               <div class="w-full pt-4 flex flex-row">
-                  <textarea tdsInput [placeholder]="isEnterSend?'Nhập nội dung tin nhắn, nhấn [Enter] để gửi':'Nhập nội dung tin nhắn'"
+                  <textarea tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
                       [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
                       (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
                   </textarea>
                   <div>
-                      <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender($event)">
+                      <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
                           <span class="flex items-center px-6">
                               <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
                           </span>

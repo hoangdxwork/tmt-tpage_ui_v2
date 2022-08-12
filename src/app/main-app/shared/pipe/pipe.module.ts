@@ -29,6 +29,7 @@ import { GetOrderStatusPipe } from './get-order-status.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
 import { CheckTagSelectedPipe } from './check-tag-selected.pipe';
+import { ConverseTimePipe } from './converse-time.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -57,7 +58,8 @@ const cmp =[
   TagStatusColorPipe,
   CheckTagSelectedPipe,
   ChatomniTShopType,
-  ChatomniFacebookType
+  ChatomniFacebookType,
+  ConverseTimePipe
 ]
 
 @NgModule({

@@ -26,7 +26,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
     @Input() data!: string[];
     @Input() isArray!: boolean;
     @Input() size: number = 112;
-    @Input() isAvatar!:boolean
+    @Input() isAvatar!:boolean;
     @Output() onLoadImage = new EventEmitter();
     @Output() getResult = new EventEmitter<string>();
     @Output() getBase64 = new EventEmitter<any>();
@@ -74,10 +74,10 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
       const formData = new FormData();
       formData.append('files', item.file as any, item.file.name);
       formData.append('id', '0000000000000051');
-      
+
       let dataModel = this.fileList as any[];
       return this.sharedService.saveImageV2(formData).pipe(finalize(()=>{ this.isUploading = false })).subscribe((res: any) => {
-        
+
         if(res){
           let x = {
             uid: res[0].eTag,
@@ -103,7 +103,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
               this.msg.error(e);
             }
           )
-          
+
         }
       }, error => {
         this.msg.error(error.Message ? error.Message:'Upload xảy ra lỗi');
