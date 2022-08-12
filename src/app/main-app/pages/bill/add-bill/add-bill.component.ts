@@ -258,6 +258,8 @@ export class AddBillComponent implements OnInit {
 
             obs.State = 'draft';
             obs.TrackingRef = null;
+            obs.Number = '';
+            obs.CompanyId = Number(this.companyCurrents.CompanyId);
 
         } else {
             obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
@@ -340,8 +342,8 @@ export class AddBillComponent implements OnInit {
 
   loadTeamById(id: any) {
     this.crmTeamService.getTeamById(id).subscribe((team: any) => {
-        this.dataModel.Team.Name = team?.Name;
-        this.dataModel.Team.Facebook_PageName = team?.Facebook_PageName;
+        this.dataModel.Team!.Name = team?.Name;
+        this.dataModel.Team!.Facebook_PageName = team?.Facebook_PageName;
     },  err=>{
         this.message.error(err?.error?.message)
     })
@@ -986,7 +988,6 @@ export class AddBillComponent implements OnInit {
               this.printInvoices(print, this.id);
           } else {
               this.isLoading = false;
-              this.onBack();
           }
 
       }, error => {
@@ -1004,7 +1005,6 @@ export class AddBillComponent implements OnInit {
                 this.printInvoices(print, res.Id);
             } else {
                 this.isLoading = false;
-                this.onBack();
             }
         }, error => {
             this.isLoading = false;
