@@ -1,7 +1,11 @@
-import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
+import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
+import { PrepareFacebookPostHandler } from './../../../handler-v2/conversation-post/prepare-facebook-post.handler';
+import { LiveCampaignService } from './../../../services/live-campaign.service';
+import { LiveCampaignModel } from './../../../dto/live-campaign/odata-live-campaign.dto';
+import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, Input, OnChanges, OnDestroy, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef } from '@angular/core';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, Input, OnChanges, OnDestroy, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
@@ -14,14 +18,12 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { FacebookPostItem } from '@app/dto/facebook-post/facebook-post.dto';
 import { ConversationPostFacade } from '@app/services/facades/conversation-post.facade';
 import { SignalRConnectionService } from '@app/services/signalR/signalR-connection.service';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByGroup } from '@app/dto/conversation/post/comment-group.dto';
 import { RequestCommentByPost } from '@app/dto/conversation/post/comment-post.dto';
-import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign.dto';
 
 @Component({
   selector: 'conversation-post-view-v3',
@@ -30,11 +32,13 @@ import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign.dt
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDestroy {
+export class ConversationPostViewV3Component implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
+  @Input() availableCampaigns!:Array<LiveCampaignModel>;
 
+  currentLiveCampaign?:LiveCampaignModel;
   indClickFilter = 0;
   isShowFilterUser = false;
   indeterminate: boolean = false;
@@ -83,17 +87,23 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   isLoading: boolean = false;
   isProcessing: boolean = false;
+  indClickTag: string = '';
 
   constructor(private facebookPostService: FacebookPostService,
+    private liveCampaignService: LiveCampaignService,
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private cdRef: ChangeDetectorRef,
+    private objectEvent: ObjectFacebookPostEvent,
+    private prepareHandler: PrepareFacebookPostHandler,
+    private fbPostHandler: FaceBookPostItemHandler,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private sgRConnectionService: SignalRConnectionService,
     private conversationPostFacade: ConversationPostFacade,
     private facebookCommentService: FacebookCommentService,
     private message: TDSMessageService,
+    private cdr: ChangeDetectorRef,
     private destroy$: TDSDestroyService) {
   }
 
@@ -104,6 +114,14 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     }
     
     this.loadData();
+  }
+
+  ngAfterViewInit(): void {
+    this.objectEvent.getObjectFBData$.subscribe(res=>{
+      (<MDB_Facebook_Mapping_PostDto>this.data.Data) = res;
+      this.currentLiveCampaign = this.availableCampaigns.find(f=>f.Id == res.live_campaign_id);
+      this.cdRef.detectChanges();
+    })
   }
 
   initialize() {
@@ -125,7 +143,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
     this.facebookScanData$ = this.sgRConnectionService._onFacebookScanData$.subscribe((res: any) => {
       if (res.data) {
-        let data = Object.assign({}, res.data);
+        let data = {...res.data};
 
         if (res.type == "update_scan_feed") {
           if (data.comment?.object?.id == this.data?.ObjectId) {
@@ -447,12 +465,42 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
       this.currentSort = this.sortOptions[0];
       this.currentFilter = this.filterOptions[0];
 
-      this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).subscribe((res: any) => {
+      this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.facebookCommentService.setSort(this.currentSort.value);
         this.loadData();
       }, error => {
         this.message.error('Thao tác thất bại');
       })
+    }
+  }
+
+  openTag(id: string) {
+    this.indClickTag = id;
+  }
+
+  closeTag(): void {
+    this.indClickTag = '';
+  }
+
+  addNewCampaign() {
+    if(this.currentLiveCampaign){
+      let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.data?.Data), this.currentLiveCampaign);
+      let liveCampaignId = this.currentLiveCampaign?.Id || (<MDB_Facebook_Mapping_PostDto> this.data?.Data)?.live_campaign_id;
+      
+      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
+          if(res.value){
+            this.fbPostHandler.updateLiveCampaignPost(this.currentLiveCampaign as LiveCampaignModel, (<MDB_Facebook_Mapping_PostDto> this.data?.Data));
+            this.objectEvent.getObjectFBData$.emit((<MDB_Facebook_Mapping_PostDto>this.data?.Data));
+            this.message.success('Cập nhật chiến dịch thành công');
+
+            this.cdr.markForCheck();
+          }
+      },
+      err=>{
+        this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
+      })
+
+      this.indClickTag = '';
     }
   }
 
