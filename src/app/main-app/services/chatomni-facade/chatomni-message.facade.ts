@@ -42,7 +42,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
           }
       });
     }
-    return model;
+    return {...model};
   }
 
   mappingChatomniDataItemDto(data:MakeActivityItemWebHook){
@@ -66,7 +66,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       UserId: data.to_id
     } as ChatomniDataItemDto
 
-    return model;
+    return  {...model};
   }
 
 
@@ -79,7 +79,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       CreatedTime: tag.DateCreated
     } as ChatomniConversationTagDto
 
-    return model;
+    return  {...model};
   }
 
   mappingModelTagMess(tag:Tag){
@@ -91,7 +91,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       CreatedTime: tag.created_time
     } as ChatomniConversationTagDto
 
-    return model;
+    return  {...model};
   }
 
   mappinglTagsEmiter(data: ChatomniConversationItemDto){
@@ -100,7 +100,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       Tags: data.Tags
     } as ChatomniTagsEventEmitterDto
 
-    return model;
+    return  {...model};
   }
 
   mappinglLastMessageEmiter(ConversationId: string, data: ChatomniDataItemDto){
@@ -112,7 +112,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       }
     } as ChatomniLastMessageEventEmitterDto
 
-    return model
+    return  {...model};
   }
 
   mappingCurrentConversation(res: MDBByPSIdDTO){
@@ -127,6 +127,6 @@ export class ChatomniMessageFacade extends BaseSevice  {
       })
     } 
 
-    return model;
+    return  {...model};
   }
 }

@@ -1,5 +1,5 @@
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { takeUntil } from 'rxjs/operators';
@@ -41,6 +41,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   @Input() omcs_Item!: ChatomniConversationItemDto; // dữ liệu nhận từ conversation-all
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
+  @Output() onTabOderOutput = new EventEmitter<boolean>();
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -111,6 +112,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     })
     this.conversationOrderFacade.loadPartnerByPostComment$.subscribe(res=>{
       if(TDSHelperObject.hasValue(res)) {
+        debugger
         let psid = res.from?.id;
         let pageId = this.team.ChannelId;
         this.loadData(pageId, psid);
@@ -491,6 +493,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           this.message.error(error.error.message ?? 'Không tải được dữ liệu');
       }
     )
+  }
+
+  onTabOrder(){
+    this.onTabOderOutput.emit(true);
   }
 
   mappingAddress(partner: TabPartnerCvsRequestModel) {

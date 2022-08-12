@@ -70,6 +70,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   cacheChatbot: OnChatBotSignalRModel[] = [];
   orderCode: any;
   checkCsidRouter: string = '';
+  selectedIndex: number = 0;
 
   tagsChange!: ChatomniConversationTagDto[];
   currentOrderTab: number = 0;
@@ -478,6 +479,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       }
       event.preventDefault();
       event.stopImmediatePropagation();
+  }
+
+  onTabOderOutput(ev: boolean){
+    this.selectedIndex = 1
   }
 
   loadFilterText(text: string) {
