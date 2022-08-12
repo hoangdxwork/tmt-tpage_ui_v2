@@ -34,7 +34,7 @@ export class SO_ComputeCaclHandler {
     };
   }
 
-  public so_calcTotal(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel, saleConfig: InitSaleDTO) {
+  public so_calcTotal(saleModel: FastSaleOrder_DefaultDTOV2 | null, quickOrderModel: QuickSaleOnlineOrderModel, saleConfig: InitSaleDTO) {
     let totalAmount = 0;
     let totalQuantity = 0;
 
@@ -69,7 +69,10 @@ export class SO_ComputeCaclHandler {
       saleModel.TotalQuantity = totalQuantity;
     }
 
-    return { saleModel, quickOrderModel };
+    return {
+        saleModel: saleModel || null,
+        quickOrderModel: quickOrderModel
+    };
   }
 
 }

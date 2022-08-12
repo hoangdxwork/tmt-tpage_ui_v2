@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { TDSHelperString } from "tds-ui/shared/utility";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
@@ -8,7 +9,7 @@ import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleo
 
 export class CsOrder_PrepareModelHandler {
 
-  public  prepareInsertFromMessage(model: QuickSaleOnlineOrderModel) {
+  public  prepareInsertFromMessage(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
 
     let x = {} as InsertFromMessageDto;
 
@@ -21,7 +22,7 @@ export class CsOrder_PrepareModelHandler {
     x.WardName = model.WardName;
 
     x.Code = model.Code;
-    x.CRMTeamId = model.CRMTeamId;
+    x.CRMTeamId = model.CRMTeamId || team.Id;
     x.Email = model.Email;
     x.Facebook_ASUserId = model.Facebook_ASUserId;
     x.Facebook_UserId = model.Facebook_UserId;
@@ -30,16 +31,16 @@ export class CsOrder_PrepareModelHandler {
     x.Name = model.Name;
     x.Note = model.Note;
     x.PartnerId = model.PartnerId;
-    x.PartnerName = model.PartnerName;
+    x.PartnerName = model.PartnerName || model.Partner?.Name;
     x.Telephone = model.Telephone;
     x.TotalAmount = model.TotalAmount;
     x.TotalQuantity = model.TotalQuantity;
 
     x.User = {
-      Id: model.UserId,
-      Name: model.UserName
+      Id: model.UserId || model.User?.Id,
+      Name: model.UserName || model.User?.Name,
     }
-    x.UserId = model.UserId;
+    x.UserId = model.UserId || model.User?.Id;
 
     x.Details = [];
     model.Details.map(obj => {
@@ -88,6 +89,7 @@ export interface InsertFromMessageDto {
   Telephone: string;
   Note?: any;
   CRMTeamId: number;
+  FormAction?: string;
 }
 
 export interface Detail_InsertFromMessageDto {

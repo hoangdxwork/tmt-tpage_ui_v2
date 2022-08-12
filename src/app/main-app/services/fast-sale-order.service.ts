@@ -106,14 +106,14 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  createFastSaleOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/create`,
-      method: CoreApiMethodType.post,
-    }
+  // createFastSaleOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
+  //   const api: CoreAPIDTO = {
+  //     url: `${this._BASE_URL}/rest/v2.0/fastsaleorder/create/create`,
+  //     method: CoreApiMethodType.post,
+  //   }
 
-    return this.apiService.getData<TDSSafeAny>(api, data);
-  }
+  //   return this.apiService.getData<TDSSafeAny>(api, data);
+  // }
 
   insertListOrderModel(data: TDSSafeAny, isForce = false) {
     const api: CoreAPIDTO = {
