@@ -1,8 +1,11 @@
+import { PrepareFacebookPostHandler } from './../../../../handler-v2/conversation-post/prepare-facebook-post.handler';
+import { FaceBookPostItemHandler } from './../../../../handler-v2/conversation-post/facebook-post-item.handler';
+import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-post/object-facebook-post.event';
+import { LiveCampaignPostComponent } from './../live-campaign-post/live-campaign-post.component';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewContainerRef } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-import { ListLiveCampaignComponent } from 'src/app/main-app/shared/list-live-campaign/list-live-campaign.component';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -15,7 +18,7 @@ import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/c
   providers: [ TDSDestroyService ]
 })
 
-export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
+export class ObjectFacebookPostComponent  implements OnInit {
 
   @Input() item?: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
@@ -31,6 +34,9 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   constructor(private liveCampaignService: LiveCampaignService,
     private modal: TDSModalService,
     private message: TDSMessageService,
+    private objectEvent: ObjectFacebookPostEvent,
+    private fbPostHandler: FaceBookPostItemHandler,
+    private prepareHandler: PrepareFacebookPostHandler,
     private viewContainerRef: ViewContainerRef,
     private cdr: ChangeDetectorRef,
     private destroy$: TDSDestroyService) {
@@ -45,13 +51,28 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   showModalLiveCampaign(item: ChatomniObjectsItemDto) {
     const modal = this.modal.create({
       title: 'Chiến dịch',
-      content: ListLiveCampaignComponent,
+      content: LiveCampaignPostComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        post: item
+        post: item,
+        currentLiveCampaign: this.currentLiveCampaign,
+        lstOfData: this.availableCampaigns
       }
     });
+
+    modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
+      this.currentLiveCampaign = res as LiveCampaignModel;
+
+      if(this.item?.Data){
+        this.mdbFbPost = this.fbPostHandler.updateLiveCampaignPost(res, (<MDB_Facebook_Mapping_PostDto> this.item.Data));
+        this.item.Data = this.mdbFbPost;
+      }
+
+      this.objectEvent.getObjectFBData$.emit(this.mdbFbPost);
+
+      this.cdr.detectChanges();
+    })
   }
 
   selectPost(item: ChatomniObjectsItemDto) {
@@ -66,49 +87,18 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     this.indClickTag = '';
   }
 
-  prepareLiveCampaignModel(liveCampaignModel: LiveCampaignModel, fbPostModel:MDB_Facebook_Mapping_PostDto, isDelete?:boolean){
-    return {
-      action: isDelete ? "cancel" : "update",
-      model: {
-        Id: liveCampaignModel.Id,
-        IsActive: liveCampaignModel.IsActive,
-        Name: liveCampaignModel.Name,
-        Note: liveCampaignModel.Note,
-        DateCreated: new Date().toISOString(),
-        Facebook_LiveId: liveCampaignModel.Facebook_LiveId,
-        Facebook_UserId: liveCampaignModel.Facebook_UserId,
-        Facebook_UserName: liveCampaignModel.Facebook_UserName,
-        Facebook_UserAvatar: liveCampaignModel.Facebook_UserAvatar || "",
-        Facebook_Post: {
-          created_time: new Date(liveCampaignModel.DateCreated).toISOString(),
-          facebook_id: liveCampaignModel.Facebook_LiveId,
-          from:{
-            id: liveCampaignModel.Facebook_UserId,
-            name: liveCampaignModel.Facebook_UserName,
-            picture: liveCampaignModel.Facebook_UserAvatar || "",
-          },
-          full_picture: "",
-          message: fbPostModel.message,
-          picture: liveCampaignModel.Facebook_UserAvatar || "",
-          source: "",
-        }
-      }
-    }
-  }
-
   addNewCampaign() {
     if(this.currentLiveCampaign){
-      let model = this.prepareLiveCampaignModel(this.currentLiveCampaign, <MDB_Facebook_Mapping_PostDto>this.item?.Data);
-
-      this.liveCampaignService.updateLiveCampaignPost(this.currentLiveCampaign.Id, model).pipe(takeUntil(this.destroy$)).subscribe(res => {
+      let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.item?.Data), this.currentLiveCampaign);
+      let liveCampaignId = this.currentLiveCampaign?.Id || (<MDB_Facebook_Mapping_PostDto> this.item?.Data)?.live_campaign_id;
+      
+      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
           if(res.value){
-            (<MDB_Facebook_Mapping_PostDto>this.item?.Data).live_campaign_id = this.currentLiveCampaign.Id;
-            (<MDB_Facebook_Mapping_PostDto>this.item?.Data).live_campaign = {
-              name: this.currentLiveCampaign.Name,
-              note: this.currentLiveCampaign.Note
-            }
-            this.cdr.markForCheck();
+            this.fbPostHandler.updateLiveCampaignPost(this.currentLiveCampaign, (<MDB_Facebook_Mapping_PostDto> this.item?.Data));
+            this.objectEvent.getObjectFBData$.emit((<MDB_Facebook_Mapping_PostDto>this.item?.Data));
             this.message.success('Cập nhật chiến dịch thành công');
+
+            this.cdr.markForCheck();
           }
       },
       err=>{
@@ -118,8 +108,4 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
       this.indClickTag = '';
     }
   }
-
-  ngOnChanges(changes: SimpleChanges) {
-  }
-
 }

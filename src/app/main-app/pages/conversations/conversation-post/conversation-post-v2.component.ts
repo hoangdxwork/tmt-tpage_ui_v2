@@ -247,7 +247,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
         if(res && res.Items) {
 
-            this.lstObjects = [...res.Items];debugger
+            this.lstObjects = [...res.Items];
 
             if(TDSHelperArray.hasListValue(res.Items)){
                 let exits = res.Items.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];

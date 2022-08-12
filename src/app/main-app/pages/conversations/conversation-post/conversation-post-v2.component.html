@@ -61,7 +61,7 @@
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[50%] flex flex-col h-full overflow-hidden">
             <div *ngIf="currentPost && currentTeam" class="h-full w-full">
-                <conversation-post-view-v3 [data]="currentPost" [team]="currentTeam"></conversation-post-view-v3>
+                <conversation-post-view-v3 [data]="currentPost" [team]="currentTeam" [availableCampaigns]="lstOfLiveCampaign"></conversation-post-view-v3>
             </div>
             <div *ngIf="!currentPost" class="h-full w-full">
                 Hãy chọn một bài viết.

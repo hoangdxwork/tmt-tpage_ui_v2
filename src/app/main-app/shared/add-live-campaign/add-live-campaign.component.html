@@ -1,5 +1,5 @@
 <tds-spin [spinning]="isLoading">
-  <form [formGroup]="formCreateLiveCampaign">
+  <form [formGroup]="_form">
     <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
       <tds-tab title="Thông tin" clsContent="p-4 border-t border-neutral-2-200">
         <div class="w-full h-full grid grid-cols-2 gap-y-4 gap-x-8">
@@ -77,9 +77,19 @@
             </div>
 
             <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Thời gian kết thúc tổng hợp (phút)</tds-label>
+              <tds-label class="w-1/3">Ngày bắt đầu</tds-label>
               <tds-form-field class="w-2/3" class="w-full">
-                  <tds-date-picker showTime placeholder="Chọn ngày kết thúc" formControlName="EndDate">
+                  <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime [ngModel]="_form.value.StartDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate" 
+                  (ngModelChange)="onChangeDate($event,0)">
+                  </tds-date-picker>
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Ngày kết thúc</tds-label>
+              <tds-form-field class="w-2/3" class="w-full">
+                  <tds-date-picker placeholder="Chọn ngày kết thúc" showTime [ngModel]="_form.value.EndDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate" 
+                  (ngModelChange)="onChangeDate($event,1)">
                   </tds-date-picker>
               </tds-form-field>
             </div>
@@ -89,9 +99,6 @@
               <tds-form-field class="w-2/3" class="w-full">
                   <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
                   ></tds-input-number>
-                  <!-- <tds-error>
-                      Vui lòng nhập số tiền tối thiểu
-                  </tds-error> -->
               </tds-form-field>
             </div>
 
@@ -100,9 +107,6 @@
               <tds-form-field class="w-2/3" class="w-full">
                   <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit"
                   ></tds-input-number>
-                  <!-- <tds-error>
-                      Vui lòng nhập số tiền tối thiểu
-                  </tds-error> -->
               </tds-form-field>
             </div>
 
@@ -173,7 +177,7 @@
                           <!-- Số lượng -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1" formControlName="Quantity">
+                              <tds-input-number [min]="1" [step]="1" formControlName="Quantity">
                               </tds-input-number>
                             </tds-form-field>
                           </td>
@@ -181,7 +185,7 @@
                           <!-- Giới hạn trên đơn -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity">
+                              <tds-input-number [min]="1" [step]="1" formControlName="LimitedQuantity">
                               </tds-input-number>
                             </tds-form-field>
                           </td>
@@ -214,7 +218,7 @@
 
     <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
       <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" [disabled]="!formCreateLiveCampaign?.valid" (click)="onSave()">Lưu</button>
+      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
     </div>
 
   </form>

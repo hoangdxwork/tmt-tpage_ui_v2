@@ -130,12 +130,44 @@
                         </div>
 
                         <div *ngIf="!(data.Data | facebookType).live_campaign">
-                            <tds-tag size="sm" status="bg-neutral-3-100 text-neutral-1-600">
+                            <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
+                                (click)="openTag(data.Id)"
+                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
+                                [popoverAutoClose]="false" [popoverContent]="contentAddtag" [popoverBackdrop]="true"
+                                popoverPlacement="right"
+                                status="bg-neutral-3-100 text-neutral-1-600">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                                     <span class="flex-auto truncate">Chọn chiến dịch</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                 </span>
                             </tds-tag>
+
+                            <ng-template #contentAddtag>
+                                <div class="w-[304px]">
+                                  <tds-form-field>
+                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
+                                        [(ngModel)]="currentLiveCampaign"
+                                        [allowClear]="true" [valuePrimitive]="false" [data]="availableCampaigns"
+                                        [autoClose]="true">
+                                    </tds-select>
+                                  </tds-form-field>
+                                </div>
+                            </ng-template>
+
+                            <ng-template #footerAddTag>
+                                <div class="flex justify-end pt-2">
+                                  <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-close-fill"></i>
+                                    </span>
+                                  </button>
+                                  <button tds-button-icon type="button" size="sm" color="primary" (click)="addNewCampaign()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-tick-fill"></i>
+                                    </span>
+                                  </button>
+                                </div>
+                            </ng-template>
                         </div>
 
                     </div>
