@@ -1,3 +1,4 @@
+import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { PrepareFacebookPostHandler } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { FaceBookPostItemHandler } from './../../handler-v2/conversation-post/facebook-post-item.handler';
@@ -145,6 +146,7 @@ import { ObjectFacebookPostComponent } from './conversation-post/objects/object-
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { DrawerDetailBillComponent } from './components/drawer-detail-bill/drawer-detail-bill.component';
 import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 
 const SERVICES = [
@@ -262,6 +264,7 @@ const SERVICES = [
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
     CommentFilterAllComponent,
+    DrawerDetailBillComponent,
     LiveCampaignPostComponent
   ],
 
@@ -304,7 +307,8 @@ const SERVICES = [
     TDSEmptyModule,
     TDSUploadModule,
     DirectivesModule,
-    ScrollingModule
+    ScrollingModule,
+    TDSButtonSpitModule
   ],
   providers: [ ...SERVICES]
 })

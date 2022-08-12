@@ -1,3 +1,6 @@
+import { ConversationService } from './../../services/conversation/conversation.service';
+import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
+import { ChatomniMessageFacade } from './../../services/chatomni-facade/chatomni-message.facade';
 import { OdataProductService } from './../../services/mock-odata/odata-product.service';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
 import { AttachmentService } from '../../services/attachment.service';
@@ -91,7 +94,10 @@ const SERVICES = [
   AttachmentService,
   AttachmentState,
   OdataProductService,
-  ChatomniMessageService
+  ChatomniMessageService,
+  ChatomniMessageFacade,
+  ActivityMatchingService,
+  ConversationService
 ]
 
 @NgModule({

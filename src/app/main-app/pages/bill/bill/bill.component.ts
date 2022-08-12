@@ -1,3 +1,4 @@
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { GetSummaryStatusInputDTO } from './../../../dto/fastsaleorder/fastsaleorder.dto';
 import { Message } from './../../../../lib/consts/message.const';
 import { GenerateMessageTypeEnum } from './../../../dto/conversation/message.dto';
@@ -145,7 +146,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private deliveryCarrierService: DeliveryCarrierService,
-    private crmMatchingService: CRMMatchingService) {
+    private crmMatchingService: CRMMatchingService,
+    private chatomniMessageFacade: ChatomniMessageFacade) {
   }
 
   ngOnInit(): void {
@@ -582,17 +584,9 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          res["keyTags"] = {};
-
-          if (res.tags && res.tags.length > 0) {
-            res.tags.map((x: any) => {
-              res["keyTags"][x.id] = true;
-            })
-          } else {
-            res.tags = [];
-          }
-
-          this.currentConversation = { ...res, ...this.currentConversation };
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          this.currentConversation = { ...model };
+          
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }

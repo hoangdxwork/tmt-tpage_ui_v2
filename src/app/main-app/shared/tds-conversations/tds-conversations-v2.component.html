@@ -79,7 +79,7 @@
                 <!-- Chatbot đang gặp vấn đề -->
                 <div class="flex">
                     <!-- chatbot lỗi -->
-                    <span *ngIf="data.State == 2" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề">
+                    <span *ngIf="data.State == 2" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề" (click)="onAlertChatBot()">
                         <img src="../../../assets/imagesv2/chatbot-error.svg" width="38px" height="38px">
                     </span>
                     <!-- bật chatbot thành công sau 5s thì đóng -->
@@ -155,7 +155,7 @@
 
     <!-- Thông báo Chatbot -->
     <div *ngIf="data && data.State == 2" class="absolute top-[88px] left-[8px] right-[8px]" >
-        <tds-alert type="info" [message]="contentMessage" [closeable]="true" showIcon ></tds-alert>
+        <tds-alert *ngIf="isAlertChatbot" type="info" [message]="contentMessage" [closeable]="true" showIcon (close)="onCloseAlertChatbot($event) "></tds-alert>
     </div>
     <ng-template #contentMessage>
         <div class="text-body-2 font-regular">Hệ thống chatbot chưa xử lý được kịch bản hội thoại này và chuyển cho admin xử lý. Hãy bật lại chatbot để xử lý tự động tin nhắn.

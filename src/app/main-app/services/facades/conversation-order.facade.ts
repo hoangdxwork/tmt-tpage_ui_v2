@@ -55,7 +55,15 @@ export class ConversationOrderFacade extends BaseSevice  {
   // TODO: chọn sản phẩm từ tds-conversation sang tab đơn hàng
   public onAddProductOrder$:EventEmitter<DataPouchDBDTO> = new EventEmitter<DataPouchDBDTO>();
 
+  // TODO: outPut thông tin khách hàng từ comment sang tab đơn hàng
+  public onLoadedCommentByUser$:EventEmitter<TDSSafeAny> = new EventEmitter<TDSSafeAny>();
+
+  // TODO: outPut thông tin khách hàng từ comment sang tab Khách hàng
   public loadPartnerByPostComment$ = new EventEmitter<any>();
+
+  // TODO: outPut thông tin khách hàng từ comment sang tab Khách hàng
+  public onPartnerIdByComment$ = new EventEmitter<number>();
+
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
 
   constructor(private apiService: TCommonService,

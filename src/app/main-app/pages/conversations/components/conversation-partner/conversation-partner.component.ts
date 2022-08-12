@@ -61,6 +61,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   isEditPartner: boolean = false;
   partner!: TabPartnerCvsRequestModel;
   isLoading: boolean = false;
+  visibleDrawerBillDetail: boolean = false;
 
   constructor(private message: TDSMessageService,
     private conversationService: ConversationService,
@@ -89,9 +90,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     // TODO: load lại form conversation-partner từ conversation-order
     this.loadPartnerFromTabOrder();
 
-    // TODO: load lại form conversation-partner từ comment bài post
-    this.loadPartnerByPostComment();
-
     // TODO: update partner từ conversation realtime signalR
     this.loadUpdateInfoByConversation();
 
@@ -99,6 +97,26 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.onSelectOrderFromMessage();
 
     this.loadPartnerStatus();
+
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    // TODO: load lại form conversation-partner từ comment bài post
+    this.conversationOrderFacade.onPartnerIdByComment$.subscribe(partnerId=>{
+      if(partnerId){
+        this.omcs_Item = this.omcs_Item? this.omcs_Item : {} as ChatomniConversationItemDto
+        this.omcs_Item.PartnerId = partnerId
+      }
+    })
+    this.conversationOrderFacade.loadPartnerByPostComment$.subscribe(res=>{
+      if(TDSHelperObject.hasValue(res)) {
+        let psid = res.from?.id;
+        let pageId = this.team.ChannelId;
+        this.loadData(pageId, psid);
+    }
+    })
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -186,6 +204,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     });
   }
+
 
   loadUpdateInfoByConversation() {
     this.conversationDataFacade.onUpdateInfoByConversation$.pipe(takeUntil(this.destroy$)).subscribe(res => {

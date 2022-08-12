@@ -1,3 +1,6 @@
+import { ConversationService } from './../../services/conversation/conversation.service';
+import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { OrderEvent } from './../../handler-v2/order-handler/order.event';
 import { PreparePartnerHandler } from './../../handler-v2/bill-handler/prepare-partner.handler';
 import { CalculateBillFeeHandler } from './../../handler-v2/bill-handler/calculate-bill-fee.handler';
@@ -143,6 +146,9 @@ const SERVICES = [
   PrepareCopyItemHandler,
   OrderEvent,
   ChatomniMessageService,
+  ChatomniMessageFacade,
+  ActivityMatchingService,
+  ConversationService,
   SO_ComputeCaclHandler,
   CalculateFeeAshipHandler
 ]

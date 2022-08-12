@@ -1,3 +1,4 @@
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
@@ -45,6 +46,7 @@ export class TableOrderMessageComponent implements OnInit {
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
+    private chatomniMessageFacade: ChatomniMessageFacade
   ) { }
 
   ngOnInit(): void {
@@ -160,17 +162,9 @@ export class TableOrderMessageComponent implements OnInit {
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          res["keyTags"] = {};
-
-          if (res.tags && res.tags.length > 0) {
-            res.tags.map((x: any) => {
-              res["keyTags"][x.id] = true;
-            })
-          } else {
-            res.tags = [];
-          }
-
-          this.currentConversation = { ...res, ...this.currentConversation };
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          this.currentConversation = { ...model };
+          
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }

@@ -142,18 +142,22 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     // TODO: cập nhật tags
     this.chatomniEventEmiterService.tag_ConversationEmiter$.subscribe((res: ChatomniTagsEventEmitterDto)=>{
       if(res){
-        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
-        this.lstOmcs[index].Tags = [...res.Tags];
-        this.lstOmcs[index] = {...this.lstOmcs[index]}
+        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
+        if(index >- 1) {
+          this.lstOmcs[index].Tags = [...res.Tags];
+          this.lstOmcs[index] = {...this.lstOmcs[index]}
+        }
       }
     })
 
     // TODO: Cập nhật hội thoại cuối cùng
     this.chatomniEventEmiterService.last_Message_ConversationEmiter$.subscribe((res: ChatomniLastMessageEventEmitterDto)=>{
       if(res){
-        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
-        this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
-        this.lstOmcs[index] = {...this.lstOmcs[index]}
+        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
+        if(index >- 1) {
+          this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
+          this.lstOmcs[index] = {...this.lstOmcs[index]}
+        }
       }
     })
 

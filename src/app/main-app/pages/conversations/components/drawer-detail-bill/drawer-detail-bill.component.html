@@ -1,0 +1,68 @@
+<div class="text-info-500 font-semibold text-body-2 font-sans" (click)="onDrawerDetailBill()">
+    #{{bill.Number || 'N/A'}}
+  </div>
+<tds-drawer [bodyStyle]="{'overflow':'hidden'}" [visible]="visibleDrawerBillDetail" [placement]="'right'" size="xl"
+    [bodyStyle]="{'overflow':'hidden','display': 'flex','flex-direction': 'column','padding': 0}" [title]="titleTpl"
+    (onClose)="onClose()" [footer]="footerTpl">
+    <ng-template #titleTpl>
+        <span class="text-header-1 text-neutral-1-900 font-semibold">Phiếu bán hàng 
+            <span class="text-white text-body-2 bg-primary-1 rounded px-2">{{bill.Number}}</span>
+        </span>
+    </ng-template>
+    <ng-container *tdsDrawerContent>
+
+    </ng-container>
+    <ng-template #footerTpl>
+        <div class="flex flex-col justify-end w-full p-4 border-t border-neutral-2-100 text-body-2 text-neutral-1-900 gap-y-2.5">
+            <div class="flex justify-end flex-auto gap-x-2">
+                <button tds-button type="button" color="primary">
+                    <span class="flex items-center">
+                        <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>Gửi vận đơn
+                    </span>
+                </button>
+                <button type="button"  tds-button color="primary">
+                    <span class="flex items-center">
+                        <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Tạo trả hàng
+                    </span>
+                </button>
+                <button tds-button color="primary" type="button">
+                    <span class="flex items-center">
+                        <i class="tdsi-copy-fill text-lg leading-none mr-2"></i>Sao chép
+                    </span>
+                </button>
+                <button tds-button color="info" type="button">
+                    <span class="flex items-center">
+                        <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sữa
+                    </span>
+                </button>
+                <button tds-button color="error" type="button">
+                    <span class="flex items-center">
+                        <i class="tdsi-close-fill text-lg leading-none mr-2"></i>Hủy hóa đơn
+                    </span>
+                </button>
+            </div>
+            <div class="flex justify-end flex-auto">
+                <!-- <tds-button-split class="mr-2" (clickButton)="onClickButton($event)" color="secondary">
+                    <span class="flex items-center js-label font-semibold">
+                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu</span>
+                    <div class="js-content flex flex-col ">
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill80')">Bill 80</button>
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill58')">Bill 58</button>
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('A4')">In A4</button>
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('A5')">In A5</button>
+                    </div>
+                </tds-button-split>
+                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('delivery')">
+                    <span class="flex items-center">
+                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In giao hàng
+                    </span>
+                </button>
+                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
+                    <span class="flex items-center">
+                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
+                    </span>
+                </button> -->
+            </div>
+        </div>
+    </ng-template>
+</tds-drawer>

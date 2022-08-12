@@ -176,6 +176,15 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     this.allItems[postId] = ArrayHelper.makeUniqueArray(this.allItems[postId], data.Items, "Id");
   }
 
+  getCommentsByUserAndPost(asId: string, postId: string): Observable<any>{
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/SaleOnline_Facebook_Comment/ODataService.GetCommentsByUserAndPost?userId=${asId}&postId=${postId}`,
+      method: CoreApiMethodType.get
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

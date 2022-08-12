@@ -1,3 +1,4 @@
+import { Tag, MDBByPSIdDTO } from './../../dto/crm-matching/mdb-by-psid.dto';
 import { ChatomniLastMessageEventEmitterDto, ChatomniConversationItemDto, ChatomniTagsEventEmitterDto, ChatomniConversationTagDto } from './../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniFacebookDataDto, ChatomniDataItemDto, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { Injectable, OnDestroy } from "@angular/core";
@@ -81,6 +82,18 @@ export class ChatomniMessageFacade extends BaseSevice  {
     return model;
   }
 
+  mappingModelTagMess(tag:Tag){
+    let model = {
+      Id: tag.id,
+      Name: tag.name,
+      Icon: tag.icon,
+      ColorClass: tag.color_class,
+      CreatedTime: tag.created_time
+    } as ChatomniConversationTagDto
+
+    return model;
+  }
+
   mappinglTagsEmiter(data: ChatomniConversationItemDto){
     let model = {
       ConversationId: data.ConversationId,
@@ -100,5 +113,20 @@ export class ChatomniMessageFacade extends BaseSevice  {
     } as ChatomniLastMessageEventEmitterDto
 
     return model
+  }
+
+  mappingCurrentConversation(res: MDBByPSIdDTO){
+    let model = { ...res } as any
+    model.ConversationId = res.psid
+    model.Name = res.name
+    model.Tags = [];
+    if (res.tags && res.tags.length > 0){
+      res.tags.map(x=>{
+        let data = this.mappingModelTagMess(x);
+        model.Tags.push(data);
+      })
+    } 
+
+    return model;
   }
 }
