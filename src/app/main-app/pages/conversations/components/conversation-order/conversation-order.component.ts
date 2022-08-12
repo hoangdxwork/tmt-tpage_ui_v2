@@ -14,7 +14,7 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
 import { TDSMessageService } from 'tds-ui/message';
@@ -54,6 +54,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { SharedService } from '@app/services/shared.service';
 import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CreateFastSaleOrderDTO } from '@app/dto/saleonlineorder/create-fastsaleorder.dto';
+import { ProductTemplateV2DTO } from '@app/dto/producttemplate/product-tempalte.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -559,7 +560,7 @@ export class ConversationOrderComponent implements OnInit {
   showModalAddProduct() {
     const modal = this.modal.create({
         title: 'Thêm sản phẩm',
-        content: TpageAddProductComponent,
+        content: ModalProductTemplateComponent,
         size: "xl",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
@@ -570,11 +571,11 @@ export class ConversationOrderComponent implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
         if(TDSHelperObject.hasValue(result)) {
 
-            let data = result[0] as ProductTemplateDTO;
+            let data = result[0] as ProductTemplateV2DTO;
             let x: Detail_QuickSaleOnlineOrder = {
               Quantity: 1,
               Price: data.ListPrice,
-              ProductId: data.Id,
+              ProductId: data.VariantFirstId,
               ProductName: data.Name,
               ProductNameGet: data.NameGet,
               ProductCode: data.DefaultCode,

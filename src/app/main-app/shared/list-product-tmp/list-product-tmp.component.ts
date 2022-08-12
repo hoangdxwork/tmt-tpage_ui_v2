@@ -10,7 +10,7 @@ import { fromEvent, Subject } from 'rxjs';
 import { orderBy as _orderBy } from 'lodash';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
-import { TpageAddProductComponent } from '../tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
 import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
@@ -203,7 +203,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   showModalAddProduct() {
     const modal = this.modalService.create({
       title: 'Thêm sản phẩm',
-      content: TpageAddProductComponent,
+      content: ModalProductTemplateComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
