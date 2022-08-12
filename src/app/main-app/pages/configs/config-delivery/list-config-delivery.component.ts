@@ -8,7 +8,6 @@ import { DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-car
 import { TDSMessageService } from 'tds-ui/message';
 import { finalize } from 'rxjs';
 import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
-import { isBuffer } from 'lodash';
 
 @Component({
   selector: 'list-config-delivery',
@@ -19,6 +18,7 @@ export class ListConfigDeliveryComponent implements OnInit {
   isLoading: boolean = false;
   isLoading1: boolean = false;
   keyFilter: string = '';
+  dataFilter: Array<DeliveryDataResponseDto> = [];
   providerDataSource: Array<DeliveryDataResponseDto> = [];
   deliveryDataSource: Array<DeliveryCarrierDTO> = [];
   public expandSet = new Set<number>();
@@ -42,7 +42,7 @@ export class ListConfigDeliveryComponent implements OnInit {
       .subscribe((res: DeliveryResponseDto<GetDeliveryResponseDto>) => {
         if (res.Success && res.Data) {
           this.providerDataSource = res.Data.Providers;
-          this.loadSearchData();
+          this.dataFilter = res.Data.Providers;
         } else {
           this.message.error(res.Error?.Message);
         }
@@ -58,7 +58,7 @@ export class ListConfigDeliveryComponent implements OnInit {
     (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
     (x.Type && TDSHelperString.stripSpecialChars(x.Type.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1))
 
-    return this.providerDataSource = data;
+    return data;
   }
 
   loadDeliveryCarriesByType(providerType: string) {
@@ -114,7 +114,7 @@ export class ListConfigDeliveryComponent implements OnInit {
   onInputKeyup(ev:TDSSafeAny){
     this.isLoading = true;
     this.keyFilter = ev.value;
-    this.loadData();
+    this.dataFilter = [...this.loadSearchData()];
     this.isLoading = false;
   }
 }
