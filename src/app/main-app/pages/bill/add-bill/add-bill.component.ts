@@ -47,7 +47,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
-import { CaculateFeeResponseDto, CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
+import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
 import { UpdateShipExtraHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipextra.handler';
 import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipservice-extras.handler';
@@ -57,7 +57,6 @@ import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/handler-v2/as
 import { AddBillHandler } from 'src/app/main-app/handler-v2/bill-handler/add-bill.handler';
 import { CreateFormBillHandler } from 'src/app/main-app/handler-v2/bill-handler/create-form-bill.handler';
 import { PrinterService } from '@app/services/printer.service';
-import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cacl.handler';
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 
 @Component({
@@ -236,7 +235,7 @@ export class AddBillComponent implements OnInit {
           let detailConfig = data.ShipmentDetailsAship?.ConfigsProvider.find(y => y.ConfigName == x.ConfigName);
           x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
 
-          return x;
+          return {...x} as AshipGetInfoConfigProviderDto;
       });
     }
   }
@@ -249,33 +248,40 @@ export class AddBillComponent implements OnInit {
         const obs = res as FastSaleOrder_DefaultDTOV2;
 
         if(this.path.includes('copy')){
-            delete this.id;
-            obs.Id = 0;
 
-            obs.DateInvoice = new Date();
-            obs.ReceiverDate = new Date();
-            obs.DateOrderRed = new Date();
+          delete this.id;
+          obs.Id = 0;
 
-            obs.State = 'draft';
-            obs.TrackingRef = null;
-            obs.Number = '';
-            obs.CompanyId = Number(this.companyCurrents.CompanyId);
+          obs.DateInvoice = new Date();
+          obs.ReceiverDate = new Date();
+          obs.DateOrderRed = new Date();
+
+          obs.State = 'draft';
+          obs.TrackingRef = null;
+          obs.Number = '';
+          obs.CompanyId = Number(this.companyCurrents.CompanyId);
 
         } else {
-            obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
-            obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
-            obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
+          obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
+          obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
+          obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
         }
 
         //TODO: cập nhật danh sách dịch vụ
         let services = this.getServiceHandler.getShipService(obs);
+
         if(services != null){
             this.shipServices.push(services);
         }
+        
         this.shipExtraServices = this.getServiceHandler.getShipExtrasService(obs);
 
-        //TODO: nếu Team thiếu thông tin thì map dữ liệu
-        if (obs.TeamId) {
+        //TODO: cập nhật danh sách sản phẩm
+        this.updateOrderLines(obs);
+
+        this.dataModel = {...obs};
+         //TODO: nếu Team thiếu thông tin thì map dữ liệu
+         if (obs.TeamId) {
           this.loadTeamById(obs.TeamId);
         }
 
@@ -291,13 +297,10 @@ export class AddBillComponent implements OnInit {
         //TODO: cập nhật địa chỉ
         this.mappingDataAddress(obs);
 
-        //TODO: cập nhật danh sách sản phẩm
-        this.updateOrderLines(obs);
-
-        this.dataModel = {...obs};
         this.loadConfigProvider(this.dataModel);
 
         this._form.patchValue(this.dataModel);
+
         this.calcTotal();
 
     }, error => {
@@ -323,7 +326,7 @@ export class AddBillComponent implements OnInit {
             if (res.PartnerId && res.Partner?.Id) {
                 this.changePartner(res.PartnerId);
             }
-
+            
             //TODO: cập nhật danh sách order lines
             this.updateOrderLines(data);
             this._form.patchValue(data);
@@ -590,6 +593,7 @@ export class AddBillComponent implements OnInit {
 
   onChangePriceUnit(event: any, item: any) {
     let datas = this._form.controls['OrderLines'].value;
+
     if (TDSHelperArray.hasListValue(datas)) {
 
       datas.map((x: any) => {
@@ -604,6 +608,7 @@ export class AddBillComponent implements OnInit {
 
   onAddUserOrderLines(event: any, item: OrderLineV2, index: number): void {
     let datas = this._form.controls['OrderLines'].value;
+
     if (TDSHelperArray.hasListValue(datas)) {
 
       datas.map((x: OrderLineV2, i: number) => {
@@ -619,6 +624,7 @@ export class AddBillComponent implements OnInit {
 
   changeProductDiscountType(event: any, item: any, typeDiscount: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
+
     if (TDSHelperArray.hasListValue(datas)) {
 
       datas.map((x: any, index: number) => {
@@ -703,23 +709,23 @@ export class AddBillComponent implements OnInit {
   }
 
   copyOrderLine(x: OrderLineV2, index: number) {
+    let items = this._form.controls['OrderLines'].value;
     let item = this.prepareCopyItemHandler.prepareCopyModel(x, this.dataModel);
 
     if (item.Id <= 0) {
-      item.Id = this.idPush + 1;
+      item.Id = this.idPush - 1;
       this.idPush = item.Id;
     }
 
     const insert = (arr: string | any[], index: number, ...newItems: any[]) => [
-      // part of the array before the specified index
-      ...arr.slice(0, index),
       // inserted items
       ...newItems,
+      // part of the array before the specified index
+      ...arr.slice(0, index),
       // part of the array after the specified index
       ...arr.slice(index)
     ];
 
-    let items = this._form.controls['OrderLines'].value;
     let datas = insert(items, index++, item) || [];
 
     if (datas) {
@@ -981,13 +987,14 @@ export class AddBillComponent implements OnInit {
     if (this.id) {
       this.isLoading = true;
 
-      this.fastSaleOrderService.update(this.id, model).subscribe((res: any) => {
+      this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           this.message.success('Cập nhật phiếu bán hàng thành công!');
 
           if(print) {
               this.printInvoices(print, this.id);
           } else {
               this.isLoading = false;
+              this.router.navigateByUrl(`bill/detail/${this.id}`);
           }
 
       }, error => {
@@ -998,13 +1005,14 @@ export class AddBillComponent implements OnInit {
     } else {
         this.isLoading = true;
 
-        this.fastSaleOrderService.insert(model).subscribe((res: any) => {
+        this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
             this.message.success('Tạo mới phiếu bán hàng thành công!');
 
             if(print) {
                 this.printInvoices(print, res.Id);
             } else {
                 this.isLoading = false;
+                this.router.navigateByUrl(`bill/detail/${res.Id}`);
             }
         }, error => {
             this.isLoading = false;
@@ -1035,7 +1043,7 @@ export class AddBillComponent implements OnInit {
       this.printerService.printHtml(res);
           this.isLoading = false;
 
-          this.onBack();
+          this.router.navigateByUrl(`bill/detail/${id}`);
 
       }, (error: TDSSafeAny) => {
         this.isLoading = false;
@@ -1043,7 +1051,7 @@ export class AddBillComponent implements OnInit {
           this.message.error(error?.error?.message);
         }
 
-        this.onBack();
+        this.router.navigateByUrl(`bill/detail/${id}`);
     });
 
     if(!obs) {

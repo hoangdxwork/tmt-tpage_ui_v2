@@ -18,7 +18,6 @@ export interface ChatomniObjectsItemDto {
   Title?: any;
   Description: string;
   Thumbnail?: Thumbnail;
-
   LiveCampaignId?: string;
   LiveCampaign: ChatomniLiveCampaignDto;
 }
@@ -72,13 +71,10 @@ export interface MDB_Facebook_Mapping_PostDto {
   comments: Comments;
   reactions: Reactions;
   attachments: Attachments;
-
   from_id: string;
   count_comments: number;
   count_reactions: number;
   count_shares: number;
-  live_campaign_id: string;
-  live_campaign: Facebook_Inner_LiveCampaignDto;
 }
 
 export interface Facebook_Inner_LiveCampaignDto{
