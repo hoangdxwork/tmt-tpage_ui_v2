@@ -130,7 +130,7 @@ const SERVICES = [
     TDSPopoverModule,
     TDSMessageModule,
     DirectivesModule,
-    TDSSwitchModule,
+    TDSSwitchModule
   ],
   exports:[
    ...cmp
