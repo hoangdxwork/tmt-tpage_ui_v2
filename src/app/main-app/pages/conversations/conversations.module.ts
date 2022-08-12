@@ -1,3 +1,4 @@
+import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { OdataSaleCouponProgramService } from 'src/app/main-app/services/mock-odata/odata-sale-coupon-program.service';
 import { AccountRegisterPaymentService } from './../../services/account-register-payment.service';
 import { NgModule } from '@angular/core';
@@ -140,6 +141,7 @@ import { ObjectFacebookPostComponent } from './conversation-post/objects/object-
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { DrawerDetailBillComponent } from './components/drawer-detail-bill/drawer-detail-bill.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -250,7 +252,8 @@ const SERVICES = [
     ConversationPostViewV3Component,
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
-    CommentFilterAllComponent
+    CommentFilterAllComponent,
+    DrawerDetailBillComponent
   ],
 
   imports: [
@@ -292,7 +295,8 @@ const SERVICES = [
     TDSEmptyModule,
     TDSUploadModule,
     DirectivesModule,
-    ScrollingModule
+    ScrollingModule,
+    TDSButtonSpitModule
   ],
   providers: [ ...SERVICES]
 })

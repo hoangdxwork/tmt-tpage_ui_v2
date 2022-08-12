@@ -65,6 +65,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   isEditPartner: boolean = false;
   partner!: TabPartnerCvsRequestModel;
   isLoading: boolean = false;
+  visibleDrawerBillDetail: boolean = false;
 
   constructor(private message: TDSMessageService,
     private conversationService: ConversationService,
@@ -86,7 +87,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   ngOnInit(): void  {
     if(this.data) {
       this.dataModel = this.data;
-
       let psid = this.dataModel?.ConversationId;
       let pageId = this.team.ChannelId;
       this.loadData(pageId, psid);
@@ -95,9 +95,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     // TODO: load lại form conversation-partner từ conversation-order
     this.loadPartnerFromTabOrder();
 
-    // TODO: load lại form conversation-partner từ comment bài post
-    this.loadPartnerByPostComment();
-
     // TODO: update partner từ conversation realtime signalR
     this.loadUpdateInfoByConversation();
 
@@ -105,6 +102,26 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.onSelectOrderFromMessage();
 
     this.loadPartnerStatus();
+
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    // TODO: load lại form conversation-partner từ comment bài post
+    this.conversationOrderFacade.onPartnerIdByComment$.subscribe(partnerId=>{
+      if(partnerId){
+        this.dataModel = this.dataModel? this.dataModel : {} as ChatomniConversationItemDto
+        this.dataModel.PartnerId = partnerId
+      }
+    })
+    this.conversationOrderFacade.loadPartnerByPostComment$.subscribe(res=>{
+      if(TDSHelperObject.hasValue(res)) {
+        let psid = res.from?.id;
+        let pageId = this.team.ChannelId;
+        this.loadData(pageId, psid);
+    }
+    })
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -112,7 +129,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         let x = {...changes["data"].currentValue} as ChatomniConversationItemDto;
 
         if(TDSHelperObject.hasValue(x) && x.Id) {
-
+          
             this.dataModel = x;
 
             let psid = this.dataModel.ConversationId;
@@ -128,7 +145,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.checkConversation(pageId, psid);
     this.loadNotes(pageId, psid);
 
-    let partnerId = this.dataModel?.PartnerId;
+    let partnerId = this.dataModel?.PartnerId;   
     if(partnerId) {
         this.loadPartnerBill(partnerId);
         this.loadPartnerRevenue(partnerId);
@@ -183,18 +200,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       });
   }
 
-  loadPartnerByPostComment() {
-    this.isLoading = true;
-    this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$),
-      finalize(() => { this.isLoading = false })).subscribe(res => {
-        if(res) {
-            let pageId = this.team.ChannelId;
-            let psid = res.psid;
-
-            this.checkConversation(pageId, psid);
-        }
-    });
-  }
 
   loadUpdateInfoByConversation() {
     this.isLoading = true;

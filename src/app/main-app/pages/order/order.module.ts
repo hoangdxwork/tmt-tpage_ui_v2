@@ -1,3 +1,6 @@
+import { ConversationService } from './../../services/conversation/conversation.service';
+import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { OrderEvent } from './../../handler-v2/order-handler/order.event';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { DirectivesModule } from './../../shared/directives/directives.module';
@@ -117,7 +120,10 @@ const SERVICES = [
   CalculateFeeAshipHandler,
   CsOrder_SuggestionHandler,
   OrderEvent,
-  ChatomniMessageService
+  ChatomniMessageService,
+  ChatomniMessageFacade,
+  ActivityMatchingService,
+  ConversationService
 ]
 
 @NgModule({

@@ -123,9 +123,9 @@
                             <span class="mr-2">Khách hàng</span>
                         </div>
                     </ng-template>
-                    <div>
-                        <!-- <conversation-partner [team]="currentTeam" [type]="type">
-                      </conversation-partner> -->
+                    <div *ngIf="currentTeam">
+                        <conversation-partner [team]="currentTeam" [type]="type">
+                      </conversation-partner>
                     </div>
                 </tds-tab>
                 <!-- tab đơn hàng -->

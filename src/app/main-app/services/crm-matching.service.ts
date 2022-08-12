@@ -167,7 +167,7 @@ export class CRMMatchingService extends BaseSevice {
 
   transferChatbot(pageId: string, psId: string) {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/transferchatbot?page_id=${pageId}&sid=${psId}`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/transferchatbot?page_id=${pageId}&psid=${psId}`,
         method: CoreApiMethodType.get
     }
     return this.apiService.getData(api, null);

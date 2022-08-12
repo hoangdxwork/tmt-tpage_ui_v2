@@ -48,10 +48,10 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   filterOptions: TDSSafeAny[] = [
     { value: "all", text: "Tất cả bình luận", icon: 'tdsi-livechat-line' },
-    { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
-    { value: "manage", text: "Quản lí bình luận", icon: 'tdsi-eye-line' },
-    { value: "filter", text: "Tìm kiếm bình luận", icon: 'tdsi-search-fill' },
-    { value: "report", text: "Thống kê chốt đơn", icon: 'tdsi-chart-pie-line' },
+    // { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
+    // { value: "manage", text: "Quản lí bình luận", icon: 'tdsi-eye-line' },
+    // { value: "filter", text: "Tìm kiếm bình luận", icon: 'tdsi-search-fill' },
+    // { value: "report", text: "Thống kê chốt đơn", icon: 'tdsi-chart-pie-line' },
   ];
   currentFilter: any = this.filterOptions[0];
 

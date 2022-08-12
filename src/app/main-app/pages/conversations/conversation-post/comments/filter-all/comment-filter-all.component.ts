@@ -1,4 +1,4 @@
-
+import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
 import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -21,7 +21,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { ProductPagefbComponent } from '@app/pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ReplaceHelper } from '@app/shared/helper/replace.helper';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
-import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { ChatomniDataDto, ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 
@@ -67,7 +67,8 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
     private chatomniCommentService: ChatomniCommentService,
     public crmService: CRMTeamService,
     private destroy$: TDSDestroyService,
-    private conversationOrderFacade: ConversationOrderFacade) {
+    private conversationOrderFacade: ConversationOrderFacade,
+    private facebookcommentService: FacebookCommentService) {
   }
 
   ngOnInit() {
@@ -295,7 +296,23 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
   }
 
   onInformation(item: any) {
-    this.conversationOrderFacade.commentFormPost(item, false);
+    let model = item.Data
+    if (model) {
+      model.post_id = this.team.ChannelId;
+      if (!model.from || !model.from.id) {
+        this.message.error("Không truy vấn được thông tin người dùng!");
+        return;
+      }
+    }
+    this.conversationOrderFacade.commentFormPost(model, false);
+    //TODO: xử lý load khách hàng
+    if(model.PartnerId){
+      this.conversationOrderFacade.onPartnerIdByComment$.emit(model.PartnerId)
+    }else {
+      this.message.error('Không lấy được PartnerId')
+    }
+    
+    this.conversationOrderFacade.loadPartnerByPostComment$.emit(model);
   }
 
   onCreateOrder(item: any) {

@@ -95,6 +95,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   isEnableChatbot: boolean = false;
   pageId!: string;
+  isAlertChatbot: boolean = true;
 
   constructor(private modalService: TDSModalService,
     private chatomniMessageService: ChatomniMessageService,
@@ -840,7 +841,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   refreshRead() {
     this.validateData();
-    (this.data as any) = null;
     this.loadMessages(this.data);
   }
 
@@ -958,6 +958,14 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
             this.cdRef.detectChanges();
         })
     }
+  }
+
+  onAlertChatBot(){
+    this.isAlertChatbot = true;
+  }
+
+  onCloseAlertChatbot(ev: boolean){ 
+    this.isAlertChatbot = false;
   }
 
   // adminTransferChatbot() {
