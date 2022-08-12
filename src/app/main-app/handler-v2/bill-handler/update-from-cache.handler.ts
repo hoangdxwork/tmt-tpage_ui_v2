@@ -21,6 +21,7 @@ export class UpdateFromCacheHandler {
                     let model = JSON.parse(res?.value)?.value;
 
                     if (TDSHelperObject.hasValue(model)) {
+
                         data.SaleOnlineIds = model.ids;
                         data.Reference = model.Reference;
                         data.Partner = model.partner;

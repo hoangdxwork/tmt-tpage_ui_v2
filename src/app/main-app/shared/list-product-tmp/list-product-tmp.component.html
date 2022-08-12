@@ -48,14 +48,14 @@
             <thead>
                 <tr>
                     <th width="60px">Ảnh</th>
-                    <th width="200px">Tên sản Phẩm</th>
+                    <th width="200px">Tên sản phẩm</th>
                     <th width="80px">Đơn vị</th>
                     <th width="90px">Giá</th>
                 </tr>
             </thead>
             <tbody>
                 <ng-template tds-virtual-scroll let-data let-index="index">
-                    <tr class="group cursor-pointer" *ngIf="data" (click)="addItem(data)">
+                    <tr class="group hover:cursor-pointer" *ngIf="data" (click)="addItem(data)">
                         <td>
                             <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
                             </tds-avatar>

@@ -8,12 +8,17 @@
     </div>
     <div class="flex flex-row items-center justify-between py-2.5 px-4 bg-white rounded-b-xl">
       <span class="text-neutral-1-900 text-title-1 font-semibold">Danh sách đối tác</span>
+      <tds-form-field class="w-1/4 mr-2">
+          <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" [tdsInputDebounce]="750"
+              (inputKeyup)="onInputKeyup($event)" />
+          <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
     </div>
     <div class="flex flex-col w-full h-full mt-2">
       <div class="w-full h-full">
         <tds-spin [spinning]="isLoading">
-          <div *ngIf="providerDataSource && providerDataSource.length > 0" class="tds-panel-scroll" style="max-height: calc(80vh - 8px); overflow: auto;">
-            <div *ngFor="let item of providerDataSource; let index = index" class="pr-4 py-2">
+          <div *ngIf="dataFilter && dataFilter.length > 0" class="tds-panel-scroll" style="max-height: calc(80vh - 8px); overflow: auto;">
+            <div *ngFor="let item of dataFilter; let index = index" class="pr-4 py-2">
               <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
                 <tds-collapse-panel [header]="header" [active]="false" tdsClass="p-0"
                   bordered="false" [expandedIcon]="'tdsi-arrow-up-line'" [extra]="icon"
@@ -69,12 +74,12 @@
                             <div class="font-semibold">{{ data.DeliveryType }}</div>
                           </div>
                           <div class="flex divide-x-2 font-semibold w-1/3 justify-end">
-                            <div class="pr-4 flex items-center">
-                              <i class="tdsi-edit-fill text-xl leading-none mr-2 text-neutral-1-500"></i>
+                            <div class="pr-4 flex items-center text-neutral-1-500 hover:text-info-500">
+                              <i class="tdsi-edit-fill text-xl leading-none mr-2"></i>
                               <span class="cursor-pointer" [routerLink]="['/configs/delivery/edit']" [queryParams]="{id: data.Id}">Chỉnh sửa</span>
                             </div>
-                            <div class="pl-4 flex items-center">
-                              <i class="tdsi-trash-fill text-xl leading-none mr-2 text-neutral-1-500"></i>
+                            <div class="pl-4 flex items-center text-neutral-1-500 hover:text-error-500">
+                              <i class="tdsi-trash-fill text-xl leading-none mr-2"></i>
                               <span class="cursor-pointer" (click)="onDeleteDelivery(data)">Xóa</span>
                             </div>
                           </div>
@@ -93,7 +98,7 @@
               </tds-collapse>
             </div>
           </div>
-          <div *ngIf="(providerDataSource && providerDataSource.length === 0) || !providerDataSource">
+          <div *ngIf="(dataFilter && dataFilter.length === 0) || !dataFilter">
             <tds-empty></tds-empty>
           </div>
         </tds-spin>

@@ -82,20 +82,19 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
 
     this.ngZone.run(() => {
       this.dataSource$ =  this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
-    })
 
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-        if(res) {
-            this.dataSource = res;
-        }
-        this.isLoading = false;
-        
-        this.cdRef.markForCheck();
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+          if(res) {
+              this.dataSource = res;
+          }
 
-        this.cdRef.markForCheck();
+          this.isLoading = false;
+          this.cdRef.markForCheck();
+      }, error => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.markForCheck();
+      })
     })
   }
 
@@ -320,7 +319,27 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
   }
 
   nextData(event: any) {
+    if(event) {
+      this.isLoading = true;
+      let id = `${this.team.Id}_${this.data.ObjectId}`;
 
+      this.ngZone.run(() => {
+
+          this.dataSource$ = this.chatomniCommentService.nextDataSource(id);
+
+          this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+
+              if(TDSHelperArray.hasListValue(res?.Items)) {
+                  this.dataSource.Items = [...res.Items];
+              }
+
+              this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
+              this.isLoading = false;
+          }, error => {
+              this.isLoading = false;
+          })
+        })
+    }
   }
 
   trackByIndex(i: any) {
