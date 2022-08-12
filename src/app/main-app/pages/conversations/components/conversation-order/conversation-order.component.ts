@@ -245,15 +245,16 @@ export class ConversationOrderComponent implements OnInit {
 
   //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
-    if (data.CarrierId && data.Carrier) {
+    if (data.Carrier && data.Carrier.ExtraProperties) {
+
       let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
 
       this.insuranceInfo = data.ShipmentDetailsAship?.InsuranceInfo || null;
 
       this.configsProviderDataSource = _shipmentDetailsAship.map(x => {
           let detailConfig = data.ShipmentDetailsAship?.ConfigsProvider.find(y => y.ConfigName == x.ConfigName);
-          x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
 
+          x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
           return x;
       });
     }

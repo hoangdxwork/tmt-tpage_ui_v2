@@ -205,7 +205,7 @@ export class EditOrderV2Component implements OnInit {
 
   //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
-    if (data.CarrierId && data.Carrier) {
+    if (data.Carrier && data.Carrier.ExtraProperties) {
       let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
 
       this.insuranceInfo = data.ShipmentDetailsAship?.InsuranceInfo || null;

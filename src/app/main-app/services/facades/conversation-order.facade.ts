@@ -21,15 +21,14 @@ import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from '../../dto/saleonlineorder/quick-saleonline-order.dto';
 import { ProductService } from '../product.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ConversationOrderFacade extends BaseSevice  {
 
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
+
   private currentTeam!: CRMTeamDTO;;
   private userInit!: UserInitDTO;
 
@@ -101,7 +100,7 @@ export class ConversationOrderFacade extends BaseSevice  {
 
           // TODO: partner có đơn hàng gần nhất LastOrder
           if(obs && obs?.LastOrder) {
-              this.lastOrder = this.loadLastOrder(obs);
+              this.lastOrder = {...this.loadLastOrder(obs)};
               this.onLastOrderCheckedConversation$.emit(this.lastOrder);
           }
           // TODO: Không có đơn hàng gần nhất thì sử dụng đơn hàng nháp gần nhất
@@ -113,7 +112,7 @@ export class ConversationOrderFacade extends BaseSevice  {
               })
           }
       } else {
-          this.lastOrder = this.loadCurrentPartner(obs);
+          this.lastOrder = {...this.loadCurrentPartner(obs)};
           this.onLastOrderCheckedConversation$.emit(this.lastOrder);
       }
     });
@@ -129,11 +128,11 @@ export class ConversationOrderFacade extends BaseSevice  {
 
                 this.partnerService.getLastOrder(this.partner.Id).subscribe((obs: any) => {
                     if(obs) {
-                        this.lastOrder = { ...obs };
+                        this.lastOrder = {...obs};
 
                         this.lastOrder.Details = [...obs.Details];
                         this.lastOrder.PartnerId = obs.PartnerId || obs.Partner?.Id;
-                        this.lastOrder.PartnerName = obs.PartnerId || obs.Partner?.Name;
+                        this.lastOrder.PartnerName = obs.PartnerName || obs.Partner?.Name;
 
                     } else {
                       this.lastOrder && (delete this.lastOrder.Id)
@@ -182,7 +181,7 @@ export class ConversationOrderFacade extends BaseSevice  {
         UOMName: model.UOMName
     } as Detail_QuickSaleOnlineOrder
 
-    return x;
+    return {...x};
   }
 
   editOrderFormPost(order: TDSSafeAny) {
@@ -336,7 +335,8 @@ export class ConversationOrderFacade extends BaseSevice  {
           x.WardName = model.Ward.name;
       }
     }
-    return x;
+
+    return {...x};
   }
 
   loadLastOrderDraft(model: TabPartnerCvsRequestModel): Observable<any> {
@@ -388,27 +388,27 @@ export class ConversationOrderFacade extends BaseSevice  {
         };
 
         this.partnerService.checkInfo(data).subscribe((res: any) => {
-            if(res?.Success && res?.Data?.Id) {
+            if(res && res.Success && res.Data?.Id) {
 
-                  if(TDSHelperString.hasValueString(res.Data.Name)) {
-                      x.PartnerName = res.Data.Name;
-                      x.Name = res.Data.Name;
-                  }
+                if(TDSHelperString.hasValueString(res.Data.Name)) {
+                    x.PartnerName = res.Data.Name;
+                    x.Name = res.Data.Name;
+                }
 
-                  x.Email = res.Data.Email;
-                  x.PartnerId = res.Data.Id;
+                x.Email = res.Data.Email;
+                x.PartnerId = res.Data.Id;
 
-                  if(TDSHelperString.hasValueString(res.Data.Street)) {
-                      x.Address = res.Data.Street;
-                  }
-                  if(TDSHelperString.hasValueString(res.Data.Phone)) {
-                      x.Telephone = res.Data.Phone;
-                  }
+                if(TDSHelperString.hasValueString(res.Data.Street)) {
+                    x.Address = res.Data.Street;
+                }
+                if(TDSHelperString.hasValueString(res.Data.Phone)) {
+                    x.Telephone = res.Data.Phone;
+                }
 
-                  obs.next(x);
-                  obs.complete();
+                obs.next({...x});
+                obs.complete();
             } else {
-                obs.next(x);
+                obs.next({...x});
                 obs.complete();
             }
           }, error => {
@@ -468,7 +468,7 @@ export class ConversationOrderFacade extends BaseSevice  {
       }
     }
 
-    return x;
+    return {...x};
   }
 
   loadOrderDefault(data: CheckConversationData, dataComment?: TDSSafeAny){
@@ -498,6 +498,6 @@ export class ConversationOrderFacade extends BaseSevice  {
       model.Facebook_UserId = dataComment?.from?.id;
     }
 
-    return model;
+    return {...model};
   }
 }
