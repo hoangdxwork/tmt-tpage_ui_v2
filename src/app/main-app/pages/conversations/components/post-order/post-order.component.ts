@@ -13,7 +13,6 @@ import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pou
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-red.dto';
 import { SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
-import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/user/application-user.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -32,7 +31,7 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
@@ -44,6 +43,7 @@ import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
   selector: 'post-order',
   templateUrl: './post-order.component.html'
 })
+
 export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data!: ConversationMatchingItem;
@@ -485,7 +485,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   showModalAddProduct() {
     const modal = this.modalService.create({
         title: 'Thêm sản phẩm',
-        content: TpageAddProductComponent,
+        content: ModalProductTemplateComponent,
         size: "xl",
         viewContainerRef: this.viewContainerRef,
         componentParams: {

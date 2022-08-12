@@ -18,8 +18,10 @@ export interface ChatomniObjectsItemDto {
   Title?: any;
   Description: string;
   Thumbnail?: Thumbnail;
-}
 
+  LiveCampaignId?: string;
+  LiveCampaign: ChatomniLiveCampaignDto;
+}
 
 export interface ChatomniObjectsDto {
   Items: ChatomniObjectsItemDto[];
@@ -38,6 +40,12 @@ export enum ChatomniObjectTypeDto {
   TShopLiveVideo = 13,
   TShopPhoto = 14,
   TShopAlbum = 15,
+}
+
+export interface ChatomniLiveCampaignDto {
+  Id?: string;
+  Name: string;
+  Note: string;
 }
 
 export interface MDB_Facebook_Mapping_PostDto {

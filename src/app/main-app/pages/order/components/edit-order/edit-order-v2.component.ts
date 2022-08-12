@@ -14,7 +14,7 @@ import { ProductService } from 'src/app/main-app/services/product.service';
 import { GetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
-import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -302,7 +302,7 @@ export class EditOrderV2Component implements OnInit {
   onAddProduct() {
     const modal = this.modal.create({
         title: 'Thêm sản phẩm',
-        content: TpageAddProductComponent,
+        content: ModalProductTemplateComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
@@ -316,7 +316,7 @@ export class EditOrderV2Component implements OnInit {
         let item = {
             Quantity: 1,
             Price: data.ListPrice,
-            ProductId: data.Id,
+            ProductId: data.VariantFirstId,
             ProductName: data.Name,
             ProductNameGet: data.NameGet,
             ProductCode: data.DefaultCode,

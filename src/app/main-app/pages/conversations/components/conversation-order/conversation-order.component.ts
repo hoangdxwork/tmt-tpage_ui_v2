@@ -15,7 +15,7 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
 import { TDSMessageService } from 'tds-ui/message';
@@ -55,6 +55,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { SharedService } from '@app/services/shared.service';
 import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CreateFastSaleOrderDTO } from '@app/dto/saleonlineorder/create-fastsaleorder.dto';
+import { ProductTemplateV2DTO } from '@app/dto/producttemplate/product-tempalte.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -563,7 +564,7 @@ export class ConversationOrderComponent implements OnInit {
   showModalAddProduct() {
     const modal = this.modal.create({
         title: 'Thêm sản phẩm',
-        content: TpageAddProductComponent,
+        content: ModalProductTemplateComponent,
         size: "xl",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
@@ -575,8 +576,7 @@ export class ConversationOrderComponent implements OnInit {
         if(TDSHelperObject.hasValue(result)) {
 
             let data = result[0] as ProductDTOV2;
-            let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data)
-
+            let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data);
             this.quickOrderModel.Details = [...this.quickOrderModel.Details, x];
 
             this.coDAmount();
