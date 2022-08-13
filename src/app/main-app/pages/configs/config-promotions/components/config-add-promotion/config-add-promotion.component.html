@@ -1,61 +1,61 @@
-<tds-spin [spinning]="isLoading">
-  <form [formGroup]="formAddPromotion" autocomplete="off">
-    <div class="w-full pb-4 px-4">
-        <div class="flex flex-col w-full bg-white rounded-xl">
-            <div class="flex flex-row items-center justify-between px-4 py-3">
-                <div class="flex flex-row items-center">
-                    <button tds-flat-button-icon size="md" type="button"
-                        (click)="redirectList()">
-                        <span class="flex items-center">
-                            <i class="tdsi-back-fill text-xl leading-5"></i>
-                        </span>
-                    </button>
-                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">Thêm chương trình khuyến mãi</span>
-                </div>
-                <button tds-button color="primary" class="w-[100px]" type="submit"
-                    [disabled]="!formAddPromotion?.valid" (click)="onSave()">
-                    <span class="text-body-2 font-semibold">Lưu</span>
-                </button>
-            </div>
-            <div class="flex flex-col bg-neutral-3-100 gap-y-1">
-                <div class="flex flex-row items-center justify-start w-full pb-6 bg-white p-4">
-                    <div class="flex flex-col w-full">
-                        <div class="flex flex-row items-baseline w-full">
-                            <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6">
-                              Tên chương trình
-                              <span class="text-error-500 text-body-2 font-semibold">*</span>
-                            </span>
-                            <tds-form-field class="w-5/6">
-                                <input tdsInput formControlName="Name" placeholder="Nhập tên chương trình" class="text-neutral-1-900 text-body-2 font-regular"
-                                [required]='true'/>
-                                <tds-error>
-                                    Vui lòng nhập tên chương trình
-                                </tds-error>
-                            </tds-form-field>
-                        </div>
+<div class="w-full h-full overflow-auto tds-custom-scroll">
+  <tds-spin [spinning]="isLoading">
+    <form [formGroup]="formAddPromotion" autocomplete="off">
+      <div class="w-full pb-4 px-4">
+          <div class="flex flex-col w-full bg-white rounded-xl">
+              <div class="flex flex-row items-center justify-between px-4 py-3">
+                  <div class="flex flex-row items-center">
+                      <button tds-flat-button-icon size="md" type="button"
+                          (click)="redirectList()">
+                          <span class="flex items-center">
+                              <i class="tdsi-back-fill text-xl leading-5"></i>
+                          </span>
+                      </button>
+                      <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">Thêm chương trình khuyến mãi</span>
+                  </div>
+                  <button tds-button color="primary" class="w-[100px]" type="submit" (click)="onSave()">
+                      <span class="text-body-2 font-semibold">Lưu</span>
+                  </button>
+              </div>
+              <div class="flex flex-col bg-neutral-3-100 gap-y-1">
+                  <div class="flex flex-row items-center justify-start w-full pb-6 bg-white p-4">
+                      <div class="flex flex-col w-full">
+                          <div class="flex flex-row items-baseline w-full">
+                              <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6">
+                                Tên chương trình
+                                <span class="text-error-500 text-body-2 font-semibold">*</span>
+                              </span>
+                              <tds-form-field class="w-5/6">
+                                  <input tdsInput formControlName="Name" placeholder="Nhập tên chương trình" class="text-neutral-1-900 text-body-2 font-regular"
+                                  [required]='true'/>
+                                  <tds-error>
+                                      Vui lòng nhập tên chương trình
+                                  </tds-error>
+                              </tds-form-field>
+                          </div>
 
-                        <div class="flex flex-row items-center w-full pt-4">
-                            <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6 pr-6">Dựa trên</span>
-                            <tds-radio-group formControlName="RuleBasedOn" class="flex justify-between w-1/3">
-                                <label tds-radio value="all" >Toàn bộ</label>
-                                <label tds-radio value="product_category">Nhóm sản phẩm</label>
-                                <label tds-radio value="combo">Combo sản phẩm</label>
-                            </tds-radio-group>
-                        </div>
-                    </div>
-                </div>
-                <div *ngIf="formAddPromotion.value.RuleBasedOn === 'all' " class="w-full border border-neutral-2-100 bg-white p-4">
-                    <app-config-promotion-all [form]="formAddPromotion"></app-config-promotion-all>
-                </div>
-                <div *ngIf="formAddPromotion.value.RuleBasedOn === 'product_category' " class="w-full border border-neutral-2-100 bg-white p-4">
-                    <app-config-promotion-group [form]="formAddPromotion"></app-config-promotion-group>
-                </div>
-                <div *ngIf="formAddPromotion.value.RuleBasedOn === 'combo' " class="w-full border border-neutral-2-100">
-                    <app-config-promotion-combo [form]="formAddPromotion"></app-config-promotion-combo>
-                </div>
-            </div>
-        </div>
-    </div>
-  </form>
-</tds-spin>
-
+                          <div class="flex flex-row items-center w-full pt-4">
+                              <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6 pr-6">Dựa trên</span>
+                              <tds-radio-group formControlName="RuleBasedOn" class="flex justify-between w-1/3">
+                                  <label tds-radio value="all" >Toàn bộ</label>
+                                  <label tds-radio value="product_category">Nhóm sản phẩm</label>
+                                  <label tds-radio value="combo">Combo sản phẩm</label>
+                              </tds-radio-group>
+                          </div>
+                      </div>
+                  </div>
+                  <div *ngIf="formAddPromotion.value.RuleBasedOn === 'all' " class="w-full border border-neutral-2-100 bg-white p-4">
+                      <app-config-promotion-all [form]="formAddPromotion"></app-config-promotion-all>
+                  </div>
+                  <div *ngIf="formAddPromotion.value.RuleBasedOn === 'product_category' " class="w-full border border-neutral-2-100 bg-white p-4">
+                      <app-config-promotion-group [form]="formAddPromotion"></app-config-promotion-group>
+                  </div>
+                  <div *ngIf="formAddPromotion.value.RuleBasedOn === 'combo' " class="w-full border border-neutral-2-100">
+                      <app-config-promotion-combo [form]="formAddPromotion"></app-config-promotion-combo>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </form>
+  </tds-spin>
+</div>

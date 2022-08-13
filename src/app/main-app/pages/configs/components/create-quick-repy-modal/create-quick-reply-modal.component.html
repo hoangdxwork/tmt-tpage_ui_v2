@@ -2,8 +2,10 @@
 <form [formGroup]="formQuickReply">
     <div class="flex flex-row items-center mb-6">
         <span class="text-neutral-1-900 text-body-2 font-semibold w-32">Trạng thái</span>
-        <div class="flex flex-row items-center">
-            <tds-switch formControlName="active"></tds-switch>
+        <div class="flex flex-row items-center gap-x-2">
+            <tds-switch formControlName="active" [(ngModel)]="check"></tds-switch>
+            <span *ngIf="check == false" class="text-body-2">Không hiển thị</span>
+            <span *ngIf="check == true" class="text-body-2">Hiển thị</span>
         </div>
     </div>
     <div autocomplete="off">
@@ -54,16 +56,14 @@
             </textarea>
         </tds-form-field>
 
-        <tds-breadcrumb class="mb-2">
-            <div *ngFor="let data of contentTagList; let i= index">
-                <tds-breadcrumb-item [separator]="iconTemplate" [active]="currentBreadcrumb == i"
-                    class="text-caption-2 font-semibold" (click)="currentBreadcrumb = i">
+        <!-- <tds-breadcrumb class="mb-2">
+            <div *ngFor="let data of contentTagList; let i = index">
+                <tds-breadcrumb-item [separator]="iconTemplate" [active]="currentBreadcrumb == i" (click)="currentBreadcrumb = i">
                     {{data.name}}
                 </tds-breadcrumb-item>
 
                 <ng-template #iconTemplate>
-                    <i
-                        class="text-base leading-4 {{currentBreadcrumb == i ? 'tdsi-arrow-down-line text-primary-1' : 'tdsi-arrow-right-line text-neutral-1-600'}}"></i>
+                    <i class="text-base leading-4 {{currentBreadcrumb == i ? 'tdsi-arrow-down-line text-primary-1' : 'tdsi-arrow-right-line text-neutral-1-600'}}"></i>
                 </ng-template>
             </div>
         </tds-breadcrumb>
@@ -75,7 +75,28 @@
                     <span>{{item.id}}</span>
                 </div>
             </div>
-        </div>
+        </div> -->
+
+        <tds-tabset [clsTab]="'flex pr-4'" [tabBarStyle]="{'padding-right':'16px'}" [(selectedIndex)]="selectedIndex">
+          <tds-tab *ngFor="let data of contentTagList; let i = index" [title]="titleTemplate" clsContent="py-2.5 px-0">
+            <ng-template #titleTemplate let-active='active'>
+              <div class="text-caption-2 font-semibold cursor-pointer flex items-center"
+                [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-600":!active}'>
+                <span class="mr-0.5">{{ data.name }}</span>
+                <span class="text-base" [ngClass]='{"text-neutral-1-900 tdsi-arrow-down-line":active,"text-neutral-1-600 tdsi-arrow-right-line":!active}'></span>
+              </div>
+            </ng-template>
+            <div class="flex flex-wrap gap-y-2 w-full">
+              <div *ngFor="let item of contentTagList[selectedIndex].data;let i = index">
+                  <div class="bg-primary-1 text-white text-caption-2 font-semibold rounded cursor-pointer px-2 py-0.5 mr-2"
+                      (click)="addTagToContent(selectedIndex,item.value)">
+                      <span>{{item.id}}</span>
+                  </div>
+              </div>
+          </div>
+          </tds-tab>
+        </tds-tabset>
+
     </div>
 </form>
 
@@ -100,10 +121,30 @@
                     Tin nhắn
                 </span>
             </div>
-            <tds-select valueField="id" textField="value" [(ngModel)]="templateType" placeholder='chọn mẫu tin nhắn'
+            <!-- <tds-select valueField="id" textField="value" [(ngModel)]="templateType" placeholder='chọn mẫu tin nhắn'
                 [data]="MessageFormList" class="w-[135px] truncate tds-message-form bg-white"
                 (ngModelChange)="getTemplateType($event)" classIcon="tdsi-arrow-down-fill">
-            </tds-select>
+            </tds-select> -->
+
+            <button tds-button color="secondary" class="w-[135px]" tds-dropdown trigger="click" [placement]="'bottomRight'" [tdsDropdownMenu]="menu">
+              <div class="w-full flex">
+                <div class="flex-auto text-left truncate">
+                  {{ currentItem?.value}}
+                </div>
+                <span class="flex items-center">
+                  <i class="tdsi-arrow-down-fill text-base"></i>
+                </span>
+              </div>
+            </button>
+            <tds-dropdown-menu #menu="tdsDropdownMenu">
+              <div class="w-[170px]">
+                <ng-template ngFor let-item [ngForOf]="MessageFormList">
+                  <div tds-dropdown-item (click)="getTemplateType(item)">
+                    <a> {{ item.value }} </a>
+                  </div>
+                </ng-template>
+              </div>
+            </tds-dropdown-menu>
         </div>
         <div *ngIf="templateType == 'generic'" class="flex flex-col bg-white w-[200px]">
             <div class="relative">
@@ -231,9 +272,9 @@
                         <div class="w-full h-[195px] overflow-auto tds-custom-scroll">
                             <div *ngFor="let formButtons of buttonFormList; let i = index">
                                 <div class="bg-neutral-3-50 w-full rounded p-3 mb-2">
-                                    <div class="flex flex-row items-center justify-between w-full">
+                                    <div class="flex flex-row items-center justify-between w-full mb-2.5">
                                         <span class="text-neutral-1-900 text-caption-1 font-semibold">
-                                            Hành động {{i+1}}
+                                            Hành động {{ i + 1 }}
                                         </span>
                                         <button tds-flat-button-icon (click)="onCloseActionButton(i)">
                                             <span class="flex items-center">
