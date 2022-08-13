@@ -498,29 +498,34 @@ export class EditOrderV2Component implements OnInit {
         this.saleModel.FormAction = formAction;
     }
 
+    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+
     if(this.isEnableCreateOrder) {
-        if (!TDSHelperArray.hasListValue(this.saleModel.OrderLines)) {
-            this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
-            return false;
-        }
+      
+      this.updateShipExtras();
+      this.updateShipServiceExtras();
+      this.updateShipmentDetailsAship();
 
-        if (!this.saleModel.Phone) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
-            return false;
-        }
+      fs_model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(this.saleModel, this.quickOrderModel);
 
-        if (!this.saleModel.Address) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
-            return false;
-        }
+      if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
+          this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          return false;
+      }
 
-        // if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
-        //   this.confirmShipService(this.saleModel.Carrier);
-        // }
+      if (!fs_model.Phone) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
+          return false;
+      }
 
-        this.updateShipExtras();
-        this.updateShipServiceExtras();
-        this.updateShipmentDetailsAship();
+      if (!fs_model.Address) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+          return false;
+      }
+
+      // if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
+      //   this.confirmShipService(this.saleModel.Carrier);
+      // }
     }
 
     this.isLoading = true;
@@ -532,7 +537,7 @@ export class EditOrderV2Component implements OnInit {
 
         if(this.isEnableCreateOrder) {
             // call api tạo hóa đơn
-            this.createFastSaleOrder(this.saleModel, type);
+            this.createFastSaleOrder(fs_model, type);
         } else {
           this.isLoading = false;
           this.message.success('Cập nhật đơn hàng thành công');
@@ -549,8 +554,8 @@ export class EditOrderV2Component implements OnInit {
     });
   }
 
-  createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type?: string) {
-    let model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(data, this.quickOrderModel);
+  createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
+    let model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(fs_model, this.quickOrderModel);
 
     this.fastSaleOrderService.saveV2(model).subscribe((res: CreateFastSaleOrderDTO) => {
 

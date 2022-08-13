@@ -67,7 +67,6 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   ngOnChanges(changes: SimpleChanges) {
-
     if (this._cities && this._cities.code) {
       this._form.controls['City'].patchValue(this._cities);
 

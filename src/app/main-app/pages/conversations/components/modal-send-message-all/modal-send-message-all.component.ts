@@ -1,3 +1,4 @@
+import { responseAddMessCommentDto } from './../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from './../../../../app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
@@ -246,7 +247,7 @@ export class ModalSendMessageAllComponent implements OnInit {
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isSending = false }))
         .subscribe(res => {
-          res.forEach((x: TDSSafeAny) => {
+          res.forEach((x: responseAddMessCommentDto) => {
             x["status"] = ChatomniStatus.Pending;
             x.type = 11;
             let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
@@ -276,7 +277,7 @@ export class ModalSendMessageAllComponent implements OnInit {
         .pipe(finalize(() => { this.isSending = false; }))
         .subscribe((res) => {
 
-          res.forEach((x: TDSSafeAny) => {
+          res.forEach((x: responseAddMessCommentDto) => {
             x["status"] = ChatomniStatus.Pending;
             x.type = 11;
   

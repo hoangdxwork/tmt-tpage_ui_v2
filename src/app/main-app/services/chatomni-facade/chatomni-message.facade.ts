@@ -7,7 +7,7 @@ import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
-import { MakeActivityItemWebHook } from "@app/dto/conversation/make-activity.dto";
+import { responseAddMessCommentDto } from '@app/dto/conversation-all/chatomni/response-mess.dto';
 
 @Injectable()
 
@@ -47,27 +47,26 @@ export class ChatomniMessageFacade extends BaseSevice  {
     return {...model};
   }
 
-  mappingChatomniDataItemDto(data:MakeActivityItemWebHook){
+  mappingChatomniDataItemDto(data:responseAddMessCommentDto){
     let model  = {
-        Id: data.id,
-        Type: data.type,
-        IsOwner: data.is_admin,
-        Data: {
-            id: data.message?.id,
-            message: data.message?.message,
-            from: data.message?.from,
-            to: data.message?.to?.data[0],
-            attachments: data?.attachments,
-            has_admin_required: data.has_admin_required
-        } as unknown as ChatomniFacebookDataDto,
-
-        CreatedTime: data.DateCreated,
-        Message: data.message_formatted,
-        Status: data.status as number,
-        Error: undefined,
-        CreatedBy: data.CreatedBy,
-        UserId: data.to_id
-    } as ChatomniDataItemDto
+      Id: data.id,
+      Type: data.type,
+      IsOwner: data.is_admin,
+      Data: {
+        id: data.message?.id,
+        message: data.message?.message,
+        from: data.message?.from,
+        to: data.message?.to?.data[0],
+        attachments: data?.attachments,
+        has_admin_required: data.has_admin_required
+      } as unknown as ChatomniFacebookDataDto,
+      CreatedTime: data.DateCreated,
+      Message: data.message_formatted,
+      Status: data.status as number,
+      Error: undefined,
+      CreatedBy: data.CreatedBy,
+      UserId: data.to_id
+    } as unknown as ChatomniDataItemDto;
 
     return  {...model};
   }
