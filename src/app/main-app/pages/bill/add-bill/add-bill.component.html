@@ -34,12 +34,12 @@
               <button tds-button color="secondary" type="button" class="mr-4" (click)="onBack()">Quay lại</button>
           </div>
         </div>
-        <div class="flex flex-col h-full gap-y-4 px-4 pb-4 overflow-scroll tds-custom-scroll" *ngIf="dataModel">
+        <div class="flex flex-col h-full gap-y-4 px-4 pb-4" *ngIf="dataModel">
           <div class="divide-y divide-transparent">
             <tds-tabset class="w-full bg-white rounded-t-xl" [(selectedIndex)]="selectedIndex" [ngClass]="selectedIndex == 1 ? '' : 'rounded-b-xl'">
               <tds-tab title="Thông tin">
                 <!-- tab thông tin -->
-                <div class="grid grid-cols-3 grid-rows-3 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
+                <div class="grid grid-cols-3 grid-rows-3 2xl:gap-x-8 xl:gap-x-4 xl:gap-y-4 text-body-2 text-neutral-1-900">
                   <div class="flex col-span-1 row-span-2">
                     <div class="w-1/3">
                       <span class="font-semibold">Khách hàng</span>
@@ -477,9 +477,9 @@
             </tds-tabset>
             <!-- collapse dịch vụ đối tác -->
             <div *ngIf="selectedIndex == 1">
-                <tds-collapse accordion="true" *ngIf="dataModel.State == 'paid' || dataModel.State == 'draft'">
+                <tds-collapse accordion="true" [bordered]="false" *ngIf="dataModel.State == 'paid' || dataModel.State == 'draft'">
                     <tds-collapse-panel header="Dịch vụ của đối tác" [tdsClass]="'w-full rounded-b-xl bg-white p-4'"
-                      [tdsHeaderClass]="'bg-neutral-3-50'" [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
+                      [tdsHeaderClass]="'bg-neutral-3-50 p-4'" [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
 
                         <div class="grid grid-cols-2 gap-x-8 items-start w-full">
                           <!-- thông tin dịch vụ -->
@@ -714,25 +714,26 @@
               </div>
             </div>
           </div>
-          <div class="flex gap-x-4 h-full" *ngIf="dataModel && dataModel.State == 'draft'">
-            <div class="w-1/3 h-full flex">
+
+          <div class="flex flex-cols gap-x-4 h-full" *ngIf="dataModel && dataModel.State == 'draft'">
+            <div class="w-[600px] h-full">
               <list-product-tmp [priceListItems]="priceListItems" [isLoadingProduct]="isLoadingProduct"
                 (onLoadProductToOrderLines)="onLoadProductToOrderLines($event)"></list-product-tmp>
             </div>
-            <div class="w-2/3 h-full">
+            <div class="flex flex-auto h-full">
               <div class="rounded-xl pt-2 px-3 bg-white flex h-full w-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
                 <tds-table templateMode #TableAddBill [scroll]="{y:'auto'}" [showPagination]="false">
                   <thead>
                     <tr>
-                      <th width="50px">STT</th>
-                      <th width="220px">Sản Phẩm</th>
-                      <th width="120px">Số lượng</th>
-                      <th width="120px">Đơn giá</th>
-                      <th width="100px">Giá gần đây</th>
-                      <th width="80px">Giảm giá</th>
-                      <th width="90px" class="truncate">KL(g)</th>
-                      <th width="100px">Thành tiền</th>
-                      <th width="90px">
+                      <th width="10%">STT</th>
+                      <th width="10%">Sản Phẩm</th>
+                      <th width="10%">Số lượng</th>
+                      <th width="10%">Đơn giá</th>
+                      <th width="10%">Giá gần đây</th>
+                      <th width="10%">Giảm giá</th>
+                      <th width="10%" class="truncate">KL(g)</th>
+                      <th width="10%">Thành tiền</th>
+                      <th width="10%">
                         <div class="flex items-center justify-center">
                           <button tds-button-icon color="error" tds-tooltip="Xóa" size="sm" type="button"
                             (click)="removeAllOrderLines()">
@@ -741,7 +742,6 @@
                             </span>
                           </button>
                         </div>
-
                       </th>
                     </tr>
                   </thead>
@@ -962,6 +962,7 @@
                     </button>
                   </div>
                 </ng-template>
+
                 <ng-template #popoverFooterTax>
                   <div class="flex justify-end gap-x-2 mt-2">
                     <button tds-button-icon color="secondary" type="button" (click)="closePopoverTax()">

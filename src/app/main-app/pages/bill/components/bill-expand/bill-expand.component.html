@@ -107,8 +107,8 @@
     </tds-tab>
     <tds-tab title="Thông tin" (tabSelect)="onLoadTab('information')">
       <ng-template tds-tab>
-        <div class="grid grid-cols-3 gap-8 text-body-2">
-          <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-3 text-body-2 xl:gap-4 2xl:gap-8">
+          <div class="grid grid-cols-3 gap-y-4 xl:gap-x-2 2xl:gap-x-4">
             <div class="font-semibold">Số HĐ</div>
             <div class="col-span-2">{{ dataItem.Number || 'N/A' }}</div>
             <div class="font-semibold">Ngày đơn hàng</div>
@@ -120,7 +120,7 @@
             <div class="font-semibold">Ghi chú</div>
             <div class="col-span-2">{{ dataItem.Comment }}</div>
           </div>
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-3 gap-y-4 xl:gap-x-2 2xl:gap-x-4">
             <div class="font-semibold">Người giao hàng</div>
             <div class="col-span-2">{{ dataItem.Deliver || 'N/A' }}</div>
             <div class="font-semibold">Tổng tiền</div>
@@ -132,7 +132,7 @@
             <div class="font-semibold">Ghi chú giao hàng</div>
             <div class="col-span-2">{{ dataItem.DeliveryNote || 'N/A' }}</div>
           </div>
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-3 gap-y-4 xl:gap-x-2 2xl:gap-x-4">
             <div class="font-semibold">Đối tác GH</div>
             <div class="col-span-2">{{ dataItem.CarrierName }}</div>
             <div class="font-semibold">Kho hàng</div>
