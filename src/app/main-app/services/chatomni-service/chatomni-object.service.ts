@@ -91,7 +91,8 @@ export class ChatomniObjectService extends BaseSevice  {
 
         if(res.Extras?.Objects) {
           exist.Extras = {
-              Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
+              Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
+              Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
           }
         }
 

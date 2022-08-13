@@ -16,51 +16,47 @@
 
                         <!-- droupdown filter -->
 
-                        <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
-                            [tdsDropdownMenu]="btnFilter">
+                        <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight" [tdsDropdownMenu]="btnFilter">
                             <span class="flex text-neutral-1-500 relative w-[34px] h-[34px]">
                                 <i class="tdsi-filter-2-line text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+
                                 <div *ngIf="currentType.id != 'all'" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
                                     style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
-                                    <span class="text-[7px] leading-[5px] tdsi-tick-fill">
-                                    </span>
+                                    <span class="text-[7px] leading-[5px] tdsi-tick-fill"></span>
                                 </div>
                             </span>
                         </button>
+
                         <!-- droupdown filter -->
                         <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
                             <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="onchangeType(item.id)"
-                                    class="w-full flex justify-between items-center">
+                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="onchangeType(item.id)" class="w-full flex justify-between items-center">
                                     {{item.name}}
-                                    <span class="tdsi-success-fill text-success-500"
-                                        *ngIf="item?.name == currentType?.name"></span>
-                                </div>
-                            </div>
-                        </tds-dropdown-menu>
-                        <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
-                            [tdsDropdownMenu]="btnUpDown">
-                            <span class="flex text-neutral-1-500 w-[34px] h-[34px] relative">
-                                <i class="tdsi-sort-up-down-fill text-xl leading-5 h-full w-full flex items-center justify-center"></i>
-                                <div *ngIf="currentSort.id != 'ChannelCreatedTime desc'" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
-                                    style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
-                                    <span class="text-[7px] leading-[5px] tdsi-tick-fill">
-                                </span>
-                            </div>
-                            </span>
-                        </button>
-                        <!-- droupdown up down -->
-                        <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
-                            <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstSort" (click)="onChangeSort(item.id)"
-                                    class="w-full flex justify-between items-center">
-                                    {{item.name}}
-                                    <span class="tdsi-success-fill text-success-500"
-                                        *ngIf="item?.name == currentSort?.name"></span>
+                                    <span *ngIf="item?.name == currentType?.name" class="tdsi-success-fill text-success-500"></span>
                                 </div>
                             </div>
                         </tds-dropdown-menu>
 
+                        <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight" [tdsDropdownMenu]="btnUpDown">
+                            <span class="flex text-neutral-1-500 w-[34px] h-[34px] relative">
+                                <i class="tdsi-sort-up-down-fill text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+
+                                <div *ngIf="currentSort.id != 'ChannelCreatedTime desc'" style="transform: translate(30%, -30%); transform-origin: 100% 0px;"
+                                    class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center">
+                                    <span class="text-[7px] leading-[5px] tdsi-tick-fill"></span>
+                                </div>
+                            </span>
+                        </button>
+
+                        <!-- droupdown up down -->
+                        <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
+                            <div class="w-[225px] py-2">
+                                <div tds-dropdown-item *ngFor="let item of lstSort" (click)="onChangeSort(item.id)" class="w-full flex justify-between items-center">
+                                    {{item.name}}
+                                    <span class="tdsi-success-fill text-success-500" *ngIf="item?.name == currentSort?.name"></span>
+                                </div>
+                            </div>
+                        </tds-dropdown-menu>
                     </div>
                 </div>
             </div>
@@ -90,19 +86,21 @@
                 </div>
             </div>
         </div>
+
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[50%] flex flex-col h-full overflow-hidden">
             <div *ngIf="currentPost && currentTeam" class="h-full w-full">
                 <conversation-post-view-v3 [data]="currentPost" [team]="currentTeam" [availableCampaigns]="lstOfLiveCampaign"></conversation-post-view-v3>
             </div>
-            <div *ngIf="!currentPost" class="h-full w-full">
-                Hãy chọn một bài viết.
+            <div *ngIf="!currentPost" class="h-full w-full text-center">
+                <p class="text-body-2"> Hãy chọn một bài viết</p>
             </div>
         </div>
+
         <!-- Danh sách khách hàng, đơn hàng -->
         <div class="w-[30%] h-full flex flex-col">
-            <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
-                [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+            <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+
                 <!-- tab Danh sách -->
                 <tds-tab [title]="titleList" clsContent=" -mt-px h-full flex flex-col">
                     <ng-template #titleList let-active="active">
@@ -111,10 +109,12 @@
                             <span class="mr-2">Danh sách</span>
                         </div>
                     </ng-template>
+
                     <div class="flex pt-1 w-full h-[calc(100vh-109px)]">
                         <conversation-order-list class="w-full"></conversation-order-list>
                     </div>
                 </tds-tab>
+
                 <!-- tab Khách hàng -->
                 <tds-tab [title]="titlePartner" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
                     <ng-template #titlePartner let-active="active">
@@ -124,10 +124,10 @@
                         </div>
                     </ng-template>
                     <div *ngIf="currentTeam">
-                        <conversation-partner [team]="currentTeam" [type]="type">
-                      </conversation-partner>
+                        <conversation-partner [team]="currentTeam" [type]="type"> </conversation-partner>
                     </div>
                 </tds-tab>
+
                 <!-- tab đơn hàng -->
                 <tds-tab [title]="titleOrder" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
                     <ng-template #titleOrder let-active="active">
@@ -136,7 +136,7 @@
                             <span class="mr-2">Đơn hàng</span>
                         </div>
                     </ng-template>
-                    <div>
+                    <div *ngIf="currentTeam">
                         <!-- <post-order [team]="currentTeam"></post-order> -->
                     </div>
                 </tds-tab>

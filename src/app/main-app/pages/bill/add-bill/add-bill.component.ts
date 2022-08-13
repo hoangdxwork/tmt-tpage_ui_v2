@@ -167,6 +167,7 @@ export class AddBillComponent implements OnInit {
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
     private destroy$: TDSDestroyService) {
       this.createForm();
+      this.loadCurrentCompany();
   }
 
   createForm() {
@@ -184,7 +185,6 @@ export class AddBillComponent implements OnInit {
     }
 
     this.loadConfig();
-    this.loadCurrentCompany();
     this.lstCarriers = this.loadCarrier();
     this.lstPaymentJournals = this.loadPaymentJournals();
     this.lstPrices = this.loadListPrice();
@@ -259,7 +259,7 @@ export class AddBillComponent implements OnInit {
           obs.State = 'draft';
           obs.TrackingRef = null;
           obs.Number = '';
-          obs.CompanyId = Number(this.companyCurrents.CompanyId);
+          obs.CompanyId = this.companyCurrents?.CompanyId;
 
         } else {
           obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
@@ -273,7 +273,7 @@ export class AddBillComponent implements OnInit {
         if(services != null){
             this.shipServices.push(services);
         }
-        
+
         this.shipExtraServices = this.getServiceHandler.getShipExtrasService(obs);
 
         //TODO: cập nhật danh sách sản phẩm
@@ -326,7 +326,7 @@ export class AddBillComponent implements OnInit {
             if (res.PartnerId && res.Partner?.Id) {
                 this.changePartner(res.PartnerId);
             }
-            
+
             //TODO: cập nhật danh sách order lines
             this.updateOrderLines(data);
             this._form.patchValue(data);
@@ -718,10 +718,10 @@ export class AddBillComponent implements OnInit {
     }
 
     const insert = (arr: string | any[], index: number, ...newItems: any[]) => [
-      // inserted items
-      ...newItems,
       // part of the array before the specified index
       ...arr.slice(0, index),
+      // inserted items
+      ...newItems,
       // part of the array after the specified index
       ...arr.slice(index)
     ];
