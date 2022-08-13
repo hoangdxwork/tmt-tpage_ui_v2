@@ -3,7 +3,6 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnI
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { ChangeTabConversationEnum } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
@@ -21,6 +20,7 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
+import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 
 @Component({
   selector: 'app-conversation-post',
