@@ -263,6 +263,10 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   onSave(): any {
+    if(!this._form.dirty && this.partnerId) {
+        return this.modal.destroy(null);
+    }
+
     let model = this.prepareModel();
     if (!TDSHelperString.hasValueString(model.Name)) {
         this.message.error('Vui lòng nhập tên khách hàng');
@@ -274,21 +278,22 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     }
 
     if (this.partnerId) {
-      this.isLoading = true;
-      this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-        this.message.success('Cập nhật khách hàng thành công!');
-        this.modal.destroy(this.partnerId);
-      }, error => {
-        this.message.error('Cập nhật khách hàng thất bại!');
-      })
+        this.isLoading = true;
+        this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
+            this.message.success('Cập nhật khách hàng thành công!');
+            this.modal.destroy(this.partnerId);
+        }, error => {
+            this.message.error('Cập nhật khách hàng thất bại!');
+        })
+
     } else {
-      this.isLoading = false;
-      this.partnerService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-        this.message.success('Thêm mới khách hàng thành công!');
-        this.modal.destroy(res.Id);
-      }, error => {
-        this.message.error('Thêm mới khách hàng thất bại!');
-      })
+        this.isLoading = false;
+        this.partnerService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
+          this.message.success('Thêm mới khách hàng thành công!');
+          this.modal.destroy(res.Id);
+        }, error => {
+          this.message.error('Thêm mới khách hàng thất bại!');
+        })
     }
   }
 

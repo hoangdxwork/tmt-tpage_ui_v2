@@ -294,23 +294,25 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
     // this.activityDataFacade.messageReplyCommentServer(addActive);
   }
 
-  onInformation(item: any) {
+  getTabPartner(item: any) {
     let model = item.Data
     if (model) {
-      model.post_id = this.team.ChannelId;
-      if (!model.from || !model.from.id) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
-      }
+        model.post_id = this.team.ChannelId;
+        if (!model.from || !model.from.id) {
+            this.message.error("Không truy vấn được thông tin người dùng!");
+            return;
+        }
     }
+
     this.conversationOrderFacade.commentFormPost(model, false);
+
     //TODO: xử lý load khách hàng
     if(model.PartnerId){
       this.conversationOrderFacade.onPartnerIdByComment$.emit(model.PartnerId)
-    }else {
+    } else {
       this.message.error('Không lấy được PartnerId')
     }
-    
+
     this.conversationOrderFacade.loadPartnerByPostComment$.emit(model);
   }
 

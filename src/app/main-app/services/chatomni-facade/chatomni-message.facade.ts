@@ -34,6 +34,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
 
   createDataAttachments(attachment_url: string) {
     const model = {} as any;
+
     if (TDSHelperString.hasValueString(attachment_url)) {
       model["data"] = [];
       model["data"].push({
@@ -42,28 +43,30 @@ export class ChatomniMessageFacade extends BaseSevice  {
           }
       });
     }
+
     return {...model};
   }
 
   mappingChatomniDataItemDto(data:MakeActivityItemWebHook){
     let model  = {
-      Id: data.id,
-      Type: data.type,
-      IsOwner: data.is_admin,
-      Data: {
-        id: data.message?.id,
-        message: data.message?.message,
-        from: data.message?.from,
-        to: data.message?.to?.data[0],
-        attachments: data?.attachments,
-        has_admin_required: data.has_admin_required
-      } as unknown as ChatomniFacebookDataDto,
-      CreatedTime: data.DateCreated,
-      Message: data.message_formatted,
-      Status: data.status as number,
-      Error: undefined,
-      CreatedBy: data.CreatedBy,
-      UserId: data.to_id
+        Id: data.id,
+        Type: data.type,
+        IsOwner: data.is_admin,
+        Data: {
+            id: data.message?.id,
+            message: data.message?.message,
+            from: data.message?.from,
+            to: data.message?.to?.data[0],
+            attachments: data?.attachments,
+            has_admin_required: data.has_admin_required
+        } as unknown as ChatomniFacebookDataDto,
+
+        CreatedTime: data.DateCreated,
+        Message: data.message_formatted,
+        Status: data.status as number,
+        Error: undefined,
+        CreatedBy: data.CreatedBy,
+        UserId: data.to_id
     } as ChatomniDataItemDto
 
     return  {...model};
@@ -72,11 +75,11 @@ export class ChatomniMessageFacade extends BaseSevice  {
 
   mappingModelTag(tag:TDSSafeAny){
     let model = {
-      Id: tag.Id,
-      Name: tag.Name,
-      Icon: tag.Icon,
-      ColorClass: tag.ColorClassName,
-      CreatedTime: tag.DateCreated
+        Id: tag.Id,
+        Name: tag.Name,
+        Icon: tag.Icon,
+        ColorClass: tag.ColorClassName,
+        CreatedTime: tag.DateCreated
     } as ChatomniConversationTagDto
 
     return  {...model};
@@ -84,11 +87,11 @@ export class ChatomniMessageFacade extends BaseSevice  {
 
   mappingModelTagMess(tag:Tag){
     let model = {
-      Id: tag.id,
-      Name: tag.name,
-      Icon: tag.icon,
-      ColorClass: tag.color_class,
-      CreatedTime: tag.created_time
+        Id: tag.id,
+        Name: tag.name,
+        Icon: tag.icon,
+        ColorClass: tag.color_class,
+        CreatedTime: tag.created_time
     } as ChatomniConversationTagDto
 
     return  {...model};
@@ -120,12 +123,13 @@ export class ChatomniMessageFacade extends BaseSevice  {
     model.ConversationId = res.psid
     model.Name = res.name
     model.Tags = [];
+
     if (res.tags && res.tags.length > 0){
       res.tags.map(x=>{
         let data = this.mappingModelTagMess(x);
         model.Tags.push(data);
       })
-    } 
+    }
 
     return  {...model};
   }
