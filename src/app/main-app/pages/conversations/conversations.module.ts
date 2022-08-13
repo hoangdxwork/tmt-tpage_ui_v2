@@ -9,7 +9,6 @@ import { AccountRegisterPaymentService } from './../../services/account-register
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConversationsRoutingModule } from './conversations-routing.module';
-import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { MainSharedModule } from '../../shared/shared.module';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -139,7 +138,6 @@ import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostV2Component } from './conversation-post/conversation-post-v2.component';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
-import { ConversationPostViewV2Component } from './conversation-post/conversation-post-view-v2.component';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
 import { ObjectFacebookPostComponent } from './conversation-post/objects/object-facebook-post.component';
@@ -216,7 +214,6 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ConversationPostComponent,
     ModalImageStoreComponent,
     CurrentConversationItemComponent,
     ConversationOrderComponent,
@@ -259,7 +256,6 @@ const SERVICES = [
     ConversationAllV2Component,
     CurrentConversationItemV2Component,
     ConversationPostV2Component,
-    ConversationPostViewV2Component,
     ConversationPostViewV3Component,
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
