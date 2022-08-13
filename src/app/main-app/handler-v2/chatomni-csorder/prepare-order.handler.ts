@@ -59,6 +59,63 @@ export class CsOrder_PrepareModelHandler {
     return {...x};
   }
 
+  public prepareInsertFromBot(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
+
+    let x = {} as InsertFromMessageDto;
+
+    x.Address = model.Address;
+    x.CityCode = model.CityCode;
+    x.CityName = model.CityName;
+    x.DistrictCode = model.DistrictCode;
+    x.DistrictName = model.DistrictName;
+    x.WardCode = model.WardCode;
+    x.WardName = model.WardName;
+
+    x.Code = model.Code;
+    x.CRMTeamId = model.CRMTeamId || team.Id;
+    x.Email = model.Email;
+    x.Facebook_ASUserId = model.Facebook_ASUserId;
+    x.Facebook_UserId = model.Facebook_UserId;
+    x.Facebook_UserName = model.Facebook_UserName;
+    x.Id = model.Id;
+    x.Name = model.Name;
+    x.Note = model.Note;
+    x.PartnerId = model.PartnerId;
+    x.PartnerName = model.PartnerName || model.Partner?.Name;
+    x.Telephone = model.Telephone;
+    x.TotalAmount = model.TotalAmount;
+    x.TotalQuantity = model.TotalQuantity;
+
+    x.User = {
+      Id: model.UserId || model.User?.Id,
+      Name: model.UserName || model.User?.Name,
+    }
+    x.UserId = model.UserId || model.User?.Id;
+
+    x.Details = [];
+    model.Details.map(obj => {
+      let item = {
+          Note: obj.Note,
+          Price: obj.Price,
+          ProductId: obj.ProductId,
+          ProductName: obj.ProductName,
+          ProductNameGet: obj.ProductNameGet,
+          ProductCode: obj.ProductCode,
+          Quantity: obj.Quantity,
+          UOMId: obj.UOMId,
+          UOMName: obj.UOMName
+      }
+
+      x.Details.push(item);
+    })
+
+    return {...x};
+  }
+
+}
+
+export interface InsertFromBotDto {
+
 }
 
 export interface InsertFromMessageDto {
