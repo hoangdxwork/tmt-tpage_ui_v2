@@ -1,5 +1,5 @@
 import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -31,7 +31,7 @@ import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/ch
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnDestroy {
+export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
@@ -53,7 +53,6 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
 
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
-    private ngZone: NgZone,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private crmMatchingService: CRMMatchingService,
@@ -62,25 +61,32 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
     private chatomniCommentService: ChatomniCommentService,
     public crmService: CRMTeamService,
     private destroy$: TDSDestroyService,
-    private conversationOrderFacade: ConversationOrderFacade,
-    private facebookcommentService: FacebookCommentService) {
+    private conversationOrderFacade: ConversationOrderFacade) {
   }
 
   ngOnInit() {
-    if(this.team && this.data) {
-        this.loadData();
+    if(this.data) {
+      this.loadData();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes["data"] && !changes["data"].firstChange) {
+      (this.dataSource$ as any) = null;
+      (this.dataSource as any) = null;
+
+      this.data = {...changes["data"].currentValue};
+      this.loadData();
     }
   }
 
   loadData() {
     this.isLoading = true;
-      this.dataSource$ =  this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
+      this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
 
       if(this.dataSource$) {
         this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-            if(res) {
-                this.dataSource = res;
-            }
+            this.dataSource = {...res};
 
             this.isLoading = false;
             this.cdRef.markForCheck();
