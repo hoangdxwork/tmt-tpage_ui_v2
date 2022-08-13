@@ -76,14 +76,10 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
   innerText: string = '';
   textSearchFilterComment: string = '';
 
-  objComment?: any = { Items: [] };
-
   partners$!: Observable<any>;
   facebookComment$!: Subscription;
   facebookScanData$!: Subscription;
   subSetCommentOrders$!: Subscription;
-
-  childs: any = {};
   commentOrders: any = [];
 
   isLoading: boolean = false;
@@ -100,8 +96,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     private prepareHandler: PrepareFacebookPostHandler,
     private fbPostHandler: FaceBookPostItemHandler,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    private sgRConnectionService: SignalRConnectionService,
-    private conversationPostFacade: ConversationPostFacade,
     private facebookCommentService: FacebookCommentService,
     private message: TDSMessageService,
     private cdr: ChangeDetectorRef,
@@ -110,7 +104,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
 
   ngOnInit() {
     if (this.team!.Type == 'Facebook') {
-      this.initialize();
       this.onSetCommentOrders();
       this.currentLiveCampaign = this.availableCampaigns.find(f=> f.Id == this.data?.LiveCampaignId);
       this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
@@ -121,284 +114,110 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
 
   ngAfterViewInit(): void {
     this.objectEvent.getObjectFBData$.subscribe(res => {
-      this.data = {...res};
-      this.currentLiveCampaign = this.availableCampaigns.find(f=>f.Id == res?.LiveCampaignId);
-
-      this.cdRef.detectChanges();
+        this.data = {...res};
+        this.currentLiveCampaign = this.availableCampaigns.find(f=>f.Id == res?.LiveCampaignId);
     })
   }
 
-  initialize() {
-    this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
-
-    this.facebookComment$ = this.sgRConnectionService._onFacebookEvent$.subscribe((res: any) => {
-      if (res?.data?.last_activity?.comment_obj && res?.data?.last_activity?.type == 2) {
-        let comment_obj = res.data?.last_activity?.comment_obj;
-
-        if (comment_obj?.object?.id == this.data?.ObjectId) {
-          if (comment_obj?.parent?.id != this.data.ObjectId) {
-            this.childs[comment_obj.parent.id].unshift(comment_obj);
-          } else {
-            this.objComment.Items.unshift(comment_obj);
-          }
-        }
-      }
-    });
-
-    this.facebookScanData$ = this.sgRConnectionService._onFacebookScanData$.subscribe((res: any) => {
-      if (res.data) {
-        let data = {...res.data};
-
-        if (res.type == "update_scan_feed") {
-          if (data.comment?.object?.id == this.data?.ObjectId) {
-            this.objComment.Items = [...[data.comment], ...this.objComment.Items];
-          }
-        }
-      }
-    });
-  }
-
-  validateData() {
-    this.objComment = { Items: [] };
-    this.childs = {};
-    this.commentOrders = [];
-  }
-
   loadData() {
-    this.isLoading = true;
-    this.validateData();
-    this.getCommentOrders(this.data.ObjectId);
-
-    switch (this.currentFilter.value) {
-      case 'all':
-        // TODO: Tất cả bình luận
-        this.loadAllCommentsByPost();
-        break;
-      case 'group':
-        // TODO: Lọc theo người dùng
-        this.loadGroupCommentsByPost();
-        break;
-      case 'filter':
-        // TODO: Lọc theo bình luận
-        this.loadFilterCommentsByPost();
-        break;
-      case 'manage':
-        // TODO:Quản lý bình luận
-        this.loadManageCommentsByPost();
-        break;
-      case "report":
-        this.reportCommentByPost();
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  loadGroupCommentsByPost() {
-    if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getGroupCommentsByPostId(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
-        .subscribe((res: RequestCommentByGroup) => {
-
-          if (TDSHelperArray.hasListValue(res.Items)) {
-            res.Items.map((x: any) => {
-              let first = x.activities[0];
-              x.created_time = first.created_time;
-            });
-          }
-
-          this.objComment = res;
-          this.isLoading = false;
-
-          this.cdRef.markForCheck();
-        }, error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Lọc theo người dùng đã xảy ra lỗi');
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-        });
-    }
-  }
-
-  loadFilterCommentsByPost() {
-    if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getFilterCommentsByPostId(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
-        .subscribe((res: RequestCommentByGroup) => {
-
-          if (TDSHelperArray.hasListValue(res.Items)) {
-            res.Items.map((x: any) => {
-              let first = x.activities[0];
-
-              x.message = first.message;
-              x.created_time = first.created_time;
-            });
-          }
-
-          this.objComment = res;
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-        }, error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Lọc theo bình luận đã xảy ra lỗi');
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-        });
-    }
-  }
-
-  loadManageCommentsByPost() {
-    if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getManageCommentsByLimit(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
-        .subscribe((res: RequestCommentByPost) => {
-
-          if (TDSHelperArray.hasListValue(res.Items)) {
-            res.Items.forEach((x: any) => {
-              x["selected"] = false;
-              x["error_message"] = null;
-            });
-          }
-
-          this.objComment = res;
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-        }, error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-        });
-    }
-  }
-
-  loadAllCommentsByPost() {
-    if (this.team!.Type == 'Facebook') {
-
-      this.facebookCommentService.getCommentsByPostId(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
-        .subscribe((res: RequestCommentByPost) => {
-
-          // Xử lý nếu bình luận đó là bình luận của 1 post child
-          let childIds = Object.keys(res.Extras['childs']);
-
-          if (TDSHelperObject.hasValue(childIds)) {
-            childIds.map((x: any) => {
-              let splitParentId = x.split("_");
-              let splitPostId = this.data.ObjectId.split("_");
-
-              if (splitParentId && splitParentId[0] == splitPostId[0]) {
-                res.Items = [...res.Items, ...(res.Extras['childs'] as any)[x]];
-              }
-            })
-          }
-
-          this.objComment = res;
-          this.childs = res.Extras['childs'] || {};
-          this.isLoading = false;
-
-          this.cdRef.markForCheck();
-        }, error => {
-          this.message.error(`${error?.error?.message}` || 'Load comment bài viết đã xảy ra lỗi');
-          this.isLoading = false;
-
-          this.cdRef.markForCheck();
-        });
-    }
+    let postId = this.data.ObjectId;
+    this.getCommentOrders(postId);
   }
 
   getCommentOrders(posId: string) {
-    if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$))
-        .subscribe((res: OdataCommentOrderPostDTO) => {
+    this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$))
+      .subscribe((res: OdataCommentOrderPostDTO) => {
 
-          res?.value.map((x: CommentOrderPost) => {
-            this.commentOrders[x.asuid] = [];
-            this.commentOrders[x.uid] = [];
+          if(res && res.value) {
+              let comments = [...res.value];
 
-            if (TDSHelperArray.hasListValue(x.orders)) {
-              x.orders.map((a: CommentOrder) => {
-                this.commentOrders[x.asuid].push(a);
+              comments.map((x: CommentOrderPost) => {
+                  this.commentOrders[x.asuid] = [];
+                  this.commentOrders[x.uid] = [];
+
+                  x.orders?.map((a: CommentOrder) => {
+                      this.commentOrders[x.asuid].push(a);
+                  });
+
+                  if (x.uid && x.uid != x.asuid) {
+                    x.orders?.map((a: any) => {
+                        this.commentOrders[x.uid].push(a);
+                    });
+                  }
               });
+          }
 
-              if (x.uid && x.uid != x.asuid) {
-                x.orders.map((a: any) => {
-                  this.commentOrders[x.uid].push(a);
-                });
-              }
-            }
-          });
           this.cdRef.markForCheck();
-        }, error => {
+      }, error => {
           this.message.error(`${error?.error?.message}`);
           this.cdRef.markForCheck();
-        });
-    }
+      });
   }
 
   onSetCommentOrders() {
-    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders
-      .subscribe((res: any) => {
+    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders.subscribe((res: any) => {
         let data = res?.data;
 
         if (!this.commentOrders[res.fbid]) {
-          this.commentOrders[res.fbid] = [];
+            this.commentOrders[res.fbid] = [];
         }
 
         if (this.commentOrders[res.fbid].filter((x: any) => x.id === data.Id).length === 0) {
-          this.commentOrders[res.fbid].push({
-            session: data.Session,
-            index: data.SessionIndex,
-            code: data.SessionIndex > 0 ? `#${data.SessionIndex}. ${data.Code}` : data.Code,
-            id: data.Id
-          });
+            this.commentOrders[res.fbid].push({
+                session: data.Session,
+                index: data.SessionIndex,
+                code: data.SessionIndex > 0 ? `#${data.SessionIndex}. ${data.Code}` : data.Code,
+                id: data.Id
+            });
         }
-      });
+    });
 
     this.facebookPostService.onRemoveOrderComment.subscribe((res: any) => {
       let keys = Object.keys(this.commentOrders);
 
       keys.forEach(key => {
-        this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
+          this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
       })
     })
 
-    this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
-      if (res.data) {
-        let data = res.data;
-        let userId = data.facebook_ASUserId;
+    // this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
+    //   if (res.data) {
+    //     let data = res.data;
+    //     let userId = data.facebook_ASUserId;
 
-        if (data.facebook_PostId == this.data.ObjectId) {
-          let dataAdd = {} as any;
+    //     if (data.facebook_PostId == this.data.ObjectId) {
+    //       let dataAdd = {} as any;
 
-          if (this.commentOrders[userId]) {
-            this.commentOrders[userId] = this.commentOrders[userId].filter((x: any) => x.id && !data.id);
+    //       if (this.commentOrders[userId]) {
+    //         this.commentOrders[userId] = this.commentOrders[userId].filter((x: any) => x.id && !data.id);
 
-            dataAdd = {
-              code: data.code,
-              id: data.id,
-              index: data.index,
-              session: data.session
-            };
-          } else {
-            this.commentOrders[userId] = [];
+    //         dataAdd = {
+    //           code: data.code,
+    //           id: data.id,
+    //           index: data.index,
+    //           session: data.session
+    //         };
+    //       } else {
+    //         this.commentOrders[userId] = [];
 
-            dataAdd = {
-              code: data.code,
-              id: data.id,
-              index: data.index,
-              session: data.session
-            };
-          }
+    //         dataAdd = {
+    //           code: data.code,
+    //           id: data.id,
+    //           index: data.index,
+    //           session: data.session
+    //         };
+    //       }
 
-          this.commentOrders[userId].push(dataAdd);
-
-        }
-      }
-    })
+    //       this.commentOrders[userId].push(dataAdd);
+    //     }
+    //   }
+    // })
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-      this.currentSort = this.sortOptions[0];
-      this.currentFilter = this.filterOptions[0];
-
-      this.data = changes["data"].currentValue;
-      this.loadData();
+        this.data = changes["data"].currentValue;
+        this.loadData();
     }
   }
 
