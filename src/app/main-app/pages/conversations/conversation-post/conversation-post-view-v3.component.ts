@@ -1,3 +1,4 @@
+import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { PrepareFacebookPostHandler } from './../../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { LiveCampaignService } from './../../../services/live-campaign.service';
@@ -111,15 +112,18 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     if (this.team!.Type == 'Facebook') {
       this.initialize();
       this.onSetCommentOrders();
+      this.currentLiveCampaign = this.availableCampaigns.find(f=> f.Id == this.data?.LiveCampaignId);
+      this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
     }
     
     this.loadData();
   }
 
   ngAfterViewInit(): void {
-    this.objectEvent.getObjectFBData$.subscribe(res=>{
-      (<MDB_Facebook_Mapping_PostDto>this.data.Data) = res;
-      this.currentLiveCampaign = this.availableCampaigns.find(f=>f.Id == res.live_campaign_id);
+    this.objectEvent.getObjectFBData$.subscribe(res => {
+      this.data = {...res};
+      this.currentLiveCampaign = this.availableCampaigns.find(f=>f.Id == res?.LiveCampaignId);
+
       this.cdRef.detectChanges();
     })
   }
@@ -474,6 +478,32 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     }
   }
 
+  showModalLiveCampaign(data: ChatomniObjectsItemDto) {
+    const modal = this.modalService.create({
+      title: 'Chiến dịch',
+      content: LiveCampaignPostComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        post: data,
+        currentLiveCampaign: this.currentLiveCampaign,
+        lstOfData: this.availableCampaigns
+      }
+    });
+
+    modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
+      this.currentLiveCampaign = res;
+
+      if(this.data?.Data){
+        this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
+      }
+
+      this.objectEvent.getObjectFBData$.emit(this.data);
+
+      this.cdr.detectChanges();
+    })
+  }
+
   openTag(id: string) {
     this.indClickTag = id;
   }
@@ -485,12 +515,12 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
   addNewCampaign() {
     if(this.currentLiveCampaign){
       let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.data?.Data), this.currentLiveCampaign);
-      let liveCampaignId = this.currentLiveCampaign?.Id || (<MDB_Facebook_Mapping_PostDto> this.data?.Data)?.live_campaign_id;
+      let liveCampaignId = this.currentLiveCampaign?.Id || this.data?.LiveCampaignId;
       
       this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
           if(res.value){
-            this.fbPostHandler.updateLiveCampaignPost(this.currentLiveCampaign as LiveCampaignModel, (<MDB_Facebook_Mapping_PostDto> this.data?.Data));
-            this.objectEvent.getObjectFBData$.emit((<MDB_Facebook_Mapping_PostDto>this.data?.Data));
+            this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
+            this.objectEvent.getObjectFBData$.emit(this.data);
             this.message.success('Cập nhật chiến dịch thành công');
 
             this.cdr.markForCheck();

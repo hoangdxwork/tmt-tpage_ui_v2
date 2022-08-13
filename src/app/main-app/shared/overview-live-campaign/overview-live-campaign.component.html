@@ -251,30 +251,30 @@
                   </td>
                   <td>
                     <div class="flex flex-row items-center">
-                      <p class="text-body-2">Đơn hàng chờ: <span class="font-semibold">{{ data.ListSaleOnlineOrder?.length || 0 }}</span></p>
+                      <p class="text-body-2 mr-2">Đơn hàng chờ: <span class="font-semibold">{{ data.ListSaleOnlineOrder?.length || 0 }}</span></p>
                       <button tds-button-flat color="info" size="sm">
                         <span class="flex items-center">
-                          <i class="tdsi-group-2-line text-lg"></i>
+                          <i class="tdsi-group-2-line text-base"></i>
                         </span>
                       </button>
                     </div>
                     <div class="flex flex-row items-center">
-                      <p class="text-body-2">Hóa đơn: <span class="font-semibold">{{ data.ListFastSaleOrder?.length || 0 }}</span></p>
+                      <p class="text-body-2 mr-2">Hóa đơn: <span class="font-semibold">{{ data.ListFastSaleOrder?.length || 0 }}</span></p>
                       <button tds-button-flat color="info" size="sm">
                         <span class="flex items-center">
-                          <i class="tdsi-group-2-line text-lg"></i>
+                          <i class="tdsi-group-2-line text-base"></i>
                         </span>
                       </button>
                     </div>
                   </td>
                   <td>
                     <div class="flex flex-row items-center">
-                      <span>{{ data.Quantity }}</span>
+                      <span class="mr-2">{{ data.Quantity }}</span>
                       <button tds-button-flat tds-popover [popoverVisible]="indClickStatus == data.Id" popoverTrigger="click"
-                      [popoverFooter]="footerQuantity" [popoverContent]="contentQuantity" [popoverBackdrop]="true"
-                      popoverPlacement="bottom" [popoverAutoClose]="false" color="info" size="sm" (click)="openQuantityPopover(data,data.Id)">
+                        [popoverFooter]="footerQuantity" [popoverContent]="contentQuantity" [popoverBackdrop]="true"
+                        popoverPlacement="bottom" [popoverAutoClose]="false" color="info" size="sm" (click)="openQuantityPopover(data,data.Id)">
                         <span class="flex items-center">
-                          <i class="tdsi-edit-fill text-xl"></i>
+                          <i class="tdsi-edit-fill text-base"></i>
                         </span>
                       </button>
                       

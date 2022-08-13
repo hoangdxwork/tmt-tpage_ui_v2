@@ -9,14 +9,13 @@ export class PrepareCopyItemHandler {
 
     public prepareCopyModel(x: OrderLineV2, dataModel: FastSaleOrder_DefaultDTOV2): OrderLineV2 {
 
-      x.Id = 0;
       x.UserId = x.UserId || dataModel.UserId;
       x.AccountId = x.AccountId || dataModel.Account?.Id;
       x.OrderId = dataModel.Id;
       x.CompanyId = x.CompanyId || dataModel.Company?.Id;
       x.User = x.User || dataModel.User;
 
-      return x;
+      return {...x};
     }
 
 
@@ -49,6 +48,6 @@ export class PrepareCopyItemHandler {
         User: dataModel.User
       }
 
-      return item;
+      return {...item};
     }
 }

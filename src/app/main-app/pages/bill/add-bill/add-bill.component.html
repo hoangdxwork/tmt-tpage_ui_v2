@@ -791,13 +791,13 @@
                       </td>
                       <!-- Số lượng -->
                       <td>
-                        <tds-input-number [ngModel]="data.ProductUOMQty | number: '1.0-3'" [min]="0" [step]="1"
+                        <tds-input-number [ngModel]="data.ProductUOMQty" [min]="1" [step]="1"
                           (ngModelChange)="onChangeQuantity($event, data)" [ngModelOptions]="{standalone: true}">
                         </tds-input-number>
                       </td>
                       <!-- Đơn giá -->
                       <td>
-                        <tds-input-number [ngModel]="data.PriceUnit | number: '1.0-3'" [min]="0" [step]="1000"
+                        <tds-input-number [ngModel]="data.PriceUnit" [min]="0" [step]="1000"
                           (ngModelChange)="onChangePriceUnit($event, data)" [ngModelOptions]="{standalone: true}">
                         </tds-input-number>
                       </td>

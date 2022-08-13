@@ -41,12 +41,14 @@ export class PrepareSuggestionsBillHandler {
       street = data.Ship_Receiver.Street;
     }
 
-    return {
+    let result = {
       _cities: cities,
       _districts: districts,
       _wards: wards,
       _street: street
     };
+
+    return {...result};
   }
 
   public onLoadSuggestion(_form: FormGroup, item: ResultCheckAddressDTO) {
