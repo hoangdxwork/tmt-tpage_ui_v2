@@ -56,6 +56,7 @@ import { SharedService } from '@app/services/shared.service';
 import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CreateFastSaleOrderDTO } from '@app/dto/saleonlineorder/create-fastsaleorder.dto';
 import { ProductTemplateV2DTO } from '@app/dto/producttemplate/product-tempalte.dto';
+import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -170,6 +171,14 @@ export class ConversationOrderComponent implements OnInit {
   eventEmitter(){
     this.conversationOrderFacade.onAddProductOrder$.subscribe(res=>{
         this.selectProduct(res);
+    });
+
+    //TODO: tạo đơn hàng từ comment bài viết, xử dụng insertFromBot gọi save
+    this.conversationOrderFacade.loadCreateOrderByPostComment$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataItemDto) => {
+        if(res) {
+            this.isEnableCreateOrder = false;
+            let model = this.csOrder_PrepareModelHandler.prepareInsertFromBot(this.quickOrderModel, this.team);
+        }
     })
   }
 
@@ -842,6 +851,7 @@ export class ConversationOrderComponent implements OnInit {
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;
         }
+
         this.coDAmount();
         this.calcTotal();
     }

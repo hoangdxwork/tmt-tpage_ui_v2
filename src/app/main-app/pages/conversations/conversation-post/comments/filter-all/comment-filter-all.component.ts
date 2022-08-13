@@ -60,6 +60,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private conversationPostFacade: ConversationPostFacade,
     private chatomniCommentService: ChatomniCommentService,
     public crmService: CRMTeamService,
+    private ngZone: NgZone,
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade) {
   }
@@ -261,7 +262,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO) {
-
   }
 
   loadPartnerTab(item: ChatomniDataItemDto) {
@@ -276,8 +276,21 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
   }
 
-  onCreateOrder(item: any) {
-    this.conversationOrderFacade.commentFormPost(item, true);
+  onCreateOrder(item: ChatomniDataItemDto) {
+    let psid = item.UserId || item.Data?.from?.id;
+    if (!psid) {
+        this.message.error("Không truy vấn được thông tin người dùng!");
+        return;
+    }
+
+    // TODO: Dùng ngZone đợi cập nhật dữ liệu từ conversation-partner sang conversation-order
+    this.ngZone.run(() => {
+        // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
+        this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
+
+        this.conversationOrderFacade.loadCreateOrderByPostComment$.emit(item);
+        this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    })
   }
 
   nextData(event: any) {

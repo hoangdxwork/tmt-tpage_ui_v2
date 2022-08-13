@@ -60,6 +60,9 @@ export class ConversationOrderFacade extends BaseSevice  {
   // TODO: outPut thông tin khách hàng từ comment sang tab Khách hàng
   public loadPartnerByPostComment$ = new EventEmitter<any>();
 
+  // TODO: outPut thông tin khách hàng từ comment sang tab Đơn hàng
+  public loadCreateOrderByPostComment$ = new EventEmitter<any>();
+
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
 
   constructor(private apiService: TCommonService,
