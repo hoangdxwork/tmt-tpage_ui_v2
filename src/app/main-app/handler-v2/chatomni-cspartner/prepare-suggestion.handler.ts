@@ -3,9 +3,7 @@ import { ResultCheckAddressDTO } from "../../dto/address/address.dto";
 import { TabPartnerCvsRequestModel } from "../../dto/conversation-partner/partner-conversation-request.dto";
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from "../../dto/suggest-address/suggest-address.dto";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class CsPartner_SuggestionHandler {
 
@@ -32,7 +30,7 @@ export class CsPartner_SuggestionHandler {
 
     partner.Street = item.Address;
 
-    return partner;
+    return {...partner};
   }
 
 

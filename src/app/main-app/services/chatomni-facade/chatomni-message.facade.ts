@@ -34,6 +34,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
 
   createDataAttachments(attachment_url: string) {
     const model = {} as any;
+
     if (TDSHelperString.hasValueString(attachment_url)) {
       model["data"] = [];
       model["data"].push({
@@ -42,6 +43,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
           }
       });
     }
+
     return {...model};
   }
 
@@ -64,7 +66,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       Error: undefined,
       CreatedBy: data.CreatedBy,
       UserId: data.to_id
-    } as unknown as ChatomniDataItemDto
+    } as unknown as ChatomniDataItemDto;
 
     return  {...model};
   }
@@ -72,11 +74,11 @@ export class ChatomniMessageFacade extends BaseSevice  {
 
   mappingModelTag(tag:TDSSafeAny){
     let model = {
-      Id: tag.Id,
-      Name: tag.Name,
-      Icon: tag.Icon,
-      ColorClass: tag.ColorClassName,
-      CreatedTime: tag.DateCreated
+        Id: tag.Id,
+        Name: tag.Name,
+        Icon: tag.Icon,
+        ColorClass: tag.ColorClassName,
+        CreatedTime: tag.DateCreated
     } as ChatomniConversationTagDto
 
     return  {...model};
@@ -84,11 +86,11 @@ export class ChatomniMessageFacade extends BaseSevice  {
 
   mappingModelTagMess(tag:Tag){
     let model = {
-      Id: tag.id,
-      Name: tag.name,
-      Icon: tag.icon,
-      ColorClass: tag.color_class,
-      CreatedTime: tag.created_time
+        Id: tag.id,
+        Name: tag.name,
+        Icon: tag.icon,
+        ColorClass: tag.color_class,
+        CreatedTime: tag.created_time
     } as ChatomniConversationTagDto
 
     return  {...model};
@@ -120,12 +122,13 @@ export class ChatomniMessageFacade extends BaseSevice  {
     model.ConversationId = res.psid
     model.Name = res.name
     model.Tags = [];
+
     if (res.tags && res.tags.length > 0){
       res.tags.map(x=>{
         let data = this.mappingModelTagMess(x);
         model.Tags.push(data);
       })
-    } 
+    }
 
     return  {...model};
   }

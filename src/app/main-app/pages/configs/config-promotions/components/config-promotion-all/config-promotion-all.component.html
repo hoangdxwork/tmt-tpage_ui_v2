@@ -209,7 +209,7 @@
                   <div class="col-span-2 flex gap-x-4 items-center">
                     <div class="flex items-center w-3/5">
                       <tds-form-field class="w-full">
-                        <tds-input-number formControlName="DiscountMaxAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                        <tds-input-number formControlName="DiscountMaxAmount" [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         <tds-error>
                             Vui lòng nhập giá trị chiết khấu tối đa
                         </tds-error>

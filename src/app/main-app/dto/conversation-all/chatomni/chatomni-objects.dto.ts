@@ -1,4 +1,4 @@
-import { Extras, PagingTimestamp } from './chatomni-data.dto';
+import { ExtrasDto, PagingTimestamp } from './chatomni-data.dto';
 import { Attachments } from './../../facebook-post/facebook-post.dto';
 import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
@@ -24,7 +24,7 @@ export interface ChatomniObjectsItemDto {
 
 export interface ChatomniObjectsDto {
   Items: ChatomniObjectsItemDto[];
-  Extras?: Extras;
+  Extras?: ExtrasDto;
   Paging: PagingTimestamp;
 }
 

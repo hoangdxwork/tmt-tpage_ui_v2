@@ -95,7 +95,4 @@ export interface ConversationSummaryByTagDTO {
   count: number;
 }
 
-export enum ChangeTabConversationEnum {
-  order = "orderTab",
-  partner = "partnerTab"
-}
+

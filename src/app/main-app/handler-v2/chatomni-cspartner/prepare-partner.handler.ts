@@ -5,9 +5,7 @@ import { CreateOrUpdatePartnerModel } from "../../dto/conversation-partner/creat
 import { TabPartnerCvsRequestModel } from "../../dto/conversation-partner/partner-conversation-request.dto";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class CsPartner_PrepareModelHandler {
 
@@ -41,7 +39,7 @@ export class CsPartner_PrepareModelHandler {
         } : null,
     }
 
-    return model;
+    return {...model};
   }
 
   public updatePartnerModel(partner: TabPartnerCvsRequestModel, x: CreateOrUpdatePartnerModel) {
@@ -78,7 +76,7 @@ export class CsPartner_PrepareModelHandler {
       partner.Ward = null;
     }
 
-    return partner;
+    return {...partner};
   }
 
   public loadPartnerFromTabOrder(partner: TabPartnerCvsRequestModel, order: QuickSaleOnlineOrderModel) {
@@ -124,6 +122,6 @@ export class CsPartner_PrepareModelHandler {
       }
     }
 
-    return partner;
+    return {...partner};
   }
 }

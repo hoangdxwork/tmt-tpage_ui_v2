@@ -178,7 +178,7 @@
                           <td>
                               <div class="border border-neutral-2-200 rounded bg-white">
                                   <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="DiscountPercentage"
-                                    tdsInput type="number" [min]="0" [max]="100" />
+                                    tdsInput type="number" [min]="0" [step]="1000" [max]="100" />
                               </div>
                           </td>
                           <!-- Tiền cố định -->
@@ -192,7 +192,7 @@
                           <td>
                               <div class="border border-neutral-2-200 rounded bg-white">
                                   <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="DiscountMaxAmount"
-                                    tdsInput type="number" [min]="0"/>
+                                    tdsInput type="number" [step]="1000" [min]="0"/>
                               </div>
                           </td>
                           <!-- Trên sản phẩm -->
@@ -222,7 +222,7 @@
                           <td [width]="'80px'">
                               <button tds-button-icon color="secondary" (click)="deleteDetailDiscount(index)">
                                   <span class="flex items-center">
-                                    <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                    <i class="tdsi-trash-fill text-lg text-neutral-1-500 leading-none"></i>
                                   </span>
                               </button>
                           </td>
@@ -282,7 +282,7 @@
                           <td>
                               <div class="border border-neutral-2-200 rounded bg-white">
                                   <input class="text-neutral-1-900 text-body-2 font-regular"
-                                    tdsInput type="number" [min]="0" />
+                                    tdsInput type="number" [min]="0" [step]="1000" />
                               </div>
                           </td>
                           <!-- % chiết khấu -->
@@ -296,7 +296,7 @@
                           <td>
                               <div class="border border-neutral-2-200 rounded bg-white">
                                   <input class="text-neutral-1-900 text-body-2 font-regular"
-                                    tdsInput type="number" [min]="0" />
+                                    tdsInput type="number" [min]="0" [step]="1000"/>
                               </div>
                           </td>
                           <!-- Sản phẩm mua -->
@@ -336,11 +336,16 @@
                           </td>
                           <!-- Thao tác -->
                           <td [width]="'80px'">
-                              <button tds-button-icon color="secondary" (click)="deleteDetailCombo(index)">
-                                  <span class="flex items-center">
-                                  <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
-                                  </span>
+                            <div class="flex gap-x-2">
+                              <button tds-button-outline-icon color="primary">
+                                <i class="tdsi-edit-fill text-lg leading-none"></i>
                               </button>
+                              <button tds-button-icon color="secondary" (click)="deleteDetailDiscount(index)">
+                                <span class="flex items-center">
+                                  <i class="tdsi-trash-fill text-lg text-neutral-1-500 leading-none"></i>
+                                </span>
+                              </button>
+                            </div>
                           </td>
                       </tr>
                   </tbody>
