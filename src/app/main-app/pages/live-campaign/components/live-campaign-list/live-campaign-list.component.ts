@@ -233,7 +233,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
   showModalRemove(data: any) {
     const modal = this.modal.error({
         title: 'Xác nhận xóa chiến dịch',
-        content: `Bạn có chắc muốn xóa chiến dịch ${data.Name} không?`,
+        content: `Bạn có chắc muốn xóa chiến dịch <span class="font-semibold">${data.Name}</span> không?`,
         iconType: 'tdsi-trash-fill',
         okText: "Xác nhận",
         cancelText: "Hủy bỏ",

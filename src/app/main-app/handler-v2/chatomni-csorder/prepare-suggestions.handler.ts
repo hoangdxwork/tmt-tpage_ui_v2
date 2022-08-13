@@ -29,7 +29,15 @@ export class CsOrder_SuggestionHandler {
     return quickOrderModel;
   }
 
+  validateData(){
+    (this._cities as any) = null;
+    (this._districts as any) = null; 
+    (this._wards as any) = null; 
+    (this._street as any) = null;
+  }
+
   public mappingAddress(data: QuickSaleOnlineOrderModel) {
+    this.validateData();
     if (data && data.CityCode) {
       this._cities = {
           code: data.CityCode,

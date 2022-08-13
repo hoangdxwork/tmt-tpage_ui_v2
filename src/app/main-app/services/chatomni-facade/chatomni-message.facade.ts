@@ -7,7 +7,7 @@ import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
-import { MakeActivityItemWebHook } from "@app/dto/conversation/make-activity.dto";
+import { responseAddMessCommentDto } from '@app/dto/conversation-all/chatomni/response-mess.dto';
 
 @Injectable()
 
@@ -45,7 +45,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
     return {...model};
   }
 
-  mappingChatomniDataItemDto(data:MakeActivityItemWebHook){
+  mappingChatomniDataItemDto(data:responseAddMessCommentDto){
     let model  = {
       Id: data.id,
       Type: data.type,
@@ -64,7 +64,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       Error: undefined,
       CreatedBy: data.CreatedBy,
       UserId: data.to_id
-    } as ChatomniDataItemDto
+    } as unknown as ChatomniDataItemDto
 
     return  {...model};
   }

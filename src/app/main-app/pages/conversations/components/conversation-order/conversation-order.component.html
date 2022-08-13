@@ -49,9 +49,9 @@
                             </tds-form-field>
                         </div>
 
-                        <div class="flex gap-2 items-center">
-                            <div class="tdsi-pin-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
-                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans w-2/3">{{ quickOrderModel.Address || 'Chưa có địa chỉ' }}</span>
+                        <div class="flex gap-2 items-start">
+                            <div class="tdsi-pin-fill p-1 bg-neutral-3-50 text-neutral-1-400 text-xl leading-none rounded-[10px]"></div>
+                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans w-2/3 pt-1">{{ quickOrderModel.Address || 'Chưa có địa chỉ' }}</span>
 
                             <div *ngIf="isEditPartner" class="w-full">
                                 <suggest-address [_isBtnExtend]="true" [_isExpanded]="false" [_cities]="_cities" [_districts]="_districts"
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="w-full pt-4 flex items-center">
+                    <div class="w-full pt-4 flex items-center z-9999 bg-white">
                         <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar w-3/4 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400">{{quickOrderModel.Note }}</textarea>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [backdrop]="true" [tdsDropdownMenu]="menuUser"
@@ -345,12 +345,14 @@
             </div>
 
             <!-- Giao hàng -->
-            <tds-collapse *ngIf="isEnableCreateOrder && saleModel">
-              <tds-collapse-panel header="Dịch vụ của đối tác" [tdsClass]="'w-full rounded-b-xl bg-white p-4'"
-                  [tdsHeaderClass]="'bg-neutral-3-50'" [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
-                  <div class="grid items-start w-full" *ngIf="saleModel && saleModel.Carrier">
+            <tds-collapse *ngIf="isEnableCreateOrder && saleModel" [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white mt-1">
+              <tds-collapse-panel [header]="headerShip" tdsClass="w-full rounded-b-xl bg-white p-4" [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
+                  <ng-template #headerShip>
+                    <span class="text-header-1 font-semibold text-neutral-1-900 font-sans mr-2">Giao hàng</span>
+                  </ng-template>
+                  <div class="grid gap-2 items-start w-full" *ngIf="saleModel && saleModel.Carrier">
 
-                      <div class="w-full">
+                      <div class="w-full flex flex-col gap-y-2">
                           <div class="flex items-center"><tds-label>Đối tác giao hàng</tds-label></div>
 
                           <div class="col-span-2" *ngIf="lstCarrier">
