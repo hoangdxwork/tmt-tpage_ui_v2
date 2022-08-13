@@ -115,7 +115,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
       this.currentLiveCampaign = this.availableCampaigns.find(f=> f.Id == this.data?.LiveCampaignId);
       this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
     }
-    
+
     this.loadData();
   }
 
@@ -516,7 +516,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     if(this.currentLiveCampaign){
       let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.data?.Data), this.currentLiveCampaign);
       let liveCampaignId = this.currentLiveCampaign?.Id || this.data?.LiveCampaignId;
-      
+
       this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
           if(res.value){
             this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);

@@ -25,7 +25,7 @@ export interface Ward {
 }
 
 export interface TabPartnerCvsRequestModel {
-  Id: number;
+  Id: number; // id partner
   Name: string;
   Ref: string;
   Phone: string;

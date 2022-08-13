@@ -29,6 +29,7 @@ import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-a
 import { CsPartner_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-cspartner/prepare-suggestion.handler';
 import { CsPartner_PrepareModelHandler } from 'src/app/main-app/handler-v2/chatomni-cspartner/prepare-partner.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -83,9 +84,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   ngOnInit(): void  {
     if(this.omcs_Item) {
-      let psid = this.omcs_Item?.ConversationId;
-      let pageId = this.team.ChannelId;
-      this.loadData(pageId, psid);
+        let psid = this.omcs_Item?.ConversationId;
+        let pageId = this.team.ChannelId;
+        this.loadData(pageId, psid);
     }
 
     // TODO: load lại form conversation-partner từ conversation-order
@@ -96,29 +97,22 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     // TODO: Chọn làm địa chỉ, số điện thoại, ghi chú  selectOrder(type: string)
     this.onSelectOrderFromMessage();
-
     this.loadPartnerStatus();
 
     this.eventEmitter();
   }
 
   eventEmitter(){
-    // TODO: load lại form conversation-partner từ comment bài post
-    this.conversationOrderFacade.onPartnerIdByComment$.subscribe(partnerId=>{
-      if(partnerId){
-        this.omcs_Item = this.omcs_Item? this.omcs_Item : {} as ChatomniConversationItemDto
-        this.omcs_Item.PartnerId = partnerId
+    // TODO: load thông tin partner từ comment bài post 'comment-filter-all'
+    this.conversationOrderFacade.loadPartnerByPostComment$.subscribe((res: ChatomniDataItemDto) => {
+      if(TDSHelperObject.hasValue(res)) {
+          (this.omcs_Item as any) = null;
+
+          let pageId = this.team.ChannelId;
+          let psid = res.UserId || res.Data.from.id;
+          this.loadData(pageId, psid);
       }
     })
-    this.conversationOrderFacade.loadPartnerByPostComment$.subscribe(res=>{
-      if(TDSHelperObject.hasValue(res)) {
-        debugger
-        let psid = res.from?.id;
-        let pageId = this.team.ChannelId;
-        this.loadData(pageId, psid);
-    }
-    })
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -142,12 +136,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     // TODO: dữ liệu chính gán cho partner
     this.checkConversation(pageId, psid);
     this.loadNotes(pageId, psid);
-
-    let partnerId = this.omcs_Item?.PartnerId;
-    if(partnerId) {
-        this.loadPartnerBill(partnerId);
-        this.loadPartnerRevenue(partnerId);
-    }
   }
 
   checkConversation(pageId: string, psid: string): any {
@@ -174,10 +162,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           x.psid = psid;
 
           this.partner = x;
-
           this.mappingAddress(this.partner);
-          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
 
+          // TODO: load dữ liệu đơn hàng, phiếu bán hàng theo partnerId
+          let partnerId = x.Id || this.omcs_Item?.PartnerId;
+          if(partnerId) {
+              this.loadPartnerBill(partnerId);
+              this.loadPartnerRevenue(partnerId);
+          }
+
+          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
           this.isLoading = false;
       }
       }, error => {
@@ -194,19 +188,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
        }
     });
   }
-
-  loadPartnerByPostComment() {
-    this.isLoading = true;
-    this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      if(res) {
-          let pageId = this.team.ChannelId;
-          let psid = res.psid;
-
-          this.checkConversation(pageId, psid);
-      }
-    });
-  }
-
 
   loadUpdateInfoByConversation() {
     this.conversationDataFacade.onUpdateInfoByConversation$.pipe(takeUntil(this.destroy$)).subscribe(res => {
@@ -248,7 +229,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   loadPartnerRevenue(partnerId: number){
     this.partnerService.getPartnerRevenueById(partnerId).pipe(takeUntil(this.destroy$)).subscribe(res => {
       if(res){
-        this.objRevenue = {...res};
+          this.objRevenue = {...res};
       }
     }, error => {
         this.message.error(`${error?.error?.message}`);
