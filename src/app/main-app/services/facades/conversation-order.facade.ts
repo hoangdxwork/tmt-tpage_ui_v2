@@ -13,13 +13,13 @@ import { SignalRConnectionService } from "../signalR/signalR-connection.service"
 import { ConversationOrderForm } from '../../dto/coversation-order/conversation-order.dto';
 import { GeneralConfigsFacade } from "./general-config.facade";
 import { ProductDTO } from "../../dto/product/product.dto";
-import { ChangeTabConversationEnum } from '../../dto/conversation/conversation.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TabPartnerCvsRequestModel } from '../../dto/conversation-partner/partner-conversation-request.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from '../../dto/saleonlineorder/quick-saleonline-order.dto';
 import { ProductService } from '../product.service';
+import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 
 @Injectable()
 
@@ -195,30 +195,30 @@ export class ConversationOrderFacade extends BaseSevice  {
   }
 
   commentFormPost(data: ActivityByGroup, isCreateOrder: boolean) {
-    let psid = data?.from?.id;
-    let postId = data?.object?.id;
+    // let psid = data?.from?.id;
+    // let postId = data?.object?.id;
 
-    if(postId){
-      let pageId = postId.split("_")[0];
-      let currentTeam = this.crmTeamService.getCurrentTeam();
+    // if(postId){
+    //   let pageId = postId.split("_")[0];
+    //   let currentTeam = this.crmTeamService.getCurrentTeam();
 
-      if(isCreateOrder === true) {
-        this.onChangeTab$.emit(ChangeTabConversationEnum.order);
-        this.createOrderByComment(data, psid, pageId)
-          .subscribe(res => {
-            this.checkConversation(pageId, psid, data);
-          }, error => {});
-      }
-      else {
-        this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-        // this.loadPartnerByComment(data, psid, postId, currentTeam?.Id)
-        //   .subscribe(res => {
-        //     this.checkConversation(pageId, psid, data);
-        //   }, error => {});
-      }
-    }else{
-      this.message.error('Không tìm thấy thông tin page')
-    }
+    //   if(isCreateOrder === true) {
+    //     this.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    //     this.createOrderByComment(data, psid, pageId)
+    //       .subscribe(res => {
+    //         this.checkConversation(pageId, psid, data);
+    //       }, error => {});
+    //   }
+    //   else {
+    //     this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+    //     // this.loadPartnerByComment(data, psid, postId, currentTeam?.Id)
+    //     //   .subscribe(res => {
+    //     //     this.checkConversation(pageId, psid, data);
+    //     //   }, error => {});
+    //   }
+    // }else{
+    //   this.message.error('Không tìm thấy thông tin page')
+    // }
   }
 
   createOrderByComment(comment: TDSSafeAny, psid: string, pageId: string): Observable<any> {
