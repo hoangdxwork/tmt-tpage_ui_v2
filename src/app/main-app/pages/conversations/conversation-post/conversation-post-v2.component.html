@@ -102,7 +102,7 @@
             <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 
                 <!-- tab Danh sách -->
-                <tds-tab [title]="titleList" clsContent=" -mt-px h-full flex flex-col">
+                <tds-tab [title]="titleList" clsContent="-mt-px h-full flex flex-col">
                     <ng-template #titleList let-active="active">
                         <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                             [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
@@ -116,7 +116,7 @@
                 </tds-tab>
 
                 <!-- tab Khách hàng -->
-                <tds-tab [title]="titlePartner" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
+                <tds-tab [title]="titlePartner" clsContent="-mt-px h-full flex flex-col">
                     <ng-template #titlePartner let-active="active">
                         <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                             [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
@@ -129,7 +129,7 @@
                 </tds-tab>
 
                 <!-- tab đơn hàng -->
-                <tds-tab [title]="titleOrder" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
+                <tds-tab [title]="titleOrder" clsContent="-mt-px h-full flex flex-col" >
                     <ng-template #titleOrder let-active="active">
                         <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                             [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>

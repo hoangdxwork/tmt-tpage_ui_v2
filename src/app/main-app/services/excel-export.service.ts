@@ -14,7 +14,7 @@ export class ExcelExportService extends BaseSevice {
   baseRestApi: string = "";
 
   @Output()
-  public onReponseExcel: EventEmitter<any> = new EventEmitter<any>();
+  public onResponseExcel: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService,
     private authen: TAuthService,
@@ -70,7 +70,7 @@ export class ExcelExportService extends BaseSevice {
 
   transferCompletePost = (evt: any) => {
     let url = evt.target.responseURL;
-    this.onReponseExcel.emit(url);
+    this.onResponseExcel.emit(url);
   }
 
   transferFailedPost = (evt: any) => {
@@ -124,7 +124,7 @@ export class ExcelExportService extends BaseSevice {
 
   transferCompleteGet = (evt: any) => {
     let url = evt.target.responseURL;
-    this.onReponseExcel.emit(url);
+    this.onResponseExcel.emit(url);
   }
 
   transferFailedGet = (evt: any) => {

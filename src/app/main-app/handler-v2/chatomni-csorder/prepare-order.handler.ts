@@ -1,15 +1,12 @@
 import { Injectable } from "@angular/core";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
-import { TDSHelperString } from "tds-ui/shared/utility";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class CsOrder_PrepareModelHandler {
 
-  public  prepareInsertFromMessage(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
+  public prepareInsertFromMessage(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
 
     let x = {} as InsertFromMessageDto;
 
@@ -59,7 +56,7 @@ export class CsOrder_PrepareModelHandler {
       x.Details.push(item);
     })
 
-    return x;
+    return {...x};
   }
 
 }

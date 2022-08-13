@@ -14,7 +14,7 @@
                         <div class="bg-white rounded-2xl px-4 py-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex gap-x-2">
-                                    <label class="font-semibold">{{ item.Data?.from?.name }} </label>
+                                    <label class="font-semibold" *ngIf="item.Data && item.Data.from">{{ item.Data.from.name }} </label>
 
                                     <div *ngIf="commentOrders && item.Data?.from" class="flex flex-row items-center">
                                         <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
@@ -68,9 +68,9 @@
 
                             <!-- hình ảnh đính kèm -->
                             <div *ngIf="item.Data?.attachment">
-                                <img tds-image *ngIf="item.Data?.attachment?.type != 'sticker'" [tdsSrc]="item.Data?.attachment?.media?.image?.src"
+                                <img tds-image *ngIf="item.Data?.attachment?.type != 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
                                   class="max-w-[200px]" />
-                                <img tds-image *ngIf="item.Data?.attachment?.type == 'sticker'" [tdsSrc]="item.Data?.attachment?.media?.image?.src"
+                                <img tds-image *ngIf="item.Data?.attachment?.type == 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
                                   class="max-w-[100px]" />
                             </div>
 
@@ -79,7 +79,7 @@
                                 <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onCreateOrder(item.Data)"> Tạo đơn hàng  </button>
 
                                 <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng" tooltipPlacement="top"
-                                  (click)="getTabPartner(item)" tds-tooltip>
+                                    (click)="loadPartnerTab(item)" tds-tooltip>
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-information-fill text-neutral-1-500"></i>
                                     </span>
@@ -197,7 +197,7 @@
                                       </div>
 
                                       <div class="flex pt-4">
-                                          <button (click)="getTabPartner(child)" type="button" tds-button-icon color="secondary" class="mr-2"
+                                          <button (click)="loadPartnerTab(child)" type="button" tds-button-icon color="secondary" class="mr-2"
                                               tooltipTitle="Thông tin" tooltipPlacement="top" tds-tooltip >
                                               <span class="flex items-center justify-center"> <i class="tdsi-information-fill"></i></span>
                                           </button>
