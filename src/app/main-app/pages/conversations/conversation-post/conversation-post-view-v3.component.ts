@@ -284,17 +284,15 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
   }
 
   fetchComments() {
-    if (this.team!.Type == 'Facebook') {
-      this.currentSort = this.sortOptions[0];
-      this.currentFilter = this.filterOptions[0];
+    this.currentSort = this.sortOptions[0];
+    this.currentFilter = this.filterOptions[0];
 
-      this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.facebookCommentService.setSort(this.currentSort.value);
-        this.loadData();
-      }, error => {
-        this.message.error('Thao tác thất bại');
-      })
-    }
+    this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.facebookCommentService.setSort(this.currentSort.value);
+      this.loadData();
+    }, error => {
+      this.message.error('Thao tác thất bại');
+    })
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {

@@ -40,7 +40,7 @@ export class SocketService  {
           this.notificationService.error(
               'Kết nối socket-io xảy ra lỗi',
               `${err.message}`,
-              { placement: 'bottomLeft'} )
+              {placement: 'bottomLeft'})
         }
 
         this.establishedConnected = false;

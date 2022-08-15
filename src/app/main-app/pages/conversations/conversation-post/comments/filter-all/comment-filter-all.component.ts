@@ -301,8 +301,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
               this.dataSource.Items = [...res.Items];
           }
 
-          this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
           this.isLoading = false;
+          this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
+          this.cdRef.markForCheck();
       }, error => {
           this.isLoading = false;
       })
