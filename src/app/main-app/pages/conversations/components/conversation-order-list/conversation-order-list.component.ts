@@ -237,7 +237,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
 
     if(TDSHelperArray.hasListValue(data)) {
       data.forEach(order => {
-        this.orderPrintService.printOrder(order, null);
+        this.orderPrintService.printOrder(order);
       });
       this.isLoadingActive = false;
     }

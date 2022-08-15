@@ -67,9 +67,10 @@ export interface ChatomniFacebookDataDto {
   can_like?: boolean;
   can_reply_privately?: boolean;
   comment_count?: number;
+  like_count?: number;
   user_likes?: boolean;
   object: ObjectDto;
-  comments?: any;
+  comments?: any[];
   attachment?: any;
   message_tags: MessageTag[];
   phone: string;

@@ -51,7 +51,6 @@ import { CRMTagService } from '../../services/crm-tag.service';
 import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
-import { PostOrderComponent } from './components/post-order/post-order.component';
 import { ConfigPostOutletComponent } from './components/config-post/config-post-outlet.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
 import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
@@ -232,7 +231,6 @@ const SERVICES = [
     PostCommentGroupComponent,
     PostCommentFilterComponent,
     ManagePostCommentComponent,
-    PostOrderComponent,
     ConfigPostOutletComponent,
     ConversationAllFilterComponent,
     ConversationOrderListComponent,

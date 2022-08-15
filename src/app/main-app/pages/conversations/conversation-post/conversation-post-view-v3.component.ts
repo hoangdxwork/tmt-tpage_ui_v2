@@ -25,6 +25,7 @@ import { SaleOnline_OrderService } from '@app/services/sale-online-order.service
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByGroup } from '@app/dto/conversation/post/comment-group.dto';
 import { RequestCommentByPost } from '@app/dto/conversation/post/comment-post.dto';
+import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 
 @Component({
   selector: 'conversation-post-view-v3',
@@ -125,38 +126,37 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
   }
 
   getCommentOrders(posId: string) {
-    this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$))
-      .subscribe((res: OdataCommentOrderPostDTO) => {
+    this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$)).subscribe((res: OdataCommentOrderPostDTO) => {
 
-          if(res && res.value) {
-              let comments = [...res.value];
+        if(res && res.value) {
+            let comments = [...res.value];
 
-              comments.map((x: CommentOrderPost) => {
-                  this.commentOrders[x.asuid] = [];
-                  this.commentOrders[x.uid] = [];
+            comments.map((x: CommentOrderPost) => {
+                this.commentOrders[x.asuid] = [];
+                this.commentOrders[x.uid] = [];
 
-                  x.orders?.map((a: CommentOrder) => {
-                      this.commentOrders[x.asuid].push(a);
+                x.orders?.map((a: CommentOrder) => {
+                    this.commentOrders[x.asuid].push(a);
+                });
+
+                if (x.uid && x.uid != x.asuid) {
+                  x.orders?.map((a: any) => {
+                      this.commentOrders[x.uid].push(a);
                   });
+                }
+            });
+        }
 
-                  if (x.uid && x.uid != x.asuid) {
-                    x.orders?.map((a: any) => {
-                        this.commentOrders[x.uid].push(a);
-                    });
-                  }
-              });
-          }
-
-          this.cdRef.markForCheck();
-      }, error => {
-          this.message.error(`${error?.error?.message}`);
-          this.cdRef.markForCheck();
-      });
+        this.cdRef.markForCheck();
+    }, error => {
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.markForCheck();
+    });
   }
 
   onSetCommentOrders() {
-    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders.subscribe((res: any) => {
-        let data = res?.data;
+    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders$.subscribe((res: any) => {
+        let data = res?.data as QuickSaleOnlineOrderModel;
 
         if (!this.commentOrders[res.fbid]) {
             this.commentOrders[res.fbid] = [];
