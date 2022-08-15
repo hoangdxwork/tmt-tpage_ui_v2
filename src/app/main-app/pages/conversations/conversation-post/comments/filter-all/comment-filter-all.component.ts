@@ -42,7 +42,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   dataSource$!: Observable<ChatomniDataDto>;
   dataSource!: ChatomniDataDto;
-
   childs: any = {} // dictionary return ChatomniDataItemDto[]
 
   enumActivityStatus = ActivityStatus;
@@ -60,7 +59,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private conversationPostFacade: ConversationPostFacade,
     private chatomniCommentService: ChatomniCommentService,
     public crmService: CRMTeamService,
-    private ngZone: NgZone,
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade) {
   }
@@ -283,14 +281,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
-    // TODO: Dùng ngZone đợi cập nhật dữ liệu từ conversation-partner sang conversation-order
-    this.ngZone.run(() => {
-        // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-        this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
+    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
+    this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
 
-        this.conversationOrderFacade.loadCreateOrderByPostComment$.emit(item);
-        this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-    })
+    // TODO: Đẩy dữ liệu sang conversation-orer để tạo hà, insertfrompost
+    this.conversationOrderFacade.loadCreateOrderByPostComment$.emit(item);
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
   }
 
   nextData(event: any) {

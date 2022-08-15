@@ -366,5 +366,4 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.isDisableTab = isDisable;
   }
 
-
 }

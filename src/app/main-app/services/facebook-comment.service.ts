@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable, OnDestroy, OnInit, Output } from '@angular/core';
+import { OdataSaleOnline_Facebook_CommentDto } from '@app/dto/coversation-order/saleonline-facebook-comment.dto';
 import {  Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -9,9 +10,7 @@ import { CheckFacebookIdDTO, FacebookPostDTO, FacebookPostItem } from '../dto/fa
 import { ArrayHelper } from '../shared/helper/array.helper';
 import { BaseSevice } from './base.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class FacebookCommentService extends BaseSevice implements  OnDestroy {
 
@@ -176,13 +175,13 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     this.allItems[postId] = ArrayHelper.makeUniqueArray(this.allItems[postId], data.Items, "Id");
   }
 
-  getCommentsByUserAndPost(asId: string, postId: string): Observable<any>{
+  saleOnline_Facebook_Comment(userId: string, postId: string): Observable<OdataSaleOnline_Facebook_CommentDto>{
     let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/odata/SaleOnline_Facebook_Comment/ODataService.GetCommentsByUserAndPost?userId=${asId}&postId=${postId}`,
+      url: `${this._BASE_URL}/odata/SaleOnline_Facebook_Comment/ODataService.GetCommentsByUserAndPost?userId=${userId}&postId=${postId}`,
       method: CoreApiMethodType.get
     }
 
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<OdataSaleOnline_Facebook_CommentDto>(api, null);
   }
 
   ngOnDestroy(): void {

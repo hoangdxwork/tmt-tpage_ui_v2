@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
+import { QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
@@ -18,7 +19,8 @@ export class SaleOnline_OrderService extends BaseSevice {
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
   public _keyCreateBillOrder: string = 'saleonline_order:create_bill_order';
   public _keyCacheFilter: string = 'saleonline_order:filter_cache';
-  public onSetCommentOrders: EventEmitter<any> = new EventEmitter();
+
+  public onSetCommentOrders$: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -133,13 +135,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  insertFromPost(data: SaleOnline_OrderDTO, isIncrease: boolean = false): Observable<SaleOnline_OrderDTO> {
+  insertFromPost(data: any, isIncrease: boolean = false): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?IsIncrease=${isIncrease}&$expand=Details,User`,
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   createUpdatePartner(data: any): Observable<any> {
@@ -151,8 +153,8 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  setCommentOrder(data: any, fbid: string) {
-    this.onSetCommentOrders.emit({ data: data, fbid: fbid });
+  setCommentOrder(data: QuickSaleOnlineOrderModel, fbid: string) {
+    this.onSetCommentOrders$.emit({ data: data, fbid: fbid });
   }
 
   updateStatusSaleOnline(idOrder: any, value: any): Observable<TDSSafeAny> {

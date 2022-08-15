@@ -158,7 +158,7 @@
                   </ng-template>
 
                   <div *ngIf="omcs_Item && currentTeam ">
-                      <conversation-order [omcs_Item]="omcs_Item" [team]="currentTeam"></conversation-order>
+                      <conversation-order [omcs_Item]="omcs_Item" [team]="currentTeam" [type]="type"></conversation-order>
                   </div>
 
                   <div *ngIf="!omcs_Item">
