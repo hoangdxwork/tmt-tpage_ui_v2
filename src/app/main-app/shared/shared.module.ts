@@ -1,3 +1,4 @@
+import { TableDetailReportComponent } from './table-detail-report/table-detail-report.component';
 import { TDSSwitchModule } from 'tds-ui/switch';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -81,7 +82,8 @@ const cmp =[
   QuickReplyButtonComponent,
   OverviewLiveCampaignComponent,
   BillFilterOptionsComponent,
-  TpageNotificationDropdownComponent
+  TpageNotificationDropdownComponent,
+  TableDetailReportComponent
 ]
 
 const SERVICES = [

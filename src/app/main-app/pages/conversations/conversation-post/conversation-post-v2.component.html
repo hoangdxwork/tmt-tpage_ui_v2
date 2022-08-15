@@ -70,7 +70,7 @@
                         <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex">
 
                             <div *ngIf="item && currentTeam!.Type == 'Facebook'">
-                                <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" [availableCampaigns]="lstOfLiveCampaign"
+                                <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" [lstOfLiveCampaign]="lstOfLiveCampaign"
                                     (selectPostItemEvent)="selectPost($event)">
                                 </object-facebook-post>
                             </div>

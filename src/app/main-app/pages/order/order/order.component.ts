@@ -548,7 +548,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
             delete res['@odata.context'];
 
             const modal = this.modal.create({
-                title: `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>`,
+                title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
                 content: EditOrderV2Component,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,

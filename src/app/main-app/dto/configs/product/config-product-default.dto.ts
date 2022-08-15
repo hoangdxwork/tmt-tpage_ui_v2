@@ -1,3 +1,4 @@
+import { ComboProductDTO } from "@app/dto/product/product-combo.dto";
 import { WallPicturesDTO } from "../../attachment/wall-pictures.dto";
 
 export interface ConfigUOM {
@@ -277,7 +278,7 @@ export interface ConfigProductDefaultDTO {
     AttributeLines: ConfigAttributeLine[];
     Items: any[];
     UOMLines: UOMLine[];
-    ComboProducts: any[];
+    ComboProducts: ComboProductDTO[];
     ProductSupplierInfos: any[];
 }
 
