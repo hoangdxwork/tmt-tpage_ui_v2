@@ -72,6 +72,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   lstObjects!: ChatomniObjectsItemDto[];
 
   queryObj?: any = { type!: "", sort!: "", q!: "" };
+  isRefreshing: boolean = false;
 
   constructor(private facebookPostService: FacebookPostService,
     private conversationPostFacade: ConversationPostFacade,
@@ -189,6 +190,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.facebookPostService.fetchPosts(team?.Id).pipe(takeUntil(this.destroy$)).subscribe();
   }
 
+  onRefresh(event: any) {
+    this.queryObj = { type!: "", sort!: "", q!: "" };
+    this.isRefreshing = true;
+    this.loadData();
+  }
+
   loadData(queryObj?: any){
     this.isLoading = true;
     this.validateData();
@@ -235,8 +242,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
         }
 
         this.isLoading = false;
+        setTimeout(() => {
+            this.isRefreshing = false;
+        }, 300);
     }, error => {
         this.isLoading = false;
+        this.isRefreshing = false;
         this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
     })
   }

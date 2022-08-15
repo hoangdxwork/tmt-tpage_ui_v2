@@ -39,7 +39,7 @@ import { TDSUploadChangeParam } from 'tds-ui/upload';
 import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ChatomniMessageService } from '../../services/chatomni-service/chatomni-message.service';
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
-import { ChatomniConversationItemDto, ChatomniTagsEventEmitterDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniConversationItemDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { DOCUMENT } from '@angular/common';
@@ -363,34 +363,34 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   nextData() {
-    if (this.isLoading || this.isProcessing) {
+    if (this.isProcessing) {
       return;
     }
 
     this.isProcessing = true;
     let id = `${this.team.Id}_${this.data.ConversationId}`;
 
-    this.ngZone.run(() => {
-      this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
-
-      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-          if(res) {
+    this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
+    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+        if(res) {
+            if(res.Extras) {
               this.dataSource.Extras = res.Extras;
-
+            }
+            if(TDSHelperArray.hasListValue(res.Items)) {
               this.dataSource.Items = [...res.Items];
-              this.dataSource.Paging = {...res.Paging};
+            }
 
-              this.srcollBehavior();
-          }
+            this.dataSource.Paging = {...res.Paging};
+            this.srcollBehavior();
+        }
 
-          this.isProcessing = false;
-          this.cdRef.markForCheck();
+        this.isProcessing = false;
+        this.cdRef.markForCheck();
 
-      }, error => {
-          this.isProcessing = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-          this.cdRef.markForCheck();
-      })
+    }, error => {
+        this.isProcessing = false;
+        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+        this.cdRef.markForCheck();
     })
   }
 
@@ -499,7 +499,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
                 this.data.Name = res.conversation.name;
             }
             if (res.conversation?.from) {
-              // this.data.from = res.conversation.from;
+              // this.data.F = res.conversation.from;
             }
         }
 
@@ -965,7 +965,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.isAlertChatbot = true;
   }
 
-  onCloseAlertChatbot(ev: boolean){ 
+  onCloseAlertChatbot(ev: boolean){
     this.isAlertChatbot = false;
   }
 
