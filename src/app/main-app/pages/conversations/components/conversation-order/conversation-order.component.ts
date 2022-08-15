@@ -281,8 +281,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     (this.quickOrderModel as any) = null;
     (this.saleModel as any) = null;
     (this._cities as any) = null;
-    (this._districts as any) = null; 
-    (this._wards as any) = null; 
+    (this._districts as any) = null;
+    (this._wards as any) = null;
     (this._street as any) = null;
   }
 
@@ -598,8 +598,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
         if(TDSHelperObject.hasValue(result)) {
 
-            let data = result[0] as ProductDTOV2;
-            let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data);
+            let data = result[0] as ProductTemplateV2DTO;
+            let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'create_template');
             this.quickOrderModel.Details = [...this.quickOrderModel.Details, x];
 
             this.coDAmount();
@@ -608,7 +608,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
-  mappingDetailQuickSaleOnlineOrder(data: ProductDTOV2){
+  mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu
+
+    //data sẽ là ProductDTOV2 | ProductTemplateV2DTO
     let model : Detail_QuickSaleOnlineOrder = {
       Quantity: 1,
       Price: data.Price,
@@ -624,6 +626,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       ImageUrl: data.ImageUrl,
       Priority: 0,
     } as Detail_QuickSaleOnlineOrder;
+
+
+    // TODO: trường hợp thêm mới từ product-template
+    if(type == 'create_template') {
+      model.ProductId = data.VariantFirstId;
+      model.Price = data.ListPrice;
+    }
 
     return {...model};
   }
@@ -664,7 +673,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   selectProduct(item: DataPouchDBDTO) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id);
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId);
     if(index < 0) {
       let data = {...item} as ProductDTOV2;
 
@@ -806,8 +815,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
-  pushItemProduct(data: ProductDTOV2) {  
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === data.Id);
+  pushItemProduct(data: ProductDTOV2) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId);
     if (index < 0){
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
 
