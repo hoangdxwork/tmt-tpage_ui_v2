@@ -156,7 +156,7 @@ export class LiveCampaignPostComponent implements OnInit {
         });
       },
       err => {
-        this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kế');
+        this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kê');
       })
   }
 

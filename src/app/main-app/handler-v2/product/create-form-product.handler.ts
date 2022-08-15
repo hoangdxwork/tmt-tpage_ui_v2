@@ -19,6 +19,7 @@ export class CreateFormProductHandler {
         Distributor: [null],
         Element: [null],
         EnableAll: [false],
+        Image: [null],
         Images: fb.array([]),
         ImageUrl: [null],
         Importer: [null],
