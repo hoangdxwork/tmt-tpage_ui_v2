@@ -42,7 +42,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
     });
   }
 
-  printOrder(model: any, commentMessage: string | null) {
+  printOrder(model: any, commentMessage?: string) {
 
     let lsProduct = [];
     let product = "";

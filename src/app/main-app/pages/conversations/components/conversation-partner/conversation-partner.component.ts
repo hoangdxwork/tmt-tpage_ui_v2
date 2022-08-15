@@ -171,7 +171,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
               this.loadPartnerRevenue(partnerId);
           }
 
-          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
+          // Load đơn hàng khác từ bên bài viết gọi qua
+          if(this.type != 'post') {
+            this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
+          }
+
           this.isLoading = false;
       }
       }, error => {
