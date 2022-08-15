@@ -73,6 +73,14 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   ngOnInit(): void {
+    if(this.dataItem && this.dataItem.Id && !this.dataItem.Message) {
+        let exist = this.dataItem.Data.attachments.data;
+        if(exist) {
+          this.dataItem.Data!.is_error_attachment = false;
+        } else {
+          this.dataItem.Data!.is_error_attachment = true;
+        }
+    }
   }
 
   selectOrder(type: string): any {
@@ -183,7 +191,7 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
-    if(dataItem && (dataItem.Status != 2 || dataItem.Error?.Message)) {
+    if(dataItem && (dataItem.Status != ChatomniStatus.Error || dataItem.Error?.Message)) {
         this.dataItem.Data['is_error_attachment'] = true;
     }
   }
@@ -193,6 +201,7 @@ export class TDSConversationItemV2Component implements OnInit {
     if(this.reloadingImage){
       return
     }
+
     this.reloadingImage = true;
     this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.dataItem.Data.id || this.csid , item.id)
       .pipe(takeUntil(this.destroy$))
