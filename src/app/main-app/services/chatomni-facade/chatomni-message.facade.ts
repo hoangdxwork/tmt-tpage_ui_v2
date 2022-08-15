@@ -7,7 +7,7 @@ import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
-import { responseAddMessCommentDto } from '@app/dto/conversation-all/chatomni/response-mess.dto';
+import { ResponseAddMessCommentDto } from '@app/dto/conversation-all/chatomni/response-mess.dto';
 
 @Injectable()
 
@@ -47,7 +47,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
     return {...model};
   }
 
-  mappingChatomniDataItemDto(data:responseAddMessCommentDto){
+  mappingChatomniDataItemDto(data:ResponseAddMessCommentDto){
     let model  = {
       Id: data.id,
       Type: data.type,

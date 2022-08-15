@@ -1,4 +1,4 @@
-import { responseAddMessCommentDto } from './../../dto/conversation-all/chatomni/response-mess.dto';
+import { ResponseAddMessCommentDto } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniStatus, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
@@ -586,7 +586,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false })).subscribe((res: any) => {
 
         if (TDSHelperArray.hasListValue(res)) {
-          res.forEach((x: responseAddMessCommentDto, i: number) => {
+          res.forEach((x: ResponseAddMessCommentDto, i: number) => {
             x["status"] = ChatomniStatus.Pending;
             x.type = 11;
 
@@ -646,7 +646,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   messageResponse(res: any, model: SendMessageModelDTO) {
     if (TDSHelperArray.hasListValue(res)) {
-      res.map((x: responseAddMessCommentDto, i: number) => {
+      res.map((x: ResponseAddMessCommentDto, i: number) => {
         x["status"] = ChatomniStatus.Pending;
         x.type = 11;
 

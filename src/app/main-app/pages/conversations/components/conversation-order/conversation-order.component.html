@@ -113,9 +113,9 @@
                                 <div *ngIf="textSearchProduct && lstProductSearch.length > 0; else noDataProduct"
                                     class="absolute left-0 right-0 -bottom-2 top-full p-2 h-56 overflow-hidden overflow-y-auto tds-panel-scroll z-10 bg-white flex flex-col gap-y-2 shadow-md">
 
-                                    <tds-spin [spinning]="isLoadingProduct">
+                                    <tds-spin [spinning]="isLoadingProduct" class="h-full overflow-hidden">
                                         <span *ngFor="let item of lstProductSearch" (click)="pushItemProduct(item)" class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
-                                            <span class="text-info-400"> {{ item.NameGet }} - {{item.Price | number}}đ </span>
+                                            <span *ngIf="item.NameGet" class="text-info-400"> {{ item.NameGet }} - {{item.Price | number}}đ </span>
 
                                             <div class="fw-5" *ngIf="lstInventory && lstInventory[item.Id]">
                                                 <span class="text-neutral-1-400">Tồn kho: </span>

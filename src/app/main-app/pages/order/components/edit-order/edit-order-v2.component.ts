@@ -49,7 +49,7 @@ import { SO_ComputeCaclHandler } from 'src/app/main-app/handler-v2/order-handler
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { Router } from '@angular/router';
-import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 
 @Component({
   selector: 'edit-order-v2',
@@ -140,7 +140,7 @@ export class EditOrderV2Component implements OnInit {
     private computeCaclHandler: SO_ComputeCaclHandler,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
-    private so_PrepareFaseSaleOrderHandler: SO_PrepareFaseSaleOrderHandler,
+    private so_PrepareFastSaleOrderHandler: SO_PrepareFastSaleOrderHandler,
     private partnerService: PartnerService,
     private sharedService: SharedService,
     private productTemplateOUMLineService: ProductTemplateOUMLineService,
@@ -191,7 +191,7 @@ export class EditOrderV2Component implements OnInit {
             DeliveryPrice: 0
         }, this.saleModel);
 
-        this.saleModel = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(this.saleModel, this.quickOrderModel);
+        this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
         this.coDAmount();
         this.calcTotal();
 
@@ -506,7 +506,7 @@ export class EditOrderV2Component implements OnInit {
       this.updateShipServiceExtras();
       this.updateShipmentDetailsAship();
 
-      fs_model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(this.saleModel, this.quickOrderModel);
+      fs_model = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
 
       if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
           this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
@@ -555,7 +555,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
-    let model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(fs_model, this.quickOrderModel);
+    let model = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(fs_model, this.quickOrderModel);
 
     this.fastSaleOrderService.saveV2(model).subscribe((res: CreateFastSaleOrderDTO) => {
 

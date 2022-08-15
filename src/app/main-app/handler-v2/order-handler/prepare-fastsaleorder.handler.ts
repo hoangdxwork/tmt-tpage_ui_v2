@@ -4,9 +4,9 @@ import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "src/app/
 
 @Injectable()
 
-export class SO_PrepareFaseSaleOrderHandler {
+export class SO_PrepareFastSaleOrderHandler {
 
-  public so_prepareFaseSaleOrder(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel) {
+  public so_prepareFastSaleOrder(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel) {
 
       if(quickOrderModel.LiveCampaignId) {
           saleModel.LiveCampaignId = quickOrderModel.LiveCampaignId;

@@ -1,4 +1,4 @@
-export interface responseAddMessCommentDto {
+export interface ResponseAddMessCommentDto {
     id: string;
     host: string;
     ActivityCampaignId?: any;
