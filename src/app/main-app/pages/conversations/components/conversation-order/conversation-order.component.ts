@@ -53,7 +53,7 @@ import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-
 import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SharedService } from '@app/services/shared.service';
-import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CreateFastSaleOrderDTO } from '@app/dto/saleonlineorder/create-fastsaleorder.dto';
 import { ProductTemplateV2DTO } from '@app/dto/producttemplate/product-tempalte.dto';
 import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
@@ -90,7 +90,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   saleModel!: FastSaleOrder_DefaultDTOV2;
   enableInsuranceFee: boolean = false;
   userInit!: UserInitDTO;
-  lstProductSearch: ProductDTOV2[] = [];
+  lstProductSearch: ProductDTOV2[] = [{} as any];
 
   //TODO: dữ liệu aship v2
   shipExtraServices: ShipServiceExtra[] = [];
@@ -148,7 +148,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private updateShipExtraHandler: UpdateShipExtraHandler,
     private updateShipServiceExtrasHandler: UpdateShipServiceExtrasHandler,
     private updateShipmentDetailAshipHandler: UpdateShipmentDetailAshipHandler,
-    private so_PrepareFaseSaleOrderHandler: SO_PrepareFaseSaleOrderHandler,
+    private so_PrepareFastSaleOrderHandler: SO_PrepareFastSaleOrderHandler,
     private csOrder_PrepareModelHandler: CsOrder_PrepareModelHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
@@ -239,7 +239,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 DeliveryPrice: 0
             }, this.saleModel);
 
-            this.saleModel = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(this.saleModel, this.quickOrderModel);
+            this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
             this.coDAmount();
             this.calcTotal();
 
@@ -448,7 +448,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.calcFee();
   }
 
-  onSave(formAction?: string, type?: string): any {
+  onSave(formAction?: string, type?: string): any {   
       let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team);
 
       if(TDSHelperString.hasValueString(formAction)) {
@@ -468,7 +468,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.updateShipServiceExtras();
         this.updateShipmentDetailsAship();
 
-        fs_model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(this.saleModel, this.quickOrderModel);
+        fs_model = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
 
         if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
             this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');

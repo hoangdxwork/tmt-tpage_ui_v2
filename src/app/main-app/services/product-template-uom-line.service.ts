@@ -36,7 +36,7 @@ export class ProductTemplateOUMLineService extends BaseSevice {
       filter = `&$filter=(contains(NameNoSign,'${keyword}')+or+contains(NameGet,'${keyword}')+or+contains(Barcode,'${keyword}'))`;
     }
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?$skip=${skip}&$top=${top}&$orderby=Name asc${filter}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?$skip=${skip}&$top=${top}&$orderby=Name asc${filter}&$count=true`,
       method: CoreApiMethodType.get,
   }
   return this.apiService.getData<ODataProductDTO>(api, null);
