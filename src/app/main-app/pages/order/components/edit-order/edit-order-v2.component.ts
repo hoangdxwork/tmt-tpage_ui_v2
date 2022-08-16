@@ -752,7 +752,7 @@ export class EditOrderV2Component implements OnInit {
               }
 
             } else {
-              this.message.error(res.error?.message);
+                this.message.error(res.error?.message);
             }
           }
 

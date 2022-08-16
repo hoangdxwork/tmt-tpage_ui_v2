@@ -101,7 +101,7 @@ export class AppComponent {
 
               }
           }, error => {
-             console.log('Thông báo đến từ kênh chưa được kết nối', this.data)
+             console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${this.data}`)
           })
         }
 

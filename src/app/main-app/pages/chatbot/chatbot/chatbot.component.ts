@@ -32,21 +32,20 @@ export class ChatbotComponent implements OnInit {
   }
 
   loadChannelChatbot() {
-    this.isLoading = true;
     this.crmTeamService.onChangeListFaceBook().subscribe(res => {
-
       if(res) {
         let childs = this.getChilds(res);
         let pageIds = childs.map(x => x.ChannelId);
 
         if(TDSHelperArray.hasListValue(pageIds) && pageIds?.length) {
-          this.crmTeamService.getChannelChatbot(pageIds)
-            .pipe(finalize(() => this.isLoading = false))
-            .subscribe(res => {
-              this.lstChannelChatbot = res;
-            }, error => {
-              this.message.error(`${error?.error?.message}` || JSON.stringify(error));
-            });
+            this.isLoading = true;
+            this.crmTeamService.getChannelChatbot(pageIds).subscribe(res => {
+                  this.lstChannelChatbot = res;
+                  this.isLoading = false
+              }, error => {
+                  this.isLoading = false;
+                  this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+              });
         }
       }
     });
@@ -57,10 +56,10 @@ export class ChatbotComponent implements OnInit {
 
     if(TDSHelperArray.hasListValue(teams) && teams?.length) {
       teams.forEach(team => {
-        let childActive = team?.Childs!.filter(x => x.Active);
-        if(TDSHelperArray.hasListValue(childActive) && childActive?.length) {
-          childs = [...childs, ...childActive];
-        }
+          let childActive = team?.Childs!.filter(x => x.Active);
+          if(TDSHelperArray.hasListValue(childActive) && childActive?.length) {
+              childs = [...childs, ...childActive];
+          }
       });
     }
 
