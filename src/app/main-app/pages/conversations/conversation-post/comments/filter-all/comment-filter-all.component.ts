@@ -22,6 +22,7 @@ import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/c
 import { ChatomniDataDto, ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
+import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto';
 
 @Component({
   selector: 'comment-filter-all',
@@ -39,13 +40,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   @Input() commentOrders!: any;
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
+  @Input() partnerDict!: {[key: string]: PartnerTimeStampItemDto};
 
   dataSource$!: Observable<ChatomniDataDto>;
   dataSource!: ChatomniDataDto;
   childs: any = {} // dictionary return ChatomniDataItemDto[]
 
   enumActivityStatus = ActivityStatus;
-  partners$!: Observable<any>;
   messageModel!: string;
   isLoading: boolean = false;
   isHiddenComment: any = {};
@@ -159,20 +160,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  onQuickReplySelected(event: any) {
+  onQuickReplySelected(event: any, partner: PartnerTimeStampItemDto) {
     let text = event.BodyPlain || event.BodyHtml || event.text;
-    if(this.partners$){
-      this.partners$.pipe(takeUntil(this.destroy$)).subscribe((partner: any) => {
 
-          text = ReplaceHelper.quickReply(text, partner);
-          this.message = text;
-
-        }, (error)=>{
-          this.message.error(`${error.error.message}` || 'Đã xảy ra lỗi');
-        })
-    } else{
-        this.message.error('Không lấy được thông tin khách hàng');
-    }
+    text = ReplaceHelper.quickReply(text, partner);
+    this.message = text;
   }
 
   onEnter(item: ChatomniDataItemDto, event: any) {

@@ -28,39 +28,6 @@
                                 <span class="text-neutral-1-400 text-right text-caption-1">{{item.CreatedTime | date:'dd/MM/yyyy HH:mm aa'}}</span>
                             </div>
 
-                            <div *ngIf="(partners$ | async)?.data[item.UserId] || commentOrders[item.UserId]?.length > 0 "
-                                class="w-full flex flex-row items-center justify-between pb-2">
-
-                                <!-- trạng thái khách hàng & mã đơn hàng -->
-                                <div class="flex items-center gap-1.5">
-
-                                    <!-- trạng thái khách hàng -->
-                                    <div *ngIf="(partners$ | async)?.data[item.UserId] as partner" class="button-status flex items-center gap-1.5 mr-4">
-                                        <span *ngIf="partner.p" tds-tooltip tooltipTitle="Chọn làm số điện thoại"
-                                            class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer">
-                                            <i class="tdsi-call-fill text-xs text-white"></i>
-                                        </span>
-
-                                        <span *ngIf="partner.a" tds-tooltip tooltipTitle="Chọn làm địa chỉ"
-                                            class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer">
-                                            <i class="tdsi-pin-fill text-xs text-white"></i>
-                                        </span>
-
-                                        <tds-tag *ngIf="partner.st" [ngStyle]="{ 'color' : partner.ss }" type="outline">
-                                            {{partner.st || 'Bình thường'}}
-                                        </tds-tag>
-                                    </div>
-                                </div>
-
-                                <div *ngIf="(partners$ | async)?.data[item.UserId] as partner" class="tag-status w-1/2">
-                                    <div *ngIf="partner.t" class="w-full flex flex-wrap items-center justify-end">
-                                        <a class="tdsi-radio-circle-fill" *ngFor="let tag of partner.t"
-                                            [ngStyle]="{ 'color' : [tag.color_class] }" [title]="tag.name">
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- nội dung bình luận -->
                             <div class="flex flex-row">
                                 <div [innerHTML]="item.Message | formatIconLike | safeHtml"></div>
@@ -105,16 +72,33 @@
                                     </button>
                                 </div>
 
-                                <div class="flex items-center ml-6 gap-x-2">
-                                    <div class="flex h-5 w-5 items-center justify-center bg-base-green-400 rounded-md">
-                                        <i class="tdsi-call-fill leading-none text-white"></i>
+                                <div *ngIf="partnerDict[item.UserId || item.ObjectId] || commentOrders[item.UserId]?.length > 0" class="w-full flex flex-row items-center justify-between">
+                                    <!-- trạng thái khách hàng & mã đơn hàng -->
+                                    <div class="flex items-center gap-1.5">
+
+                                        <!-- trạng thái khách hàng -->
+                                        <div *ngIf="partnerDict[item.UserId || item.ObjectId]" class="button-status flex items-center gap-1.5 mr-4">
+                                            <span *ngIf="partnerDict[item.UserId || item.ObjectId].p" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer">
+                                                <i class="tdsi-call-fill text-xs text-white"></i>
+                                            </span>
+
+                                            <span *ngIf="partnerDict[item.UserId || item.ObjectId].a" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer">
+                                                <i class="tdsi-pin-fill text-xs text-white"></i>
+                                            </span>
+
+                                            <tds-tag *ngIf="partnerDict[item.UserId || item.ObjectId].st" [ngStyle]="{'background-color': partnerDict[item.UserId || item.ObjectId].ss, 'color': partnerDict[item.UserId || item.ObjectId].ss}" type="outline">
+                                                {{partnerDict[item.UserId || item.ObjectId].st}}
+                                            </tds-tag>
+                                        </div>
                                     </div>
 
-                                    <div class="flex h-5 w-5 items-center justify-center bg-base-orange-500 rounded-md">
-                                        <i class="tdsi-pin-fill leading-none text-white"></i>
+                                    <div *ngIf="partnerDict[item.UserId || item.ObjectId]" class="tag-status w-1/2">
+                                        <div *ngIf="partnerDict[item.UserId || item.ObjectId].t" class="w-full flex flex-wrap items-center justify-end">
+                                            <a class="tdsi-radio-circle-fill" *ngFor="let tag of partnerDict[item.UserId || item.ObjectId].t"
+                                                [ngStyle]="{ 'color' : [tag.color_class] }" tds-tooltip tooltipTitle="{{tag.name}}" >
+                                            </a>
+                                        </div>
                                     </div>
-
-                                    <tds-tag status='primary' type="outline">Bình thường</tds-tag>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +140,7 @@
                                       </span>
 
                                       <div class="p-1 hover:bg-neutral-3-50 rounded-md flex items-center" tds-tooltip tooltipTitle="Tin nhắn nhanh">
-                                          <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                                          <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event, partnerDict[item.UserId || item.ObjectId])"></quick-reply-button>
                                       </div>
                                   </div>
                               </div>

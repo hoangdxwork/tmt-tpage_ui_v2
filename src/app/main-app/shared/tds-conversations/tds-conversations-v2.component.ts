@@ -550,7 +550,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
   }
 
-  sendIconLike() {
+  sendIconLike() {debugger
     const message = "(y)";
     let model = this.prepareModel(message);
     model.attachment = {
@@ -660,10 +660,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
         //TODO: Đẩy qua conversation-all-v2
         if(i == res.length - 1){
+
           let itemLast = {...data}
           if (TDSHelperArray.hasListValue(model.attachments)) {
             itemLast.Message = x.message_formatted ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
           }
+
           let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
         }

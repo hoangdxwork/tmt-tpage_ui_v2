@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { PartnerTimeStampDto } from '@app/dto/partner/partner-timestamp.dto';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -231,13 +232,12 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<CheckInfoPartnerDTO>(api, null);
   }
 
-
-  getPartnersByTimestamp(teamId: any, timestamp: any): Observable<TDSSafeAny> {
+  getPartnersByTimestamp(teamId: any, timestamp: any): Observable<PartnerTimeStampDto> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getfacebookdictionarybytimestamp?teamId=${teamId}&timestamp=${timestamp}`,
         method: CoreApiMethodType.get,
     }
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getCacheData<PartnerTimeStampDto>(api, null);
   }
 
   getAllByMDBPartnerId(partnerId: any): Observable<TDSSafeAny> {

@@ -1,3 +1,4 @@
+import { ChatomniCommentService } from './../../../services/chatomni-service/chatomni-comment.service';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { PrepareFacebookPostHandler } from './../../../handler-v2/conversation-post/prepare-facebook-post.handler';
@@ -26,6 +27,7 @@ import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/d
 import { RequestCommentByGroup } from '@app/dto/conversation/post/comment-group.dto';
 import { RequestCommentByPost } from '@app/dto/conversation/post/comment-post.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
   selector: 'conversation-post-view-v3',
@@ -92,6 +94,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     private cdRef: ChangeDetectorRef,
     private objectEvent: ObjectFacebookPostEvent,
     private prepareHandler: PrepareFacebookPostHandler,
@@ -111,6 +114,11 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     }
 
     this.loadData();
+    this.loadPartnerTimstamp();
+  }
+
+  loadPartnerTimstamp() {
+    this.partners$ = this.chatomniCommentFacade.getParentTimeStamp(this.team.Id);
   }
 
   ngAfterViewInit(): void {
