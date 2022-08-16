@@ -35,17 +35,17 @@
         </div>
         <!-- TODO: Thao tác -->
         <div class="flex flex-row items-center justify-end gap-x-2 pr-4">
-          <action-dropdown *ngIf="setOfCheckedId.size == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
+          <action-dropdown *ngIf="setOfCheckedId.size == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]>
           </action-dropdown>
 
-          <tds-form-field class="w-[240px]">
-            <tds-select valueField="Id" textField="Name"
-              placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
+          <tds-form-field>
+            <tds-select valueField="Id" textField="Name" class="w-[100px] xl:w-[120px] 2xl:w-[240px] truncate"
+              placeholder="Chọn đối tác" [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
               disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
             </tds-select>
           </tds-form-field>
 
-          <tds-form-field class="flex flex-auto">
+          <tds-form-field class="flex flex-auto w-[100px] xl:w-[120px] 2xl:w-[240px]">
               <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
@@ -69,7 +69,7 @@
               <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-r">Thông tin</th>
               <th *ngIf="isHidden('DateCreated')" [align]="'center'" width="120px" class="border-r">Ngày tạo đơn</th>
               <th *ngIf="isHidden('CarrierName')" width="160px" class="border-r">Đối tác GH</th>
-              <th *ngIf="isHidden('TrackingRef')" class="min-w-[120px] max-w-[240px] border-r">Mã vận đơn</th>
+              <th *ngIf="isHidden('TrackingRef')" width="120px" class="border-r">Mã vận đơn</th>
               <th *ngIf="isHidden('AmountTotal')" [align]="'right'" width="120px" class="border-r">Tổng tiền</th>
               <th *ngIf="isHidden('Residual')" [align]="'right'" width="120px" class="border-r">Còn nợ</th>
               <th *ngIf="isHidden('ShowState')" width="120px" class="border-r">Trạng thái</th>
@@ -81,7 +81,7 @@
               <th *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" width="140px" class="border-r">Phí ship GH</th>
               <th *ngIf="isHidden('UserName')" width="280px" class="border-r">Nhân viên</th>
               <th *ngIf="isHidden('CreateByName')" width="280px" class="border-r">Người lập</th>
-              <th [tdsRight]="true" [align]="'center'" width="130px">Thao tác</th>
+              <th [tdsRight]="true" [align]="'center'" width="140px">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -162,7 +162,7 @@
                 </td>
                 <td *ngIf="isHidden('CRMTeamName')" class="border-r">
                   <div class="w-full flex">
-                    <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
                     <span class="ml-1">{{data.CRMTeamName}}</span>
                   </div>
                 </td>
@@ -176,9 +176,9 @@
                     <span>{{data.CarrierName}}</span>
                   </div>
                 </td>
-                <td *ngIf="isHidden('TrackingRef')" class="min-w-[120px] max-w-[240px] border-r">
+                <td *ngIf="isHidden('TrackingRef')" class="w-[120px] border-r">
                   <div class="w-full">
-                    <span class="text-info-400 font-semibold">{{data.TrackingRef}}</span>
+                    <div class="text-info-400 font-semibold w-[90px] truncate">{{data.TrackingRef}}</div>
                   </div>
                 </td>
                 <td *ngIf="isHidden('AmountTotal')" [align]="'right'" class="border-r">
@@ -309,7 +309,7 @@
   </div>
   <tds-drawer [visible]="isOpenDrawer"
     [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
-    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'50vw'">
     <ng-template #titleMessage>
       <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
         Gửi tin nhắn Facebook

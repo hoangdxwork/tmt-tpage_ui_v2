@@ -265,6 +265,9 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
           title: 'Yêu cầu thanh toán',
           content: PaymentRequestComponent,
           size: 'xl',
+          bodyStyle:{
+            'padding':'0'
+          },
           viewContainerRef: this.viewContainerRef,
           componentParams: {
             dataPayment: dataPayment
@@ -362,6 +365,9 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Danh sách phù hợp gửi lại mã vận đơn',
         content: SendDeliveryComponent,
         size: 'xl',
+        bodyStyle:{
+          'padding':'0'
+        },
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           ids: this.idsModel

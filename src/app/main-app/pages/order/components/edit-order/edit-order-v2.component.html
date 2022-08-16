@@ -1,4 +1,4 @@
-<tds-spin  [spinning]="isLoading">
+<tds-spin [spinning]="isLoading">
   <div class="text-body-2 text-neutral-1-900  flex flex-col max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll">
         <div class="flex flex-col">
           <tds-tabset class="border-b border-neutral-2-200" [(selectedIndex)]="selectedIndex">
@@ -14,7 +14,7 @@
                         <tds-label>Tên Khách hàng</tds-label>
                         <tds-form-field>
                           <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true'
-                            [ngModel]="quickOrderModel?.Name" [ngModelOptions]="{standalone: true}" />
+                            [ngModel]="quickOrderModel?.Partner?.Name" [ngModelOptions]="{standalone: true}" />
                           <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                         </tds-form-field>
                         <div *ngIf="quickOrderModel?.Partner">

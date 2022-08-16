@@ -17,7 +17,7 @@
                 </tds-filter-status-item>
             </ng-template>
         </tds-filter-status>
-        <div class="max-h-[450px] h-[450px]">
+        <div class="2xl:max-h-[450px] 2xl:h-[450px] xl:max-h-[300px] xl:h-[300px]">
             <tds-table class="w-full h-full" #productTable [listData]="lstOrder"
                 [pageIndex]="pageIndex" [pageSize]="pageSize" [total]="count" [loading]="isLoading"
                 (queryParams)="onQueryParamsChange($event)">

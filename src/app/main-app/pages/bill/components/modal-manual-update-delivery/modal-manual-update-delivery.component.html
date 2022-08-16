@@ -25,7 +25,7 @@
         </div>
         <div *ngIf="searchData || model">
             <tds-table #basicTable [listData]="searchData || model" [showPagination]="false" [frontPagination]="false"
-                [outerBordered]="true" [scroll]="{y:'450px'}">
+                [outerBordered]="true" [scroll]="{ y:'350px' }">
                 <thead>
                     <tr>
                         <th width="200px">Khách hàng</th>
@@ -73,7 +73,7 @@
                 </tds-checkbox>
             </div>
         </div>
-    
+
         <div>
             <div class="w-full flex justify-end p-4" *tdsModalFooter>
                 <button tds-button type="button" class="mr-2 min-w-[100px]" color="secondary"

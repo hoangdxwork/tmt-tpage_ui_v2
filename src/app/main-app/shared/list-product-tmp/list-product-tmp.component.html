@@ -1,6 +1,6 @@
-<div class="rounded-xl bg-white pt-2 flex h-full flex-col gap-y-2">
+<div class="rounded-xl pb-3 bg-white pt-2 flex h-full flex-col gap-y-2">
     <div class="flex gap-x-2 px-3">
-        <tds-form-field>
+        <tds-form-field class="min-w-[100px]">
             <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" [tdsInputDebounce]="750"
                 (inputKeyup)="onInputKeyup($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
@@ -47,10 +47,10 @@
             [frontPagination]="false" [virtualItemSize]="20" [loading]="isLoading" [virtualForTrackBy]="trackByIndex">
             <thead>
                 <tr>
-                    <th width="60px">Ảnh</th>
-                    <th width="200px">Tên sản phẩm</th>
-                    <th width="80px">Đơn vị</th>
-                    <th width="90px">Giá</th>
+                    <th width="20%">Ảnh</th>
+                    <th width="40%">Tên sản phẩm</th>
+                    <th width="20%">Đơn vị</th>
+                    <th width="20%">Giá</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,7 +62,7 @@
                         </td>
                         <td>
                             <div class="flex flex-col">
-                                <span class="text-body-2">{{ data.NameGet }}</span>
+                                <span class="text-body-2 w-[130px] truncate">{{ data.NameGet }}</span>
                                 <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
                                     <span class="text-primary-1"
                                         *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
