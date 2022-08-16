@@ -203,17 +203,17 @@ export class TDSConversationItemV2Component implements OnInit {
     }
 
     this.reloadingImage = true;
-    this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.dataItem.Data.id || this.csid , item.id)
+    this.activityMatchingService.refreshAttachment(this.team.ChannelId, this.dataItem.Data.id || this.csid , item.id)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe((res: any) => {
 
         this.tdsMessage.success('Thao tác thành công');
         this.activityDataFacade.refreshAttachment(res);
-        this.dataItem.Data["errorShowAttachment"] = false;
+        this.dataItem.Data["is_error_attachment"] = false;
         this.cdRef.markForCheck();
 
     }, error => {
-        this.tdsMessage.error('Không thành công');
+        this.tdsMessage.error(`${error?.error?.message}` || 'Không thành công');
     })
   }
 
@@ -318,18 +318,23 @@ export class TDSConversationItemV2Component implements OnInit {
     let result:TDSSafeAny[]= [];
     this.gallery = this.dataSource.Items.filter((x: ChatomniDataItemDto) => x.Data && x.Data.attachments != null);
 
-    if(this.gallery){
-      this.gallery.map(item=>{
+    if(this.gallery && this.gallery.length > 0) {
+
+      this.gallery.map(item => {
         if(item.Data?.attachments){
+
           item.Data?.attachments.data.map(attachment=>{
-            if(attachment.mime_type != 'audio/mpeg'){
-              result.push({
-                date_time: item.CreatedTime,
-                id: item.Data?.from?.id || item.UserId,
-                url: attachment.image_data.url ? attachment.image_data.url : attachment.video_data.url,
-                type: attachment.mime_type ? attachment.mime_type : null
-              });
-            }
+              if(attachment.mime_type != 'audio/mpeg'){
+
+                  let image_url = attachment.image_data?.url ? attachment.image_data?.url : attachment.video_data?.url;
+                  result.push({
+                      date_time: item.CreatedTime,
+                      id: item.Data?.from?.id || item.UserId,
+                      url: image_url,
+                      type: attachment.mime_type ? attachment.mime_type : null
+                  });
+
+              }
           })
         }
       })
