@@ -1,10 +1,9 @@
 import { Injectable } from "@angular/core";
 import { CompanyCurrentDTO } from "@app/dto/configs/company-current.dto";
 import { ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
-import { InitSaleDTO, SaleOnlineSettingDTO } from "@app/dto/setting/setting-sale-online.dto";
+import { SaleOnlineSettingDTO } from "@app/dto/setting/setting-sale-online.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { CRMTeamService } from "@app/services/crm-team.service";
-import { SharedService } from "@app/services/shared.service";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
 @Injectable()
@@ -70,7 +69,7 @@ export class CsOrder_PrepareModelHandler {
     return {...x};
   }
 
-  public prepareInsertFromBot(comment: ChatomniDataItemDto, saleOnlineSetting: SaleOnlineSettingDTO) {
+  public prepareInsertFromBot(comment: ChatomniDataItemDto, saleOnlineSetting: SaleOnlineSettingDTO, companyCurrents: CompanyCurrentDTO) {
 
     let x = {} as InsertFromPostDto;
     let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
@@ -84,6 +83,12 @@ export class CsOrder_PrepareModelHandler {
     x.PartnerName = comment.Data?.from?.name;
 
     x.Facebook_Comments = [this.prepareFacebookComment(comment)];
+
+    //TODO: check sdt cấu hình mặc định
+    let config = JSON.parse(companyCurrents.Configs);
+    if(config && config.PhoneRegex) {
+      this.phoneRegex = config.PhoneRegex;
+    }
 
     if(this.phoneRegex && comment.Message) {
       let regex = new RegExp(this.phoneRegex);

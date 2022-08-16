@@ -188,7 +188,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.loadCreateOrderByPostComment$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataItemDto) => {
       if(res) {
           this.isEnableCreateOrder = false;
-          this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromBot(res, this.saleOnlineSettings) as InsertFromPostDto;
+          this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromBot(res, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
 
           this.insertFromPostModel.UserId = this.userInit.Id;
           this.insertFromPost(this.insertFromPostModel, res);
