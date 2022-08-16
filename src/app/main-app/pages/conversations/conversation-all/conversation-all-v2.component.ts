@@ -166,6 +166,30 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.conversationOrderFacade.onPushLastOrderCode$.subscribe((code: any) => {
       this.orderCode = code;
     })
+
+    // TODO: Cập nhật đã xem tin nhắn
+    this.chatomniEventEmiterService.countUnreadEmiter$.subscribe((id: string)=>{
+      if(id){
+        let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
+        if(index >- 1) {
+          this.lstOmcs[index].CountUnread = 0;
+
+          this.cdRef.detectChanges();
+        }
+      }
+    })
+
+    // TODO: Cập nhật Khi bật chatbot thành công
+    this.chatomniEventEmiterService.chatbotStateEmiter$.subscribe((id: string)=>{
+      if(id){
+        let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
+        if(index >- 1) {
+          this.lstOmcs[index].State = 0;
+
+          this.cdRef.detectChanges();
+        }
+      }
+    })
   }
 
   spinLoading() {
