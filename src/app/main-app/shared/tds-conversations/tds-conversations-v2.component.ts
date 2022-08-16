@@ -366,7 +366,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   nextData() {
-    if (this.isProcessing) {
+    if (this.isProcessing || this.isLoading) {
       return;
     }
 
@@ -396,7 +396,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.cdRef.markForCheck();
     })
   }
-
 
   srcollBehavior() {
     setTimeout(() => {
