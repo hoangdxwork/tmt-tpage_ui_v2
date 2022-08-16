@@ -170,6 +170,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
             if(res) {
                 this.dataSource = { ...res };
+
+                //TODO: truyền về conversation-all
+                this.chatomniEventEmiter.countUnreadEmiter$.emit(this.data.ConversationId);
             }
 
             this.isLoading = false;
@@ -949,6 +952,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
           // TODO: bật chatbot thành công 5s rồi tắt
           setTimeout(() =>{
               this.isEnableChatbot = false;
+
+              //TODO: Truyền về conversation-all để tắt hiện thị chatbot
+              this.chatomniEventEmiter.chatbotStateEmiter$.emit(this.data.ConversationId);
           }, 5 * 1000)
 
           this.cdRef.detectChanges();

@@ -9,7 +9,7 @@ export interface ChatomniDataDto {
 
 export interface ExtrasDto {
   Objects: { [key: string]: ExtrasObjectDto };
-  Childs: { [key: string]: ExtrasChildsDto };
+  Childs: { [key: string]: ExtrasChildsDto[] };
 }
 
 export interface Facebook_Graph_FromDto {

@@ -24,6 +24,7 @@ export interface ResponseAddMessCommentDto {
     attachments?: any;
     status?: number;
     Error: any;
+    name?: string;
 }
 
 
