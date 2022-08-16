@@ -501,7 +501,7 @@ export class EditOrderV2Component implements OnInit {
     let fs_model = {} as FastSaleOrder_DefaultDTOV2;
 
     if(this.isEnableCreateOrder) {
-      
+
       this.updateShipExtras();
       this.updateShipServiceExtras();
       this.updateShipmentDetailsAship();
@@ -735,7 +735,7 @@ export class EditOrderV2Component implements OnInit {
 
     this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-          if(res) {
+          if(res && !res.error) {
 
             if(!TDSHelperString.isString(res)){
               this.configsProviderDataSource = [...res.configs];
@@ -752,7 +752,7 @@ export class EditOrderV2Component implements OnInit {
               }
 
             } else {
-              this.message.error(res);
+              this.message.error(res.error?.message);
             }
           }
 
