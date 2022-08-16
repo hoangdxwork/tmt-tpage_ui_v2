@@ -1,3 +1,4 @@
+import { StockChangeProductQtyService } from './../../services/stock-change-product-qty.service';
 import { EditProductVariantComponent } from './edit-product-variant/edit-product-variant.component';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { ExcelExportService } from './../../services/excel-export.service';
@@ -107,6 +108,7 @@ import { ConfigDeliveryConnectComponent } from './config-delivery/config-deliver
 import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
 import { UserRestHandler } from '../../handler-v2/user-rest.handler';
 import { CreateComboModalComponent } from './components/create-combo-modal/create-combo-modal.component';
+import { UpdateInitInventoryComponent } from './components/update-init-inventory/update-init-inventory.component';
 
 
 const SERVICES = [
@@ -132,7 +134,8 @@ const SERVICES = [
     CompanyService,
     ProductIndexDBService,
     THelperCacheService,
-    DeliveryCarrierV2Service
+    DeliveryCarrierV2Service,
+    StockChangeProductQtyService
 ]
 
 @NgModule({
@@ -185,6 +188,7 @@ const SERVICES = [
     ConfigDeliveryUpdateComponent,
     FacebookCartComponent,
     CreateComboModalComponent,
+    UpdateInitInventoryComponent,
   ],
   imports: [
     CommonModule,

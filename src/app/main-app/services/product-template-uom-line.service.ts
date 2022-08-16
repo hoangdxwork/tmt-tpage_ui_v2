@@ -3,7 +3,7 @@ import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { ProductTemplateV2DTO } from "../dto/producttemplate/product-tempalte.dto";
+import { ProductTemplateV2DTO } from "../dto/product-template/product-tempalte.dto";
 import { BaseSevice } from "./base.service";
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
