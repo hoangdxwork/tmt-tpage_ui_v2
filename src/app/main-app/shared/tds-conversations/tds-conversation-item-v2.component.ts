@@ -393,7 +393,7 @@ export class TDSConversationItemV2Component implements OnInit {
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$)).subscribe((res: ResponseAddMessCommentDto) => {
           res["status"] = ChatomniStatus.Pending;
-          res.type = 12;
+          res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
           res.name = this.team.Name;
 
           let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
@@ -433,7 +433,7 @@ export class TDSConversationItemV2Component implements OnInit {
         if(TDSHelperArray.hasListValue(res)){
           res.forEach((x: ResponseAddMessCommentDto, i: number) => {
             x["status"] = ChatomniStatus.Pending;
-            x.type = 11;
+            x.type = this.team.Type == CRMTeamType._Facebook ? 11 :(this.team.Type == CRMTeamType._TShop? 92 : 0);
 
             let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
 

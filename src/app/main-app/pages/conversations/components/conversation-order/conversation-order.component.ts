@@ -1,8 +1,9 @@
+import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ProductTemplateOUMLineService } from './../../../../services/product-template-uom-line.service';
-import { ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
-import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
-import { Subject, Observable, takeUntil, finalize, map } from 'rxjs';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { takeUntil, finalize } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -29,10 +30,9 @@ import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { GetInventoryDTO, ProductTemplateDTO } from 'src/app/main-app/dto/product/product.dto';
+import { GetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
-import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
@@ -159,7 +159,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private viewContainerRef: ViewContainerRef,
     private facebookCommentService: FacebookCommentService,
     private destroy$: TDSDestroyService,
-    private productTemplateOUMLineService: ProductTemplateOUMLineService) {
+    private productTemplateOUMLineService: ProductTemplateOUMLineService,
+    private omniEventEmiter: ChatomniEventEmiterService) {
   }
 
   ngOnInit(): void {
@@ -177,11 +178,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if(changes["omcs_Item"] && !changes["omcs_Item"].firstChange) {
+      this.isEditPartner = false;
+    }
   }
 
   eventEmitter(){
     this.conversationOrderFacade.onAddProductOrder$.subscribe(res => {
         this.selectProduct(res);
+        let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id)
+        if(index > -1){
+          this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
+            `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
+        }
     });
 
     //TODO: tạo đơn hàng từ comment bài viết, xử dụng insertFromBot gọi save
@@ -492,8 +501,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
             this.orderPrintService.printOrder(res, comment.Message);
             this.message.success('Cập nhật đơn hàng thành công');
-        }
-        debugger
+        }      
         this.isLoading = false;
     }, error => {
         this.isLoading = false;
@@ -606,6 +614,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(res && !res.Message ) {
           this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
         }
+
+        this.omniEventEmiter.callConversationPartnerEmiter$.emit(true);
 
         if(type && res) {
             this.printOrder(type, res);

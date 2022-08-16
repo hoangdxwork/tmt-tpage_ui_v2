@@ -25,6 +25,9 @@ export class ChatomniEventEmiterService {
     //TODO: tryền bật chatbot thành công về conversation-all
     public chatbotStateEmiter$ = new EventEmitter<string>();
 
+    //TODO: Thêm đơn hàng thành công gọi lại conversation-partner
+    public callConversationPartnerEmiter$ = new EventEmitter<boolean>();
+
     constructor() {
     }
 }

@@ -1,4 +1,4 @@
-<span class="text-info-500 font-semibold text-body-2 font-sans cursor-pointer" (click)="onDrawerDetailBill($event)">
+<span class="text-info-500 font-semibold  font-sans cursor-pointer" [ngClass]="isBillNearest?'text-header-1':'text-body-2'" (click)="onDrawerDetailBill($event)">
     #{{bill.Number || 'N/A'}}
 </span>
 

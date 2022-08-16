@@ -1,3 +1,5 @@
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ResponseAddMessCommentDto } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniStatus, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ReplaceHelper } from '../helper/replace.helper';
@@ -101,6 +103,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   constructor(private modalService: TDSModalService,
     private chatomniMessageService: ChatomniMessageService,
     private omniMessageFacade: ChatomniMessageFacade,
+    private omniCommentFacade: ChatomniCommentFacade,
     private message: TDSMessageService,
     private activityMatchingService: ActivityMatchingService,
     private applicationUserService: ApplicationUserService,
@@ -590,7 +593,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         if (TDSHelperArray.hasListValue(res)) {
           res.forEach((x: ResponseAddMessCommentDto, i: number) => {
             x["status"] = ChatomniStatus.Pending;
-            x.type = 11;
+            x.type = this.team.Type == CRMTeamType._Facebook ? 11 :(this.team.Type == CRMTeamType._TShop? 92 : 0);
 
             if (!x.message_formatted && TDSHelperArray.hasListValue(model.attachments)) {
               x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
@@ -631,8 +634,22 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     model.to_name = activityFinal?.Data?.from?.name || null;
 
     this.activityMatchingService.replyComment(this.team?.Id, model)
-      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false; })).subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false; })).subscribe((res: ResponseAddMessCommentDto) => {
         // add vào dataSource tại đây
+        res["status"] = ChatomniStatus.Pending;
+        res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
+        res.name = this.team.Name;
+
+        let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
+
+        if(activityFinal?.Data?.id && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
+          this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
+        }
+
+        //TODO: Đẩy qua conversation-all-v2
+        let itemLast = {...data}
+        let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+        this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
         this.currentImage = null;
         this.uploadedImages = [];
@@ -650,7 +667,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     if (TDSHelperArray.hasListValue(res)) {
       res.map((x: ResponseAddMessCommentDto, i: number) => {
         x["status"] = ChatomniStatus.Pending;
-        x.type = 11;
+        x.type = this.team.Type == CRMTeamType._Facebook ? 11 :(this.team.Type == CRMTeamType._TShop? 92 : 0);
 
         if (TDSHelperArray.hasListValue(model.attachments) && !x.message_formatted) {
           x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
