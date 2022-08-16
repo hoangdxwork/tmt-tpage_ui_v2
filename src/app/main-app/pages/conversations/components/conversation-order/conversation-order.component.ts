@@ -1005,7 +1005,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-          if(res) {
+          if(res && !res.error) {
 
               this.configsProviderDataSource = [...res.configs];
 
@@ -1019,7 +1019,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
           } else {
-            this.message.error(res);
+            this.message.error(res.error?.message);
           }
 
           this.isLoading = false;

@@ -1109,7 +1109,7 @@ export class AddBillComponent implements OnInit {
 
     this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        if(res) {
+        if(res && !res.error) {
 
           if(!TDSHelperString.isString(res)){
             this.configsProviderDataSource = [...res.configs];
@@ -1124,9 +1124,9 @@ export class AddBillComponent implements OnInit {
 
                 this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
             }
-          } else {
 
-            this.message.error(res);
+          } else {
+            this.message.error(res.error?.message);
           }
         }
 
