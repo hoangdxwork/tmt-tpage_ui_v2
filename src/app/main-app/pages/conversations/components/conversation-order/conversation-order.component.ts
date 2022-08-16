@@ -200,6 +200,32 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           });
       }
     })
+
+    // TODO: load thông tin đơn háng khi click mã đơn hàng từ danh sách comment bài viết
+    this.conversationOrderFacade.clickOrderFromCommentPost$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      if(res && res.orderId && res.comment) {
+
+          this.isEnableCreateOrder = false;
+          res.comment = res.comment as ChatomniDataItemDto;
+
+          this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromBot(res.comment, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
+          this.insertFromPostModel.UserId = this.userInit.Id;
+
+          this.isLoading = true;
+          this.saleOnline_OrderService.getById(res.orderId).subscribe((order: any) => {
+            if(order) {
+                delete order['@odata.context'];
+                this.quickOrderModel = {...order};
+            }
+
+            this.isLoading = false;
+
+          }, error => {
+              this.isLoading = false;
+              this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+          })
+      }
+    })
   }
 
   loadData() {
