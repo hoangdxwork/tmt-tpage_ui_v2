@@ -160,6 +160,10 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
   //   }
   // }
 
+  onCancel(){
+    this.modal.destroy(null);
+  }
+
   trackByIndex(_: number, data: any): number {
     return data.index;
   }

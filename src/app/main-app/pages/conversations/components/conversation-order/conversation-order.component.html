@@ -17,7 +17,7 @@
                                             [(ngModel)]="quickOrderModel.PartnerName" [ngModelOptions]="{standalone: true}"/>
                                     </tds-form-field>
 
-                                    <span class="text-neutral-1-400">FB: {{quickOrderModel.Facebook_UserName}}</span>
+                                    <span class="text-primary-1 font-semibold">FB: {{quickOrderModel.Facebook_UserName}}</span>
                                 </div>
 
                                 <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()">
@@ -255,6 +255,12 @@
                                 </div>
                             </div>
                         </ng-template>
+                        <div class="w-ful h-full p-3 pb-4" *ngIf="!isEnableCreateOrder && quickOrderModel.Details.length > 0">
+                            <div class="bg-neutral-2-50 flex justify-between rounded-xl gap-x-4 p-4">
+                                <label>Tổng</label>
+                                <span class="col-span-2 text-right">{{ quickOrderModel.TotalAmount || 0 | number:'1.0-3' }}</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Tổng số lượng và tổng tiền -->

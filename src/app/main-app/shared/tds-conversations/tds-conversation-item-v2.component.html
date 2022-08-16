@@ -288,23 +288,23 @@
           <div *ngIf="children" class="chat-list" @eventReplyComment>
               <div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
                   <div class="avatar mr-2">
-                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
-                        [token]="team.Facebook_PageToken">
+                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
+                        [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
                   </div>
 
                   <div class="flex flex-col w-full">
                       <div class="inline-flex w-fit group">
                           <div class="chat-body !m-0" tds-tooltip
-                              tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
+                              tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
                                   <div class="border-activety-comment" *ngIf="child.message_format">
-                                      <div class="name font-semibold pb-1">{{child.from.name}}</div>
+                                      <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
                                       <div class="content-message font-regular" [innerHTML]="child.message_format | safeHtml"></div>
                                   </div>
                                   <div class="border-activety-comment" *ngIf="!child.message_format">
-                                      <div class="name font-semibold pb-1">{{child.from.name}}</div>
-                                      <div class="content-message font-regular">{{child.message}}</div>
+                                      <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                      <div class="content-message font-regular">{{child.Message}}</div>
                                   </div>
                               </div>
                           </div>
@@ -330,9 +330,9 @@
                       </div>
                       <div class="chat-meta text-neutral-1-600 text-caption-2 font-regular mt-1.5 relative">
                           <div class="chat-acts flex flex-row items-center relative" >
-                              <span *ngIf="child.created_time" class="date-diff cursor-pointer hover:underline"	tds-tooltip
-                                  tooltipTitle="{{child.created_time | date:'dd'}} Tháng {{child.created_time | date:'MM'}}, {{child.created_time | date:'yyyy'}} lúc {{child.created_time | date:'HH:mm'}}">
-                                  {{child.created_time | yiDiffDateTime}}
+                              <span *ngIf="child.ChannelCreatedTime" class="date-diff cursor-pointer hover:underline"	tds-tooltip
+                                  tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}} Tháng {{child.ChannelCreatedTime | date:'MM'}}, {{child.ChannelCreatedTime | date:'yyyy'}} lúc {{child.ChannelCreatedTime | date:'HH:mm'}}">
+                                  {{child.ChannelCreatedTime | yiDiffDateTime}}
                               </span>
                           </div>
                       </div>
