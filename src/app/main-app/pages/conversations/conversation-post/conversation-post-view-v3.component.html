@@ -43,7 +43,7 @@
                                 <span class="whitespace-nowrap">{{(data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm"}}</span>
                             </div>
                             <!-- truy cập bài viết -->
-                            <a [href]="(data.Data | tshopType).MediaLive.RecordUrl" target="_blank" class="text-neutral-1-400">
+                            <a [href]="(data.Data | tshopType)?.MediaLive?.RecordUrl" target="_blank" class="text-neutral-1-400">
                                 <i class="tdsi-expand-2-line leading-none text-xl"></i>
                             </a>
                         </span>
