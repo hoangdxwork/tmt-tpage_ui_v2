@@ -94,7 +94,7 @@ export class ChatomniConversationService extends BaseSevice {
 
       return this.getLink(url).pipe(map((res: ChatomniConversationDto) => {
 
-        if(res.Extras?.Objects) {
+        if(res.Extras) {
           exist.Extras = {
               Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
           }

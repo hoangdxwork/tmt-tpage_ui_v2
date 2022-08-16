@@ -276,7 +276,7 @@ export class TDSConversationItemV2Component implements OnInit {
     if(event && event.Id){
       let model = {
         page_id: this.team.Facebook_PageId,
-        to_id: this.dataItem.Data.from.id,
+        to_id: this.dataItem.UserId,
         comment_id: this.dataItem.Data.id,
         message: this.message,
 
@@ -467,10 +467,10 @@ export class TDSConversationItemV2Component implements OnInit {
       name: this.team.Name
     }
     model.to = {
-      id: this.dataItem.Data.from.id,
+      id: this.dataItem.UserId,
       name: this.name
     };
-    model.to_id = this.dataItem.Data.from.id;
+    model.to_id = this.dataItem.UserId;
     model.to_name = this.name;
     model.message = message;
     model.created_time = (new Date()).toISOString();

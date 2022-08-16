@@ -106,7 +106,6 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   initialize(){
-    this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
     // this.team = this.crmService.getCurrentTeam() as any;
     // this.conversationPostFacade.setPartnerSimplest(this.team);
 

@@ -78,7 +78,6 @@ export interface ChatomniFacebookDataDto {
   // các dữ liệu bổ sung để check client
   has_admin_required?: boolean;
   is_error_attachment?: boolean;// ko có trong dữ liệu trả về
-  errorShowAttachment?: boolean;// ko có trong dữ liệu trả về
   is_reply?: boolean;// ko có trong dữ liệu trả về
   is_private_reply: boolean;// ko có trong dữ liệu trả về
 }
