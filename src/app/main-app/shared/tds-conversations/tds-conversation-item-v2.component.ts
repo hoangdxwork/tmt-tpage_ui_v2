@@ -1,4 +1,8 @@
-import { ChatomniDataItemDto, ChatomniMessageType, ChatomniStatus, Datum, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event/chatomni-event-emiter.service';
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
+import { ResponseAddMessCommentDto } from './../../dto/conversation-all/chatomni/response-mess.dto';
+import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
+import { ChatomniDataItemDto, ChatomniMessageType, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { Facebook } from './../../../lib/dto/facebook.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
@@ -35,7 +39,7 @@ export class TDSConversationItemV2Component implements OnInit {
   @Input() csid!: string;
   @Input() partner: any;
   @Input() team!: CRMTeamDTO;
-  @Input() children!: any;
+  @Input() children!: ExtrasChildsDto[];
   @Input() type: any;
   @Input() name!: string;
   @Input() dataSource!: ChatomniDataDto;
@@ -69,7 +73,10 @@ export class TDSConversationItemV2Component implements OnInit {
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private activityMatchingService: ActivityMatchingService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private omniCommentFacade: ChatomniCommentFacade,
+    private omniMessageFacade: ChatomniMessageFacade,
+    private chatomniEventEmiter: ChatomniEventEmiterService) {
   }
 
   ngOnInit(): void {
@@ -370,20 +377,30 @@ export class TDSConversationItemV2Component implements OnInit {
       model.parent_id = this.dataItem.ParentId || this.dataItem?.Data?.id || null;
 
       this.activityMatchingService.replyComment(this.team?.Id, model)
-        .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(()=> {this.isReplyingComment = false;} )).subscribe((res: any) => {
+        .pipe(takeUntil(this.destroy$)).subscribe((res: ResponseAddMessCommentDto) => {
+          res["status"] = ChatomniStatus.Pending;
+          res.type = 12;
+          res.name = this.team.Name;
 
-          this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
-          this.conversationDataFacade.messageServer(res);
+          let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
+          this.children = [ ...this.children, data];
+
+          //TODO: Đẩy qua conversation-all-v2
+          let itemLast = {...data}
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
           this.messageModel = null;
           this.tdsMessage.success("Trả lời bình luận thành công");
 
           this.isReply = false;
-          this.cdRef.markForCheck();
+          this.isReplyingComment = false;
 
+          this.cdRef.markForCheck();
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
+          this.isReplyingComment = false;
+
           this.cdRef.markForCheck();
         });
     }
@@ -400,15 +417,25 @@ export class TDSConversationItemV2Component implements OnInit {
       .subscribe((res: any) => {
 
         if(TDSHelperArray.hasListValue(res)){
-          res.forEach((item: any) => {
-            item["status"] = ChatomniStatus.Pending;
-            this.activityDataFacade.messageServer({ ...item });
+          res.forEach((x: ResponseAddMessCommentDto, i: number) => {
+            x["status"] = ChatomniStatus.Pending;
+            x.type = 11;
+
+            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
+
+            // TODO: Đẩy qua tds-conversation-v2 
+            this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
+            //TODO: Đẩy qua conversation-all-v2
+            if(i == res.length - 1){
+              let itemLast = {...data}
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+            }
           });
         }
 
-        this.conversationDataFacade.messageServer(res.pop());
-
         this.messageModel = null;
+        this.isReply = false;
         this.isReplyingComment = false;
         this.tdsMessage.success('Gửi tin thành công');
 
