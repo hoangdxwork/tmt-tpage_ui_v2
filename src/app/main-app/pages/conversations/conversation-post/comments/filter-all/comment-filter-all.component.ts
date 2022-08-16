@@ -97,10 +97,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       }
   }
 
-  editOrder(id: any, item: any){
-    this.conversationPostFacade.onCommentSelected$.emit(item);
-  }
-
   isPrivateReply(item: ChatomniDataItemDto){
     item.Data.is_private_reply = !item.Data.is_private_reply;
   }
@@ -272,6 +268,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+  }
+
+  editOrder(id: any, item: ChatomniDataItemDto){
+    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
+    this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
+
+    this.conversationOrderFacade.clickOrderFromCommentPost$.emit({orderId: id, comment: item} );
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
   }
 
   onCreateOrder(item: ChatomniDataItemDto) {

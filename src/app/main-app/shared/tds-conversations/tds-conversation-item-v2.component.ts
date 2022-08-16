@@ -340,15 +340,14 @@ export class TDSConversationItemV2Component implements OnInit {
                       url: image_url,
                       type: attachment.mime_type ? attachment.mime_type : null
                   });
-
               }
           })
         }
       })
 
-    this.listAtts = [...result];
-    if(att.image_data && att.image_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.image_data.url);
-    if(att.video_data && att.video_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.video_data.url);
+      this.listAtts = [...result];
+      if(att.image_data && att.image_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.image_data.url);
+      if(att.video_data && att.video_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.video_data.url);
     }
   }
 
@@ -357,7 +356,6 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   onEnter(event: any): any{
-
     this.replyComment();
 
     event.preventDefault();
@@ -437,7 +435,7 @@ export class TDSConversationItemV2Component implements OnInit {
 
             let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
 
-            // TODO: Đẩy qua tds-conversation-v2 
+            // TODO: Đẩy qua tds-conversation-v2
             this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
             //TODO: Đẩy qua conversation-all-v2
             if(i == res.length - 1){
