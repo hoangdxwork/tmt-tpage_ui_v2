@@ -1,3 +1,4 @@
+import { DefaultOrderComponent } from './default-order/default-order.component';
 
 import { ConfigAddProductComponent } from './create-product/create-product.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
@@ -29,7 +30,7 @@ import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'saleorder',
+    redirectTo: 'sale-order',
     pathMatch: 'full'
   },
   {
@@ -37,8 +38,12 @@ const routes: Routes = [
     component: ConfigComponent,
     children:[
       {
-        path:'saleorder',
+        path:'sale-order',
         component: SaleOrderComponent
+      },
+      {
+        path:'default-order',
+        component: DefaultOrderComponent
       },
       {
         path:'facebook-cart',

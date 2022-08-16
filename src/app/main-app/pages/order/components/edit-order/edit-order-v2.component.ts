@@ -1,4 +1,4 @@
-import { ProductTemplateOUMLineService } from '../../../../services/product-template-uom-line.service';
+import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
@@ -143,7 +143,7 @@ export class EditOrderV2Component implements OnInit {
     private so_PrepareFastSaleOrderHandler: SO_PrepareFastSaleOrderHandler,
     private partnerService: PartnerService,
     private sharedService: SharedService,
-    private productTemplateOUMLineService: ProductTemplateOUMLineService,
+    private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private router: Router) {
   }
 
@@ -653,7 +653,7 @@ export class EditOrderV2Component implements OnInit {
     let top = 20;
     let skip = 0;
 
-    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch)
+    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch)
       .pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoadingProduct = false ))
       .subscribe((res: ODataProductDTOV2) => {
            this.lstProductSearch = [...res.value]

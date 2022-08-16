@@ -1,0 +1,62 @@
+<div class="w-full h-full px-4 overflow-auto tds-custom-scroll">
+    <div class="w-full max-w-[1280px]">
+        <div class="w-full h-full bg-white rounded-xl p-4 mb-4">
+            <div class="flex flex-row items-center pb-4">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-gear-2-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CẤU HÌNH TẠO ĐƠN</span>
+            </div>
+
+            <div class="w-full">
+                <tds-label class="p-4">Sản phẩm mặc định</tds-label>
+                <div class="w-full flex flex-row items-center justify-between border rounded-xl p-2.5" *ngIf="defaultProduct; else tableAttribute">
+                    <div class="flex flex-row items-center gap-x-4">
+                        <tds-avatar [tdsSrc]="defaultProduct.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="52" class="rounded-lg"></tds-avatar>
+                        <div class="flex flex-col">
+                            <tds-label>{{ defaultProduct.NameGet }}</tds-label>
+                            <span class="text-neutral-1-400 text-caption-1">{{ defaultProduct.UOMName }} - {{ defaultProduct.PurchasePrice || 0 }}đ</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-row items-center gap-x-2">
+                        <button tds-button-flat color="secondary" (click)="createDefaultProduct()">
+                            <span class="flex items-center">
+                              <i class="tdsi-in-out-fill text-xl leading-5 mr-2"></i>Thay đổi
+                            </span>
+                        </button>
+                        <div class="border border-neutral-2-200 h-[16.5px]"></div>
+                        <button tds-button-flat color="secondary" (click)="removeDefaultProduct()">
+                            <span class="flex items-center">
+                              <i class="tdsi-trash-fill text-xl leading-5 mr-2"></i>Xóa
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <ng-template #tableAttribute>
+                    <div class="flex flex-col gap-y-8 justify-center items-center">
+                        <div class="flex flex-col gap-y-4 items-center">
+                            <img src="../../assets/imagesv2/live-campaign/noData.svg" alt="">
+                            <span class="text-neutral-1-400 text-body-2">Chưa có sản phẩm mặc định nào</span>
+                        </div>
+                        <button tds-button type="button" color="primary" (click)="createDefaultProduct()">
+                            <span class="flex items-center">
+                                <i class="tdsi-product-fill mr-2"></i>Chọn sản phẩm
+                            </span>
+                        </button>
+                    </div>
+                </ng-template>
+            </div>
+
+            <!-- <div class="flex flex-row items-center justify-end">
+            <button tds-button color="secondary" class="mr-2.5">
+                <span class="text-neutral-1-900 text-body-2 font-semibold">Hủy</span>
+            </button>
+            <button tds-button color="primary" (click)="onSave()" type="button">
+                <span class="flex items-center">
+                  <i class="tdsi-save-fill text-lg leading-none mr-2"></i>
+                  <span class="text-white text-body-2 font-semibold">Lưu thay đổi</span>
+                </span>
+            </button>
+        </div> -->
+        </div>
+    </div>
+</div>

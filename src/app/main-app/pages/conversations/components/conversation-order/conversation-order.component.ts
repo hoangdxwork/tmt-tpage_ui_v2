@@ -1,4 +1,4 @@
-import { ProductTemplateOUMLineService } from './../../../../services/product-template-uom-line.service';
+import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
@@ -159,7 +159,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private viewContainerRef: ViewContainerRef,
     private facebookCommentService: FacebookCommentService,
     private destroy$: TDSDestroyService,
-    private productTemplateOUMLineService: ProductTemplateOUMLineService) {
+    private productTemplateUOMLineService: ProductTemplateUOMLineService) {
   }
 
   ngOnInit(): void {
@@ -904,7 +904,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let top = 20;
     let skip = 0;
 
-    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch)
+    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch)
       .pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoadingProduct = false ))
       .subscribe((res: ODataProductDTOV2) => {
            this.lstProductSearch = [...res.value]

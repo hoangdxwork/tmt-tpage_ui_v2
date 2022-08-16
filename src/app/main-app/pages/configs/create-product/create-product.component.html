@@ -78,7 +78,7 @@
 
               <tds-label>Nhóm sản phẩm:</tds-label>
               <div class="col-span-2 flex space-x-2">
-                <tds-form-field class="w-full mr-2">
+                <tds-form-field class="w-full">
                   <tds-select valueField="Id" textField="CompleteName" placeholder='Chọn nhóm sản phẩm'
                     formControlName="Categ" [valuePrimitive]="false"
                     [data]="categoryList" [allowClear]="false" [optionOverflowSize]="5">
@@ -97,21 +97,21 @@
 
               <tds-label>Số lượng thực tế:</tds-label>
               <div class="col-span-2 flex space-x-2">
-                <tds-form-field class="w-full mr-2">
+                <tds-form-field class="w-full">
                   <tds-input-number 
                     [ngModel]="_form.value.InitInventory || initInventory" 
                     [ngModelOptions]="{standalone: true}" 
                     [min]="0" 
                     [formatter]="numberWithCommas"
                     [parser]="parserComas" 
-                    [disabled]="true"
+                    [disabled]="id ? true : false"
                     class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                   <tds-error>
                     Vui lòng nhập số lượng thực tế
                   </tds-error>
                 </tds-form-field>
 
-                <button tds-button-icon color="primary" tds-tooltip tooltipTitle="Cập nhật số lượng thực tế" (click)="showUpdateInitInventoryModal()">
+                <button *ngIf="id" tds-button-icon color="primary" tds-tooltip tooltipTitle="Cập nhật số lượng thực tế" (click)="showUpdateInitInventoryModal()">
                   <i class="tdsi-edit-fill"></i>
                 </button>
               </div>
@@ -364,13 +364,21 @@
 
       <tds-collapse accordion="true" [expandIconPosition]="'right'" class="mt-1">
         <tds-collapse-panel [header]="variantHeaderTpl" [tdsClass]="'w-full bg-white p-4'" [active]="false"
-          [tdsHeaderClass]="'bg-white p-4'" [expandedIcon]="'tdsi-arrow-right-line'">
+          [tdsHeaderClass]="'bg-white p-4'" [extra]="extraVariantsHeader" [expandedIcon]="'tdsi-arrow-right-line'">
 
           <ng-template #variantHeaderTpl>
             <div class="flex items-center bg-white w-full">
                 <span class="tdsi-variant-fill text-neutral-1-500 text-xl leading-none mr-2"></span>
                 Biến thể
             </div>
+          </ng-template>
+
+          <ng-template #extraVariantsHeader>
+            <button tds-button type="button" color="primary" (click)="showCreateAttributeModal()" *ngIf="lstVariants.length > 0">
+              <span class="flex items-center">
+                  <i class="tdsi-plus-circle-fill mr-2"></i>Thêm biến thể
+              </span>
+            </button>
           </ng-template>
 
           <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
