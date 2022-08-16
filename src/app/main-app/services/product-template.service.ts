@@ -1,3 +1,4 @@
+import { ODataComboProductTemplateDTO } from './../dto/product/product-combo.dto';
 import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-product.dto';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
@@ -101,6 +102,15 @@ export class ProductTemplateService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getComboProducts(id:TDSSafeAny){
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/ComboProducts?$expand=Product`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataComboProductTemplateDTO>(api, null);
   }
 
   getProductUOM():Observable<TDSSafeAny> {

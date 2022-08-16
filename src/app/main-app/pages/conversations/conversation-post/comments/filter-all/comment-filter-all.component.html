@@ -1,8 +1,8 @@
-<tds-spin [spinning]="isLoading">
-    <div *ngIf="data && dataSource && team" class="w-full h-full overflow-hidden overflow-y-auto tds-custom-scroll p-3 flex flex-col gap-y-3">
+<tds-spin [spinning]="isLoading" class="overflow-hidden flex flex-auto w-full h-full">
+    <div *ngIf="data && dataSource && team" class="overflow-hidden flex flex-col flex-auto w-full h-full gap-y-3" style="padding: 0.75rem 0 0.75rem 0.75rem">
 
-        <div class="flex flex-col gap-y-1" id="myScroll" is-lock="true" id="scrollCommentAll"
-            yiAutoScroll lock-y-offset="10" scroll-end="true" observe-attributes (on-change-bottom)="nextData($event)">
+        <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" is-lock="true" id="scrollCommentAll" style="padding-right: 0.75rem"
+          yiAutoScroll lock-y-offset="10" scroll-end="true" observe-attributes (on-change-bottom)="nextData($event)">
 
             <div *ngFor="let item of dataSource.Items; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
                 <div *ngIf="item" class="flex flex-auto w-full"  @eventFadeState>

@@ -2,6 +2,7 @@
   <button tds-button-icon color="secondary"
     tds-dropdown
     trigger="click"
+    [placement]="'bottomRight'"
     [tdsDropdownMenu]="menu"
     [autoClose]="false"
     tds-tooltip
@@ -12,7 +13,7 @@
     </span>
   </button>
   <tds-dropdown-menu #menu="tdsDropdownMenu">
-    <div class="w-full">
+    <div class="max-h-[600px] w-full overflow-hidden overflow-y-auto tds-panel-scroll">
         <ng-container *ngFor="let column of columns">
           <div class="p-2">
             <tds-checkbox [checked]="column.isChecked" (change)="onChecked($event, column)">{{column.name}}</tds-checkbox>

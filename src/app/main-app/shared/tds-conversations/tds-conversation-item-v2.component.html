@@ -21,7 +21,7 @@
                   class="p-0.5 flex gap-x-2 justify-center items-center">
 
                   <a class="flex items-center" [ngClass]="reloadingImage ? 'cursor-wait' : ''" tds-tooltip tooltipTitle="Ảnh đã hết hạn"
-                     *ngIf="dataItem.Data.is_error_attachment" (click)="refreshAttachment(att)">
+                      *ngIf="dataItem.Data!.is_error_attachment" (click)="refreshAttachment(att)">
                       <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
                   </a>
                   <a *ngIf="att.image_data" (click)="open_gallery(att)">
@@ -70,7 +70,7 @@
           </div>
 
           <!-- Tin nhắn không tải được -->
-          <div *ngIf="!dataItem.Message&& !dataItem.Data?.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
               tds-tooltip tooltipTitle="{{dataItem.CreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
@@ -90,7 +90,7 @@
           </div>
 
           <!-- admin copy tin nhắn gửi lại-->
-          <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Data.has_admin_required" tds-tooltip tooltipTitle="Sao chép" (click)="copyMessage()">
+          <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Data!.has_admin_required" tds-tooltip tooltipTitle="Sao chép" (click)="copyMessage()">
               <span class="tdsi-copy-line  text-body-1 leading-none"></span>
           </a>
 
@@ -142,7 +142,7 @@
           <!-- Avatar Facebook_PageId -->
           <div class="mr-2">
               <tpage-avatar-facebook [shape]="'circle'" [size]="36"
-                  [psid]="!dataItem.IsOwner ? dataItem!.Data?.from?.id : team.ChannelId"
+                  [psid]="!dataItem.IsOwner ? dataItem.UserId : team.ChannelId"
                   [token]="team.ChannelToken">
               </tpage-avatar-facebook>
           </div>
@@ -171,7 +171,7 @@
                       <div class="flex flex-auto">
                           <!--Nội dung-->
                           <div *ngIf="dataItem.Message">
-                              <div class="name font-semibold pb-1">{{dataItem.Data?.from?.name}}</div>
+                              <div class="name font-semibold pb-1">{{dataItem.Data.from.name}}</div>
                               <div class="content-message font-regular" #contentMessage>{{dataItem.Message}}</div>
                           </div>
                       </div>

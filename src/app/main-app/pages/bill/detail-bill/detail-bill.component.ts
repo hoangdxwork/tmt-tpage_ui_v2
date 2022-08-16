@@ -93,7 +93,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         }
 
         this.dataModel = res;
-        // console.log(this.dataModel)
+        console.log(this.dataModel)
 
         for (var item of this.dataModel.OrderLines) {
           this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;

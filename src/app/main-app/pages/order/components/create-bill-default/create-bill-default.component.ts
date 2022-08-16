@@ -167,6 +167,7 @@ export class CreateBillDefaultComponent implements OnInit {
       title: 'Sửa địa chỉ',
       content: UpdateInfoPartnerComponent,
       size: 'lg',
+      centered: true,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         partner: item.Partner

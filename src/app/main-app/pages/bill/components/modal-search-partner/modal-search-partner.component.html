@@ -2,7 +2,7 @@
     <div class="flex w-2/5">
         <div class="w-full mr-2">
             <tds-form-field>
-                <input tdsInput autocomplete="off"  #innerText  placeholder="Tìm kiếm khách hàng" />
+                <input tdsInput autocomplete="off" #innerText placeholder="Tìm kiếm khách hàng" />
             </tds-form-field>
         </div>
         <button tds-button-icon color="primary" type="button" size="md" (click)="onSearch()">
@@ -31,7 +31,7 @@
                         <td  class="font-semibold">{{ data.DisplayName || data.Name }}</td>
                         <td>{{ data.Phone }}</td>
                         <td>{{ data.Street }}</td>
-                        <td >
+                        <td>
                             <button tds-button color="success" (click)="selectCustomer(data)">Chọn</button>
                         </td>
                     </tr>

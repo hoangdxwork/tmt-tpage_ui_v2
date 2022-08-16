@@ -106,6 +106,7 @@ import { DeliveryCarrierV2Service } from '../../services/delivery-carrier-v2.ser
 import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
 import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
 import { UserRestHandler } from '../../handler-v2/user-rest.handler';
+import { CreateComboModalComponent } from './components/create-combo-modal/create-combo-modal.component';
 
 
 const SERVICES = [
@@ -183,6 +184,7 @@ const SERVICES = [
     ConfigDeliveryConnectComponent,
     ConfigDeliveryUpdateComponent,
     FacebookCartComponent,
+    CreateComboModalComponent,
   ],
   imports: [
     CommonModule,

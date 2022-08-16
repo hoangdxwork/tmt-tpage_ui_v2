@@ -1,3 +1,6 @@
+import { ComboProductDTO, ComboProductTemplateDTO } from './../../../dto/product/product-combo.dto';
+import { CreateComboModalComponent } from './../components/create-combo-modal/create-combo-modal.component';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TpageAddCategoryComponent } from '../../../shared/tpage-add-category/tpage-add-category.component';
 import { ProductCategoryService } from '../../../services/product-category.service';
 import { WallPicturesDTO } from '../../../dto/attachment/wall-pictures.dto';
@@ -9,12 +12,10 @@ import { ConfigProductVariant } from '../../../dto/configs/product/config-produc
 import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
 import { ProductTemplateOUMLineService } from '../../../services/product-template-uom-line.service';
 import { ProductTemplateService } from '../../../services/product-template.service';
-import { OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
 import { CreateCountryModalComponent } from '../components/create-country-modal/create-country-modal.component';
 import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-UOM-modal.component';
 import { takeUntil, finalize } from 'rxjs/operators';
-import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,9 +27,10 @@ import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-c
 
 @Component({
   selector: 'app-create-product',
-  templateUrl: './create-product.component.html'
+  templateUrl: './create-product.component.html',
+  providers: [TDSDestroyService]
 })
-export class ConfigAddProductComponent implements OnInit, OnDestroy {
+export class ConfigAddProductComponent implements OnInit {
   _form!: FormGroup;
   productTypeList: Array<TDSSafeAny> = [];
   categoryList: Array<ConfigCateg> = [];
@@ -42,6 +44,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   originCountryList: Array<ConfigOriginCountryDTO> = [];
   lstAttributes: Array<ConfigAttributeLine> = [];
   lstVariants: Array<ConfigProductVariant> = [];
+  lstProductCombo: Array<ComboProductDTO> = [];
   dataModel!: ConfigProductDefaultDTO;
   isLoading = false;
   isLoadingVariant = false;
@@ -63,14 +66,13 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     return value
   };
 
-  private destroy$ = new Subject<void>();
-
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
+    private destroy$: TDSDestroyService,
     private createFormProductHandler : CreateFormProductHandler,
     private productCategoryService: ProductCategoryService,
     private productTemplateService: ProductTemplateService,
@@ -84,9 +86,11 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
+
     if (this.id) {
       this.loadData(this.id);
       this.loadProductAttributeLine(this.id);
+      this.loadComboProducts(this.id);
     } else {
       this.loadDefault();
     }
@@ -107,7 +111,10 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
-        this.lstVariants = this.dataModel.ProductVariants;
+        // TODO: lấy danh sách biến thể
+        if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
+          this.lstVariants = this.dataModel.ProductVariants;
+        }
 
         this.formatProperty(this.dataModel);
       }, error => {
@@ -115,8 +122,27 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       })
   }
 
+  loadComboProducts(id: TDSSafeAny){
+    // TODO: lấy danh sách combo
+    this.productTemplateService.getComboProducts(id).pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+
+        this.lstProductCombo = res.value.map((item) => {
+          return {
+            Product: item.Product,
+            ProductId: item.ProductId,
+            Quantity: item.Quantity
+          }
+        });
+      },
+      err => {
+        this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+      })
+  }
+
   loadDefault() {
     this.isLoading = true;
+
     this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
@@ -276,56 +302,56 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       this.message.error('Vui lòng nhập tên sản phẩm');
     }
   }
+  // modal thêm mới biến thể
+  // showCreateVariantsModal() {
+  //   if (TDSHelperArray.hasListValue(this.lstAttributes)) {
+  //     let formModel = this._form.value;
+  //     let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
 
-  showCreateVariantsModal() {
-    if (TDSHelperArray.hasListValue(this.lstAttributes)) {
-      let formModel = this._form.value;
-      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+  //     if (formModel.Name) {
+  //       const modal = this.modalService.create({
+  //         title: 'Thêm biến thể sản phẩm',
+  //         content: CreateVariantsModalComponent,
+  //         size: "lg",
+  //         viewContainerRef: this.viewContainerRef,
+  //         componentParams: {
+  //           attributeLines: this.lstAttributes,
+  //           suggestModel: suggestModel,
+  //           defaultModel: {
+  //             NameTemplate: formModel.NameTemplate,
+  //             Type: formModel.Type,
+  //             DefaultCode: formModel.DefaultCode,
+  //             Barcode: formModel.Barcode
+  //           }
+  //         }
+  //       });
 
-      if (formModel.Name) {
-        const modal = this.modalService.create({
-          title: 'Thêm biến thể sản phẩm',
-          content: CreateVariantsModalComponent,
-          size: "lg",
-          viewContainerRef: this.viewContainerRef,
-          componentParams: {
-            attributeLines: this.lstAttributes,
-            suggestModel: suggestModel,
-            defaultModel: {
-              NameTemplate: formModel.NameTemplate,
-              Type: formModel.Type,
-              DefaultCode: formModel.DefaultCode,
-              Barcode: formModel.Barcode
-            }
-          }
-        });
-
-        modal.afterClose.subscribe((result: ConfigProductVariant) => {
-          if (TDSHelperObject.hasValue(result)) {
-            if (result.Id == 0) {
-              this.minIndex -= 1;
-              result.Id = this.minIndex;
-              this.lstVariants.push(result);
-            } else {
-              this.modalService.warning({
-                title: 'Biến thể đã tồn tại',
-                content: 'Nhấn [Tiếp tục] để thêm biến thể, nhấn [Hủy] để hủy biến thể',
-                onOk: () => {
-                  this.lstVariants.push(result);
-                  this.message.success('Thêm biến thể thành công');
-                },
-                onCancel: () => { },
-                okText: "Tiếp tục",
-                cancelText: "Hủy"
-              });
-            }
-          }
-        });
-      } else {
-        this.message.error('Vui lòng nhập tên sản phẩm');
-      }
-    }
-  }
+  //       modal.afterClose.subscribe((result: ConfigProductVariant) => {
+  //         if (TDSHelperObject.hasValue(result)) {
+  //           if (result.Id == 0) {
+  //             this.minIndex -= 1;
+  //             result.Id = this.minIndex;
+  //             this.lstVariants.push(result);
+  //           } else {
+  //             this.modalService.warning({
+  //               title: 'Biến thể đã tồn tại',
+  //               content: 'Nhấn [Tiếp tục] để thêm biến thể, nhấn [Hủy] để hủy biến thể',
+  //               onOk: () => {
+  //                 this.lstVariants.push(result);
+  //                 this.message.success('Thêm biến thể thành công');
+  //               },
+  //               onCancel: () => { },
+  //               okText: "Tiếp tục",
+  //               cancelText: "Hủy"
+  //             });
+  //           }
+  //         }
+  //       });
+  //     } else {
+  //       this.message.error('Vui lòng nhập tên sản phẩm');
+  //     }
+  //   }
+  // }
 
   showEditVariantsModal(data: ConfigProductVariant) {
     let name = this._form.controls["Name"].value;
@@ -367,6 +393,30 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     } else {
       this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
     }
+  }
+
+  showCreateComboModal(data?: ComboProductDTO, index?:number){
+    const modal = this.modalService.create({
+      title: data ? 'Sửa thành phần' : 'Thêm thành phần',
+      content: CreateComboModalComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        data: data
+      }
+    });
+
+    modal.componentInstance?.getProductCombo$.subscribe(result => {
+      if(data){
+        this.lstProductCombo[index || 0] = result;
+      }else{
+        this.lstProductCombo.push(result);
+      }
+    });
+  }
+
+  removeComboProduct(index: number) {
+    this.lstProductCombo = this.lstProductCombo.filter((f,i)=> i != index);
   }
 
   addCategory() {
@@ -539,7 +589,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   prepareModel() {
-    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants);
+    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants, this.lstProductCombo);
   }
 
   backToMain() {
@@ -579,10 +629,5 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         });
       }
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

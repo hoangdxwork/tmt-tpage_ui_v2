@@ -205,6 +205,10 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
       title: 'Thêm sản phẩm',
       content: ModalProductTemplateComponent,
       size: "xl",
+      bodyStyle: {
+        padding : '0px'
+      },
+      centered: true,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         typeComponent: 'lst-product-tmp',

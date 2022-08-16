@@ -53,12 +53,12 @@ import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-
 import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SharedService } from '@app/services/shared.service';
-import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CreateFastSaleOrderDTO } from '@app/dto/saleonlineorder/create-fastsaleorder.dto';
 import { ProductTemplateV2DTO } from '@app/dto/producttemplate/product-tempalte.dto';
 import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { OdataSaleOnline_Facebook_CommentDto, SaleOnline_Facebook_CommentDto } from '@app/dto/coversation-order/saleonline-facebook-comment.dto';
 import { FacebookCommentService } from '@app/services/facebook-comment.service';
+import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 
 @Component({
   selector: 'conversation-order',
@@ -188,7 +188,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.loadCreateOrderByPostComment$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataItemDto) => {
       if(res) {
           this.isEnableCreateOrder = false;
-          this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromBot(res, this.saleOnlineSettings) as InsertFromPostDto;
+          this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromBot(res, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
 
           this.insertFromPostModel.UserId = this.userInit.Id;
           this.insertFromPost(this.insertFromPostModel, res);
@@ -1005,7 +1005,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-          if(res) {
+          if(res && !res.error) {
 
               this.configsProviderDataSource = [...res.configs];
 
@@ -1019,7 +1019,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
           } else {
-            this.message.error(res);
+            this.message.error(res.error?.message);
           }
 
           this.isLoading = false;

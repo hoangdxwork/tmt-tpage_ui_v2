@@ -80,6 +80,14 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   ngOnInit(): void {
+    if(this.dataItem && this.dataItem.Id && !this.dataItem.Message) {
+        let exist = this.dataItem.Data.attachments.data;
+        if(exist) {
+          this.dataItem.Data!.is_error_attachment = false;
+        } else {
+          this.dataItem.Data!.is_error_attachment = true;
+        }
+    }
   }
 
   selectOrder(type: string): any {
@@ -190,7 +198,7 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
-    if(dataItem && (dataItem.Status != 2 || dataItem.Error?.Message)) {
+    if(dataItem && (dataItem.Status != ChatomniStatus.Error || dataItem.Error?.Message)) {
         this.dataItem.Data['is_error_attachment'] = true;
     }
   }
@@ -200,18 +208,19 @@ export class TDSConversationItemV2Component implements OnInit {
     if(this.reloadingImage){
       return
     }
+
     this.reloadingImage = true;
-    this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.dataItem.Data.id || this.csid , item.id)
+    this.activityMatchingService.refreshAttachment(this.team.ChannelId, this.dataItem.Data.id || this.csid , item.id)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe((res: any) => {
 
         this.tdsMessage.success('Thao tác thành công');
         this.activityDataFacade.refreshAttachment(res);
-        this.dataItem.Data["errorShowAttachment"] = false;
+        this.dataItem.Data["is_error_attachment"] = false;
         this.cdRef.markForCheck();
 
     }, error => {
-        this.tdsMessage.error('Không thành công');
+        this.tdsMessage.error(`${error?.error?.message}` || 'Không thành công');
     })
   }
 
@@ -316,18 +325,23 @@ export class TDSConversationItemV2Component implements OnInit {
     let result:TDSSafeAny[]= [];
     this.gallery = this.dataSource.Items.filter((x: ChatomniDataItemDto) => x.Data && x.Data.attachments != null);
 
-    if(this.gallery){
-      this.gallery.map(item=>{
+    if(this.gallery && this.gallery.length > 0) {
+
+      this.gallery.map(item => {
         if(item.Data?.attachments){
+
           item.Data?.attachments.data.map(attachment=>{
-            if(attachment.mime_type != 'audio/mpeg'){
-              result.push({
-                date_time: item.CreatedTime,
-                id: item.Data?.from?.id || item.UserId,
-                url: attachment.image_data.url ? attachment.image_data.url : attachment.video_data.url,
-                type: attachment.mime_type ? attachment.mime_type : null
-              });
-            }
+              if(attachment.mime_type != 'audio/mpeg'){
+
+                  let image_url = attachment.image_data?.url ? attachment.image_data?.url : attachment.video_data?.url;
+                  result.push({
+                      date_time: item.CreatedTime,
+                      id: item.Data?.from?.id || item.UserId,
+                      url: image_url,
+                      type: attachment.mime_type ? attachment.mime_type : null
+                  });
+
+              }
           })
         }
       })

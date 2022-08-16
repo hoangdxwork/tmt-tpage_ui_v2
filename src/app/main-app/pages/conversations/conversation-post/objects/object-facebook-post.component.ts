@@ -4,7 +4,7 @@ import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-p
 import { LiveCampaignPostComponent } from './../live-campaign-post/live-campaign-post.component';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
@@ -18,12 +18,12 @@ import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/c
   providers: [ TDSDestroyService ]
 })
 
-export class ObjectFacebookPostComponent  implements OnInit {
+export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   @Input() item!: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
   @Input() postChilds!: any[];
-  @Input() availableCampaigns!: LiveCampaignModel[];
+  @Input() lstOfLiveCampaign!: LiveCampaignModel[];
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
@@ -43,9 +43,24 @@ export class ObjectFacebookPostComponent  implements OnInit {
   }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes["item"] && !changes["item"].firstChange && !changes["lstOfLiveCampaign"].firstChange) {
+      this.item = {...changes["item"].currentValue};
+      this.lstOfLiveCampaign = [...changes["lstOfLiveCampaign"].currentValue];
+      
+      this.loadData();
+    }
+  }
+
+  loadData(){
     if(this.item) {
       this.mdbFbPost = this.item.Data as MDB_Facebook_Mapping_PostDto;
-      this.currentLiveCampaign = this.availableCampaigns.find(f=> f.Id == this.item?.LiveCampaignId);
+
+      let liveId = this.item.LiveCampaignId;
+      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=> f.Id == liveId);
     }
   }
 
@@ -58,7 +73,7 @@ export class ObjectFacebookPostComponent  implements OnInit {
       componentParams:{
         post: data,
         currentLiveCampaign: this.currentLiveCampaign,
-        lstOfData: this.availableCampaigns
+        lstOfData: this.lstOfLiveCampaign
       }
     });
 

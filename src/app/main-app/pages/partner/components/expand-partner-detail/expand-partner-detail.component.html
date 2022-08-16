@@ -1,7 +1,7 @@
 <div>
   <tds-tabset class="bg-white w-full border rounded-md">
     <tds-tab [title]="'Thông tin'">
-      <div class="flex flex-col gap-y-4 w-full text-neutral-900 text-body-2 h-[425px]">
+      <div class="flex flex-col gap-y-4 w-full text-neutral-900 text-body-2">
         <div class="flex w-full gap-x-6  items-center">
           <tds-avatar [shape]="'square'" [size]="'xl'" [tdsSrc]="dataPartner.ImageUrl ? dataPartner.ImageUrl : 'error'"></tds-avatar>
           <div>
@@ -92,8 +92,8 @@
         </div>
       </div>
     </tds-tab>
-    <tds-tab [title]="'Hóa đơn'">
-      <div class="text-neutral-900 text-body-2 h-[425px]">
+    <tds-tab [title]="'Hóa đơn'" clsContent="p-0 pb-2.5">
+      <div class="text-neutral-900 text-body-2">
         <tds-table #rowSelectionTable1 [showSizeChanger]="true" [frontPagination]="false" [listData]="lstInvocie"
         [(pageSize)]="pageSize2" [(pageIndex)]="pageIndex2" [total]="countInvocie" [scroll]="{y:'auto'}"
         [loading]="isLoading" (clickRefresh)="refreshInvoice()"
@@ -136,8 +136,8 @@
         </tds-table>
       </div>
     </tds-tab>
-    <tds-tab [title]="'Chi tiết nợ'">
-      <div class="text-neutral-900 text-body-2  w-full h-[425px]">
+    <tds-tab [title]="'Chi tiết nợ'" clsContent="p-0 pb-2.5">
+      <div class="text-neutral-900 text-body-2 w-full">
         <tds-table #rowSelectionTable2 [showSizeChanger]="true" [frontPagination]="false" [listData]="lstCreditDebit"
             [(pageSize)]="pageSize1" [(pageIndex)]="pageIndex1" [total]="countDebit" [scroll]="{y:'auto'}"
             [loading]="isLoading" (clickRefresh)="refreshCreditDebit()"
@@ -154,7 +154,7 @@
                 <tr>
                   <td>{{ data.Date | date:"dd/MM/yyyy"}}</td>
                   <td>{{ data.DisplayedName }}</td>
-                  <td  class="text-right">{{ data.AmountResidual | number:'1.0-3' }}</td>
+                  <td class="text-right">{{ data.AmountResidual | number:'1.0-3' }}</td>
                 </tr>
               </ng-template>
             </tbody>

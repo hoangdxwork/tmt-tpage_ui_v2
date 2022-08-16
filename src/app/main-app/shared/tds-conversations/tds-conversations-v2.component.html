@@ -105,9 +105,9 @@
 
     <!-- main -->
     <tds-spin class="flex-auto h-full w-full flex overflow-hidden" [color]="'secondary'" tip="Loading..." [spinning]="isLoading" >
+
         <div class="h-full w-full overflow-y-auto tds-custom-scroll flex flex-col relative delay-100"
-            #scrollToIndex  (onScrollToTop)="nextData()" id="dataSourceScroll"
-            yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40">
+            #scrollToIndex  (onScrollToTop)="nextData()" id="dataSourceScroll" yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40">
 
             <div class="absolute w-full flex justify-center z-10" *ngIf="isProcessing">
                 <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
@@ -148,7 +148,6 @@
                   </div>
                 </div>
             </div>
-
         </div>
     </tds-spin>
 
