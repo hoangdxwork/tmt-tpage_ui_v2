@@ -6,7 +6,7 @@ import { AfterViewInit, ChangeDetectorRef, ElementRef, Input, OnChanges, OnDestr
 import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
+import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { debounceTime, finalize, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';

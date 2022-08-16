@@ -8,7 +8,7 @@ import { CommonService } from '../../services/common.service';
 import { debounceTime, finalize, map, takeUntil } from 'rxjs/operators';
 import { fromEvent, Subject } from 'rxjs';
 import { orderBy as _orderBy } from 'lodash';
-import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
+import { ProductTemplateV2DTO } from '../../dto/product-template/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
 import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
 import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';

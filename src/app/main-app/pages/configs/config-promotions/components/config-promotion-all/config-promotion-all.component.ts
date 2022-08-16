@@ -5,7 +5,7 @@ import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
+import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { PromotionAllDTO } from 'src/app/main-app/dto/configs/promotion/promotion-add.dto';
 import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPercentageSpecificProduct, showProduct } from 'src/app/main-app/services/facades/config-promotion.facede';
