@@ -408,6 +408,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       title: 'Lịch sử gửi tin nhắn',
       content: ModalHistoryChatComponent,
       size: "xl",
+      bodyStyle: {
+        padding: '0px',
+      },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         orderId: orderId,
@@ -761,9 +764,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
           this.currentConversation = { ...model };
-          
+
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }

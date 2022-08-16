@@ -5,10 +5,10 @@
                 <div class="flex flex-col gap-y-1">
                     <tds-breadcrumb tds-page-header-breadcrumb>
                         <tds-breadcrumb-item (click)="directPage('bill')">Phiếu bán hàng</tds-breadcrumb-item>
-                        <tds-breadcrumb-item>{{dataModel.Number}}</tds-breadcrumb-item>
+                        <tds-breadcrumb-item>{{ dataModel.Number || 'N/A' }}</tds-breadcrumb-item>
                     </tds-breadcrumb>
                     <div class="pl-4 pb-2.5">
-                        <span class="text-header-1 text-neutral-1-900 font-semibold">{{dataModel.Number}}</span>
+                        <span class="text-header-1 text-neutral-1-900 font-semibold">{{ dataModel.Number || "N/A" }}</span>
                     </div>
                 </div>
                 <div class="flex gap-x-2">
@@ -58,7 +58,7 @@
                         (click)="onEdit()"
                         *ngIf="dataModel.State !='cancel'">
                         <span class="flex items-center">
-                            <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sửa
+                            <i class="tdsi-edit-fill text-lg leading-none mr-2 text-neutral-1-500"></i>Chỉnh sửa
                         </span>
                     </button>
                     <button tds-button color="secondary" class="mr-4" [disabled]="isProcessing"
@@ -70,7 +70,7 @@
             <div  class="flex justify-end items-center py-4" *ngIf="dataModel.State !== 'cancel'">
                 <tds-button-split class="mr-2" (clickButton)="onClickButton($event)" color="secondary">
                     <span class="flex items-center js-label font-semibold">
-                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu</span>
+                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu</span>
                     <div class="js-content flex flex-col ">
                         <button tds-button-menu-item class="text-left p-3" (click)="print('bill80')">Bill 80</button>
                         <button tds-button-menu-item class="text-left p-3" (click)="print('bill58')">Bill 58</button>
@@ -80,12 +80,12 @@
                 </tds-button-split>
                 <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('delivery')">
                     <span class="flex items-center">
-                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In giao hàng
+                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In giao hàng
                     </span>
                 </button>
                 <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
                     <span class="flex items-center">
-                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
+                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
                     </span>
                 </button>
                 <tds-steps [current]="indexStep" [status]="isStatusStep">
@@ -101,18 +101,20 @@
                 <div class="rounded-xl bg-white p-4 flex flex-col">
                     <div class="mb-7">
                         <h1 class="text-header-1 font-semibold flex items-center">
-                            <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng: {{dataModel.Number}}
+                            <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng: {{dataModel.Number || 'N/A'}}
                         </h1>
                     </div>
-                    <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+                    <div class="grid grid-cols-2 gap-y-4 2xl:gap-x-8 xl:gap-x-6">
                         <div class="flex gap-x-6 items-center">
                             <div class="flex w-fit">
                                 <tds-avatar [size]="84" [tdsSrc]="dataModel.Partner.ImageUrl"></tds-avatar>
                             </div>
                             <div class="flex flex-auto flex-col gap-y-2">
-                                <div class="flex items-center">
-                                    <span class="text-header-2 font-semibold mr-2">{{dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign}}</span>
-                                    <tds-tag *ngIf="dataModel.Partner?.StatusText" status='primary' size="sm" rounded="rounded-full">{{dataModel.Partner.StatusText}}</tds-tag>
+                                <div class="flex">
+                                    <span class="text-header-2 font-semibold mr-2 w-1/2 h-full flex justify-start">{{dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign}}</span>
+                                    <div class="w-1/2 h-[28px] flex justify-end items-center">
+                                      <tds-tag *ngIf="dataModel.Partner?.StatusText" status='primary' size="sm" rounded="rounded-full">{{dataModel.Partner.StatusText}}</tds-tag>
+                                    </div>
                                 </div>
                                 <span class="text-neutral-1-600">
                                     <i class="tdsi-call-fill mr-2"></i> {{dataModel.Ship_Receiver?.Phone || '---'}}
@@ -168,7 +170,7 @@
                                     <div class="rounded-full bg-neutral-3-100 px-2">
                                         <span class="text-neutral-1-700 font-semibold">{{dataModel.ShowShipStatus || '---'}}</span>
                                     </div>
-                                    <span class="text-info-500 font-semibold ml-2">{{dataModel.TrackingRef || '---'}}</span>
+                                    <span class="text-info-500 font-semibold ml-2 w-1/3 truncate">{{dataModel.TrackingRef || '---'}}</span>
                                 </div>
                             </div>
                         </div>

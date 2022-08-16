@@ -47,7 +47,7 @@
     </div>
   </div>
   <tds-tabset>
-    <tds-tab title="Chi tiết" (tabSelect)="onLoadTab('detail')">
+    <tds-tab title="Chi tiết" (tabSelect)="onLoadTab('detail')" clsContent="p-0">
       <ng-template tds-tab>
         <div class="flex flex-col items-end w-full h-full">
           <tds-table #basicTable
@@ -82,7 +82,7 @@
             </tbody>
           </tds-table>
           <ng-template #noResult></ng-template>
-          <div class="w-1/5 text-right mt-4">
+          <div class="w-1/5 text-right my-4 mr-4">
             <div class="grid grid-cols-3 gap-x-6 gap-y-4 pb-4">
               <span class="text-right">Tổng</span>
               <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountUntaxed| number) || 0 }}</span>
