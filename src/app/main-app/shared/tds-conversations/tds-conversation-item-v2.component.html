@@ -20,13 +20,14 @@
               <div *ngFor="let att of dataItem.Data.attachments.data" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
                   class="p-0.5 flex gap-x-2 justify-center items-center">
 
-                  <a class="flex items-center" [ngClass]="reloadingImage ? 'cursor-wait' : ''" tds-tooltip tooltipTitle="Ảnh đã hết hạn"
+                  <a class="flex items-center" [ngClass]="reloadingImage ? 'cursor-wait' : 'cursor-pointer'" tds-tooltip tooltipTitle="Tải lại"
                       *ngIf="dataItem.Data!.is_error_attachment" (click)="refreshAttachment(att)">
                       <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
                   </a>
-                  <a *ngIf="att.image_data" (click)="open_gallery(att)">
+                  <a *ngIf="att.image_data" (click)="open_gallery(att)" class="relative">
                       <show-attachment class="w-full h-full" [type]="att.mime_type" [height]="'225px'" [url]="att.image_data.url" (onError)="isErrorAttachment(att, dataItem)">
                       </show-attachment>
+                      <div class="absolute inset-0" tds-tooltip tooltipTitle="Ảnh đã hết hạn" *ngIf="dataItem.Data!.is_error_attachment"></div>
                   </a>
                   <a *ngIf="att.video_data" (click)="open_gallery(att)">
                       <show-attachment [type]="att.mime_type" [url]="att.video_data?.url" (onError)="isErrorAttachment(att, dataItem)"

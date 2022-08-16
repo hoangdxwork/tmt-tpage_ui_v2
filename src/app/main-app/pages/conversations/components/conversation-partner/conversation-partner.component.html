@@ -142,7 +142,8 @@
 
                             <div class="flex gap-2 items-center" *ngIf="lastSaleOrder">
 
-                                <div class="text-info-500 text-header-1 font-sans font-semibold">#{{ lastSaleOrder.Number || 'N/A' }}</div>
+                                <drawer-detail-bill [isBillNearest]="true" [bill]="lastSaleOrder"></drawer-detail-bill>
+
                                 <tds-tag status='primary' type="outline" [status]="getColorStatusText(lastSaleOrder.ShowState)">
                                   {{ lastSaleOrder.ShowState }}
                                 </tds-tag>

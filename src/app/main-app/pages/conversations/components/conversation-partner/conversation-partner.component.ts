@@ -1,3 +1,4 @@
+import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
@@ -79,7 +80,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private csPartner_PrepareModelHandler: CsPartner_PrepareModelHandler,
     private conversationOrderFacade: ConversationOrderFacade,
     private destroy$: TDSDestroyService,
-    private router: Router) {
+    private router: Router,
+    private omniEventEmiter: ChatomniEventEmiterService) {
   }
 
   ngOnInit(): void  {
@@ -113,6 +115,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           this.loadData(pageId, psid);
       }
     })
+
+    // TODO: load thông tin partner khi tạo đơn hàng thành công
+    this.omniEventEmiter.callConversationPartnerEmiter$.subscribe(res=>{
+      if(res) {
+        let psid = this.omcs_Item.ConversationId;
+        let pageId = this.team.ChannelId;
+        this.loadData(pageId, psid);
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -132,6 +143,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   loadData(pageId: string, psid: string) {
     (this.partner as any) = null;
+    this.isEditPartner = false;
 
     // TODO: dữ liệu chính gán cho partner
     this.checkConversation(pageId, psid);

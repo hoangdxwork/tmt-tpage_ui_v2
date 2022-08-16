@@ -20,6 +20,7 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 })
 export class DrawerDetailBillComponent implements OnInit {
   @Input() bill!: ViewConversation_FastSaleOrdersDTO;
+  @Input() isBillNearest!: boolean;
 
   payments: Array<PaymentJsonDTO> = [];
   selectedIndex: number = 0;

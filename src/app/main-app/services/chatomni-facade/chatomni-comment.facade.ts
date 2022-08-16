@@ -53,7 +53,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
       Message: data.message_formatted,
       Status: data.status as number,
       CreatedBy: data.CreatedBy,
-      UserId: data.to_id
+      UserId: data.account_id
     } as unknown as ExtrasChildsDto;
 
     return  {...model};
