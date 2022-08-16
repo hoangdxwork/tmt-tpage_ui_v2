@@ -1,4 +1,7 @@
-import { ComboProductDTO, ComboProductTemplateDTO } from './../../../dto/product/product-combo.dto';
+import { UpdateInitInventoryComponent } from './../components/update-init-inventory/update-init-inventory.component';
+import { StockChangeProductQtyDTO } from './../../../dto/product/stock-change-product-qty.dto';
+import { StockChangeProductQtyService } from './../../../services/stock-change-product-qty.service';
+import { ComboProductDTO } from './../../../dto/product/product-combo.dto';
 import { CreateComboModalComponent } from './../components/create-combo-modal/create-combo-modal.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TpageAddCategoryComponent } from '../../../shared/tpage-add-category/tpage-add-category.component';
@@ -45,7 +48,9 @@ export class ConfigAddProductComponent implements OnInit {
   lstAttributes: Array<ConfigAttributeLine> = [];
   lstVariants: Array<ConfigProductVariant> = [];
   lstProductCombo: Array<ComboProductDTO> = [];
+  stockChangeProductList: Array<StockChangeProductQtyDTO> = [];
   dataModel!: ConfigProductDefaultDTO;
+  initInventory:number = 0;
   isLoading = false;
   isLoadingVariant = false;
   isLoadingAttribute = false;
@@ -76,24 +81,27 @@ export class ConfigAddProductComponent implements OnInit {
     private createFormProductHandler : CreateFormProductHandler,
     private productCategoryService: ProductCategoryService,
     private productTemplateService: ProductTemplateService,
+    private stockChangeProductQtyService: StockChangeProductQtyService,
     private productTemplateOUMLine: ProductTemplateOUMLineService) {
     this.createForm();
   }
 
   createForm() {
-    this._form = this.createFormProductHandler.createForm(this._form,this.fb);
+    this._form = this.createFormProductHandler.createForm(this._form, this.fb);
   }
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
-
+    
     if (this.id) {
       this.loadData(this.id);
+      this.loadStockChangeProductQty(this.id);
       this.loadProductAttributeLine(this.id);
       this.loadComboProducts(this.id);
     } else {
       this.loadDefault();
     }
+
     this.loadProductTypeList();
     this.loadProductCategory();
     this.loadProductUOM();
@@ -111,6 +119,7 @@ export class ConfigAddProductComponent implements OnInit {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
+        
         // TODO: lấy danh sách biến thể
         if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
           this.lstVariants = this.dataModel.ProductVariants;
@@ -140,6 +149,26 @@ export class ConfigAddProductComponent implements OnInit {
       })
   }
 
+  loadStockChangeProductQty(id: TDSSafeAny){
+    let data = {
+      model: {
+        ProductTmplId: Number(id)
+      }
+    };
+
+    this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.stockChangeProductList = res.value;
+        // TODO: số lượng tồn thực tế
+        this.stockChangeProductList.forEach(item => {
+          this.initInventory += item.NewQuantity;
+        });
+      },
+      err => {
+        this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+      })
+  }
+
   loadDefault() {
     this.isLoading = true;
 
@@ -147,7 +176,7 @@ export class ConfigAddProductComponent implements OnInit {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
-
+        
         this.formatProperty(res);
       }, error => {
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -161,14 +190,17 @@ export class ConfigAddProductComponent implements OnInit {
         this.addImages(x);
       });
     }
+
     if (TDSHelperArray.hasListValue(data.ProductVariants)) {
       data.ProductVariants.forEach((x: ConfigProductVariant) => {
         this.addProductVariants(x);
       });
     }
+
     if (data.DateCreated) {
       data.DateCreated = new Date(data.DateCreated);
     }
+
     this._form.patchValue(data);
   }
 
@@ -262,6 +294,24 @@ export class ConfigAddProductComponent implements OnInit {
     )
   }
 
+  showUpdateInitInventoryModal(){
+    const modal = this.modalService.create({
+      title: 'Cập nhật số lượng thực tế',
+      content: UpdateInitInventoryComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        lstData: this.stockChangeProductList
+      }
+    });
+
+    modal.afterClose.subscribe(result => {
+      if (result){
+        this._form.controls["InitInventory"].setValue(result);
+      }
+    });
+  }
+
   showCreateAttributeModal() {
     let productName = this._form.controls.Name.value;
     
@@ -302,56 +352,6 @@ export class ConfigAddProductComponent implements OnInit {
       this.message.error('Vui lòng nhập tên sản phẩm');
     }
   }
-  // modal thêm mới biến thể
-  // showCreateVariantsModal() {
-  //   if (TDSHelperArray.hasListValue(this.lstAttributes)) {
-  //     let formModel = this._form.value;
-  //     let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
-
-  //     if (formModel.Name) {
-  //       const modal = this.modalService.create({
-  //         title: 'Thêm biến thể sản phẩm',
-  //         content: CreateVariantsModalComponent,
-  //         size: "lg",
-  //         viewContainerRef: this.viewContainerRef,
-  //         componentParams: {
-  //           attributeLines: this.lstAttributes,
-  //           suggestModel: suggestModel,
-  //           defaultModel: {
-  //             NameTemplate: formModel.NameTemplate,
-  //             Type: formModel.Type,
-  //             DefaultCode: formModel.DefaultCode,
-  //             Barcode: formModel.Barcode
-  //           }
-  //         }
-  //       });
-
-  //       modal.afterClose.subscribe((result: ConfigProductVariant) => {
-  //         if (TDSHelperObject.hasValue(result)) {
-  //           if (result.Id == 0) {
-  //             this.minIndex -= 1;
-  //             result.Id = this.minIndex;
-  //             this.lstVariants.push(result);
-  //           } else {
-  //             this.modalService.warning({
-  //               title: 'Biến thể đã tồn tại',
-  //               content: 'Nhấn [Tiếp tục] để thêm biến thể, nhấn [Hủy] để hủy biến thể',
-  //               onOk: () => {
-  //                 this.lstVariants.push(result);
-  //                 this.message.success('Thêm biến thể thành công');
-  //               },
-  //               onCancel: () => { },
-  //               okText: "Tiếp tục",
-  //               cancelText: "Hủy"
-  //             });
-  //           }
-  //         }
-  //       });
-  //     } else {
-  //       this.message.error('Vui lòng nhập tên sản phẩm');
-  //     }
-  //   }
-  // }
 
   showEditVariantsModal(data: ConfigProductVariant) {
     let name = this._form.controls["Name"].value;

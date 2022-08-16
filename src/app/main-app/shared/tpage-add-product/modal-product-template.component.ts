@@ -22,7 +22,7 @@ import { ConfigAddAttributeProductModalComponent } from '../../pages/configs/com
 import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from '../../dto/configs/product/config-product-default.dto';
 import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
 import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
-import { ProductTemplateV2DTO } from '@app/dto/producttemplate/product-tempalte.dto';
+import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 
 @Component({
   selector: 'modal-product-template',
