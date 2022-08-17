@@ -12,8 +12,10 @@
                     <div class="flex flex-row items-center gap-x-4">
                         <tds-avatar [tdsSrc]="defaultProduct.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="52" class="rounded-lg"></tds-avatar>
                         <div class="flex flex-col">
-                            <tds-label>{{ defaultProduct.NameGet }}</tds-label>
-                            <span class="text-neutral-1-400 text-caption-1">{{ defaultProduct.UOMName }} - {{ defaultProduct.PurchasePrice || 0 }}đ</span>
+                            <span>{{ defaultProduct.ProductNameGet }}</span>
+                            <span class="text-neutral-1-400 text-caption-1">
+                                {{ defaultProduct.UOMName }} - {{ (defaultProduct.Price || 0)|numberCustom:'.' }}đ
+                            </span>
                         </div>
                     </div>
                     

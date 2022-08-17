@@ -1,6 +1,7 @@
+import { map, Observable } from 'rxjs';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { takeUntil, finalize } from 'rxjs';
+import { takeUntil, finalize, mergeMap } from 'rxjs';
 import { StockChangeProductQtyService } from './../../../../services/stock-change-product-qty.service';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -128,28 +129,19 @@ export class UpdateInitInventoryComponent implements OnInit {
     let model = this.prepareModel();
   
     this.stockService.postStockChangeProductQty({ model: model }).pipe(takeUntil(this.destroy$))
+      .pipe(mergeMap(item => {
+
+        let ids = item.value.map((f: any) => { return f.Id });
+        
+        return this.stockService.updateStockChangeProductQty({ids: ids})
+      }))
       .subscribe(res => {
-          let updateList = res.value as TDSSafeAny[];
-          //TODO: lấy danh sách id cập nhật
-          let ids = updateList.map((item:any) => {
-            return Number(item.Id);
-          });
+          this.message.success(Message.UpdatedSuccess);
           
-          this.stockService.updateStockChangeProductQty({ids: ids}).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-            .subscribe(res2 => {
-                this.message.success(Message.UpdatedSuccess);
-
-                let sum = 0;
-
-                updateList.forEach(item => {
-                  sum += item.NewQuantity;
-                });
-
-                this.modal.destroy(sum);
-              },
-              err => {
-                this.message.error(err?.error?.message || Message.UpdatedFail);
-              });
+          let data = this.dataArray.value as any[];
+          let sum = data.reduce<number>((total, item) => { return total + item.NewQuantity }, 0);
+          
+          this.modal.destroy(sum);
         },
         err => {
           this.message.error(err?.error?.message || Message.UpdatedFail);

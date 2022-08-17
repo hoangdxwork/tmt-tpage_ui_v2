@@ -17,7 +17,7 @@ import { ProductTemplateUOMLineService } from '../../../services/product-templat
 import { ProductTemplateService } from '../../../services/product-template.service';
 import { CreateCountryModalComponent } from '../components/create-country-modal/create-country-modal.component';
 import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-UOM-modal.component';
-import { takeUntil, finalize } from 'rxjs/operators';
+import { takeUntil, finalize, mergeMap, map } from 'rxjs/operators';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
@@ -155,7 +155,7 @@ export class ConfigAddProductComponent implements OnInit {
         ProductTmplId: Number(id)
       }
     };
-
+    
     this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.stockChangeProductList = res.value;
@@ -493,6 +493,10 @@ export class ConfigAddProductComponent implements OnInit {
     });
   }
 
+  changeInitInventory(value: number){
+    this._form.controls["InitInventory"].setValue(value);
+  }
+
   getAvatar(url: string) {
     this._form.controls["ImageUrl"].setValue(url);
   }
@@ -554,7 +558,7 @@ export class ConfigAddProductComponent implements OnInit {
 
   addProduct() {
     let model = this.prepareModel();
-
+    console.log(model)
     if (model.Name) {
       this.productTemplateService.insertProductTemplate(model)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))

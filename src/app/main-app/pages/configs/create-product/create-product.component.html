@@ -105,6 +105,7 @@
                     [formatter]="numberWithCommas"
                     [parser]="parserComas" 
                     [disabled]="id ? true : false"
+                    (ngModelChange)="changeInitInventory($event)"
                     class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                   <tds-error>
                     Vui lòng nhập số lượng thực tế

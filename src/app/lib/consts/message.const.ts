@@ -53,7 +53,8 @@ export const Message = {
   Product: {
     CanNotLoadData: 'Không thể tải danh sách sản phẩm',
     InsertSuccess: 'Thêm sản phẩm thành công.',
-    UpdateListPriceSuccess: 'Cập nhật bảng giá thành công.'
+    UpdateListPriceSuccess: 'Cập nhật bảng giá thành công.',
+    DefaultProductEmpty: 'Chưa có sản phẩm mặc định'
   },
   ProductCategory: {
     InsertSuccess: 'Thêm nhóm sản phẩm thành công.'
