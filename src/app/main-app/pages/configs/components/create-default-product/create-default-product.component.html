@@ -1,17 +1,38 @@
-<tds-spin [spinning]="isLoading">
-    <div class="w-full grid grid-cols-4 gap-x-6">
-        <tds-label>Sản phẩm</tds-label>
-        <tds-form-field class="w-full col-span-3">
-            <tds-select valueField="Id" textField="NameGet" placeholder='Chọn sản phẩm'
-                [ngModel]="defaultProduct" (ngModelChange)="onChangeProduct($event)"
-                [valuePrimitive]="false" [allowClear]="false" [data]="lstProduct"
-                [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)">
-            </tds-select>
-        </tds-form-field>
+<div class="w-full grid grid-cols-4 gap-x-6 relative">
+    <tds-label>Sản phẩm</tds-label>
+
+    <tds-form-field class="w-full col-span-3">
+        <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" [ngModel]="defaultProduct?.NameGet" 
+            (inputKeyup)="onSearch($event)">
+
+        <span *ngIf="defaultProduct" tdsSuffix>
+            <i (click)="removeProduct()" class="text-neutral-1-500 tdsi-close-fill mr-2"></i>
+        </span>
+    </tds-form-field>
+
+    <div *ngIf="isOpen" class="absolute left-0 right-0 -bottom-2 top-full p-2 h-56 overflow-hidden z-10 bg-white flex flex-col gap-y-2 shadow-md">
+        <tds-spin [spinning]="isLoading" class="h-full overflow-hidden overflow-y-auto tds-panel-scroll">
+            <div *ngIf="lstProduct.length > 0 ; else noDataProduct">
+                <span *ngFor="let item of lstProduct" (click)="onChangeProduct(item)" class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex flex-col gap-y-1">
+                    <span *ngIf="item.NameGet" class="text-info-400"> {{ item.NameGet }} - {{item.Price | number}}đ </span>
+
+                    <div *ngIf="lstInventory && lstInventory[item.Id]">
+                        <span class="text-neutral-1-400">Tồn kho: </span>
+                        <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
+                        <span class="text-neutral-1-400">Tồn dự báo: </span>
+                        <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
+                    </div>
+                </span>
+            </div>
+        </tds-spin>
     </div>
-    
-    <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-        <button tds-button class=" w-[100px]" type="submit" color="primary" (click)="onSave()">Áp dụng</button>
-    </div>
-</tds-spin>
+
+    <ng-template #noDataProduct>
+        <tds-spin [spinning]="isLoading"><tds-empty></tds-empty></tds-spin>
+    </ng-template>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+    <button tds-button class=" w-[100px]" type="submit" color="primary" (click)="onSave()">Áp dụng</button>
+</div>

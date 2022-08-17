@@ -1,11 +1,10 @@
+import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { takeUntil } from 'rxjs';
+import { mergeMap, takeUntil, Observable } from 'rxjs';
 import { Message } from './../../../../lib/consts/message.const';
 import { ProductService } from './../../../services/product.service';
-import { TDSHelperString } from 'tds-ui/shared/utility';
 import { SharedService } from './../../../services/shared.service';
 import { ProductTemplateUOMLineService } from './../../../services/product-template-uom-line.service';
-import { THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { CreateDefaultProductComponent } from './../components/create-default-product/create-default-product.component';
@@ -21,51 +20,45 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
 })
 export class DefaultOrderComponent implements OnInit {
 
-  defaultProduct?: TDSSafeAny;
-  key!:string;
+  defaultProduct?: Detail_QuickSaleOnlineOrder;
 
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private cacheApi: THelperCacheService,
     private shareService: SharedService,
     private productService: ProductService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
-    this.key = this.productTemplateUOMLineService._keyCacheDefaultProduct;
-    
-    this.cacheApi.getItem(this.key).subscribe(res =>{
 
-      if(res){
-        let stringData = JSON.parse(res.value).value;
-        //TODO: lấy sản phẩm mặc định từ cache
-        if(TDSHelperString.isString(stringData)){
-          this.defaultProduct = this.prepareModel(JSON.parse(stringData));console.log(JSON.parse(stringData))
-        }
+    this.productTemplateUOMLineService.getDefaultProduct().pipe(takeUntil(this.destroy$)).subscribe(res=>{
+      //TODO: lấy sản phẩm mặc định từ cache
+      this.defaultProduct = {...res};
+    },
+    err => {
+      //TODO: lấy sản phẩm mặc định từ sale configs
+      this.shareService.getConfigs().pipe(takeUntil(this.destroy$))
+        .pipe(mergeMap(item => {
 
-      }else{
-        //TODO: lấy sản phẩm mặc định từ sale configs
-        this.shareService.getConfigs().pipe(takeUntil(this.destroy$)).subscribe(item => {
+          if(item.SaleSetting.ProductId){
+            
+            return this.productService.getById(item.SaleSetting.ProductId);
+          }else{
 
-          if(TDSHelperObject.hasValue(item.SaleSetting.Product)){
-            let productId = item.SaleSetting.ProductId;
-
-            this.productService.getById(productId).pipe(takeUntil(this.destroy$)).subscribe(res =>{
-
-              this.defaultProduct = this.prepareModel(res);
-              this.cacheApi.setItem(this.key, JSON.stringify(this.defaultProduct));
-
-            }, err => {
-              this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-            })
+            return new Observable<any>();
           }
+
+        }))
+        .subscribe(res => {
+          //TODO: Trường hợp có sản phẩm
+          this.defaultProduct = this.prepareModel(res);
+
+          this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
         },
         err => {
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
         })
-      }
     })
   }
 
@@ -81,25 +74,30 @@ export class DefaultOrderComponent implements OnInit {
       if(TDSHelperObject.hasValue(result)){
         this.defaultProduct = this.prepareModel(result);
 
-        this.cacheApi.setItem(this.key, JSON.stringify(this.defaultProduct));
+        this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
       }
     })
   }
 
   prepareModel(data:TDSSafeAny){
     return {
-      Id: data.Id,
-      Name: data.Name,
-      NameGet: data.NameGet,
-      ImageUrl: data.ImageUrl,
-      ListPrice: data.ListPrice || data.Price,
-      UOMId: data.UOMId,
-      UOMName: data.UOMName || data.UOM?.Name
-    };
+      Id: null,
+      Quantity: data?.Quantity || data?.QtyAvailable,
+      Price: data?.ListPrice || data?.Price,
+      ProductId: data?.Id,
+      ProductName: data?.Name,
+      ProductNameGet: data?.NameGet,
+      ProductCode: data?.DefaultCode,
+      UOMId: data?.UOMId,
+      UOMName: data?.UOMName || data?.UOM?.Name,
+      Factor: data?.Factor,
+      ImageUrl: data?.ImageUrl
+    } as Detail_QuickSaleOnlineOrder;
   }
 
   removeDefaultProduct(){
     delete this.defaultProduct;
-    this.cacheApi.removeItem(this.key);
+
+    this.productTemplateUOMLineService.removeApiCache();
   }
 }
