@@ -189,7 +189,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
   }
 
   onEdit(order: TDSSafeAny) {
-    this.conversationOrderFacade.editOrderFormPost(order);
+    // this.conversationOrderFacade.editOrderFormPost(order);
   }
 
   onCheck(orderId: string, event: TDSCheckboxChange) {

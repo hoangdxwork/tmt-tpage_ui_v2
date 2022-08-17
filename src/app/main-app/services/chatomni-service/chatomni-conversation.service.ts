@@ -120,4 +120,14 @@ export class ChatomniConversationService extends BaseSevice {
     }
   }
 
+  getInfo(teamId: number, csid: string): Observable<any> {
+
+    let id = `${teamId}_${csid}`;
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/info?id=${id}`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
 }

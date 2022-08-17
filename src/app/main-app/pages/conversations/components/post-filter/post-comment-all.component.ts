@@ -258,11 +258,11 @@ export class PostCommentAllComponent implements OnDestroy {
   }
 
   onInformation(item: ActivityByGroup) {
-    this.conversationOrderFacade.commentFormPost(item, false);
+    // this.conversationOrderFacade.commentFormPost(item, false);
   }
 
   onCreateOrder(item: ActivityByGroup) {
-    this.conversationOrderFacade.commentFormPost(item, true);
+    // this.conversationOrderFacade.commentFormPost(item, true);
   }
 
   nextData(event: any) {

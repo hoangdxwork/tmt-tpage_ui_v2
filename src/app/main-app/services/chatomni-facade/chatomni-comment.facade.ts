@@ -1,14 +1,13 @@
 import { ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ResponseAddMessCommentDto } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { Injectable, OnDestroy } from "@angular/core";
-import { map, Observable, Subject, takeUntil } from "rxjs";
+import { map, Observable, shareReplay, Subject, takeUntil } from "rxjs";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { CRMTeamService } from "../crm-team.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { PartnerService } from '../partner.service';
-import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { PartnerTimeStampDto, PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto';
 
 @Injectable()
@@ -23,7 +22,6 @@ export class ChatomniCommentFacade extends BaseSevice  {
   partner: { [teamId: number] : PartnerTimeStampItemDto } = {};
 
   constructor(private apiService: TCommonService,
-    private crmTeamService: CRMTeamService,
     private partnerService: PartnerService) {
     super(apiService)
   }
@@ -88,9 +86,8 @@ export class ChatomniCommentFacade extends BaseSevice  {
             observer.next(this.partner[teamId]);
             observer.complete();
         }
-
       }
-    })
+    }, shareReplay())
   }
 
 }

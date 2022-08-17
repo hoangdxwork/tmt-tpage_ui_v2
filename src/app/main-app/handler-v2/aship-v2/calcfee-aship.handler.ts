@@ -1,12 +1,8 @@
 
-import { formatNumber } from "@angular/common";
 import { Injectable } from "@angular/core";
-import { FormGroup } from "@angular/forms";
 import { Observable } from "rxjs";
 import { AshipGetInfoConfigProviderDto } from "src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto";
-import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from "src/app/main-app/dto/carrierV2/delivery-carrier-response.dto";
 import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
-import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray } from "tds-ui/shared/utility";
 import { FastSaleOrderService } from "../../services/fast-sale-order.service";

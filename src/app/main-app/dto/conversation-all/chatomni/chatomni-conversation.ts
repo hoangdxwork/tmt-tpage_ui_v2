@@ -46,10 +46,8 @@ export interface ChatomniConversationItemDto {
   Tags: ChatomniConversationTagDto[];
   UpdatedTime: Date;
   LatestMessage?: ChatomniConversationMessageDto;
-
   State?: StateChatbot;
-  HasOrder?: boolean | null;
-  Message?: string; // Không có trong dữ liệu trả về, dùng để hiện thị
+  Message?: string;
 }
 
 export interface PagingTimestamp {
