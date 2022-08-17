@@ -395,7 +395,7 @@ export class TDSConversationItemV2Component implements OnInit {
           res.name = this.team.Name;
 
           let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
-          this.children = [ ...this.children, data];
+          this.children = [ ...(this.children || []), data];
 
           //TODO: Đẩy qua conversation-all-v2
           let itemLast = {...data}

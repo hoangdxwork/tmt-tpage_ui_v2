@@ -289,7 +289,7 @@
           <div *ngIf="children" class="chat-list" @eventReplyComment>
               <div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
                   <div class="avatar mr-2">
-                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.UserId"
+                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
                         [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
                   </div>

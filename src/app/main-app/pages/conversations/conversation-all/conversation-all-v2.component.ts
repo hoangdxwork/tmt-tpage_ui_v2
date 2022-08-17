@@ -173,8 +173,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
         if(index >- 1) {
           this.lstOmcs[index].CountUnread = 0;
-
-          this.cdRef.detectChanges();
+          this.lstOmcs[index] = {...this.lstOmcs[index]};
         }
       }
     })
@@ -185,8 +184,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
         if(index >- 1) {
           this.lstOmcs[index].State = 0;
-
-          this.cdRef.detectChanges();
+          this.lstOmcs[index] = {...this.lstOmcs[index]};
         }
       }
     })
