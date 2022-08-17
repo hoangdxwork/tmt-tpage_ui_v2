@@ -1,5 +1,5 @@
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
-import { ProductTemplateOUMLineService } from './../../../../services/product-template-uom-line.service';
+import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
@@ -159,7 +159,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private viewContainerRef: ViewContainerRef,
     private facebookCommentService: FacebookCommentService,
     private destroy$: TDSDestroyService,
-    private productTemplateOUMLineService: ProductTemplateOUMLineService,
+    private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private omniEventEmiter: ChatomniEventEmiterService) {
   }
 
@@ -188,12 +188,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.selectProduct(res);
         let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id)
         if(index > -1){
-          this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
-            `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
+          this.notification.success(`ĝã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
+            `${res.NameGet} \n => Tổng tiờn: ${this.quickOrderModel.TotalAmount}`)
         }
     });
 
-    //TODO: tạo đơn hàng từ comment bài viết, xử dụng insertFromBot gọi save
+    //TODO: tạo đơn hàng từ comment bài viết, xử dụng insertFromBot gời save
     this.conversationOrderFacade.loadCreateOrderByPostComment$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataItemDto) => {
       if(res) {
           this.isEnableCreateOrder = false;
@@ -295,7 +295,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
     }, error => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
     });
   }
 
@@ -471,7 +471,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   calcFee() {
     if(!this.saleModel.Carrier) {
-      this.message.error('Vui lòng chọn đối tác giao hàng')
+      this.message.error('Vui lòng chờn đối tác giao hàng')
     }
 
     let model = this.saleModel.Carrier as any;
@@ -513,7 +513,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         delete res['@odata.context'];
         this.quickOrderModel = {...res};
 
-        //TODO: trường hợp tạo lần đầu thì gọi in phiếu
+        //TODO: trường hợp tạo lần đầu thì gời in phiếu
         if(this.quickOrderModel.IsCreated) {
             let fbid = model.Facebook_ASUserId;
             this.saleOnline_OrderService.setCommentOrder(res, fbid);
@@ -531,7 +531,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.isLoading = false;
     }, error => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` || 'ĝã xảy ra lỗi');
     })
   }
 
@@ -573,7 +573,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
     }, error => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` || 'ĝã xảy ra lỗi');
     })
   }
 
@@ -611,7 +611,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       }, error => {
 
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
     })
   }
 
@@ -672,7 +672,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       fs_model.FormAction = model.FormAction;
 
       if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
-          this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          this.notification.warning( 'Không thể tạo hóa đơn', 'ĝơn hàng chưa có chi tiết');
           return false;
       }
       if (!fs_model.Phone) {
@@ -717,7 +717,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   // confirmShipService(carrier: TDSSafeAny) {
   //   this.modal.info({
   //     title: 'Cảnh báo',
-  //     content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
+  //     content: 'ĝối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
   //     onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err);}),
   //     onCancel:()=>{},
   //     okText: "Ok",
@@ -779,7 +779,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalAddPromotion(){
     // this.modal.create({
-    //   title: 'Chọn khuyến mãi',
+    //   title: 'Chờn khuyến mãi',
     //   content: ModalApplyPromotionComponent,
     //   size: "lg",
     //   viewContainerRef: this.viewContainerRef
@@ -790,7 +790,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalConfigProduct() {
     this.modal.create({
-        title: 'Chọn bảng giá',
+        title: 'Chờn bảng giá',
         content: TpageConfigProductComponent,
         size: "lg",
         viewContainerRef: this.viewContainerRef
@@ -799,7 +799,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalListProduct(){
     const modal = this.modal.create({
-        title: 'Chọn sản phẩm',
+        title: 'Chờn sản phẩm',
         content: ModalListProductComponent,
         viewContainerRef: this.viewContainerRef,
         size: 'xl'
@@ -940,7 +940,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let top = 20;
     let skip = 0;
 
-    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch)
+    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch)
       .pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoadingProduct = false ))
       .subscribe((res: ODataProductDTOV2) => {
            this.lstProductSearch = [...res.value]
@@ -1029,11 +1029,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
     if(!this.saleModel.Carrier) {
-        return this.message.error('Vui lòng chọn  đối tác giao hàng');
+        return this.message.error('Vui lòng chờn  đối tác giao hàng');
     }
 
     if (!this.saleModel) {
-        return this.message.error('Vui lòng chọn nhập khối lượng');
+        return this.message.error('Vui lòng chờn nhập khối lượng');
     }
 
     let model = this.prepareModelFeeV2();
@@ -1052,7 +1052,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   let svDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
                   this.selectShipServiceV2(svDetail);
 
-                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+                  this.message.success(`ĝối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
           } else {
             this.message.error(res.error?.message);

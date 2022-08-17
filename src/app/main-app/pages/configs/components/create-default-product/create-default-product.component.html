@@ -1,0 +1,17 @@
+<tds-spin [spinning]="isLoading">
+    <div class="w-full grid grid-cols-4 gap-x-6">
+        <tds-label>Sản phẩm</tds-label>
+        <tds-form-field class="w-full col-span-3">
+            <tds-select valueField="Id" textField="NameGet" placeholder='Chọn sản phẩm'
+                [ngModel]="defaultProduct" (ngModelChange)="onChangeProduct($event)"
+                [valuePrimitive]="false" [allowClear]="false" [data]="lstProduct"
+                [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)">
+            </tds-select>
+        </tds-form-field>
+    </div>
+    
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+        <button tds-button class=" w-[100px]" type="submit" color="primary" (click)="onSave()">Áp dụng</button>
+    </div>
+</tds-spin>

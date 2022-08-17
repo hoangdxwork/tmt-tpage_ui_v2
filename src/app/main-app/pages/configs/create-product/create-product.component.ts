@@ -13,7 +13,7 @@ import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggest
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from '../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
-import { ProductTemplateOUMLineService } from '../../../services/product-template-uom-line.service';
+import { ProductTemplateUOMLineService } from '../../../services/product-template-uom-line.service';
 import { ProductTemplateService } from '../../../services/product-template.service';
 import { CreateCountryModalComponent } from '../components/create-country-modal/create-country-modal.component';
 import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-UOM-modal.component';
@@ -82,7 +82,7 @@ export class ConfigAddProductComponent implements OnInit {
     private productCategoryService: ProductCategoryService,
     private productTemplateService: ProductTemplateService,
     private stockChangeProductQtyService: StockChangeProductQtyService,
-    private productTemplateOUMLine: ProductTemplateOUMLineService) {
+    private productTemplateUOMLine: ProductTemplateUOMLineService) {
     this.createForm();
   }
 
@@ -234,7 +234,7 @@ export class ConfigAddProductComponent implements OnInit {
   }
 
   loadUOMs() {
-    this.productTemplateOUMLine.getOUMs().pipe(takeUntil(this.destroy$)).subscribe(
+    this.productTemplateUOMLine.getOUMs().pipe(takeUntil(this.destroy$)).subscribe(
       (res: TDSSafeAny) => {
         this.UOMList = [...res.value];
       },

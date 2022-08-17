@@ -1,6 +1,6 @@
 import { TDSMessageService } from 'tds-ui/message';
 import { FilterObjDTO } from 'src/app/main-app/services/mock-odata/odata-product.service';
-import { ProductTemplateOUMLineService } from './../../../../services/product-template-uom-line.service';
+import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ConversationOrderFacade } from './../../../../services/facades/conversation-order.facade';
 import { AfterViewInit, ChangeDetectorRef, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
@@ -55,7 +55,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
     private message: TDSMessageService,
     private commonService: CommonService,
     private conversationOrderFacade: ConversationOrderFacade,
-    private productTemplateOUMLineService: ProductTemplateOUMLineService) {
+    private productTemplateUOMLineService: ProductTemplateUOMLineService) {
   }
 
   ngOnInit(): void {
@@ -88,7 +88,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
     this.validateData();
     this.isLoading = true;
 
-    this.productTemplateOUMLineService.getProductUOMLine(this.pageIndex - 1, this.pageSize, this.textSearchProduct)
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex - 1, this.pageSize, this.textSearchProduct)
     .pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
     .subscribe(res=>{
       this.lstOfData = [...res.value];

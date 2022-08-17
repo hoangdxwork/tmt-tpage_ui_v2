@@ -109,6 +109,8 @@ import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery
 import { UserRestHandler } from '../../handler-v2/user-rest.handler';
 import { CreateComboModalComponent } from './components/create-combo-modal/create-combo-modal.component';
 import { UpdateInitInventoryComponent } from './components/update-init-inventory/update-init-inventory.component';
+import { DefaultOrderComponent } from './default-order/default-order.component';
+import { CreateDefaultProductComponent } from './components/create-default-product/create-default-product.component';
 
 
 const SERVICES = [
@@ -189,6 +191,8 @@ const SERVICES = [
     FacebookCartComponent,
     CreateComboModalComponent,
     UpdateInitInventoryComponent,
+    DefaultOrderComponent,
+    CreateDefaultProductComponent,
   ],
   imports: [
     CommonModule,
