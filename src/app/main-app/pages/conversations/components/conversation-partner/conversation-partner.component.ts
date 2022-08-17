@@ -106,7 +106,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   eventEmitter(){
     // TODO: load thông tin partner từ comment bài post 'comment-filter-all'
-    this.conversationOrderFacade.loadPartnerByPostComment$.subscribe((res: ChatomniDataItemDto) => {
+    this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataItemDto) => {
       if(TDSHelperObject.hasValue(res)) {
           (this.omcs_Item as any) = null;
 
@@ -117,7 +117,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     })
 
     // TODO: load thông tin partner khi tạo đơn hàng thành công
-    this.omniEventEmiter.callConversationPartnerEmiter$.subscribe(res=>{
+    this.omniEventEmiter.callConversationPartnerEmiter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       if(res) {
         let psid = this.omcs_Item.ConversationId;
         let pageId = this.team.ChannelId;
