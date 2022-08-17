@@ -184,12 +184,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   eventEmitter(){
-    this.conversationOrderFacade.onAddProductOrder$.subscribe(res => {
+    this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.selectProduct(res);
-        let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id)
+        let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId);
+
         if(index > -1){
-          this.notification.success(`ĝã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
-            `${res.NameGet} \n => Tổng tiờn: ${this.quickOrderModel.TotalAmount}`)
+            this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
+            `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
         }
     });
 
@@ -202,7 +203,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.insertFromPostModel.UserId = this.userInit.Id;
           this.insertFromPost(this.insertFromPostModel, res);
 
-          this.facebookCommentService.saleOnline_Facebook_Comment(res.UserId, res.ObjectId).subscribe((comments: OdataSaleOnline_Facebook_CommentDto) => {
+          this.facebookCommentService.saleOnline_Facebook_Comment(res.UserId, res.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((comments: OdataSaleOnline_Facebook_CommentDto) => {
               if(comments && comments.value) {
                   this.so_FacebookComments = [...comments.value];
               }
@@ -210,7 +211,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       }
     })
 
-    // TODO: load thông tin đơn háng khi click mã đơn hàng từ danh sách comment bài viết
+    // TODO: load thông tin đơn hàng khi click mã đơn hàng từ danh sách comment bài viết
     this.conversationOrderFacade.clickOrderFromCommentPost$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(res && res.orderId && res.comment) {
 
@@ -221,7 +222,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.insertFromPostModel.UserId = this.userInit.Id;
 
           this.isLoading = true;
-          this.saleOnline_OrderService.getById(res.orderId).subscribe((order: any) => {
+          this.saleOnline_OrderService.getById(res.orderId).pipe(takeUntil(this.destroy$)).subscribe((order: any) => {
             if(order) {
                 delete order['@odata.context'];
                 this.quickOrderModel = {...order};
@@ -312,7 +313,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     if (data.Carrier && data.Carrier.ExtraProperties) {
 
       let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
-
       this.insuranceInfo = data.ShipmentDetailsAship?.InsuranceInfo || null;
 
       this.configsProviderDataSource = _shipmentDetailsAship.map(x => {
@@ -527,7 +527,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
             this.orderPrintService.printOrder(res, comment.Message);
             this.message.success('Cập nhật đơn hàng thành công');
-        }      
+        }
         this.isLoading = false;
     }, error => {
         this.isLoading = false;
