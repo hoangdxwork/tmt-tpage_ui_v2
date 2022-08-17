@@ -1,3 +1,4 @@
+import { ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { Tag, MDBByPSIdDTO } from './../../dto/crm-matching/mdb-by-psid.dto';
 import { ChatomniLastMessageEventEmitterDto, ChatomniConversationItemDto, ChatomniTagsEventEmitterDto, ChatomniConversationTagDto } from './../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniFacebookDataDto, ChatomniDataItemDto, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
@@ -71,6 +72,22 @@ export class ChatomniMessageFacade extends BaseSevice  {
     return  {...model};
   }
 
+  mappingChatomniDataItemDtoV2(data:ResponseAddMessCommentDtoV2){
+    let model  = {
+      Id: data.Id,
+      Type: data.MessageType,
+      IsOwner: data.IsOwner,
+      Data: { ...data.Data } as unknown as ChatomniFacebookDataDto,
+      CreatedTime: data.CreatedTime,
+      Message: data.Message,
+      Status: data.Status as number,
+      Error: data.Error,
+      CreatedBy: data.CreatedBy,
+      UserId: data.UserId
+    } as unknown as ChatomniDataItemDto;
+
+    return  {...model};
+  }
 
   mappingModelTag(tag:TDSSafeAny){
     let model = {

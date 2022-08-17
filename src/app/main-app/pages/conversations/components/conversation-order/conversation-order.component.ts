@@ -81,6 +81,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   isLoadingProduct: boolean = false;
 
   lstUser!: Array<ApplicationUserDTO>;
+  users!: Array<ApplicationUserDTO>;
   lstCarrier!: DeliveryCarrierDTOV2[];
 
   saleConfig!: InitSaleDTO;
@@ -367,6 +368,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   loadUsers() {
     this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.users = [...res.value];
         this.lstUser = [...res.value];
     });
   }
@@ -467,6 +469,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
       }
     }
+  }
+
+  assignUser(){
+  }
+
+  searchUser(){
+    let data = this.users;
+    let key = this.keyFilterUser;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstUser = data
   }
 
   calcFee() {
@@ -1055,7 +1071,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.message.success(`ĝối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
           } else {
-            this.message.error(res.error?.message);
+            this.message.error(res.error? res.error.message: 'Lỗi chọn đối tác');
           }
 
           this.isLoading = false;

@@ -73,9 +73,27 @@
                             <i class="tdsi-arrow-down-line w-1/5"></i>
 
                             <tds-dropdown-menu #menuUser="tdsDropdownMenu">
-                                <div class="w-72 max-h-80 overflow-hidden overflow-y-auto tds-panel-scroll">
-                                    <div *ngFor="let user of lstUser">
-                                        <div (click)="changeUser(user)" tds-dropdown-item>{{user.Name}}</div>
+                                <div class="w-72 max-h-80 overflow-hidden overflow-y-auto tds-panel-scroll ">
+                                    <div class="px-4 py-2">
+                                        <tds-form-field class="w-full">
+                                            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchUser()"/>
+                                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                                        </tds-form-field>
+                                    </div>
+                                    <div class="gap-y-2 flex flex-col overflow-y-auto tds-panel-scroll">
+                                        <div *ngFor="let item of lstUser" (click)="changeUser(item)"
+                                        class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
+                                        <div class="flex gap-x-2">
+                                            <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
+                                            <span>{{item.Name}}</span>
+                                        </div>
+                                        <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == quickOrderModel?.User?.Id"></span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">
+                                        <span class="cursor-pointer pt-2 flex items-center" (click)="assignUser()">
+                                            <i class="tdsi-error-line leading-none mr-2"></i>Bỏ gán nhân viên
+                                        </span>
                                     </div>
                                 </div>
                             </tds-dropdown-menu>

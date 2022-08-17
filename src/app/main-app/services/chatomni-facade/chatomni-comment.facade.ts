@@ -1,5 +1,6 @@
+import { Data } from './../../dto/saleonlineorder/create-fastsaleorder.dto';
 import { ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { ResponseAddMessCommentDto } from './../../dto/conversation-all/chatomni/response-mess.dto';
+import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { Injectable, OnDestroy } from "@angular/core";
 import { map, Observable, Subject, takeUntil } from "rxjs";
 import { TCommonService } from "src/app/lib";
@@ -54,6 +55,23 @@ export class ChatomniCommentFacade extends BaseSevice  {
       Status: data.status as number,
       CreatedBy: data.CreatedBy,
       UserId: data.account_id
+    } as unknown as ExtrasChildsDto;
+
+    return  {...model};
+  }
+
+  mappingExtrasChildsDtoV2(data: ResponseAddMessCommentDtoV2){
+    let model  = {
+      Id: data.Id,
+      Type: data.MessageType,
+      IsOwner: data.IsOwner,
+      Data: { ...data.Data
+      } as unknown,
+      ChannelCreatedTime: data.ChannelCreatedTime,
+      Message: data.Message,
+      Status: data.Status as number,
+      CreatedBy: data.CreatedBy,
+      UserId: data.UserId
     } as unknown as ExtrasChildsDto;
 
     return  {...model};
