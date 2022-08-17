@@ -1,8 +1,6 @@
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { ActivityByGroup } from './../../dto/conversation/post/comment-group.dto';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { map, takeUntil } from "rxjs/operators";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
 import { CheckConversationData } from "../../dto/partner/check-conversation.dto";
 import { BaseSevice } from "../base.service";
@@ -12,7 +10,6 @@ import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { ConversationOrderForm } from '../../dto/coversation-order/conversation-order.dto';
 import { GeneralConfigsFacade } from "./general-config.facade";
-import { ProductDTO } from "../../dto/product/product.dto";
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TabPartnerCvsRequestModel } from '../../dto/conversation-partner/partner-conversation-request.dto';
@@ -34,7 +31,6 @@ export class ConversationOrderFacade extends BaseSevice  {
 
   private lastOrder!: QuickSaleOnlineOrderModel;
   private partner!: TabPartnerCvsRequestModel;
-  private productDefault!: Detail_QuickSaleOnlineOrder;
 
   // Event loading tab partner, order
   public onChangeTab$ = new EventEmitter<ChangeTabConversationEnum>();
@@ -75,7 +71,6 @@ export class ConversationOrderFacade extends BaseSevice  {
       private sgRConnectionService: SignalRConnectionService,
       private generalConfigsFacade: GeneralConfigsFacade,
       private auth: TAuthService,
-      private productService: ProductService,
       private sharedService: SharedService) {
         super(apiService);
 
@@ -101,200 +96,21 @@ export class ConversationOrderFacade extends BaseSevice  {
       if(!exits) {
           this.partner = { ... obs };
 
-          // TODO: partner có đơn hàng gần nhất LastOrder
+          // TODO: partner có đơn hàng nháp gần nhất LastOrder
           if(obs && obs?.LastOrder) {
               this.lastOrder = {...this.loadLastOrder(obs)};
               this.onLastOrderCheckedConversation$.emit(this.lastOrder);
           }
-          // TODO: Không có đơn hàng gần nhất thì sử dụng đơn hàng nháp gần nhất
+          // TODO: Không có đơn hàng nháp gần nhất thì tạo form mặc định
           else {
-              this.loadLastOrderDraft(obs).subscribe((res: any) => {
-                  if(res) {
-                      this.onLastOrderCheckedConversation$.emit(res);
-                  }
-              })
+              let orderDefault = {...this.loadLastOrderDefault(obs)};
+              this.onLastOrderCheckedConversation$.emit(orderDefault);
           }
       } else {
-          this.lastOrder = {...this.loadCurrentPartner(obs)};
+          this.lastOrder = {...this.loadCurrentPartner(obs)};debugger
           this.onLastOrderCheckedConversation$.emit(this.lastOrder);
       }
     });
-  }
-
-  loadOrderFromSignalR(){
-    this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
-        if(res && (res.action == "create" || res.action == "updated")) {
-
-          if(this.partner && this.currentTeam && this.partner.Id &&
-            (this.partner.Facebook_ASUserId == res.data.facebook_ASUserId && res.data.facebook_PageId == this.currentTeam.ChannelId ||
-            this.partner.Facebook_ASUserId == res.data.facebook.psId && res.data.facebook.pageId == this.currentTeam.ChannelId)) {
-
-                this.partnerService.getLastOrder(this.partner.Id).subscribe((obs: any) => {
-                    if(obs) {
-                        this.lastOrder = {...obs};
-
-                        this.lastOrder.Details = [...obs.Details];
-                        this.lastOrder.PartnerId = obs.PartnerId || obs.Partner?.Id;
-                        this.lastOrder.PartnerName = obs.PartnerName || obs.Partner?.Name;
-
-                    } else {
-                      this.lastOrder && (delete this.lastOrder.Id)
-                      this.lastOrder && (delete this.lastOrder.Code)
-                    }
-
-                    this.onLastOrderCheckedConversation$.emit(this.lastOrder);
-                })
-          }
-        }
-      }, error => {
-          console.log(`Load đơn hàng từ signalR đã xảy ra lỗi: ${error}`);
-      });
-  }
-
-  loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
-        if(TDSHelperObject.hasValue(res.SaleSetting?.Product)) {
-            this.productDefault = this.createProductDefault(res.SaleSetting?.Product);
-        }
-    });
-  }
-
-  loadUserLogged() {
-    this.auth.getUserInit().subscribe(res => {
-        if(res) {
-            this.userInit = res;
-        }
-    });
-  }
-
-  loadTeam() {
-    this.currentTeam = this.crmTeamService.getCurrentTeam() as any;
-  }
-
-  createProductDefault(model: ProductDTO): any {
-    let x = {
-        Note: model.Note,
-        Price: model.Price || model.PriceVariant || 0,
-        ProductCode: model.DefaultCode,
-        ProductId: model.Id,
-        ProductName: model.Name,
-        ProductNameGet: model.NameGet,
-        Quantity: 1,
-        UOMId: model.UOMId,
-        UOMName: model.UOMName
-    } as Detail_QuickSaleOnlineOrder
-
-    return {...x};
-  }
-
-  editOrderFormPost(order: TDSSafeAny) {
-    // this.onChangeTab$.emit(ChangeTabConversationEnum.order);
-    // this.saleOnline_OrderService.getById(order.Id)
-    //   .subscribe(res => {
-    //     let pageId = res?.Facebook_PostId.split("_")[0];
-    //     let psid = res?.Facebook_ASUserId || res?.Facebook_UserId;
-
-    //     this.order = this.loadLastOrder(res);
-    //     this.onOrderCheckPost$.emit(this.order);
-    //     this.checkConversation(pageId, psid, res);
-    //   });
-  }
-
-  commentFormPost(data: ActivityByGroup, isCreateOrder: boolean) {
-    // let psid = data?.from?.id;
-    // let postId = data?.object?.id;
-
-    // if(postId){
-    //   let pageId = postId.split("_")[0];
-    //   let currentTeam = this.crmTeamService.getCurrentTeam();
-
-    //   if(isCreateOrder === true) {
-    //     this.onChangeTab$.emit(ChangeTabConversationEnum.order);
-    //     this.createOrderByComment(data, psid, pageId)
-    //       .subscribe(res => {
-    //         this.checkConversation(pageId, psid, data);
-    //       }, error => {});
-    //   }
-    //   else {
-    //     this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-    //     // this.loadPartnerByComment(data, psid, postId, currentTeam?.Id)
-    //     //   .subscribe(res => {
-    //     //     this.checkConversation(pageId, psid, data);
-    //     //   }, error => {});
-    //   }
-    // }else{
-    //   this.message.error('Không tìm thấy thông tin page')
-    // }
-  }
-
-  createOrderByComment(comment: TDSSafeAny, psid: string, pageId: string): Observable<any> {
-    return new Observable(observer => {
-
-      // this.checkInfoPartner(psid, pageId).subscribe(infoPartner => {
-      //   if(infoPartner?.Data) {
-      //     // Tạo order form, update theo comment
-      //     let formOrder = this.orderFormHandler.createOrderFormGroup();
-      //     this.orderFormHandler.updateFormByComment(formOrder, comment, infoPartner?.Data);
-
-      //     // Gán Facebook_Comments
-      //     let fbComment = this.checkFormHandler.prepareOrderComment(comment);
-      //     formOrder.controls.Facebook_Comments.setValue([fbComment]);
-
-      //     // Chuẩn bị model
-      //     let model = this.checkFormHandler.prepareOrder(formOrder);
-
-      //     // Tạo đơn theo bình luận
-      //     this.saleOnline_OrderService.insertFromPost(model, true).subscribe((res) => {
-      //       // this.order = this.loadLastOrder(res);
-      //       this.onOrderCheckPost$.emit(this.order);
-      //       this.message.success(Message.Order.UpdateSuccess);
-
-      //       observer.next();
-      //       observer.complete();
-      //     }, error => {
-      //       this.message.error(`${error?.error?.message}` || JSON.stringify(error));
-      //       observer.next(error);
-      //     });
-      //   }
-      // });
-    });
-  }
-
-  loadPartnerByComment(comment: TDSSafeAny, psid: string, postId: string, teamId: number) {
-    // return new Observable(observer => {
-
-    //   this.facebookCommentService.getCustomersByFacebookId(psid, postId, teamId).subscribe(customer => {
-    //     if(TDSHelperArray.hasListValue(customer?.orders)) {
-    //       this.order = this.loadLastOrder(customer.orders[0]);
-    //       this.onOrderCheckPost$.emit(this.order);
-
-    //       observer.next();
-    //       observer.complete();
-    //     }
-    //     else {
-    //       let pageId = postId.split("_")[0];
-
-    //       this.checkInfoPartner(psid, pageId).subscribe(partner => {
-    //         this.order = this.loadOrderDefault(partner?.Data, comment);
-    //         this.onOrderCheckPost$.emit(this.order);
-
-    //         observer.next();
-    //         observer.complete();
-    //       });
-    //     }
-    //   });
-    // });
-  }
-
-  checkConversation(pageId: string, psid: string, dataComment?: any ) {
-    this.partnerService.checkConversation(pageId, psid)
-      .subscribe(res => {
-        if(res?.Data && res.Success === true) {
-          res.Data.Facebook_UserName = res.Data.Facebook_UserName || dataComment?.from?.name || dataComment?.Facebook_UserName;
-        }
-
-        // this.onLoadConversationPartner$.emit(res?.Data)
-      });
   }
 
   loadLastOrder(model: TabPartnerCvsRequestModel): any {
@@ -342,7 +158,7 @@ export class ConversationOrderFacade extends BaseSevice  {
     return {...x};
   }
 
-  loadLastOrderDraft(model: TabPartnerCvsRequestModel): Observable<any> {
+  loadLastOrderDefault(model: TabPartnerCvsRequestModel) {
     let x = {} as QuickSaleOnlineOrderModel;
 
     x.Name = model.Name || model.Facebook_UserName;
@@ -374,55 +190,57 @@ export class ConversationOrderFacade extends BaseSevice  {
 
     x.Note = model.Comment;
 
+    // TODO: Xử lý gán sản phẩm mặc định từ cầu hình tại đây
     if(TDSHelperArray.hasListValue(model.LastOrder?.Details)) {
         x.Details = [ ...model?.LastOrder.Details ];
     } else {
         x.Details = [];
     }
 
+    return {...x};
 
-    return new Observable(obs => {
+    // return new Observable(obs => {
 
-      if(TDSHelperString.hasValueString(model.page_id) && TDSHelperString.hasValueString(model.psid)) {
+    //   if(TDSHelperString.hasValueString(model.page_id) && TDSHelperString.hasValueString(model.psid)) {
 
-        let data = {
-            UserId: model.psid,
-            PageId: model.page_id
-        };
+    //     let data = {
+    //         UserId: model.psid,
+    //         PageId: model.page_id
+    //     };
 
-        this.partnerService.checkInfo(data).subscribe((res: any) => {
-            if(res && res.Success && res.Data?.Id) {
+    //     this.partnerService.checkInfo(data).subscribe((res: any) => {
+    //         if(res && res.Success && res.Data?.Id) {
 
-                if(TDSHelperString.hasValueString(res.Data.Name)) {
-                    x.PartnerName = res.Data.Name;
-                    x.Name = res.Data.Name;
-                }
+    //             if(TDSHelperString.hasValueString(res.Data.Name)) {
+    //                 x.PartnerName = res.Data.Name;
+    //                 x.Name = res.Data.Name;
+    //             }
 
-                x.Email = res.Data.Email;
-                x.PartnerId = res.Data.Id;
+    //             x.Email = res.Data.Email;
+    //             x.PartnerId = res.Data.Id;
 
-                if(TDSHelperString.hasValueString(res.Data.Street)) {
-                    x.Address = res.Data.Street;
-                }
-                if(TDSHelperString.hasValueString(res.Data.Phone)) {
-                    x.Telephone = res.Data.Phone;
-                }
+    //             if(TDSHelperString.hasValueString(res.Data.Street)) {
+    //                 x.Address = res.Data.Street;
+    //             }
+    //             if(TDSHelperString.hasValueString(res.Data.Phone)) {
+    //                 x.Telephone = res.Data.Phone;
+    //             }
 
-                obs.next({...x});
-                obs.complete();
-            } else {
-                obs.next({...x});
-                obs.complete();
-            }
-          }, error => {
-              obs.next(x);
-              obs.complete();
-        })
-      }
-    })
+    //             obs.next({...x});
+    //             obs.complete();
+    //         } else {
+    //             obs.next({...x});
+    //             obs.complete();
+    //         }
+    //       }, error => {
+    //           obs.next(x);
+    //           obs.complete();
+    //     })
+    //   }
+    // })
   }
 
-  loadCurrentPartner(model: TabPartnerCvsRequestModel): any {
+  loadCurrentPartner(model: TabPartnerCvsRequestModel): any {debugger
 
     this.partner = { ... model} as any;
     this.partner.LastOrder = { ... model.LastOrder };
@@ -474,33 +292,76 @@ export class ConversationOrderFacade extends BaseSevice  {
     return {...x};
   }
 
-  loadOrderDefault(data: CheckConversationData, dataComment?: TDSSafeAny){
-    const model =  {} as any; //this.orderDefault() as ConversationOrderForm;
+  // loadOrderDefault(data: CheckConversationData, dataComment?: TDSSafeAny){
+  //   const model =  {} as any; //this.orderDefault() as ConversationOrderForm;
 
-    model.Name = data.Name || "";
-    model.PartnerName = data.Name || "";
-    model.PartnerId = data.Id;
+  //   model.Name = data.Name || "";
+  //   model.PartnerName = data.Name || "";
+  //   model.PartnerId = data.Id;
 
-    model.Facebook_ASUserId = data.Facebook_ASUserId;
-    model.Facebook_UserName = data.Facebook_UserName || "";
-    model.Telephone = data.Phone || data.Facebook_UserPhone;
-    model.Email = data.Email;
-    model.Street = data.Street || data.Facebook_UserAddress;
+  //   model.Facebook_ASUserId = data.Facebook_ASUserId;
+  //   model.Facebook_UserName = data.Facebook_UserName || "";
+  //   model.Telephone = data.Phone || data.Facebook_UserPhone;
+  //   model.Email = data.Email;
+  //   model.Street = data.Street || data.Facebook_UserAddress;
 
-    model.City = data?.City?.code ? { Code: data.City.code, Name: data.City.name } : undefined;
-    model.District = data?.District?.code ? { Code: data.District.code, Name: data.District.name } : undefined;
-    model.Ward = data?.Ward?.code ? { Code: data.Ward.code, Name: data.Ward.name } : undefined;
+  //   model.City = data?.City?.code ? { Code: data.City.code, Name: data.City.name } : undefined;
+  //   model.District = data?.District?.code ? { Code: data.District.code, Name: data.District.name } : undefined;
+  //   model.Ward = data?.Ward?.code ? { Code: data.Ward.code, Name: data.Ward.name } : undefined;
 
-    model.Details = this.productDefault ?  [this.productDefault] : [];
-    model.User = this.userInit ? { Id: this.userInit?.Id, Name: this.userInit?.Name } : undefined;
+  //   model.Details = this.productDefault ?  [this.productDefault] : [];
+  //   model.User = this.userInit ? { Id: this.userInit?.Id, Name: this.userInit?.Name } : undefined;
 
-    if(TDSHelperObject.hasValue(dataComment)) {
-      model.Facebook_CommentId  = dataComment.id;
-      model.Facebook_PostId = dataComment?.object?.id;
-      model.Facebook_UserName = dataComment?.from?.name;
-      model.Facebook_UserId = dataComment?.from?.id;
-    }
+  //   if(TDSHelperObject.hasValue(dataComment)) {
+  //     model.Facebook_CommentId  = dataComment.id;
+  //     model.Facebook_PostId = dataComment?.object?.id;
+  //     model.Facebook_UserName = dataComment?.from?.name;
+  //     model.Facebook_UserId = dataComment?.from?.id;
+  //   }
 
-    return {...model};
+  //   return {...model};
+  // }
+
+  loadOrderFromSignalR(){
+    this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
+        if(res && (res.action == "create" || res.action == "updated")) {
+
+          if(this.partner && this.currentTeam && this.partner.Id &&
+            (this.partner.Facebook_ASUserId == res.data.facebook_ASUserId && res.data.facebook_PageId == this.currentTeam.ChannelId ||
+            this.partner.Facebook_ASUserId == res.data.facebook.psId && res.data.facebook.pageId == this.currentTeam.ChannelId)) {
+
+                this.partnerService.getLastOrder(this.partner.Id).subscribe((obs: any) => {
+                    if(obs) {
+                        this.lastOrder = {...obs};
+
+                        this.lastOrder.Details = [...obs.Details];
+                        this.lastOrder.PartnerId = obs.PartnerId || obs.Partner?.Id;
+                        this.lastOrder.PartnerName = obs.PartnerName || obs.Partner?.Name;
+
+                    } else {
+                      this.lastOrder && (delete this.lastOrder.Id)
+                      this.lastOrder && (delete this.lastOrder.Code)
+                    }
+
+                    this.onLastOrderCheckedConversation$.emit(this.lastOrder);
+                })
+          }
+        }
+      }, error => {
+          console.log(`Load đơn hàng từ signalR đã xảy ra lỗi: ${error}`);
+      });
   }
+
+  loadUserLogged() {
+    this.auth.getUserInit().subscribe(res => {
+        if(res) {
+            this.userInit = res;
+        }
+    });
+  }
+
+  loadTeam() {
+    this.currentTeam = this.crmTeamService.getCurrentTeam() as any;
+  }
+
 }

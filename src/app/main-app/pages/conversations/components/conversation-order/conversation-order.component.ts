@@ -186,7 +186,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   eventEmitter(){
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+
         this.selectProduct(res);
+
         let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId);
 
         if(index > -1){
@@ -560,11 +562,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       model.FormAction = formAction;
     }
 
-    if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
-        this.message.error('Vui lòng thêm sản phẩm')
-        return false;
-    }
-
     let fs_model = {} as FastSaleOrder_DefaultDTOV2;
     fs_model = this.prepareCsFastSaleOrder(model);
 
@@ -597,11 +594,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team);
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
-    }
-
-    if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
-        this.message.error('Vui lòng thêm sản phẩm')
-        return false;
     }
 
     let fs_model = {} as FastSaleOrder_DefaultDTOV2;
@@ -833,8 +825,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     if(index < 0) {
       let data = {...item} as ProductDTOV2;
 
-      let x = this.mappingDetailQuickSaleOnlineOrder(data);
-      this.quickOrderModel.Details = [...this.quickOrderModel.Details, x];
+      let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
+      this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
     } else {
       this.quickOrderModel.Details[index].Quantity += 1;
     }

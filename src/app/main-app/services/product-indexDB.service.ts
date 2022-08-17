@@ -33,15 +33,17 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
     let keyCache = this._keyCacheProductIndexDB;
     return this.cacheApi.getItem(keyCache)
       .pipe(map((x: any) => {
-        if (TDSHelperString.hasValueString(x)) {
-          let cache = JSON.parse(x['value']) as TDSSafeAny;
-          let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
-          this.cacheObject = Object.assign(this.cacheObject, cacheDB);
-        }
-        return this.cacheObject;
+
+          if (TDSHelperString.hasValueString(x)) {
+              let cache = JSON.parse(x['value']) as TDSSafeAny;
+              let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
+
+              this.cacheObject = Object.assign(this.cacheObject, cacheDB);
+          }
+          return this.cacheObject;
       }),
         mergeMap((x: KeyCacheIndexDBDTO) => {
-          return this.getLastVersionV2(x.cacheCount, x.cacheVersion)
+            return this.getLastVersionV2(x.cacheCount, x.cacheVersion)
         }));
   }
 
@@ -56,10 +58,13 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
 
         let exist = (data.cacheCount == -1 && data.cacheVersion == 0);
         if (exist) {
+
           // TODO: trường hợp load lần đầu
           (data.cacheDbStorage as any) = [];
           data.cacheDbStorage = [...res.Datas];
+
         } else {
+
           if (!reload) {//TODO: nếu reload = true thì không thêm sp
             // TODO: trường hợp thêm mới hoặc update
             res.Datas?.forEach((x: DataPouchDBDTO) => {
@@ -71,14 +76,15 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
         //TODO: check số version
         let versions = data.cacheDbStorage.map((x: DataPouchDBDTO) => x.Version);
         let lastVersion = Math.max(...versions);
+
         //TODO: check số lượng
         let countDB = data.cacheDbStorage.length;
 
         //TODO: lưu cache cho ds sản phẩm
         const items: KeyCacheIndexDBDTO = {
-          cacheCount: countDB,
-          cacheVersion: lastVersion,
-          cacheDbStorage: data.cacheDbStorage
+            cacheCount: countDB,
+            cacheVersion: lastVersion,
+            cacheDbStorage: data.cacheDbStorage
         };
 
         let keyCache = this._keyCacheProductIndexDB;

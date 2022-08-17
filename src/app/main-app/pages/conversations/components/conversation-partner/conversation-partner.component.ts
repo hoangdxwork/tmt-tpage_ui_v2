@@ -31,6 +31,7 @@ import { CsPartner_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomn
 import { CsPartner_PrepareModelHandler } from 'src/app/main-app/handler-v2/chatomni-cspartner/prepare-partner.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
     selector: 'conversation-partner',
@@ -76,6 +77,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private conversationDataFacade: ConversationDataFacade,
+    private chatomniConversationService: ChatomniConversationService,
     private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
     private csPartner_PrepareModelHandler: CsPartner_PrepareModelHandler,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -173,7 +175,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           x.page_id = pageId;
           x.psid = psid;
 
-          this.partner = x;
+          // TODO: gán lại thông tin chi tiết đơn hàng
+          this.partner = x;debugger
           this.mappingAddress(this.partner);
 
           // TODO: load dữ liệu đơn hàng, phiếu bán hàng theo partnerId
