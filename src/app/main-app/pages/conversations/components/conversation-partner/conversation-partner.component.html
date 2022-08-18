@@ -130,7 +130,7 @@
           </div>
 
           <!-- Phiếu bán hàng -->
-          <div class="pt-1" *ngIf="!isEditPartner && lastBill">
+          <div class="pt-1" *ngIf="!isEditPartner && lastBill && lastBill.Id">
             <tds-collapse [expandIconPosition]="'right'" class="bg-white">
               <tds-collapse-panel [header]="headerSalesDetails" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
 
@@ -153,7 +153,7 @@
                     </div>
                 </ng-template>
 
-                <div class="w-full h-full flex flex-col gap-3" *ngIf="lastBill">
+                <div class="w-full h-full flex flex-col gap-3" *ngIf="lastBill && lastBill.Id">
                     <div class="flex gap-3 items-center">
                         <div *ngIf="lastBill.CarrierName" class="text-body-2 font-semibold font-sans text-neutral-1-900">
                           {{ lastBill.CarrierName || 'Chưa có đối tác'}}</div>

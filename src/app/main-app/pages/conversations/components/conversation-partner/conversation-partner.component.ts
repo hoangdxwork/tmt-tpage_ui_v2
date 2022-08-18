@@ -29,6 +29,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenueDto, Conversation_LastBillDto, GroupBy_ConversationBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
+import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -104,24 +105,13 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   eventEmitter(){
     // TODO: load thông tin partner từ comment bài post 'comment-filter-all'
-    // this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataItemDto) => {
-    //   if(TDSHelperObject.hasValue(res)) {
-    //       (this.omcs_Item as any) = null;
-
-    //       let pageId = this.team.ChannelId;
-    //       let psid = res.UserId || res.Data.from.id;
-    //       this.loadData(pageId, psid);
-    //   }
-    // })
-
-    // // TODO: load thông tin partner khi tạo đơn hàng thành công
-    // this.omniEventEmiter.callConversationPartnerEmiter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-    //   if(res) {
-    //     let psid = this.omcs_Item.ConversationId;
-    //     let pageId = this.team.ChannelId;
-    //     this.loadData(pageId, psid);
-    //   }
-    // })
+    this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationInfoDto) => {
+          if(TDSHelperObject.hasValue(res)) {
+              this.loadData(res);
+          }
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -160,53 +150,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(conversationInfo && conversationInfo.Revenue) {
         this.revenue = {...conversationInfo.Revenue};
     }
-  }
-
-  checkConversation(pageId: string, psid: string): any {
-    // if(!TDSHelperString.hasValueString(pageId)) {
-    //     return this.message.error('Không tìm thấy Facebook_PageId');
-    // }
-    // if(!TDSHelperString.hasValueString(psid)) {
-    //     return this.message.error('Không tìm thấy psid');
-    // }
-
-    // this.isLoading = true;
-    // this.partnerService.checkConversation(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe((res: TabPartnerCvsRequestDTO) => {
-
-    //   if(res?.Data && res?.Success) {
-    //       let x = { ... res.Data} as TabPartnerCvsRequestModel;
-
-    //       x.Facebook_ASUserId = x.Facebook_ASUserId || this.omcs_Item?.Id;
-    //       x.Name = x.Name || x.Facebook_UserName ||  this.omcs_Item?.Name;
-    //       x.Phone = x.Phone || this.omcs_Item?.Phone;
-    //       x.Street = x.Street;
-
-    //       // TODO: 2 field gán thêm để mapping qua conversation-order, xem cmt dto
-    //       x.page_id = pageId;
-    //       x.psid = psid;
-
-    //       // TODO: gán lại thông tin chi tiết đơn hàng
-    //       this.partner = x;
-    //       this.mappingAddress(this.partner);
-
-    //       // TODO: load dữ liệu đơn hàng, phiếu bán hàng theo partnerId
-    //       let partnerId = x.Id || this.omcs_Item?.PartnerId;
-    //       if(partnerId) {
-    //           this.loadPartnerBill(partnerId);
-    //           this.loadPartnerRevenue(partnerId);
-    //       }
-
-    //       // Load đơn hàng khác từ bên bài viết gọi qua
-    //       if(this.type != 'post') {
-    //         this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
-    //       }
-
-    //       this.isLoading = false;
-    //   }
-    //   }, error => {
-    //       this.isLoading = false;
-    //       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-    //   })
   }
 
   loadPartnerFromTabOrder() {

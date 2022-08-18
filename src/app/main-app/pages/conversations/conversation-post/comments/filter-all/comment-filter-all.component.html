@@ -18,7 +18,7 @@
 
                                     <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
                                         <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
-                                            <div class="flex flex-row cursor-pointer hover:underline" (click)="editOrder(order.id, item)">
+                                            <div class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderTab(order.id, item)">
                                                 <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
                                             </div>
                                         </div>
@@ -43,7 +43,7 @@
 
                             <!-- thao tác -->
                             <div class="flex items-center pt-3">
-                                <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onCreateOrder(item)"> Tạo đơn hàng  </button>
+                                <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
 
                                 <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng" tooltipPlacement="top"
                                     (click)="loadPartnerTab(item)" tds-tooltip>
@@ -72,29 +72,29 @@
                                     </button>
                                 </div>
 
-                                <div *ngIf="partnerDict && (partnerDict[item.UserId || item.ObjectId] || commentOrders[item.UserId]?.length > 0)" class="w-full flex flex-row items-center justify-between">
+                                <div *ngIf="partnerDict && partnerDict[item.UserId]" class="w-full flex flex-row items-center justify-between">
                                     <!-- trạng thái khách hàng & mã đơn hàng -->
                                     <div class="flex items-center gap-1.5">
 
                                         <!-- trạng thái khách hàng -->
-                                        <div *ngIf="partnerDict[item.UserId || item.ObjectId]" class="button-status flex items-center gap-1.5 mr-4">
-                                            <span *ngIf="partnerDict[item.UserId || item.ObjectId].p" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer">
+                                        <div *ngIf="partnerDict[item.UserId]" class="button-status flex items-center gap-1.5 mr-4">
+                                            <span *ngIf="partnerDict[item.UserId].p" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer">
                                                 <i class="tdsi-call-fill text-xs text-white"></i>
                                             </span>
 
-                                            <span *ngIf="partnerDict[item.UserId || item.ObjectId].a" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer">
+                                            <span *ngIf="partnerDict[item.UserId].a" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer">
                                                 <i class="tdsi-pin-fill text-xs text-white"></i>
                                             </span>
 
-                                            <tds-tag *ngIf="partnerDict[item.UserId || item.ObjectId].st" [ngStyle]="{'background-color': partnerDict[item.UserId || item.ObjectId].ss, 'color': partnerDict[item.UserId || item.ObjectId].ss}" type="outline">
-                                                {{partnerDict[item.UserId || item.ObjectId].st}}
+                                            <tds-tag *ngIf="partnerDict[item.UserId].st" [ngStyle]="{'background-color': partnerDict[item.UserId].ss, 'color': partnerDict[item.UserId].ss}" type="outline">
+                                                {{partnerDict[item.UserId].st}}
                                             </tds-tag>
                                         </div>
                                     </div>
 
-                                    <div *ngIf="partnerDict[item.UserId || item.ObjectId]" class="tag-status w-1/2">
-                                        <div *ngIf="partnerDict[item.UserId || item.ObjectId].t" class="w-full flex flex-wrap items-center justify-end">
-                                            <a class="tdsi-radio-circle-fill" *ngFor="let tag of partnerDict[item.UserId || item.ObjectId].t"
+                                    <div *ngIf="partnerDict[item.UserId]" class="tag-status w-1/2">
+                                        <div *ngIf="partnerDict[item.UserId].t" class="w-full flex flex-wrap items-center justify-end">
+                                            <a class="tdsi-radio-circle-fill" *ngFor="let tag of partnerDict[item.UserId].t"
                                                 [ngStyle]="{ 'color' : [tag.color_class] }" tds-tooltip tooltipTitle="{{tag.name}}" >
                                             </a>
                                         </div>
@@ -140,7 +140,7 @@
                                       </span>
 
                                       <div class="p-1 hover:bg-neutral-3-50 rounded-md flex items-center" tds-tooltip tooltipTitle="Tin nhắn nhanh">
-                                          <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event, partnerDict[item.UserId || item.ObjectId])"></quick-reply-button>
+                                          <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event, partnerDict[item.UserId])"></quick-reply-button>
                                       </div>
                                   </div>
                               </div>
@@ -163,7 +163,7 @@
 
                                               <div *ngIf="commentOrders">
                                                   <a class="text-info-500 font-semibold" *ngFor="let order of commentOrders[child.from.id]"
-                                                      (click)="editOrder(order.id, child)"> {{order.code}} </a>
+                                                      (click)="loadOrderTab(order.id, child)"> {{order.code}} </a>
                                               </div>
                                           </div>
                                           <span class="text-neutral-1-400 text-right text-caption-1">{{child.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>

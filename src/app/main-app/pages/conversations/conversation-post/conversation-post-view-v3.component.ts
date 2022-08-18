@@ -163,7 +163,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
   }
 
   onSetCommentOrders() {
-    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders$.subscribe((res: any) => {
+    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         let data = res?.data as QuickSaleOnlineOrderModel;
 
         if (!this.commentOrders[res.fbid]) {

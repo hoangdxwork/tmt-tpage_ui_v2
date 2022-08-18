@@ -271,7 +271,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
                   this.conversationInfo = {...info};
               },
               error: (error: any) => {
-                  this.notification.error('Lỗi thông tin khách hàng', `${error?.error?.message}`);
+                  this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
               }
           })
       }

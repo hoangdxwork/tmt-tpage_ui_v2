@@ -23,6 +23,9 @@ import { ChatomniDataDto, ChatomniDataItemDto, ChatomniFacebookDataDto } from '@
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { TDSNotificationService } from 'tds-ui/notification';
 
 @Component({
   selector: 'comment-filter-all',
@@ -57,16 +60,17 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private crmMatchingService: CRMMatchingService,
     private activityMatchingService: ActivityMatchingService,
-    private conversationPostFacade: ConversationPostFacade,
+    private chatomniConversationService: ChatomniConversationService,
     private chatomniCommentService: ChatomniCommentService,
     public crmService: CRMTeamService,
+    private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade) {
   }
 
   ngOnInit() {
-    if(this.data) {
-      this.loadData();
+    if(this.data && this.team) {
+        this.loadData();
     }
   }
 
@@ -258,30 +262,39 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-    this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
-    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniConversationInfoDto) => {
+          if(res) {
+              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+              this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+          }
+        },
+        error: (error: any) => {
+            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+        }
+    })
   }
 
-  editOrder(id: any, item: ChatomniDataItemDto){
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-    this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
-
-    this.conversationOrderFacade.clickOrderFromCommentPost$.emit({orderId: id, comment: item} );
-    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-  }
-
-  onCreateOrder(item: ChatomniDataItemDto) {
+  loadOrderTab(orderId: any, item: ChatomniDataItemDto){
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
         return;
     }
 
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-    this.conversationOrderFacade.loadPartnerByPostComment$.emit(item);
+    this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+  }
+
+  onInsertFromPost(item: ChatomniDataItemDto) {
+    let psid = item.UserId || item.Data?.from?.id;
+    if (!psid) {
+        this.message.error("Không truy vấn được thông tin người dùng!");
+        return;
+    }
 
     // TODO: Đẩy dữ liệu sang conversation-orer để tạo hà, insertfrompost
-    this.conversationOrderFacade.loadCreateOrderByPostComment$.emit(item);
+    this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
   }
 
