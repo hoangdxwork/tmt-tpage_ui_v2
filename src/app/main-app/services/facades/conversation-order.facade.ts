@@ -1,15 +1,10 @@
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
-import { Observable, Subject } from "rxjs";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { CRMTeamService } from "../crm-team.service";
 import { PartnerService } from "../partner.service";
-import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
-import { ConversationOrderForm } from '../../dto/coversation-order/conversation-order.dto';
-import { GeneralConfigsFacade } from "./general-config.facade";
-import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TabPartnerCvsRequestModel } from '../../dto/conversation-partner/partner-conversation-request.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
@@ -59,7 +54,6 @@ export class ConversationOrderFacade extends BaseSevice  {
   public loadOrderFromCommentPost$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService,
-      private crmTeamService: CRMTeamService,
       private partnerService: PartnerService,
       private sgRConnectionService: SignalRConnectionService,
       private auth: TAuthService) {
