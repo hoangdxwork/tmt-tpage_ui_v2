@@ -557,41 +557,42 @@ export class EditOrderV2Component implements OnInit {
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
     let model = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(fs_model, this.quickOrderModel);
 
-    this.fastSaleOrderService.saveV2(model).subscribe((res: CreateFastSaleOrderDTO) => {
+    this.fastSaleOrderService.saveV2(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: CreateFastSaleOrderDTO) => {
+            // TODO: Tạo hóa đơn thành công
+            if(res?.Success) {
 
-        // TODO: Tạo hóa đơn thành công
-        if(res?.Success) {
+                this.shipServices = [];
+                this.shipExtraServices = [];
+                delete this.saleModel.Ship_ServiceId;
+                delete this.saleModel.Ship_ServiceName;
 
-            this.shipServices = [];
-            this.shipExtraServices = [];
-            delete this.saleModel.Ship_ServiceId;
-            delete this.saleModel.Ship_ServiceName;
-
-            if(res.Message) {
-                this.notification.warning('Tạo hóa đơn thành công', res.Message);
+                if(res.Message) {
+                    this.notification.warning('Tạo hóa đơn thành công', res.Message);
+                }
             }
+
+            // TODO: trường hợp gửi vận đơn lỗi
+            if(!res?.Success && res.Message) {
+                this.notification.warning( 'Lỗi gửi vận đơn', res.Message);
+            }
+
+            if(res && !res.Message ) {
+              this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
+            }
+
+            if(type && res) {
+                this.printOrder(type, res);
+            } else {
+                this.modalRef.destroy(null);
+            }
+
+            this.isLoading = false;
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
         }
-
-        // TODO: trường hợp gửi vận đơn lỗi
-        if(!res?.Success && res.Message) {
-            this.notification.warning( 'Lỗi gửi vận đơn', res.Message);
-        }
-
-        if(res && !res.Message ) {
-          this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
-        }
-
-        if(type && res) {
-            this.printOrder(type, res);
-        } else {
-            this.modalRef.destroy(null);
-        }
-
-        this.isLoading = false;
-
-    }, error => {
-        this.isLoading = false;
-        this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
     });
   }
 
@@ -733,36 +734,38 @@ export class EditOrderV2Component implements OnInit {
     let model = this.prepareModelFeeV2();
     this.isLoading = true;
 
-    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-          if(res && !res.error) {
+    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            if(res && !res.error) {
 
-            if(!TDSHelperString.isString(res)){
-              this.configsProviderDataSource = [...res.configs];
+                if(!TDSHelperString.isString(res)){
+                  this.configsProviderDataSource = [...res.configs];
 
-              this.insuranceInfo = res.data?.InsuranceInfo || null;
-              this.shipServices = res.data?.Services || [];
+                  this.insuranceInfo = res.data?.InsuranceInfo || null;
+                  this.shipServices = res.data?.Services || [];
 
-              if(TDSHelperArray.hasListValue(this.shipServices)) {
+                  if(TDSHelperArray.hasListValue(this.shipServices)) {
 
-                  let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                  this.selectShipServiceV2(x);
+                      let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                      this.selectShipServiceV2(x);
 
-                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
-              }
+                      this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                  }
 
-            } else {
-                this.message.error(res.error?.message);
+                } else {
+                    this.message.error(res.error?.message);
+                }
             }
-          }
 
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-      }, error => {
-          this.isLoading = false;
-          this.message.error(error.error.message || error.error.error_description);
-          this.cdRef.markForCheck();
-      })
+            this.isLoading = false;
+            this.cdRef.markForCheck();
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(error.error.message || error.error.error_description);
+            this.cdRef.markForCheck();
+        }
+    })
   }
 
   selectShipServiceV2(x: CalculateFeeServiceResponseDto) {

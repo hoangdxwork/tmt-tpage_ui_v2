@@ -1107,33 +1107,35 @@ export class AddBillComponent implements OnInit {
     let model = this.prepareModelFeeV2();
     this.isLoading = true;
 
-    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        if(res && !res.error) {
+    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            if(res && !res.error) {
 
-          if(!TDSHelperString.isString(res)){
-            this.configsProviderDataSource = [...res.configs];
+                if(!TDSHelperString.isString(res)){
+                  this.configsProviderDataSource = [...res.configs];
 
-            this.insuranceInfo = res.data?.InsuranceInfo || null;
-            this.shipServices = res.data?.Services || [];
+                  this.insuranceInfo = res.data?.InsuranceInfo || null;
+                  this.shipServices = res.data?.Services || [];
 
-            if(TDSHelperArray.hasListValue(this.shipServices)) {
+                  if(TDSHelperArray.hasListValue(this.shipServices)) {
 
-                let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                this.selectShipServiceV2(x);
+                      let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                      this.selectShipServiceV2(x);
 
-                this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                  }
+
+                } else {
+                  this.message.error(res.error?.message);
+                }
             }
 
-          } else {
-            this.message.error(res.error?.message);
-          }
+            this.isLoading = false;
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(error.error.message || error.error.error_description);
         }
-
-        this.isLoading = false;
-    }, error => {
-        this.isLoading = false;
-        this.message.error(error.error.message || error.error.error_description);
     })
   }
 

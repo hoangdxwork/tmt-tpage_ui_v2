@@ -5,7 +5,7 @@ import { ModalSendMessageAllComponent } from '../components/modal-send-message-a
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable, Subject } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -364,7 +364,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   fetchLiveConversations(team: CRMTeamDTO): void {
-    this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`).subscribe();
+    this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.ChannelToken}`).subscribe();
   }
 
   setCheck(){
@@ -611,7 +611,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         }
 
         let uri = 'conversation/all';
-        let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${csid}`;
+        let uriParams = `${uri}?teamId=${team.Id}&type=all&csid=${csid}`;
 
         this.router.navigateByUrl(uriParams)
         this.notification.remove(this.notificationRef.messageId);

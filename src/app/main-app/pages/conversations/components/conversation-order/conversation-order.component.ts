@@ -1065,8 +1065,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let model = this.prepareModelFeeV2();
     this.isLoading = true;
 
-    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
           if(res && !res.error) {
 
               this.configsProviderDataSource = [...res.configs];
@@ -1080,15 +1080,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
-          } else {
-            this.message.error(res.error? res.error.message: 'Lỗi chọn đối tác');
+          }
+          else {
+              this.message.error(res.error? res.error.message: 'Lỗi chọn đối tác');
           }
 
           this.isLoading = false;
-      }, error => {
+      },
+      error: (error: any) => {
           this.isLoading = false;
           this.message.error(error.error.message || error.error.error_description);
-      })
+      }
+    })
 
   }
 
