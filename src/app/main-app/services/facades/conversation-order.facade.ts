@@ -35,9 +35,6 @@ export class ConversationOrderFacade extends BaseSevice  {
   // Event loading tab partner, order
   public onChangeTab$ = new EventEmitter<ChangeTabConversationEnum>();
 
-  // gán mã đơn hàng last order sáng tab đơn hàng
-  public onPushLastOrderCode$ = new EventEmitter<any>();
-
   // Event Output
   public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
 

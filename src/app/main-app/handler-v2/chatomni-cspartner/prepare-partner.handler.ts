@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
 import { TDSHelperString } from "tds-ui/shared/utility";
 import { ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { CreateOrUpdatePartnerModel } from "../../dto/conversation-partner/create-update-partner.dto";
@@ -9,9 +10,9 @@ import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleo
 
 export class CsPartner_PrepareModelHandler {
 
-  public prepareModel(partner: TabPartnerCvsRequestModel, dataModel: ChatomniConversationItemDto) {
+  public prepareModel(partner: ConversationPartnerDto, item: ChatomniConversationItemDto) {
     let  model = {
-        Id: dataModel.PartnerId || partner?.Id,
+        Id: item.PartnerId || partner?.Id,
         StatusText: partner?.StatusText,
         Name: partner?.Name,
         Phone: partner?.Phone,
@@ -20,8 +21,8 @@ export class CsPartner_PrepareModelHandler {
         Comment: partner?.Comment,
         Street: partner?.Street,
 
-        FacebookASIds: partner?.Facebook_ASUserId || (dataModel.PartnerId == partner?.Id ? dataModel.Id : null),
-        FacebookId: (dataModel.PartnerId == partner?.Id ? dataModel.Id : null),
+        FacebookASIds: partner?.FacebookASIds || partner?.FacebookPSId,
+        FacebookId: partner.FacebookId,
 
         City: partner.City?.code ? {
             code: partner.City.code,
@@ -42,7 +43,7 @@ export class CsPartner_PrepareModelHandler {
     return {...model};
   }
 
-  public updatePartnerModel(partner: TabPartnerCvsRequestModel, x: CreateOrUpdatePartnerModel) {
+  public updatePartnerModel(partner: ConversationPartnerDto, x: CreateOrUpdatePartnerModel) {
 
     partner.Name = x.Name;
     partner.Comment = x.Comment;
@@ -54,15 +55,23 @@ export class CsPartner_PrepareModelHandler {
           code: x.City.code || x.CityCode,
           name: x.City.name || x.CityName
       }
+
+      partner.CityCode = x.CityCode || x.City?.code;
+      partner.CityName = x.CityName || x.City?.name;
+
     } else {
       partner.City = null;
     }
 
     if(x.District?.code || x.DistrictCode) {
-      partner.District = {
-          code: x.District.code || x.DistrictCode,
-          name: x.District.name || x.DistrictName
-      }
+        partner.District = {
+            code: x.District.code || x.DistrictCode,
+            name: x.District.name || x.DistrictName
+        } as any;
+
+        partner.DistrictCode = x.DistrictCode || x.District?.code;
+        partner.DistrictName = x.WardName || x.District?.name;
+
     } else {
       partner.District = null;
     }
@@ -71,7 +80,10 @@ export class CsPartner_PrepareModelHandler {
       partner.Ward = {
           code: x.Ward.code || x.WardCode,
           name: x.Ward.name || x.WardName
-      }
+      } as any;
+
+      partner.WardCode = x.WardCode || x.Ward?.code;
+      partner.WardName = x.WardName || x.Ward?.name;
     } else {
       partner.Ward = null;
     }

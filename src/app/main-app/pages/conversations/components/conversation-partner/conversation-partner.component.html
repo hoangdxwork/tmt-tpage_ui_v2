@@ -1,18 +1,18 @@
 
 <tds-spin [spinning]="isLoading" class="flex w-full h-[calc(100vh-109px)] overflow-hidden">
-  <div *ngIf="partner && team; else noData">
+  <div *ngIf="partner && team && conversationItem; else noData">
       <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-hidden overflow-y-auto tds-custom-scroll flex-col flex">
           <!-- Thông tin khách hàng -->
           <div class="bg-white px-4 py-4">
               <div class="flex gap-6">
 
-                <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="partner.Facebook_ASUserId" [token]="team.ChannelToken">
+                <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="conversationItem.ConversationId" [token]="team.ChannelToken">
                 </tpage-avatar-facebook>
 
                 <div class="flex flex-col gap-2">
                     <div class="flex gap-4 items-center" style="min-height: 34px;">
-                        <div class="text-heading-4 font-sans font-semibold text-neutral-1-900">
-                            {{ partner.Facebook_UserName || partner.Name}}
+                        <div class="font-sans font-semibold text-neutral-1-900 text-[20px]">
+                            {{partner.DisplayName}}
                         </div>
                         <button type="button" tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
                             <span class="flex items-center">
@@ -69,21 +69,21 @@
                   </div>
               </div>
 
-              <div class="pt-3 flex gap-2" *ngIf="!isEditPartner && objRevenue">
+              <div class="pt-3 flex gap-2" *ngIf="!isEditPartner && revenue">
                   <tds-button-group>
                       <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
                           class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 2xl:px-4 px-2">
                           <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer whitespace-nowrap">
-                              Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue.RevenueTotal || 0 | number: '1.0-3'}} đ</span>
+                              Tổng doanh số: <span class="pl-2 text-primary-1">{{revenue.RevenueTotal || 0 | number: '1.0-3'}} đ</span>
                               <i class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
                           </span>
                       </button>
 
                       <tds-dropdown-menu #menuRevenue="tdsDropdownMenu">
                           <div class="w-full">
-                              <div tds-dropdown-item>Doanh số đầu kỳ: {{objRevenue.RevenueBegan || 0 | number: '1.0-3'}} đ</div>
-                              <div tds-dropdown-item>Doanh số: {{objRevenue.Revenue || 0 | number: '1.0-3'}} đ</div>
-                              <div tds-dropdown-item>Tổng doanh số: {{objRevenue.RevenueTotal || 0 | number: '1.0-3'}} đ</div>
+                              <div tds-dropdown-item>Doanh số đầu kỳ: {{revenue.RevenueBegan || 0 | number: '1.0-3'}} đ</div>
+                              <div tds-dropdown-item>Doanh số: {{revenue.Revenue || 0 | number: '1.0-3'}} đ</div>
+                              <div tds-dropdown-item>Tổng doanh số: {{revenue.RevenueTotal || 0 | number: '1.0-3'}} đ</div>
                           </div>
                       </tds-dropdown-menu>
                   </tds-button-group>
@@ -130,7 +130,7 @@
           </div>
 
           <!-- Phiếu bán hàng -->
-          <div class="pt-1" *ngIf="!isEditPartner && totalBill > 0">
+          <div class="pt-1" *ngIf="!isEditPartner && lastBill">
             <tds-collapse [expandIconPosition]="'right'" class="bg-white">
               <tds-collapse-panel [header]="headerSalesDetails" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
 
@@ -140,12 +140,12 @@
                         <div class="flex flex-col gap-1">
                             <div class="text-neutral-1-400 font-regular text-body-2 font-sans">Phiếu bán hàng gần nhất</div>
 
-                            <div class="flex gap-2 items-center" *ngIf="lastSaleOrder">
+                            <div class="flex gap-2 items-center" *ngIf="lastBill">
 
-                                <drawer-detail-bill [isBillNearest]="true" [bill]="lastSaleOrder"></drawer-detail-bill>
+                                <drawer-detail-bill [isBillNearest]="true" [bill]="lastBill"></drawer-detail-bill>
 
-                                <tds-tag status='primary' type="outline" [status]="getColorStatusText(lastSaleOrder.ShowState)">
-                                  {{ lastSaleOrder.ShowState }}
+                                <tds-tag status='primary' type="outline" [status]="getColorStatusText(lastBill.ShowState)">
+                                  {{ lastBill.ShowState }}
                                 </tds-tag>
 
                             </div>
@@ -153,32 +153,32 @@
                     </div>
                 </ng-template>
 
-                <div class="w-full h-full flex flex-col gap-3" *ngIf="lastSaleOrder">
+                <div class="w-full h-full flex flex-col gap-3" *ngIf="lastBill">
                     <div class="flex gap-3 items-center">
-                        <div *ngIf="lastSaleOrder.CarrierName" class="text-body-2 font-semibold font-sans text-neutral-1-900">
-                          {{ lastSaleOrder.CarrierName || 'Chưa có đối tác'}}</div>
+                        <div *ngIf="lastBill.CarrierName" class="text-body-2 font-semibold font-sans text-neutral-1-900">
+                          {{ lastBill.CarrierName || 'Chưa có đối tác'}}</div>
 
-                        <div *ngIf="!lastSaleOrder.CarrierName" class="text-body-2 italic font-regular font-sans text-neutral-1-900">
+                        <div *ngIf="!lastBill.CarrierName" class="text-body-2 italic font-regular font-sans text-neutral-1-900">
                           (Chưa có đối tác)</div>
 
                         <div class="text-body-2 font-regular font-sans text-neutral-1-900">
-                          [ {{ lastSaleOrder.ShowState }} - <span class="text-info-500 pl-0.5">{{ lastSaleOrder.TrackingRef || '#N/A' }}</span>]
+                          [ {{ lastBill.ShowState }} - <span class="text-info-500 pl-0.5">{{ lastBill.TrackingRef || '#N/A' }}</span>]
                         </div>
 
                     </div>
 
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                        Tổng tiền: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastSaleOrder.AmountTotal | number:'1.0-3' }} đ ({{ lastSaleOrder.PaymentJournalName }})</span>
+                        Tổng tiền: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.AmountTotal | number:'1.0-3' }} đ ({{ lastBill.PaymentJournalName }})</span>
                     </div>
 
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                        Ngày tạo: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastSaleOrder.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
+                        Ngày tạo: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
                     </div>
 
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                        {{ lastSaleOrder.Phone }} - {{ lastSaleOrder.Address }} </div>
+                        {{ lastBill.Phone }} - {{ lastBill.Address }} </div>
 
-                    <div class="text-body-2 font-semibold font-sans text-accent-3"> {{ lastSaleOrder.DeliveryNote }} </div>
+                    <div class="text-body-2 font-semibold font-sans text-accent-3"> {{ lastBill.DeliveryNote }} </div>
                 </div>
               </tds-collapse-panel>
             </tds-collapse>
@@ -197,9 +197,10 @@
 
                 <div class="w-full h-full" *ngIf="lstBill">
                     <div class="w-full">
-                      <tds-filter-status (selectChange)="onChangeBill($event)" [ngModel]='tabBillCurrent' [ngModelOptions]="{standalone: true}" class="gap-2 flex flex-wrap">
-                          <tds-filter-status-item *ngFor="let bills of lstBill; let index = index"
-                              [name]='bills.data[0].ShowState' [value]='index' [count]='bills.total'>
+                      <tds-filter-status (selectChange)="onChangeTabBill($event)" [ngModel]='tab_Bill' [ngModelOptions]="{standalone: true}" class="gap-2 flex flex-wrap">
+
+                          <tds-filter-status-item *ngFor="let item of lstBill; let index = index"
+                              [name]='item.Value[0].ShowState' [value]='index' [count]='item.Total'>
 
                               <ng-template tds-filter-status-template let-active='active' let-count='count' let-name='name' let-value>
 
@@ -216,55 +217,55 @@
                   </div>
 
                   <div class="pt-4 flex flex-col gap-2 w-full" *ngIf="lstBill">
-                      <tds-collapse *ngFor="let bill of lstBill[tabBillCurrent]?.data; let index = index">
+                      <tds-collapse *ngFor="let item of lstBill[tab_Bill]?.Value; let index = index">
                           <tds-collapse-panel [header]="headerBill" [active]="false" [disabled]=false>
                               <ng-template #headerBill>
-                                  <div class="grid grid-cols-3 gap-x-6 w-full" *ngIf="bill">
+                                  <div class="grid grid-cols-3 gap-x-6 w-full" *ngIf="item">
 
                                       <div class="w-[125px] flex flex-col gap-y-0.5">
-                                            <drawer-detail-bill [bill]="bill"></drawer-detail-bill>
-                                          <div class="text-neutral-1-400 text-caption-2 font-regular"> {{bill.DateCreated | date: "HH:mm, dd/MM/yyyy"}} </div>
+                                            <drawer-detail-bill [bill]="item"></drawer-detail-bill>
+                                          <div class="text-neutral-1-400 text-caption-2 font-regular"> {{item.DateCreated | date: "HH:mm, dd/MM/yyyy"}} </div>
                                       </div>
 
                                       <div class="w-[125px]">
-                                          <span class="text-neutral-1-900 text-body-2 font-semibold text-center">{{bill.AmountTotal | number}} đ</span>
+                                          <span class="text-neutral-1-900 text-body-2 font-semibold text-center">{{item.AmountTotal | number}} đ</span>
                                       </div>
 
                                       <div class="w-[125px] text-center">
-                                          <tds-badge [status]="getColorStatusText(bill.ShowState)" [text]="bill.ShowState"></tds-badge>
+                                          <tds-badge [status]="getColorStatusText(item.ShowState)" [text]="item.ShowState"></tds-badge>
                                       </div>
                                   </div>
                               </ng-template>
 
-                              <div class="grid grid-cols-4 gap-x-6 gap-y-4" *ngIf="bill">
+                              <div class="grid grid-cols-4 gap-x-6 gap-y-4" *ngIf="item">
                                   <label>Đối tác GH:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold"> {{bill.CarrierName}} - <span class="text-info-500">{{lastSaleOrder.TrackingRef || '#N/A'}}</span> </div>
+                                      <div class="font-semibold"> {{item.CarrierName}} - <span class="text-info-500">{{item.TrackingRef || '#N/A'}}</span> </div>
                                   </div>
 
                                   <label>Phương thức TT:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold">{{bill.PaymentJournalName}}</div>
+                                      <div class="font-semibold">{{item.PaymentJournalName}}</div>
                                   </div>
 
                                   <label>Điện thoại:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold">{{bill.Phone}}</div>
+                                      <div class="font-semibold">{{item.Phone}}</div>
                                   </div>
 
                                   <label>Địa chỉ:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold">{{bill.Address}}</div>
+                                      <div class="font-semibold">{{item.Address}}</div>
                                   </div>
 
                                   <label>Trạng thái GH:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <tds-tag status='primary' type="outline" [status]="getColorStatusText(bill.ShowState)">{{bill.ShowState}}</tds-tag>
+                                      <tds-tag status='primary' type="outline" [status]="getColorStatusText(item.ShowState)">{{item.ShowState}}</tds-tag>
                                   </div>
 
                                   <div class="flex flex-row items-center justify-end w-full col-span-4">
-                                      <button tds-button color="primary" class="mr-2" (click)="editBill(bill)">Sửa</button>
-                                      <button *ngIf="bill.State === 'open'" tds-button color="primary" (click)="showPaymentModal(bill)">Thanh toán</button>
+                                      <button tds-button color="primary" class="mr-2" (click)="editBill(item)">Sửa</button>
+                                      <button *ngIf="item.State === 'open'" tds-button color="primary" (click)="showPaymentModal(item)">Thanh toán</button>
                                   </div>
                               </div>
                           </tds-collapse-panel>

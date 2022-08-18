@@ -30,7 +30,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   @Input() team!: CRMTeamDTO;
   @Input() type: any;
   @Input() csid: any;
-  @Input() omcs_Item!: ChatomniConversationItemDto;
+  @Input() conversationItem!: ChatomniConversationItemDto;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
   @Input() state!: any;
@@ -99,8 +99,8 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes["omcs_Item"] && !changes["omcs_Item"].firstChange) {
-        this.omcs_Item = changes["omcs_Item"].currentValue;
+    if(changes["conversationItem"] && !changes["conversationItem"].firstChange) {
+        this.conversationItem = changes["conversationItem"].currentValue;
     }
 
     if(changes["state"] && !changes["state"].firstChange) {
