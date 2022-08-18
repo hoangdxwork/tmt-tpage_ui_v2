@@ -184,7 +184,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         this.cdRef.markForCheck();
         }
     });
-      
+
   }
 
   onSetCommentOrders() {
@@ -210,7 +210,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     this.facebookPostService.onRemoveOrderComment$.subscribe({
       next: (res: any) => {
         let keys = Object.keys(this.commentOrders);
-  
+
         keys.forEach(key => {
             this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
         })
@@ -328,7 +328,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
       next :(res: any) => {
         this.facebookCommentService.setSort(this.currentSort.value);
         this.loadData();
-      }, 
+      },
       error: error => {
         this.message.error('Thao tác thất bại');
       }
