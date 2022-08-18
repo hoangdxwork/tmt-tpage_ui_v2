@@ -1,7 +1,6 @@
-import { map, Observable } from 'rxjs';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { takeUntil, finalize, mergeMap } from 'rxjs';
+import { takeUntil, mergeMap } from 'rxjs';
 import { StockChangeProductQtyService } from './../../../../services/stock-change-product-qty.service';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -76,11 +75,13 @@ export class UpdateInitInventoryComponent implements OnInit {
   }
 
   loadLocations() {
-    this.stockService.getStockLocation().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.lstLocation = [...res.value];
-    },
-    err => {
-      this.message.error(err?.error?.message || 'Không thể tải dữ liệu địa điểm');
+    this.stockService.getStockLocation().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.lstLocation = [...res.value];
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Không thể tải dữ liệu địa điểm');
+      }
     });
   }
 
@@ -110,7 +111,7 @@ export class UpdateInitInventoryComponent implements OnInit {
   }
 
   prepareModel() {
-    return this.lstData.map((data,i) => {
+    return this.lstData.map((data, i) => {
       let formData = <FormGroup> this.dataArray.at(i);
 
       return Object.assign(data, formData.value);
@@ -135,7 +136,8 @@ export class UpdateInitInventoryComponent implements OnInit {
         
         return this.stockService.updateStockChangeProductQty({ids: ids})
       }))
-      .subscribe(res => {
+      .subscribe({
+        next:(res) => {
           this.message.success(Message.UpdatedSuccess);
           
           let data = this.dataArray.value as any[];
@@ -143,10 +145,11 @@ export class UpdateInitInventoryComponent implements OnInit {
           
           this.modal.destroy(sum);
         },
-        err => {
+        error:(err) => {
           this.message.error(err?.error?.message || Message.UpdatedFail);
           this.isLoading = false;
-        });
+        }
+      });
   }
 
   onCancel() {
