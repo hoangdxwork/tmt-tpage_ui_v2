@@ -109,13 +109,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     private message: TDSMessageService,
     private activityMatchingService: ActivityMatchingService,
     private applicationUserService: ApplicationUserService,
-    private activityDataFacade: ActivityDataFacade,
-    private conversationDataFacade: ConversationDataFacade,
     private sharedService: SharedService,
     private draftMessageService: DraftMessageService,
     private crmMatchingService: CRMMatchingService,
     private crmTagService: CRMTagService,
-    private conversationEventFacade: ConversationEventFacade,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
     private ngZone: NgZone,
@@ -170,35 +167,38 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   loadMessages(data: ChatomniConversationItemDto): any {
     this.isLoading = true;
 
-    this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
+    this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataDto) => {
+          if(res) {
+              this.dataSource = { ...res };
 
-        this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-            if(res) {
-                this.dataSource = { ...res };
+              //TODO: truyền về conversation-all
+              setTimeout(() => {
+                this.chatomniEventEmiter.countUnreadEmiter$.emit(this.data.ConversationId);
+              }, 300);
+          }
 
-                //TODO: truyền về conversation-all
-                setTimeout(() => {
-                  this.chatomniEventEmiter.countUnreadEmiter$.emit(this.data.ConversationId);
-                }, 300);
-            }
-
-            this.isLoading = false;
-            this.cdRef.markForCheck();
-        }, error => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-            this.cdRef.markForCheck();
-        })
+          this.isLoading = false;
+          this.cdRef.markForCheck();
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.markForCheck();
+      }
     })
   }
 
   loadUser() {
-    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.users = res;
-        this.lstUser = res;
-    }, error => {
-        this.message.error('Load user đã xảy ra lỗi');
+    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.users = res;
+          this.lstUser = res;
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || 'Load user đã xảy ra lỗi');
+      }
     })
   }
 
@@ -382,26 +382,28 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     let id = `${this.team.Id}_${this.data.ConversationId}`;
 
     this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-        if(res) {
-            if(res.Extras) {
-              this.dataSource.Extras = res.Extras;
-            }
-            if(TDSHelperArray.hasListValue(res.Items)) {
-              this.dataSource.Items = [...res.Items];
-            }
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataDto) => {
+          if(res) {
+              if(res.Extras) {
+                this.dataSource.Extras = res.Extras;
+              }
+              if(TDSHelperArray.hasListValue(res.Items)) {
+                this.dataSource.Items = [...res.Items];
+              }
 
-            this.dataSource.Paging = {...res.Paging};
-            this.srcollBehavior();
-        }
+              this.dataSource.Paging = {...res.Paging};
+              this.srcollBehavior();
+          }
 
-        this.isProcessing = false;
-        this.cdRef.markForCheck();
-
-    }, error => {
-        this.isProcessing = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-        this.cdRef.markForCheck();
+          this.isProcessing = false;
+          this.cdRef.markForCheck();
+      },
+      error: (error: any) => {
+          this.isProcessing = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.markForCheck();
+      }
     })
   }
 
@@ -501,21 +503,19 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   refetch(psid: string) {
-    this.crmMatchingService.refetch(psid, this.pageId)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.crmMatchingService.refetch(psid, this.pageId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
 
         if (res?.conversation?.psid == this.data.Id) {
             if (res.conversation?.name) {
                 this.data.Name = res.conversation.name;
             }
-            if (res.conversation?.from) {
-              // this.data.F = res.conversation.from;
-            }
         }
-
-      }, error => {
+      },
+      error: (error: any) => {
           this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
-      });
+      }
+    });
   }
 
   onClickSender() {
@@ -548,13 +548,15 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     let activityFinal = this.dataSource.Items ? this.dataSource.Items[this.dataSource.Items!.length - 1]: null
 
     if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === 12 || activityFinal?.Type === 91)) {
-      if (this.type === 'all') {
+
+        if (this.type === 'all') {
             this.sendPrivateRepliesV2(activityFinal, message);
         } else if (this.type === 'comment') {
             this.replyCommentV2(activityFinal, message);
         }
+
     } else {
-      this.sendMessageV2(message);
+        this.sendMessageV2(message);
     }
 
 
