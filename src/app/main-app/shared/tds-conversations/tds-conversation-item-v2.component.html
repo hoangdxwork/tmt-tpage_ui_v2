@@ -77,16 +77,16 @@
           </div>
 
           <!-- Tin nhắn lỗi -->
-          <div *ngIf="dataItem.Error?.Message || dataItem.Status == 2" class="select-message flex items-center">
-              <a class="flex items-center cursor-pointer" *ngIf="!checkErrorMessage(dataItem.Error!.Message)" tds-popover [popoverContent]="popoverBug">
+          <div *ngIf="(dataItem.Error && dataItem.Error!.Message) || dataItem.Status == 2" class="select-message flex items-center">
+              <a class="flex items-center cursor-pointer" *ngIf="!checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-popover [popoverContent]="popoverBug">
                   <span class="tdsi-info-line text-error-400 text-body-1 leading-none" ></span>
               </a>
-              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error!.Message)" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
+              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
                   <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
               </a>
 
               <ng-template #popoverBug>
-                  <div class="max-w-[336px] text-body-2 text-neutral-1-900">{{dataItem.Error!.Message}}</div>
+                  <div class="max-w-[336px] text-body-2 text-neutral-1-900">{{dataItem.Error? dataItem.Error.Message: ''}}</div>
               </ng-template>
           </div>
 
@@ -124,8 +124,8 @@
       </span>
 
       <!-- Người gửi -->
-      <span *ngIf="dataItem.Error?.Message || dataItem.Status == 2 ; else seenBy">
-          <span *ngIf="checkErrorMessage(dataItem.Error!.Message)" class="text-caption-2 text-neutral-1-400 gap-x-1 flex justify-end">
+      <span *ngIf="(dataItem.Error && dataItem.Error?.Message) || dataItem.Status == 2 ; else seenBy">
+          <span *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" class="text-caption-2 text-neutral-1-400 gap-x-1 flex justify-end">
               <span class="tdsi-info-line flex items-center"></span>Tin nhắn chưa được gửi
           </span>
       </span>

@@ -1,3 +1,5 @@
+import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
+import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
@@ -86,7 +88,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private chatomniObjectService: ChatomniObjectService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private objectEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
 

@@ -4,5 +4,6 @@ import { EventEmitter, Injectable } from "@angular/core";
 @Injectable()
 
 export class ObjectFacebookPostEvent{
+  //TODO: Cập nhật chiến dịch live coversation-post-view-v3 và Object-facebook-post
   public getObjectFBData$: EventEmitter<ChatomniObjectsItemDto> = new EventEmitter();
 }
