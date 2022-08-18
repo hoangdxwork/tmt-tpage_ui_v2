@@ -53,6 +53,9 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
       
       this.loadData();
     }
+    // if(changes["lstOfLiveCampaign"] && !changes["lstOfLiveCampaign"].firstChange){
+    //   this.lstOfLiveCampaign = [...changes["lstOfLiveCampaign"].currentValue];
+    // }
   }
 
   loadData(){
@@ -79,7 +82,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
     modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
       this.currentLiveCampaign = res;
-
+debugger
       if(this.item?.Data){
         this.item = this.fbPostHandler.updateLiveCampaignPost(this.item, res);
       }

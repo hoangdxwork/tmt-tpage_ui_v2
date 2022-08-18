@@ -24,8 +24,8 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
   responseData!: FacebookPostDTO;
   queryObj: any;
 
-  public onLoadedPost: EventEmitter<any> = new EventEmitter();
-  public onRemoveOrderComment: EventEmitter<any> = new EventEmitter();
+  public onLoadedPost$: EventEmitter<any> = new EventEmitter();
+  public onRemoveOrderComment$: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService,
     public caheApi: THelperCacheService) {
@@ -35,7 +35,7 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
 
   loadPost(data: any) {
     this.currentPost = data;
-    this.onLoadedPost.emit(data);
+    this.onLoadedPost$.emit(data);
   }
 
   getByIds(data: any): Observable<any> {

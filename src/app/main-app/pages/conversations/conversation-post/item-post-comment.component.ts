@@ -159,7 +159,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         }
     });
 
-    this.facebookPostService.onRemoveOrderComment
+    this.facebookPostService.onRemoveOrderComment$
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         let keys = Object.keys(this.commentOrders);
         keys.forEach(key => {

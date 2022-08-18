@@ -1,4 +1,3 @@
-import { ChatomniCommentService } from './../../../services/chatomni-service/chatomni-comment.service';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { PrepareFacebookPostHandler } from './../../../handler-v2/conversation-post/prepare-facebook-post.handler';
@@ -6,7 +5,7 @@ import { LiveCampaignService } from './../../../services/live-campaign.service';
 import { LiveCampaignModel } from './../../../dto/live-campaign/odata-live-campaign.dto';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, Input, OnChanges, OnDestroy, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -18,14 +17,10 @@ import { ModalReportOrderPostComponent } from '../components/post-filter/modal-r
 import { ConfigPostOutletComponent } from '../components/config-post/config-post-outlet.component';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { ConversationPostFacade } from '@app/services/facades/conversation-post.facade';
-import { SignalRConnectionService } from '@app/services/signalR/signalR-connection.service';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
-import { RequestCommentByGroup } from '@app/dto/conversation/post/comment-group.dto';
-import { RequestCommentByPost } from '@app/dto/conversation/post/comment-post.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
@@ -36,7 +31,7 @@ import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-co
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostViewV3Component implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDestroy {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
@@ -115,17 +110,25 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
 
     this.loadData();
     this.loadPartnerTimstamp();
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        this.data = {...res};
+        let data = this.availableCampaigns.find(f=>f.Id == res?.LiveCampaignId);
+        if(data){
+          this.currentLiveCampaign = {...data};
+        }
+
+        this.cdRef.markForCheck();
+      }
+    })
   }
 
   loadPartnerTimstamp() {
     this.partners$ = this.chatomniCommentFacade.getParentTimeStamp(this.team.Id);
-  }
-
-  ngAfterViewInit(): void {
-    this.objectEvent.getObjectFBData$.subscribe(res => {
-        this.data = {...res};
-        this.currentLiveCampaign = this.availableCampaigns.find(f=>f.Id == res?.LiveCampaignId);
-    })
   }
 
   loadData() {
@@ -134,8 +137,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
   }
 
   getCommentOrders(posId: string) {
-    this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$)).subscribe((res: OdataCommentOrderPostDTO) => {
-
+    this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: OdataCommentOrderPostDTO) => {
         if(res && res.value) {
             let comments = [...res.value];
 
@@ -156,14 +159,17 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
         }
 
         this.cdRef.markForCheck();
-    }, error => {
+      }, error: (error: any) => {
         this.message.error(`${error?.error?.message}`);
         this.cdRef.markForCheck();
+        }
     });
+      
   }
 
   onSetCommentOrders() {
-    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders$.subscribe((res: any) => {
+    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders$.subscribe({
+      next : (res: any) => {
         let data = res?.data as QuickSaleOnlineOrderModel;
 
         if (!this.commentOrders[res.fbid]) {
@@ -178,14 +184,17 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
                 id: data.Id
             });
         }
+      }
     });
 
-    this.facebookPostService.onRemoveOrderComment.subscribe((res: any) => {
-      let keys = Object.keys(this.commentOrders);
-
-      keys.forEach(key => {
-          this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
-      })
+    this.facebookPostService.onRemoveOrderComment$.subscribe({
+      next: (res: any) => {
+        let keys = Object.keys(this.commentOrders);
+  
+        keys.forEach(key => {
+            this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
+        })
+      }
     })
 
     // this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
@@ -295,11 +304,14 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     this.currentSort = this.sortOptions[0];
     this.currentFilter = this.filterOptions[0];
 
-    this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.facebookCommentService.setSort(this.currentSort.value);
-      this.loadData();
-    }, error => {
-      this.message.error('Thao tác thất bại');
+    this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+      next :(res: any) => {
+        this.facebookCommentService.setSort(this.currentSort.value);
+        this.loadData();
+      }, 
+      error: error => {
+        this.message.error('Thao tác thất bại');
+      }
     })
   }
 
@@ -317,8 +329,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     });
 
     modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
-      this.currentLiveCampaign = res;
-
       if(this.data?.Data){
         this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
       }
@@ -342,17 +352,19 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
       let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.data?.Data), this.currentLiveCampaign);
       let liveCampaignId = this.currentLiveCampaign?.Id || this.data?.LiveCampaignId;
 
-      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe({
+        next : res => {
           if(res.value){
-            this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
+            this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
             this.objectEvent.getObjectFBData$.emit(this.data);
             this.message.success('Cập nhật chiến dịch thành công');
 
             this.cdr.markForCheck();
           }
       },
-      err=>{
+      error: err=>{
         this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
+      }
       })
 
       this.indClickTag = '';
