@@ -128,6 +128,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     // TODO: gán thông tin khách hàng
     if(this.team && TDSHelperObject.hasValue(conversationInfo.Partner)) {
         this.partner = {...conversationInfo.Partner};
+
+        if(!this.partner.Phone && conversationInfo && conversationInfo.Conversation.Phone) {
+          this.partner.Phone = conversationInfo.Conversation.Phone
+        }
+
+        if(!this.partner.Email && conversationInfo && conversationInfo.Conversation.Email) {
+          this.partner.Email = conversationInfo.Conversation.Email
+        }
+
         this.mappingAddress(this.partner);
     }
 

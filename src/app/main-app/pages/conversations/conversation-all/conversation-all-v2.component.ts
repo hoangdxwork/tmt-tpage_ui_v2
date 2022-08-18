@@ -460,6 +460,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   onSentSucceed() {
+    //check lại hàm này
     this.conversationDataFacade.checkAllSendMessage(this.currentTeam!.ChannelId, this.type, this.isCheckedAll);
   }
 
@@ -529,6 +530,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.selectedIndex = 1
   }
 
+  //check lại hàm này
   loadFilterText(text: string) {
 
       // let query = this.conversationDataFacade.createQuery(this.currentTeam.Facebook_PageId, this.type) as any;
