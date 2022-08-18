@@ -167,7 +167,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if(this.conversationInfo && this.team && this.type) {
-        this.loadData();
+        this.loadData(this.conversationInfo);
     }
 
     this.loadSaleConfig();
@@ -183,7 +183,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
-        this.isEditPartner = false;
+        this.validateData();
+
+        let x = {...changes["conversationInfo"].currentValue};
+        this.loadData(x);
     }
   }
 
@@ -191,7 +194,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe(res => {
 
         this.selectProduct(res);
-
         let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId);
 
         if(index > -1){
@@ -244,14 +246,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
-  loadData() {
+  loadData(conversationInfo: ChatomniConversationInfoDto) {
     this.validateData();
-    this.conversationOrderFacade.onLastOrderCheckedConversation$.pipe(takeUntil(this.destroy$)).subscribe((res: QuickSaleOnlineOrderModel) => {
-       if(res) {
-          this.quickOrderModel = { ... res };
-          this.mappingAddress(this.quickOrderModel);
-       }
-    })
+
+    this.quickOrderModel = {...this.conversationOrderFacade.prepareConversationOrder(conversationInfo, this.team)};
+    this.mappingAddress(this.quickOrderModel);
   }
 
   onSelectOrderFromMessage() {
@@ -601,7 +600,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.createFastSaleOrder(fs_model, type);
         } else {
             this.isLoading = false;
-            this.message.success('Thao tác thành công');
+            if(model.Id) {
+                this.message.success('Cập nhật đơn hàng thành công');
+            } else {
+                this.message.success('Tạo đơn hàng thành công');
+            }
         }
 
         // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
@@ -652,6 +655,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       }, error => {
 
         this.isLoading = false;
+        if(this.quickOrderModel.Id) {
+            this.message.success('Cập nhật đơn hàng thành công');
+        } else {
+            this.message.success('Tạo đơn hàng thành công');
+        }
+
         this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
       });
   }
@@ -1027,11 +1036,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
     if(!this.saleModel.Carrier) {
-        return this.message.error('Vui lòng chờn  đối tác giao hàng');
+        return this.message.error('Vui lòng chờ đối tác giao hàng');
     }
 
     if (!this.saleModel) {
-        return this.message.error('Vui lòng chờn nhập khối lượng');
+        return this.message.error('Vui lòng chờ nhập khối lượng');
     }
 
     let model = this.prepareModelFeeV2();
@@ -1050,7 +1059,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   let svDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
                   this.selectShipServiceV2(svDetail);
 
-                  this.message.success(`ĝối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
           } else {
             this.message.error(res.error? res.error.message: 'Lỗi chọn đối tác');
@@ -1092,6 +1101,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   validateData(){
+    this.isEditPartner = false;
     (this.conversationInfo as any) = null;
     (this.quickOrderModel as any) = null;
     (this.saleModel as any) = null;
