@@ -3,7 +3,6 @@ import { ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chato
 import { TDSHelperString } from "tds-ui/shared/utility";
 import { ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { CreateOrUpdatePartnerModel } from "../../dto/conversation-partner/create-update-partner.dto";
-import { TabPartnerCvsRequestModel } from "../../dto/conversation-partner/partner-conversation-request.dto";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
 @Injectable()
@@ -91,7 +90,7 @@ export class CsPartner_PrepareModelHandler {
     return {...partner};
   }
 
-  public loadPartnerFromTabOrder(partner: TabPartnerCvsRequestModel, order: QuickSaleOnlineOrderModel) {
+  public loadPartnerFromTabOrder(partner: ConversationPartnerDto, order: QuickSaleOnlineOrderModel) {
 
     if(TDSHelperString.hasValueString(order.PartnerName)) {
       partner.Name = order.PartnerName;
@@ -124,14 +123,14 @@ export class CsPartner_PrepareModelHandler {
       partner.District = {
           code: order.DistrictCode,
           name: order.DistrictName
-      }
+      } as any;
     }
 
     if(TDSHelperString.hasValueString(order.WardCode)) {
       partner.Ward = {
           code: order.WardCode,
           name: order.WardName
-      }
+      } as any;
     }
 
     return {...partner};

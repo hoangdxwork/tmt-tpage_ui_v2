@@ -28,6 +28,7 @@ import { CsPartner_PrepareModelHandler } from 'src/app/main-app/handler-v2/chato
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenueDto, Conversation_LastBillDto, GroupBy_ConversationBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -209,12 +210,14 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadPartnerFromTabOrder() {
-    // this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$)).subscribe((res: QuickSaleOnlineOrderModel) => {
-    //    if(res) {
-    //       let partner = this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, res);
-    //       this.partner = partner;
-    //    }
-    // });
+    this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: QuickSaleOnlineOrderModel) => {
+        if(res) {
+           let partner = this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, res);
+           this.partner = partner;
+        }
+      }
+    });
   }
 
   loadUpdateInfoByConversation() {
@@ -446,7 +449,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         }
 
         // cập nhật dữ liệu khách hàng sang form conversation-order
-        // this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
+        // Chỗ này chưa xử lý bên order
+        this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
 
         this.isEditPartner = false;
         this.isLoading = false

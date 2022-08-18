@@ -162,7 +162,7 @@
                           (Chưa có đối tác)</div>
 
                         <div class="text-body-2 font-regular font-sans text-neutral-1-900">
-                          [ {{ lastBill.ShowState }} - <span class="text-info-500 pl-0.5">{{ lastBill.TrackingRef || '#N/A' }}</span>]
+                          [ {{ lastBill.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastBill.TrackingRef"> - {{ lastBill.TrackingRef }}</span>]
                         </div>
 
                     </div>
