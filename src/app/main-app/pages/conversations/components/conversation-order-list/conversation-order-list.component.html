@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="h-full w-full">
   <div class="w-full h-full flex overflow-hidden flex-col gap-y-4 overflow-y-auto tds-custom-scroll bg-white p-4">
     <div class="flex gap-x-2">
         <tds-form-field class="w-full">
@@ -130,7 +130,7 @@
     </div>
     <ng-template #noData>
         <div class="pt-1 flex-auto">
-            <div class="flex flex-col gap-4 p-4 items-center bg-white h-full">
+            <div class="flex flex-col gap-4 p-4 items-center bg-white">
                 <img src="../../../assets/imagesv2/shop-empty.svg" alt="" class="mt-24 w-[110px] h-[82px]">
                 <span class="text-neutral-1-400 font-normal">Chưa có đơn hàng nào</span>
 
@@ -144,4 +144,3 @@
     </ng-template>
   </div>
 </tds-spin>
-

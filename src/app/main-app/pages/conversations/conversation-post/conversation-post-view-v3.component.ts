@@ -1,3 +1,4 @@
+import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
 import { ChatomniCommentService } from './../../../services/chatomni-service/chatomni-comment.service';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
@@ -43,6 +44,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
   @Input() availableCampaigns!:Array<LiveCampaignModel>;
 
   currentLiveCampaign?:LiveCampaignModel;
+  orderTotal = 0;
   indClickFilter = 0;
   isShowFilterUser = false;
   indeterminate: boolean = false;
@@ -101,8 +103,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
     private fbPostHandler: FaceBookPostItemHandler,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private facebookCommentService: FacebookCommentService,
+    private conversationPostEvent: ConversationPostEvent,
     private message: TDSMessageService,
-    private cdr: ChangeDetectorRef,
     private destroy$: TDSDestroyService) {
   }
 
@@ -115,10 +117,20 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
 
     this.loadData();
     this.loadPartnerTimstamp();
+    this.loadOrderTotal();
   }
 
   loadPartnerTimstamp() {
     this.partners$ = this.chatomniCommentFacade.getParentTimeStamp(this.team.Id);
+  }
+
+  loadOrderTotal(){
+    this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.orderTotal = res;
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   ngAfterViewInit(): void {
@@ -325,7 +337,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
 
       this.objectEvent.getObjectFBData$.emit(this.data);
 
-      this.cdr.detectChanges();
+      this.cdRef.detectChanges();
     })
   }
 
@@ -348,7 +360,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, After
             this.objectEvent.getObjectFBData$.emit(this.data);
             this.message.success('Cập nhật chiến dịch thành công');
 
-            this.cdr.markForCheck();
+            this.cdRef.markForCheck();
           }
       },
       err=>{
