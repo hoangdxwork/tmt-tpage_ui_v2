@@ -12,6 +12,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { ViewConversation_FastSaleOrdersDTO } from './../../../../dto/fastsaleorder/view_fastsaleorder.dto';
 import { Component, Input, OnInit } from '@angular/core';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { Conversation_LastBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 
 @Component({
   selector: 'drawer-detail-bill',
@@ -19,7 +20,8 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
   providers: [ TDSDestroyService ]
 })
 export class DrawerDetailBillComponent implements OnInit {
-  @Input() bill!: ViewConversation_FastSaleOrdersDTO;
+
+  @Input() bill!: Conversation_LastBillDto;
   @Input() isBillNearest!: boolean;
 
   payments: Array<PaymentJsonDTO> = [];

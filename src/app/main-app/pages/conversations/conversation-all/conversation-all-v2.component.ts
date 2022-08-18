@@ -17,17 +17,15 @@ import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-aut
 import { eventFadeStateTrigger, eventCollapTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSModalService, TDSModalRef } from 'tds-ui/modal';
+import { TDSModalService } from 'tds-ui/modal';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { OnChatBotSignalRModel, TypeOnChatBot } from 'src/app/main-app/dto/event-signalR/on-chatbot-signalR.dto';
 import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
 import { TDSNotificationRef, TDSNotificationService } from 'tds-ui/notification';
-import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { CrmMatchingV2Service } from 'src/app/main-app/services/matching-v2-service/crm-matching-v2.service';
-import { ChatomniMessageService } from 'src/app/main-app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 
 @Component({
   selector: 'app-conversation-all-v2',
@@ -52,7 +50,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   lstOmcs: ChatomniConversationItemDto[] = [];
 
   csid!: string;
-  omcs_Item!: ChatomniConversationItemDto | undefined;
+  conversationInfo!: ChatomniConversationInfoDto;
+  conversationItem!: ChatomniConversationItemDto;
 
   isFastSend: boolean = false;
   checked: boolean = false;
@@ -68,10 +67,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   clickReload: number = 0;
   isCheckedAll: boolean = false;
   cacheChatbot: OnChatBotSignalRModel[] = [];
-  orderCode: any;
   checkCsidRouter: string = '';
   selectedIndex: number = 0;
-
   tagsChange!: ChatomniConversationTagDto[];
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -84,14 +81,12 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private fbGraphService: FacebookGraphService,
     public activatedRoute: ActivatedRoute,
     public router: Router,
-    private chatomniMessageService: ChatomniMessageService,
     private chatomniConversationService: ChatomniConversationService,
     private ngZone: NgZone,
     private notification: TDSNotificationService,
     private conversationOrderFacade: ConversationOrderFacade,
     private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
-    private chatomniMessageFacade: ChatomniMessageFacade,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private sgRConnectionService: SignalRConnectionService,
@@ -103,33 +98,37 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   ngOnInit(): void {
     // TODO: change team tds header
-    this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
-        this.onClickTeam(team);
+    this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team) => {
+          this.onClickTeam(team);
+      }
     })
 
     // TODO: change team in component
-    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
-      if (!TDSHelperObject.hasValue(team)) {
-          return this.onRedirect();
+    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe({
+      next: ([team, params]: any) => {
+          if (!TDSHelperObject.hasValue(team)) {
+              return this.onRedirect();
+          }
+
+          // TODO: change Team
+          if(team.Id != this.currentTeam?.Id) {
+              this.fetchLiveConversations(team);
+              this.setCurrentTeam(team);
+          }
+
+          this.type = params?.params?.type;
+          this.setParamsUrl(params.params);
+
+          let exist = (TDSHelperString.isString(this.conversationItem?.ConversationId) != TDSHelperString.isString(this.paramsUrl?.csid))
+            || (!TDSHelperString.isString(this.conversationItem?.ConversationId) && !TDSHelperString.isString(this.paramsUrl?.csid));
+
+          if(exist){
+              this.loadData(team);
+          }
+
+          this.checkCsidRouter = localStorage.getItem(this.chatomniConversationService._keyCheckCsidRouter) || '';
       }
-
-      // TODO: change Team
-      if(team.Id != this.currentTeam?.Id) {
-          this.fetchLiveConversations(team);
-          this.setCurrentTeam(team);
-      }
-
-      this.type = params?.params?.type;
-      this.setParamsUrl(params.params);
-
-      let exist = (TDSHelperString.isString(this.omcs_Item?.ConversationId) != TDSHelperString.isString(this.paramsUrl?.csid))
-        || (!TDSHelperString.isString(this.omcs_Item?.ConversationId) && !TDSHelperString.isString(this.paramsUrl?.csid));
-
-      if(exist){
-          this.onChangeConversation(team);
-      }
-
-      this.checkCsidRouter = localStorage.getItem(this.chatomniConversationService._keyCheckCsidRouter) || '';
     })
 
     this.hubEvents(); // các sự kiện realtime
@@ -141,50 +140,55 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   eventEmitter() {
     // TODO: cập nhật tags
-    this.chatomniEventEmiterService.tag_ConversationEmiter$.subscribe((res: ChatomniTagsEventEmitterDto)=>{
-      if(res){
-        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
-        if(index >- 1) {
-          this.lstOmcs[index].Tags = [...res.Tags];
-          this.lstOmcs[index] = {...this.lstOmcs[index]}
+    this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniTagsEventEmitterDto) => {
+        if(res) {
+            let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
+            if(index >- 1) {
+                this.lstOmcs[index].Tags = [...res.Tags];
+                this.lstOmcs[index] = {...this.lstOmcs[index]};
+            }
         }
       }
     })
 
     // TODO: Cập nhật hội thoại cuối cùng
-    this.chatomniEventEmiterService.last_Message_ConversationEmiter$.subscribe((res: ChatomniLastMessageEventEmitterDto)=>{
-      if(res){
-        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
-        if(index >- 1) {
-          this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
-          this.lstOmcs[index] = {...this.lstOmcs[index]}
+    this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniLastMessageEventEmitterDto) => {
+        if(res) {
+            let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
+            if(index >- 1) {
+                this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
+                this.lstOmcs[index] = {...this.lstOmcs[index]};
+            }
         }
       }
     })
 
-    // TODO: gán mã code load từ Tab Order
-    this.conversationOrderFacade.onPushLastOrderCode$.subscribe((code: any) => {
-      this.orderCode = code;
-    })
-
     // TODO: Cập nhật đã xem tin nhắn
-    this.chatomniEventEmiterService.countUnreadEmiter$.subscribe((id: string)=>{
-      if(id){
-        let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
-        if(index >- 1) {
-          this.lstOmcs[index].CountUnread = 0;
-          this.lstOmcs[index] = {...this.lstOmcs[index]};
+    this.chatomniEventEmiterService.countUnreadEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (id: string) => {
+        if(id) {
+            let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
+            if(index >- 1) {
+              this.lstOmcs[index].CountUnread = 0;
+              this.lstOmcs[index] = {...this.lstOmcs[index]};
+              this.cdRef.detectChanges();
+            }
         }
       }
     })
 
     // TODO: Cập nhật Khi bật chatbot thành công
-    this.chatomniEventEmiterService.chatbotStateEmiter$.subscribe((id: string)=>{
-      if(id){
-        let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
-        if(index >- 1) {
-          this.lstOmcs[index].State = 0;
-          this.lstOmcs[index] = {...this.lstOmcs[index]};
+    this.chatomniEventEmiterService.chatbotStateEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (id: string) => {
+        if(id) {
+            let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
+            if(index >- 1) {
+                this.lstOmcs[index].State = 0;
+                this.lstOmcs[index] = {...this.lstOmcs[index]};
+                this.cdRef.detectChanges();
+            }
         }
       }
     })
@@ -193,21 +197,13 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   spinLoading() {
   }
 
-  onChangeConversation(team: any, queryObj?: any) {
+  loadData(team: any, queryObj?: any) {
     this.validateData();
 
-    // Sử dụng ngZone chạy bất đồng bộ dữ liệu
-    this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
-        if(this.dataSource$) {
-            this.loadConversations(this.dataSource$);
-        }
-    })
-  }
-
-  validateData() {
-    this.lstOmcs = [];
-    delete this.dataSource$;
+    this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
+    if(this.dataSource$) {
+        this.loadConversations(this.dataSource$);
+    }
   }
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
@@ -216,66 +212,85 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     }
 
     this.isLoading = true;
-    dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
+    dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniConversationDto) => {
+            if (res && TDSHelperArray.hasListValue(res.Items)) {
 
-        if (res && TDSHelperArray.hasListValue(res.Items)) {
-            this.lstOmcs = [...res.Items];
-            let csid = this.paramsUrl?.csid || null;
+                this.lstOmcs = [...res.Items];
+                let csid = this.paramsUrl?.csid || null;
 
-            //TODO: check psid khi load lần 2,3,4...
-            let exits = this.lstOmcs.filter(x => x.ConversationId == csid)[0] ;
-            //TODO: kiểm tra khi chọn menu tin nhắn và bình luận, giữ item đang chọn
+                //TODO: check psid khi load lần 2,3,4...
+                let exits = this.lstOmcs.filter(x => x.ConversationId == csid)[0] ;
 
-            let exitsTab = this.lstOmcs.filter(x => x.ConversationId == this.checkCsidRouter)[0] ;
-            if (exits || exitsTab) {
-                this.setCurrentConversationItem(exits || exitsTab);
+                //TODO: kiểm tra khi chọn menu tin nhắn và bình luận, giữ item đang chọn
+                let exitsTab = this.lstOmcs.filter(x => x.ConversationId == this.checkCsidRouter)[0] ;
+                if (exits || exitsTab) {
+                    this.setCurrentConversationItem(exits || exitsTab);
+                } else {
+                    //TODO: load lần đầu tiên'
+                    this.setCurrentConversationItem(this.lstOmcs[0]);
+                }
+
             } else {
-                //TODO: load lần đầu tiên'
-                this.setCurrentConversationItem(this.lstOmcs[0]);
+                //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
+                this.validateData();
             }
 
-        } else {
-            //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-            this.validateData();
+            this.isLoading = false;
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
         }
-
-        this.isLoading = false;
-
-      }, error => {
-          this.isLoading = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-      })
+    })
   }
 
-  //TODO: matching đang chọn active
+  // TODO: matching đang chọn active
+  // TODO: xử lý lấy thông tin partner + đơn hàng từ GetInfo()
   setCurrentConversationItem(item: ChatomniConversationItemDto) {
     if (TDSHelperObject.hasValue(item)) {
 
       if (this.isFastSend == true) {
-          this.conversationDataFacade.checkSendMessage(this.currentTeam!.ChannelId, this.type, item.ConversationId);
+          // Check lại trường hợp này
+          // this.conversationDataFacade.checkSendMessage(this.currentTeam!.ChannelId, this.type, item.ConversationId);
       }
       else {
           //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
-          this.omcs_Item = {...item};
+          this.conversationItem = {...item};
           this.csid = item.ConversationId;
 
           let uri = this.router.url.split("?")[0];
           let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&csid=${item?.ConversationId}`;
           this.router.navigateByUrl(uriParams);
       }
-      // this.checkCsidRouter = this.route.snapshot.queryParams.csid;
-      localStorage.setItem(this.chatomniConversationService._keyCheckCsidRouter, item?.ConversationId);
+
+      // TODO: gán thông tin cho conversation-partner, conversation-order
+      if(this.currentTeam?.Id && item.ConversationId) {
+          this.chatomniConversationService.getInfo(this.currentTeam!.Id, item.ConversationId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (info: ChatomniConversationInfoDto) => {
+                  this.conversationInfo = {...info};
+              },
+              error: (error: any) => {
+                  this.notification.error('Lỗi thông tin khách hàng', `${error?.error?.message}`);
+              }
+          })
+      }
+
+      // TODO: lưu lại item đang active để hiện thị tiếp ở message, inbox nếu trùng csid
+      const _keyCache = this.chatomniConversationService._keyCheckCsidRouter;
+      localStorage.setItem(_keyCache, item.ConversationId);
     }
   }
 
-  changeCurrentCvsItem(item: ChatomniConversationItemDto) {
+  changeCurrentConversationItem(item: ChatomniConversationItemDto) {
     if(this.isOpenCollapCheck){
         this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
         this.refreshCheckedStatus();
+
         return;
     }
 
-    delete this.omcs_Item;
+    (this.conversationItem as any) = null;
     this.setCurrentConversationItem(item);
   }
 
@@ -291,10 +306,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       }
 
       this.isProcessing = true;
-      this.ngZone.run(() => {
-          this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryFilter);
+      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryFilter);
 
-          this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: ChatomniConversationDto) => {
 
               if(TDSHelperArray.hasListValue(res?.Items)) {
                   this.lstOmcs = [...res.Items];
@@ -304,9 +319,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
               this.yiAutoScroll.scrollToElement('scrollConversation', 750);
               this.cdRef.markForCheck();
-          }, error => {
+          },
+          error: (error) => {
               this.isProcessing = false;
-          })
+          }
       })
     }
   }
@@ -329,11 +345,14 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.clickReload = 0;
 
         if (this.currentTeam) {
-            this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe(res => {
+          this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res) => {
                   this.message.success('Yêu cầu cập nhật thành công');
-            }, error => {
+              },
+              error: (error) => {
                   this.message.success('Yêu cầu cập nhật thất bại');
-            });
+              }
+          });
         }
     } else {
         this.onSubmitFilter({});
@@ -404,11 +423,14 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             userIds += x.toString() + ",";
         }
     })
+
     if(lstCheck.length > 0) {
         this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam!.ChannelId}&psids=${userIds.toString()}`)
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-            that.printerService.printHtml(res);
-    })}
+          .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe({
+              next: (res: TDSSafeAny) => {
+                  that.printerService.printHtml(res);
+              }
+          })}
   }
 
   showModalSendMessage(){
@@ -522,7 +544,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             // TODO: nếu dữ liệu ko phải là conversation hiện tại
             let item = this.lstOmcs.filter(x => x.Id == hubs.data.pageId && x.ConversationId == hubs.data.psid)[0]; // x.Id  này để tạm
             // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
-            let exits = this.omcs_Item?.Id == hubs.data.pageId && this.omcs_Item?.ConversationId == hubs.data.psid;
+            let exits = this.conversationItem?.Id == hubs.data.pageId && this.conversationItem?.ConversationId == hubs.data.psid;
 
             let data = {
               team: {},
@@ -536,7 +558,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
                     item.State = StateChatbot.SystemError;
                   }
                   if(exits) {
-                      this.omcs_Item!.State = StateChatbot.SystemError;
+                      this.conversationItem!.State = StateChatbot.SystemError;
                   }
                   // TODO: Lấy teamId của page
                   this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
@@ -556,7 +578,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
                   }
 
                   if(exits) {
-                      this.omcs_Item!.State = StateChatbot.Normal;
+                      this.conversationItem!.State = StateChatbot.Normal;
                   }
 
                   this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
@@ -578,27 +600,38 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   getLink(team: TDSSafeAny, csid: string){
     if(TDSHelperObject.hasValue(team)){
-      if(team.Id != this.currentTeam!.Id){
-        this.crmService.changeTeamFromLayout$.emit(team);
-        this.onChangeConversation(team);
-      }
-      let data = this.lstOmcs.find(x => x.ConversationId == csid)
-      if(data){
-        this.omcs_Item = data;
-      }
+        if(team.Id != this.currentTeam!.Id){
+            this.crmService.changeTeamFromLayout$.emit(team);
+            this.loadData(team);
+        }
 
-      let uri = 'conversation/all';
-      let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${csid}`;
-      this.router.navigateByUrl(uriParams)
-      this.notification.remove(this.notificationRef.messageId);
+        let data = this.lstOmcs.find(x => x.ConversationId == csid)
+        if(data){
+          this.conversationItem = data;
+        }
+
+        let uri = 'conversation/all';
+        let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${csid}`;
+
+        this.router.navigateByUrl(uriParams)
+        this.notification.remove(this.notificationRef.messageId);
     }
   }
 
   notificationMessNew(){
-    this.conversationDataFacade.notificationMessNew$.pipe(takeUntil(this.destroy$)).subscribe(res=>{
-      if(res){
-        this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+    this.conversationDataFacade.notificationMessNew$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res) {
+              this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          }
       }
     })
   }
+
+  validateData() {
+    this.lstOmcs = [];
+    (this.conversationInfo as any) = null;
+    delete this.dataSource$;
+  }
+
 }

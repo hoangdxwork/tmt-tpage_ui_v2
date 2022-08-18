@@ -59,6 +59,7 @@ import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni
 import { OdataSaleOnline_Facebook_CommentDto, SaleOnline_Facebook_CommentDto } from '@app/dto/coversation-order/saleonline-facebook-comment.dto';
 import { FacebookCommentService } from '@app/services/facebook-comment.service';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -68,7 +69,7 @@ import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/pr
 
 export class ConversationOrderComponent implements OnInit, OnChanges {
 
-  @Input() omcs_Item!: ChatomniConversationItemDto;
+  @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
 
@@ -165,7 +166,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.loadData();
+    if(this.conversationInfo && this.team && this.type) {
+        this.loadData();
+    }
 
     this.loadSaleConfig();
     this.loadSaleOnineSettingConfig();
@@ -179,8 +182,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes["omcs_Item"] && !changes["omcs_Item"].firstChange) {
-      this.isEditPartner = false;
+    if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
+        this.isEditPartner = false;
     }
   }
 
@@ -247,10 +250,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
        if(res) {
           this.quickOrderModel = { ... res };
           this.mappingAddress(this.quickOrderModel);
-
-          if(TDSHelperString.hasValueString(this.quickOrderModel.Code)){
-              this.conversationOrderFacade.onPushLastOrderCode$.emit(this.quickOrderModel.Code);
-          }
        }
     })
   }
@@ -325,15 +324,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           return x;
       });
     }
-  }
-
-  validateData(){
-    (this.quickOrderModel as any) = null;
-    (this.saleModel as any) = null;
-    (this._cities as any) = null;
-    (this._districts as any) = null;
-    (this._wards as any) = null;
-    (this._street as any) = null;
   }
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
@@ -1101,5 +1091,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
   }
 
+  validateData(){
+    (this.conversationInfo as any) = null;
+    (this.quickOrderModel as any) = null;
+    (this.saleModel as any) = null;
+    (this._cities as any) = null;
+    (this._districts as any) = null;
+    (this._wards as any) = null;
+    (this._street as any) = null;
+  }
 
 }

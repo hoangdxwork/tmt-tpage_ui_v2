@@ -71,13 +71,13 @@
                     yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
                     <div *ngFor="let item of lstOmcs; let i= index ; trackBy: trackByIndex">
-                        <div *ngIf="item && item.ConversationId && omcs_Item && currentTeam" @eventFadeState>
+                        <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
 
-                          <a (click)="changeCurrentCvsItem(item)" >
+                          <a (click)="changeCurrentConversationItem(item)" >
                             <!-- class="w-full {{ (isChanged && omcs_Item) ? 'cursor-wait' : 'cursor-pointer'}}" -->
                               <current-conversation-item-v2
                                   [item]="item" [csid]="item.ConversationId" [type]="type"
-                                  [omcs_Item]="omcs_Item"
+                                  [conversationItem]="conversationItem"
                                   [state]="item.State"
                                   [team]="currentTeam" [isFastSend]="isFastSend"
                                   [isOpenCollapCheck]="isOpenCollapCheck"
@@ -108,11 +108,11 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex 2xl:w-[48%] w-[45%]">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <div class="flex w-full flex-col h-full" *ngIf="omcs_Item && currentTeam" @eventFadeState>
+        <div class="flex w-full flex-col h-full" *ngIf="conversationItem && currentTeam" @eventFadeState>
             <shared-tds-conversations-v2
                 class="flex w-full h-full"
-                [data]="omcs_Item"
-                [state]="omcs_Item.State"
+                [data]="conversationItem"
+                [state]="conversationItem.State"
                 [type]="type" [team]="currentTeam">
             </shared-tds-conversations-v2>
         </div>
@@ -137,11 +137,11 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="omcs_Item  && currentTeam">
-                      <conversation-partner [omcs_Item]="omcs_Item" [team]="currentTeam" [type]="type" (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
+                  <div *ngIf="currentTeam && type && conversationInfo">
+                      <conversation-partner [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type" (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
                   </div>
 
-                  <div *ngIf="!omcs_Item">
+                  <div *ngIf="!conversationItem">
                       <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>
@@ -152,7 +152,7 @@
                         [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
 
                           <span class="mr-2 flex items-center">  Đơn hàng
-                              <tds-tag status='primary' class="ml-3" *ngIf="orderCode"> #{{orderCode}} </tds-tag>
+                              <tds-tag status='primary' class="ml-3" *ngIf="conversationInfo && conversationInfo.Order && conversationInfo.Order.Code"> #{{conversationInfo.Order.Code}} </tds-tag>
                           </span>
 
                           <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
@@ -161,11 +161,11 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="omcs_Item && currentTeam ">
-                      <conversation-order [omcs_Item]="omcs_Item" [team]="currentTeam" [type]="type"></conversation-order>
+                  <div *ngIf="currentTeam && type && conversationInfo">
+                      <conversation-order [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type"></conversation-order>
                   </div>
 
-                  <div *ngIf="!omcs_Item">
+                  <div *ngIf="!conversationItem">
                       <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>
