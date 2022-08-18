@@ -42,11 +42,14 @@ export class CreateDefaultProductComponent implements OnInit {
     let skip = 0;
 
     this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoading = false ))
-      .subscribe((res: ODataProductDTOV2) => {
-           this.lstProduct = [...res.value];
-      },err =>{
+      .subscribe({
+        next:(res: ODataProductDTOV2) => {
+          this.lstProduct = [...res.value];
+        },
+        error:(err) => {
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-    });
+        }
+      });
   }
 
   loadInventory() {
@@ -54,11 +57,13 @@ export class CreateDefaultProductComponent implements OnInit {
       .pipe(mergeMap(item => {
         return this.productService.getInventoryWarehouseId(item?.Company?.Id) as Observable<GetInventoryDTO>
       }))
-      .subscribe(res => {
-        this.lstInventory = res;
-      },
-      err => {
-        this.message.error(err?.error?.message || 'Không thể tải dữ liệu kho');
+      .subscribe({
+        next:(res) => {
+          this.lstInventory = res;
+        },
+        error:(err) => {
+          this.message.error(err?.error?.message || 'Không thể tải dữ liệu kho');
+        }
       });
   }
 

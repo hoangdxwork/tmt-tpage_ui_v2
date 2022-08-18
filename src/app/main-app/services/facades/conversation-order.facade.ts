@@ -53,10 +53,10 @@ export class ConversationOrderFacade extends BaseSevice  {
   public loadPartnerByPostComment$ = new EventEmitter<any>();
 
   // TODO: outPut thông tin khách hàng từ comment sang tab Đơn hàng
-  public loadCreateOrderByPostComment$ = new EventEmitter<any>();
+  public loadInsertFromPostFromComment$ = new EventEmitter<any>();
 
   // TODO:click code đơn hàng từ bài viết
-  public clickOrderFromCommentPost$ = new EventEmitter<any>();
+  public loadOrderFromCommentPost$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService,
       private crmTeamService: CRMTeamService,
@@ -199,10 +199,6 @@ export class ConversationOrderFacade extends BaseSevice  {
           this.userInit = {...res};
       }
     });
-  }
-
-  loadTeam() {
-    this.currentTeam = this.crmTeamService.getCurrentTeam() as any;
   }
 
 }

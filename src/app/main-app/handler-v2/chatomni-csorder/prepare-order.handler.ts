@@ -69,7 +69,7 @@ export class CsOrder_PrepareModelHandler {
     return {...x};
   }
 
-  public prepareInsertFromBot(comment: ChatomniDataItemDto, saleOnlineSetting: SaleOnlineSettingDTO, companyCurrents: CompanyCurrentDTO) {
+  public prepareInsertFromPost(comment: ChatomniDataItemDto, saleOnlineSetting: SaleOnlineSettingDTO, companyCurrents: CompanyCurrentDTO) {
 
     let x = {} as InsertFromPostDto;
     let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;

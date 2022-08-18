@@ -202,46 +202,59 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
     });
 
-    //TODO: tạo đơn hàng từ comment bài viết, xử dụng insertFromBot gời save
-    this.conversationOrderFacade.loadCreateOrderByPostComment$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataItemDto) => {
-      if(res) {
-          this.isEnableCreateOrder = false;
-          this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromBot(res, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
+    //TODO: tạo đơn hàng từ comment bài viết, sử dụng insertFromPost
+    this.conversationOrderFacade.loadInsertFromPostFromComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataItemDto) => {
+        if(res) {
+            this.validateData();
 
-          this.insertFromPostModel.UserId = this.userInit.Id;
-          this.insertFromPost(this.insertFromPostModel, res);
+            this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromPost(res, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
+            if(!this.insertFromPostModel.UserId) {
+                this.insertFromPostModel.UserId = this.userInit.Id;
+            }
 
-          this.facebookCommentService.saleOnline_Facebook_Comment(res.UserId, res.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((comments: OdataSaleOnline_Facebook_CommentDto) => {
-              if(comments && comments.value) {
-                  this.so_FacebookComments = [...comments.value];
+            this.insertFromPost(this.insertFromPostModel, res);
+
+            this.facebookCommentService.saleOnline_Facebook_Comment(res.UserId, res.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (comments: OdataSaleOnline_Facebook_CommentDto) => {
+                  if(comments && comments.value) {
+                      this.so_FacebookComments = [...comments.value];
+                  }
               }
-          });
+            });
+        }
       }
     })
 
     // TODO: load thông tin đơn hàng khi click mã đơn hàng từ danh sách comment bài viết
-    this.conversationOrderFacade.clickOrderFromCommentPost$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if(res && res.orderId && res.comment) {
+    this.conversationOrderFacade.loadOrderFromCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res && res.orderId && res.comment) {
 
-          this.isEnableCreateOrder = false;
-          res.comment = res.comment as ChatomniDataItemDto;
+            this.validateData();
+            this.conversationInfo = res.comment as ChatomniConversationInfoDto;
 
-          this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromBot(res.comment, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
-          this.insertFromPostModel.UserId = this.userInit.Id;
-
-          this.isLoading = true;
-          this.saleOnline_OrderService.getById(res.orderId).pipe(takeUntil(this.destroy$)).subscribe((order: any) => {
-            if(order) {
-                delete order['@odata.context'];
-                this.quickOrderModel = {...order};
+            this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromPost(res.comment, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
+            if(!this.insertFromPostModel.UserId) {
+                this.insertFromPostModel.UserId = this.userInit.Id;
             }
 
-            this.isLoading = false;
-
-          }, error => {
-              this.isLoading = false;
-              this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
-          })
+            this.isLoading = true;
+            this.saleOnline_OrderService.getById(res.orderId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (obs: any) => {
+                  if(obs) {
+                      delete obs['@odata.context'];
+                      this.quickOrderModel = {...obs};
+                      this.mappingAddress(this.quickOrderModel);
+                  }
+                  this.isLoading = false;
+              },
+              error: (error: any) => {
+                  this.isLoading = false;
+                  this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+              }
+            })
+        }
       }
     })
   }
@@ -516,29 +529,36 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   //TODO: xử ly giống insertfrommessage
   insertFromPost(model: InsertFromPostDto, comment: ChatomniDataItemDto) {
     this.isLoading = true;
-    this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        delete res['@odata.context'];
-        this.quickOrderModel = {...res};
+    this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: any) => {
 
-        //TODO: trường hợp tạo lần đầu thì gời in phiếu
-        if(this.quickOrderModel.IsCreated) {
-            let fbid = model.Facebook_ASUserId;
-            this.saleOnline_OrderService.setCommentOrder(res, fbid);
+          delete res['@odata.context'];
+          this.quickOrderModel = {...res};
 
-            if(!this.saleOnlineSettings.isDisablePrint) {
-                this.orderPrintService.printOrder(res, comment.Message);
-            }
+          //TODO: trường hợp tạo lần đầu thì gọi in phiếu
+          if(res.IsCreated) {
+              // Check lại hàm này
+              let fbid = model.Facebook_ASUserId;
+              this.saleOnline_OrderService.setCommentOrder(res, fbid);
 
-            this.message.success('Tạo đơn hàng thành công');
-        } else
-        if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
-            this.orderPrintService.printOrder(res, comment.Message);
-            this.message.success('Cập nhật đơn hàng thành công');
+              if(!this.saleOnlineSettings.isDisablePrint) {
+                  this.orderPrintService.printOrder(res, comment.Message);
+              }
+
+              this.message.success('Tạo đơn hàng thành công');
+          }
+          else
+          if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
+              this.orderPrintService.printOrder(res, comment.Message);
+              this.message.success('Cập nhật đơn hàng thành công');
+          }
+
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'ĝã xảy ra lỗi');
         }
-        this.isLoading = false;
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'ĝã xảy ra lỗi');
     })
   }
 
@@ -569,10 +589,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         } else {
             this.isLoading = false;
             this.message.success('Cập nhật đơn hàng thành công');
+
         }
 
         // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
         this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
+
     }, error => {
         this.isLoading = false;
         this.message.error(`${error?.error?.message}` || 'ĝã xảy ra lỗi');
@@ -617,7 +639,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
-
     this.fastSaleOrderService.saveV2(fs_model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
         // TODO: Tạo hóa đơn thành công
@@ -641,8 +662,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(res && !res.Message ) {
           this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
         }
-
-        this.omniEventEmiter.callConversationPartnerEmiter$.emit(true);
 
         if(type && res) {
             this.printOrder(type, res);
