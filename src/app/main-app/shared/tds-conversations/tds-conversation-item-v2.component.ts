@@ -224,8 +224,8 @@ export class TDSConversationItemV2Component implements OnInit {
     })
   }
 
-  checkErrorMessage(message?: string): boolean {
-    if(message?.includes("(#10)")) {
+  checkErrorMessage(message: string): boolean {
+    if(message.includes("(#10)")) {
         return true;
     }
     return false;

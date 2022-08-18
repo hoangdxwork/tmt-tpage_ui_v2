@@ -86,6 +86,7 @@ import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prep
 import { ConvertCustomersComponent } from './components/convert-customers/convert-customers.component';
 import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -124,7 +125,8 @@ const SERVICES = [
   ChatomniMessageFacade,
   ActivityMatchingService,
   ConversationService,
-  SO_PrepareFastSaleOrderHandler
+  SO_PrepareFastSaleOrderHandler,
+  ChatomniCommentFacade
 ]
 
 @NgModule({

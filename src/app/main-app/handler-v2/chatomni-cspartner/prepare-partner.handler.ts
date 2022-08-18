@@ -20,7 +20,7 @@ export class CsPartner_PrepareModelHandler {
         Comment: partner?.Comment,
         Street: partner?.Street,
 
-        FacebookASIds: partner?.FacebookASIds || partner?.FacebookPSId,
+        FacebookASIds: item.ConversationId,
         FacebookId: partner.FacebookId,
 
         City: partner.City?.code ? {

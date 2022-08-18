@@ -107,7 +107,7 @@
                 <tds-collapse-panel [header]="headerProduct" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'" tdsClass="p-0">
                     <ng-template #headerProduct>
                         <span class="text-header-1 font-semibold text-neutral-1-900 font-sans mr-2">Sản phẩm</span>
-                        <tds-badge [standalone]="true" [count]="quickOrderModel.Details.length" [tdsClass]="'bg-success-400 text-white'"></tds-badge>
+                        <tds-badge *ngIf="quickOrderModel.Details" [standalone]="true" [count]="quickOrderModel.Details.length" [tdsClass]="'bg-success-400 text-white'"></tds-badge>
                     </ng-template>
 
                     <div class="flex gap-1.5 px-6 pt-6 pb-3">
@@ -274,7 +274,7 @@
                             </div>
                         </ng-template>
                     </div>
-                    <div class="w-ful h-full p-3 pb-4" *ngIf="!isEnableCreateOrder && quickOrderModel.Details.length > 0">
+                    <div class="w-ful h-full p-3 pb-4" *ngIf="!isEnableCreateOrder && quickOrderModel.Details && quickOrderModel.Details.length > 0">
                         <div class="bg-neutral-2-50 flex justify-between rounded-xl gap-x-4 p-4">
                             <label>Tổng</label>
                             <span class="col-span-2 text-right">{{ quickOrderModel.TotalAmount || 0 | number:'1.0-3' }}</span>
