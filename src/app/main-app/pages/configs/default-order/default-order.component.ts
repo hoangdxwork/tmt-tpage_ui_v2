@@ -31,13 +31,17 @@ export class DefaultOrderComponent implements OnInit {
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
+    this.loadDefaultProduct();
+  }
 
-    this.productTemplateUOMLineService.getDefaultProduct().pipe(takeUntil(this.destroy$)).subscribe(res=>{
-      //TODO: lấy sản phẩm mặc định từ cache
-      this.defaultProduct = {...res};
-    },
-    err => {
-      //TODO: lấy sản phẩm mặc định từ sale configs
+  loadDefaultProduct(){
+    let exist = this.productTemplateUOMLineService.getDefaultProduct();
+
+    if(exist != null){
+
+      this.defaultProduct = exist;
+
+    }else{
       this.shareService.getConfigs().pipe(takeUntil(this.destroy$))
         .pipe(mergeMap(item => {
 
@@ -50,16 +54,18 @@ export class DefaultOrderComponent implements OnInit {
           }
 
         }))
-        .subscribe(res => {
-          //TODO: Trường hợp có sản phẩm
-          this.defaultProduct = this.prepareModel(res);
-
-          this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
-        },
-        err => {
-          this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+        .subscribe({
+          next:(res) => {
+            //TODO: Trường hợp có sản phẩm
+            this.defaultProduct = this.prepareModel(res);
+  
+            this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+          },
+          error:(err) => {
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+          }
         })
-    })
+    }
   }
 
   createDefaultProduct(){
@@ -70,7 +76,7 @@ export class DefaultOrderComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe((result: ProductDTOV2) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductDTOV2) => {
       if(TDSHelperObject.hasValue(result)){
         this.defaultProduct = this.prepareModel(result);
 
@@ -98,6 +104,6 @@ export class DefaultOrderComponent implements OnInit {
   removeDefaultProduct(){
     delete this.defaultProduct;
 
-    this.productTemplateUOMLineService.removeApiCache();
+    this.productTemplateUOMLineService.removeCache();
   }
 }
