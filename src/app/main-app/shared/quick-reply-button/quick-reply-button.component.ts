@@ -64,6 +64,7 @@ export class QuickReplyButtonComponent implements OnInit {
     this.isVisibleReply = false;
     let modal = this.modalService.create({
       title: 'Thêm mới trả lời nhanh',
+      centered: true,
       content: ModalAddQuickReplyComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'md',

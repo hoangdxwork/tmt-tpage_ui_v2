@@ -7,28 +7,28 @@
         </tds-form-field>
     </div>
     <div class="h-full pb-2.5">
-        <tds-table #table class="table-vertical-line" [showSizeChanger]="true" [frontPagination]="false"
+        <tds-table #table [showSizeChanger]="true" [frontPagination]="false"
             [listData]="lstOfData" [scroll]="{y:'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
             (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
             <thead>
                 <tr>
-                    <th rowSpan="2" width="32px"></th>
-                    <th rowSpan="2">Tên sản phẩm</th>
-                    <th colSpan="4" class="text-center">Sản phẩm</th>
-                    <th colSpan="2" class="text-center">Đơn hàng</th>
-                    <th colSpan="2" class="text-center">Hóa đơn</th>
+                    <th class="border-r" rowSpan="2" width="32px"></th>
+                    <th class="border-r" rowSpan="2">Tên sản phẩm</th>
+                    <th colSpan="4" class="border-r border-b text-center">Sản phẩm</th>
+                    <th colSpan="2" class="border-r border-b text-center">Đơn hàng</th>
+                    <th colSpan="2" class="border-r border-b text-center">Hóa đơn</th>
                 </tr>
                 <tr>
-                    <th>Tổng SL</th>
-                    <th>Chờ chốt</th>
-                    <th>Đã chốt</th>
-                    <th>Đã hủy</th>
+                    <th class="border-r">Tổng SL</th>
+                    <th class="border-r">Chờ chốt</th>
+                    <th class="border-r">Đã chốt</th>
+                    <th class="border-r">Đã hủy</th>
 
-                    <th>Chờ chốt</th>
-                    <th>Đã hủy</th>
+                    <th class="border-r">Chờ chốt</th>
+                    <th class="border-r">Đã hủy</th>
 
-                    <th>Đã chốt</th>
-                    <th>Đã hủy</th>
+                    <th class="border-r">Đã chốt</th>
+                    <th class="border-r">Đã hủy</th>
                 </tr>
             </thead>
             <tbody>

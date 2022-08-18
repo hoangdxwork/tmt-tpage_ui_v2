@@ -38,14 +38,16 @@
           <action-dropdown *ngIf="setOfCheckedId.size == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]>
           </action-dropdown>
 
-          <tds-form-field>
-            <tds-select valueField="Id" textField="Name" class="w-[100px] xl:w-[120px] 2xl:w-[240px] truncate"
-              placeholder="Chọn đối tác" [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
-              disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
-            </tds-select>
-          </tds-form-field>
+          <div class="xl:hidden 2xl:flex">
+            <tds-form-field>
+              <tds-select valueField="Id" textField="Name" class="xl:w-[100px] 2xl:w-[190px] truncate"
+                placeholder="Chọn đối tác" [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
+                disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
+              </tds-select>
+            </tds-form-field>
+          </div>
 
-          <tds-form-field class="flex flex-auto w-[100px] xl:w-[120px] 2xl:w-[240px]">
+          <tds-form-field class="flex flex-auto xl:w-[150px] 2xl:w-[190px]">
               <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
