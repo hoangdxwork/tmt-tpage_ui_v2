@@ -21,7 +21,6 @@ export class CreateDefaultProductComponent implements OnInit {
   lstInventory!: GetInventoryDTO;
   defaultProduct?: ProductDTOV2;
   isLoading = false;
-  isOpen = false;
 
   constructor(private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private auth: TAuthService,
@@ -59,7 +58,7 @@ export class CreateDefaultProductComponent implements OnInit {
       }))
       .subscribe({
         next:(res) => {
-          this.lstInventory = res;
+          this.lstInventory = {...res};
         },
         error:(err) => {
           this.message.error(err?.error?.message || 'Không thể tải dữ liệu kho');
@@ -69,23 +68,12 @@ export class CreateDefaultProductComponent implements OnInit {
 
   onChangeProduct(data: ProductDTOV2){
     this.defaultProduct = data;
-    this.isOpen = false;
   }
 
   onSearch(event:any){
     let text = event.keyupEvent.target.value;
-    this.isOpen = text ? true : false;
-
+    
     this.loadProduct(text);
-  }
-
-  closeSearchProduct(){
-    this.isOpen = false;
-  }
-
-  removeProduct(){
-    delete this.defaultProduct;
-    this.isOpen = false;
   }
 
   onCancel(){
