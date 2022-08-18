@@ -78,7 +78,7 @@
                     </tds-button-group>
 
                     <div class="flex items-center gap-x-2 pr-4">
-                        <tds-form-field class="w-80">
+                        <tds-form-field class="2xl:w-80 xl:w-50">
                             <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="filterObj.searchText"
                                 [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
                             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
@@ -119,7 +119,7 @@
                                 <th *ngIf="isHidden('Tag')" width="200px" class="border-r">Nhãn</th>
                                 <th *ngIf="isHidden('FacebookId')" width="200px" class="border-r">Facebook</th>
                                 <th *ngIf="isHidden('Zalo')" width="200px" class="border-r">Zalo</th>
-                                <th *ngIf="isHidden('Credit')" class="min-w-[120px] text-right border-r">Nợ hiện tại
+                                <th *ngIf="isHidden('Credit')" width="120px" class="text-right border-r">Nợ hiện tại
                                 </th>
                                 <th *ngIf="isHidden('Active')" width="120px" class="text-center border-r">Hiệu lực</th>
                                 <th *ngIf="isHidden('DateCreated')" width="150px" class="text-center border-r">Ngày tạo</th>
@@ -209,7 +209,11 @@
                                     </td>
                                     <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right">{{ data.FacebookId }}</td>
                                     <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right">{{ data.Zalo }}</td>
-                                    <td *ngIf="isHidden('Credit')" class="border-r min-w-[120px] border-neutral-200 text-right">{{ data.Credit || 0 | numberCustom:',' }}</td>
+                                    <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
+                                      <div class="w-[90px] truncate">
+                                        {{ data.Credit || 0 | numberCustom:',' }}
+                                      </div>
+                                    </td>
                                     <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200">
                                         <div class="w-full">
                                             <span [ngClass]="data.Active ? 'tdsi-success-fill text-success-400' : 'tdsi-error-fill text-error-400'" class="text-xl leading-5"></span>

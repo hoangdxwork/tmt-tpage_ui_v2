@@ -20,32 +20,34 @@
                       <upload-pictures-wall (getResult)="getUrl($event)" (getBase64)="getBase64($event)"></upload-pictures-wall>
                     </div>
 
-                    <div class="flex flex-col w-1/3">
-                        <tds-form-field>
+                    <div class="flex flex-col h-full 2xl:w-2/3 xl:w-full">
+                        <tds-form-field class="w-1/2">
                             <tds-label>Nhập tên sản phẩm</tds-label>
                             <input tdsInput formControlName="Name" placeholder="Nhập tên sản phẩm" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
                             <tds-error>
                                 Vui lòng nhập tên sản phẩm
                             </tds-error>
                         </tds-form-field>
-                        
-                        <div class="grid grid-cols-2 gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
-                            <tds-checkbox formControlName="SaleOK">Có thể bán</tds-checkbox>
-                            <tds-checkbox formControlName="PurchaseOK">Có thể mua</tds-checkbox>
-                            <tds-checkbox formControlName="Active">Hiệu lực</tds-checkbox>
-                            <tds-checkbox formControlName="AvailableInPOS">Hiện trên điểm bán hàng</tds-checkbox>
-                            
+
+                        <div class="flex flex-col gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
+                            <div class="flex">
+                              <tds-checkbox class="w-1/3" formControlName="SaleOK">Có thể bán</tds-checkbox>
+                              <tds-checkbox class="w-1/3" formControlName="PurchaseOK">Có thể mua</tds-checkbox>
+                            </div>
+
+                            <div class="flex flex-row-reverse">
+                              <tds-checkbox class="w-1/3" formControlName="Active">Hiệu lực</tds-checkbox>
+                              <tds-checkbox class="w-1/3" formControlName="AvailableInPOS">Hiện trên điểm bán hàng</tds-checkbox>
+                              <tds-checkbox class="w-1/3" [checked]="addToFBPage" (change)="onChangeAddToFBPage(addToFBPage)">Thêm sản phẩm vào Page</tds-checkbox>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex flex-auto self-end">
-                      <tds-checkbox [checked]="addToFBPage" (change)="onChangeAddToFBPage(addToFBPage)">Thêm sản phẩm vào Page</tds-checkbox>
                     </div>
                 </div>
                 <div class="w-full border border-neutral-2-100 rounded-md">
                     <tds-tabset clsTab="tds-add-product-form">
                         <tds-tab title="Thông tin chung">
-                            <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                            <div class="grid grid-cols-2 gap-y-4 gap-x-8 xl:gap-x-4">
+                              <div class="grid grid-cols-3 gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center">
                                 <tds-label>Loại sản phẩm:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="value" textField="text" placeholder='Chọn loại sản phẩm'
@@ -97,7 +99,7 @@
                                 </tds-form-field>
                               </div>
 
-                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                              <div class="grid grid-cols-3 gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center">
                                 <tds-label>Giá biến thể:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-input-number formControlName="PriceVariant" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
@@ -144,6 +146,7 @@
                               </div>
                             </div>
                         </tds-tab>
+
                         <tds-tab title="Tồn kho">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
                               <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
@@ -157,6 +160,7 @@
                               </div>
                             </div>
                         </tds-tab>
+
                         <tds-tab title="Bán hàng">
                           <div class="grid grid-cols-2 gap-y-4 gap-x-8 items-center text-neutral-1-600 text-header-2 font-semibold">
                             <span>Chính sách bán hàng</span>
@@ -188,6 +192,7 @@
                             </div>
                           </div>
                         </tds-tab>
+
                         <tds-tab title="Hóa đơn">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
                               <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">

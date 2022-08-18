@@ -38,6 +38,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   indexDbProductCount: number = -1;
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
+  search: boolean = false;
 
   cacheObject: KeyCacheIndexDBDTO = {
     cacheCount: -1,
@@ -305,6 +306,10 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     this.keyFilter = ev.value;
     this.loadDataTable();
     this.isLoading = false;
+  }
+
+  onSearch() {
+    this.search = !this.search
   }
 
   ngOnDestroy(): void {

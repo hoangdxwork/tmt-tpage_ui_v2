@@ -20,8 +20,8 @@
             <upload-pictures-wall class="mr-12" [size]="112"
               [data]="[_form.controls.ImageUrl.value || dataModel.ImageUrl]" (getResult)="getAvatar($event)" (getBase64)="getBase64($event)">
             </upload-pictures-wall>
-            <div class="flex flex-col w-full">
-              <tds-form-field>
+            <div class="flex flex-col w-2/3">
+              <tds-form-field class="w-1/2">
                 <tds-label>Tên sản phẩm</tds-label>
                 <input tdsInput formControlName="Name" placeholder="Nhập tên sản phẩm"
                   class="text-neutral-1-900 text-body-2 font-regular" [required]="true" />
@@ -30,7 +30,7 @@
                 </tds-error>
               </tds-form-field>
 
-              <div class="grid grid-cols-3 gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
+              <div class="grid grid-cols-3 w-full gap-x-2 gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
                 <tds-checkbox formControlName="SaleOK">Có thể bán</tds-checkbox>
                 <tds-checkbox formControlName="IsCombo">Là combo</tds-checkbox>
                 <tds-checkbox formControlName="Active">Hiệu lực</tds-checkbox>
@@ -203,7 +203,7 @@
             </div>
           </div>
         </tds-tab>
-        
+
         <tds-tab title="Thông tin khác">
           <div class="grid grid-cols-1 gap-y-4">
             <div class="grid grid-cols-8 gap-x-6">
@@ -379,7 +379,7 @@
                   </tr>
                 </tbody>
               </tds-table>
-          </div>             
+          </div>
           </div>
 
           <ng-template #tableAttribute>
@@ -455,9 +455,9 @@
                   </tr>
                 </tbody>
               </tds-table>
-          </div>             
           </div>
-          
+          </div>
+
           <ng-template #comboTable>
               <div class="flex flex-col gap-y-8 justify-center items-center">
                   <div class="flex flex-col gap-y-4 items-center" >

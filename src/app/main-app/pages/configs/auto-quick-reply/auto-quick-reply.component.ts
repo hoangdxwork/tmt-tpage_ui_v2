@@ -143,6 +143,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   onAddNewData(data: TDSSafeAny) {
     const modal = this.modalService.create({
       title: 'Thêm mới trả lời nhanh',
+      centered: true,
       content: CreateQuickReplyModalComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'lg',
@@ -169,6 +170,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   onEditRow(ev: TDSSafeAny, id: number) {
     const modal = this.modalService.create({
       title: 'Cập nhật trả lời nhanh',
+      centered: true,
       content: CreateQuickReplyModalComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'lg',

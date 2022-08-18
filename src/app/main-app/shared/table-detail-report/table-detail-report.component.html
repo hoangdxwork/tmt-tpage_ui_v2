@@ -1,7 +1,7 @@
 <div class="w-full h-full">
-    <tds-table class="tds-table-rounded" #detailTable [bordered]="true" [listData]="lstDetails"
+    <tds-table #detailTable [listData]="lstDetails"
         [showPagination]="false" [scroll]="{y:'400px'}">
-        <thead class="rounded">
+        <thead>
             <tr>
                 <th [width]="'6%'">STT</th>
                 <th [width]="'32%'">Sản phẩm</th>
@@ -31,7 +31,7 @@
                     </td>
                     <td>
                         <div class="flex flex-row items-center w-full">
-                            <p class="text-body-2 mr-2">Đơn hàng chờ: 
+                            <p class="text-body-2 mr-2">Đơn hàng chờ:
                                 <span tds-tooltip tooltipTitle="{{ data.ListSaleOnlineOrder?.length || 0 }}" class="font-semibold">
                                     {{ data.ListSaleOnlineOrder?.length || 0 }}
                                 </span>
@@ -45,7 +45,7 @@
                             </p>
                         </div>
                         <div class="flex flex-row items-center w-full">
-                            <p class="text-body-2 mr-2">Hóa đơn: 
+                            <p class="text-body-2 mr-2">Hóa đơn:
                                 <span tds-tooltip tooltipTitle="{{ data.ListFastSaleOrder?.length || 0 }}" class="truncate font-semibold">
                                     {{ data.ListFastSaleOrder?.length || 0 }}
                                 </span>

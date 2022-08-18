@@ -189,13 +189,13 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
 
   deleteProductToPageFB() {
     if (this.checkValueEmpty() == 1) {
-      let data = { 
+      let data = {
         model:{
-          PageId: this.team.ChannelId, 
+          PageId: this.team.ChannelId,
           ProductIds: this.idsModel
         }
       };
-      
+
       this.productService.deleteProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.message.success('Đã xóa sản phẩm khỏi page')
         this.onSelectChange(this.selected);
@@ -253,6 +253,7 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
   showEditModal(id: number) {
     let modal = this.modalService.create({
       title: 'Cập nhật biến thể sản phẩm',
+      centered: true,
       content: EditProductVariantComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -297,13 +298,13 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
         okText: "Xác nhận",
         cancelText: "Hủy bỏ",
         onOk: () => {
-          let data = { 
+          let data = {
             model:{
-              PageId: this.team.ChannelId, 
+              PageId: this.team.ChannelId,
               ProductIds: [key]
             }
           };
-          
+
           this.productService.deleteProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe(res => {
             this.message.success('Đã xóa sản phẩm khỏi page')
             this.onSelectChange(this.selected);
