@@ -118,21 +118,21 @@ export class ConversationOrderFacade extends BaseSevice  {
         order.CRMTeamName = team.Name;
     }
 
-    if(!order.Telephone && partner && partner.Phone) {
-        order.Telephone = partner.Phone;
+    if(!order.Telephone && (partner && partner.Phone || conversationInfo.Conversation?.Phone)) {
+        order.Telephone = partner.Phone || conversationInfo.Conversation?.Phone;
     }
 
     if(!order.Address && partner && partner.Street) {
         order.Telephone = partner.Street;
     }
 
-    if(!order.Email && partner && partner.Email) {
-        order.Email = partner.Email;
+    if(!order.Email && (partner && partner.Email || conversationInfo.Conversation?.Email) ) {
+        order.Email = partner.Email || conversationInfo.Conversation?.Email;
     }
 
     if(!order.PartnerId && partner && partner.Id) {
         order.PartnerId = partner.Id;
-        order.PartnerName = partner.DisplayName || partner.Name;
+        order.PartnerName = partner.Name || conversationInfo.Conversation?.Name;
     }
 
     if(!order.UserId && this.userInit) {
@@ -154,6 +154,10 @@ export class ConversationOrderFacade extends BaseSevice  {
 
     if(!order.Facebook_ASUserId && ((partner && partner.FacebookASIds) || conversationInfo.Conversation)) {
         order.Facebook_ASUserId = partner.FacebookASIds || conversationInfo.Conversation.ConversationId;
+    }
+
+    if(!order.Facebook_UserName && conversationInfo.Conversation.Name) {
+        order.Facebook_UserName = conversationInfo.Conversation.Name;
     }
 
     if(!order.Facebook_UserId) {
