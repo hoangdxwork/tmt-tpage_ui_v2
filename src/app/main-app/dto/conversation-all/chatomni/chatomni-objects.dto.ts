@@ -1,4 +1,4 @@
-import { Extras, PagingTimestamp } from './chatomni-data.dto';
+import { ExtrasDto, PagingTimestamp } from './chatomni-data.dto';
 import { Attachments } from './../../facebook-post/facebook-post.dto';
 import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
@@ -18,12 +18,13 @@ export interface ChatomniObjectsItemDto {
   Title?: any;
   Description: string;
   Thumbnail?: Thumbnail;
+  LiveCampaignId?: string;
+  LiveCampaign: ChatomniLiveCampaignDto;
 }
-
 
 export interface ChatomniObjectsDto {
   Items: ChatomniObjectsItemDto[];
-  Extras?: Extras;
+  Extras?: ExtrasDto;
   Paging: PagingTimestamp;
 }
 
@@ -38,6 +39,12 @@ export enum ChatomniObjectTypeDto {
   TShopLiveVideo = 13,
   TShopPhoto = 14,
   TShopAlbum = 15,
+}
+
+export interface ChatomniLiveCampaignDto {
+  Id?: string;
+  Name: string;
+  Note: string;
 }
 
 export interface MDB_Facebook_Mapping_PostDto {
@@ -64,13 +71,10 @@ export interface MDB_Facebook_Mapping_PostDto {
   comments: Comments;
   reactions: Reactions;
   attachments: Attachments;
-
   from_id: string;
   count_comments: number;
   count_reactions: number;
   count_shares: number;
-  live_campaign_id: string;
-  live_campaign: Facebook_Inner_LiveCampaignDto;
 }
 
 export interface Facebook_Inner_LiveCampaignDto{

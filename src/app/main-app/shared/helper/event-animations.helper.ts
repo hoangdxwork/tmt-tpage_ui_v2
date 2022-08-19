@@ -25,6 +25,6 @@ export const eventReplyCommentTrigger = trigger("eventReplyComment",
 export const eventCollapTrigger = trigger('openCollapse', [
   state('false', style({ height: AUTO_STYLE, visibility: AUTO_STYLE })),
   state('true', style({ height: '0', visibility: 'hidden' })),
-  transition('false => true', animate(300 + 'ms ease-in')),
-  transition('true => false', animate(300 + 'ms ease-out'))
+  transition('false => true', animate(150 + 'ms ease-in')),
+  transition('true => false', animate(150 + 'ms ease-out'))
 ])

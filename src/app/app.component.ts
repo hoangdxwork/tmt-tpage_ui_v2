@@ -7,7 +7,7 @@ import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { BehaviorSubject, Observable , takeUntil} from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { SocketService } from './main-app/services/socket-io/socket.service';
 import { PageLoadingService } from './shared/services/page-loading.service';
@@ -44,73 +44,96 @@ export class AppComponent {
 
   ngOnInit() {
     let that = this;
-    that.init().subscribe(res => {
-        this.loader.hidden();
-        that.isLoaded = true;
+    that.init().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.loader.hidden();
+          that.isLoaded = true;
+      }
     });
 
-    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         this.data = JSON.parse(res) as SocketioOnMessageDto;
         console.log(this.data);
 
         if(this.data && this.crmTeamService.getCurrentTeam()?.Id) {
-          this.crmTeamService.getActiveByPageIds$([this.data.Conversation.ChannelId]).pipe(takeUntil(this.destroy$)).subscribe((teams: CRMTeamDTO[]) => {
+            this.crmTeamService.getActiveByPageIds$([this.data.Conversation.ChannelId]).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (teams: CRMTeamDTO[]) => {
+                    this.team = teams[0];
 
-              this.team = teams[0];
+                    switch(this.data.Message.MessageType) {
+                        case ChatomniMessageType.FacebookMessage:
 
-              switch(this.data.Message.MessageType) {
-                  case ChatomniMessageType.FacebookMessage:
+                          this.titleMessage = `Facebook: ${this.data.Conversation.Name} vừa nhắn tin`;
+                          this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
 
-                    this.titleMessage = `Facebook: ${this.data.Conversation.Name} vừa nhắn tin`;
-                    this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/inbox?teamId=${this.team.Id}&type=message&csid=${this.data.Conversation.UserId}`;
+                          if(this.team && this.team.Id) {
+                              this.url = `/conversation/inbox?teamId=${this.team.Id}&type=message&csid=${this.data.Conversation.UserId}`;
+                          }
 
-                    break;
+                          break;
 
-                  case ChatomniMessageType.FacebookComment:
+                        case ChatomniMessageType.FacebookComment:
 
-                    this.titleMessage = `Facebook: ${this.data.Conversation.Name} vừa bình luận`;
-                    this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
+                          this.titleMessage = `Facebook: ${this.data.Conversation.Name} vừa bình luận`;
+                          this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
 
-                  break;
+                          if(this.team && this.team.Id) {
+                              this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
+                          }
 
-                  case ChatomniMessageType.TShopMessage:
+                        break;
 
-                    this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa nhắn tin`;
-                    this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
+                        case ChatomniMessageType.TShopMessage:
 
-                  break;
+                          this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa nhắn tin`;
+                          this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
 
-                  case ChatomniMessageType.TShopComment:
+                          if(this.team && this.team.Id) {
+                              this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
+                          }
 
-                    this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa bình luận`;
-                    this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
+                        break;
 
-                  break;
+                        case ChatomniMessageType.TShopComment:
 
-                  default:
+                          this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa bình luận`;
+                          this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
 
-                    this.titleMessage = `${this.data.Conversation.Name} vừa phản hồi`;
-                    this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
+                          if(this.team && this.team.Id) {
+                              this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
+                          }
 
-                  break;
+                        break;
 
-              }
-          }, error => {
-             console.log('Thông báo đến từ kênh chưa được kết nối', this.data)
-          })
+                        default:
+
+                          this.titleMessage = `${this.data.Conversation.Name} vừa phản hồi`;
+                          this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
+
+                          if(this.team && this.team.Id) {
+                            this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
+                          }
+
+                        break;
+
+                    }
+                },
+                error: (error: any) => {
+                    console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${this.data}`)
+                }
+            })
         }
-
+      }
     });
   }
 
   getLink() {
-    this.router.navigateByUrl(this.url);
-    this.crmTeamService.onUpdateTeam(this.team)
+    if(TDSHelperString.hasValueString(this.url)) {
+        this.router.navigateByUrl(this.url);
+        console.log(this.url);
+        this.crmTeamService.onUpdateTeam(this.team)
+    }
   }
 
   init(): Observable<boolean> {
@@ -118,9 +141,12 @@ export class AppComponent {
     return new Observable(obs => {
         that.zone.runOutsideAngular(() => {
             that.setGlobalConfig();
-            that.libCommon.init().subscribe((s: TDSSafeAny) => {
-                obs.next(true);
-                obs.complete();
+
+            that.libCommon.init().subscribe({
+                next: (s: TDSSafeAny) => {
+                    obs.next(true);
+                    obs.complete();
+                }
             });
         });
     })

@@ -1,8 +1,6 @@
 import { Injectable, OnDestroy } from "@angular/core";
-import { Subject, takeUntil } from "rxjs";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { CRMTeamService } from "../crm-team.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { ChatomniObjectsDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";

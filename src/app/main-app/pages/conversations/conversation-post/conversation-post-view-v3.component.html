@@ -43,7 +43,7 @@
                                 <span class="whitespace-nowrap">{{(data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm"}}</span>
                             </div>
                             <!-- truy cập bài viết -->
-                            <a [href]="(data.Data | tshopType).MediaLive.RecordUrl" target="_blank" class="text-neutral-1-400">
+                            <a [href]="(data.Data | tshopType)?.MediaLive?.RecordUrl" target="_blank" class="text-neutral-1-400">
                                 <i class="tdsi-expand-2-line leading-none text-xl"></i>
                             </a>
                         </span>
@@ -88,7 +88,7 @@
                     </button> -->
 
                     <!-- đơn hàng -->
-                    <tds-badge [count]="3" [tdsClass]="'bg-error-400 text-white'" tooltipTitle="Đơn hàng" tooltipPlacement="bottom" tds-tooltip>
+                    <tds-badge [count]="orderTotal || 0" [tdsClass]="'bg-error-400 text-white'" tooltipTitle="Đơn hàng" tooltipPlacement="bottom" tds-tooltip>
                         <button tds-button-icon color="secondary" size="md">
                             <span class="flex items-center justify-center">
                                 <i class="tdsi-bag-fill text-neutral-1-500"></i>
@@ -97,8 +97,7 @@
                     </tds-badge>
 
                     <!-- reload -->
-                    <button tds-button-icon color="secondary" size="md" tooltipTitle="Tải lại trang"
-                        tooltipPlacement="bottom" tds-tooltip (click)="fetchComments()">
+                    <button tds-button-icon color="secondary" size="md" tooltipTitle="Tải lại trang" tooltipPlacement="bottom" tds-tooltip (click)="fetchComments()">
                         <span class="flex items-center justify-center">
                             <i class="tdsi-reload-fill text-neutral-1-500"></i>
                         </span>
@@ -119,17 +118,16 @@
                             <p class="description" *ngIf="(data.Data | facebookType).description" showMore [text]="(data.Data | facebookType).description" [length]="400"></p>
                         </div>
 
-                        <div *ngIf="(data.Data | facebookType).live_campaign">
-                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" >
-                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
-                                    [tooltipTitle]="(data.Data | facebookType).live_campaign.name">
-                                    <span class="flex-auto truncate">{{(data.Data | facebookType).live_campaign.name}}</span>
+                        <div *ngIf="data.LiveCampaign">
+                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data)">
+                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
+                                    <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                 </span>
                             </tds-tag>
                         </div>
 
-                        <div *ngIf="!(data.Data | facebookType).live_campaign">
+                        <div *ngIf="!data.LiveCampaign">
                             <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
                                 (click)="openTag(data.Id)"
                                 [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -317,11 +315,11 @@
                             [commentOrders]="commentOrders">
                         </post-comment-all> -->
 
-                        <comment-filter-all [data]="data" [team]="team" [commentOrders]="commentOrders">
+                        <comment-filter-all [data]="data" [team]="team" [commentOrders]="commentOrders" [partnerDict]="(partners$ | async)">
                         </comment-filter-all>
                     </div>
 
-                    <div *ngIf="currentFilter.value === 'group'" class="h-full w-full">
+                    <!-- <div *ngIf="currentFilter.value === 'group'" class="h-full w-full">
                         <post-comment-group
                             [postId]="data.ObjectId"
                             [data]="objComment"
@@ -341,7 +339,7 @@
 
                     <div *ngIf="currentFilter.value === 'manage'" class="h-full w-full">
                         <manage-post-comment></manage-post-comment>
-                    </div>
+                    </div> -->
                 </div>
             </tds-spin>
 

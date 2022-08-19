@@ -4,23 +4,23 @@
             <tds-collapse-panel [header]="headerTpl" [active]="openCollapsePanel(item.link)" [tdsClass]="'p-0'">
                 <ng-template #headerTpl>
                     <div class="flex items-center px-2 border-transparent text-neutral-500 overflow-hidden truncate {{loading ? 'cursor-wait' : 'cursor-pointer'}}">
-                        <i class="text-lg leading-none mr-2 
+                        <i class="text-lg leading-none mr-2
                             {{item.icon ?? 'p-2.5'}}">
                         </i>
-                        <span class="font-semibold text-body-2 font-sans w-full truncate overflow-hidden">{{item.name}}</span>
+                        <span class="font-semibold 2xl:text-body-2 xl:text-caption-1 font-sans w-full overflow-hidden truncate">{{item.name}}</span>
                     </div>
                 </ng-template>
                 <div *ngFor="let child of item.listChild">
                     <div class="w-full px-2 m-0 {{loading ? 'cursor-wait' : 'cursor-pointer'}}"
-                        (click)="onChangePage(child.link)" 
+                        (click)="onChangePage(child.link)"
                         [routerLink]="item.link">
-                        <span class="flex items-center rounded-lg p-4 
+                        <span class="flex items-center rounded-lg p-4
                         {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'bg-primary-1' : 'bg-transparent hover:bg-neutral-3-50 group'}}">
-                            <i class="text-lg leading-none mr-2 
+                            <i class="text-lg leading-none mr-2
                                 {{child.icon ?? 'p-2.5'}}
                                 {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-white' : 'text-neutral-1-500'}}">
                             </i>
-                            <span class="font-semibold text-body-2 font-sans w-full truncate overflow-hidden
+                            <span class="font-semibold 2xl:text-body-2 xl:text-caption-1 font-sans w-full truncate overflow-hidden
                                 {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-white' : 'text-neutral-1-600 group-hover:text-neutral-1-900'}}">
                                 {{child.name}}
                             </span>
@@ -34,11 +34,11 @@
         <div class="w-full px-2 {{loading ? 'cursor-wait' : 'cursor-pointer'}}" (click)="onChangePage(item.link)" [routerLink]="item.link">
             <span class="flex items-center rounded-lg p-4
                 {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'bg-primary-1' : 'bg-transparent hover:bg-neutral-3-50 group'}}">
-                <i class="text-lg leading-none mr-2 
+                <i class="text-lg leading-none mr-2
                     {{item.icon ?? 'p-2.5'}}
                     {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-white' : 'text-neutral-1-500'}}">
                 </i>
-                <span class="font-semibold text-body-2 font-sans w-full  truncate overflow-hidden
+                <span class="font-semibold 2xl:text-body-2 xl:text-caption-1 font-sans w-full truncate overflow-hidden
                     {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-white' : 'text-neutral-1-600 group-hover:text-neutral-1-900'}}">
                     {{item.name}}
                 </span>

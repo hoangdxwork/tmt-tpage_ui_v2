@@ -1,3 +1,4 @@
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { OrderEvent } from './../../../handler-v2/order-handler/order.event';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
 import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
@@ -134,7 +135,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
-    private modalService: TDSModalService) {
+    private modalService: TDSModalService,
+    private chatomniMessageFacade: ChatomniMessageFacade) {
   }
 
   ngOnInit(): void {
@@ -406,6 +408,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       title: 'Lịch sử gửi tin nhắn',
       content: ModalHistoryChatComponent,
       size: "xl",
+      bodyStyle: {
+        padding: '0px',
+      },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         orderId: orderId,
@@ -546,7 +551,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
             delete res['@odata.context'];
 
             const modal = this.modal.create({
-                title: `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>`,
+                title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
                 content: EditOrderV2Component,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,
@@ -759,17 +764,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          res["keyTags"] = {};
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+          this.currentConversation = { ...model };
 
-          if (res.tags && res.tags.length > 0) {
-            res.tags.map((x: any) => {
-              res["keyTags"][x.id] = true;
-            })
-          } else {
-            res.tags = [];
-          }
-
-          this.currentConversation = { ...res, ...this.currentConversation };
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }

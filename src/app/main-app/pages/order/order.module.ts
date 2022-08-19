@@ -1,3 +1,6 @@
+import { ConversationService } from './../../services/conversation/conversation.service';
+import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { OrderEvent } from './../../handler-v2/order-handler/order.event';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { DirectivesModule } from './../../shared/directives/directives.module';
@@ -82,7 +85,8 @@ import { CalculateFeeAshipHandler } from '../../handler-v2/aship-v2/calcfee-ashi
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { ConvertCustomersComponent } from './components/convert-customers/convert-customers.component';
 import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
-import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -118,7 +122,11 @@ const SERVICES = [
   CsOrder_SuggestionHandler,
   OrderEvent,
   ChatomniMessageService,
-  SO_PrepareFaseSaleOrderHandler
+  ChatomniMessageFacade,
+  ActivityMatchingService,
+  ConversationService,
+  SO_PrepareFastSaleOrderHandler,
+  ChatomniCommentFacade
 ]
 
 @NgModule({

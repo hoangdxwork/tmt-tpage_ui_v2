@@ -9,7 +9,7 @@
           <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
         </div>
     </div>
-    <div class="max-h-[450px] h-[450px]">
+    <div class="2xl:max-h-[450px] 2xl:h-[450px] xl:max-h-[300px] xl:h-[300px]">
         <tds-table class="w-full h-full tds-table-rounded" [scroll]="{ y:'auto' }" #productTable [bordered]="true"
             [listData]="lstOrder"
             [pageIndex]="pageIndex"

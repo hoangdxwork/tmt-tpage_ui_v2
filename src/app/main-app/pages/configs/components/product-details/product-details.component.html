@@ -1,236 +1,226 @@
 <div class="w-full h-full">
-    <tds-tabset (selectedIndexChange)="onChangeTab($event)">
-        <tds-tab title="Thông tin" clsContent="p-4 border-t">
-            <div class="grid grid-cols-12 gap-x-8">
-                <div class="w-full col-span-1">
-                    <tds-avatar [tdsSrc]="productTemplate.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg">
-                    </tds-avatar>
-                </div>
-                <div class="w-full col-span-11">
-                    <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
-                        <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Mã sản phẩm:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.DefaultCode ? productTemplate.DefaultCode:'---' }}
-                                </span>
-                            </div>
+  <tds-tabset (selectedIndexChange)="onChangeTab($event)">
+    <tds-tab title="Thông tin" clsContent="p-4 border-t">
+      <div class="flex 2xl:gap-x-8 xl:gap-x-4">
+        <div>
+          <tds-avatar [tdsSrc]="productTemplate.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg">
+          </tds-avatar>
+        </div>
+        <div class="grid 2xl:grid-cols-9 gap-x-8 gap-y-4 xl:grid-cols-6 items-center">
+          <span class="text-neutral-1-900 text-body-2 font-regular">Mã sản phẩm:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.DefaultCode ? productTemplate.DefaultCode:'---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Tên sản phẩm:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.Name ? productTemplate.Name : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Tên sản phẩm:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.Name ? productTemplate.Name : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Nhóm sản phẩm:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.CategName ? productTemplate.CategName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Nhóm sản phẩm:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.CategName ? productTemplate.CategName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Loại sản phẩm:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                    {{ productTemplate.ShowType ? productTemplate.ShowType : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Loại sản phẩm:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold">
+              {{ productTemplate.ShowType ? productTemplate.ShowType : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Giá bán mặc định:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                    {{ ( productTemplate.ListPrice | number ) ?? '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Giá bán mặc định:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold">
+              {{ ( productTemplate.ListPrice | number ) ?? '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Chiết khấu bán:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.DiscountSale ? productTemplate.DiscountSale : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Chiết khấu bán:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.DiscountSale ? productTemplate.DiscountSale : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Cho phép bán ở công ty
-                                khác:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.EnableAll ? 'Có' : (productTemplate.EnableAll == false ? 'Không'
-                                    : '---') }}
-                                </span>
-                            </div>
-                        </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Cho phép bán ở công ty khác:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.EnableAll ? 'Có' : (productTemplate.EnableAll == false ? 'Không'
+              : '---') }}
+            </span>
+          </div>
 
-                        <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Công ty:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.CompanyName ? productTemplate.CompanyName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Công ty:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.CompanyName ? productTemplate.CompanyName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Đơn vị mặc định:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.UOMName ? productTemplate.UOMName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Đơn vị mặc định:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.UOMName ? productTemplate.UOMName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Giá mua:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.PurchasePrice ? productTemplate.PurchasePrice : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Giá mua:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.PurchasePrice ? productTemplate.PurchasePrice : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Giá vốn:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.StandardPrice ? productTemplate.StandardPrice : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Giá vốn:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.StandardPrice ? productTemplate.StandardPrice : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Chiết khấu mua:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.DiscountPurchase ? productTemplate.DiscountPurchase : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Chiết khấu mua:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.DiscountPurchase ? productTemplate.DiscountPurchase : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Đơn vị mua:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.UOMPOName ? productTemplate.UOMPOName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Đơn vị mua:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.UOMPOName ? productTemplate.UOMPOName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Khối lượng:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.Weight ? productTemplate.Weight : '---' }}
-                                </span>
-                            </div>
-                        </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Khối lượng:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.Weight ? productTemplate.Weight : '---' }}
+            </span>
+          </div>
 
-                        <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Nhà phân phối:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.DistributorName ? productTemplate.DistributorName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Nhà phân phối:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.DistributorName ? productTemplate.DistributorName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Nhà nhập khẩu:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.ImporterName ? productTemplate.ImporterName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Nhà nhập khẩu:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.ImporterName ? productTemplate.ImporterName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Nhà sản xuất:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.ProducerName ? productTemplate.ProducerName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Nhà sản xuất:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.ProducerName ? productTemplate.ProducerName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Xuất xứ:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.OriginCountryName ? productTemplate.OriginCountryName : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Xuất xứ:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.OriginCountryName ? productTemplate.OriginCountryName : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Thành phần:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.IsCombo ? 'Là combo' : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Thành phần:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.IsCombo ? 'Là combo' : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Thông số kỹ thuật:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.Specifications ? productTemplate.Specifications : '---' }}
-                                </span>
-                            </div>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Thông số kỹ thuật:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.Specifications ? productTemplate.Specifications : '---' }}
+            </span>
+          </div>
 
-                            <span class="text-neutral-1-900 text-body-2 font-regular">Thông tin cảnh báo:</span>
-                            <div class="w-full col-span-2">
-                                <span class="text-neutral-1-900 text-body-2 font-semibold ">
-                                    {{ productTemplate.InfoWarning ? productTemplate.InfoWarning : '---' }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </tds-tab>
-        <tds-tab title="Hình ảnh" clsContent="p-4 border-t">
-            <div class="flex flex-wrap items-center gap-x-4">
-                <div *ngFor="let image of productTemplate.Images">
-                    <tds-avatar [shape]="'square'" [size]="108" class="rounded-10" [isAvatar]="false"
-                        [tdsSrc]="image.Url">
-                    </tds-avatar>
-                </div>
-            </div>
-        </tds-tab>
-        <tds-tab title="Thẻ kho" clsContent="p-4 border-t">
-            <tds-table [listData]="lstStockMove" [loading]="isLoading_stockMove" [frontPagination]="false"
-                [scroll]="{ x: 'auto' }" [showSizeChanger]="true" [(pageSize)]="pageSize_stockMove"
-                [(pageIndex)]="pageIndex_stockMove" [total]="count_stockMove"
-                (queryParams)="onQueryParamsStockMove($event)" (clickRefresh)="refreshStockMoveTable()">
-                <thead>
-                    <tr>
-                        <th [width]="'164px'" [tdsLeft]="true">Loại</th>
-                        <th [width]="'164px'" [tdsLeft]="true">PickingName</th>
-                        <th [width]="'164px'">Tham chiếu</th>
-                        <th [width]="'164px'">Nguồn</th>
-                        <th [width]="'164px'">Đến</th>
-                        <th [width]="'164px'">ĐVT</th>
-                        <th [width]="'164px'">Số lượng</th>
-                        <th [width]="'164px'">Ngày tạo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <ng-template ngFor let-data [ngForOf]="lstStockMove">
-                        <tr>
-                            <td [tdsLeft]="true">{{ data.Type }}</td>
-                            <td [tdsLeft]="true">{{ data.PickingName }}</td>
-                            <td>{{ data.OrderName }}</td>
-                            <td>{{ data.LocationNameGet }}</td>
-                            <td>{{ data.LocationDestNameGet }}</td>
-                            <td>{{ data.ProductUOMName }}</td>
-                            <td>{{ data.ProductQty | number }}</td>
-                            <td>{{ data.Date | date:'dd/MM/yyy HH:mm' }}</td>
-                        </tr>
-                    </ng-template>
-                </tbody>
-            </tds-table>
-        </tds-tab>
-        <tds-tab title="Tồn kho" clsContent="p-4 border-t">
-            <tds-table [listData]="lstProductInventory" [loading]="isLoading_inventory" [frontPagination]="false"
-                [showSizeChanger]="true" [(pageSize)]="pageSize_inventory" [(pageIndex)]="pageIndex_inventory"
-                [total]="count_inventory" (queryParams)="onQueryParamsInventory($event)"
-                (clickRefresh)="refreshProductInventoryTable()">
-                <thead>
-                    <tr>
-                        <th width="50%">Kho</th>
-                        <th width="50%">Tồn kho</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <ng-template ngFor let-data [ngForOf]="lstProductInventory">
-                        <tr>
-                            <td>{{ data.Name }}</td>
-                            <td>{{ data.Quantity }}</td>
-                        </tr>
-                    </ng-template>
-                </tbody>
-            </tds-table>
-        </tds-tab>
-        <tds-tab title="Mô tả" clsContent="p-4 border-t">
-            <span class="text-body-2">Nội dung đang cập nhật</span>
-        </tds-tab>
-    </tds-tabset>
+          <span class="text-neutral-1-900 text-body-2 font-regular">Thông tin cảnh báo:</span>
+          <div class="w-full col-span-2">
+            <span class="text-neutral-1-900 text-body-2 font-semibold ">
+              {{ productTemplate.InfoWarning ? productTemplate.InfoWarning : '---' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </tds-tab>
+    <tds-tab title="Hình ảnh" clsContent="p-4 border-t">
+      <div class="flex flex-wrap items-center gap-x-4">
+        <div *ngFor="let image of productTemplate.Images">
+          <tds-avatar [shape]="'square'" [size]="108" class="rounded-10" [isAvatar]="false" [tdsSrc]="image.Url">
+          </tds-avatar>
+        </div>
+      </div>
+    </tds-tab>
+    <tds-tab title="Thẻ kho" clsContent="pb-2.5 border-t">
+      <tds-table [listData]="lstStockMove" [loading]="isLoading_stockMove" [frontPagination]="false"
+        [scroll]="{ x: 'auto' }" [showSizeChanger]="true" [(pageSize)]="pageSize_stockMove"
+        [(pageIndex)]="pageIndex_stockMove" [total]="count_stockMove" (queryParams)="onQueryParamsStockMove($event)"
+        (clickRefresh)="refreshStockMoveTable()">
+        <thead>
+          <tr>
+            <th [width]="'164px'" [tdsLeft]="true">Loại</th>
+            <th [width]="'164px'" [tdsLeft]="true">PickingName</th>
+            <th [width]="'164px'">Tham chiếu</th>
+            <th [width]="'164px'">Nguồn</th>
+            <th [width]="'164px'">Đến</th>
+            <th [width]="'164px'">ĐVT</th>
+            <th [width]="'164px'">Số lượng</th>
+            <th [width]="'164px'">Ngày tạo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-template ngFor let-data [ngForOf]="lstStockMove">
+            <tr>
+              <td [tdsLeft]="true">{{ data.Type }}</td>
+              <td [tdsLeft]="true">{{ data.PickingName }}</td>
+              <td>{{ data.OrderName }}</td>
+              <td>{{ data.LocationNameGet }}</td>
+              <td>{{ data.LocationDestNameGet }}</td>
+              <td>{{ data.ProductUOMName }}</td>
+              <td>{{ data.ProductQty | number }}</td>
+              <td>{{ data.Date | date:'dd/MM/yyy HH:mm' }}</td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </tds-table>
+    </tds-tab>
+    <tds-tab title="Tồn kho" clsContent="pb-2.5 border-t">
+      <tds-table [listData]="lstProductInventory" [loading]="isLoading_inventory" [frontPagination]="false"
+        [showSizeChanger]="true" [(pageSize)]="pageSize_inventory" [(pageIndex)]="pageIndex_inventory"
+        [total]="count_inventory" (queryParams)="onQueryParamsInventory($event)"
+        (clickRefresh)="refreshProductInventoryTable()">
+        <thead>
+          <tr>
+            <th width="50%">Kho</th>
+            <th width="50%">Tồn kho</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-template ngFor let-data [ngForOf]="lstProductInventory">
+            <tr>
+              <td>{{ data.Name }}</td>
+              <td>{{ data.Quantity }}</td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </tds-table>
+    </tds-tab>
+    <tds-tab title="Mô tả" clsContent="p-4 border-t">
+      <span class="text-body-2">Nội dung đang cập nhật</span>
+    </tds-tab>
+  </tds-tabset>
 </div>

@@ -3,9 +3,7 @@ import { ResultCheckAddressDTO } from "../../dto/address/address.dto";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from "../../dto/suggest-address/suggest-address.dto";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class CsOrder_SuggestionHandler {
 
@@ -26,10 +24,18 @@ export class CsOrder_SuggestionHandler {
     quickOrderModel.WardCode = item.WardCode;
     quickOrderModel.WardName = item.WardName;
 
-    return quickOrderModel;
+    return {...quickOrderModel};
+  }
+
+  validateData(){
+    (this._cities as any) = null;
+    (this._districts as any) = null; 
+    (this._wards as any) = null; 
+    (this._street as any) = null;
   }
 
   public mappingAddress(data: QuickSaleOnlineOrderModel) {
+    this.validateData();
     if (data && data.CityCode) {
       this._cities = {
           code: data.CityCode,

@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { FilterProductTemplateObjDTO } from '../../../services/mock-odata/odata-product-template.service';
 import { ProductTemplateDTO } from '../../../dto/product/product.dto';
 import { ColumnTableDTO } from '../../partner/components/config-column/config-column-partner.component';
@@ -25,10 +26,11 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-product',
-  templateUrl: './product.component.html'
+  templateUrl: './product.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class ConfigProductComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ConfigProductComponent implements OnInit, AfterViewInit {
 
   @ViewChild('viewChildProductTable') parentElement!: ElementRef;
 
@@ -69,11 +71,9 @@ export class ConfigProductComponent implements OnInit, AfterViewInit, OnDestroy 
   isLoading = false;
   configModelTags: Array<TagDTO> = [];
   configTagDataList: Array<TagDTO> = [];
-  
+
   indClickTag = -1;
   isProcessing: boolean = false;
-
-  private destroy$ = new Subject<void>();
 
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
@@ -83,6 +83,7 @@ export class ConfigProductComponent implements OnInit, AfterViewInit, OnDestroy 
     private modalService: TDSModalService,
     private message: TDSMessageService,
     private cacheApi: THelperCacheService,
+    private destroy$: TDSDestroyService,
     private tagService: TagService,
     private productTagService: TagProductTemplateService,
     private productTemplateService: ProductTemplateService,
@@ -197,8 +198,8 @@ export class ConfigProductComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   exportExcel() {
-    if (this.isProcessing) { 
-      return 
+    if (this.isProcessing) {
+      return
     }
 
     let state = {
@@ -231,7 +232,7 @@ export class ConfigProductComponent implements OnInit, AfterViewInit, OnDestroy 
 
   sortByIds(columnValue: string) {
     // this.filterObj.active = true;
-    
+
     switch(this.sortByName){
       case 'Z-A':
         this.sortByName = 'A-Z';
@@ -399,10 +400,5 @@ export class ConfigProductComponent implements OnInit, AfterViewInit, OnDestroy 
         modal.close();
       },
     })
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

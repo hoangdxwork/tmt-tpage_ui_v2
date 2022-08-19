@@ -94,7 +94,7 @@ export class ChatomniConversationService extends BaseSevice {
 
       return this.getLink(url).pipe(map((res: ChatomniConversationDto) => {
 
-        if(res.Extras?.Objects) {
+        if(res.Extras) {
           exist.Extras = {
               Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
           }
@@ -118,6 +118,16 @@ export class ChatomniConversationService extends BaseSevice {
 
       }), shareReplay({ bufferSize: 1, refCount: true }));
     }
+  }
+
+  getInfo(teamId: number, csid: string): Observable<any> {
+
+    let id = `${teamId}_${csid}`;
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/info?id=${id}`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
   }
 
 }

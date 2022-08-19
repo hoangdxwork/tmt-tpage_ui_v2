@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col h-full gap-y-4 pb-0 p-4 overflow-scroll tds-custom-scroll">
+    <div class="flex flex-col h-full gap-y-4 pb-4 p-4">
       <div class="bg-white rounded-xl">
         <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
           <tds-collapse-panel [header]="header" [disabled]=false [(active)]="isShowFormInfo"
@@ -36,12 +36,12 @@
             </ng-template>
 
             <!-- Content -->
-            <div class="w-full h-full grid grid-cols-3 gap-x-4 gap-y-4 text-body-2 text-neutral-1-900">
+            <div class="w-full h-full grid grid-cols-3 gap-4 2xl:text-body-2 xl:text-caption-1 text-neutral-1-900">
               <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">
+                <span class="font-semibold w-1/4">
                   Tên chiến dịch
                   <span class="text-error-500 text-body-2 font-semibold">*</span>
-                </tds-label>
+                </span>
                 <tds-form-field class="w-3/4">
                   <input tdsInput placeholder="Nhập tên chiến dịch" class="text-neutral-1-900 text-body-2 font-regular" formControlName="Name"
                     [required]='true'/>
@@ -49,18 +49,20 @@
                 </tds-form-field>
               </div>
 
-              <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">Mẫu tin chốt đơn</tds-label>
-                <div class="w-3/4 flex gap-x-2 justify-between">
-                  <tds-form-field class="w-full">
+              <div class="grid grid-cols-4 gap-x-4 items-center">
+                <tds-label>Mẫu tin chốt đơn</tds-label>
+                <div class="col-span-3 flex flex-row gap-x-2">
+                  <tds-form-field class="w-full truncate">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn mẫu tin' formControlName="ConfirmedOrder_Template"
-                        [valuePrimitive]="false" [allowClear]="true" disabledField="isActive" [data]="lstQuickReplies"
+                        [valuePrimitive]="false" [allowClear]="true" [data]="lstQuickReplies"
                         [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
-                  <button type="button" tds-button-icon color="secondary" (click)="showModalAddQuickReply()">
+                  <div class="w-[34px]">
+                    <button type="button" tds-button-icon color="secondary" (click)="showModalAddQuickReply()">
                       <i class="tdsi-plus-circle-fill text-primary-1"></i>
-                  </button>                 
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -82,9 +84,9 @@
                 </tds-form-field>
               </div>
 
-              <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">Mẫu tin dự bị</tds-label>
-                <tds-form-field class="w-3/4">
+              <div class="grid grid-cols-4 gap-x-4 items-center">
+                <tds-label>Mẫu tin dự bị</tds-label>
+                <tds-form-field class="col-span-3">
                   <tds-select valueField="Id" textField="Name"
                       placeholder='Chọn mẫu tin' [valuePrimitive]="false"  formControlName="Preliminary_Template"
                       disabledField="isActive" [data]="lstQuickReplies" [allowClear]="true">
@@ -110,9 +112,9 @@
                 </tds-form-field>
               </div>
 
-              <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">Thời gian tổng hợp (phút)</tds-label>
-                <tds-form-field class="w-3/4">
+              <div class="grid grid-cols-4 gap-x-4 items-center">
+                <tds-label>Thời gian tổng hợp (phút)</tds-label>
+                <tds-form-field class="col-span-3">
                     <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" ></tds-input-number>
                 </tds-form-field>
               </div>
@@ -139,14 +141,13 @@
                 </tds-form-field>
               </div>
 
-              <div class="flex gap-x-4">
-                <tds-label class="w-1/4">Thời gian gửi tin tự động</tds-label>
-                <tds-form-field class="w-3/4">
-                  <tds-range-picker  [(ngModel)]="datePicker" showTime="{format: 'HH:mm'}" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+              <div class="grid grid-cols-4 gap-x-4">
+                <tds-label>Thời gian gửi tin tự động</tds-label>
+                <tds-form-field class="col-span-3">
+                  <tds-range-picker [(ngModel)]="datePicker" showTime="{format: 'HH:mm'}" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeDate($event)"></tds-range-picker>
                 </tds-form-field>
               </div>
 
-              
             </div>
           </tds-collapse-panel>
         </tds-collapse>
@@ -168,16 +169,16 @@
               <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [listData]="_form.controls['Details'].value" [scroll]="{y:'auto'}">
                 <thead>
                   <tr>
-                      <th [width]="'5%'">STT</th>
-                      <th [width]="'35%'">Sản phẩm</th>
-                      <th [width]="'8%'">Ẩn/ hiện</th>
-                      <th [width]="'15%'">Số lượng</th>
-                      <th [width]="'15%'">Giới hạn trên đơn</th>
-                      <th [width]="'15%'">Giá bán</th>
-                      <th [width]="'11%'" class="text-center">
+                      <th [width]="'50px'">STT</th>
+                      <th [width]="'350px'">Sản phẩm</th>
+                      <th [width]="'200px'">Ẩn/ hiện</th>
+                      <th [width]="'200px'">Số lượng</th>
+                      <th [width]="'200px'">Giới hạn trên đơn</th>
+                      <th [width]="'200px'">Giá bán</th>
+                      <th [width]="'200px'" class="text-center">
                         <button type="button" tds-button-icon color="secondary">
                           <span class="flex items-center">
-                          <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
+                            <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
                           </span>
                         </button>
                       </th>
@@ -191,7 +192,7 @@
                     <td>
                       <div class="flex gap-x-2 items-center">
                         <div class="w-1/5">
-                          <tds-avatar size="xl" [shape]="'square'" class="bg-white h-[60px] w-[60px]" [tdsSrc]="detail?.value.ImageUrl">
+                          <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="bg-white h-[60px] w-[60px]" [tdsSrc]="detail?.value.ImageUrl">
                           </tds-avatar>
                         </div>
                         <div class="flex flex-col gap-y-1 cursor-pointer w-4/5">
@@ -219,7 +220,7 @@
                             <div class="w-96 flex flex-col gap-y-4">
                               <tds-form-field>
                                 <tds-select placeholder='Nhập và chọn Tag' [valuePrimitive]="false" valueField="id" textField="name" formControlName="Tags"
-                                  [allowClear]="true" [data]="(detail.value.Tags | stringToStringArray)"  mode="tags">                        
+                                  [allowClear]="true" [data]="(detail.value.Tags | stringToStringArray)"  mode="tags">
                                 </tds-select>
                               </tds-form-field>
                               <div class="flex gap-x-2 justify-end">
@@ -286,6 +287,5 @@
         </div>
       </div>
     </div>
-
   </form>
 </tds-spin>

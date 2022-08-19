@@ -1,19 +1,48 @@
 import { Injectable } from "@angular/core";
+import { ChatomniConversationInfoDto, ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
+import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { TDSHelperString } from "tds-ui/shared/utility";
 import { ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { CreateOrUpdatePartnerModel } from "../../dto/conversation-partner/create-update-partner.dto";
-import { TabPartnerCvsRequestModel } from "../../dto/conversation-partner/partner-conversation-request.dto";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class CsPartner_PrepareModelHandler {
 
-  public prepareModel(partner: TabPartnerCvsRequestModel, dataModel: ChatomniConversationItemDto) {
+  public getPartnerFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO) {
+    let partner: ConversationPartnerDto = {} as any;
+
+    if(conversationInfo && conversationInfo.Partner) {
+        partner = {...conversationInfo.Partner};
+    }
+
+    if(!partner.Name && conversationInfo && conversationInfo.Conversation?.Name) {
+        partner.Name = conversationInfo.Conversation.Name;
+    }
+
+    if(!partner.Phone && conversationInfo && conversationInfo.Conversation?.Phone) {
+        partner.Phone = conversationInfo.Conversation.Phone;
+    }
+
+    if(!partner.Email && conversationInfo && conversationInfo.Conversation?.Email) {
+        partner.Email = conversationInfo.Conversation.Email;
+    }
+
+    if(!partner.FacebookASIds && conversationInfo && conversationInfo.Conversation?.ConversationId) {
+        partner.FacebookASIds = conversationInfo.Conversation.ConversationId;
+    }
+
+    if(!partner.FacebookPSId && conversationInfo && conversationInfo.Conversation?.ConversationId) {
+        partner.FacebookPSId = conversationInfo.Conversation.ConversationId;
+    }
+
+    return {...partner};
+  }
+
+  public prepareModel(partner: ConversationPartnerDto, item: ChatomniConversationItemDto) {
     let  model = {
-        Id: dataModel.PartnerId || partner?.Id,
+        Id: item.PartnerId || partner?.Id,
         StatusText: partner?.StatusText,
         Name: partner?.Name,
         Phone: partner?.Phone,
@@ -22,8 +51,8 @@ export class CsPartner_PrepareModelHandler {
         Comment: partner?.Comment,
         Street: partner?.Street,
 
-        FacebookASIds: partner?.Facebook_ASUserId || (dataModel.PartnerId == partner?.Id ? dataModel.Id : null),
-        FacebookId: (dataModel.PartnerId == partner?.Id ? dataModel.Id : null),
+        FacebookASIds: item.ConversationId,
+        FacebookId: partner.FacebookId,
 
         City: partner.City?.code ? {
             code: partner.City.code,
@@ -41,10 +70,10 @@ export class CsPartner_PrepareModelHandler {
         } : null,
     }
 
-    return model;
+    return {...model};
   }
 
-  public updatePartnerModel(partner: TabPartnerCvsRequestModel, x: CreateOrUpdatePartnerModel) {
+  public updatePartnerModel(partner: ConversationPartnerDto, x: CreateOrUpdatePartnerModel) {
 
     partner.Name = x.Name;
     partner.Comment = x.Comment;
@@ -56,15 +85,23 @@ export class CsPartner_PrepareModelHandler {
           code: x.City.code || x.CityCode,
           name: x.City.name || x.CityName
       }
+
+      partner.CityCode = x.CityCode || x.City?.code;
+      partner.CityName = x.CityName || x.City?.name;
+
     } else {
       partner.City = null;
     }
 
     if(x.District?.code || x.DistrictCode) {
-      partner.District = {
-          code: x.District.code || x.DistrictCode,
-          name: x.District.name || x.DistrictName
-      }
+        partner.District = {
+            code: x.District.code || x.DistrictCode,
+            name: x.District.name || x.DistrictName
+        } as any;
+
+        partner.DistrictCode = x.DistrictCode || x.District?.code;
+        partner.DistrictName = x.DistrictName || x.District?.name;
+
     } else {
       partner.District = null;
     }
@@ -73,57 +110,68 @@ export class CsPartner_PrepareModelHandler {
       partner.Ward = {
           code: x.Ward.code || x.WardCode,
           name: x.Ward.name || x.WardName
-      }
+      } as any;
+
+      partner.WardCode = x.WardCode || x.Ward?.code;
+      partner.WardName = x.WardName || x.Ward?.name;
     } else {
       partner.Ward = null;
     }
 
-    return partner;
+    return {...partner};
   }
 
-  public loadPartnerFromTabOrder(partner: TabPartnerCvsRequestModel, order: QuickSaleOnlineOrderModel) {
+  public loadPartnerFromTabOrder(partner: ConversationPartnerDto, order: QuickSaleOnlineOrderModel) {
 
-    if(TDSHelperString.hasValueString(order.PartnerName)) {
-      partner.Name = order.PartnerName;
+    if(!partner.Name && order.PartnerName ) {
+        partner.Name = order.PartnerName;
     }
 
-    if(TDSHelperString.hasValueString(order.Telephone)) {
-      partner.Phone = order.Telephone;
+    if(!partner.Phone && order.Telephone) {
+        partner.Phone = order.Telephone;
     }
 
-    if(TDSHelperString.hasValueString(order.Email)) {
-      partner.Email = order.Email;
+    if(!partner.Email && order.Email) {
+        partner.Email = order.Email;
     }
 
-    if(TDSHelperString.hasValueString(order.Note)) {
-      partner.Comment = order.Note;
+    if(!partner.Comment && order.Note) {
+        partner.Comment = order.Note;
     }
 
-    if(TDSHelperString.hasValueString(order.Address)) {
+    if(!partner.Street && order.Address) {
       partner.Street = order.Address;
     }
 
-    if(TDSHelperString.hasValueString(order.CityCode)) {
+    if(order.CityCode && !partner.City) {
       partner.City = {
           code: order.CityCode,
           name: order.CityName
       }
+      partner.CityCode = order.CityCode;
+      partner.CityName = order.CityName;
     }
 
-    if(TDSHelperString.hasValueString(order.DistrictCode)) {
-      partner.District = {
-          code: order.DistrictCode,
-          name: order.DistrictName
-      }
+    if(order.DistrictCode && !partner.District) {
+        partner.District = {
+            code: order.DistrictCode,
+            name: order.DistrictName
+        } as any;
+
+        partner.DistrictCode = order.DistrictCode;
+        partner.DistrictName = order.DistrictName;
     }
 
-    if(TDSHelperString.hasValueString(order.WardCode)) {
+    if(order.WardCode && !partner.Ward) {
       partner.Ward = {
           code: order.WardCode,
           name: order.WardName
-      }
+      } as any;
+
+      partner.WardCode = order.WardCode;
+      partner.WardName = order.WardName;
     }
 
-    return partner;
+    return {...partner};
   }
 }

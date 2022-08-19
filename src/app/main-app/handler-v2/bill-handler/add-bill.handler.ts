@@ -161,6 +161,6 @@ export class AddBillHandler {
         data.State = 'draft';
     }
 
-    return data;
+    return {...data};
   }
 }

@@ -1,0 +1,31 @@
+<div class="w-full grid grid-cols-4 gap-x-6 relative">
+    <tds-label>Sản phẩm</tds-label>
+
+    <tds-spin [spinning]="isLoading" class="w-full col-span-3">
+        <tds-form-field class="w-full">
+            <tds-select valueField="Id" textField="NameGet" [valuePrimitive]="false" placeholder='Chọn sản phẩm'
+                [ngModel]="defaultProduct" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" (selectChange)="onChangeProduct($event)"
+                [data]="lstProduct" [allowClear]="true">
+                <ng-template tds-label-tmp let-item="item">
+                    {{ item.data.NameGet }}
+                </ng-template>
+                <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
+                    <div class="flex flex-col gap-y-2.5">
+                        <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{ item.NameGet || item.Name }}</span>
+                        <div *ngIf="lstInventory && lstInventory[item.Id]" class="flex gap-x-1">
+                            <span class="text-neutral-1-400">Tồn kho: </span>
+                            <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
+                            <span class="text-neutral-1-400">Tồn dự báo: </span>
+                            <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
+                        </div>
+                    </div>
+                </ng-template>
+            </tds-select>
+        </tds-form-field>
+    </tds-spin>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+    <button tds-button class=" w-[100px]" type="submit" color="primary" (click)="onSave()">Áp dụng</button>
+</div>

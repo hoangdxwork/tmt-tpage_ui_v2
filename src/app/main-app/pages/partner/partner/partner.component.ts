@@ -1,3 +1,5 @@
+import { ChatomniMessageFacade } from './../../../services/chatomni-facade/chatomni-message.facade';
+import { ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { Message } from 'src/app/lib/consts/message.const';
 import { finalize, switchMap } from 'rxjs/operators';
 import { ModalBirthdayPartnerComponent } from './../components/modal-birthday-partner/modal-birthday-partner.component';
@@ -123,7 +125,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     private partnerService: PartnerService,
     private viewContainerRef: ViewContainerRef,
     private resizeObserver: TDSResizeObserver,
-    private configService: TDSConfigService) {
+    private configService: TDSConfigService,
+    private chatomniMessageFacade: ChatomniMessageFacade) {
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -627,18 +630,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     // get data currentConversation
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
-        if (res) {
-          res["keyTags"] = {};
-
-          if (res.tags && res.tags.length > 0) {
-            res.tags.map((x: any) => {
-              res["keyTags"][x.id] = true;
-            })
-          } else {
-            res.tags = [];
-          }
-
-          this.currentConversation = { ...res, ...this.currentConversation };
+        if (res) {        
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          this.currentConversation = { ...model };
+          
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }

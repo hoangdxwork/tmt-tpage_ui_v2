@@ -1,4 +1,4 @@
-<tds-spin  [spinning]="isLoading">
+<tds-spin [spinning]="isLoading">
   <div class="w-full h-full bg-neutral-3-200">
     <div class="bg-white pt-4">
         <tds-page-header title="Kênh kết nối">
@@ -38,7 +38,6 @@
     </div>
     <div class="mx-auto p-4 flex flex-col gap-4">
       <div *ngIf="data && data.length > 0 || dataSearch" class="flex gap-x-4 w-full">
-
         <!-- Col Left -->
         <div class="w-3/4 gap-y-4 flex flex-col">
             <div *ngFor="let team of (dataSearch || data); let index = index" @eventFadeState>
@@ -61,7 +60,7 @@
                                   <div class="flex gap-2 items-center">
                                       <div class="text-title-1 font-sans font-semibold"> {{team?.Name}} </div>
                                   </div>
-                                  <div *ngIf="team.Active" class="font-regular font-sans text-xs ">
+                                  <div *ngIf="team.Active" class="font-regular font-sans text-xs">
                                       <p *ngIf="!lstData[team.Id]?.data || lstData[team.Id].data.length < 1" class="text-neutral-1-400">
                                           <span style="color: #929DAA; font-size: 12px;">Chưa có trang nào được kết nối</span>
                                           <span class="font-semibold text-success-400 ml-2">Kết nối trang</span>
@@ -278,7 +277,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </tds-spin>

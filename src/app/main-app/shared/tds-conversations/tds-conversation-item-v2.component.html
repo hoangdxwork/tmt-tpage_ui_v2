@@ -5,7 +5,7 @@
           <div *ngIf="!dataItem.IsOwner" class="mr-2 flex flex-col justify-end">
 
               <tpage-avatar-facebook [shape]="'circle'" [size]="36"
-                  [psid]="dataItem.Data.from.id" [token]="team.ChannelToken">
+                  [psid]="dataItem.Data?.from?.id" [token]="team.ChannelToken">
               </tpage-avatar-facebook>
           </div>
 
@@ -16,17 +16,18 @@
 
           <!-- Tin nhắn hình ảnh -->
 		      <!-- 1 hình -->
-		      <div *ngIf="dataItem.Data.attachments && dataItem.Data.attachments.data.length == 1" class="flex flex-wrap max-w-[225px]">
+		      <div *ngIf="dataItem.Data && dataItem.Data?.attachments && dataItem.Data.attachments?.data!.length == 1" class="flex flex-wrap max-w-[225px]">
               <div *ngFor="let att of dataItem.Data.attachments.data" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
                   class="p-0.5 flex gap-x-2 justify-center items-center">
 
-                  <a class="flex items-center" [ngClass]="reloadingImage ? 'cursor-wait' : ''" tds-tooltip tooltipTitle="Ảnh đã hết hạn"
-                     *ngIf="dataItem.Data.is_error_attachment" (click)="refreshAttachment(att)">
+                  <a class="flex items-center" [ngClass]="reloadingImage ? 'cursor-wait' : 'cursor-pointer'" tds-tooltip tooltipTitle="Tải lại"
+                      *ngIf="dataItem.Data!.is_error_attachment" (click)="refreshAttachment(att)">
                       <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
                   </a>
-                  <a *ngIf="att.image_data" (click)="open_gallery(att)">
+                  <a *ngIf="att.image_data" (click)="open_gallery(att)" class="relative">
                       <show-attachment class="w-full h-full" [type]="att.mime_type" [height]="'225px'" [url]="att.image_data.url" (onError)="isErrorAttachment(att, dataItem)">
                       </show-attachment>
+                      <div class="absolute inset-0" tds-tooltip tooltipTitle="Ảnh đã hết hạn" *ngIf="dataItem.Data!.is_error_attachment"></div>
                   </a>
                   <a *ngIf="att.video_data" (click)="open_gallery(att)">
                       <show-attachment [type]="att.mime_type" [url]="att.video_data?.url" (onError)="isErrorAttachment(att, dataItem)"
@@ -42,7 +43,7 @@
           </div>
 
 		      <!-- Nhiều hình -->
-          <div *ngIf="dataItem.Data.attachments && dataItem.Data.attachments.data.length > 1" class="flex flex-wrap w-[327px]">
+          <div *ngIf="dataItem.Data && dataItem.Data.attachments && dataItem.Data.attachments?.data!.length > 1" class="flex flex-wrap w-[327px]">
               <div *ngFor="let att of dataItem.Data.attachments.data" class="p-0.5"  [ngClass]="dataItem.Data.attachments.data.length == 2 ? 'w-1/2' : 'w-1/3'">
                   <div class="w-full relative" [ngStyle]="{'padding-top.%': 100}">
 
@@ -63,34 +64,34 @@
               </div>
           </div>
 
-          <div *ngIf="dataItem.Data.attachments && this.isShowItemImage == true">
+          <div *ngIf="dataItem.Data && dataItem.Data.attachments && this.isShowItemImage == true">
               <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
                   (closeShowItemImage)="onCloseShowItemImage($event)">
               </show-item-image>
           </div>
 
           <!-- Tin nhắn không tải được -->
-          <div *ngIf="!dataItem.Message&& !dataItem.Data.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
               tds-tooltip tooltipTitle="{{dataItem.CreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
 
           <!-- Tin nhắn lỗi -->
-          <div *ngIf="dataItem.Error?.Message || dataItem.Status == 2" class="select-message flex items-center">
-              <a class="flex items-center cursor-pointer" *ngIf="!checkErrorMessage(dataItem.Error!.Message)" tds-popover [popoverContent]="popoverBug">
+          <div *ngIf="(dataItem.Error && dataItem.Error!.Message) || dataItem.Status == 2" class="select-message flex items-center">
+              <a class="flex items-center cursor-pointer" *ngIf="!checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-popover [popoverContent]="popoverBug">
                   <span class="tdsi-info-line text-error-400 text-body-1 leading-none" ></span>
               </a>
-              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error!.Message)" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
+              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
                   <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
               </a>
 
               <ng-template #popoverBug>
-                  <div class="max-w-[336px]">{{dataItem.Error!.Message}}</div>
+                  <div class="max-w-[336px] text-body-2 text-neutral-1-900">{{dataItem.Error? dataItem.Error.Message: ''}}</div>
               </ng-template>
           </div>
 
           <!-- admin copy tin nhắn gửi lại-->
-          <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Data.has_admin_required" tds-tooltip tooltipTitle="Sao chép" (click)="copyMessage()">
+          <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Data!.has_admin_required" tds-tooltip tooltipTitle="Sao chép" (click)="copyMessage()">
               <span class="tdsi-copy-line  text-body-1 leading-none"></span>
           </a>
 
@@ -103,7 +104,7 @@
                       <span class="tdsi-call-fill text-md text-white"></span>
                   </span>
 
-                  <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="selectOrder('address')"
+                  <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress(dataItem.Message)"
                       class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                       <span class="tdsi-pin-fill text-md text-white"></span>
                   </span>
@@ -123,14 +124,14 @@
       </span>
 
       <!-- Người gửi -->
-      <span *ngIf="dataItem.Error?.Message || dataItem.Status == 2 ; else seenBy">
-          <span *ngIf="checkErrorMessage(dataItem.Error!.Message)" class="text-caption-2 text-neutral-1-400 gap-x-1 flex justify-end">
+      <span *ngIf="(dataItem.Error && dataItem.Error?.Message) || dataItem.Status == 2 ; else seenBy">
+          <span *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" class="text-caption-2 text-neutral-1-400 gap-x-1 flex justify-end">
               <span class="tdsi-info-line flex items-center"></span>Tin nhắn chưa được gửi
           </span>
       </span>
       <ng-template #seenBy>
           <span *ngIf="dataItem.CreatedBy && dataItem.Status != 0" class="chat-by">
-              Được gửi bởi <span class="text-info-500"> {{dataItem.CreatedBy.Name}}</span>
+              Được gửi bởi <span class="text-info-500"> {{dataItem.CreatedBy?.Name}}</span>
           </span>
       </ng-template>
   </div>
@@ -142,7 +143,7 @@
           <!-- Avatar Facebook_PageId -->
           <div class="mr-2">
               <tpage-avatar-facebook [shape]="'circle'" [size]="36"
-                  [psid]="!dataItem.IsOwner ? dataItem!.Data?.from?.id : team.ChannelId"
+                  [psid]="!dataItem.IsOwner ? dataItem.UserId : team.ChannelId"
                   [token]="team.ChannelToken">
               </tpage-avatar-facebook>
           </div>
@@ -190,7 +191,7 @@
                         class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                         <i class="tdsi-call-fill text-md text-white"></i>
                     </span>
-                    <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="selectOrder('address')"
+                    <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress(dataItem.Message)"
                         class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                         <i class="tdsi-pin-fill text-md text-white"></i>
                     </span>
@@ -288,38 +289,37 @@
           <div *ngIf="children" class="chat-list" @eventReplyComment>
               <div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
                   <div class="avatar mr-2">
-                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
-                        [token]="team.Facebook_PageToken">
+                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
+                        [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
                   </div>
 
                   <div class="flex flex-col w-full">
                       <div class="inline-flex w-fit group">
                           <div class="chat-body !m-0" tds-tooltip
-                              tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
+                              tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
-                                  <div class="border-activety-comment" *ngIf="child.message_format">
-                                      <div class="name font-semibold pb-1">{{child.from.name}}</div>
-                                      <div class="content-message font-regular" [innerHTML]="child.message_format | safeHtml"></div>
-                                  </div>
-                                  <div class="border-activety-comment" *ngIf="!child.message_format">
-                                      <div class="name font-semibold pb-1">{{child.from.name}}</div>
-                                      <div class="content-message font-regular">{{child.message}}</div>
+                                  <div class="border-activety-comment" *ngIf="child.Message">
+                                      <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                      <div class="content-message font-regular" #contentMessage [innerHTML]="child.Message | formatIconLike | safeHtml"></div>
                                   </div>
                               </div>
                           </div>
-                        <div *ngIf="!child.message?.attachments"  class="chat-option invisible group-hover:visible">
+
+                        <div *ngIf="!child.Data?.attachments"  class="chat-option invisible group-hover:visible">
                             <div class="select-order flex flex-row items-center w-fit h-full pl-3">
                                 <span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
                                     class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
                                     (click)="selectOrder('phone')">
                                     <i class="tdsi-call-fill text-md text-white"></i>
                                 </span>
+
                                 <span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
                                     class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
-                                    (click)="selectOrder('address')">
+                                    (click)="showModalSuggestAddress(child.Message)">
                                     <i class="tdsi-pin-fill text-md text-white"></i>
                                 </span>
+
                                 <span tds-tooltip tooltipTitle="Thêm vào ghi chú"
                                     class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
                                     (click)="selectOrder('note')">
@@ -328,11 +328,12 @@
                             </div>
                         </div>
                       </div>
+
                       <div class="chat-meta text-neutral-1-600 text-caption-2 font-regular mt-1.5 relative">
                           <div class="chat-acts flex flex-row items-center relative" >
-                              <span *ngIf="child.created_time" class="date-diff cursor-pointer hover:underline"	tds-tooltip
-                                  tooltipTitle="{{child.created_time | date:'dd'}} Tháng {{child.created_time | date:'MM'}}, {{child.created_time | date:'yyyy'}} lúc {{child.created_time | date:'HH:mm'}}">
-                                  {{child.created_time | yiDiffDateTime}}
+                              <span *ngIf="child.ChannelCreatedTime" class="date-diff cursor-pointer hover:underline"	tds-tooltip
+                                  tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}} Tháng {{child.ChannelCreatedTime | date:'MM'}}, {{child.ChannelCreatedTime | date:'yyyy'}} lúc {{child.ChannelCreatedTime | date:'HH:mm'}}">
+                                  {{child.ChannelCreatedTime | yiDiffDateTime}}
                               </span>
                           </div>
                       </div>

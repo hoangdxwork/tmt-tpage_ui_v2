@@ -77,7 +77,7 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit  {
      * @param duration: duration in milliseconds, default is 750.
      * @param container the container html native element (or its id), window will be used if not set
      */
-    scrollToElement(elementID: string, duration: number = 750, container?: any): void {debugger
+    scrollToElement(elementID: string, duration: number = 750, container?: any): void {
 
         const item = document.getElementById(elementID); // the element
         if (item) {

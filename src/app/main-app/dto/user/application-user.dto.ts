@@ -28,6 +28,6 @@ export interface ApplicationUserDTO {
 }
 
 export interface ODataApplicationUserDTO {
-  "@odata.context": string;
+  "@odata.context"?: string;
   value: ApplicationUserDTO[];
 }

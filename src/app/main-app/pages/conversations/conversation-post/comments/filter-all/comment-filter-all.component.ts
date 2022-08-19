@@ -1,5 +1,5 @@
-
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone } from '@angular/core';
+import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -9,9 +9,6 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-message.dto';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
-import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
-import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
@@ -21,9 +18,14 @@ import { TDSModalService } from 'tds-ui/modal';
 import { ProductPagefbComponent } from '@app/pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ReplaceHelper } from '@app/shared/helper/replace.helper';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
-import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { ChatomniDataDto, ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
+import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { TDSNotificationService } from 'tds-ui/notification';
 
 @Component({
   selector: 'comment-filter-all',
@@ -33,72 +35,71 @@ import { TDSDestroyService } from 'tds-ui/core/services';
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnDestroy {
-
+export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
-  // @Input() postId!: string;
-  // @Input() data: any = { Items: []};
-  // @Input() team!: CRMTeamDTO | null;
 
   @Input() commentOrders!: any;
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
+  @Input() partnerDict!: {[key: string]: PartnerTimeStampItemDto};
 
   dataSource$!: Observable<ChatomniDataDto>;
   dataSource!: ChatomniDataDto;
-  childs: any = {};
+  childs: any = {} // dictionary return ChatomniDataItemDto[]
 
   enumActivityStatus = ActivityStatus;
-  partners$!: Observable<any>;
   messageModel!: string;
   isLoading: boolean = false;
   isHiddenComment: any = {};
 
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
-    private ngZone: NgZone,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private crmMatchingService: CRMMatchingService,
     private activityMatchingService: ActivityMatchingService,
-    private conversationPostFacade: ConversationPostFacade,
+    private chatomniConversationService: ChatomniConversationService,
     private chatomniCommentService: ChatomniCommentService,
     public crmService: CRMTeamService,
+    private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade) {
   }
 
   ngOnInit() {
-    if(this.team && this.data) {
+    if(this.data && this.team) {
         this.loadData();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes["data"] && !changes["data"].firstChange) {
+      (this.dataSource$ as any) = null;
+      (this.dataSource as any) = null;
+
+      this.data = {...changes["data"].currentValue};
+      this.loadData();
     }
   }
 
   loadData() {
     this.isLoading = true;
+      this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
 
-    this.ngZone.run(() => {
-      this.dataSource$ =  this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
+      if(this.dataSource$) {
+        this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+            this.dataSource = {...res};
 
-      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-          if(res) {
-              this.dataSource = res;
-          }
-
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-      }, error => {
-          this.isLoading = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-          this.cdRef.markForCheck();
-      })
-    })
-  }
-
-  editOrder(id: any, item: any){
-    this.conversationPostFacade.onCommentSelected$.emit(item);
+            this.isLoading = false;
+            this.cdRef.markForCheck();
+        }, error => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+            this.cdRef.markForCheck();
+        })
+      }
   }
 
   isPrivateReply(item: ChatomniDataItemDto){
@@ -163,31 +164,23 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
 
   }
 
-  onQuickReplySelected(event: any) {
+  onQuickReplySelected(event: any, partner: PartnerTimeStampItemDto) {
     let text = event.BodyPlain || event.BodyHtml || event.text;
-    if(this.partners$){
-      this.partners$.pipe(takeUntil(this.destroy$)).subscribe((partner: any) => {
 
-          text = ReplaceHelper.quickReply(text, partner);
-          this.message = text;
-
-        }, (error)=>{
-          this.message.error(`${error.error.message}` || 'Đã xảy ra lỗi');
-        })
-    } else{
-        this.message.error('Không lấy được thông tin khách hàng');
-    }
+    text = ReplaceHelper.quickReply(text, partner);
+    this.message = text;
   }
 
   onEnter(item: ChatomniDataItemDto, event: any) {
     if(event) {
-      let message = this.messageModel;
-      this.replyComment(item, message);
+        let message = this.messageModel as string;
+        this.replyComment(item, message);
 
-      (this.messageModel as any) = null;
-      event.preventDefault();
-      event.stopImmediatePropagation();
+        (this.messageModel as any) = null;
     }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
   }
 
   messageSendingToServer(item: ChatomniDataItemDto) {
@@ -203,43 +196,40 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
 
   replyComment(item: ChatomniDataItemDto, msg:string){
     if(TDSHelperString.hasValueString(msg)) {
-      const model = this.prepareModel(item, msg);
+        const model = this.prepareModel(item, msg);
 
-      // TODO: gửi về tin nhắn
-      if(item.Data.is_private_reply){
+        // TODO: gửi về tin nhắn
+        if(item.Data.is_private_reply){
 
-          model.comment_id = item.Id;
-          this.crmMatchingService.addQuickReplyComment(model)
-            .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+            model.comment_id = item.Id;
+            this.crmMatchingService.addQuickReplyComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
-                this.message.success('Gửi tin thành công');
-                if(TDSHelperArray.hasListValue(res)){
-                  res.forEach((x: any) => {
-                      x["status"] = ActivityStatus.sending;
-                      // this.activityDataFacade.messageServer({...x});
-                  });
-                }
-
-                // let items = res.pop();
-                // this.conversationDataFacade.messageServer(items);
-            }, error => {
-              this.message.error(`${error.error?.message}` || 'Gửi tin nhắn thất bại');
-          })
+                  this.message.success('Gửi tin thành công');
+                  if(TDSHelperArray.hasListValue(res)){
+                      res.forEach((x: any) => {
+                          x["status"] = ActivityStatus.sending;
+                      });
+                  }
+              }, error => {
+                this.message.error(`${error.error?.message}` || 'Gửi tin nhắn thất bại');
+            })
 
       } else {
           // TODO: Trả lời bình luận
-          model.parent_id = item.Id;
+          model.parent_id = item.ParentId || item.Data?.id || null;
           model.fbid = item.UserId;
 
           this.activityMatchingService.replyComment(this.team!.Id, model)
-            .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+            .pipe(takeUntil(this.destroy$)).subscribe({
+              next:(res: any) => {
 
-              this.message.success("Trả lời bình luận thành công.");
-              this.addReplyComment(item, model);
-
-          }, error => {
-            this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
-          })
+                this.message.success("Trả lời bình luận thành công.");
+                this.addReplyComment(item, model);
+              },
+              error: error => {
+                this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
+              }
+            })
       }
     }
   }
@@ -264,41 +254,50 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
   }
 
   addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO) {
-    // let comment = {
-    //   created_time: model.created_time,
-    //   from: model.from,
-    //   message: model.message,
-    //   parent_id: item.id,
-    //   post_id: item.object?.id
-    // }
-
-    // let replyComment = {
-    //   created_time: model.created_time,
-    //   message_format: model.message,
-    //   message: model.message,
-    //   from_id: item.from?.id,
-    //   comment: comment,
-    //   from: comment.from
-    // }
-
-    // if (this.childs[item.id]) {
-    //   this.childs[item.id].push(replyComment);
-    // } else {
-    //   this.childs[item.id] = [];
-    //   this.childs[item.id].push(replyComment);
-    // }
-
-    // const addActive = {...item, ...model};
-    // addActive["status"] = this.enumActivityStatus.sending;
-    // this.activityDataFacade.messageReplyCommentServer(addActive);
   }
 
-  onInformation(item: any) {
-    this.conversationOrderFacade.commentFormPost(item, false);
+  loadPartnerTab(item: ChatomniDataItemDto) {
+    let psid = item.UserId || item.Data?.from?.id;
+    if (!psid) {
+        this.message.error("Không truy vấn được thông tin người dùng!");
+        return;
+    }
+
+    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
+    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniConversationInfoDto) => {
+          if(res) {
+              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+              this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+          }
+        },
+        error: (error: any) => {
+            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+        }
+    })
   }
 
-  onCreateOrder(item: any) {
-    this.conversationOrderFacade.commentFormPost(item, true);
+  loadOrderTab(orderId: any, item: ChatomniDataItemDto){
+    let psid = item.UserId || item.Data?.from?.id;
+    if (!psid) {
+        this.message.error("Không truy vấn được thông tin người dùng!");
+        return;
+    }
+
+    this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+  }
+
+  onInsertFromPost(item: ChatomniDataItemDto) {
+    let psid = item.UserId || item.Data?.from?.id;
+    if (!psid) {
+        this.message.error("Không truy vấn được thông tin người dùng!");
+        return;
+    }
+
+    // TODO: Đẩy dữ liệu sang conversation-orer để tạo hà, insertfrompost
+    this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
   }
 
   nextData(event: any) {
@@ -306,22 +305,19 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       let id = `${this.team.Id}_${this.data.ObjectId}`;
 
-      this.ngZone.run(() => {
+      this.dataSource$ = this.chatomniCommentService.nextDataSource(id);
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
 
-          this.dataSource$ = this.chatomniCommentService.nextDataSource(id);
+          if(TDSHelperArray.hasListValue(res?.Items)) {
+              this.dataSource.Items = [...res.Items];
+          }
 
-          this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-
-              if(TDSHelperArray.hasListValue(res?.Items)) {
-                  this.dataSource.Items = [...res.Items];
-              }
-
-              this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
-              this.isLoading = false;
-          }, error => {
-              this.isLoading = false;
-          })
-        })
+          this.isLoading = false;
+          this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
+          this.cdRef.markForCheck();
+      }, error => {
+          this.isLoading = false;
+      })
     }
   }
 

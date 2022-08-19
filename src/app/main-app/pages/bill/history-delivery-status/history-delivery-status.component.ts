@@ -26,7 +26,7 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
   pageIndex = 1;
   isLoading: boolean = false;
   count: number = 1;
-  tableWidth:number = 0;
+  Widthtable:number = 0;
   paddingCollapse:number = 36;
   marginLeftCollapse: number = 0;
   teamId!:TDSSafeAny;
@@ -44,12 +44,12 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
   }
 
   ngAfterViewInit(): void {
-    this.tableWidth = this.viewChildTableWidth?.nativeElement?.offsetWidth - this.paddingCollapse
+    this.Widthtable = this.viewChildTableWidth?.nativeElement?.offsetWidth - this.paddingCollapse
 
     this.resizeObserver
       .observe(this.viewChildTableWidth)
       .subscribe(() => {
-        this.tableWidth = this.viewChildTableWidth?.nativeElement?.offsetWidth - this.paddingCollapse;
+        this.Widthtable = this.viewChildTableWidth?.nativeElement?.offsetWidth - this.paddingCollapse;
         this.viewChildTableWidth?.nativeElement.click()
       });
       setTimeout(() => {

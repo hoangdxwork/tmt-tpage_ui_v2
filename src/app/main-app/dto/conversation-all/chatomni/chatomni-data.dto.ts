@@ -3,25 +3,26 @@ import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
 export interface ChatomniDataDto {
   Items: ChatomniDataItemDto[];
-  Extras?: Extras;
+  Extras?: ExtrasDto;
   Paging: PagingTimestamp;
 }
 
-export interface Extras {
+export interface ExtrasDto {
   Objects: { [key: string]: ExtrasObjectDto };
+  Childs: { [key: string]: ExtrasChildsDto[] };
 }
 
-export interface Facebook_Graph_From {
+export interface Facebook_Graph_FromDto {
   id: string;
   name: string;
   uid?: any;
 }
 
-export interface Parent {
+export interface ParentChildsDto {
   id: string;
 }
 
-export interface Object {
+export interface ObjectDto {
   id: string;
 }
 
@@ -56,19 +57,20 @@ export interface ChatomniFacebookDataDto {
   message: string;
   message_formatted: string;
   created_time: Date;
-  from: Facebook_Graph_From;
+  from: Facebook_Graph_FromDto;
   to?: Facebook_Inner_UserSimple;
   attachments: Attachments;
-  parent: Parent;
+  parent: ParentChildsDto;
   is_hidden?: boolean;
   can_hide?: boolean;
   can_remove?: boolean;
   can_like?: boolean;
   can_reply_privately?: boolean;
   comment_count?: number;
+  like_count?: number;
   user_likes?: boolean;
-  object: Object;
-  comments?: any;
+  object: ObjectDto;
+  comments?: any[];
   attachment?: any;
   message_tags: MessageTag[];
   phone: string;
@@ -76,7 +78,6 @@ export interface ChatomniFacebookDataDto {
   // các dữ liệu bổ sung để check client
   has_admin_required?: boolean;
   is_error_attachment?: boolean;// ko có trong dữ liệu trả về
-  errorShowAttachment?: boolean;// ko có trong dữ liệu trả về
   is_reply?: boolean;// ko có trong dữ liệu trả về
   is_private_reply: boolean;// ko có trong dữ liệu trả về
 }
@@ -155,7 +156,7 @@ export enum ChatomniMessageType {
 }
 
 export interface ExtrasObjectDto {
-  Data:  Facebook_Graph_Post | ChatomniDataTShopPostDto;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
+  Data: Facebook_Graph_Post | ChatomniDataTShopPostDto;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
   Id: string;
   ObjectId: string;
   ObjectType: number;
@@ -166,3 +167,24 @@ export interface ExtrasObjectDto {
   Description: string;
   Thumbnail?: Thumbnail
 }
+
+export interface ExtrasChildsDto {
+  Data: ChatomniFacebookDataDto;
+  Id: string;
+  ObjectId: string;
+  ParentId?: string;
+  Message: string;
+  Source?: any;
+  Type: ChatomniMessageType;
+  UserId: string;
+  Error?: ErrorMessageOmni;
+  Status: ChatomniStatus;
+  IsSystem: boolean; // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
+  CreatedById?: string;
+  CreatedBy?: ChatomniInnerUser;
+  CreatedTime: Date | any;
+  ChannelCreatedTime: Date;
+  ChannelUpdatedTime?: any;
+  IsOwner: boolean;
+}
+

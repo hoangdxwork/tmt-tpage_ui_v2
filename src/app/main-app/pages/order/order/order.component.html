@@ -209,7 +209,7 @@
                 <!-- Kênh kết nối -->
                 <td *ngIf="isHidden('CRMTeamName')" class="border-r">
                   <div class="w-full flex">
-                    <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
                     <span class="ml-1">{{data.CRMTeamName}}</span>
                   </div>
                 </td>
@@ -318,7 +318,7 @@
 
   <tds-drawer [visible]="isOpenDrawer"
     [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
-    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'50vw'">
     <ng-template #titleMessage>
       <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
         Gửi tin nhắn Facebook

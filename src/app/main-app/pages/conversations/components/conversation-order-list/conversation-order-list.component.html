@@ -1,8 +1,8 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="h-full w-full">
   <div class="w-full h-full flex overflow-hidden flex-col gap-y-4 overflow-y-auto tds-custom-scroll bg-white p-4">
     <div class="flex gap-x-2">
         <tds-form-field class="w-full">
-            <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" (keydown.enter)="applyFilter($event)"/>
+            <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="applyFilter($event)"/>
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
         <button tds-button color="primary" tds-dropdown trigger="click"
@@ -20,7 +20,7 @@
             </div>
         </tds-dropdown-menu>
     </div>
-    <div class="flex">
+    <div *ngIf="tabNavs.length > 1" class="flex">
         <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
           <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
             <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
@@ -37,7 +37,7 @@
           </ng-template>
         </tds-filter-status>
     </div>
-    <div class="flex flex-col gap-y-4">
+    <div class="flex flex-col gap-y-4" *ngIf="lstOfData.length > 0; else noData">
         <tds-collapse accordion="true">
             <tds-collapse-panel [header]="headerOrder" [active]="false" *ngFor="let order of lstOfData" (activeChange)="onActiveChange(order, $event)"
                 [extra]="extraTpl1">
@@ -94,34 +94,31 @@
                   </div>
                 </ng-template>
                 <!-- Content  -->
-                <div class="w-full">
-                    <tds-table #tableInCollapse [listData]="lstLine" [loading]="isLoadingLine" [showPagination]="false">
+                <div class="flex flex-auto">
+                    <tds-table #tableInCollapse [listData]="lstLine" [loading]="isLoadingLine" [showPagination]="false" [tableLayout]="'fixed'">
                         <thead>
                             <tr>
-                                <th>Sản phẩm</th>
-                                <th>Số lượng</th>
-                                <th>Thành tiền</th>
-                                <th>Trạng thái</th>
+                                <th width="40%">Sản phẩm</th>
+                                <th width="20%">Số lượng</th>
+                                <th width="20%">Thành tiền</th>
+                                <th width="20%">Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             <ng-template ngFor let-data [ngForOf]="tableInCollapse.data">
-                                <tr>
+                                <tr class="text-caption-2">
                                     <td>
-                                        <div class="flex flex-col">
-                                            <span>{{data.ProductNameGet}}</span>
-                                            <span>{{data.Price | number}}</span>
+                                        <div class="flex flex-col" tds-tooltip tooltipTitle="{{ data.ProductNameGet }}">
+                                            <span class="truncate">{{ data.ProductNameGet }}</span>
+                                            <span class="text-neutral-1-400">{{ data.Price | numberCustom:'.' }}</span>
                                         </div>
                                     </td>
-                                    <td>{{ data.Quantity | number }}</td>
-                                    <td>{{ data.Quantity * data.Price | number }}</td>
+                                    <td>{{ data.Quantity | numberCustom:'.' }}</td>
+                                    <td>{{ data.Quantity * data.Price | numberCustom:'.' }}</td>
                                     <td>
-                                        <div class="flex">
-                                            <div class="py-1 px-4 rounded text-white font-semibold"
-                                            [ngClass]="data.IsOrderPriority == true?'bg-primary-1':'bg-neutral-1-300 text'">
-                                                <span>{{data.IsOrderPriority == true?'Ưu tiên':'Dự bị'}}</span>
-                                            </div>
-                                        </div>
+                                        <tds-tag [status]="data.IsOrderPriority ? 'primary' : 'secondary'">
+                                            {{ data.IsOrderPriority ? 'Ưu tiên' : 'Dự bị' }}
+                                        </tds-tag>
                                     </td>
                                 </tr>
                             </ng-template>
@@ -131,6 +128,19 @@
             </tds-collapse-panel>
         </tds-collapse>
     </div>
+    <ng-template #noData>
+        <div class="pt-1 flex-auto">
+            <div class="flex flex-col gap-4 p-4 items-center bg-white">
+                <img src="../../../assets/imagesv2/shop-empty.svg" alt="" class="mt-24 w-[110px] h-[82px]">
+                <span class="text-neutral-1-400 font-normal">Chưa có đơn hàng nào</span>
+
+                <!-- <button type="button" tds-button color="primary" class="mt-3.5">
+                    <span class="flex items-center">
+                        <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Tạo đơn hàng
+                    </span>
+                </button> -->
+            </div>
+        </div>
+    </ng-template>
   </div>
 </tds-spin>
-

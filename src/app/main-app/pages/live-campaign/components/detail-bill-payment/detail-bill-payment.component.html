@@ -22,20 +22,20 @@
       (queryParams)="onQueryParamsChange($event)">
       <thead>
         <tr>
-          <th [width]="'3%'" [(checked)]="checked" [indeterminate]="indeterminate">
+          <th [width]="'64px'" [(checked)]="checked" [indeterminate]="indeterminate">
           </th>
-          <th [width]="'3.5%'">STT</th>
-          <th [width]="'13%'">Hình thanh toán</th>
-          <th [width]="'9%'">Số HĐ</th>
-          <th [width]="'8%'">Khách hàng</th>
-          <th [width]="'6%'">Tiền cọc</th>
-          <th [width]="'6%'">Còn nợ</th>
-          <th [width]="'6%'">Tổng tiền</th>
-          <th [width]="'7%'">Tiền thu hộ</th>
-          <th [width]="'7%'">Trạng thái</th>
-          <th [width]="'10%'">Nhân viên</th>
-          <th [width]="'9%'">Ngày cập nhật</th>
-          <th [width]="'16%'">Thao tác</th>
+          <th [width]="'200px'">STT</th>
+          <th [width]="'200px'">Hình thanh toán</th>
+          <th [width]="'200px'">Số HĐ</th>
+          <th [width]="'200px'">Khách hàng</th>
+          <th [width]="'200px'">Tiền cọc</th>
+          <th [width]="'200px'">Còn nợ</th>
+          <th [width]="'200px'">Tổng tiền</th>
+          <th [width]="'200px'">Tiền thu hộ</th>
+          <th [width]="'200px'">Trạng thái</th>
+          <th [width]="'200px'">Nhân viên</th>
+          <th [width]="'200px'">Ngày cập nhật</th>
+          <th [width]="'200px'">Thao tác</th>
         </tr>
       </thead>
       <tbody>
@@ -50,7 +50,7 @@
             <!-- Hình thanh toán -->
             <td>
               <div class="w-[154px] h-[104px] image-payment relative">
-                <img src="{{ data.IRAttachmentUrl }}" class="rounded-lg min-w-[154px] max-w-[154px] min-h-[104px] max-h-[104px]"/>
+                <img src="{{ data.IRAttachmentUrl }}" class="rounded-lg min-w-[154px] max-w-[154px] min-h-[104px] max-h-[104px] object-cover"/>
                 <div class="w-full h-full inset-0 absolute bg-white/[0.9] rounded-lg items-center justify-center flex hidden show-img-payment">
                   <div class="rounded px-2 py-1 text-caption-2 text-primary-1 font-semibold border border-primary-1 cursor-pointer" (click)="showModalDeposit(data)">
                     Xác nhận cọc
@@ -84,7 +84,7 @@
                     [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left" color="secondary" size="sm"
                     class=" border-0">
                     <div class="w-5 h-5 relative">
-                      <i class="tdsi-tag-fill text-base leading-4 select-all absolute top-0 left-0"></i>
+                      <i class="tdsi-tag-fill text-base text-neutral-1-500 leading-4 select-all absolute top-0 left-0"></i>
                       <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12" height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745"/>
                       </svg>
@@ -158,12 +158,12 @@
             <td>
               <div class="flex space-x-2">
                 <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
-                  <span class="flex items-center">
+                  <span class="flex items-center text-neutral-1-500">
                     <i class="tdsi-edit-fill"></i>
                   </span>
                 </button>
-                <button tds-button-icon color="secondary" size="sm">
-                  <span class="flex items-center">
+                <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(data)">
+                  <span class="flex items-center text-neutral-1-500">
                     <i class="tdsi-messenger-fill"></i>
                   </span>
                 </button>
@@ -179,4 +179,24 @@
       </tbody>
     </tds-table>
   </div>
+  <tds-drawer [visible]="isOpenDrawer"
+  [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+  [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+    <ng-template #titleMessage>
+      <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
+        Gửi tin nhắn Facebook
+      </span>
+    </ng-template>
+    <ng-container *tdsDrawerContent>
+      <div class="w-full h-full flex flex-col overflow-hidden text-body-2">
+        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
+          <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
+            <shared-tds-conversations-v2 class="flex w-full h-full" [team]="currentMappingTeam?.team"
+              [data]="currentConversation" [type]="'all'">
+            </shared-tds-conversations-v2>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </tds-drawer>
 </div>

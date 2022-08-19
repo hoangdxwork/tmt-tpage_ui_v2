@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 
 export class PrepareAddCampaignHandler {
 
-    public prepareModel(form: FormGroup) {
+    public prepareModel(form: FormGroup): LiveCampaignModel {
 
         let formValue = form.value;
         let model = {} as LiveCampaignModel;
@@ -36,6 +36,6 @@ export class PrepareAddCampaignHandler {
     
         model.Details = formValue.Details;
     
-        return model;
+        return {...model};
     }
 }

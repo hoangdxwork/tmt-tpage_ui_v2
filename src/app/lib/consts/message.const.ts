@@ -6,6 +6,8 @@ export const Message = {
   DeleteSuccess: 'Xóa thành công.',
   DeleteFail: 'Xóa thất bại.',
   UpdatedSuccess: 'Cập nhật thành công.',
+  UpdateQuantitySuccess: 'Cập nhật số lượng thành công',
+  UpdateQuantityFail: 'Cập nhật số lượng thất bại',
   UpdatedActiveSuccess: 'Cập nhật trạng thái thành công.',
   UpdatedFail: 'Cập nhật thất bại.',
   ManipulationSuccessful: 'Thao tác thành công.',
@@ -49,14 +51,19 @@ export const Message = {
     EmptyContent: 'Vui lòng nhập đủ tên và nội dung'
   },
   Product: {
+    CanNotLoadData: 'Không thể tải danh sách sản phẩm',
     InsertSuccess: 'Thêm sản phẩm thành công.',
-    UpdateListPriceSuccess: 'Cập nhật bảng giá thành công.'
+    UpdateListPriceSuccess: 'Cập nhật bảng giá thành công.',
+    DefaultProductEmpty: 'Chưa có sản phẩm mặc định'
   },
   ProductCategory: {
     InsertSuccess: 'Thêm nhóm sản phẩm thành công.'
   },
   ProductUOM: {
     InsertSuccess: 'Thêm đơn vị tính thành công.'
+  },
+  ComboProduct:{
+    CanNotLoadData: 'Không thể tải danh sách combo'
   },
   Carrier: {
     EmptyCarrier: "Vui lòng chọn đối tác giao hàng."

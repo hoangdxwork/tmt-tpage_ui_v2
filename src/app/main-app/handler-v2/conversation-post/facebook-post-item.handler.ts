@@ -1,4 +1,4 @@
-import { MDB_Facebook_Mapping_PostDto } from './../../dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { LiveCampaignModel } from './../../dto/live-campaign/odata-live-campaign.dto';
 import { Injectable } from "@angular/core";
 import { TDSHelperObject } from "tds-ui/shared/utility";
@@ -6,19 +6,25 @@ import { TDSHelperObject } from "tds-ui/shared/utility";
 @Injectable()
 
 export class FaceBookPostItemHandler {
-    public updateLiveCampaignPost(liveCampaign: LiveCampaignModel, data: MDB_Facebook_Mapping_PostDto) {
+    public updateLiveCampaignPost(data: ChatomniObjectsItemDto, liveCampaign?: LiveCampaignModel): ChatomniObjectsItemDto {
 
-        if(liveCampaign && TDSHelperObject.hasValue(liveCampaign)){
-            data.live_campaign_id = liveCampaign.Id;
+        if(data) {
+            data.Id = data.Id
+            if(liveCampaign && TDSHelperObject.hasValue(liveCampaign)){
+                data.LiveCampaignId = liveCampaign.Id;
 
-            data.live_campaign = {
-                name: liveCampaign.Name,
-                note: liveCampaign.Note
+                data.LiveCampaign = {
+                    Id: liveCampaign.Id,
+                    Name: liveCampaign.Name,
+                    Note: liveCampaign.Note
+                }
+            }else{
+                data = { ...data, ...{ live_campaign_id: undefined, live_campaign: undefined } } as any;
             }
-        }else{
-            data = { ...data, ...{ live_campaign_id: undefined, live_campaign: undefined } } as any;
-        }
 
-        return data;
+            return {...data};
+        }else{
+            return data;
+        }
     }
 }

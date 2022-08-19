@@ -1,4 +1,5 @@
 <div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900">
+
   <!-- conversation list -->
   <div class="2xl:w-1/5 w-1/4 h-full ">
       <div class="w-full flex flex-col gap-0.5 pl-1 h-full">
@@ -6,27 +7,27 @@
               <div class="block items-center">
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isRefreshing"></tpage-team-dropdown>
               </div>
-              <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
+
               <div class="flex items-center gap-x-1">
                   <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
-                      <input class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
+                      <input class="placeholder-neutral-1-400 truncate" #conversationSearchInput placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
                       <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                   </tds-form-field>
 
                   <div class="flex gap-0.5">
                       <!-- button fillter -->
-                      <conversation-all-filter (onFilter)="onSubmitFilter($event)"
-                          [totalCount]="total" [team]="currentTeam">
+                      <conversation-all-filter (onSubmitFilter)="onSubmitFilter($event)" [queryObj]="queryObj" [totalConversations]="totalConversations">
                       </conversation-all-filter>
 
-                      <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
+                      <button (click)="setSort()" tds-tooltip [tooltipTitle]="isSort ? 'Hội thoại cũ nhất' : 'Hội thoại mới nhất'"
+                          class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
                           <span class="flex items-center text-primary-1">
-                              <i [ngClass]="isSort?'tdsi-sort-arrow-up-fill':'tdsi-sort-arrow-down-fill'" class="text-xl leading-5"></i>
+                              <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill' : 'tdsi-sort-arrow-down-fill'" class="text-xl leading-5"></i>
                           </span>
                       </button>
 
                       <button class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
-                          [ngClass]="isOpenCollapCheck?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
+                          [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
                           <span class="flex items-center ">
                               <i class="tdsi-success-line text-xl leading-5"></i>
                           </span>
@@ -34,6 +35,7 @@
                   </div>
               </div>
           </div>
+
           <!-- Xử lý click button checkbox -->
           <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white ">
               <div class="w-full flex justify-between items-center py-2 px-3.5">
@@ -63,19 +65,19 @@
 
           <!-- List danh sách chat -->
           <tds-spin class="overflow-hidden flex flex-auto" [spinning]="isLoading">
-              <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstOmcs && lstOmcs.length > 0; else noOmcs" >
+              <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0; else noOmcs" >
 
                 <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
                     yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                    <div *ngFor="let item of lstOmcs; let i= index ; trackBy: trackByIndex">
-                        <div *ngIf="item && item.ConversationId && omcs_Item && currentTeam" @eventFadeState>
+                    <div *ngFor="let item of lstConversation; let i= index ; trackBy: trackByIndex">
+                        <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
 
-                          <a (click)="changeCurrentCvsItem(item)" >
+                          <a (click)="changeCurrentConversationItem(item)" >
                             <!-- class="w-full {{ (isChanged && omcs_Item) ? 'cursor-wait' : 'cursor-pointer'}}" -->
                               <current-conversation-item-v2
                                   [item]="item" [csid]="item.ConversationId" [type]="type"
-                                  [omcs_Item]="omcs_Item"
+                                  [conversationItem]="conversationItem"
                                   [state]="item.State"
                                   [team]="currentTeam" [isFastSend]="isFastSend"
                                   [isOpenCollapCheck]="isOpenCollapCheck"
@@ -102,24 +104,26 @@
           </tds-spin>
       </div>
   </div>
+
   <!--Nội dung cuộc hội thoại-->
   <div class="flex 2xl:w-[48%] w-[45%]">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <div class="flex w-full flex-col h-full" *ngIf="omcs_Item && currentTeam" @eventFadeState>
+        <div class="flex w-full flex-col h-full" *ngIf="conversationItem && currentTeam" @eventFadeState>
             <shared-tds-conversations-v2
                 class="flex w-full h-full"
-                [data]="omcs_Item"
-                [state]="omcs_Item.State"
+                [data]="conversationItem"
+                [state]="conversationItem.State"
                 [type]="type" [team]="currentTeam">
             </shared-tds-conversations-v2>
         </div>
     </div>
   </div>
+
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
   <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
   <tds-spin class="flex 2xl:w-[32%] w-[30%] h-full" [spinning]="isLoading">
       <div class="w-full h-full flex flex-col">
-          <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+          <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
               <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
 
                   <ng-template #conversationPartner let-active="active">
@@ -133,11 +137,11 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="omcs_Item  && currentTeam">
-                      <conversation-partner [omcs_Item]="omcs_Item" [team]="currentTeam" [type]="type"> </conversation-partner>
+                  <div *ngIf="currentTeam && type && conversationInfo">
+                      <conversation-partner [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type" (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
                   </div>
 
-                  <div *ngIf="!omcs_Item">
+                  <div *ngIf="!conversationItem">
                       <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>
@@ -148,7 +152,7 @@
                         [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
 
                           <span class="mr-2 flex items-center">  Đơn hàng
-                              <tds-tag status='primary' class="ml-3" *ngIf="orderCode"> #{{orderCode}} </tds-tag>
+                              <tds-tag status='primary' class="ml-3" *ngIf="conversationInfo && conversationInfo.Order && conversationInfo.Order.Code"> #{{conversationInfo.Order.Code}} </tds-tag>
                           </span>
 
                           <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
@@ -157,11 +161,11 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="omcs_Item && currentTeam ">
-                      <conversation-order [omcs_Item]="omcs_Item" [team]="currentTeam"></conversation-order>
+                  <div *ngIf="currentTeam && type && conversationInfo">
+                      <conversation-order [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type"></conversation-order>
                   </div>
 
-                  <div *ngIf="!omcs_Item">
+                  <div *ngIf="!conversationItem">
                       <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>

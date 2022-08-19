@@ -1,8 +1,9 @@
-import { finalize, takeUntil } from 'rxjs/operators';
-import { OnDestroy } from '@angular/core';
-import { Component, Input, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
+import { ConversationPostEvent } from './../../../../handler-v2/conversation-post/conversation-post.event';
+import { ConversationOrderDTO } from './../../../../dto/coversation-order/conversation-order.dto';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { finalize, takeUntil, map } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -21,9 +22,10 @@ import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 
 @Component({
   selector: 'conversation-order-list',
-  templateUrl: './conversation-order-list.component.html'
+  templateUrl: './conversation-order-list.component.html',
+  providers: [TDSDestroyService]
 })
-export class ConversationOrderListComponent implements OnInit,OnDestroy {
+export class ConversationOrderListComponent implements OnInit {
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -49,25 +51,25 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
   pageIndex = 1;
   tabIndex: number = 1;
 
-  currentPost!: FacebookPostItem;
+  currentPost!: ChatomniObjectsItemDto;
   isLoading: boolean = false;
   isLoadingLine: boolean = false;
-  lstOfData: Array<TDSSafeAny> = [];
+  lstOfData: Array<ConversationOrderDTO> = [];
   tabNavs: Array<TDSSafeAny> = [];
 
   lstLine: any[] = [];
 
   count: number = 0;
-  private destroy$ = new Subject<void>();
 
   constructor(
     private conversationPostFacade: ConversationPostFacade,
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
-    private conversationOrderFacade: ConversationOrderFacade,
     private orderPrintService: OrderPrintService,
+    private conversationPostEvent: ConversationPostEvent,
     private modalService: TDSModalService,
+    private destroy$: TDSDestroyService,
     private excelExportService: ExcelExportService
   ) { }
 
@@ -76,38 +78,57 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
   }
 
   loadPost() {
-    this.conversationPostFacade.onPostChanged$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.currentPost = res;
-      this.loadData(this.pageSize, this.pageIndex);
-    });
+    this.conversationPostFacade.onPostChanged$.pipe(takeUntil(this.destroy$))
+      .pipe(map((item: ChatomniObjectsItemDto) => {
+
+        this.currentPost = item;
+        
+        this.loadSummaryStatus();
+        this.loadData(this.pageSize,this.pageIndex);
+
+        return item;
+      }))
+      .subscribe();
   }
 
   loadData(pageSize: number, pageIndex: number) {
     let filters = this.odataSaleOnline_OrderService.buildFilterByPost(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: TDSSafeAny) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = res.value;
+    this.getViewData(params).subscribe({
+      next:(res: TDSSafeAny) => {
+        this.count = res['@odata.count'] as number;
 
-    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
+        this.lstOfData = [...res.value];
+      }, 
+      error:(error) => {
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
+    });
 
     this.loadSummaryStatus();
   }
 
   getViewData(params: string) {
     this.isLoading = true;
+
     return this.odataSaleOnline_OrderService
-      .getViewByPost(this.currentPost.fbid, params, this.filterObj)
+      .getViewByPost(this.currentPost.ObjectId, params, this.filterObj)
       .pipe(finalize(() => this.isLoading = false ));
   }
 
   getLine(id: string) {
     this.isLoadingLine = true;
+
     this.saleOnline_OrderService.getLines(id)
       .pipe(finalize(() => this.isLoadingLine = false))
-      .subscribe(res => {
-        this.lstLine = res?.value;
+      .subscribe({
+        next:(res) => {
+          this.lstLine = res ? [...res.value] : [];
+        },
+        error:(err) => {
+          this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+        }
       });
   }
 
@@ -125,8 +146,8 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
   applyFilter(event: TDSSafeAny) {
     this.tabIndex = 1;
     this.pageIndex = 1;
-
-    this.filterObj.searchText = event.target.value;
+    
+    this.filterObj.searchText = event.value;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -134,7 +155,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
     let model : SaleOnlineOrderSummaryStatusDTO = {
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
-      PostId: this.currentPost.fbid
+      PostId: this.currentPost.ObjectId
     }
 
     this.isLoading = true;
@@ -165,6 +186,8 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
               break;
           }
         });
+        
+        this.conversationPostEvent.getOrderTotal$.emit(total);
 
         this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
         this.tabNavs.sort((a, b) => a.Index - b.Index);
@@ -189,7 +212,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
   }
 
   onEdit(order: TDSSafeAny) {
-    this.conversationOrderFacade.editOrderFormPost(order);
+    // this.conversationOrderFacade.editOrderFormPost(order);
   }
 
   onCheck(orderId: string, event: TDSCheckboxChange) {
@@ -237,7 +260,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
 
     if(TDSHelperArray.hasListValue(data)) {
       data.forEach(order => {
-        this.orderPrintService.printOrder(order, null);
+        this.orderPrintService.printOrder(order);
       });
       this.isLoadingActive = false;
     }
@@ -251,7 +274,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
       {
         data: JSON.stringify({}),
         campaignId: null,
-        postId: this.currentPost.fbid,
+        postId: this.currentPost.ObjectId,
         ids: ids,
       }, `don_hang_online`)
       .pipe(finalize(() => this.isLoadingActive = false), takeUntil(this.destroy$))
@@ -281,15 +304,15 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
 
     this.odataSaleOnline_OrderService.removeIds({ids: ids})
       .pipe(finalize(() => this.isLoadingActive = false))
-      .subscribe(res => {
-        this.message.success(Message.DeleteSuccess);
-        this.loadData(this.pageSize, this.pageIndex);
-      }, error => {this.message.error(`${error?.error?.message}` || JSON.stringify(error))});
-  }
+      .subscribe({
+        next:(res) => {
+          this.message.success(Message.DeleteSuccess);
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+          this.loadData(this.pageSize, this.pageIndex);
+        }, 
+        error:(error) => {
+          this.message.error(error?.error?.message || JSON.stringify(error));
+        }
+      });
   }
-
 }

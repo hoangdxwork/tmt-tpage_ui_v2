@@ -5,20 +5,24 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         name: "Cấu hình bán hàng",
         icon: "tdsi-gear-2-fill",
         link: '/configs',
-        listChild:[
-          {
-              name: "Cấu hình chốt đơn",
-              link: '/configs/saleorder',
-          },
-          {
-              name: "Cấu hình giỏ hàng",
-              link: '/configs/facebook-cart',
-          },
-          {
-              name: "Đối tác giao hàng",
-              link: '/configs/delivery',
-          },
-      ]
+        listChild: [
+            {
+                name: "Cấu hình chốt đơn",
+                link: '/configs/sale-order',
+            },
+            {
+                name: "Cấu hình tạo đơn",
+                link: '/configs/default-order',
+            },
+            {
+                name: "Cấu hình giỏ hàng",
+                link: '/configs/facebook-cart',
+            },
+            {
+                name: "Đối tác giao hàng",
+                link: '/configs/delivery',
+            },
+        ]
     },
     {
         name: "Nhãn hội thoại",
@@ -59,7 +63,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         name: "Người dùng",
         icon: "tdsi-group-people-fill",
         link: '/configs/users',
-        listChild:[
+        listChild: [
             {
                 name: "Quản lý người dùng",
                 link: '/configs/users/operation',
@@ -78,7 +82,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         name: "Cài đặt trang",
         icon: "tdsi-facebook-2-fill",
         link: '/configs/pages',
-        listChild:[
+        listChild: [
             {
                 name: "Basic",
                 link: '/configs/pages/basic',

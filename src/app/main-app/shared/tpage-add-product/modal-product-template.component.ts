@@ -22,13 +22,14 @@ import { ConfigAddAttributeProductModalComponent } from '../../pages/configs/com
 import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from '../../dto/configs/product/config-product-default.dto';
 import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
 import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
+import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 
 @Component({
-  selector: 'tpage-add-product',
-  templateUrl: './tpage-add-product.component.html'
+  selector: 'modal-product-template',
+  templateUrl: './modal-product-template.component.html'
 })
 
-export class TpageAddProductComponent implements OnInit, OnDestroy {
+export class ModalProductTemplateComponent implements OnInit, OnDestroy {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
   @Input() typeComponent!: any;
@@ -97,7 +98,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadCategory() { 
+  loadCategory() {
     this.isLoading = true;
 
     this.productCategoryService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
@@ -180,7 +181,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
     this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
     this.defaultGet["StandardPrice"] = formModel.StandardPrice;
-    // this.defaultGet["Tags"] =  formModel.Tags;
 
     if (formModel.UOM) {
       this.defaultGet["UOM"] = formModel.UOM;
@@ -201,22 +201,26 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((res) => {
+      .subscribe((res: any) => {
 
         delete res['@odata.context'];
+
+        let product = res as ProductTemplateV2DTO;
         this.message.success('Thêm mới sản phẩm thành công');
 
         // TODO: Trường hợp ở component Phiếu bán hàng
+        // Khi gán dữ liệu , lấy field VariantFirstId
+
         if(this.typeComponent == 'lst-product-tmp') {
             this.productIndexDBService.loadProductIndexDBV2().subscribe((x) => {
                 if (type == "select") {
-                    this.onCancel([res, x]);
+                    this.onCancel([product, x]);
                 } else {
                     this.onCancel(null);
                 }
             }, error => {
                 if (type == "select") {
-                    this.onCancel([res, null]);
+                    this.onCancel([product, null]);
                 } else {
                     this.onCancel(null);
                 }
@@ -229,7 +233,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
 
         else {
           if (type == "select") {
-              this.onCancel([res, null]);
+              this.onCancel([product, null]);
           } else {
               this.onCancel(null);
           }

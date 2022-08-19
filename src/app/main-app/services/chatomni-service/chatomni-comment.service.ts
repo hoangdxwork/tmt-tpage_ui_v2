@@ -95,9 +95,10 @@ export class ChatomniCommentService extends BaseSevice  {
         let url = this.urlNext  as string;
         return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
 
-            if(res.Extras?.Objects) {
+            if(res.Extras) {
               exist.Extras = {
-                  Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
+                  Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
+                  Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
               }
             }
 

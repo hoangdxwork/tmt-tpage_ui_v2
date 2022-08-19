@@ -1,3 +1,4 @@
+import { ODataProductDTOV2 } from './../../dto/product/odata-product.dto';
 import { ODataProductDTO } from './../../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -36,6 +37,15 @@ export class OdataProductService extends BaseSevice {
         method: CoreApiMethodType.get,
     }
     return this.apiService.getData<ODataProductDTO>(api, null);
+  }
+
+  getProductCombo(params: string): Observable<ODataProductDTOV2> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24format=json&${params}&%24count=true`,
+      method: CoreApiMethodType.get,
+    }
+  
+    return this.apiService.getData<ODataProductDTOV2>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {

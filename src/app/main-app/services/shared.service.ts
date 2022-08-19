@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
-import { InitSaleDTO } from '../dto/setting/setting-sale-online.dto';
+import { InitSaleDTO, SaleOnlineSettingDTO } from '../dto/setting/setting-sale-online.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
 
@@ -19,11 +19,12 @@ interface AppSettings {
 
 export class SharedService extends BaseSevice {
 
-  public userLogged: any;
-  public settings!: AppSettings;
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
+
+  public userLogged: any;
+  public settings!: AppSettings;
   _keyCacheConfigs = "_keycache_configs";
 
   constructor(private apiService: TCommonService,
@@ -33,6 +34,7 @@ export class SharedService extends BaseSevice {
         appName: "T-Page",
         appVersion: "1.06.1.7"
     };
+
     //TODO: xử lý userLogged\
     this.loadUserLogged();
   }

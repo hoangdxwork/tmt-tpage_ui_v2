@@ -1,207 +1,198 @@
 import { CRMTagDTO } from './../../../../dto/crm-tag/odata-crmtag.dto';
 import { startOfMonth, endOfMonth, startOfYesterday, endOfYesterday, subDays } from 'date-fns';
 import { ApplicationUserService } from './../../../../services/application-user.service';
-import { CRMMatchingService } from './../../../../services/crm-matching.service';
 import { CRMTagService } from './../../../../services/crm-tag.service';
-import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
-import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny, TDSHelperString, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TDSI18nService, vi_VN } from 'tds-ui/i18n';
+import { QueryFilterConversationDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { CRMTeamService } from '@app/services/crm-team.service';
+import { Observable, takeUntil } from 'rxjs';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { ApplicationUserDTO } from '@app/dto/user/application-user.dto';
 
 @Component({
   selector: 'conversation-all-filter',
   templateUrl: './conversation-all-filter.component.html',
+  providers: [ TDSDestroyService ]
 })
+
 export class ConversationAllFilterComponent implements OnInit, OnChanges {
 
-  _form !: FormGroup;
-
-  @Input() team!: CRMTeamDTO | null;
-  @Input() totalCount!: number;
-  @Output() onFilter: EventEmitter<any> = new EventEmitter();
+  @Input() queryObj!: QueryFilterConversationDto;
+  @Input() totalConversations: number = 0;
+  @Output() onSubmitFilter: EventEmitter<any> = new EventEmitter();
 
   visibleDrawerFillter: boolean = false;
-  rangeDate!: Date;
-  keyTags: any = {};
-  tags: CRMTagDTO[] = [];
-  users: TDSSafeAny[] = [];
-  total: number = 0;
-  daterange: Date[] = [];
-  toggle_Key: boolean = true;
-  filtered: boolean = false;
-  keyFilterTag!: string;
-  lstOfTag: CRMTagDTO[] = [];
+  dateTimes!: any[];
 
-  leftControl = {
+  lstUser!: ApplicationUserDTO[];
+  lstUserSearch!: ApplicationUserDTO[];
+
+  lstOfTag: CRMTagDTO[] = [];
+  lstOfTagSearch: CRMTagDTO[] = [];
+
+  keyFilterTag: string = '';
+  keyFilterUser: string = '';
+  isFilter!: boolean;
+
+  dateRanges = {
     'Hôm nay': [new Date(), new Date()],
     'Hôm qua': [startOfYesterday(), endOfYesterday()],
     '7 ngày trước': [subDays(new Date(), 7), new Date()],
     '30 ngày trước': [subDays(new Date(), 30), new Date()],
     'Tháng này': [startOfMonth( new Date()), endOfMonth(new Date())],
-  };
+  } as any;
 
-  constructor(private fb: FormBuilder,
+  constructor(private crmTeamService: CRMTeamService,
     private crmTagService: CRMTagService,
-    private crmMatchingService: CRMMatchingService,
     private applicationUserService: ApplicationUserService,
+    private destroy$: TDSDestroyService,
     private i18n: TDSI18nService) {
-      this.createForm();
-  }
-
-  ngOnChanges(simpleChange: SimpleChanges) {
-    if (simpleChange.totalCount) {
-      this.total = simpleChange.totalCount.currentValue || 0;
-    }
-    if (simpleChange.team) {
-      this.resetFilter();
-    }
-    if (simpleChange.totalCount && simpleChange.totalCount.currentValue < 0 && TDSHelperObject.hasValue(this.prepareValues())) {
-      this.resetFilter();
-    }
+      this.i18n.setLocale(vi_VN);
   }
 
   ngOnInit(): void {
-    this.i18n.setLocale(vi_VN);
-    this.applicationUserService.dataSource$.subscribe((res) => {
-      if (this.crmMatchingService.queryObj.user_ids && TDSHelperArray.hasListValue(res)) {
-        res.forEach((element: TDSSafeAny) => {
-
-          let value = this.crmMatchingService.queryObj.user_ids
-            .split(",")
-            .find((x: TDSSafeAny) => x === element.Id);
-
-          if (value) {
-            element.selected = true;
-          }
-        });
-      }
-      this.users = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
-    });
-
-    this.crmTagService.dataSource$.subscribe((res: CRMTagDTO[]) => {
-      if (this.crmMatchingService.queryObj.tag_ids && TDSHelperArray.hasListValue(res)) {
-        res.forEach((element: TDSSafeAny) => {
-
-          let value = this.crmMatchingService.queryObj.tag_ids
-            .split(",")
-            .find((x: TDSSafeAny) => x === element.Id);
-
-          if (value) {
-            this.keyTags[element.Id] = true;
-          }
-        });
-      }
-      if(TDSHelperArray.hasListValue(res)){
-        this.tags = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
-        this.lstOfTag = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
+    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ApplicationUserDTO[]) => {
+          this.lstUser = [...res];;
+          this.lstUser = this.lstUser.sort((a, b) => (a.Name.length) - (b.Name.length));
+          this.lstUserSearch = this.lstUser;
       }
     });
+
+    this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (tags: CRMTagDTO[]) => {
+          this.lstOfTag = [...tags];
+          this.lstOfTag = this.lstOfTag.sort((a, b) => (a.Name.length) - (b.Name.length));
+          this.lstOfTagSearch = this.lstOfTag;
+      }
+    })
   }
 
-  createForm() {
-    this._form = this.fb.group({
-      hasOrder: [false],
-      hasAddress: [false],
-      hasPhone: [false],
-      hasUnread: [false],
-      notAddress: [false],
-      notPhone: [false]
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["totalConversations"] && !changes["totalConversations"].firstChange) {
+        this.totalConversations = changes["totalConversations"].currentValue as number;
+    }
   }
 
   openDrawerFillter() {
     this.visibleDrawerFillter = true;
   }
 
-  close(): void {
+  closeDrawerFillter(): void {
     this.visibleDrawerFillter = false;
   }
 
-  onChange(result: Date[]): void {
-    this.daterange = result;
-  }
-
-  onSelectTag(item: TDSSafeAny) {
-    this.keyTags[item.Id] = !this.keyTags[item.Id];
-  }
-
-  selectUser(item: TDSSafeAny) {
-    item.selected = !item.selected;
-  }
-
-  resetFilter() {
-    this.daterange = [];
-    this.keyTags = {};
-    this.users.forEach((x) => {
-      delete x.selected;
-    });
-
-    this._form.reset();
-    this.toggle_Key = !this.toggle_Key;
-    this.filtered = false;
-    this.visibleDrawerFillter = false;
-  }
-
-  public clearFilter(): void {
-    this.resetFilter();
-    this.onFilter.emit({});
-  }
-
-  searchTag() {
-    let data = this.tags;
-    let key = this.keyFilterTag;
-    if (TDSHelperString.hasValueString(key)) {
-      key = TDSHelperString.stripSpecialChars(key.trim());
+  onChangeDate(value: Date[]): void {
+    this.dateTimes = value;
+    if(this.dateTimes) {
+        this.queryObj['start'] = (this.dateTimes[0]).toISOString();
+        this.queryObj['end'] = this.dateTimes[1].toISOString();
     }
-    data = data.filter((x) =>
-      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
-    this.lstOfTag = data
-    console.log(data)
   }
 
-  prepareValues(): any {
-    const formModel = this._form.value;
-    const model: any = {
-      hasPhone: formModel.hasPhone as boolean,
-      hasAddress: formModel.hasAddress as boolean,
-      hasOrder: formModel.hasOrder as boolean,
-      hasUnread: formModel.hasUnread as boolean,
-      notAddress: formModel.notAddress as boolean,
-      notPhone: formModel.notPhone as boolean,
-    };
+  onSelectTag(item: CRMTagDTO) {
+    let ids: any = [];
+    if(this.queryObj['tag_ids'] && this.queryObj['tag_ids'].length > 0) {
+        ids = this.queryObj['tag_ids'];
+    }
 
-    return model;
+    let exits = ids?.find((x: any) => x == item.Id);
+    if(exits) {
+        ids = ids.filter((x: any)  => x != item.Id);
+    } else {
+        ids.push(item.Id);
+    }
+
+    this.queryObj['tag_ids'] = [...ids];
+  }
+
+  selectUser(item: ApplicationUserDTO) {
+    let ids: any = [];
+    if(this.queryObj['user_ids'] && this.queryObj['user_ids'].length > 0) {
+        ids = this.queryObj['user_ids'];
+    }
+
+    let exits = ids?.find((x: any) => x == item.Id);
+    if(exits) {
+        ids = ids.filter((x: any)  => x != item.Id);
+    } else {
+        ids.push(item.Id);
+    }
+
+    this.queryObj['user_ids'] = [...ids];
+  }
+
+  clearFilter() {
+    this.isFilter = false;
+    this.keyFilterUser = '';
+    this.keyFilterTag = '';
+    this.totalConversations = 0;
+    this.queryObj = {} as any;
+    this.onSubmitFilter.emit(this.queryObj);
+    this.closeDrawerFillter()
+  }
+
+  onSearchTags(event: any) {
+    let value = TDSHelperString.stripSpecialChars(this.keyFilterTag.trim());
+    this.lstOfTag = this.lstOfTagSearch.filter(x => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+
+  onSearchUser(event: any) {
+    let value = TDSHelperString.stripSpecialChars(this.keyFilterTag.trim());
+    this.lstUser = this.lstUserSearch.filter(x => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+    event.preventDefault();
+    event.stopImmediatePropagation();
   }
 
   onSubmit(): void {
-    let tagIds: TDSSafeAny[] = [];
-    Object.keys(this.keyTags).forEach((element) => {
-      if (this.keyTags[element]) {
-        tagIds.push(element);
-      }
-    });
-
-    let userIds: TDSSafeAny[] = [];
-    this.users.forEach((x) => {
-      if (x.selected) {
-        userIds.push(x.Id);
-      }
-    });
-
-    let model = {
-      from_date: this.daterange[0] ? this.daterange[0].toISOString() : null,
-      to_date: this.daterange[1] ? this.daterange[1].toISOString() : null,
-      tag_ids: tagIds,
-      user_ids: userIds,
-    };
-
-    let checkModel = this.prepareValues();
-    model = Object.assign(model, checkModel);
-
-    this.onFilter.emit(model);
-    this.toggle_Key = !this.toggle_Key;
-    this.visibleDrawerFillter = false;
-    this.filtered = true;
+    this.isFilter = true;
+    this.totalConversations = 0;
+    this.onSubmitFilter.emit(this.queryObj);
+    this.closeDrawerFillter();
   }
+
+  onChangeHasPhone(event: boolean) {
+    if(event == true) {
+        this.queryObj['has_phone'] = event;
+    } else {
+        delete this.queryObj['has_phone'];
+    }
+  }
+
+  onChangeNotPhone(event: boolean) {
+    if(event == true) {
+        this.queryObj['not_phone'] = event;
+    } else {
+        delete this.queryObj['not_phone'];
+    }
+  }
+
+  onChangeHasAddress(event: boolean) {
+    if(event == true) {
+        this.queryObj['has_address'] = event;
+    } else {
+        delete this.queryObj['has_address'];
+    }
+  }
+
+  onChangeNotAddress(event: boolean) {
+    if(event == true) {
+        this.queryObj['not_address'] = event;
+    } else {
+        delete this.queryObj['not_address'];
+    }
+  }
+
+  onChangeHasUnread(event: boolean) {
+    if(event == true) {
+        this.queryObj['has_unread'] = event;
+    } else {
+        delete this.queryObj['has_unread'];
+    }
+  }
+
 }

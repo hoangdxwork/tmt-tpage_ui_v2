@@ -33,10 +33,12 @@ export class CalculateBillFeeHandler {
     this.fs_coDAmount(_form);
 
     //TODO: tổng số lượng và tổng tiền tạm tính
-    return {
+    let result = {
       totalQtyLines: totalQty,
       totalAmountLines: totalPrice
     }
+
+    return {...result};
   }
 
   public updateTotalSummary(_form:FormGroup, datas: OrderLineV2[], totalAmountLines:number, roleConfigs: SaleSettingsDTO) {

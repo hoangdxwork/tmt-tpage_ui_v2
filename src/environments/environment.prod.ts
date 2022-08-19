@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
-  signalRAppend: "?host=admin.tpos.vn",
+  signalRAppend: "",
   urlLogin:'/account/login',
-  socketUrl: 'https://socket-tpos.dev.tmtco.org/chatomni',
+  socketUrl: 'https://rt.tpos.app/chatomni',
   apiAccount:{
     signInPassword:"/token",
     signInFacebook:"/sign-in/facebook",

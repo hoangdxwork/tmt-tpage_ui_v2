@@ -1,8 +1,9 @@
-import { MDB_Facebook_Mapping_PostDto } from './../../dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { EventEmitter, Injectable } from "@angular/core";
 
 @Injectable()
 
 export class ObjectFacebookPostEvent{
-  public getObjectFBData$: EventEmitter<MDB_Facebook_Mapping_PostDto> = new EventEmitter();
+  //TODO: Cập nhật chiến dịch live coversation-post-view-v3 và Object-facebook-post
+  public getObjectFBData$: EventEmitter<ChatomniObjectsItemDto> = new EventEmitter();
 }

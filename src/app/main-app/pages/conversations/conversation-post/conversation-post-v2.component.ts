@@ -1,3 +1,6 @@
+import { ChatomniLiveCampaignDto } from './../../../dto/conversation-all/chatomni/chatomni-objects.dto';
+import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
+import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
@@ -6,8 +9,6 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, NgZone, OnDest
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { ChangeTabConversationEnum } from 'src/app/main-app/dto/conversation/conversation.dto';
-import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -16,17 +17,14 @@ import { ConversationPostFacade } from 'src/app/main-app/services/facades/conver
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { ListLiveCampaignComponent } from 'src/app/main-app/shared/list-live-campaign/list-live-campaign.component';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { Facebook_Graph_Post } from '@app/dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
+import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 
 @Component({
   selector: 'app-conversation-post-v2',
@@ -70,13 +68,14 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   isLoading: boolean = false;
   isProcessing: boolean = false;
 
-  currentOrderTab: number = 0;
+  selectedIndex: number = 0;
   isDisableTab: boolean = true;
 
   dataSource$?: Observable<ChatomniObjectsDto> ;
   lstObjects!: ChatomniObjectsItemDto[];
 
   queryObj?: any = { type!: "", sort!: "", q!: "" };
+  isRefreshing: boolean = false;
 
   constructor(private facebookPostService: FacebookPostService,
     private conversationPostFacade: ConversationPostFacade,
@@ -90,7 +89,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private chatomniObjectService: ChatomniObjectService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private objectEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
 
@@ -132,6 +132,19 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     });
 
     this.onChangeTabEvent();
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+        let index = this.lstObjects.findIndex(x=> x.Id == res.Id);        
+        if(index >- 1) {
+            this.lstObjects[index].LiveCampaign = { ...res.LiveCampaign } as unknown as ChatomniLiveCampaignDto;
+            this.lstObjects[index] = {...this.lstObjects[index]};
+        }
+      }
+    })
   }
 
   loadAvailableCampaign(){
@@ -152,24 +165,6 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
             this.listBadge[post_id]["count"] = (this.listBadge[post_id]["count"] || 0) + 1;
         }
     });
-  }
-
-  onChangeTabEvent() {
-    this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-
-          if(res === ChangeTabConversationEnum.order) {
-            this.changeTab(2, false);
-          }
-
-          else if(res === ChangeTabConversationEnum.partner) {
-            this.changeTab(1, false);
-          }
-      });
-  }
-
-  changeTab(tabIndex: number, isDisable: boolean = true) {
-    this.currentOrderTab = tabIndex;
-    this.isDisableTab = isDisable;
   }
 
   onchangeType(event: any) {
@@ -212,14 +207,17 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.facebookPostService.fetchPosts(team?.Id).pipe(takeUntil(this.destroy$)).subscribe();
   }
 
+  onRefresh(event: any) {
+    this.queryObj = { type!: "", sort!: "", q!: "" };
+    this.isRefreshing = true;
+    this.loadData();
+  }
+
   loadData(queryObj?: any){
     this.isLoading = true;
     this.validateData();
 
-    this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, queryObj);
-    })
-
+    this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, queryObj);
     if(this.dataSource$) {
         this.loadObjects(this.dataSource$);
     }
@@ -247,11 +245,10 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
 
         if(res && res.Items) {
-
             this.lstObjects = [...res.Items];
 
             if(TDSHelperArray.hasListValue(res.Items)){
-                let exits = res.Items.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
+                let exits = res.Items?.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
 
                 if(TDSHelperObject.hasValue(exits)){
                     this.selectPost(exits);
@@ -262,8 +259,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
         }
 
         this.isLoading = false;
+        setTimeout(() => {
+            this.isRefreshing = false;
+        }, 300);
     }, error => {
         this.isLoading = false;
+        this.isRefreshing = false;
         this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
     })
   }
@@ -280,7 +281,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
               let x = item.Data as MDB_Facebook_Mapping_PostDto;
               if(x.parent_id) {
 
-                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {debugger
+                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
                     if(res && TDSHelperArray.hasListValue(res.Items)) {
                         this.postChilds = [...res.Items];
                     }
@@ -289,9 +290,6 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
             break;
 
             case CRMTeamType._TShop:
-
-              let selectItem = item.Data as ChatomniDataTShopPostDto;
-
             break;
 
             default: break;
@@ -308,16 +306,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
   nextData(event: any): any {
     if(event) {
-
       if (this.isProcessing) {
           return false;
       }
-
       this.isProcessing = true;
-      this.ngZone.run(() => {
-          this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
-      })
 
+      this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
 
           if(TDSHelperArray.hasListValue(res?.Items)) {
@@ -360,7 +354,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   onTabOrder(event: boolean) {
-    this.currentOrderTab = 2;
+    this.selectedIndex = 2;
   }
 
   ngAfterViewInit() {
@@ -382,4 +376,22 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     delete this.dataSource$;
     delete this.currentPost;
   }
+
+  onChangeTabEvent() {
+    this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+        if(res === ChangeTabConversationEnum.order) {
+          this.changeTab(2, false);
+        }
+
+        else if(res === ChangeTabConversationEnum.partner) {
+          this.changeTab(1, false);
+        }
+    });
+  }
+
+  changeTab(tabIndex: number, isDisable: boolean = true) {
+    this.selectedIndex = tabIndex;
+    this.isDisableTab = isDisable;
+  }
+
 }

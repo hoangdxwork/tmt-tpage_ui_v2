@@ -1,3 +1,11 @@
+import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
+import { takeUntil } from 'rxjs';
+import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
+import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
+import { CRMTeamService } from './../../../../services/crm-team.service';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { PartnerService } from './../../../../services/partner.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -16,7 +24,8 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'detail-bill',
-  templateUrl: './detail-bill.component.html'
+  templateUrl: './detail-bill.component.html',
+  providers: [ TDSDestroyService ]
 })
 export class DetailBillComponent implements OnInit {
 
@@ -51,13 +60,24 @@ export class DetailBillComponent implements OnInit {
 
   public lstTags: Array<TDSSafeAny> = [];
   public modelTags: Array<TDSSafeAny> = [];
+  public mappingTeams: any[] = [];
+  public currentMappingTeam: any;
+  currentConversation!: ChatomniConversationItemDto;
+  psid: any;
+  isOpenDrawer: boolean = false;
+  orderMessage: TDSSafeAny;
 
   constructor(
     private message: TDSMessageService,
     private tagService: TagService,
     private router: Router,
     private fastSaleOrderService: FastSaleOrderService,
-    private oDataLiveCampaignBillService: ODataLiveCampaignBillService
+    private oDataLiveCampaignBillService: ODataLiveCampaignBillService,
+    private partnerService: PartnerService,
+    private destroy$: TDSDestroyService,
+    private crmTeamService: CRMTeamService,
+    private crmMatchingService: CRMMatchingService,
+    private chatomniMessageFacade: ChatomniMessageFacade
   ) { }
 
   ngOnInit() {
@@ -201,5 +221,87 @@ export class DetailBillComponent implements OnInit {
     this.filterObj.searchText = text;
     this.loadData(this.pageSize, this.pageIndex);
   }
+
+  openMiniChat(data: TDSSafeAny) {
+    let partnerId = data.PartnerId;
+    this.orderMessage = data;
+
+    if (this.orderMessage.DateCreated) {
+      this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
+    }
+
+    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
+
+      let pageIds: any = [];
+      res.map((x: any) => {
+        pageIds.push(x.page_id);
+      });
+
+      if (pageIds.length == 0) {
+        return this.message.error('Không có kênh kết nối với khách hàng này.');
+      }
+
+      this.crmTeamService.getActiveByPageIds$(pageIds)
+        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
+
+          if (teams.length == 0) {
+            return this.message.error('Không có kênh kết nối với khách hàng này.');
+          }
+
+          this.mappingTeams = [];
+          let pageDic = {} as any;
+
+          teams.map((x: any) => {
+            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
+
+            if (exist && !pageDic[exist.page_id]) {
+
+              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+
+              this.mappingTeams.push({
+                psid: exist.psid,
+                team: x
+              })
+            }
+          })
+
+          if (this.mappingTeams.length > 0) {
+            this.currentMappingTeam = this.mappingTeams[0];
+            this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+          }
+        });
+    }, error => {
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+    })
+  }
+
+  loadMDBByPSId(pageId: string, psid: string) {
+    // Xoá hội thoại hiện tại
+    (this.currentConversation as any) = null;
+
+    // get data currentConversation
+    this.crmMatchingService.getMDBByPSId(pageId, psid)
+      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+        if (res) {
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          this.currentConversation = { ...model };
+          
+          this.psid = res.psid;
+          this.isOpenDrawer = true;
+        }
+      }, error => {
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+      })
+  }
+
+  selectMappingTeam(item: any) {
+    this.currentMappingTeam = item;
+    this.loadMDBByPSId(item.team?.ChannelId, item.psid); // Tải lại hội thoại
+  }
+
+  closeDrawer() {
+    this.isOpenDrawer = false;
+  }
+
 
 }

@@ -1,4 +1,4 @@
-import { ProductTemplateOUMLineService } from '../../../../services/product-template-uom-line.service';
+import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
@@ -14,7 +14,7 @@ import { ProductService } from 'src/app/main-app/services/product.service';
 import { GetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
-import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -49,7 +49,7 @@ import { SO_ComputeCaclHandler } from 'src/app/main-app/handler-v2/order-handler
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { Router } from '@angular/router';
-import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 
 @Component({
   selector: 'edit-order-v2',
@@ -140,10 +140,10 @@ export class EditOrderV2Component implements OnInit {
     private computeCaclHandler: SO_ComputeCaclHandler,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
-    private so_PrepareFaseSaleOrderHandler: SO_PrepareFaseSaleOrderHandler,
+    private so_PrepareFastSaleOrderHandler: SO_PrepareFastSaleOrderHandler,
     private partnerService: PartnerService,
     private sharedService: SharedService,
-    private productTemplateOUMLineService: ProductTemplateOUMLineService,
+    private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private router: Router) {
   }
 
@@ -191,7 +191,7 @@ export class EditOrderV2Component implements OnInit {
             DeliveryPrice: 0
         }, this.saleModel);
 
-        this.saleModel = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(this.saleModel, this.quickOrderModel);
+        this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
         this.coDAmount();
         this.calcTotal();
 
@@ -205,7 +205,7 @@ export class EditOrderV2Component implements OnInit {
 
   //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
-    if (data.CarrierId && data.Carrier) {
+    if (data.Carrier && data.Carrier.ExtraProperties) {
       let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
 
       this.insuranceInfo = data.ShipmentDetailsAship?.InsuranceInfo || null;
@@ -302,7 +302,7 @@ export class EditOrderV2Component implements OnInit {
   onAddProduct() {
     const modal = this.modal.create({
         title: 'Thêm sản phẩm',
-        content: TpageAddProductComponent,
+        content: ModalProductTemplateComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
@@ -316,7 +316,7 @@ export class EditOrderV2Component implements OnInit {
         let item = {
             Quantity: 1,
             Price: data.ListPrice,
-            ProductId: data.Id,
+            ProductId: data.VariantFirstId,
             ProductName: data.Name,
             ProductNameGet: data.NameGet,
             ProductCode: data.DefaultCode,
@@ -489,6 +489,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onSave(formAction?: string, type?: string): any {
+
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
 
@@ -497,29 +498,34 @@ export class EditOrderV2Component implements OnInit {
         this.saleModel.FormAction = formAction;
     }
 
+    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+
     if(this.isEnableCreateOrder) {
-        if (!TDSHelperArray.hasListValue(this.saleModel.OrderLines)) {
-            this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
-            return false;
-        }
 
-        if (!this.saleModel.Phone) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
-            return false;
-        }
+      this.updateShipExtras();
+      this.updateShipServiceExtras();
+      this.updateShipmentDetailsAship();
 
-        if (!this.saleModel.Address) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
-            return false;
-        }
+      fs_model = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
 
-        // if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
-        //   this.confirmShipService(this.saleModel.Carrier);
-        // }
+      if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
+          this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          return false;
+      }
 
-        this.updateShipExtras();
-        this.updateShipServiceExtras();
-        this.updateShipmentDetailsAship();
+      if (!fs_model.Phone) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
+          return false;
+      }
+
+      if (!fs_model.Address) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+          return false;
+      }
+
+      // if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
+      //   this.confirmShipService(this.saleModel.Carrier);
+      // }
     }
 
     this.isLoading = true;
@@ -531,7 +537,7 @@ export class EditOrderV2Component implements OnInit {
 
         if(this.isEnableCreateOrder) {
             // call api tạo hóa đơn
-            this.createFastSaleOrder(this.saleModel, type);
+            this.createFastSaleOrder(fs_model, type);
         } else {
           this.isLoading = false;
           this.message.success('Cập nhật đơn hàng thành công');
@@ -548,44 +554,45 @@ export class EditOrderV2Component implements OnInit {
     });
   }
 
-  createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type?: string) {
-    let model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(data, this.quickOrderModel);
+  createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
+    let model = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(fs_model, this.quickOrderModel);
 
-    this.fastSaleOrderService.saveV2(model).subscribe((res: CreateFastSaleOrderDTO) => {
+    this.fastSaleOrderService.saveV2(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: CreateFastSaleOrderDTO) => {
+            // TODO: Tạo hóa đơn thành công
+            if(res?.Success) {
 
-        // TODO: Tạo hóa đơn thành công
-        if(res?.Success) {
+                this.shipServices = [];
+                this.shipExtraServices = [];
+                delete this.saleModel.Ship_ServiceId;
+                delete this.saleModel.Ship_ServiceName;
 
-            this.shipServices = [];
-            this.shipExtraServices = [];
-            delete this.saleModel.Ship_ServiceId;
-            delete this.saleModel.Ship_ServiceName;
-
-            if(res.Message) {
-                this.notification.warning('Tạo hóa đơn thành công', res.Message);
+                if(res.Message) {
+                    this.notification.warning('Tạo hóa đơn thành công', res.Message);
+                }
             }
+
+            // TODO: trường hợp gửi vận đơn lỗi
+            if(!res?.Success && res.Message) {
+                this.notification.warning( 'Lỗi gửi vận đơn', res.Message);
+            }
+
+            if(res && !res.Message ) {
+              this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
+            }
+
+            if(type && res) {
+                this.printOrder(type, res);
+            } else {
+                this.modalRef.destroy(null);
+            }
+
+            this.isLoading = false;
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
         }
-
-        // TODO: trường hợp gửi vận đơn lỗi
-        if(!res?.Success && res.Message) {
-            this.notification.warning( 'Lỗi gửi vận đơn', res.Message);
-        }
-
-        if(res && !res.Message ) {
-          this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
-        }
-
-        if(type && res) {
-            this.printOrder(type, res);
-        } else {
-            this.modalRef.destroy(null);
-        }
-
-        this.isLoading = false;
-
-    }, error => {
-        this.isLoading = false;
-        this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
     });
   }
 
@@ -647,7 +654,7 @@ export class EditOrderV2Component implements OnInit {
     let top = 20;
     let skip = 0;
 
-    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch)
+    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch)
       .pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoadingProduct = false ))
       .subscribe((res: ODataProductDTOV2) => {
            this.lstProductSearch = [...res.value]
@@ -727,36 +734,38 @@ export class EditOrderV2Component implements OnInit {
     let model = this.prepareModelFeeV2();
     this.isLoading = true;
 
-    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-          if(res) {
+    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            if(res && !res.error) {
 
-            if(!TDSHelperString.isString(res)){
-              this.configsProviderDataSource = [...res.configs];
+                if(!TDSHelperString.isString(res)){
+                  this.configsProviderDataSource = [...res.configs];
 
-              this.insuranceInfo = res.data?.InsuranceInfo || null;
-              this.shipServices = res.data?.Services || [];
+                  this.insuranceInfo = res.data?.InsuranceInfo || null;
+                  this.shipServices = res.data?.Services || [];
 
-              if(TDSHelperArray.hasListValue(this.shipServices)) {
+                  if(TDSHelperArray.hasListValue(this.shipServices)) {
 
-                  let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                  this.selectShipServiceV2(x);
+                      let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                      this.selectShipServiceV2(x);
 
-                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
-              }
+                      this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                  }
 
-            } else {
-              this.message.error(res);
+                } else {
+                    this.message.error(res.error?.message);
+                }
             }
-          }
 
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-      }, error => {
-          this.isLoading = false;
-          this.message.error(error.error.message || error.error.error_description);
-          this.cdRef.markForCheck();
-      })
+            this.isLoading = false;
+            this.cdRef.markForCheck();
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(error.error.message || error.error.error_description);
+            this.cdRef.markForCheck();
+        }
+    })
   }
 
   selectShipServiceV2(x: CalculateFeeServiceResponseDto) {

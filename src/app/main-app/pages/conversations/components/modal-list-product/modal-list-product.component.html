@@ -1,62 +1,68 @@
 
-<div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2">
+<div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
   <div class="flex gap-x-2">
       <tds-form-field class="w-full">
-          <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" #innerText />
+          <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off"  [tdsInputDebounce]="750" [(ngModel)]="textSearchProduct"
+          [ngModelOptions]="{standalone: true}" (inputKeyup)="onSearchProduct($event)"/>
           <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
   </div>
-  <div class="w-full h-full">
-      <tds-table #basicTable
+  <div class="h-[600px] max-h-[600px] w-full" >
+      <tds-table #basicTable class="w-full h-full"
           [listData]="lstOfData"
-          [scroll]="{y:'50vh',x:'hidden'}"
-          [showPagination]="false"
+          [scroll]="{y:'auto'}"
+          [(pageSize)]="pageSize"
+          [(pageIndex)]="pageIndex"
+          [showSizeChanger]="true"
           [frontPagination]="false"
-          [virtualItemSize]="20"
+          [total]="count"
           [loading]="isLoading"
-          [virtualForTrackBy]="trackByIndex">
+          (clickRefresh)="refreshData()"
+          (queryParams)="onQueryParamsChange($event)">
           <thead>
               <tr>
-                  <th width="60px">Ảnh</th>
-                  <th width="220px">Tên sản phẩm</th>
-                  <th width="80px">Đơn vị</th>
-                  <th width="96px">Giá</th>
-                  <th width="45px"></th>
+                  <th width="400px">Sản phẩm</th>
+                  <th>Đơn vị</th>
+                  <th>Giá</th>
+                  <th>Thao tác</th>
               </tr>
           </thead>
           <tbody>
-              <ng-template tds-virtual-scroll let-data let-index="index" >
-                  <tr class="group" *ngIf="data">
-                      <td>
-                          <div>
-                              <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
-                              </tds-avatar>
-                          </div>
-                      </td>
-                      <td>
-                          <div class="flex flex-col">
-                              <span class="text-body-2">{{ data.NameGet }}</span>
-                              <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                                <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
-                              </span>
-                              <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
-                                <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
-                              </span>
-                          </div>
-                      </td>
-                      <td class="text-body-2">{{ data.UOMName }}</td>
-                      <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
-                      <td>
-                          <button type="button" title="Thêm sản phẩm vào đơn hàng" tds-button-icon color="primary" size="sm" (click)="addItem(data)">
-                              <span class="flex items-center">
-                                  <i class="tdsi-arrow-right-line"></i>
-                              </span>
-                          </button>
-                      </td>
-                  </tr>
-              </ng-template>
+            <tr *ngFor="let data of basicTable.data; let index = index">
+                <td>
+                <div class="flex gap-x-2 items-center">
+                    <div>
+                        <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
+                        </tds-avatar>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-body-2">{{ data.NameGet }}</span>
+                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                        <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
+                        </span>
+                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                        <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
+                        </span>
+                    </div>
+                </div>
+                </td>
+                <td class="text-body-2">{{ data.UOMName }}</td>
+                <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                <td>
+                <div>
+                    <button type="button" title="Thêm sản phẩm vào đơn hàng" tds-button-outline color="secondary" size="sm" (click)="addItem(data)">
+                        <span class="flex items-center text-primary-1">
+                            <i class="tdsi-add-fill mr-2 text-xl leading-none"></i>Thêm vào
+                        </span>
+                    </button>
+                </div>
+                </td>
+            </tr>
           </tbody>
       </tds-table>
   </div>
+</div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button color="secondary" (click)="onCancel()">Đóng</button>
 </div>
 

@@ -1,7 +1,10 @@
-import { ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { InitSaleDTO } from './../../../../dto/setting/setting-sale-online.dto';
-import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
-import { Subject, Observable, takeUntil, finalize, map } from 'rxjs';
+import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
+import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
+import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
+import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { takeUntil, finalize } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -14,7 +17,7 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
 import { TDSMessageService } from 'tds-ui/message';
@@ -28,17 +31,16 @@ import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { GetInventoryDTO, ProductTemplateDTO } from 'src/app/main-app/dto/product/product.dto';
+import { GetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
-import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { CsOrder_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
-import { CsOrder_PrepareModelHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-order.handler';
+import { CsOrder_PrepareModelHandler, InsertFromPostDto } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-order.handler';
 import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from '@app/dto/carrierV2/delivery-carrier-response.dto';
 import { AshipGetInfoConfigProviderDto } from '@app/dto/carrierV2/aship-info-config-provider-data.dto';
 import { CalculatorListFeeDTO } from '@app/dto/fastsaleorder/calculate-listFee.dto';
@@ -52,8 +54,14 @@ import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-
 import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SharedService } from '@app/services/shared.service';
-import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CreateFastSaleOrderDTO } from '@app/dto/saleonlineorder/create-fastsaleorder.dto';
+import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
+import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { OdataSaleOnline_Facebook_CommentDto, SaleOnline_Facebook_CommentDto } from '@app/dto/coversation-order/saleonline-facebook-comment.dto';
+import { FacebookCommentService } from '@app/services/facebook-comment.service';
+import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 
 @Component({
   selector: 'conversation-order',
@@ -61,10 +69,11 @@ import { CreateFastSaleOrderDTO } from '@app/dto/saleonlineorder/create-fastsale
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent implements OnInit {
+export class ConversationOrderComponent implements OnInit, OnChanges {
 
-  @Input() omcs_Item!: ChatomniConversationItemDto;
+  @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
+  @Input() type!: string;
 
   isLoading: boolean = false;
   isEditPartner: boolean = false;
@@ -75,6 +84,7 @@ export class ConversationOrderComponent implements OnInit {
   isLoadingProduct: boolean = false;
 
   lstUser!: Array<ApplicationUserDTO>;
+  users!: Array<ApplicationUserDTO>;
   lstCarrier!: DeliveryCarrierDTOV2[];
 
   saleConfig!: InitSaleDTO;
@@ -87,7 +97,7 @@ export class ConversationOrderComponent implements OnInit {
   saleModel!: FastSaleOrder_DefaultDTOV2;
   enableInsuranceFee: boolean = false;
   userInit!: UserInitDTO;
-  lstProductSearch: ProductDTOV2[] = [];
+  lstProductSearch: ProductDTOV2[] = [{} as any];
 
   //TODO: dữ liệu aship v2
   shipExtraServices: ShipServiceExtra[] = [];
@@ -119,9 +129,13 @@ export class ConversationOrderComponent implements OnInit {
   _street!: string;
 
   lstInventory!: GetInventoryDTO;
+  so_FacebookComments!: SaleOnline_Facebook_CommentDto[];
+  saleOnlineSettings!: SaleOnlineSettingDTO;
+  insertFromPostModel!: InsertFromPostDto;
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
+    private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
     private applicationUserService: ApplicationUserService,
     private modal: TDSModalService,
     private generalConfigsFacade: GeneralConfigsFacade,
@@ -145,16 +159,22 @@ export class ConversationOrderComponent implements OnInit {
     private updateShipExtraHandler: UpdateShipExtraHandler,
     private updateShipServiceExtrasHandler: UpdateShipServiceExtrasHandler,
     private updateShipmentDetailAshipHandler: UpdateShipmentDetailAshipHandler,
-    private so_PrepareFaseSaleOrderHandler: SO_PrepareFaseSaleOrderHandler,
+    private so_PrepareFastSaleOrderHandler: SO_PrepareFastSaleOrderHandler,
     private csOrder_PrepareModelHandler: CsOrder_PrepareModelHandler,
     private viewContainerRef: ViewContainerRef,
-    private destroy$: TDSDestroyService) {
+    private facebookCommentService: FacebookCommentService,
+    private destroy$: TDSDestroyService,
+    private productTemplateUOMLineService: ProductTemplateUOMLineService,
+    private omniEventEmiter: ChatomniEventEmiterService) {
   }
 
   ngOnInit(): void {
-    this.loadData();
+    if(this.conversationInfo && this.team && this.type) {
+        this.loadData(this.conversationInfo);
+    }
 
     this.loadSaleConfig();
+    this.loadSaleOnineSettingConfig();
     this.loadUsers();
     this.loadUserLogged();
     this.loadCurrentCompany();
@@ -164,24 +184,108 @@ export class ConversationOrderComponent implements OnInit {
     this.eventEmitter();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
+        this.validateData();
+
+        let x = {...changes["conversationInfo"].currentValue};
+        this.loadData(x);
+    }
+  }
+
   eventEmitter(){
-    this.conversationOrderFacade.onAddProductOrder$.subscribe(res=>{
-        this.selectProduct(res);
+    // TODO: thêm mới sản phẩm
+    this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.selectProduct(res);
+          let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId);
+
+          if(index > -1){
+              this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
+              `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
+          }
+      }
+    });
+
+    // TODO: cập nhật đơn hàng từ conversation-partner
+    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (partner: ConversationPartnerDto) => {
+          this.quickOrderModel = {...this.csOrder_FromConversationHandler.updateOrderFromTabPartner(this.quickOrderModel, partner)}
+      }
+    })
+
+    //TODO: tạo đơn hàng từ comment bài viết, sử dụng insertFromPost
+    this.conversationOrderFacade.loadInsertFromPostFromComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataItemDto) => {
+        if(res) {
+            this.validateData();
+
+            this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromPost(res, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
+            if(!this.insertFromPostModel.UserId) {
+                this.insertFromPostModel.UserId = this.userInit.Id;
+            }
+
+            //TODO: thực hiện call API insertfrompost ,ko tạo hóa đơn
+            this.insertFromPost(this.insertFromPostModel, res);
+
+            this.facebookCommentService.saleOnline_Facebook_Comment(res.UserId, res.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (comments: OdataSaleOnline_Facebook_CommentDto) => {
+                  if(comments && comments.value) {
+                      this.so_FacebookComments = [...comments.value];
+                  }
+              }
+            });
+        }
+      }
+    })
+
+    // TODO: load thông tin đơn hàng khi click mã đơn hàng từ danh sách comment bài viết
+    this.conversationOrderFacade.loadOrderFromCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res && res.orderId && res.comment) {
+
+            this.validateData();
+            this.conversationInfo = res.comment as ChatomniConversationInfoDto;
+
+            this.insertFromPostModel = this.csOrder_PrepareModelHandler.prepareInsertFromPost(res.comment, this.saleOnlineSettings, this.companyCurrents) as InsertFromPostDto;
+            if(!this.insertFromPostModel.UserId) {
+                this.insertFromPostModel.UserId = this.userInit.Id;
+            }
+
+            this.isLoading = true;
+            this.saleOnline_OrderService.getById(res.orderId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (obs: any) => {
+                  if(obs) {
+                      delete obs['@odata.context'];
+                      this.quickOrderModel = {...obs};
+                      this.mappingAddress(this.quickOrderModel);
+                  }
+                  this.isLoading = false;
+              },
+              error: (error: any) => {
+                  this.isLoading = false;
+                  this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+              }
+            })
+        }
+      }
+    })
+
+    //TODO: Cập nhật địa chỉ từ tds-conversation-item-v2 khi lưu chọn địa chỉ
+    this.omniEventEmiter.selectAddressEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (result: ResultCheckAddressDTO)=>{
+        let data = this.csOrder_SuggestionHandler.onLoadSuggestion(result, this.quickOrderModel);
+          this.quickOrderModel = data;
+          this.mappingAddress(this.quickOrderModel);
+      }
     })
   }
 
-  loadData() {
+  loadData(conversationInfo: ChatomniConversationInfoDto) {
     this.validateData();
-    this.conversationOrderFacade.onLastOrderCheckedConversation$.pipe(takeUntil(this.destroy$)).subscribe((res: QuickSaleOnlineOrderModel) => {
-       if(res) {
-          this.quickOrderModel = { ... res };
-          this.mappingAddress(this.quickOrderModel);
 
-          if(TDSHelperString.hasValueString(this.quickOrderModel.Code)){
-              this.conversationOrderFacade.onPushLastOrderCode$.emit(this.quickOrderModel.Code);
-          }
-       }
-    })
+    this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
+    this.mappingAddress(this.quickOrderModel);
   }
 
   onSelectOrderFromMessage() {
@@ -219,7 +323,7 @@ export class ConversationOrderComponent implements OnInit {
                 DeliveryPrice: 0
             }, this.saleModel);
 
-            this.saleModel = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(this.saleModel, this.quickOrderModel);
+            this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
             this.coDAmount();
             this.calcTotal();
 
@@ -228,7 +332,7 @@ export class ConversationOrderComponent implements OnInit {
         }
     }, error => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
     });
   }
 
@@ -242,23 +346,18 @@ export class ConversationOrderComponent implements OnInit {
 
   //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
-    if (data.CarrierId && data.Carrier) {
-      let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
+    if (data.Carrier && data.Carrier.ExtraProperties) {
 
+      let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
       this.insuranceInfo = data.ShipmentDetailsAship?.InsuranceInfo || null;
 
       this.configsProviderDataSource = _shipmentDetailsAship.map(x => {
           let detailConfig = data.ShipmentDetailsAship?.ConfigsProvider.find(y => y.ConfigName == x.ConfigName);
-          x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
 
+          x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
           return x;
       });
     }
-  }
-
-  validateData(){
-    (this.quickOrderModel as any) = null;
-    (this.saleModel as any) = null;
   }
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
@@ -294,31 +393,61 @@ export class ConversationOrderComponent implements OnInit {
   }
 
   loadUsers() {
-    this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe(res => {
-        this.lstUser = [...res.value];
+    this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.users = [...res.value];
+          this.lstUser = [...res.value];
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}`);
+      }
     });
   }
 
   loadUserLogged() {
-    this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe(res => {
-        if(res) {
-            this.userInit = res || {};
-            if(this.userInit?.Company?.Id) {
+    this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.userInit =  {...res};
+          if(this.userInit?.Company?.Id) {
               this.loadInventoryWarehouseId(this.userInit?.Company?.Id);
-            }
-        }
+          }
+      },
+      error: (error: any) => {
+        this.message.error(`${error?.error?.message}`);
+      }
     })
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe(res => {
-        this.saleConfig = res;
+    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.saleConfig = {...res};
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}`);
+      }
+    });
+  }
+
+  loadSaleOnineSettingConfig() {
+    this.generalConfigsFacade.getSaleOnineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+            this.saleOnlineSettings = {...res};
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}`);
+      }
     });
   }
 
   loadCarrier() {
-    this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
-        this.lstCarrier = [...res.value];
+    this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstCarrier = [...res.value];
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}`);
+      }
     })
   }
 
@@ -386,9 +515,23 @@ export class ConversationOrderComponent implements OnInit {
     }
   }
 
+  assignUser(){
+  }
+
+  searchUser(){
+    let data = this.users;
+    let key = this.keyFilterUser;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstUser = data
+  }
+
   calcFee() {
     if(!this.saleModel.Carrier) {
-      this.message.error('Vui lòng chọn đối tác giao hàng')
+      this.message.error('Vui lòng chờn đối tác giao hàng')
     }
 
     let model = this.saleModel.Carrier as any;
@@ -423,100 +566,209 @@ export class ConversationOrderComponent implements OnInit {
     this.calcFee();
   }
 
+  //TODO: xử ly giống insertfrommessage
+  insertFromPost(model: InsertFromPostDto, comment: ChatomniDataItemDto) {
+    this.isLoading = true;
+    this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: any) => {
+
+            delete res['@odata.context'];
+            this.quickOrderModel = {...res};
+
+            //TODO: trường hợp tạo lần đầu thì gọi in phiếu
+            if(res.IsCreated) {
+                // Check lại hàm này
+                let fbid = model.Facebook_ASUserId;
+                this.saleOnline_OrderService.setCommentOrder(res, fbid);
+
+                if(!this.saleOnlineSettings.isDisablePrint) {
+                    this.orderPrintService.printOrder(res, comment.Message);
+                }
+
+                this.message.success('Tạo đơn hàng thành công');
+            }
+            else
+            if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
+                this.orderPrintService.printOrder(res, comment.Message);
+                this.message.success('Cập nhật đơn hàng thành công');
+            }
+
+            this.isLoading = false;
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'ĝã xảy ra lỗi');
+        }
+    })
+  }
+
+  onInsertFromPost(formAction?: string, type?: string): any {
+    let model1 = this.insertFromPostModel;
+    let model2 = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team);
+
+    let model = Object.assign({}, model1, model2);
+    if(formAction) {
+        model.FormAction = formAction;
+    }
+
+    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+    if(this.isEnableCreateOrder && this.saleModel) {
+        fs_model = {...this.prepareCsFastSaleOrder(model)};
+
+        if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
+            this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+            return false;
+        }
+        if (!TDSHelperString.hasValueString(fs_model.Phone)) {
+            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
+            return false;
+        }
+        if (!TDSHelperString.hasValueString(fs_model.Address)) {
+            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+            return false;
+        }
+    }
+
+    this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          this.quickOrderModel = {...res};
+
+          if(!this.isEnableCreateOrder && type == 'print') {
+              this.orderPrintService.printOrder(res);
+          }
+
+          if(this.isEnableCreateOrder) {
+              // call api tạo hóa đơn
+              fs_model.SaleOnlineIds = [res.Id];
+              this.createFastSaleOrder(fs_model, type);
+          } else {
+              this.isLoading = false;
+              this.message.success('Cập nhật đơn hàng thành công');
+          }
+
+          // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
+          this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
   onSave(formAction?: string, type?: string): any {
-      let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team);
+    let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team);
+    if(TDSHelperString.hasValueString(formAction)) {
+        model.FormAction = formAction;
+    }
 
-      if(TDSHelperString.hasValueString(formAction)) {
-          model.FormAction = formAction;
-          this.saleModel.FormAction = formAction;
-      }
+    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+    if(this.isEnableCreateOrder && this.saleModel) {
+        fs_model = {...this.prepareCsFastSaleOrder(model)};
 
-      if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
-          this.message.error('Vui lòng thêm sản phẩm')
-          return false;
-      }
-
-      if(this.isEnableCreateOrder) {
-
-        if (!TDSHelperArray.hasListValue(this.saleModel.OrderLines)) {
-            this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+        if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
+            this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
             return false;
         }
-        if (!this.saleModel.Phone) {
-            this.notification.warning( 'Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
+        if (!TDSHelperString.hasValueString(fs_model.Phone)) {
+            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
             return false;
         }
-        if (!this.saleModel.Address) {
-            this.notification.warning( 'Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+        if (!TDSHelperString.hasValueString(fs_model.Address)) {
+            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
             return false;
         }
+    }
 
-        this.updateShipExtras();
-        this.updateShipServiceExtras();
-        this.updateShipmentDetailsAship();
-      }
-
-      this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-
+    this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
           if(!this.isEnableCreateOrder && type) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
           }
 
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
-              this.createFastSaleOrder(this.saleModel, type);
-          } else {
+              fs_model.SaleOnlineIds = [res.Id];
+              this.createFastSaleOrder(fs_model, type);
+          }
+          else {
               this.isLoading = false;
-              this.message.success('Thao tác thành công');
+              if(model.Id && model.Code) {
+                  this.message.success('Cập nhật đơn hàng thành công');
+              } else {
+                  this.message.success('Tạo đơn hàng thành công');
+              }
           }
 
           // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
           this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
-        }, error => {
-
+      },
+      error: (error: any) => {
           this.isLoading = false;
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      })
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+      }
+    })
   }
 
-  createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type?: string) {
-
-    let model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(data, this.quickOrderModel);
-
-    this.fastSaleOrderService.saveV2(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+  createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
+    this.fastSaleOrderService.saveV2(fs_model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
 
           // TODO: Tạo hóa đơn thành công
           if(res?.Success) {
+              this.shipServices = [];
+              this.shipExtraServices = [];
+              delete this.saleModel.Ship_ServiceId;
+              delete this.saleModel.Ship_ServiceName;
 
-            this.shipServices = [];
-            this.shipExtraServices = [];
-            delete this.saleModel.Ship_ServiceId;
-            delete this.saleModel.Ship_ServiceName;
+              if(res.Message) {
+                  this.notification.warning('Tạo hóa đơn thành công', res.Message);
+              }
+          }
 
-            if(res.Message) {
-                this.notification.warning('Tạo hóa đơn thành công', res.Message);
-            }
-        }
+          // TODO: trường hợp gửi vận đơn lỗi
+          if(!res?.Success && res.Message) {
+              this.notification.warning('Lỗi gửi vận đơn', res.Message);
+          }
 
-        // TODO: trường hợp gửi vận đơn lỗi
-        if(!res?.Success && res.Message) {
-            this.notification.warning( 'Lỗi gửi vận đơn', res.Message);
-        }
+          if(res && !res.Message ) {
+            this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
+          }
 
-        if(res && !res.Message ) {
-          this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
-        }
+          if(type && res) {
+              this.printOrder(type, res);
+          }
 
-        if(type && res) {
-            this.printOrder(type, res);
-        }
+          this.isLoading = false;
+          this.isEnableCreateOrder = false;
+          this.saleModel = {} as any;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          if(this.quickOrderModel.Id) {
+              this.message.success('Cập nhật đơn hàng thành công');
+          } else {
+              this.message.success('Tạo đơn hàng thành công');
+          }
 
-        this.isLoading = false;
-      }, error => {
+          this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
+      }
+    });
+  }
 
-        this.isLoading = false;
-        this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
-      });
+  prepareCsFastSaleOrder(model: any): any {
+    //TODO: gán model cho tạo hóa đơn
+    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+
+    this.updateShipExtras();
+    this.updateShipServiceExtras();
+    this.updateShipmentDetailsAship();
+
+    fs_model = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
+    fs_model.FormAction = model.FormAction;
+
+    return {...fs_model};
   }
 
   printOrder(type?: string, res?: CreateFastSaleOrderDTO) {
@@ -548,7 +800,7 @@ export class ConversationOrderComponent implements OnInit {
   // confirmShipService(carrier: TDSSafeAny) {
   //   this.modal.info({
   //     title: 'Cảnh báo',
-  //     content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
+  //     content: 'ĝối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
   //     onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err);}),
   //     onCancel:()=>{},
   //     okText: "Ok",
@@ -559,7 +811,7 @@ export class ConversationOrderComponent implements OnInit {
   showModalAddProduct() {
     const modal = this.modal.create({
         title: 'Thêm sản phẩm',
-        content: TpageAddProductComponent,
+        content: ModalProductTemplateComponent,
         size: "xl",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
@@ -570,24 +822,9 @@ export class ConversationOrderComponent implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
         if(TDSHelperObject.hasValue(result)) {
 
-            let data = result[0] as ProductTemplateDTO;
-            let x: Detail_QuickSaleOnlineOrder = {
-              Quantity: 1,
-              Price: data.ListPrice,
-              ProductId: data.Id,
-              ProductName: data.Name,
-              ProductNameGet: data.NameGet,
-              ProductCode: data.DefaultCode,
-              UOMId: data.UOMId,
-              UOMName: data.UOMName,
-              Note: null,
-              Factor: 1,
-              OrderId: this.quickOrderModel.Id,
-              ImageUrl: data.ImageUrl,
-              Priority: 0,
-            } as Detail_QuickSaleOnlineOrder;
-
-            this.quickOrderModel.Details.push(x);
+            let data = result[0] as ProductTemplateV2DTO;
+            let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'create_template');
+            this.quickOrderModel.Details = [...this.quickOrderModel.Details, x];
 
             this.coDAmount();
             this.calcTotal();
@@ -595,9 +832,37 @@ export class ConversationOrderComponent implements OnInit {
     })
   }
 
+  mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu
+
+    //data sẽ là ProductDTOV2 | ProductTemplateV2DTO
+    let model : Detail_QuickSaleOnlineOrder = {
+      Quantity: 1,
+      Price: data.Price,
+      ProductId: data.Id,
+      ProductName: data.Name,
+      ProductNameGet: data.NameGet,
+      ProductCode: data.DefaultCode,
+      UOMId: data.UOMId,
+      UOMName: data.UOMName,
+      Note: null,
+      Factor: 1,
+      OrderId: this.quickOrderModel.Id,
+      ImageUrl: data.ImageUrl,
+      Priority: 0,
+    } as Detail_QuickSaleOnlineOrder;
+
+    // TODO: trường hợp thêm mới từ product-template
+    if(type == 'create_template') {
+      model.ProductId = data.VariantFirstId;
+      model.Price = data.ListPrice;
+    }
+
+    return {...model};
+  }
+
   showModalAddPromotion(){
     // this.modal.create({
-    //   title: 'Chọn khuyến mãi',
+    //   title: 'Chờn khuyến mãi',
     //   content: ModalApplyPromotionComponent,
     //   size: "lg",
     //   viewContainerRef: this.viewContainerRef
@@ -608,7 +873,7 @@ export class ConversationOrderComponent implements OnInit {
 
   showModalConfigProduct() {
     this.modal.create({
-        title: 'Chọn bảng giá',
+        title: 'Chờn bảng giá',
         content: TpageConfigProductComponent,
         size: "lg",
         viewContainerRef: this.viewContainerRef
@@ -617,7 +882,7 @@ export class ConversationOrderComponent implements OnInit {
 
   showModalListProduct(){
     const modal = this.modal.create({
-        title: 'Danh sách sản phẩm',
+        title: 'Chờn sản phẩm',
         content: ModalListProductComponent,
         viewContainerRef: this.viewContainerRef,
         size: 'xl'
@@ -625,33 +890,20 @@ export class ConversationOrderComponent implements OnInit {
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: DataPouchDBDTO) =>{
       if(TDSHelperObject.hasValue(res)) {
-          this.selectProduct(res);
+          // this.selectProduct(res);
       }
     });
   }
 
   selectProduct(item: DataPouchDBDTO) {
-    let exist = this.quickOrderModel.Details.filter(a => a.Id === item.Id)[0];
-    if(!exist) {
-      let x: Detail_QuickSaleOnlineOrder = {
-          Quantity: 1,
-          Price: item.Price,
-          ProductId: item.ProductTmplId,
-          ProductName: item.Name,
-          ProductNameGet: item.NameGet,
-          ProductCode: item.DefaultCode,
-          UOMId: item.UOMId,
-          UOMName: item.UOMName,
-          Note: null,
-          Factor: item.Factor,
-          OrderId: this.quickOrderModel.Id,
-          ImageUrl: item.ImageUrl,
-          Priority: 0,
-      } as Detail_QuickSaleOnlineOrder;
-      this.quickOrderModel.Details.push(x);
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId);
+    if(index < 0) {
+      let data = {...item} as ProductDTOV2;
 
+      let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
+      this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
     } else {
-      exist.Quantity = exist.Quantity + 1;
+      this.quickOrderModel.Details[index].Quantity += 1;
     }
 
     this.coDAmount();
@@ -701,12 +953,14 @@ export class ConversationOrderComponent implements OnInit {
 
   changeDiscount(event: any) {
     if (event) {
+      this.saleModel.Discount = event;
       this.calcTotal();
     }
   }
 
   changeDecreaseAmount(event: any) {
     if (event) {
+      this.saleModel.DecreaseAmount = event;
       this.calcTotal();
     }
   }
@@ -751,8 +1005,6 @@ export class ConversationOrderComponent implements OnInit {
     }
   }
 
-
-
   closeSearchProduct(){
     this.textSearchProduct = '';
   }
@@ -768,16 +1020,14 @@ export class ConversationOrderComponent implements OnInit {
     let filterObj: FilterObjDTO = {
       searchText: textSearch,
     }
-    let pageSize = 20;
-    let pageIndex = 1;
+    let top = 20;
+    let skip = 0;
 
-    let filters = this.odataProductService.buildFilter(filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-
-    this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
+    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch)
+      .pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoadingProduct = false ))
       .subscribe((res: ODataProductDTOV2) => {
-        this.lstProductSearch = [...res.value]
-    },err=>{
+           this.lstProductSearch = [...res.value]
+      },err =>{
         this.message.error(err.error? err.error.message: Message.CanNotLoadData);
     });
   }
@@ -788,12 +1038,19 @@ export class ConversationOrderComponent implements OnInit {
     });
   }
 
-  pushItemProduct(item: any) {
-  }
+  pushItemProduct(data: ProductDTOV2) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId);
+    if (index < 0){
+        let item = this.mappingDetailQuickSaleOnlineOrder(data);
 
-  onLoadSuggestion(item: ResultCheckAddressDTO) {
-    let data = this.csOrder_SuggestionHandler.onLoadSuggestion(item, this.quickOrderModel);
-    this.quickOrderModel = data;
+        this.quickOrderModel.Details = [...this.quickOrderModel.Details, item];
+    } else{
+        this.quickOrderModel.Details[index].Quantity += 1;
+    }
+
+    this.closeSearchProduct();
+    this.calcTotal();
+    this.coDAmount();
   }
 
   mappingAddress(data: QuickSaleOnlineOrderModel) {
@@ -823,6 +1080,7 @@ export class ConversationOrderComponent implements OnInit {
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;
         }
+
         this.coDAmount();
         this.calcTotal();
     }
@@ -843,25 +1101,25 @@ export class ConversationOrderComponent implements OnInit {
   prepareModelFeeV2() {
       let companyId = this.saleConfig.configs.CompanyId;
 
-      let model = this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel,  companyId, this.insuranceInfo );debugger
+      let model = this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel,  companyId, this.insuranceInfo );
       return model;
   }
 
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
     if(!this.saleModel.Carrier) {
-        return this.message.error('Vui lòng chọn  đối tác giao hàng');
+        return this.message.error('Vui lòng chờ đối tác giao hàng');
     }
 
     if (!this.saleModel) {
-        return this.message.error('Vui lòng chọn nhập khối lượng');
+        return this.message.error('Vui lòng chờ nhập khối lượng');
     }
 
     let model = this.prepareModelFeeV2();
     this.isLoading = true;
 
-    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-          if(res) {
+    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && !res.error) {
 
               this.configsProviderDataSource = [...res.configs];
 
@@ -874,15 +1132,18 @@ export class ConversationOrderComponent implements OnInit {
 
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
-          } else {
-            this.message.error(res);
+          }
+          else {
+              this.message.error(res.error? res.error.message: 'Lỗi chọn đối tác');
           }
 
           this.isLoading = false;
-      }, error => {
+      },
+      error: (error: any) => {
           this.isLoading = false;
           this.message.error(error.error.message || error.error.error_description);
-      })
+      }
+    })
 
   }
 
@@ -911,6 +1172,42 @@ export class ConversationOrderComponent implements OnInit {
     if (this.configsProviderDataSource) {
       this.saleModel = this.updateShipmentDetailAshipHandler.so_updateShipmentDetailAship(this.configsProviderDataSource, this.insuranceInfo, this.saleModel);
     }
+  }
+
+  showModalSuggestAddress(){
+    let modal =  this.modal.create({
+        title: 'Thêm địa chỉ',
+        content: ModalAddAddressV2Component,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          _cities : this._cities,
+          _districts: this._districts,
+          _wards: this._wards,
+          _street: this._street,
+        }
+      });
+
+    modal.afterClose.subscribe({
+      next: (result: ResultCheckAddressDTO) => {
+        if(result){
+          let data = this.csOrder_SuggestionHandler.onLoadSuggestion(result, this.quickOrderModel);
+          this.quickOrderModel = data;
+          this.mappingAddress(this.quickOrderModel);
+        }
+      }
+    })
+  }
+
+  validateData(){
+    this.isEditPartner = false;
+    (this.conversationInfo as any) = null;
+    (this.quickOrderModel as any) = null;
+    (this.saleModel as any) = null;
+    (this._cities as any) = null;
+    (this._districts as any) = null;
+    (this._wards as any) = null;
+    (this._street as any) = null;
   }
 
 }

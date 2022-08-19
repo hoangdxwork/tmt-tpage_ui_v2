@@ -1,4 +1,3 @@
-import { tShopPostTypePipe } from './tshop-post-type.pipe';
 import { ChatomniFacebookType, ChatomniTShopType } from './fb-post-type.pipe';
 import { GetStatusNamePipe } from './get-status-name.pipe';
 import { SelectMultipleValuePipe } from './select-multiple-value.pipe';

@@ -1,3 +1,7 @@
+import { ConversationService } from './../../services/conversation/conversation.service';
+import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
+import { ChatomniMessageFacade } from './../../services/chatomni-facade/chatomni-message.facade';
+import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
@@ -141,7 +145,11 @@ const SERVICES = [
   ConversationDataFacade,
   DraftMessageService,
   ConversationEventFacade,
-  ConversationOrderFacade
+  ConversationOrderFacade,
+  ChatomniMessageService,
+  ChatomniMessageFacade,
+  ActivityMatchingService,
+  ConversationService
 ]
 
 @NgModule({

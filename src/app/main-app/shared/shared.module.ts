@@ -1,3 +1,4 @@
+import { TableDetailReportComponent } from './table-detail-report/table-detail-report.component';
 import { TDSSwitchModule } from 'tds-ui/switch';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -12,7 +13,7 @@ import { TpageMenuItemComponent } from './tpage-menu-item/tpage-menu-item.compon
 import { SendMessageComponent } from './tpage-send-message/send-message.component';
 import { PipeModule } from './pipe/pipe.module';
 import { BrowserModule } from '@angular/platform-browser';
-import { TpageAddProductComponent } from './tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from './tpage-add-product/modal-product-template.component';
 import { TpageAddCategoryComponent } from './tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from './tpage-search-uom/tpage-search-uom.component';
 import { TpageAddUOMComponent } from './tpage-add-uom/tpage-add-uom.component';
@@ -59,6 +60,7 @@ import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { DirectivesModule } from './directives/directives.module';
+import { SuggestAddressV2Component } from './suggest-address-v2/suggest-address-v2.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -67,7 +69,7 @@ const cmp =[
   SendMessageComponent,
   SuggestAddressComponent,
   TpageMenuItemComponent,
-  TpageAddProductComponent,
+  ModalProductTemplateComponent,
   TpageAddCategoryComponent,
   TpageSearchUOMComponent,
   TpageAddUOMComponent,
@@ -81,7 +83,9 @@ const cmp =[
   QuickReplyButtonComponent,
   OverviewLiveCampaignComponent,
   BillFilterOptionsComponent,
-  TpageNotificationDropdownComponent
+  TpageNotificationDropdownComponent,
+  TableDetailReportComponent,
+  SuggestAddressV2Component
 ]
 
 const SERVICES = [

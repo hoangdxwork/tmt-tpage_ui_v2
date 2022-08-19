@@ -44,12 +44,10 @@ export interface ChatomniConversationItemDto {
   AssignedToId?: any;
   AssignedTo?: any;
   Tags: ChatomniConversationTagDto[];
-  UpdatedTime: Date;
+  UpdatedTime: Date | any;
   LatestMessage?: ChatomniConversationMessageDto;
-
   State?: StateChatbot;
-  HasOrder?: boolean | null;
-  Message?: string; // Không có trong dữ liệu trả về, dùng để hiện thị
+  Message?: string;
 }
 
 export interface PagingTimestamp {
@@ -73,3 +71,22 @@ export interface ChatomniLastMessageEventEmitterDto{
   ConversationId: string,
   LatestMessage?: ChatomniConversationMessageDto;
 }
+
+export interface QueryFilterConversationDto {
+  Keyword?: string;
+  NameStart?: string;
+  UserId?: string;
+  Type?: string;
+  tag_ids: any[];
+  user_ids: any[];
+  start?: Date | any;
+  end?: Date | any;
+  has_phone?: boolean;
+  has_address?: boolean;
+  has_order?: boolean;
+  has_unread?: boolean;
+  not_address?: boolean;
+  not_phone?: boolean;
+  state?: StateChatbot
+}
+

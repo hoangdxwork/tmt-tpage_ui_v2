@@ -20,7 +20,7 @@ import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-categor
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
+import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { PromotionAllDTO } from 'src/app/main-app/dto/configs/promotion/promotion-add.dto';

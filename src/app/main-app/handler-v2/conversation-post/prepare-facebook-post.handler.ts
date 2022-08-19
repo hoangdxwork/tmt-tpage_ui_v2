@@ -32,10 +32,10 @@ export class PrepareFacebookPostHandler {
             result.Note = liveCampaign.Note || null;
         }
     
-        return result;
+        return {...result};
       }
     
-    public prepareFacebookPost(data: MDB_Facebook_Mapping_PostDto) {
+    public prepareFacebookPost(data: MDB_Facebook_Mapping_PostDto): SaleOnlineFacebookPostDTO {
         let model = {} as SaleOnlineFacebookPostDTO;
         model.from = {} as SaleOnlineFacebookFromDTO;
     
@@ -49,6 +49,6 @@ export class PrepareFacebookPostHandler {
         model.picture = data.picture || "";
         model.source = "";
     
-        return model;
+        return {...model};
       }
 }

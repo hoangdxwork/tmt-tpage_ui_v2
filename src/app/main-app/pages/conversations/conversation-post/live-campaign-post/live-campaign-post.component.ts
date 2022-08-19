@@ -26,7 +26,7 @@ export class LiveCampaignPostComponent implements OnInit {
   @Input() post!: ChatomniObjectsItemDto;
   @Input() currentLiveCampaign?: LiveCampaignModel;
   @Input() lstOfData: Array<LiveCampaignModel> = [];
-  @Output() getCurrentLiveCampaign$: EventEmitter<any> = new EventEmitter<any>();
+  @Output() getCurrentLiveCampaign$: EventEmitter<LiveCampaignModel> = new EventEmitter<LiveCampaignModel>();
 
   lstFilter!: Array<LiveCampaignModel>;
   isLoading: boolean = false;
@@ -95,7 +95,7 @@ export class LiveCampaignPostComponent implements OnInit {
     modal.componentInstance?.onSuccess.subscribe(res => {
       if(TDSHelperObject.hasValue(res)) {
         this.currentLiveCampaign = res;
-        this.post.Data = this.fbPostHandler.updateLiveCampaignPost(res, (<MDB_Facebook_Mapping_PostDto> this.post.Data));
+        this.post= this.fbPostHandler.updateLiveCampaignPost(this.post, res);
 
         this.lstOfData.map(data => {
           if(data.Id == res.Id){
@@ -156,18 +156,18 @@ export class LiveCampaignPostComponent implements OnInit {
         });
       },
       err => {
-        this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kế');
+        this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kê');
       })
   }
 
   onSave() {
     let data = this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.post?.Data), this.currentLiveCampaign);
-    let liveCampaignId = this.currentLiveCampaign?.Id || (<MDB_Facebook_Mapping_PostDto> this.post?.Data)?.live_campaign_id;
+    let liveCampaignId = this.currentLiveCampaign?.Id || this.post?.LiveCampaignId;
     
     this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.message.success(Message.UpdatedSuccess);
 
-      this.post.Data = this.fbPostHandler.updateLiveCampaignPost(res, (<MDB_Facebook_Mapping_PostDto> this.post.Data));
+      this.post = this.fbPostHandler.updateLiveCampaignPost(this.post, res);
       this.getCurrentLiveCampaign$.emit(this.currentLiveCampaign);
       this.modalRef.destroy(null);
 

@@ -8,9 +8,9 @@ import { CommonService } from '../../services/common.service';
 import { debounceTime, finalize, map, takeUntil } from 'rxjs/operators';
 import { fromEvent, Subject } from 'rxjs';
 import { orderBy as _orderBy } from 'lodash';
-import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
+import { ProductTemplateV2DTO } from '../../dto/product-template/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
-import { TpageAddProductComponent } from '../tpage-add-product/tpage-add-product.component';
+import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
 import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
@@ -38,6 +38,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   indexDbProductCount: number = -1;
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
+  search: boolean = false;
 
   cacheObject: KeyCacheIndexDBDTO = {
     cacheCount: -1,
@@ -203,8 +204,12 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   showModalAddProduct() {
     const modal = this.modalService.create({
       title: 'Thêm sản phẩm',
-      content: TpageAddProductComponent,
+      content: ModalProductTemplateComponent,
       size: "xl",
+      bodyStyle: {
+        padding : '0px'
+      },
+      centered: true,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         typeComponent: 'lst-product-tmp',
@@ -301,6 +306,10 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     this.keyFilter = ev.value;
     this.loadDataTable();
     this.isLoading = false;
+  }
+
+  onSearch() {
+    this.search = !this.search
   }
 
   ngOnDestroy(): void {

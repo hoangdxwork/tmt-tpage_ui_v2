@@ -106,7 +106,6 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   initialize(){
-    this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
     // this.team = this.crmService.getCurrentTeam() as any;
     // this.conversationPostFacade.setPartnerSimplest(this.team);
 
@@ -130,19 +129,18 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
     this.facebookScanData$ = this.sgRConnectionService._onFacebookScanData$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(res.data) {
-        let data = Object.assign({}, res.data);
-        if(res.type == "update_scan_feed") {
-          if(data.comment?.object?.id == this.post?.fbid) {
-            this.data.Items = [...[data.comment], ...this.data.Items];
+          let data = Object.assign({}, res.data);
+          if(res.type == "update_scan_feed") {
+            if(data.comment?.object?.id == this.post?.fbid) {
+                this.data.Items = [...[data.comment], ...this.data.Items];
+            }
           }
-        }
       }
     });
   }
 
   onSetCommentOrders(){
-    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders
-      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res) {
           let data = res.data;
 
@@ -161,7 +159,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         }
     });
 
-    this.facebookPostService.onRemoveOrderComment
+    this.facebookPostService.onRemoveOrderComment$
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         let keys = Object.keys(this.commentOrders);
         keys.forEach(key => {
@@ -169,8 +167,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         })
     })
 
-    this.sgRConnectionService._onSaleOnlineOrder$
-      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.sgRConnectionService._onSaleOnlineOrder$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res.data) {
           let data = res.data;
           let userId = data.facebook_ASUserId;

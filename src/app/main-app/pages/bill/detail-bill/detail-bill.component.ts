@@ -93,7 +93,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         }
 
         this.dataModel = res;
-        // console.log(this.dataModel)
+        console.log(this.dataModel)
 
         for (var item of this.dataModel.OrderLines) {
           this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
@@ -240,7 +240,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     let that = this;
     that.isProcessing = true;
 
-    this.modalService.success({
+    this.modalService.warning({
       title: 'Hủy hóa đơn',
       content: 'Bạn có muốn xác nhận hủy hóa đơn',
       onOk: () => {

@@ -1,3 +1,5 @@
+import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
+import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { PrepareFacebookPostHandler } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { FaceBookPostItemHandler } from './../../handler-v2/conversation-post/facebook-post-item.handler';
@@ -8,7 +10,6 @@ import { AccountRegisterPaymentService } from './../../services/account-register
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConversationsRoutingModule } from './conversations-routing.module';
-import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { MainSharedModule } from '../../shared/shared.module';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -51,7 +52,6 @@ import { CRMTagService } from '../../services/crm-tag.service';
 import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
-import { PostOrderComponent } from './components/post-order/post-order.component';
 import { ConfigPostOutletComponent } from './components/config-post/config-post-outlet.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
 import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
@@ -138,14 +138,16 @@ import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostV2Component } from './conversation-post/conversation-post-v2.component';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
-import { ConversationPostViewV2Component } from './conversation-post/conversation-post-view-v2.component';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
 import { ObjectFacebookPostComponent } from './conversation-post/objects/object-facebook-post.component';
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
-import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { DrawerDetailBillComponent } from './components/drawer-detail-bill/drawer-detail-bill.component';
+import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
+import { ModalAddAddressV2Component } from './components/modal-add-address-v2/modal-add-address-v2.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -205,16 +207,17 @@ const SERVICES = [
   ChatomniObjectService,
   ChatomniObjectFacade,
   ChatomniCommentFacade,
-  SO_PrepareFaseSaleOrderHandler,
+  SO_PrepareFastSaleOrderHandler,
   ObjectFacebookPostEvent,
   FaceBookPostItemHandler,
   PrepareFacebookPostHandler,
-  PrepareAddCampaignHandler
+  PrepareAddCampaignHandler,
+  CsOrder_FromConversationHandler,
+  ConversationPostEvent
 ]
 
 @NgModule({
   declarations: [
-    ConversationPostComponent,
     ModalImageStoreComponent,
     CurrentConversationItemComponent,
     ConversationOrderComponent,
@@ -233,7 +236,6 @@ const SERVICES = [
     PostCommentGroupComponent,
     PostCommentFilterComponent,
     ManagePostCommentComponent,
-    PostOrderComponent,
     ConfigPostOutletComponent,
     ConversationAllFilterComponent,
     ConversationOrderListComponent,
@@ -257,12 +259,13 @@ const SERVICES = [
     ConversationAllV2Component,
     CurrentConversationItemV2Component,
     ConversationPostV2Component,
-    ConversationPostViewV2Component,
     ConversationPostViewV3Component,
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
     CommentFilterAllComponent,
-    LiveCampaignPostComponent
+    DrawerDetailBillComponent,
+    LiveCampaignPostComponent,
+    ModalAddAddressV2Component
   ],
 
   imports: [
@@ -304,7 +307,8 @@ const SERVICES = [
     TDSEmptyModule,
     TDSUploadModule,
     DirectivesModule,
-    ScrollingModule
+    ScrollingModule,
+    TDSButtonSpitModule
   ],
   providers: [ ...SERVICES]
 })

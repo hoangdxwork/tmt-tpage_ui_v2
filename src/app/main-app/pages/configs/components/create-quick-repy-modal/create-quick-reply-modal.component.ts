@@ -33,9 +33,12 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
   buttonTypeList: Array<TDSSafeAny> = [];
   mediaChannelList: Array<CRMTeamDTO> = [];
   dataMeidaRes: Array<CRMTeamDTO> = [];
-  currentBreadcrumb = 0;
+  selectedIndex = 0;
+  check : boolean = false;
   imageURL = '';
   fileList: TDSUploadFile[] = [];
+  currentItem: any;
+
 
 
   teams$!: Observable<any[]>;
@@ -136,6 +139,8 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
       { id: 'button', value: 'Mẫu nút' },
       { id: 'media', value: 'Mẫu phương tiện' }
     ];
+
+    this.currentItem = this.MessageFormList[0]
 
     this.buttonTypeList = [
       { id: "Post Back", value: "postback" },
@@ -272,8 +277,9 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
     this.onResetMessageFrom();
   }
 
-  getTemplateType(data: string) {
-    this.templateType = data;
+  getTemplateType(data: any) {
+    this.currentItem = data;
+    this.templateType = data.id;
     this.messageStructurePart = 1;
     this.onResetMessageFrom();
     this.createImageForm.controls.image.setValue('')
@@ -431,7 +437,7 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
             this.dataAdvancedTemplate.Pages?.push(model)
           }
         })
-      }     
+      }
       if (this.templateType == 'media' && this.dataAdvancedTemplate.Pages?.length == 0) {
         this.message.error('Vui lòng chọn ít nhất 1 kênh cho mẫu phương tiện');
         return
@@ -465,7 +471,7 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
       }
       this.data.AdvancedTemplate = JSON.stringify(this.dataAdvancedTemplate)
     }
-    
+
     return this.data;
   }
 

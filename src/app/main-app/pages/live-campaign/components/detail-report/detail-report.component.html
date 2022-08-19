@@ -3,20 +3,20 @@
     <div class="h-full w-full flex flex-col gap-y-4">
       <div class="flex gap-x-4 items-center">
         <div class="w-1/4 bg-white rounded-xl">
-          <div class="w-full h-full flex gap-x-6 p-6 items-start">
-            <img src="../../../assets/imagesv2/live-campaign/product.svg" alt="">
+          <div class="w-full h-full flex 2xl:gap-x-6 xl:gap-x-4 p-6 items-start">
+            <img src="../../../assets/imagesv2/live-campaign/product.svg" alt="" class="xl:w-[60px] 2xl:w-[80px]">
 
-            <div class="flex flex-col gap-y-2 text-xl font-semibold w-full">
+            <div class="flex flex-col gap-y-2 2xl:text-xl xl:text-body-1 font-semibold w-full">
               <span>Chờ chốt</span>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
                 <span>{{data?.OrderSummary?.OrderQuantity || 0 | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
                 <span>{{data?.OrderSummary?.ProductQuantity || 0 | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
                 <span class="text-info-500">{{data?.OrderSummary?.TotalAmount || 0 | number}}</span>
               </div>
@@ -25,20 +25,20 @@
         </div>
 
         <div class="w-1/4 bg-white rounded-xl">
-          <div class="w-full h-full flex gap-x-6 p-6 items-start">
-            <img src="../../../assets/imagesv2/live-campaign/money.svg" alt="">
+          <div class="w-full h-full flex 2xl:gap-x-6 xl:gap-x-4 p-6 items-start">
+            <img src="../../../assets/imagesv2/live-campaign/money.svg" alt="" class="xl:w-[60px] 2xl:w-[80px]">
 
-            <div class="flex flex-col gap-y-2 text-xl font-semibold w-full">
+            <div class="flex flex-col gap-y-2 2xl:text-xl xl:text-body-1 font-semibold w-full">
               <span>Chờ thanh toán</span>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
                 <span>{{data?.BillSummary?.OrderQuantity || 0 | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
                 <span>{{data?.BillSummary?.ProductQuantity || 0 | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
                 <span class="text-info-500">{{data?.BillSummary?.TotalAmount || 0 | number}}</span>
               </div>
@@ -47,20 +47,20 @@
         </div>
 
         <div class="w-1/4 bg-white rounded-xl">
-          <div class="w-full h-full flex gap-x-6 p-6 items-start">
-            <img src="../../../assets/imagesv2/live-campaign/turnover.svg" alt="">
+          <div class="w-full h-full flex 2xl:gap-x-6 xl:gap-x-4 p-6 items-start">
+            <img src="../../../assets/imagesv2/live-campaign/turnover.svg" alt="" class="xl:w-[60px] 2xl:w-[80px]">
 
-            <div class="flex flex-col gap-y-2 text-xl font-semibold w-full">
+            <div class="flex flex-col gap-y-2 2xl:text-xl xl:text-body-1 font-semibold w-full">
               <span>Thanh toán</span>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
                 <span>{{data?.PaySummary?.OrderQuantity || 0 | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
                 <span>{{data?.PaySummary?.ProductQuantity || 0 | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
                 <span class="text-info-500">{{data?.PaySummary?.TotalAmount || 0 | number}}</span>
               </div>
@@ -69,20 +69,20 @@
         </div>
 
         <div class="w-1/4 bg-white rounded-xl">
-          <div class="w-full h-full flex gap-x-6 p-6 items-start">
-            <img src="../../../assets/imagesv2/live-campaign/order.svg" alt="">
+          <div class="w-full h-full flex 2xl:gap-x-6 xl:gap-x-4 p-6 items-start">
+            <img src="../../../assets/imagesv2/live-campaign/order.svg" alt="" class="xl:w-[60px] 2xl:w-[80px]">
 
-            <div class="flex flex-col gap-y-2 text-xl font-semibold w-full">
+            <div class="flex flex-col gap-y-2 2xl:text-xl xl:text-body-1 font-semibold w-full">
               <span>Tổng hoá đơn</span>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
                 <span>{{(data?.BillSummary?.OrderQuantity || 0) + (data?.PaySummary?.OrderQuantity || 0) | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
                 <span>{{(data?.BillSummary?.ProductQuantity || 0) + (data?.PaySummary?.ProductQuantity || 0) | number}}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
                 <span class="text-info-500">{{(data?.BillSummary?.TotalAmount || 0) + (data?.PaySummary?.TotalAmount || 0) | number}}</span>
               </div>
@@ -93,119 +93,11 @@
 
       <!-- Danh sách sản phẩm -->
       <div class="flex gap-x-4">
-        <div class="w-2/3 bg-white rounded-xl h-fit">
+        <div class="w-2/3 bg-white rounded-xl h-full">
           <div class="p-4 font-semibold text-xl">
             <span>Sản phẩm</span>
           </div>
-
-          <div class="w-full text-body-2 text-neutral-1-900 h-[430px]">
-            <tds-table #tableReport [showSizeChanger]="true" [frontPagination]="false" [listData]="lstDetails" [scroll]="{y:'auto'}">
-              <thead>
-                <tr>
-                  <th [width]="'6%'">STT</th>
-                  <th [width]="'32%'">Sản phẩm</th>
-                  <th [width]="'21%'">Đơn hàng</th>
-                  <th [width]="'21%'">Số lượng</th>
-                  <th [width]="'21%'">Giá bán</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let detail of lstDetails; let index = index">
-                  <td>
-                    {{ index + 1 }}
-                  </td>
-
-                  <!-- Sản phẩm -->
-                  <td>
-                    <div class="flex gap-x-2 items-center">
-                      <div class="w-1/5">
-                        <tds-avatar size="xl" [shape]="'square'" class="text-white h-[60px] w-[60px]" tdsSrc="{{ detail.ImageUrl }}">
-                        </tds-avatar>
-                      </div>
-
-                      <div class="flex flex-col gap-y-1 cursor-pointer w-4/5">
-                        <span class="font-semibold text-sm">
-                          {{detail.ProductName}}
-                          <span *ngIf="detail.UOMName">({{detail.UOMName}})</span>
-                        </span>
-
-                        <!-- Tags -->
-                        <div *ngIf="detail.Tags" class="flex w-full flex-wrap gap-2">
-                          <tds-tag *ngFor="let item of (detail.Tags | stringToStringArray)" status='primary' tds-tooltip [tooltipTitle]="item" >
-                            <div class="truncate max-w-[100px]">
-                              {{item}}
-                            </div>
-                          </tds-tag>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- Đơn hàng -->
-                  <td>
-                    <div class="flex flex-col gap-y-2">
-                      <div class="flex gap-x-2 items-baseline">
-                        <span>Đơn hàng chờ:
-                          <span class="text-sm font-semibold">{{detail.ListSaleOnlineOrder && detail.ListSaleOnlineOrder.length || 0}}</span>
-                        </span>
-                        <span class="text-info-400 tdsi-user-line text-lg cursor-pointer" (click)="showModalLiveCampaignOrder(detail.ListSaleOnlineOrder)"></span>
-                      </div>
-                      <div class="flex gap-x-2 items-baseline">
-                        <span>Hóa đơn:
-                          <span class="text-sm font-semibold">{{detail.ListFastSaleOrder && detail.ListFastSaleOrder.length || 0}}</span>
-                        </span>
-                        <span class="text-info-400 tdsi-user-line text-lg cursor-pointer" (click)="showModalLiveCampaignBill(detail.ListFastSaleOrder)"></span>
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- Số lượng -->
-                  <td>
-                    <div class="flex flex-col gap-y-2">
-                      <div class="flex gap-x-1 items-baseline">
-                        <span>{{detail.Quantity}}</span>
-                        <span class="text-info-400 tdsi-edit-fill text-lg cursor-pointer" tds-popover (click)="onChangeQuantity(detail, index)"
-                        [popoverVisible]="indClickQuantity == index" popoverTrigger="click"
-                        [popoverContent]="contentQuantity" [popoverBackdrop]="true" popoverPlacement="left"></span>
-
-                        <ng-template #contentQuantity>
-                          <div class="w-96 flex flex-col gap-y-4">
-                            <tds-form-field *ngIf="currentChangeQuantity">
-                              <tds-input-number [min]='0' [step]="1" placeholder="Nhập số lượng" [(ngModel)]="currentChangeQuantity.Quantity">
-                              </tds-input-number>
-                            </tds-form-field>
-                            <div class="flex gap-x-2 justify-end">
-                              <button tds-button-icon color="error" type="button" (click)="onCloseQuantity()">
-                                <span class="flex items-center text-white">
-                                    <i class="tdsi-close-fill"></i>
-                                </span>
-                              </button>
-                              <button tds-button-icon color="primary" type="button" (click)="onSaveQuantity(detail)">
-                                <span class="flex items-center text-white">
-                                    <i class="tdsi-checkbox-check-fill"></i>
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                        </ng-template>
-
-                      </div>
-                      <div class="flex flex-col gap-y-2 text-xs text-neutral-1-400">
-                        <span>Chờ chốt: {{detail.UsedQuantity || 0}}</span>
-                        <span>Đã chốt: {{detail.UsedQuantity || 0}}</span>
-                        <span class="text-info-400 font-semibold">Còn lại: {{detail.UsedQuantity || 0}}</span>
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- Giá bán -->
-                  <td>
-                    <span class="text-sm font-normal">{{detail.Price | number}}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </tds-table>
-          </div>
+          <table-detail-report [liveCampaignId]="liveCampaignId" [lstDetails]="lstDetails"></table-detail-report>
         </div>
 
         <!-- Thông tin -->
@@ -215,34 +107,34 @@
           </div>
 
           <div class="flex flex-col gap-y-4 p-4 bg-white">
-            <div class="flex gap-x-4 items-baseline">
+            <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Tên chiến dịch</span>
               <span class="font-semibold text-sm">{{dataLiveCampaign?.Name}}</span>
             </div>
-            <div class="flex gap-x-4 items-baseline">
+            <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Facebook</span>
               <span class="font-semibold text-sm text-info-500">{{dataLiveCampaign?.Facebook_UserName}}</span>
             </div>
-            <div class="flex gap-x-4 items-baseline">
+            <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Live ID</span>
               <span class="font-semibold text-sm">{{dataLiveCampaign?.Facebook_LiveId}}</span>
             </div>
-            <div class="flex gap-x-4 items-baseline">
+            <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Ngày tạo</span>
               <span class="font-semibold text-sm">{{dataLiveCampaign?.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</span>
             </div>
-            <div class="flex gap-x-4 items-baseline">
+            <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Nhân viên chốt đơn</span>
               <span class="font-semibold text-sm" *ngFor="let user of dataLiveCampaign?.Users; let i = index">
                   {{user.Name}}
                   <span *ngIf="dataLiveCampaign?.Users && dataLiveCampaign.Users.length > (i + 1)">,</span>
               </span>
             </div>
-            <div class="flex gap-x-4 items-baseline">
+            <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Trạng thái xác nhận chốt đơn</span>
               <span class="font-semibold text-sm">{{dataLiveCampaign?.ShowConfig}}</span>
             </div>
-            <div class="flex gap-x-4 items-baseline">
+            <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Ghi chú</span>
               <span class="font-semibold text-sm">{{dataLiveCampaign?.Note}}</span>
             </div>
@@ -252,45 +144,44 @@
             <tds-collapse [expandIconPosition]="'right'" class="bg-white w-full rounded-b-xl">
               <tds-collapse-panel [header]="'Thông tin nâng cao'" [expandedIcon]="'tdsi-arrow-up-line'" [disabled]=false bordered="false">
 
-                <div class="flex flex-col gap-y-4 p-4 bg-white">
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Mẫu tin chốt đơn</span>
+                <div class="flex flex-col gap-y-4 bg-white">
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Mẫu tin chốt đơn</span>
                     <span class="font-semibold text-sm">{{dataLiveCampaign?.ConfirmedOrder_Template?.Name}}</span>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Mẫu tin dự bị</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Mẫu tin dự bị</span>
                     <span class="font-semibold text-sm">{{dataLiveCampaign?.Preliminary_Template?.Name}}</span>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Thời gian tổng hợp (phút)</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Thời gian tổng hợp (phút)</span>
                     <span class="font-semibold text-sm">{{dataLiveCampaign?.ResumeTime}}</span>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Thời gian kết thúc tổng hợp (phút)</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Thời gian kết thúc tổng hợp (phút)</span>
                     <span class="font-semibold text-sm">{{dataLiveCampaign?.EndDate | date: 'dd/MM/yyyy HH:mm'}}</span>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Số tiền cọc bắt buộc</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Số tiền cọc bắt buộc</span>
                     <span class="font-semibold text-sm">{{dataLiveCampaign?.MaxAmountDepositRequired}}</span>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Số tiền tối thiểu đặt cọc</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Số tiền tối thiểu đặt cọc</span>
                     <span class="font-semibold text-sm">{{dataLiveCampaign?.MinAmountDeposit}}</span>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Bật số lượng</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Bật số lượng</span>
                     <tds-checkbox [disabled]="true" [ngModel]="dataLiveCampaign?.EnableQuantityHandling"></tds-checkbox>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Tổng hợp đơn hàng trong thời gian ca làm việc</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Tổng hợp đơn hàng trong thời gian ca làm việc</span>
                     <tds-checkbox [disabled]="true" [ngModel]="dataLiveCampaign?.IsShift"></tds-checkbox>
                   </div>
-                  <div class="flex gap-x-4 items-baseline">
-                    <span class="w-1/3 text-sm font-normal">Không cho phép gán nhân viên vào cuộc hội thoại</span>
+                  <div class="flex gap-x-4 items-center">
+                    <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Không cho phép gán nhân viên vào cuộc hội thoại</span>
                     <tds-checkbox [disabled]="true" [ngModel]="dataLiveCampaign?.IsAssignToUserNotAllowed"></tds-checkbox>
                   </div>
                 </div>
-
               </tds-collapse-panel>
             </tds-collapse>
           </div>

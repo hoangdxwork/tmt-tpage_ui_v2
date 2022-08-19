@@ -52,7 +52,7 @@
                     <thead>
                         <tr>
                             <th width="296px">Nhân viên</th>
-                            <th>
+                            <th class="w-520px">
                                 <div class="flex w-full items-center">
                                     <div *ngFor="let item of listDataWeek" class="w-[14.28%] flex flex-col justify-center items-center">
                                         <span *ngIf="currentDateFormat == item.date" class="text-success-400 font-semibold text-heading-4">{{item.date}}</span>
@@ -76,7 +76,7 @@
                                 </td>
                                 <td class="!align-top">
                                     <div class="flex gap-x-2">
-                                        <div *ngFor="let item of listDataWeek" class=" w-[14.28%] flex flex-col">
+                                        <div *ngFor="let item of listDataWeek" class="w-[200px] flex flex-col">
 
                                             <!-- <div class="flex flex-col gap-y-2" *ngIf="user?.UserShifts?.ShiftId == item.week">
                                                 <div class="flex w-full" *ngFor="let itemTag of user.UserShifts">

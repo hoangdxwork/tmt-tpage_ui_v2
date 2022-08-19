@@ -1,3 +1,5 @@
+import { ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
+import { Tag, MDBByPSIdDTO } from './../../dto/crm-matching/mdb-by-psid.dto';
 import { ChatomniLastMessageEventEmitterDto, ChatomniConversationItemDto, ChatomniTagsEventEmitterDto, ChatomniConversationTagDto } from './../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniFacebookDataDto, ChatomniDataItemDto, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { Injectable, OnDestroy } from "@angular/core";
@@ -6,7 +8,7 @@ import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
-import { MakeActivityItemWebHook } from "@app/dto/conversation/make-activity.dto";
+import { ResponseAddMessCommentDto } from '@app/dto/conversation-all/chatomni/response-mess.dto';
 
 @Injectable()
 
@@ -33,6 +35,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
 
   createDataAttachments(attachment_url: string) {
     const model = {} as any;
+
     if (TDSHelperString.hasValueString(attachment_url)) {
       model["data"] = [];
       model["data"].push({
@@ -41,10 +44,11 @@ export class ChatomniMessageFacade extends BaseSevice  {
           }
       });
     }
-    return model;
+
+    return {...model};
   }
 
-  mappingChatomniDataItemDto(data:MakeActivityItemWebHook){
+  mappingChatomniDataItemDto(data:ResponseAddMessCommentDto){
     let model  = {
       Id: data.id,
       Type: data.type,
@@ -63,22 +67,50 @@ export class ChatomniMessageFacade extends BaseSevice  {
       Error: undefined,
       CreatedBy: data.CreatedBy,
       UserId: data.to_id
-    } as ChatomniDataItemDto
+    } as unknown as ChatomniDataItemDto;
 
-    return model;
+    return  {...model};
   }
 
+  mappingChatomniDataItemDtoV2(data:ResponseAddMessCommentDtoV2){
+    let model  = {
+      Id: data.Id,
+      Type: data.MessageType,
+      IsOwner: data.IsOwner,
+      Data: { ...data.Data } as unknown as ChatomniFacebookDataDto,
+      CreatedTime: data.CreatedTime,
+      Message: data.Message,
+      Status: data.Status as number,
+      Error: data.Error,
+      CreatedBy: data.CreatedBy,
+      UserId: data.UserId
+    } as unknown as ChatomniDataItemDto;
+
+    return  {...model};
+  }
 
   mappingModelTag(tag:TDSSafeAny){
     let model = {
-      Id: tag.Id,
-      Name: tag.Name,
-      Icon: tag.Icon,
-      ColorClass: tag.ColorClassName,
-      CreatedTime: tag.DateCreated
+        Id: tag.Id,
+        Name: tag.Name,
+        Icon: tag.Icon,
+        ColorClass: tag.ColorClassName,
+        CreatedTime: tag.DateCreated
     } as ChatomniConversationTagDto
 
-    return model;
+    return  {...model};
+  }
+
+  mappingModelTagMess(tag:Tag){
+    let model = {
+        Id: tag.id,
+        Name: tag.name,
+        Icon: tag.icon,
+        ColorClass: tag.color_class,
+        CreatedTime: tag.created_time
+    } as ChatomniConversationTagDto
+
+    return  {...model};
   }
 
   mappinglTagsEmiter(data: ChatomniConversationItemDto){
@@ -87,7 +119,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       Tags: data.Tags
     } as ChatomniTagsEventEmitterDto
 
-    return model;
+    return  {...model};
   }
 
   mappinglLastMessageEmiter(ConversationId: string, data: ChatomniDataItemDto){
@@ -99,6 +131,22 @@ export class ChatomniMessageFacade extends BaseSevice  {
       }
     } as ChatomniLastMessageEventEmitterDto
 
-    return model
+    return  {...model};
+  }
+
+  mappingCurrentConversation(res: MDBByPSIdDTO){
+    let model = { ...res } as any
+    model.ConversationId = res.psid
+    model.Name = res.name
+    model.Tags = [];
+
+    if (res.tags && res.tags.length > 0){
+      res.tags.map(x=>{
+        let data = this.mappingModelTagMess(x);
+        model.Tags.push(data);
+      })
+    }
+
+    return  {...model};
   }
 }

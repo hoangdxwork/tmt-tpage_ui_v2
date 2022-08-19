@@ -22,30 +22,26 @@
                     class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
             </ng-template>
         </ng-template>
-        <container-element [ngSwitch]="mdbFbPost.status_type">
-            <ng-container *ngSwitchCase="'added_video'">
-                <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
-                    <div class="tdsi-video-camera-fill text-white leading-none"></div>
-                </div>
-            </ng-container>
-            <ng-container *ngSwitchCase="'added_photos'">
-                <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#3B7AD9] to-[#6EB3F8]">
-                    <div class="tdsi-images-fill text-white leading-none"></div>
-                </div>
-            </ng-container>
-            <ng-container
-                *ngSwitchCase="'mobile_status_update' || 'published_story' || 'shared_story'">
-                <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
-                    <div class="tdsi-facebook-f-fill text-white leading-none"></div>
-                </div>
-            </ng-container>
-            <ng-container *ngSwitchDefault>
-                <div= class="h-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
-                    <div class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">LIVE</div>
-                </div>
-            </ng-container>
-        </container-element>
+
+        <div [ngSwitch]="mdbFbPost.status_type">
+            <div *ngSwitchCase="'added_video'" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                <div class="tdsi-video-camera-fill text-white leading-none"></div>
+            </div>
+
+            <div *ngSwitchCase="'added_photos'" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#3B7AD9] to-[#6EB3F8]">
+                <div class="tdsi-images-fill text-white leading-none"></div>
+            </div>
+
+            <div *ngSwitchCase="'mobile_status_update' || 'published_story' || 'shared_story'" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
+                <div class="tdsi-facebook-f-fill text-white leading-none"></div>
+            </div>
+
+            <div *ngSwitchDefault class="h-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                <div class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">LIVE</div>
+            </div>
+        </div>
     </div>
+    
     <div class="flex items-center w-full">
         <div class="flex items-center gap-x-2 text-neutral-1-400">
             <i class="tdsi-like-line"></i>
@@ -79,17 +75,17 @@
     </span>
 
     <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
-        <div *ngIf="mdbFbPost.live_campaign">
+        <div *ngIf="item.LiveCampaign">
             <tds-tag size="sm" status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
                 (click)="showModalLiveCampaign(item)">
                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
-                    [tooltipTitle]="mdbFbPost.live_campaign.name">
-                    <span class="flex-auto truncate">{{mdbFbPost.live_campaign.name}}</span>
+                    [tooltipTitle]="item.LiveCampaign.Name">
+                    <span class="flex-auto truncate">{{item.LiveCampaign.Name}}</span>
                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                 </span>
             </tds-tag>
         </div>
-        <div *ngIf="!mdbFbPost.live_campaign">
+        <div *ngIf="!item.LiveCampaign">
             <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
                 (click)="openTag(item.Id)"
                 [popoverVisible]="indClickTag == item.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -106,7 +102,7 @@
                   <tds-form-field>
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
                         [(ngModel)]="currentLiveCampaign"
-                        [allowClear]="true" [valuePrimitive]="false" [data]="availableCampaigns"
+                        [allowClear]="true" [valuePrimitive]="false" [data]="lstOfLiveCampaign"
                         [autoClose]="true">
                     </tds-select>
                   </tds-form-field>
@@ -127,7 +123,7 @@
                 </div>
             </ng-template>
         </div>
-        <div *ngIf="mdbFbPost.live_campaign" class="flex">
+        <div *ngIf="item.LiveCampaign" class="flex">
             <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
                 tds-tooltip tooltipTitle="Bật tạo đơn tự động">
                 <i class="tdsi-flash-on-fill text-white leading-5"></i>

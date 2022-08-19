@@ -1,3 +1,4 @@
+import { ComboProductDTO } from './../../dto/product/product-combo.dto';
 import { Injectable } from "@angular/core";
 import { WallPicturesDTO } from "../../dto/attachment/wall-pictures.dto";
 import { ConfigAttributeLine, ConfigProductDefaultDTO, ConfigProductVariant } from "../../dto/configs/product/config-product-default.dto";
@@ -7,12 +8,23 @@ import { ConfigAttributeLine, ConfigProductDefaultDTO, ConfigProductVariant } fr
 })
 export class AddProductHandler {
    
-   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines: ConfigAttributeLine[], listProductVariants: ConfigProductVariant[]) {
+   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines?: ConfigAttributeLine[], listProductVariants?: ConfigProductVariant[], listComboProducts?: ComboProductDTO[]) {
 
       dataModel = {...dataModel,...formModel};
-      dataModel.AttributeLines = listAttributeLines ?? dataModel.AttributeLines;
-      dataModel.ProductVariants = listProductVariants ?? dataModel.ProductVariants;
-      dataModel.ProductVariantCount = listProductVariants?.length ?? dataModel.ProductVariants?.length;
+      
+      if(listAttributeLines){
+         dataModel.AttributeLines = listAttributeLines;
+      }
+
+      if(listProductVariants){
+         dataModel.ProductVariants = listProductVariants;
+         dataModel.ProductVariantCount = listProductVariants?.length;
+      }
+      
+      if(listComboProducts){
+         dataModel.ComboProducts = listComboProducts;
+      }
+      
       dataModel.Images = images || [];
       dataModel.ProductVariants.map(
          (variant)=>{

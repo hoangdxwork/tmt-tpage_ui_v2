@@ -1,6 +1,6 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" >
     <tds-tabset class="bg-transparent">
-        <tds-tab title="Thông tin chung" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200">
+        <tds-tab title="Thông tin chung" clsContent="h-full w-full pb-2.5 px-4 border-t border-neutral-2-200">
             <form class="flex flex-col pt-4" [formGroup]="_form" >
                 <div class="w-full text-body-2 text-neutral-1-900">
                     <div class="grid grid-cols-2 gap-x-8 gap-y-4">
@@ -21,7 +21,7 @@
                                 <tds-form-field>
                                     <tds-label>Mã chốt đơn</tds-label>
                                     <tds-select placeholder='Nhập từ khóa và nhấn [Enter]' [valuePrimitive]="false" valueField="id" textField="name" formControlName="Tags"
-                                        [allowClear]="true" [data]="" mode="tags">                        
+                                        [allowClear]="true" [data]="" mode="tags">
                                     </tds-select>
                                 </tds-form-field>
                             </div>
@@ -211,7 +211,7 @@
                           </tbody>
                         </tds-table>
                       </div>
-                </div>              
+                </div>
             </div>
             <ng-template #tableAttribute>
                 <div class="flex flex-col gap-y-8 justify-center items-center">

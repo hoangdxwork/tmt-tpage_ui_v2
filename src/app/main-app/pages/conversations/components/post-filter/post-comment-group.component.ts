@@ -70,7 +70,7 @@ export class PostCommentGroupComponent implements  OnDestroy, OnChanges {
   }
 
   editOrder(id: any, item: CommentByPost){
-    this.conversationPostFacade.onCommentSelected$.emit(item);
+    // this.conversationPostFacade.onCommentSelected$.emit(item);
   }
 
   onGroupComment(item: any){
