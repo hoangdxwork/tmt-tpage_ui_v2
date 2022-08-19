@@ -120,22 +120,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   eventEmitter(){
     this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
       next: res => {
-
-  loadPartnerTimstamp() {
-    this.partners$ = this.chatomniCommentFacade.getParentTimeStamp(this.team.Id);
-  }
-
-  loadOrderTotal(){
-    this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
-        this.orderTotal = res;
-        this.cdRef.detectChanges();
-      }
-    })
-  }
-
-  ngAfterViewInit(): void {
-    this.objectEvent.getObjectFBData$.subscribe(res => {
         this.data = {...res};
         let data = this.availableCampaigns.find(f=>f.Id == res?.LiveCampaignId);
         if(data){
@@ -143,6 +127,15 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         }
 
         this.cdRef.markForCheck();
+        }
+      })
+    }
+
+  loadOrderTotal(){
+    this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.orderTotal = res;
+        this.cdRef.detectChanges();
       }
     })
   }
