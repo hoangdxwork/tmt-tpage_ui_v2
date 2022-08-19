@@ -7,27 +7,27 @@
               <div class="block items-center">
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isRefreshing"></tpage-team-dropdown>
               </div>
-              <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
+
               <div class="flex items-center gap-x-1">
                   <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
-                      <input class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
+                      <input class="placeholder-neutral-1-400 truncate" #conversationSearchInput placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
                       <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                   </tds-form-field>
 
                   <div class="flex gap-0.5">
                       <!-- button fillter -->
-                      <conversation-all-filter (onFilter)="onSubmitFilter($event)"
-                          [totalCount]="total" [team]="currentTeam">
+                      <conversation-all-filter (onSubmitFilter)="onSubmitFilter($event)" [queryObj]="queryObj" [totalConversations]="totalConversations">
                       </conversation-all-filter>
 
-                      <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
+                      <button (click)="setSort()" tds-tooltip [tooltipTitle]="isSort ? 'Hội thoại cũ nhất' : 'Hội thoại mới nhất'"
+                          class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
                           <span class="flex items-center text-primary-1">
-                              <i [ngClass]="isSort?'tdsi-sort-arrow-up-fill':'tdsi-sort-arrow-down-fill'" class="text-xl leading-5"></i>
+                              <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill' : 'tdsi-sort-arrow-down-fill'" class="text-xl leading-5"></i>
                           </span>
                       </button>
 
                       <button class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
-                          [ngClass]="isOpenCollapCheck?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
+                          [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
                           <span class="flex items-center ">
                               <i class="tdsi-success-line text-xl leading-5"></i>
                           </span>
@@ -65,12 +65,12 @@
 
           <!-- List danh sách chat -->
           <tds-spin class="overflow-hidden flex flex-auto" [spinning]="isLoading">
-              <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstOmcs && lstOmcs.length > 0; else noOmcs" >
+              <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0; else noOmcs" >
 
                 <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
                     yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                    <div *ngFor="let item of lstOmcs; let i= index ; trackBy: trackByIndex">
+                    <div *ngFor="let item of lstConversation; let i= index ; trackBy: trackByIndex">
                         <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
 
                           <a (click)="changeCurrentConversationItem(item)" >

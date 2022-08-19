@@ -1,102 +1,116 @@
-<button [ngClass]="filtered?'bg-primary-3':''" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center" tds-dropdown
+<button [ngClass]="isFilter ? 'bg-primary-3' : ''" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center" tds-dropdown
     trigger="click" placement="bottomRight" (click)="openDrawerFillter()">
+
     <span class="flex items-center text-neutral-1-500 relative">
         <i class="tdsi-filter-2-line  text-xl leading-5"></i>
-        <div *ngIf="filtered" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-0 right-0 flex justify-center items-center"
+        <div *ngIf="isFilter" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-0 right-0 flex justify-center items-center"
             style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
             <span class="text-[7px] leading-[5px] tdsi-tick-fill ">
             </span>
         </div>
     </span>
 </button>
+
 <tds-drawer [bodyStyle]="{'overflow':'hidden'}" [visible]="visibleDrawerFillter" [placement]="'left'"
     [bodyStyle]="{'overflow':'hidden','display': 'flex','flex-direction': 'column','padding': 0}"
-    title="Lọc hội thoại" (onClose)="close()" [footer]="footerTpl">
+    title="Lọc hội thoại" (onClose)="closeDrawerFillter()" [footer]="footerTpl">
+
     <ng-container *tdsDrawerContent>
-        <form [formGroup]="_form" action="" class="flex h-full overflow-y-auto tds-custom-scroll text-body-2 text-neutral-1-900">
+        <div  class="flex h-full overflow-y-auto tds-custom-scroll text-body-2 text-neutral-1-900">
             <div class="flex flex-col gap-y-6">
-                <div *ngIf="filtered" class="flex items-center justify-between bg-neutral-3-50 py-4 px-4">
+                <div *ngIf="isFilter" class="flex items-center justify-between bg-neutral-3-50 py-4 px-4">
                     <div class="flex gap-x-2">
                         <span class="text-body-1">Kết quả lọc</span>
                         <div class="bg-primary-1 rounded-full px-2.5 py-0.5 flex items-center">
-                            <span class="font-semibold text-white">{{total}} hội thoại</span>
+                            <span class="font-semibold text-white">{{totalConversations}} hội thoại</span>
                         </div>
                     </div>
-                    <div>
-                        <button tds-button color="secondary" (click)="clearFilter()">
-                            <span class="flex items-center text-error-400">
-                                <i class="tdsi-close-fill text-lg leading-none mr-2"></i>Bỏ lọc
-                            </span>
-                        </button>
-                    </div>
+
+                    <button tds-button color="secondary" >
+                        <span class="flex items-center text-error-400" (click)="clearFilter()">
+                            <i class="tdsi-close-fill text-lg leading-none mr-2"></i>Bỏ lọc
+                        </span>
+                    </button>
                 </div>
+
                 <div class="flex flex-col gap-y-3 px-4">
                     <div class="pb-1">
                         <span class="text-title-1 font-semibold">Lọc theo điều kiện </span>
                     </div>
                     <div class="flex items-center gap-x-2">
-                        <tds-checkbox formControlName="hasPhone">Có số điện thoại</tds-checkbox>
+                        <tds-checkbox [ngModel]="queryObj.has_phone" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeHasPhone($event)">Có số điện thoại</tds-checkbox>
                     </div>
                     <div class="flex items-center gap-x-2">
-                        <tds-checkbox formControlName="notPhone">Chưa có số điện thoại</tds-checkbox>
+                        <tds-checkbox [ngModel]="queryObj.not_phone" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeNotPhone($event)">Chưa có số điện thoại</tds-checkbox>
                     </div>
                     <div class="flex items-center gap-x-2">
-                        <tds-checkbox formControlName="hasAddress">Có địa chỉ</tds-checkbox>
+                        <tds-checkbox [ngModel]="queryObj.has_address" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeHasAddress($event)">Có địa chỉ</tds-checkbox>
                     </div>
                     <div class="flex items-center gap-x-2">
-                        <tds-checkbox formControlName="notAddress">Chưa có địa chỉ</tds-checkbox>
+                        <tds-checkbox [ngModel]="queryObj.not_address" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeNotAddress($event)">Chưa có địa chỉ</tds-checkbox>
                     </div>
                     <div class="flex items-center gap-x-2">
-                        <tds-checkbox formControlName="hasUnread">Hội thoại chưa đọc</tds-checkbox>
-                    </div>
-                    <div class="flex items-center gap-x-2">
-                        <tds-checkbox formControlName="hasOrder">Có đơn hàng</tds-checkbox>
+                        <tds-checkbox [ngModel]="queryObj.has_unread" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeHasUnread($event)">Hội thoại chưa đọc</tds-checkbox>
                     </div>
                 </div>
+
                 <div class="flex flex-col gap-y-4 px-4">
                     <div class="flex flex-col">
-                        <span class="text-title-1 font-semibold">Lọc theo thời gian</span>
-                        <span class="text-neutral-1-400">Từ ngày - Đến ngày</span>
+                        <span class="text-title-1 font-semibold">Lọc theo thời gian (<span class="text-neutral-1-400" style="font-size: 13px;">Từ ngày - Đến ngày</span>)</span>
+
                     </div>
-                    <tds-range-picker [(ngModel)]="rangeDate"  [ngModelOptions]="{standalone: true}" [ranges]="leftControl"  (ngModelChange)="onChange($event)">
+                    <tds-range-picker [(ngModel)]="dateTimes" [ngModelOptions]="{standalone: true}" [ranges]="dateRanges" (ngModelChange)="onChangeDate($event)">
                     </tds-range-picker>
                 </div>
+
                 <div class="flex flex-col gap-y-4 px-4">
                     <div class="flex flex-col">
                         <span class="text-title-1 font-semibold">Lọc theo nhân viên</span>
                     </div>
+
+                    <tds-form-field class="w-full">
+                        <input tdsInput placeholder="Tìm kiếm nhân viên" autocomplete="off" [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}"
+                            [tdsInputDebounce]="750" (inputKeyup)="onSearchUser($event)"/>
+                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                    </tds-form-field>
+
                     <div class="flex flex-wrap gap-2">
-                        <button *ngFor="let item of users" 
-                            class="py-1 px-2 flex items-center border border-solid rounded-full border-neutral-2-200"
-                            [ngClass]="item.selected?'bg-primary-1 text-white':'bg-white text-neutral-1-400'"
-                            (click)="selectUser(item)">
+                        <button *ngFor="let item of lstUser" class="py-1 px-2 flex items-center border border-solid rounded-full border-neutral-2-200"
+                            [ngClass]="(this.queryObj['user_ids'] && (this.queryObj['user_ids']).includes(item.Id) == true) ? 'bg-primary-1 text-white':'bg-white text-neutral-1-400'" (click)="selectUser(item)">
                             <div class="text-body-2 px-2 truncate"> {{item.Name}} </div>
                         </button>
                     </div>
                 </div>
-                <div class="flex flex-col gap-y-4 px-4">
+
+                <div class="flex flex-col gap-y-4 px-4 mb-4">
                     <div class="flex items-center">
                         <span class=" text-neutral-1-900 text-title-1 font-semibold leading-none">Lọc theo nhãn</span>
                     </div>
+
                     <tds-form-field class="w-full">
-                        <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchTag()"/>
+                        <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag" [ngModelOptions]="{standalone: true}"
+                            [tdsInputDebounce]="750" (inputKeyup)="onSearchTags($event)"/>
                         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                      </tds-form-field>
+                    </tds-form-field>
+
                     <div class="flex-auto flex flex-wrap gap-2.5">
                         <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
                             class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
-                            [ngClass]="keyTags && keyTags[item.Id]?'tdsi-tick-fill opacity-100':'opacity-40'"
+                            [ngClass]="(this.queryObj['tag_ids'] && (this.queryObj['tag_ids']).includes(item.Id) == true) ? 'tdsi-tick-fill opacity-100' : 'opacity-40'"
                             [ngStyle]="{'background-color': [item.ColorClassName]}" >
+
                             <span class="font-sans">{{item.Name}}</span>
                         </span>
                     </div>
                 </div>
+
             </div>
-        </form>
+        </div>
     </ng-container>
+
     <ng-template #footerTpl>
         <div class="flex justify-end w-full p-4 border-t border-neutral-2-100">
-            <button tds-button color="secondary" type="button" class="mr-2" (click)="close()">
+            <button tds-button color="secondary" type="button" class="mr-2" (click)="closeDrawerFillter()">
                 Hủy
             </button>
             <button tds-button color="primary" type="button" (click)="onSubmit()">Áp dụng</button>
