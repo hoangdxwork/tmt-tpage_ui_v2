@@ -1,9 +1,9 @@
+import { ConversationPostEvent } from './../../../../handler-v2/conversation-post/conversation-post.event';
 import { ConversationOrderDTO } from './../../../../dto/coversation-order/conversation-order.dto';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { finalize, mergeMap, takeUntil, map } from 'rxjs/operators';
+import { finalize, takeUntil, map } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
-import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -19,7 +19,6 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
-import { compareAsc, compareDesc } from 'date-fns';
 
 @Component({
   selector: 'conversation-order-list',
@@ -67,8 +66,8 @@ export class ConversationOrderListComponent implements OnInit {
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
-    private conversationOrderFacade: ConversationOrderFacade,
     private orderPrintService: OrderPrintService,
+    private conversationPostEvent: ConversationPostEvent,
     private modalService: TDSModalService,
     private destroy$: TDSDestroyService,
     private excelExportService: ExcelExportService
@@ -187,6 +186,8 @@ export class ConversationOrderListComponent implements OnInit {
               break;
           }
         });
+        
+        this.conversationPostEvent.getOrderTotal$.emit(total);
 
         this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
         this.tabNavs.sort((a, b) => a.Index - b.Index);

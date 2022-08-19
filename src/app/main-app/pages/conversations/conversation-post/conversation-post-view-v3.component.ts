@@ -1,3 +1,5 @@
+import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
+import { ChatomniCommentService } from './../../../services/chatomni-service/chatomni-comment.service';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { PrepareFacebookPostHandler } from './../../../handler-v2/conversation-post/prepare-facebook-post.handler';
@@ -38,6 +40,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   @Input() availableCampaigns!:Array<LiveCampaignModel>;
 
   currentLiveCampaign?:LiveCampaignModel;
+  orderTotal = 0;
   indClickFilter = 0;
   isShowFilterUser = false;
   indeterminate: boolean = false;
@@ -60,8 +63,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   filterExcel: any[] = [
     { value: "excel", text: "Tải file excel" },
-    { value: "excel_phone", text: "Tải file excel có SĐT" },
-    { value: "excel_phone_distinct", text: "Tải file excel lọc trùng SĐT" },
+    { value: "excel_phone", text: "Tải file excel có SĝT" },
+    { value: "excel_phone_distinct", text: "Tải file excel lờc trùng SĝT" },
   ];
 
   filterOptionsComment: any[] = [
@@ -96,8 +99,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     private fbPostHandler: FaceBookPostItemHandler,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private facebookCommentService: FacebookCommentService,
+    private conversationPostEvent: ConversationPostEvent,
     private message: TDSMessageService,
-    private cdr: ChangeDetectorRef,
     private destroy$: TDSDestroyService) {
   }
 
@@ -111,6 +114,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     this.loadData();
     this.loadPartnerTimstamp();
     this.eventEmitter();
+    this.loadOrderTotal();
   }
 
   eventEmitter(){
@@ -123,6 +127,15 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         }
 
         this.cdRef.markForCheck();
+        }
+      })
+    }
+
+  loadOrderTotal(){
+    this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.orderTotal = res;
+        this.cdRef.detectChanges();
       }
     })
   }
@@ -335,7 +348,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
       this.objectEvent.getObjectFBData$.emit(this.data);
 
-      this.cdr.detectChanges();
+      this.cdRef.detectChanges();
     })
   }
 
@@ -359,7 +372,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
             this.objectEvent.getObjectFBData$.emit(this.data);
             this.message.success('Cập nhật chiến dịch thành công');
 
-            this.cdr.markForCheck();
+            this.cdRef.markForCheck();
           }
       },
       error: err=>{

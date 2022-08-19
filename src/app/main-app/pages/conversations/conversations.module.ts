@@ -1,3 +1,4 @@
+import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
 import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { PrepareFacebookPostHandler } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
