@@ -53,8 +53,8 @@
 
                       <div class="flex items-center gap-1">
                             <div class="text-neutral-1-900 text-body-2 font-regular font-sans">{{partner.Phone || 'Chưa có SĐT'}} </div>
-                            <div class="tdsi-success-fill text-sm text-primary-1 cursor-pointer" *ngIf="!partner.PhoneReport" (click)="onlListPhoneBlock()"></div>
-                            <div class="tdsi-success-fill text-sm text-accent-3  cursor-pointer" *ngIf="partner.PhoneReport" (click)="onBlockPhone()"></div>
+                            <div class="tdsi-success-fill text-sm text-primary-1 cursor-pointer" *ngIf="!partner.PhoneReport && partner.Phone" (click)="onlListPhoneBlock()"></div>
+                            <div class="tdsi-success-fill text-sm text-accent-3  cursor-pointer" *ngIf="partner.PhoneReport && partner.Phone" (click)="onBlockPhone()"></div>
                       </div>
                   </div>
 

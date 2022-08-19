@@ -126,17 +126,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.conversationInfo = {...conversationInfo};
 
     // TODO: gán thông tin khách hàng
-    if(this.team && TDSHelperObject.hasValue(conversationInfo.Partner)) {
-        this.partner = {...conversationInfo.Partner};
-
-        if(!this.partner.Phone && conversationInfo && conversationInfo.Conversation.Phone) {
-          this.partner.Phone = conversationInfo.Conversation.Phone
-        }
-
-        if(!this.partner.Email && conversationInfo && conversationInfo.Conversation.Email) {
-          this.partner.Email = conversationInfo.Conversation.Email
-        }
-
+    if(this.team && conversationInfo) {
+        this.partner = {...this.csPartner_PrepareModelHandler.getPartnerFromConversation(conversationInfo, this.team)};
         this.mappingAddress(this.partner);
     }
 
@@ -475,6 +466,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this.revenue as any) = null;
     (this.lastBill as any) = null;
     (this.lstBill as any) = null;
+    this.totalBill = 0;
   }
 
 }

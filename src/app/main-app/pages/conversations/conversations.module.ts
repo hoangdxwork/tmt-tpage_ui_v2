@@ -145,6 +145,7 @@ import { CommentFilterAllComponent } from './conversation-post/comments/filter-a
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { DrawerDetailBillComponent } from './components/drawer-detail-bill/drawer-detail-bill.component';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -208,7 +209,8 @@ const SERVICES = [
   ObjectFacebookPostEvent,
   FaceBookPostItemHandler,
   PrepareFacebookPostHandler,
-  PrepareAddCampaignHandler
+  PrepareAddCampaignHandler,
+  CsOrder_FromConversationHandler
 ]
 
 @NgModule({
