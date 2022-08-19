@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   urlLogin:'/account/login',
-  signalRAppend: "?host=admin.tpos.vn",
+  signalRAppend: "?host=test.tpos.dev",
   socketUrl: 'https://socket-tpos.dev.tmtco.org/chatomni',
   apiAccount:{
     signInPassword:"/token",
