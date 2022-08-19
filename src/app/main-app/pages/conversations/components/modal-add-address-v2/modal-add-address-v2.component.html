@@ -1,0 +1,15 @@
+<div class="grid">
+    <div>
+      <suggest-address-v2
+          [_cities]="_cities"
+          [_districts]="_districts"
+          [_wards]="_wards"
+          [_street]="_street"
+          (onLoadSuggestion)="onLoadSuggestion($event)">
+      </suggest-address-v2>
+    </div>
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+        <button tds-button type="button" class="min-w-[100px]" color="primary"(click)="onSave()"> Lưu </button>
+    </div>
+</div>

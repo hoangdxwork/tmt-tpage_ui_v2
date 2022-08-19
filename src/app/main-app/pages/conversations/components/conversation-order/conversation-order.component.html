@@ -53,10 +53,18 @@
                             <div class="tdsi-pin-fill p-1 bg-neutral-3-50 text-neutral-1-400 text-xl leading-none rounded-[10px]"></div>
                             <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans w-2/3 pt-1">{{ quickOrderModel.Address || 'Chưa có địa chỉ' }}</span>
 
-                            <div *ngIf="isEditPartner" class="w-full">
-                                <suggest-address [_isBtnExtend]="true" [_isExpanded]="false" [_cities]="_cities" [_districts]="_districts"
+                            <div *ngIf="isEditPartner" class="w-full flex gap-x-2">
+                                <!-- <suggest-address [_isBtnExtend]="true" [_isExpanded]="false" [_cities]="_cities" [_districts]="_districts"
                                     [_wards]="_wards" [_street]="_street" (onLoadSuggestion)="onLoadSuggestion($event)">
-                                </suggest-address>
+                                </suggest-address> -->
+                                <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
+                                    <input tdsInput autocomplete="off" placeholder="Địa chỉ" [(ngModel)]="quickOrderModel.Email" [ngModelOptions]="{standalone: true}"/>
+                                </tds-form-field>
+                                <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip="Tìm kiếm địa chỉ">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-location-fill"></i>
+                                    </span>
+                                </button>
                             </div>
                         </div>
                     </div>

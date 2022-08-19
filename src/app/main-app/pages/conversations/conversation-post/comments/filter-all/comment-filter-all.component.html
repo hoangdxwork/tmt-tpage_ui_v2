@@ -118,15 +118,17 @@
                                                     +{{partnerDict[item.UserId].t.length - 3}}
                                                 </div>
                                                 <ng-template #popoverContentTag>
-                                                    <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 3:(partnerDict[item.UserId].t.length -1)" #widthTag
-                                                        class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
-                                                        <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
-                                                            class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
-                                                            <div class="flex items-center">
-                                                                <span [ngStyle]="{'background-color': [tag.color_class] }"
-                                                                class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                                                    <div class="flex gap-x-2 flex-wrap max-w-[500px]">
+                                                        <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 3:(partnerDict[item.UserId].t.length)" #widthTag
+                                                            class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                                                            <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
+                                                                class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
+                                                                <div class="flex items-center">
+                                                                    <span [ngStyle]="{'background-color': [tag.color_class] }"
+                                                                    class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                                                                </div>
+                                                                <span class="flex-auto truncate">{{tag.name}}</span>
                                                             </div>
-                                                            <span class="flex-auto truncate">{{tag.name}}</span>
                                                         </div>
                                                     </div>
                                                 </ng-template>

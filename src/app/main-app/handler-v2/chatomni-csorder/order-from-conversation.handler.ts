@@ -97,7 +97,7 @@ export class CsOrder_FromConversationHandler {
       }
 
       if(!order.Address && partner && partner.Street) {
-          order.Telephone = partner.Street;
+          order.Address = partner.Street;
       }
 
       if(!order.Email && (partner && partner.Email || conversationInfo.Conversation?.Email) ) {

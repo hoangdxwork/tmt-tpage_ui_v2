@@ -1,3 +1,4 @@
+import { ChatomniLiveCampaignDto } from './../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
@@ -131,6 +132,19 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     });
 
     this.onChangeTabEvent();
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+        let index = this.lstObjects.findIndex(x=> x.Id == res.Id);        
+        if(index >- 1) {
+            this.lstObjects[index].LiveCampaign = { ...res.LiveCampaign } as unknown as ChatomniLiveCampaignDto;
+            this.lstObjects[index] = {...this.lstObjects[index]};
+        }
+      }
+    })
   }
 
   loadAvailableCampaign(){
