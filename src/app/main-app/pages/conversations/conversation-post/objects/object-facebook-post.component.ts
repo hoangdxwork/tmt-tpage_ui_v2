@@ -38,7 +38,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     private fbPostHandler: FaceBookPostItemHandler,
     private prepareHandler: PrepareFacebookPostHandler,
     private viewContainerRef: ViewContainerRef,
-    private cdr: ChangeDetectorRef,
+    private cdRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService) {
   }
 
@@ -47,15 +47,12 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes["item"] && !changes["item"].firstChange && !changes["lstOfLiveCampaign"].firstChange) {
+    if(changes["item"] && !changes["item"].firstChange) {
       this.item = {...changes["item"].currentValue};
       this.lstOfLiveCampaign = [...changes["lstOfLiveCampaign"].currentValue];
       
       this.loadData();
     }
-    // if(changes["lstOfLiveCampaign"] && !changes["lstOfLiveCampaign"].firstChange){
-    //   this.lstOfLiveCampaign = [...changes["lstOfLiveCampaign"].currentValue];
-    // }
   }
 
   loadData(){
@@ -81,15 +78,12 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     });
 
     modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
-      this.currentLiveCampaign = res;
-debugger
       if(this.item?.Data){
         this.item = this.fbPostHandler.updateLiveCampaignPost(this.item, res);
       }
 
       this.objectEvent.getObjectFBData$.emit(this.item);
 
-      this.cdr.detectChanges();
     })
   }
 
@@ -113,11 +107,11 @@ debugger
       this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$))
         .subscribe(res => {
           if(res.value){
-            this.fbPostHandler.updateLiveCampaignPost(this.item, this.currentLiveCampaign);
+            this.item = this.fbPostHandler.updateLiveCampaignPost(this.item, this.currentLiveCampaign);
             this.objectEvent.getObjectFBData$.emit(this.item);
             this.message.success('Cập nhật chiến dịch thành công');
 
-            this.cdr.markForCheck();
+            this.cdRef.markForCheck();
           }
         },
         err=>{

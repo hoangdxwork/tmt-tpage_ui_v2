@@ -1,3 +1,4 @@
+import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
@@ -1167,6 +1168,29 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     if (this.configsProviderDataSource) {
       this.saleModel = this.updateShipmentDetailAshipHandler.so_updateShipmentDetailAship(this.configsProviderDataSource, this.insuranceInfo, this.saleModel);
     }
+  }
+
+  showModalSuggestAddress(){
+    let modal =  this.modal.create({
+        title: 'Thêm địa chỉ',
+        content: ModalAddAddressV2Component,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          _cities : this._cities,
+          _districts: this._districts,
+          _wards: this._wards,
+          _street: this._street,
+        }
+      });
+
+    modal.afterClose.subscribe({
+      next: (result: any) => {
+        if(result){
+
+        }
+      }
+    })
   }
 
   validateData(){

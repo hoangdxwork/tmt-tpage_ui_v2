@@ -147,6 +147,7 @@ import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-co
 import { DrawerDetailBillComponent } from './components/drawer-detail-bill/drawer-detail-bill.component';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
+import { ModalAddAddressV2Component } from './components/modal-add-address-v2/modal-add-address-v2.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -263,7 +264,8 @@ const SERVICES = [
     ObjectTshopPostComponent,
     CommentFilterAllComponent,
     DrawerDetailBillComponent,
-    LiveCampaignPostComponent
+    LiveCampaignPostComponent,
+    ModalAddAddressV2Component
   ],
 
   imports: [

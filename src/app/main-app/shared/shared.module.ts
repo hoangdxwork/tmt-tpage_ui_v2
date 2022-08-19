@@ -60,6 +60,7 @@ import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { DirectivesModule } from './directives/directives.module';
+import { SuggestAddressV2Component } from './suggest-address-v2/suggest-address-v2.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -83,7 +84,8 @@ const cmp =[
   OverviewLiveCampaignComponent,
   BillFilterOptionsComponent,
   TpageNotificationDropdownComponent,
-  TableDetailReportComponent
+  TableDetailReportComponent,
+  SuggestAddressV2Component
 ]
 
 const SERVICES = [

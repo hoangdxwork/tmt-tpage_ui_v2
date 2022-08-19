@@ -9,7 +9,7 @@ export class FaceBookPostItemHandler {
     public updateLiveCampaignPost(data: ChatomniObjectsItemDto, liveCampaign?: LiveCampaignModel): ChatomniObjectsItemDto {
 
         if(data) {
-            
+            data.Id = data.Id
             if(liveCampaign && TDSHelperObject.hasValue(liveCampaign)){
                 data.LiveCampaignId = liveCampaign.Id;
 
