@@ -1,6 +1,6 @@
 import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { mergeMap, takeUntil, Observable, observable, of } from 'rxjs';
+import { mergeMap, takeUntil, Observable, observable, of, map } from 'rxjs';
 import { Message } from './../../../../lib/consts/message.const';
 import { ProductService } from './../../../services/product.service';
 import { SharedService } from './../../../services/shared.service';
@@ -45,7 +45,11 @@ export class DefaultOrderComponent implements OnInit {
 
           return new Observable((observable: any): any => {
               if(config.SaleSetting?.ProductId){
-                  return this.productService.getById(config.SaleSetting.ProductId);
+                  return this.productService.getById(config.SaleSetting.ProductId)
+                    .pipe(map(x => {
+                        observable.next(x);
+                        observable.complete();
+                    }))
               } else{
                   return of({});
               }
