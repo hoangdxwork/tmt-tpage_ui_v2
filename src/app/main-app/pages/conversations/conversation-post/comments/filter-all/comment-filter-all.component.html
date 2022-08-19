@@ -72,32 +72,32 @@
                                     </button>
                                 </div>
 
-                                <div *ngIf="partnerDict && partnerDict[item.UserId || item.ObjectId] || commentOrders[item.UserId]?.length > 0" class="w-full flex flex-row items-center justify-between">
+                                <div *ngIf="partnerDict && partnerDict[item.UserId]" class="w-full flex flex-row items-center justify-between">
                                     <!-- trạng thái khách hàng & mã đơn hàng -->
                                     <div class="flex items-center gap-1.5">
 
                                         <!-- trạng thái khách hàng -->
-                                        <div *ngIf="partnerDict[item.UserId || item.ObjectId]" class="button-status flex items-center gap-1.5 mr-4">
-                                            <span *ngIf="partnerDict[item.UserId || item.ObjectId].p" class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer">
+                                        <div *ngIf="partnerDict[item.UserId]" class="button-status flex items-center gap-1.5 mr-4">
+                                            <span *ngIf="partnerDict[item.UserId].p" class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer">
                                                 <i class="tdsi-call-fill text-body-2 leading-none text-white"></i>
                                             </span>
 
-                                            <span *ngIf="partnerDict[item.UserId || item.ObjectId].a" class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer">
+                                            <span *ngIf="partnerDict[item.UserId].a" class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer">
                                                 <i class="tdsi-pin-fill text-body-2 leading-none text-white"></i>
                                             </span>
 
-                                            <div [ngStyle]="{'background-color': partnerDict[item.UserId || item.ObjectId].ss+'30', 'border-color': partnerDict[item.UserId || item.ObjectId].ss, 'color': partnerDict[item.UserId || item.ObjectId].ss}"
+                                            <div [ngStyle]="{'background-color': partnerDict[item.UserId].ss+'30', 'border-color': partnerDict[item.UserId].ss, 'color': partnerDict[item.UserId].ss}"
                                                 class="border font-semibold px-2 py-0.5 rounded text-caption-2 ">
-                                                {{partnerDict[item.UserId || item.ObjectId].st}}
+                                                {{partnerDict[item.UserId].st}}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div *ngIf="partnerDict[item.UserId || item.ObjectId].t" class="flex justify-end flex-col gap-2 tag-status flex-auto">
+                                    <div *ngIf="partnerDict[item.UserId].t" class="flex justify-end flex-col gap-2 tag-status flex-auto">
                                         <div class="flex gap-2">
                                             <div class="flex-auto flex flex-nowrap gap-1 justify-end items-center overflow-hidden" #currentWidthTag>
                                                 <div class="flex gap-x-1">
-                                                    <div *ngFor="let tag of partnerDict[item.UserId || item.ObjectId].t | slice: 0:3" #widthTag
+                                                    <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 0:3" #widthTag
                                                         class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
                                                         <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
                                                             class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
@@ -111,14 +111,14 @@
                                                 </div>
                                             </div>
                                 
-                                            <div class="flex gap-1.5 items-center"  *ngIf="partnerDict[item.UserId || item.ObjectId].t.length > 3">
+                                            <div class="flex gap-1.5 items-center"  *ngIf="partnerDict[item.UserId].t.length > 3">
                                                 <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" tds-popover
                                                     [popoverContent]="popoverContentTag"
                                                     popoverPlacement="topRight">
-                                                    +{{partnerDict[item.UserId || item.ObjectId].t.length - 3}}
+                                                    +{{partnerDict[item.UserId].t.length - 3}}
                                                 </div>
                                                 <ng-template #popoverContentTag>
-                                                    <div *ngFor="let tag of partnerDict[item.UserId || item.ObjectId].t | slice: 3:(partnerDict[item.UserId || item.ObjectId].t.length -1)" #widthTag
+                                                    <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 3:(partnerDict[item.UserId].t.length -1)" #widthTag
                                                         class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
                                                         <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
                                                             class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">

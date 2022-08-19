@@ -13,6 +13,7 @@ export interface AutoOrderConfigDTO {
   IsOnlyOrderWithPhone: boolean;
   IsForceOrderWithPhone: boolean;
   IsForcePrintWithPhone: boolean;
+  MinLengthToVisible: number;
   MinLengthToOrder: number;
   MaxCreateOrder: number;
   TextContentToExcludeOrder: string;

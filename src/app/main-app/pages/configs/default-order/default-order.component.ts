@@ -1,6 +1,6 @@
 import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { mergeMap, takeUntil, Observable } from 'rxjs';
+import { mergeMap, takeUntil, Observable, observable, of } from 'rxjs';
 import { Message } from './../../../../lib/consts/message.const';
 import { ProductService } from './../../../services/product.service';
 import { SharedService } from './../../../services/shared.service';
@@ -41,18 +41,23 @@ export class DefaultOrderComponent implements OnInit {
     if(exist && exist.ProductId){
         this.defaultProduct = exist;
     } else {
-      this.shareService.getConfigs().pipe(takeUntil(this.destroy$)).pipe(mergeMap(item => {
-          if(item.SaleSetting.ProductId){
-              return this.productService.getById(item.SaleSetting.ProductId);
-          } else{
-              return new Observable<any>();
-          }
+      this.shareService.getConfigs().pipe(takeUntil(this.destroy$)).pipe(mergeMap(config => {
+
+          return new Observable((observable: any): any => {
+              if(config.SaleSetting?.ProductId){
+                  return this.productService.getById(config.SaleSetting.ProductId);
+              } else{
+                  return of({});
+              }
+          })
         }))
         .subscribe({
-          next:(product) => {
-              //TODO: Trường hợp có sản phẩm
-              this.defaultProduct = this.prepareModel(product);
-              this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+          next:(product :any) => {
+            if(product && product.Id) {
+                //TODO: Trường hợp có sản phẩm
+                this.defaultProduct = this.prepareModel(product);
+                this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+            }
           },
           error:(err) => {
               this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
