@@ -1,4 +1,4 @@
-import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto, QueryFilterConversationDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
@@ -47,7 +47,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   isLoading: boolean = false;
   dataSource$?: Observable<ChatomniConversationDto> ;
-  lstOmcs: ChatomniConversationItemDto[] = [];
+  lstConversation: ChatomniConversationItemDto[] = [];
 
   csid!: string;
   conversationInfo!: ChatomniConversationInfoDto;
@@ -59,21 +59,18 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   isSort: boolean = false;
   indeterminate: boolean = false;
   setOfCheckedId = new Set<string>();
-  queryFilter: TDSSafeAny;
-  total: number = 0;
-  isRefresh: boolean = false;
+
+  queryObj: QueryFilterConversationDto = {} as any;
+
   isRefreshing: boolean = false;
   isProcessing:boolean = false;
   clickReload: number = 0;
   isCheckedAll: boolean = false;
-  cacheChatbot: OnChatBotSignalRModel[] = [];
   checkCsidRouter: string = '';
   selectedIndex: number = 0;
-  tagsChange!: ChatomniConversationTagDto[];
-  currentOrderTab: number = 0;
-  letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
   private notificationRef!: TDSNotificationRef;
+  totalConversations: number = 0;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -143,10 +140,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
         if(res) {
-            let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId);
             if(index >- 1) {
-                this.lstOmcs[index].Tags = [...res.Tags];
-                this.lstOmcs[index] = {...this.lstOmcs[index]};
+                this.lstConversation[index].Tags = [...res.Tags];
+                this.lstConversation[index] = {...this.lstConversation[index]};
             }
         }
       }
@@ -156,10 +153,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniLastMessageEventEmitterDto) => {
         if(res) {
-            let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId);
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId);
             if(index >- 1) {
-                this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
-                this.lstOmcs[index] = {...this.lstOmcs[index]};
+                this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
+                this.lstConversation[index] = {...this.lstConversation[index]};
             }
         }
       }
@@ -169,10 +166,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.chatomniEventEmiterService.countUnreadEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == id);
             if(index >- 1) {
-              this.lstOmcs[index].CountUnread = 0;
-              this.lstOmcs[index] = {...this.lstOmcs[index]};
+              this.lstConversation[index].CountUnread = 0;
+              this.lstConversation[index] = {...this.lstConversation[index]};
               this.cdRef.detectChanges();
             }
         }
@@ -183,10 +180,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.chatomniEventEmiterService.chatbotStateEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstOmcs.findIndex(x=> x.ConversationId == id);
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == id);
             if(index >- 1) {
-                this.lstOmcs[index].State = 0;
-                this.lstOmcs[index] = {...this.lstOmcs[index]};
+                this.lstConversation[index].State = 0;
+                this.lstConversation[index] = {...this.lstConversation[index]};
                 this.cdRef.detectChanges();
             }
         }
@@ -197,10 +194,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   spinLoading() {
   }
 
-  loadData(team: any, queryObj?: any) {
+  loadData(team: any) {
     this.validateData();
 
-    this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
+    this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type);
     if(this.dataSource$) {
         this.loadConversations(this.dataSource$);
     }
@@ -216,19 +213,19 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         next: (res: ChatomniConversationDto) => {
             if (res && TDSHelperArray.hasListValue(res.Items)) {
 
-                this.lstOmcs = [...res.Items];
+                this.lstConversation = [...res.Items];
                 let csid = this.paramsUrl?.csid || null;
 
                 //TODO: check psid khi load lần 2,3,4...
-                let exits = this.lstOmcs.filter(x => x.ConversationId == csid)[0] ;
+                let exits = this.lstConversation.filter(x => x.ConversationId == csid)[0] ;
 
                 //TODO: kiểm tra khi chọn menu tin nhắn và bình luận, giữ item đang chọn
-                let exitsTab = this.lstOmcs.filter(x => x.ConversationId == this.checkCsidRouter)[0] ;
+                let exitsTab = this.lstConversation.filter(x => x.ConversationId == this.checkCsidRouter)[0] ;
                 if (exits || exitsTab) {
                     this.setCurrentConversationItem(exits || exitsTab);
                 } else {
                     //TODO: load lần đầu tiên'
-                    this.setCurrentConversationItem(this.lstOmcs[0]);
+                    this.setCurrentConversationItem(this.lstConversation[0]);
                 }
 
             } else {
@@ -300,29 +297,26 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   nextData(event: any): any {
     if(event) {
-
       if (this.isProcessing) {
           return false;
       }
 
       this.isProcessing = true;
-      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryFilter);
+      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryObj);
 
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: ChatomniConversationDto) => {
+        next: (res: ChatomniConversationDto) => {
 
-              if(TDSHelperArray.hasListValue(res?.Items)) {
-                  this.lstOmcs = [...res.Items];
-              }
+            if(TDSHelperArray.hasListValue(res?.Items)) {
+                this.lstConversation = [...res.Items];
+            }
 
-              this.isProcessing = false;
-
-              this.yiAutoScroll.scrollToElement('scrollConversation', 750);
-              this.cdRef.markForCheck();
-          },
-          error: (error) => {
-              this.isProcessing = false;
-          }
+            this.isProcessing = false;
+            this.yiAutoScroll.scrollToElement('scrollConversation', 750);
+        },
+        error: (error) => {
+            this.isProcessing = false;
+        }
       })
     }
   }
@@ -346,16 +340,20 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
         if (this.currentTeam) {
           this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (res) => {
-                  this.message.success('Yêu cầu cập nhật thành công');
-              },
-              error: (error) => {
-                  this.message.success('Yêu cầu cập nhật thất bại');
-              }
+            next: (res) => {
+                this.message.success('Yêu cầu cập nhật thành công');
+            },
+            error: (error) => {
+                this.message.success('Yêu cầu cập nhật thất bại');
+            }
           });
         }
     } else {
-        this.onSubmitFilter({});
+        this.queryObj = {} as any;
+        this.innerText.nativeElement.value = '';
+
+        this.loadFilterDataSource();
+        this.cdRef.markForCheck();
     }
 
     setTimeout(() => {
@@ -373,6 +371,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   setSort(){
     this.isSort = !this.isSort;
+    if(this.isSort) {
+      this.lstConversation = this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(a.UpdatedTime) - Date.parse(b.UpdatedTime));
+    } else {
+      this.lstConversation = this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(b.UpdatedTime) - Date.parse(a.UpdatedTime));
+    }
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -389,15 +392,15 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   onAllChecked(value: TDSSafeAny): void {
-    this.lstOmcs.forEach(x => this.updateCheckedSet(x.ConversationId, value.checked));
+    this.lstConversation.forEach(x => this.updateCheckedSet(x.ConversationId, value.checked));
 
     this.refreshCheckedStatus();
     this.isCheckedAll = !this.isCheckedAll;
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.lstOmcs.every(x => this.setOfCheckedId.has(x.ConversationId));
-    this.indeterminate = this.lstOmcs.some(x => this.setOfCheckedId.has(x.ConversationId)) && !this.checked;
+    this.checked = this.lstConversation.every(x => this.setOfCheckedId.has(x.ConversationId));
+    this.indeterminate = this.lstConversation.some(x => this.setOfCheckedId.has(x.ConversationId)) && !this.checked;
   }
 
   printData(){
@@ -448,14 +451,14 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             setOfCheckedId: this.setOfCheckedId,
             team: this.currentTeam as any,
             type: this.type,
-            lstOmcs: this.lstOmcs
+            lstConversation: this.lstConversation
         }
     });
 
-    modal.afterClose.subscribe((res: any) => {
-        if(res) {
-            this.onSentSucceed();
-        }
+    modal.afterClose.subscribe({
+      next: (res: any) => {
+        this.onSentSucceed();
+      }
     })
   }
 
@@ -464,139 +467,106 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.conversationDataFacade.checkAllSendMessage(this.currentTeam!.ChannelId, this.type, this.isCheckedAll);
   }
 
-  onSubmitFilter(data: any) {
-
-    if (Object.keys(data || {}).length > 0) {
-      let queryObj = this.conversationDataFacade.setExtrasQuery(this.currentTeam!.ChannelId, this.type, data);
-      this.queryFilter = queryObj;
-
-      this.makeDataSource(queryObj);
-    } else {
-      this.total = -1;
-      this.queryFilter = null;
-      this.makeDataSource({});
-    }
-  }
-
-  makeDataSource(queryObj: any) {
-    if (Object.keys(queryObj || {}).length < 3) {
-      this.isRefreshing = true;
-
-      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type)
-        .pipe(takeUntil(this.destroy$), finalize(() => {
-            setTimeout(() => {
-              this.isRefreshing = false;
-            }, 500 )}
-        ));
-    } else {
-      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, queryObj).pipe(map((res => {
-        if (res && res.Items) {
-            this.total = res.Items.length;
-        }
-        return res;
-      })))
-    }
-
-    if(this.dataSource$){
-        !TDSHelperString.hasValueString(this.queryFilter) ? (this.isRefresh = true) : (this.isRefresh = false);
-        this.loadConversations(this.dataSource$);
-    }
+  onSubmitFilter(queryObj: QueryFilterConversationDto) {
+    this.queryObj = queryObj;
+    this.loadFilterDataSource();
   }
 
   ngAfterViewInit() {
     if(this.innerText?.nativeElement) {
       fromEvent(this.innerText?.nativeElement, 'keyup').pipe(
-        // get value
+
         map((event: any) => {
-          return event.target.value;
-        })
-        , debounceTime(750) , distinctUntilChanged()
-      ).subscribe((text: string) => {
-        this.loadFilterText(text);
+            return event.target.value;
+        }) , debounceTime(750) , distinctUntilChanged()
+
+      ).subscribe({
+        next: (text: string) => {
+            let value = TDSHelperString.stripSpecialChars(text.trim());
+            this.queryObj['Keyword'] = value;
+            this.loadFilterDataSource();
+        }
       })
     }
-  }
-
-  onSearch(event: any) {
-      if(event) {
-        let text = event.target.value;
-        this.loadFilterText(text);
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
   }
 
   onTabOderOutput(ev: boolean){
     this.selectedIndex = 1
   }
 
-  //check lại hàm này
-  loadFilterText(text: string) {
+  loadFilterDataSource() {
+    this.isLoading = true;
+    this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, this.queryObj).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationDto) => {
+          this.lstConversation = [...res?.Items];
 
-      // let query = this.conversationDataFacade.createQuery(this.currentTeam.Facebook_PageId, this.type) as any;
-      // query['keyword'] = text;
-      // this.queryFilter = query;
-
-      // this.makeDataSource(this.queryFilter);
+          this.totalConversations = res?.Items.length;
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}`);
+      }
+    })
   }
 
   hubEvents() {
     this.sgRConnectionService._onChatbotEvent$.pipe(takeUntil(this.destroy$)).subscribe((hubs: OnChatBotSignalRModel) => {
-        if(hubs && hubs.data) {
-            // TODO: nếu dữ liệu ko phải là conversation hiện tại
-            let item = this.lstOmcs.filter(x => x.Id == hubs.data.pageId && x.ConversationId == hubs.data.psid)[0]; // x.Id  này để tạm
-            // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
-            let exits = this.conversationItem?.Id == hubs.data.pageId && this.conversationItem?.ConversationId == hubs.data.psid;
+      if(hubs && hubs.data) {
+          // TODO: nếu dữ liệu ko phải là conversation hiện tại
+          let item = this.lstConversation.filter(x => x.Id == hubs.data.pageId && x.ConversationId == hubs.data.psid)[0]; // x.Id  này để tạm
+          // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
+          let exits = this.conversationItem?.Id == hubs.data.pageId && this.conversationItem?.ConversationId == hubs.data.psid;
 
-            let data = {
-              team: {},
-              psid: hubs.data.psid,
-              message:  hubs.message,
-            }
+          let data = {
+            team: {},
+            psid: hubs.data.psid,
+            message:  hubs.message,
+          }
 
-            switch (hubs.type) {
-              case `${TypeOnChatBot.AdminTransferChatBot}`:
-                  if(item) {
-                    item.State = StateChatbot.SystemError;
-                  }
-                  if(exits) {
-                      this.conversationItem!.State = StateChatbot.SystemError;
-                  }
-                  // TODO: Lấy teamId của page
-                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
-                      if(res){
-                        data.team = res[0];
-                      }
-                      this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
-                    }, err =>{
-                      this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
-                  })
-                  // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
-                break;
-
-              case `${TypeOnChatBot.ChatbotTranserAdmin}`:
-                  if(item) {
-                    item.State = StateChatbot.Normal;
-                  }
-
-                  if(exits) {
-                      this.conversationItem!.State = StateChatbot.Normal;
-                  }
-
-                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+          switch (hubs.type) {
+            case `${TypeOnChatBot.AdminTransferChatBot}`:
+                if(item) {
+                  item.State = StateChatbot.SystemError;
+                }
+                if(exits) {
+                    this.conversationItem!.State = StateChatbot.SystemError;
+                }
+                // TODO: Lấy teamId của page
+                this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
                     if(res){
                       data.team = res[0];
                     }
-                    this.notificationRef = this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
                   }, err =>{
-                    this.notificationRef = this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
-                  })
-                break;
+                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+                })
+                // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
+              break;
 
-              default:
-                break;
-            }
-       }
+            case `${TypeOnChatBot.ChatbotTranserAdmin}`:
+                if(item) {
+                  item.State = StateChatbot.Normal;
+                }
+
+                if(exits) {
+                    this.conversationItem!.State = StateChatbot.Normal;
+                }
+
+                this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+                  if(res){
+                    data.team = res[0];
+                  }
+                  this.notificationRef = this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+                }, err =>{
+                  this.notificationRef = this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+                })
+              break;
+
+            default:
+              break;
+          }
+      }
     })
   }
 
@@ -607,7 +577,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             this.loadData(team);
         }
 
-        let data = this.lstOmcs.find(x => x.ConversationId == csid)
+        let data = this.lstConversation.find(x => x.ConversationId == csid)
         if(data){
           this.conversationItem = data;
         }
@@ -631,7 +601,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   validateData() {
-    this.lstOmcs = [];
+    this.lstConversation = [];
     (this.conversationInfo as any) = null;
     delete this.dataSource$;
   }

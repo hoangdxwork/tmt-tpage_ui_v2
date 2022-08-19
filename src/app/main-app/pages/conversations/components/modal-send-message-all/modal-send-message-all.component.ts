@@ -30,7 +30,7 @@ export class ModalSendMessageAllComponent implements OnInit {
   @Input() setOfCheckedId = new Set<string>();
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
-  @Input() lstOmcs: ChatomniConversationItemDto[] = [];
+  @Input() lstConversation: ChatomniConversationItemDto[] = [];
 
   messageModel!: string;
   uploadedImages: any[] = [];
@@ -119,9 +119,9 @@ export class ModalSendMessageAllComponent implements OnInit {
 
   getChecked(lstCheck: string[]){
     let result: TDSSafeAny[] = [];
-    if(this.lstOmcs) {
+    if(this.lstConversation) {
       lstCheck.forEach(id=>{
-        let findData = this.lstOmcs.find(x=> x.ConversationId == id)
+        let findData = this.lstConversation.find(x => x.ConversationId == id)
         if(findData){
           let r = {
             to_id: findData.ConversationId,
@@ -253,11 +253,11 @@ export class ModalSendMessageAllComponent implements OnInit {
             let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
             let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
 
-            // TODO: Đẩy qua tds-conversation-v2 
+            // TODO: Đẩy qua tds-conversation-v2
             this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
-            // TODO: Đẩy qua conversation-all-v2 
+            // TODO: Đẩy qua conversation-all-v2
             this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-            
+
           });
 
           this.messageModel = '';
@@ -280,13 +280,13 @@ export class ModalSendMessageAllComponent implements OnInit {
           res.forEach((x: ResponseAddMessCommentDto) => {
             x["status"] = ChatomniStatus.Pending;
             x.type = 11;
-  
+
             let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
             let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
 
-            // TODO: Đẩy qua tds-conversation-v2 
+            // TODO: Đẩy qua tds-conversation-v2
             this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
-            // TODO: Đẩy qua conversation-all-v2 
+            // TODO: Đẩy qua conversation-all-v2
             this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
           });
 
