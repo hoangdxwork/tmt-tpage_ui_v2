@@ -16,7 +16,7 @@
           </button>
         </div>
         <div class="flex flex-col p-4">
-          <div class="flex flex-row items-center justify-start w-2/3 pb-6">
+          <div class="flex flex-row items-center justify-start w-full pb-6">
             <upload-pictures-wall class="mr-12" [size]="112"
               [data]="[_form.controls.ImageUrl.value || dataModel.ImageUrl]" (getResult)="getAvatar($event)" (getBase64)="getBase64($event)">
             </upload-pictures-wall>
@@ -45,8 +45,8 @@
 
       <tds-tabset class="w-full bg-white mt-1">
         <tds-tab title="Thông tin chung">
-          <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-            <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center h-fit">
+          <div class="grid grid-cols-2 gap-y-4 2xl:gap-x-8 xl:gap-x-6">
+            <div class="grid grid-cols-3 xl:gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center h-fit">
               <tds-label>Loại sản phẩm:</tds-label>
               <tds-form-field class="w-full col-span-2">
                 <tds-select valueField="value" textField="text" placeholder='Chọn loại sản phẩm'
@@ -98,12 +98,12 @@
               <tds-label>Số lượng thực tế:</tds-label>
               <div class="col-span-2 flex space-x-2">
                 <tds-form-field class="w-full">
-                  <tds-input-number 
-                    [ngModel]="_form.value.InitInventory || initInventory" 
-                    [ngModelOptions]="{standalone: true}" 
-                    [min]="0" 
+                  <tds-input-number
+                    [ngModel]="_form.value.InitInventory || initInventory"
+                    [ngModelOptions]="{standalone: true}"
+                    [min]="0"
                     [formatter]="numberWithCommas"
-                    [parser]="parserComas" 
+                    [parser]="parserComas"
                     [disabled]="id ? true : false"
                     (ngModelChange)="changeInitInventory($event)"
                     class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
@@ -118,7 +118,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+            <div class="grid grid-cols-3 xl:gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center">
               <tds-label>Giá sản phẩm:</tds-label>
               <tds-form-field class="w-full col-span-2">
                 <tds-input-number formControlName="ListPrice" [min]="0" [formatter]="numberWithCommas"

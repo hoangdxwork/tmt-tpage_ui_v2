@@ -40,9 +40,9 @@
             <div class="w-full h-full pb-2.5">
                     <tds-table #rowSelectionTable
                     [listData]="lstData"
+                    [tableLayout]="'fixed'"
                     [showSizeChanger]="true"
                     [loading]="loading"
-                    [scroll]="{y:'auto'}"
                     [pageSize]="20"
                     [total]="count"
                     [loading]="isLoading"
@@ -51,21 +51,21 @@
                     class="tds-promotion-table">
                     <thead>
                         <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                            <th width="32px" [align]="'center'"></th>
-                            <th width="44px" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked"
+                            <th width="6%" [align]="'center'"></th>
+                            <th width="6%" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked"
                                 [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
                             </th>
-                            <th>Tên</th>
-                            <th width="226px">Hiệu lực</th>
-                            <th width="322px">Ngày khởi tạo</th>
-                            <th width="322px">Thao tác</th>
+                            <th width="38%">Tên</th>
+                            <th width="10%">Hiệu lực</th>
+                            <th width="20%">Ngày khởi tạo</th>
+                            <th width="20%">Thao tác</th>
                         </tr>
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                         <tr class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.Id) ? 'bg-background-6':''}}">
                             <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)"></td>
-                            <td [checked]="setOfCheckedId.has(data.Id)"
+                            <td [checked]="setOfCheckedId.has(data.Id)" [align]="'center'"
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
                             <td>{{ data.Name }}</td>
                             <td>

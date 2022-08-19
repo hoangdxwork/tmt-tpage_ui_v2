@@ -5,7 +5,7 @@
           <span>Giá trị</span>
       </div>
 
-      <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
+      <div class="grid grid-cols-2 gap-y-4 2xl:gap-x-8 xl:gap-x-4 mt-4">
           <div class="grid grid-cols-3 gap-y-4 items-center">
               <tds-label class="flex gap-x-1 items-center">
                 <span>Số lượng tối thiểu</span>
@@ -130,7 +130,7 @@
               </div>
           </div>
       </div>
-      <div class="flex gap-x-8 mt-4 items-baseline">
+      <div class="flex 2xl:gap-x-8 xl:gap-x-4 mt-4 items-baseline">
           <div class="grid grid-colfa-stack-1x gap-y-4 items-center w-1/2">
               <!-- discount for -->
               <div *ngIf="isShow('DiscountType')" class="grid grid-cols-3 gap-y-4 items-center">
@@ -178,8 +178,8 @@
                       Chiết khấu trên
                   </span>
                   <tds-radio-group class="flex flex-col col-span-2 gap-y-2" formControlName="DiscountApplyOn">
-                      <label tds-radio value="on_order" class="w-1/2">Trên đơn hàng</label>
-                      <label tds-radio value="specific_product" class="w-1/2">Trên sản phẩm cụ thể</label>
+                      <label tds-radio value="on_order">Trên đơn hàng</label>
+                      <label tds-radio value="specific_product">Trên sản phẩm cụ thể</label>
                   </tds-radio-group>
               </div>
 
@@ -216,7 +216,7 @@
                       </tds-form-field>
                       <span class="ml-2 text-neutral-1-400 text-sm font-normal">đ</span>
                     </div>
-                    <span class="w-2/5 text-neutral-1-400 text-sm font-normal text-right"> (Nếu 0, không giới hạn) </span>
+                    <span class="w-2/5 text-neutral-1-400 2xl:text-sm xl:text-caption-2 font-normal text-right">(Nếu 0, không giới hạn) </span>
                   </div>
               </div>
 
