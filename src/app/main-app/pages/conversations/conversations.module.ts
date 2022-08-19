@@ -211,7 +211,8 @@ const SERVICES = [
   FaceBookPostItemHandler,
   PrepareFacebookPostHandler,
   PrepareAddCampaignHandler,
-  CsOrder_FromConversationHandler
+  CsOrder_FromConversationHandler,
+  ConversationPostEvent
 ]
 
 @NgModule({
