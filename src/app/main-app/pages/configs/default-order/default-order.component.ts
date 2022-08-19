@@ -18,6 +18,7 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
   templateUrl: './default-order.component.html',
   providers: [TDSDestroyService]
 })
+
 export class DefaultOrderComponent implements OnInit {
 
   defaultProduct?: Detail_QuickSaleOnlineOrder;
@@ -37,32 +38,24 @@ export class DefaultOrderComponent implements OnInit {
   loadDefaultProduct(){
     let exist = this.productTemplateUOMLineService.getDefaultProduct();
 
-    if(exist != null){
-
-      this.defaultProduct = exist;
-
-    }else{
-      this.shareService.getConfigs().pipe(takeUntil(this.destroy$))
-        .pipe(mergeMap(item => {
-
+    if(exist && exist.ProductId){
+        this.defaultProduct = exist;
+    } else {
+      this.shareService.getConfigs().pipe(takeUntil(this.destroy$)).pipe(mergeMap(item => {
           if(item.SaleSetting.ProductId){
-            
-            return this.productService.getById(item.SaleSetting.ProductId);
-          }else{
-
-            return new Observable<any>();
+              return this.productService.getById(item.SaleSetting.ProductId);
+          } else{
+              return new Observable<any>();
           }
-
         }))
         .subscribe({
-          next:(res) => {
-            //TODO: Trường hợp có sản phẩm
-            this.defaultProduct = this.prepareModel(res);
-  
-            this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+          next:(product) => {
+              //TODO: Trường hợp có sản phẩm
+              this.defaultProduct = this.prepareModel(product);
+              this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
           },
           error:(err) => {
-            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+              this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
           }
         })
     }
@@ -88,7 +81,7 @@ export class DefaultOrderComponent implements OnInit {
   prepareModel(data:TDSSafeAny){
     return {
       Id: null,
-      Quantity: data?.Quantity || data?.QtyAvailable,
+      Quantity: 1,
       Price: data?.ListPrice || data?.Price,
       ProductId: data?.Id,
       ProductName: data?.Name,
@@ -103,7 +96,6 @@ export class DefaultOrderComponent implements OnInit {
 
   removeDefaultProduct(){
     delete this.defaultProduct;
-
     this.productTemplateUOMLineService.removeCache();
   }
 }

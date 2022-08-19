@@ -294,15 +294,13 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<undefined>(api, data);
   }
 
-  // getByFacebookPageId(pageId: string): Observable<any> {
-  //   let api: CoreAPIDTO = {
-  //     url: `${this._BASE_URL}/odata/CRMTeam/ODataService.GetByFacebookPageId?PageId=${pageId}`,
-  //     method: CoreApiMethodType.post
-  //   }
+  getByFacebookPageId(pageId: string): Observable<any> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/CRMTeam/ODataService.GetByFacebookPageId?PageId=${pageId}`,
+      method: CoreApiMethodType.post
+    }
 
-  //   return this.apiService.getData<undefined>(api, null);
-  // }
-
-
+    return this.apiService.getData<any>(api, null);
+  }
 
 }
