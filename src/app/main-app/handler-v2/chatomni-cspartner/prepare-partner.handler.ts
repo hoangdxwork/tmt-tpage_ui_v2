@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
+import { ChatomniConversationInfoDto, ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
+import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { TDSHelperString } from "tds-ui/shared/utility";
 import { ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { CreateOrUpdatePartnerModel } from "../../dto/conversation-partner/create-update-partner.dto";
@@ -8,6 +9,36 @@ import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleo
 @Injectable()
 
 export class CsPartner_PrepareModelHandler {
+
+  public getPartnerFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO) {
+    let partner: ConversationPartnerDto = {} as any;
+
+    if(conversationInfo && conversationInfo.Partner) {
+        partner = {...conversationInfo.Partner};
+    }
+
+    if(!partner.Name && conversationInfo && conversationInfo.Conversation?.Name) {
+        partner.Name = conversationInfo.Conversation.Name;
+    }
+
+    if(!partner.Phone && conversationInfo && conversationInfo.Conversation?.Phone) {
+        partner.Phone = conversationInfo.Conversation.Phone;
+    }
+
+    if(!partner.Email && conversationInfo && conversationInfo.Conversation?.Email) {
+        partner.Email = conversationInfo.Conversation.Email;
+    }
+
+    if(!partner.FacebookASIds && conversationInfo && conversationInfo.Conversation?.ConversationId) {
+        partner.FacebookASIds = conversationInfo.Conversation.ConversationId;
+    }
+
+    if(!partner.FacebookPSId && conversationInfo && conversationInfo.Conversation?.ConversationId) {
+        partner.FacebookPSId = conversationInfo.Conversation.ConversationId;
+    }
+
+    return {...partner};
+  }
 
   public prepareModel(partner: ConversationPartnerDto, item: ChatomniConversationItemDto) {
     let  model = {

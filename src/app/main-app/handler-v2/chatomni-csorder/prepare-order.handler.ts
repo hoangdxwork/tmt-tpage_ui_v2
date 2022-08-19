@@ -13,8 +13,7 @@ export class CsOrder_PrepareModelHandler {
   public phoneRegex = /(?:\b|[^0-9])((0|o|84|\+84)(\s?)([2-9]|1[0-9])(\d|o(\s|\.)?){8})(?:\b|[^0-9])/;
   saleConfig!: SaleOnlineSettingDTO;
 
-  constructor(private crmTeamService: CRMTeamService) {
-  }
+  constructor(private crmTeamService: CRMTeamService) {}
 
   public prepareInsertFromMessage(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
 
@@ -127,6 +126,7 @@ export class CsOrder_PrepareModelHandler {
 
     return {...item};
   }
+
 
 }
 
