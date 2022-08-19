@@ -1,5 +1,5 @@
 import { eventCollapTrigger } from './../helper/event-animations.helper';
-import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy, HostBinding } from '@angular/core';
+import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy, HostBinding, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
@@ -15,7 +15,8 @@ const ESCAPE_ENTER = 'Enter';
 
 @Component({
   selector: 'suggest-address-v2',
-  templateUrl: './suggest-address-v2.component.html'
+  templateUrl: './suggest-address-v2.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
@@ -91,6 +92,7 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
     if(this._street) {
         this._form.controls['Street'].setValue(this._street);
         this.innerText = this._street;
+        this.checkAddress(null);
     }else{
       this._form.controls['Street'].setValue(null);
     }

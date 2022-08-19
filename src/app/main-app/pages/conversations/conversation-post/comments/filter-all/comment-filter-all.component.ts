@@ -216,18 +216,20 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
       } else {
           // TODO: Trả lời bình luận
-          model.parent_id = item.Id;
+          model.parent_id = item.ParentId || item.Data?.id || null;
           model.fbid = item.UserId;
 
           this.activityMatchingService.replyComment(this.team!.Id, model)
-            .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+            .pipe(takeUntil(this.destroy$)).subscribe({
+              next:(res: any) => {
 
-              this.message.success("Trả lời bình luận thành công.");
-              this.addReplyComment(item, model);
-
-          }, error => {
-            this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
-          })
+                this.message.success("Trả lời bình luận thành công.");
+                this.addReplyComment(item, model);
+              },
+              error: error => {
+                this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
+              }
+            })
       }
     }
   }

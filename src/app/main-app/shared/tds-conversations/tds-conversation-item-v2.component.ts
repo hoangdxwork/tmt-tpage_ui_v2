@@ -1,3 +1,5 @@
+import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { ModalAddAddressV2Component } from './../../pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ResponseAddMessCommentDto } from './../../dto/conversation-all/chatomni/response-mess.dto';
@@ -418,7 +420,6 @@ export class TDSConversationItemV2Component implements OnInit {
     }
   }
 
-  // hiện thông báo trả lời thanh công nhưng chưa add, chưa gửi vào fb
   addQuickReplyComment(message: string) {
     this.isReply = false;
     const model = this.prepareModel(message);
@@ -476,6 +477,28 @@ export class TDSConversationItemV2Component implements OnInit {
     model.created_time = (new Date()).toISOString();
 
     return model
+  }
+
+  showModalSuggestAddress(text: any){ 
+    if(!TDSHelperString.hasValueString(text))
+      return 
+    let modal =  this.modalService.create({
+        title: 'Thêm địa chỉ',
+        content: ModalAddAddressV2Component,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          _street: text,
+        }
+      });
+
+    modal.afterClose.subscribe({
+      next: (result: ResultCheckAddressDTO) => {
+        if(result){
+         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+        }
+      }
+    })
   }
 
   @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {

@@ -270,6 +270,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
       }
     })
+
+    //TODO: Cập nhật địa chỉ từ tds-conversation-item-v2 khi lưu chọn địa chỉ
+    this.omniEventEmiter.selectAddressEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (result: ResultCheckAddressDTO)=>{
+        let data = this.csOrder_SuggestionHandler.onLoadSuggestion(result, this.quickOrderModel);
+          this.quickOrderModel = data;
+          this.mappingAddress(this.quickOrderModel);
+      }
+    })
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
@@ -1044,11 +1053,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.coDAmount();
   }
 
-  onLoadSuggestion(item: ResultCheckAddressDTO) {
-    let data = this.csOrder_SuggestionHandler.onLoadSuggestion(item, this.quickOrderModel);
-    this.quickOrderModel = data;
-  }
-
   mappingAddress(data: QuickSaleOnlineOrderModel) {
     let x = this.csOrder_SuggestionHandler.mappingAddress(data);
 
@@ -1185,9 +1189,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       });
 
     modal.afterClose.subscribe({
-      next: (result: any) => {
+      next: (result: ResultCheckAddressDTO) => {
         if(result){
-
+          let data = this.csOrder_SuggestionHandler.onLoadSuggestion(result, this.quickOrderModel);
+          this.quickOrderModel = data;
+          this.mappingAddress(this.quickOrderModel);
         }
       }
     })
