@@ -112,6 +112,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           }
       }
     })
+
+    //TODO: Cập nhật địa chỉ từ tds-conversation-item-v2 khi lưu chọn địa chỉ
+    this.omniEventEmiter.selectAddressEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (result: ResultCheckAddressDTO)=>{
+        let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner);
+          this.partner = partner;
+          this.mappingAddress(this.partner);
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
