@@ -100,7 +100,7 @@ export class CsPartner_PrepareModelHandler {
         } as any;
 
         partner.DistrictCode = x.DistrictCode || x.District?.code;
-        partner.DistrictName = x.WardName || x.District?.name;
+        partner.DistrictName = x.DistrictName || x.District?.name;
 
     } else {
       partner.District = null;
@@ -123,45 +123,53 @@ export class CsPartner_PrepareModelHandler {
 
   public loadPartnerFromTabOrder(partner: ConversationPartnerDto, order: QuickSaleOnlineOrderModel) {
 
-    if(TDSHelperString.hasValueString(order.PartnerName)) {
-      partner.Name = order.PartnerName;
+    if(!partner.Name && order.PartnerName ) {
+        partner.Name = order.PartnerName;
     }
 
-    if(TDSHelperString.hasValueString(order.Telephone)) {
-      partner.Phone = order.Telephone;
+    if(!partner.Phone && order.Telephone) {
+        partner.Phone = order.Telephone;
     }
 
-    if(TDSHelperString.hasValueString(order.Email)) {
-      partner.Email = order.Email;
+    if(!partner.Email && order.Email) {
+        partner.Email = order.Email;
     }
 
-    if(TDSHelperString.hasValueString(order.Note)) {
-      partner.Comment = order.Note;
+    if(!partner.Comment && order.Note) {
+        partner.Comment = order.Note;
     }
 
-    if(TDSHelperString.hasValueString(order.Address)) {
+    if(!partner.Street && order.Address) {
       partner.Street = order.Address;
     }
 
-    if(TDSHelperString.hasValueString(order.CityCode)) {
+    if(order.CityCode && !partner.City) {
       partner.City = {
           code: order.CityCode,
           name: order.CityName
       }
+      partner.CityCode = order.CityCode;
+      partner.CityName = order.CityName;
     }
 
-    if(TDSHelperString.hasValueString(order.DistrictCode)) {
-      partner.District = {
-          code: order.DistrictCode,
-          name: order.DistrictName
-      } as any;
+    if(order.DistrictCode && !partner.District) {
+        partner.District = {
+            code: order.DistrictCode,
+            name: order.DistrictName
+        } as any;
+
+        partner.DistrictCode = order.DistrictCode;
+        partner.DistrictName = order.DistrictName;
     }
 
-    if(TDSHelperString.hasValueString(order.WardCode)) {
+    if(order.WardCode && !partner.Ward) {
       partner.Ward = {
           code: order.WardCode,
           name: order.WardName
       } as any;
+
+      partner.WardCode = order.WardCode;
+      partner.WardName = order.WardName;
     }
 
     return {...partner};

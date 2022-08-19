@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
+import { ProductTemplateUOMLineService } from "@app/services/product-template-uom-line.service";
 import { UserInitDTO } from "@core/dto";
 import { TAuthService } from "@core/services";
 import { TDSHelperArray, TDSHelperObject } from "tds-ui/shared/utility";
@@ -12,7 +13,8 @@ export class CsOrder_FromConversationHandler {
 
     private userInit!: UserInitDTO;
 
-    constructor(private auth: TAuthService){
+    constructor(private auth: TAuthService,
+      private productTemplateUOMLineService: ProductTemplateUOMLineService){
       this.loadUserLogged();
     }
 
@@ -57,8 +59,32 @@ export class CsOrder_FromConversationHandler {
       }
       // TODO: trường hợp ko có thì load dữ liệu mặc định từ conversationItem + partner
       else {
-        //mapping thêm các trường dữ liệu thiếu, chưa xử lý
+          let x = this.productTemplateUOMLineService.getDefaultProduct() as  Detail_QuickSaleOnlineOrder;
+          order.Details = [];
 
+          if(x && x.ProductId) {
+              let item = {
+                  Id: null,
+                  Quantity: 1,
+                  Price: x.Price,
+                  ProductId: x.ProductId,
+                  ProductName: x.ProductName,
+                  ProductNameGet: x.ProductNameGet,
+                  ProductCode: x.ProductCode,
+                  UOMId: x.UOMId,
+                  UOMName: x.UOMName,
+                  Note: x.Note,
+                  Factor: x.Factor,
+                  OrderId: x.OrderId,
+                  Priority: x.Priority,
+                  ImageUrl: x.ImageUrl,
+                  LiveCampaign_DetailId: x.LiveCampaign_DetailId,
+                  IsOrderPriority: x.IsOrderPriority,
+                  QuantityRegex: x.QuantityRegex
+              } as Detail_QuickSaleOnlineOrder;
+
+              order.Details.push(item);
+          }
       }
 
       if(!order.CRMTeamId) {
@@ -80,7 +106,10 @@ export class CsOrder_FromConversationHandler {
 
       if(!order.PartnerId && partner && partner.Id) {
           order.PartnerId = partner.Id;
-          order.PartnerName = partner.Name || conversationInfo.Conversation?.Name;
+      }
+
+      if(!order.PartnerName && conversationInfo.Conversation.Name) {
+          order.PartnerName = conversationInfo.Conversation.Name;
       }
 
       if(!order.UserId && this.userInit) {
@@ -112,7 +141,44 @@ export class CsOrder_FromConversationHandler {
           order.Facebook_UserId = conversationInfo.Conversation.UserId;
       }
 
+      // TODO: nếu không có đơn hàng cũ thì tính tạm tổng tiền với product mặc định
+      if(!conversationInfo.Order && TDSHelperArray.hasListValue(order.Details)) {
+          order.TotalAmount = 0;
+          order.TotalAmount = (order.Details[0].Price * order.Details[0].Quantity);
+          order.TotalQuantity = 1;
+      }
+
       return {...order}
+    }
+
+    updateOrderFromTabPartner(quickOrderModel: QuickSaleOnlineOrderModel, partner: ConversationPartnerDto) {
+
+      if(partner.Name) {
+          quickOrderModel.PartnerName = partner.Name;
+      }
+
+      if(partner.Phone) {
+          quickOrderModel.Telephone = partner.Phone;
+      }
+
+      if(partner.Email) {
+          quickOrderModel.Email = partner.Email;
+      }
+
+      if(partner.Street) {
+          quickOrderModel.Address = partner.Street;
+      }
+
+      if(partner && (partner.CityCode || partner.City?.code)) {
+          quickOrderModel.CityCode = (partner.CityCode || partner.City?.code) as any;
+          quickOrderModel.CityName = (partner.CityName || partner.City?.name) as any;
+          quickOrderModel.DistrictCode = (partner.DistrictCode || partner.District?.code) as any;
+          quickOrderModel.DistrictName = (partner.DistrictName || partner.District?.name) as any;
+          quickOrderModel.WardCode = (partner.WardCode || partner.Ward?.code) as any;
+          quickOrderModel.WardName = (partner.WardName || partner.Ward?.code) as any;
+      }
+
+      return {...quickOrderModel};
     }
 
     loadUserLogged() {

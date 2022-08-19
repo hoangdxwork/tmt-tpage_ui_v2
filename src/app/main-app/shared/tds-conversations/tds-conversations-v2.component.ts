@@ -447,9 +447,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       }
 
       // TODO: Refetch data
-      if (!this.data.Name && this.data.ConversationId && this.data.ConversationId != "null") {
-          this.refetch(changes["data"].currentValue.ConversationId);
-      }
+      // if (!this.data.Name && this.data.ConversationId && this.data.ConversationId != "null") {
+      //     this.refetch(changes["data"].currentValue.ConversationId);
+      // }
 
       this.loadData(this.data);
     }
@@ -502,21 +502,21 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
   }
 
-  refetch(psid: string) {
-    this.crmMatchingService.refetch(psid, this.pageId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+  // refetch(psid: string) {
+  //   this.crmMatchingService.refetch(psid, this.pageId).pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: any) => {
 
-        if (res?.conversation?.psid == this.data.Id) {
-            if (res.conversation?.name) {
-                this.data.Name = res.conversation.name;
-            }
-        }
-      },
-      error: (error: any) => {
-          this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
-      }
-    });
-  }
+  //       if (res?.conversation?.psid == this.data.Id) {
+  //           if (res.conversation?.name) {
+  //               this.data.Name = res.conversation.name;
+  //           }
+  //       }
+  //     },
+  //     error: (error: any) => {
+  //         this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
+  //     }
+  //   });
+  // }
 
   onClickSender() {
     this.messageSendingToServer();

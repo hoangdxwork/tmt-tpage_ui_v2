@@ -154,9 +154,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   loadPartnerFromTabOrder() {
     this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: QuickSaleOnlineOrderModel) => {
-        if(res) {
-           let partner = this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, res);
+      next: (order: QuickSaleOnlineOrderModel) => {
+        if(order) {
+           let partner = {...this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, order)};
            this.partner = partner;
         }
       }
@@ -385,7 +385,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         }
 
         let partnerUpdate = this.csPartner_PrepareModelHandler.updatePartnerModel(this.partner, x);
-
         if(partnerUpdate && this.conversationInfo) {
             this.partner = {...partnerUpdate};
             this.conversationInfo.Partner = {...partnerUpdate};

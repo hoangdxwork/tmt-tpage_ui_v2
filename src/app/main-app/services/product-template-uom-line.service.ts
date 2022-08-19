@@ -6,10 +6,10 @@ import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
-
 @Injectable({
   providedIn: 'root'
 })
+
 export class ProductTemplateUOMLineService extends BaseSevice {
 
   prefix: string = "odata";
@@ -22,7 +22,7 @@ export class ProductTemplateUOMLineService extends BaseSevice {
     super(apiService)
   }
 
-  getDefaultProduct():Detail_QuickSaleOnlineOrder | null {
+  getDefaultProduct(): Detail_QuickSaleOnlineOrder | null {
     let item = localStorage.getItem(this._keyCacheDefaultProduct);
     return item ? JSON.parse(item) : null;
   }
