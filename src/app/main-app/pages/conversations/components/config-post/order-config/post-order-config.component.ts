@@ -516,7 +516,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   onSave() {
     let model = this.prepareModelOrderConfig();
-
+    
     this.isLoading = true;
     if(this.isCheckValue(model) === 1) {
       this.facebookPostService.updateOrderConfig(this.data.ObjectId, this.isImmediateApply, model)
@@ -541,12 +541,12 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     model.IsOnlyOrderWithPhone = formValue.IsOnlyOrderWithPhone;
     model.IsForceOrderWithPhone = formValue.IsForceOrderWithPhone;
     model.IsForcePrintWithPhone = formValue.IsForcePrintWithPhone;
-    // model.MinLengthToVisible = formValue.MinLengthToVisible;
+    model.MinLengthToVisible = formValue.MinLengthToVisible;
     model.MinLengthToOrder = formValue.MinLengthToOrder;
     model.TextContentToExcludeOrder = formValue.TextContentToExcludeOrder;
     model.TextContentToOrders = formValue.TextContentToOrders;
-    model.ExcludedPhones = formValue.ExcludedPhones;
-    model.ExcludedStatusNames = formValue.ExcludedStatusNames;
+    model.ExcludedPhones = formValue.ExcludedPhones || [];
+    model.ExcludedStatusNames = formValue.ExcludedStatusNames || [];
     model.MaxCreateOrder = formValue.MaxCreateOrder;
     model.IsEnableAutoAssignUser = formValue.IsEnableAutoAssignUser;
     model.LiveCampaignId = formValue.LiveCampaignId;
