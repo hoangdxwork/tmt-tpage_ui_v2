@@ -71,7 +71,7 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
   isLoading = false;
   configModelTags: Array<TagDTO> = [];
   configTagDataList: Array<TagDTO> = [];
-  
+
   indClickTag = -1;
   isProcessing: boolean = false;
 
@@ -198,8 +198,8 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
   }
 
   exportExcel() {
-    if (this.isProcessing) { 
-      return 
+    if (this.isProcessing) {
+      return
     }
 
     let state = {
@@ -232,7 +232,7 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
 
   sortByIds(columnValue: string) {
     // this.filterObj.active = true;
-    
+
     switch(this.sortByName){
       case 'Z-A':
         this.sortByName = 'A-Z';
