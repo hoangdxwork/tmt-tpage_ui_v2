@@ -6,10 +6,19 @@
         left: -4px;
     }
 }
+
 ngx-emoji {
     button {
         span {
             cursor: pointer !important;
         }
     }
+}
+
+button.emoji-mart-search-icon {
+    top: 7px
+}
+
+.emoji-mart-scroll {
+    @extend .tds-custom-scroll;
 }
