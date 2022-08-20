@@ -1,3 +1,4 @@
+import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { FilterObjDTO } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
@@ -105,7 +106,10 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
   }
 
   addItem(item: DataPouchDBDTO) {
+    //TODO: truyền về conversation-order
     this.conversationOrderFacade.onAddProductOrder$.emit(item)
+    //TODO:nếu đang tab khách hàng, chuyển sang tab đơn hàng
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
   }
 
   refreshData(){

@@ -1,3 +1,4 @@
+import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto, QueryFilterConversationDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
@@ -186,6 +187,15 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.cdRef.detectChanges();
             }
+        }
+      }
+    })
+
+    // TODO: Chọn sản phẩm, nếu đang tab khách hàng chuyển sang đơn hàng
+    this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: string)=>{
+        if(res === ChangeTabConversationEnum.order) {
+          this.selectedIndex = 2;
         }
       }
     })

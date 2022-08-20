@@ -1,3 +1,4 @@
+import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { ModalAddAddressV2Component } from './../../pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event/chatomni-event-emiter.service';
@@ -78,7 +79,8 @@ export class TDSConversationItemV2Component implements OnInit {
     private destroy$: TDSDestroyService,
     private omniCommentFacade: ChatomniCommentFacade,
     private omniMessageFacade: ChatomniMessageFacade,
-    private chatomniEventEmiter: ChatomniEventEmiterService) {
+    private chatomniEventEmiter: ChatomniEventEmiterService,
+    private chatomniSendMessageService: ChatomniSendMessageService) {
   }
 
   ngOnInit(): void {
@@ -233,14 +235,21 @@ export class TDSConversationItemV2Component implements OnInit {
     return false;
   }
 
-  //chưa test
+  //TODO: load lại tin nhắn lỗi
   retryMessage() {
-    this.activityMatchingService.retryMessage(this.dataItem.Id, this.team.ChannelId )
-      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    let model = {   
+      MessageType: 1,
+      RecipientId: this.dataItem.Id
+    }
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
           this.tdsMessage.success("Thao tác thành công");
-      }, error => {
-          this.tdsMessage.error(`${error?.Message}` || 'Không thành công');
-      })
+        }, 
+        error: error => {
+          this.tdsMessage.error(`${error?.message}` || 'Không thành công');
+      }
+    })
   }
 
   // has_admin_required: copy lại tn đẩy qua input tds-conversation để gửi lại
