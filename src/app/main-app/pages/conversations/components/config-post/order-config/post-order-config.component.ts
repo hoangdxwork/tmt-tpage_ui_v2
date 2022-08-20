@@ -1,43 +1,42 @@
+import { ConfigUserDTO } from './../../../../../dto/configs/post/post-order-config-v2.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
-import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Observable, Subject, Subscription } from "rxjs";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
+import { Observable } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { ApplicationUserDTO } from "src/app/main-app/dto/account/application-user.dto";
-import { AutoOrderConfigDTO, AutoOrderConfig_ContentToOrderDTO, AutoOrderConfig_ProductDTO } from "src/app/main-app/dto/configs/post/order-config.dto";
 import { CRMTagDTO } from "src/app/main-app/dto/crm-tag/odata-crmtag.dto";
-import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
 import { DataPouchDBDTO } from "src/app/main-app/dto/product-pouchDB/product-pouchDB.dto";
 import { ProductDTO } from "src/app/main-app/dto/product/product.dto";
 import { ApplicationUserService } from "src/app/main-app/services/application-user.service";
 import { CRMTagService } from "src/app/main-app/services/crm-tag.service";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
 import { ProductService } from "src/app/main-app/services/product.service";
-import * as XLSX from 'xlsx';
 import { ModalListProductComponent } from "../../modal-list-product/modal-list-product.component";
-import { MDBInnerCreatedByDTO } from 'src/app/main-app/dto/conversation/inner.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { PostOrderConfigV2DTO, AutoOrderProductDTO, TextContentToOrderDTO } from '@app/dto/configs/post/post-order-config-v2.dto';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'post-order-config',
-  templateUrl: './post-order-config.component.html'
+  templateUrl: './post-order-config.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 
-export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
+export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
 
-  formOrderConfig!: FormGroup;
+  dataModel!: PostOrderConfigV2DTO;
   tags: any[] = [];
   fbid: any;
   isLoading: boolean = false;
-  dataModel: any;
-  private destroy$ = new Subject();
 
   // add more template
   prefixMoreTemplate: string = '';
@@ -46,14 +45,15 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   toMoreTemplate: number = 1;
   isVisibleRangeGenerate: boolean = false;
   isImmediateApply: boolean = false;
+  indexPush: number = 0;
 
   lstTags$!: Observable<CRMTagDTO[]>;
   lstUser$!: Observable<ApplicationUserDTO[]>;
   currentLiveCampaign!: any | undefined;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private message: TDSMessageService,
+  constructor(private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef,
+    private destroy$: TDSDestroyService,
     private facebookPostService: FacebookPostService,
     private crmTagService: CRMTagService,
     private applicationUserService: ApplicationUserService,
@@ -61,25 +61,27 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
     private productService: ProductService,
-    private liveCampaignService: LiveCampaignService
-  ) { }
-
-  get textContentToOrdersFormGroups() {
-    return (this.formOrderConfig?.get("TextContentToOrders") as FormArray);
-  }
+    private liveCampaignService: LiveCampaignService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes?.data?.firstChange === true) this.createForm();
-    else this.resetForm();
-
-    if(changes?.data?.currentValue) {
-      this.loadOrderConfig(this.data.ObjectId);
+    if(changes['data'] && !changes['data'].firstChange) {
+        this.validateData();
+        this.data = {...changes['data'].currentValue};
+        this.loadData(this.data.ObjectId);
     }
   }
 
   ngOnInit(): void {
+    if(this.data && this.data.ObjectId) {
+        this.loadData(this.data.ObjectId);
+    }
     this.loadTag();
     this.loadUser();
+  }
+
+  validateData() {
+    this.data = null as any;
+    this.currentLiveCampaign = null;
   }
 
   loadTag() {
@@ -90,164 +92,155 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     this.lstUser$ = this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$));
   }
 
-  loadLiveCampaignById(liveCampaignId: string | undefined) {
+  loadLiveCampaignById(liveCampaignId: string) {
+
     if(liveCampaignId) {
-      this.liveCampaignService.getById(liveCampaignId)
-        .pipe(takeUntil(this.destroy$)).subscribe(res => {
-            this.currentLiveCampaign = res;
-      });
+      this.liveCampaignService.getById(liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+            this.currentLiveCampaign = {...res};
+
+            this.cdRef.markForCheck();
+          },
+          error: (err) => {
+            this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadLiveCampaign);
+          }
+        });
     }
-    else {
-      this.currentLiveCampaign = undefined;
-    }
-
   }
 
-  createForm() {
-    this.formOrderConfig = this.formBuilder.group({
-      IsEnableOrderAuto: [false],
-      IsForceOrderWithAllMessage: [false],
-      IsOnlyOrderWithPartner: [false],
-      IsOnlyOrderWithPhone: [false],
-      IsForceOrderWithPhone: [false],
-      IsForcePrintWithPhone: [false],
-      TextContentToExcludeOrder: [null],
-      MinLengthToOrder: [0],
-      MinLengthToVisible: [0],
-      MaxCreateOrder: [0],
-      TextContentToOrders: this.formBuilder.array([]),
-      selectedWord1s: [null],
-      ExcludedPhones: [null],
-      ExcludedStatusNames: [null],
-      IsEnableAutoAssignUser: [false],
-      Users: [null],
-      LiveCampaignId: [null]
-    })
-  }
-
-  resetForm() {
-    this.formOrderConfig.reset();
-  }
-
-  loadOrderConfig(postId: string) {
+  loadData(postId: string) {
     this.isLoading = true;
 
-    this.facebookPostService.getOrderConfig(postId)
-      .pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-          this.updateForm(res);
-          this.loadLiveCampaignById(res?.LiveCampaignId);
+    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: PostOrderConfigV2DTO) => {
+          if(res) {
+              this.dataModel = {...res};
+              this.setupIndex();
+
+              this.cdRef.markForCheck();
+          }
+
+          if(res && res.LiveCampaignId) {
+            this.loadLiveCampaignById(res.LiveCampaignId);
+          }
+
+          this.isLoading = false;
+        },
+        error: (err: any) => {
+          this.isLoading = false;
+        }
       });
   }
 
-  updateForm(data: AutoOrderConfigDTO) {
-    if(!TDSHelperObject.hasValue(data)) return;
+  setupIndex(){
+    let maxIndex = 0;
 
-    this.formOrderConfig.patchValue(data);
-
-    if (data.TextContentToExcludeOrder) {
-      this.formOrderConfig.controls['selectedWord1s'].setValue(data.TextContentToExcludeOrder.split(','));
-    }
-
-    if (data.ExcludedPhones) {
-      this.formOrderConfig.controls.ExcludedPhones.setValue(data.ExcludedPhones);
-    }
-
-    if (data.ExcludedStatusNames) {
-      this.formOrderConfig.controls.ExcludedStatusNames.setValue(data.ExcludedStatusNames);
-    }
-
-    if(TDSHelperArray.hasListValue(data.TextContentToOrders)) {
-      this.initTextContentToOrders(data.TextContentToOrders);
-    }
-  }
-
-  initTextContentToOrders(data: AutoOrderConfig_ContentToOrderDTO[]) {
-    data.forEach(content => {
-      const control = <FormArray>this.formOrderConfig.controls['TextContentToOrders'];
-      control.push(this.initOrderContent(content));
-    });
-  }
-
-  initOrderContent(data: AutoOrderConfig_ContentToOrderDTO | undefined): FormGroup {
-    let currentIndex = this.formOrderConfig.value.TextContentToOrders.length;
-
-    let formGroup = this.formBuilder.group({
-      Index: [currentIndex, Validators.required],
-      Content: [null],
-      IsActive: [true],
-      ContentWithAttributes: [null],
-      Product: [null],
-      selectedWord2s: [null],
-      selectedWord3s: [null],
+    this.dataModel.TextContentToOrders?.forEach(x => {
+      if(maxIndex < x.Index) maxIndex = x.Index;
     });
 
-    if(TDSHelperObject.hasValue(data) && data) {
-      formGroup.patchValue(data);
+    this.indexPush = maxIndex + 1;
+  }
 
-      if(TDSHelperString.hasValueString(data.Content)) {
-        formGroup.controls['selectedWord2s'].setValue(data.Content.split(','));
-      }
-
-      if(TDSHelperString.hasValueString(data.ContentWithAttributes)) {
-        formGroup.controls['selectedWord3s'].setValue(data.ContentWithAttributes.split(','));
-      }
+  addContentToOrders(data?: TextContentToOrderDTO) {
+    if(!this.dataModel.TextContentToOrders){
+      this.dataModel.TextContentToOrders = [];
     }
 
-    return formGroup;
-  }
-
-  initTextContentToDetail(details: any[], liveCampaign: any) {
-    details.forEach(content => {
-      const control = <FormArray>this.formOrderConfig.controls['TextContentToOrders'];
-      control.push(this.initOrderContentLiveCampaign(content, liveCampaign));
-    });
-  }
-
-  initOrderContentLiveCampaign(data: any, liveCampaign: any): FormGroup {
-    let currentIndex = this.formOrderConfig.value.TextContentToOrders.length;
-
-    let formGroup = this.formBuilder.group({
-      Index: [currentIndex, Validators.required],
-      Content: [null],
-      IsActive: [true],
-      ContentWithAttributes: [null],
-      Product: [null],
-      selectedWord2s: [null],
-      selectedWord3s: [null],
-    });
-
-    let product = this.defaultOrderConfigProductByLiveCampaignDetail(data, liveCampaign.EnableQuantityHandling);
-    let selectedWord2s: string[] = [];
-    let selectedWord3s: string[] = [];
-
-    if(TDSHelperObject.hasValue(data) && data) {
-      formGroup.patchValue(data);
-
-      if(TDSHelperString.hasValueString(data.Tags)) {
-        selectedWord2s = data.Tags.split(',');
-      }
-
-      if(TDSHelperString.hasValueString(data.ProductTemplateName)) {
-        if(TDSHelperString.hasValueString(data.Tags)) {
-          selectedWord3s = data.Tags.split(',');
-        }
-      }
+    if(data){
+        this.dataModel.TextContentToOrders.push(data);
+    }else{
+        this.dataModel.TextContentToOrders.push({
+            Index: this.indexPush,
+            Content: null,
+            ContentWithAttributes: null,
+            IsActive: true,
+            Product: null
+        });
+        this.indexPush += 1;
     }
-
-    formGroup.controls.Product.setValue(product);
-    formGroup.controls.selectedWord2s.setValue(selectedWord2s);
-    formGroup.controls.Content.setValue(selectedWord2s.toString());
-    formGroup.controls.selectedWord3s.setValue(selectedWord3s);
-    formGroup.controls.ContentWithAttributes.setValue(selectedWord3s.toString());
-
-    return formGroup;
   }
 
-  addTemplate() {
-    const control = <FormArray>this.formOrderConfig.controls['TextContentToOrders'];
-    control.push(this.initOrderContent(undefined));
-    this.message.info(Message.ConversationPost.AddTemplateSuccess);
+  // Bật tạo đơn tự động?
+  changeIsEnableOrderAuto(event: boolean) {
+    this.dataModel.IsEnableOrderAuto = event;
+  }
+
+  // Tạo tự động với bình luận bất kỳ?
+  changeIsForceOrderWithAllMessage(event: boolean) {
+    this.dataModel.IsForceOrderWithAllMessage = event;
+  }
+
+  // Áp dụng ngay cho những bình luận đã có?
+  changeIsImmediateApply(event: boolean) {
+    this.isImmediateApply = event;
+  }
+
+  // Bình luận của khách đã có thông tin (điện thoại, địa chỉ)
+  changeIsOnlyOrderWithPartner(event: boolean) {
+    this.dataModel.IsOnlyOrderWithPartner = event;
+  }
+
+  // Bình luận có số điện thoại
+  changeIsOnlyOrderWithPhone(event: boolean) {
+    this.dataModel.IsOnlyOrderWithPhone = event;
+  }
+
+  // Ép buộc tạo đơn với số điện thoại
+  changeIsForceOrderWithPhone(event: boolean) {
+    this.dataModel.IsForceOrderWithPhone = event;
+  }
+
+  // Ép buộc in nhiều lần với số điện thoại
+  changeIsForcePrintWithPhone(event: boolean) {
+    this.dataModel.IsForcePrintWithPhone = event;
+  }
+
+  // Bật phân công đơn hàng tự động cho nhân viên?
+  changeIsEnableAutoAssignUser(event:boolean) {
+    this.dataModel.IsEnableAutoAssignUser = event;
+  }
+
+  // Khách hàng không thuộc trạng thái
+  changeExcludedStatusNames(event:any[]) {
+    this.dataModel.ExcludedStatusNames = event.map(x => {
+      return x.Name as string;
+    });
+  }
+  //Bình luận không có nội dung
+  changeTextContentToExcludeOrder(event:any[]) {
+    this.dataModel.TextContentToExcludeOrder = event.join(",");
+  }
+  // Danh sách không có số điện thoại seeding
+  changeExcludedPhones(event:any[]) {
+    this.dataModel.ExcludedPhones = event;
+  }
+
+  selectContent(event: string[], index: number) {
+    let idx = this.dataModel.TextContentToOrders.findIndex(f=> f.Index == index);
+    let lastItem = TDSHelperString.stripSpecialChars(event[event.length - 1].toLowerCase());
+
+    event.forEach((x :any, index: number) => {
+      if(TDSHelperString.stripSpecialChars(x.toLowerCase()) == lastItem) {
+          if(index < event.length - 1){
+            this.message.error('Trùng nội dung');
+            event.pop();
+          }
+      }
+    })
+
+    this.dataModel.TextContentToOrders[idx].Content = event.join(",");
+    this.cdRef.detectChanges();
+  }
+
+  selectContentWithAttributes(event: string[], index: number) {
+    let idx = this.dataModel.TextContentToOrders.findIndex(f=> f.Index == index);
+
+    this.dataModel.TextContentToOrders[idx].ContentWithAttributes = event.join(",");
+  }
+
+  changeUsers(event: any){
+    this.dataModel.Users = event;
   }
 
   changeMoreTemplate() {
@@ -255,18 +248,18 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   removeTemplate(index: number) {
-    (this.formOrderConfig.get("TextContentToOrders") as FormArray).removeAt(index);
+    this.dataModel.TextContentToOrders = this.dataModel.TextContentToOrders.filter(f=>f.Index != index);
   }
 
   removeAllTemplate() {
-    let currentIndex = this.formOrderConfig.value.TextContentToOrders.length;
+    let currentIndex = this.dataModel.TextContentToOrders.length;
 
     if(currentIndex < 1) {
       this.message.info(Message.EmptyData);
       return;
     }
 
-    (this.formOrderConfig.get("TextContentToOrders") as FormArray).clear();
+    this.dataModel.TextContentToOrders = [];
   }
 
   onCannelMoreTemplate() {
@@ -284,20 +277,17 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    let currentIndex = this.formOrderConfig.value?.TextContentToOrders.length || 0;
-
     for(let i = this.fromMoreTemplate; i <= this.toMoreTemplate; i++) {
       let content = `${this.prefixMoreTemplate}${i}${this.suffixMoreTemplate}`;
 
-      let control = this.formBuilder.group({
-        Index: currentIndex,
-        Content: [content],
-        Product: null,
-        selectedWord2s: [[content]],
-      });
+      this.dataModel.TextContentToOrders.push({
+        Index: this.indexPush,
+        Content: content,
+        IsActive: true,
+        Product: null
+      })
 
-      (this.formOrderConfig.get("TextContentToOrders") as FormArray).push(control);
-      currentIndex++;
+      this.indexPush += 1;
     }
 
     this.message.info(Message.ConversationPost.AddMoreTemplateSuccess);
@@ -333,10 +323,10 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
             result.unshift(name_col[0]).toString();
           }
 
-          let excludedPhonesValue = this.formOrderConfig.value.ExcludedPhones || [];
+          let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
           result = [...result, ...excludedPhonesValue];
 
-          this.formOrderConfig.controls.ExcludedPhones.setValue(result);
+          this.dataModel.ExcludedPhones = result;
           break;
         }
       };
@@ -363,7 +353,10 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
       viewContainerRef: this.viewContainerRef,
-      size: 'xl'
+      size: 'xl',
+      componentParams:{
+        isPostConfig: true
+      }
     });
 
     modal.afterClose.subscribe((res: DataPouchDBDTO) =>{
@@ -374,36 +367,46 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   selectProduct(product: DataPouchDBDTO, index: number) {
-    this.productService.getAttributeValuesById(product.Id).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      let defaultProductConfig = this.defaultOrderConfigProduct(res);
-      let selectedWord2s = this.handleAddWord2s(defaultProductConfig);
-      let selectedWord3s = selectedWord2s;
 
-      let currentIndex = (this.formOrderConfig.get("TextContentToOrders") as FormArray).at(index).value;
-      currentIndex.Product = defaultProductConfig;
-      currentIndex.selectedWord2s = selectedWord2s;
-      currentIndex.Content = selectedWord2s;
-      currentIndex.selectedWord3s = selectedWord3s; // Gán 3s thành 2s
-      currentIndex.ContentWithAttributes = selectedWord3s;
+    this.productService.getAttributeValuesById(product.Id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
 
-      (this.formOrderConfig.get("TextContentToOrders") as FormArray).at(index).setValue(currentIndex);
+        let defaultProductConfig = this.prepareProduct(res);
+        let content = this.getContentString(defaultProductConfig);
+        let contentWithAttributes = this.getcontentWithAttributesString(defaultProductConfig);
+  
+        let obj: TextContentToOrderDTO = {
+          Product: defaultProductConfig || null,
+          Content: content,
+          ContentWithAttributes: contentWithAttributes,
+          Index: index,
+          IsActive: true
+        }
+  
+        let idx = this.dataModel.TextContentToOrders.findIndex(f=> f.Index == index);
+  
+        this.dataModel.TextContentToOrders[idx] = {...obj};
+
+        this.cdRef.detectChanges();
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || Message.ConversationPost.CanNotGetProduct);
+      }
     });
   }
 
-  defaultOrderConfigProduct(product: ProductDTO): AutoOrderConfig_ProductDTO {
-    let result = {} as AutoOrderConfig_ProductDTO;
+  prepareDefaultProduct(product: ProductDTO): AutoOrderProductDTO {
+    let result = {} as AutoOrderProductDTO;
 
     result.ProductId = product.Id;
     result.ProductCode = product.DefaultCode;
     result.ProductName = product.Name;
     result.ProductNameGet = product.NameGet;
-    result.Price = product.LstPrice;
+    result.Price = product.LstPrice || 0;
     result.UOMId = product.UOMId;
     result.UOMName = product.UOMName;
 
-    result.Quantity = undefined;
-    result.QtyLimit = undefined;
-    result.QtyDefault = undefined;
+    result.Quantity = 0;
     result.IsEnableRegexQty = false;
     result.IsEnableRegexAttributeValues = false;
     result.IsEnableOrderMultiple = false;
@@ -423,51 +426,23 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     return result;
   }
 
-  defaultOrderConfigProductByLiveCampaignDetail(detail: any, isEnableQuantityHandling: boolean): AutoOrderConfig_ProductDTO {
-    let result = {} as AutoOrderConfig_ProductDTO;
-
-    result.ProductId = detail.ProductId;
-    result.ProductCode = detail.ProductCode;
-    result.ProductName = detail.ProductName;
-    result.ProductNameGet = detail.ProductName;
-    result.Price = detail.Price;
-    result.UOMId = detail.UOMId;
-    result.UOMName = detail.UOMName;
-
-    result.Quantity = detail.Quantity;
-    result.QtyLimit = detail.LimitedQuantity;
-    result.QtyDefault = undefined;
-    result.IsEnableRegexQty = isEnableQuantityHandling;
-    result.IsEnableRegexAttributeValues = false;
-    result.IsEnableOrderMultiple = false;
-    result.AttributeValues = [];
-    result.DescriptionAttributeValues = [];
-
-    if(TDSHelperArray.hasListValue(detail?.AttributeValues)) {
-      let listName = detail.AttributeValues.map((x: any) => x.Name);
-      let listNameGet = detail.AttributeValues.map((x: any) => x.NameGet);
-
-      result.AttributeValues = listName;
-      result.DescriptionAttributeValues = listNameGet;
-
-      result.IsEnableRegexAttributeValues = true;
-    }
-
-    return result;
-  }
-
-  handleAddWord2s(productConfig: AutoOrderConfig_ProductDTO) {
+  getContentString(productConfig: AutoOrderProductDTO) {
     let productName = productConfig.ProductNameGet;
-    productName =  productName.replace(`[${productConfig.ProductCode}]`,"");
+
+    productName =  productName.replace(`[${productConfig.ProductCode}]`,``);
     productName =  productName.trim();
 
-    let result = this.handleWord(productName, productConfig.ProductCode);
-    return result;
+    return this.handleWord(productName, productConfig.ProductCode);
+  }
+
+  getcontentWithAttributesString(productConfig: AutoOrderProductDTO) {
+    let attributeValues = productConfig.AttributeValues;
+
+    return attributeValues.join(",");
   }
 
   handleWord(text: string, code?: string): string[] {
     let result: string[] = [];
-
     let word = StringHelperV2.removeSpecialCharacters(text);
     let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
     let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
@@ -491,89 +466,150 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   loadConfigLiveCampaign(liveCampaignId: string) {
     this.isLoading = true;
-    this.liveCampaignService.getDetailAndAttributes(liveCampaignId)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        let users: MDBInnerCreatedByDTO[] = [];
 
-        if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
-          users = this.prepareUser(res?.LiveCampaign?.Users);
-          this.formOrderConfig.controls.IsEnableAutoAssignUser.setValue(true);
+    this.liveCampaignService.getDetailAndAttributes(liveCampaignId).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next:(res) => {
+          let users: ConfigUserDTO[] | null = [];
+          
+          if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
+            users = this.prepareUser(res?.LiveCampaign?.Users);
+            this.dataModel.IsEnableAutoAssignUser = true;
+          }
+          
+          this.dataModel.Users = users;
+  
+          if(TDSHelperArray.hasListValue(res?.Details)) {
+            this.dataModel.TextContentToOrders = [];
+          }
+
+          this.isLoading = false;
+          this.message.info(Message.ConversationPost.LoadConfigSuccess);
+
+          this.cdRef.markForCheck();
+        }, 
+        error:(error) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+          
+          this.cdRef.markForCheck();
         }
-        this.formOrderConfig.controls.Users.setValue(users);
-
-        if(TDSHelperArray.hasListValue(res?.Details)) {
-          (this.formOrderConfig.controls['TextContentToOrders'] as FormArray).clear();
-          this.initTextContentToDetail(res.Details, res.LiveCampaign);
-        }
-
-        this.message.info(Message.ConversationPost.LoadConfigSuccess);
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });
   }
 
-  onSave() {
-    let model = this.prepareModelOrderConfig();
-    
-    this.isLoading = true;
-    if(this.isCheckValue(model) === 1) {
-      this.facebookPostService.updateOrderConfig(this.data.ObjectId, this.isImmediateApply, model)
-        .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe(res => {
-          this.message.success(Message.UpdatedSuccess);
-        }, error => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-        });
+  prepareProduct(product: any, isEnableQuantityHandling?: boolean): AutoOrderProductDTO {
+    let result = {} as AutoOrderProductDTO;
+
+    result.ProductId = product.ProductId || product.Id;
+    result.ProductCode = product.ProductCode || product.DefaultCode;
+    result.ProductName = product.ProductName || product.Name;
+    result.ProductNameGet = product.ProductNameGet || product.NameGet;
+    result.Price = product.Price || product.LstPrice || 0;
+    result.UOMId = product.UOMId;
+    result.UOMName = product.UOMName;
+    result.Quantity = product.Quantity || 0;
+    result.QtyLimit = product.LimitedQuantity || 0;
+    result.QtyDefault = product.Quantity;
+    result.IsEnableRegexQty = isEnableQuantityHandling || false;
+    result.IsEnableRegexAttributeValues = false;
+    result.IsEnableOrderMultiple = false;
+    result.AttributeValues = [];
+    result.DescriptionAttributeValues = [];
+
+
+    if(product?.AttributeValues && TDSHelperArray.hasListValue(product?.AttributeValues)) {
+      let listName = product.AttributeValues.map((x: any) => x.Name);
+      let listNameGet = product.AttributeValues.map((x: any) => x.NameGet);
+
+      result.AttributeValues = listName || [];
+      result.DescriptionAttributeValues = listNameGet || [];
+
+      result.IsEnableRegexAttributeValues = true;
     }
+
+    return result;
   }
 
   prepareModelOrderConfig() {
-    let model = {} as AutoOrderConfigDTO;
+    let model = this.dataModel as PostOrderConfigV2DTO;
+    
+    model.ExcludedPhones = model.ExcludedPhones || [];
+    model.ExcludedStatusNames = model.ExcludedStatusNames || [];
+    model.Users = this.prepareUser(model.Users || null);
 
-    let formValue = this.formOrderConfig.value;
+    if(model.Users == null){
+      model.IsEnableAutoAssignUser = false;
+    }
 
-    model.IsEnableOrderAuto = formValue.IsEnableOrderAuto;
-    model.IsForceOrderWithAllMessage = formValue.IsForceOrderWithAllMessage;
-    model.IsOnlyOrderWithPartner = formValue.IsOnlyOrderWithPartner;
-    model.IsOnlyOrderWithPhone = formValue.IsOnlyOrderWithPhone;
-    model.IsForceOrderWithPhone = formValue.IsForceOrderWithPhone;
-    model.IsForcePrintWithPhone = formValue.IsForcePrintWithPhone;
-    model.MinLengthToVisible = formValue.MinLengthToVisible;
-    model.MinLengthToOrder = formValue.MinLengthToOrder;
-    model.TextContentToExcludeOrder = formValue.TextContentToExcludeOrder;
-    model.TextContentToOrders = formValue.TextContentToOrders;
-    model.ExcludedPhones = formValue.ExcludedPhones || [];
-    model.ExcludedStatusNames = formValue.ExcludedStatusNames || [];
-    model.MaxCreateOrder = formValue.MaxCreateOrder;
-    model.IsEnableAutoAssignUser = formValue.IsEnableAutoAssignUser;
-    model.LiveCampaignId = formValue.LiveCampaignId;
-    model.Users = this.prepareUser(formValue.Users);
+    if(TDSHelperArray.hasListValue(model.TextContentToOrders)){
 
-    if(TDSHelperString.hasValueString(formValue.selectedWord1s)) {
-      model.TextContentToExcludeOrder = formValue.selectedWord1s.join(",");
+      model.TextContentToOrders.map(x => {
+        if(TDSHelperArray.isArray(x.Content)){
+          x.Content = x.Content.join(",");
+        }
+
+        if(TDSHelperArray.isArray(x.ContentWithAttributes)){
+          x.ContentWithAttributes = x.ContentWithAttributes.join(",");
+        }
+
+        if(x.Product){
+          x.Product = this.prepareProduct(x.Product);
+        }else{
+          x.Product = null;
+        }
+        
+      });
     }
 
     return model;
   }
 
-  prepareUser(data: any[]) {
-    let result: MDBInnerCreatedByDTO[] = data.map((user: ApplicationUserDTO) => {
-      let inner = {} as MDBInnerCreatedByDTO;
-      inner.Id = user.Id;
-      inner.Avatar = user.Avatar;
-      inner.Name = user.Name;
-      inner.UserName = user.UserName;
+  prepareUser(data: ConfigUserDTO[] | null) {
 
-      return inner;
-    });
+    if(data != null){
+      let result: ConfigUserDTO[] = data?.map((user: ConfigUserDTO) => {
 
-    return result;
+        let inner = {} as ConfigUserDTO;
+        
+        inner.Id = user.Id;
+        inner.Avatar = user.Avatar || '';
+        inner.Name = user.Name;
+        inner.UserName = user.UserName;
+  
+        return inner;
+      });
+  
+      return result;
+    } else {
+      return null;
+    }
   }
 
-  isCheckValue(model: AutoOrderConfigDTO): number {
+  onSave() {
+    let model = this.prepareModelOrderConfig();
+    
+    if(this.isCheckValue(model) === 1) {
+      this.isLoading = true;
+
+      this.facebookPostService.updateOrderConfig(this.data.ObjectId, this.isImmediateApply, model).pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next:(res) => {
+            this.message.success(Message.UpdatedSuccess);
+            this.isLoading = false;
+
+            this.cdRef.markForCheck();
+          }, 
+          error:(error) => {
+            this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+            this.isLoading = false;
+
+            this.cdRef.markForCheck();
+          }
+        });
+    }
+  }
+
+  isCheckValue(model: PostOrderConfigV2DTO): number {
     if(TDSHelperArray.hasListValue(model.TextContentToOrders)) {
       let findIndex = model.TextContentToOrders.findIndex(x => !TDSHelperString.hasValueString(x?.Content));
 
@@ -589,10 +625,4 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   onCannel() {
     this.modalRef.destroy(null);
   }
-
-  ngOnDestroy(): void {
-    // this.destroy$.next();
-    this.destroy$.complete();
-  }
-
 }
