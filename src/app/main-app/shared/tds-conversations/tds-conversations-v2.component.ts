@@ -152,6 +152,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       next: (res: TDSSafeAny)=>{
         if(res.UserId == this.data.ConversationId){
           this.dataSource.Items = [...this.dataSource.Items, res]
+          this.yiAutoScroll.forceScrollDown();
 
           this.cdRef.detectChanges();
         }
