@@ -1,3 +1,4 @@
+import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter } from '@angular/core';
@@ -461,6 +462,31 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this._districts = data._districts;
     this._wards = data._wards;
     this._street = data._street;
+  }
+
+  showModalSuggestAddress(){
+    let modal =  this.modalService.create({
+      title: 'Thêm địa chỉ',
+      content: ModalAddAddressV2Component,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        _cities : this._cities,
+        _districts: this._districts,
+        _wards: this._wards,
+        _street: this._street,
+      }
+    });
+
+  modal.afterClose.subscribe({
+    next: (result: ResultCheckAddressDTO) => {
+      if(result){
+        let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner);
+        this.partner = partner;
+        this.mappingAddress(this.partner);
+      }
+    }
+  })
   }
 
   ngOnDestroy(): void {

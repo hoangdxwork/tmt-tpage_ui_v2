@@ -316,11 +316,16 @@
 
                   <div class="flex flex-col gap-y-2">
                       <tds-label>Địa chỉ</tds-label>
-                      <suggest-address [_isBtnExtend]="true" [_isExpanded]="false"
-                          [_cities]="_cities" [_districts]="_districts"
-                          [_wards]="_wards" [_street]="_street"
-                          (onLoadSuggestion)="onLoadSuggestion($event)">
-                      </suggest-address>
+                      <div class="flex gap-x-2 items-center">
+                        <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
+                            <input tdsInput autocomplete="off" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
+                        </tds-form-field>
+                        <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip="Tìm kiếm địa chỉ">
+                            <span class="flex items-center">
+                            <i class="tdsi-location-fill"></i>
+                            </span>
+                        </button>
+                      </div>
                   </div>
 
                   <div class="mt-4">
