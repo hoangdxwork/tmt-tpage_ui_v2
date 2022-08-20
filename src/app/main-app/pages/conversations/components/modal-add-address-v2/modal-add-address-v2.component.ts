@@ -16,6 +16,7 @@ export class ModalAddAddressV2Component implements OnInit {
   @Input() _districts!: SuggestDistrictsDTO;
   @Input() _wards!: SuggestWardsDTO;
   @Input() _street!: string;
+  @Input() isSelectAddress!: boolean; // chọn mở modal từ tab partner và order
   public items!: ResultCheckAddressDTO;
 
   constructor(private fb: FormBuilder,
@@ -30,6 +31,10 @@ export class ModalAddAddressV2Component implements OnInit {
   }
 
   onCancel() {
+    if( this.isSelectAddress){
+      this.modal.destroy(null);
+      return
+    }
     this.modalService.warning({
       title: 'Địa chỉ',
       content: 'Bạn có muốn giữ địa chỉ này',

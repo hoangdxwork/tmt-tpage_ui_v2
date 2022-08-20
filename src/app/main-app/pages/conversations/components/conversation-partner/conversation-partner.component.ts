@@ -475,6 +475,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         _districts: this._districts,
         _wards: this._wards,
         _street: this._street,
+        isSelectAddress: true
       }
     });
 

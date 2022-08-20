@@ -144,7 +144,7 @@
                             [team]="team" [csid]="data.ConversationId"
                             [name]="data.Name" [dataItem]="item"
                             [type]="type" [partner]="partner"
-                            [dataSource]="dataSource"
+                            [dataSource]="dataSource" [index]="i"
                             [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[item?.Data?.id]: []">
                         </tds-conversation-item-v2>
                     </ng-container>
