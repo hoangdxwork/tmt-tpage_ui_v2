@@ -1,3 +1,5 @@
+import { SocketService } from '@app/services/socket-io/socket.service';
+import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto, QueryFilterConversationDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
@@ -27,6 +29,7 @@ import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-
 import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
   selector: 'app-conversation-all-v2',
@@ -90,7 +93,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService,
     private destroy$: TDSDestroyService,
-    private chatomniEventEmiterService: ChatomniEventEmiterService) {
+    private chatomniEventEmiterService: ChatomniEventEmiterService,
+    private socketService: SocketService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -134,6 +138,48 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.spinLoading();
 
     this.eventEmitter();
+    this.onEventSocket();
+  }
+
+  onEventSocket(){
+    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        let socketData = JSON.parse(res) as SocketioOnMessageDto;
+        if(socketData.Conversation && socketData.Conversation.Id && this.currentTeam?.ChannelId == socketData.Conversation.ChannelId) {
+          let index = this.lstConversation.findIndex(x=> x.ConversationId == socketData.Conversation.UserId);
+          if(index >- 1) {
+              this.lstConversation[index].Message = socketData.Message.Message;
+              let lastMessage = {
+                Message: socketData.Message.Message,
+                CreatedTime: socketData.Message.CreatedTime
+              } as any
+
+              this.lstConversation[index].LatestMessage = {...lastMessage};
+              this.lstConversation[index] = {...this.lstConversation[index]};
+
+              if(this.conversationItem.ConversationId == socketData.Conversation.UserId){
+                let item: ChatomniDataItemDto = {
+                  Data: socketData.Message.Data as ChatomniFacebookDataDto, // gán tạm thời
+                  Id: socketData.Conversation.Id,
+                  ObjectId: socketData.Message.ObjectId,
+                  ParentId: socketData.Message.ParentId,
+                  Message: socketData.Message.Message,
+                  Type: socketData.Message.MessageType,
+                  UserId: socketData.Message.UserId,
+                  Status: 1,
+                  IsSystem: false, // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
+                  CreatedTime: socketData.Message.CreatedTime,
+                  ChannelCreatedTime: socketData.Message.ChannelCreatedTime,
+                  IsOwner: false,
+                }
+                this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
+              }
+     
+              this.cdRef.detectChanges();
+          }
+      }
+      }
+    })
   }
 
   eventEmitter() {
