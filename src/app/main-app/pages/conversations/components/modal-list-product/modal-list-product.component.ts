@@ -1,4 +1,4 @@
-import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
 import { FilterObjDTO } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
@@ -21,11 +21,12 @@ import { TDSModalRef } from 'tds-ui/modal';
 @Component({
   selector: 'app-modal-list-product',
   templateUrl: './modal-list-product.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class ModalListProductComponent implements OnInit, OnDestroy {
+export class ModalListProductComponent implements OnInit {
+  @Input() isPostConfig!: boolean;
 
-  private destroy$ = new Subject<void>();
   isLoading: boolean = false;
   keyFilter: string = '';
 
@@ -54,6 +55,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
   constructor(private modal: TDSModalRef,
     private sharedService: SharedService,
     private message: TDSMessageService,
+    private destroy$: TDSDestroyService,
     private commonService: CommonService,
     private conversationOrderFacade: ConversationOrderFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService) {
@@ -106,10 +108,11 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
   }
 
   addItem(item: DataPouchDBDTO) {
-    //TODO: truyền về conversation-order
-    this.conversationOrderFacade.onAddProductOrder$.emit(item)
-    //TODO:nếu đang tab khách hàng, chuyển sang tab đơn hàng
-    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    if(this.isPostConfig){
+      this.modal.destroy(item);
+    }else{
+      this.conversationOrderFacade.onAddProductOrder$.emit(item);
+    }
   }
 
   refreshData(){
@@ -171,10 +174,4 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
   trackByIndex(_: number, data: any): number {
     return data.index;
   }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
 }

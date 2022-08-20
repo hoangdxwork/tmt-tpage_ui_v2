@@ -19,7 +19,7 @@ export interface AutoOrderConfigDTO {
   TextContentToExcludeOrder: string;
   PhonePattern: string;
   EmailPattern: string;
-  LiveCampaignId?: string;
+  LiveCampaignId: string;
   TeamId?: number;
   TextContentToOrders: AutoOrderConfig_ContentToOrderDTO[];
   ExcludedPhones: string[];
