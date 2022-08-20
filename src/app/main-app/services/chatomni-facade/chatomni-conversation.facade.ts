@@ -3,9 +3,12 @@ import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get, maxBy as _maxBy } from 'lodash';
 import { set as _set } from 'lodash';
-import { ChatomniConversationDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
+import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversationMessageDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { CRMTeamService } from "../crm-team.service";
 import { Subject, takeUntil } from "rxjs";
+import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
+import { CRMTeamDTO } from "@app/dto/team/team.dto";
+import { ChatomniDataItemDto, ChatomniFacebookDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 
 @Injectable()
 
@@ -30,4 +33,26 @@ export class ChatomniConversationFacade extends BaseSevice  {
       return data;
   }
 
+  preapreMessageOnEventSocket(socket: SocketioOnMessageDto, conversationItem: ChatomniConversationItemDto, team?: CRMTeamDTO | null) {
+    let item: ChatomniDataItemDto = {
+        Data: {...socket.Message.Data} as ChatomniFacebookDataDto, // gán tạm thời
+        Id: conversationItem.Id,
+        ObjectId: socket.Message.ObjectId,
+        ParentId: socket.Message.ParentId,
+        Message: socket.Message.Message,
+        Source: null,
+        Type: socket.Message.MessageType,
+        UserId: socket.Message.UserId,
+        Status: 1,
+        IsSystem: false, // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
+        CreatedById: null,
+        CreatedBy: null,
+        CreatedTime: socket.Message.CreatedTime,
+        ChannelCreatedTime: socket.Message.ChannelCreatedTime,
+        ChannelUpdatedTime: null,
+        IsOwner: false
+    }
+
+    return {...item};
+  }
 }

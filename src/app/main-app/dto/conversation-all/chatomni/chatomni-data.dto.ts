@@ -122,8 +122,8 @@ export interface ChatomniDataItemDto {
   Error?: ErrorMessageOmni;
   Status: ChatomniStatus;
   IsSystem: boolean; // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
-  CreatedById?: string;
-  CreatedBy?: ChatomniInnerUser;
+  CreatedById?: string | any;
+  CreatedBy?: ChatomniInnerUser | any;
   CreatedTime: Date | any;
   ChannelCreatedTime: Date;
   ChannelUpdatedTime?: any;
