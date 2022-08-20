@@ -21,7 +21,6 @@ const ESCAPE_ENTER = 'Enter';
 
 export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
 
-  @HostBinding("@openCollapse") eventAnimationCollap = false;
   // @ViewChild('streetInput') streetInput!: ElementRef;
   _form!: FormGroup;
   @Input() _street!: string;

@@ -54,7 +54,6 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     { id: 'ChannelUpdatedTime asc', name: 'Ngày update cũ nhất' }
   ];
 
-  isLoadingFilter = false;
   currentType: any =  { id: 'all', name: 'Tất cả bài viết' };
   currentSort: any =  { id: 'ChannelCreatedTime desc', name: 'Ngày tạo mới nhất' };
 
@@ -99,35 +98,40 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.loadAvailableCampaign();
 
     // TODO: change team tds header
-    this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
-        this.onClickTeam(team);
+    this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team) => {
+          this.onClickTeam(team);
+      }
     })
 
     // TODO: change team in component
-    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
-      if (!TDSHelperObject.hasValue(team)) {
-          return this.onRedirect();
-      }
+    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe({
+      next: ([team, params]: any) => {
 
-      // TODO: change Team
-      if(team?.Id != this.currentTeam?.Id) {
-          this.fetchPosts(team);
-          this.setCurrentTeam(team);
-      }
+          if (!TDSHelperObject.hasValue(team)) {
+              return this.onRedirect();
+          }
 
-      this.type = params?.params?.type;
-      this.setParamsUrl(params.params);
+          // TODO: change Team
+          if(team?.Id != this.currentTeam?.Id) {
+              this.fetchPosts(team);
+              this.setCurrentTeam(team);
+          }
 
-      if(TDSHelperString.isString(params?.params?.post_id)) {
-          this.postId = params.params.post_id;
-      }
+          this.type = params?.params?.type;
+          this.setParamsUrl(params.params);
 
-      let exist = (TDSHelperString.isString(this.currentPost?.ObjectId) != TDSHelperString.isString(this.paramsUrl.post_id))
-        || (!TDSHelperString.isString(this.currentPost?.ObjectId) && !TDSHelperString.isString(this.paramsUrl?.post_id));
+          if(TDSHelperString.isString(params?.params?.post_id)) {
+              this.postId = params.params.post_id;
+          }
 
-      if(exist) {
-          this.loadData();
-          this.loadBadgeComments();
+          let exist = (TDSHelperString.isString(this.currentPost?.ObjectId) != TDSHelperString.isString(this.paramsUrl.post_id))
+            || (!TDSHelperString.isString(this.currentPost?.ObjectId) && !TDSHelperString.isString(this.paramsUrl?.post_id));
+
+          if(exist) {
+              this.loadData();
+              this.loadBadgeComments();
+          }
       }
     });
 
@@ -138,46 +142,51 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   eventEmitter(){
     this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
-        let index = this.lstObjects.findIndex(x=> x.Id == res.Id);        
-        if(index >- 1) {
-            this.lstObjects[index].LiveCampaign = { ...res.LiveCampaign } as unknown as ChatomniLiveCampaignDto;
-            this.lstObjects[index] = {...this.lstObjects[index]};
-        }
+          let index = this.lstObjects.findIndex(x=> x.Id == res.Id);
+          if(index >- 1) {
+              this.lstObjects[index].LiveCampaign = { ...res.LiveCampaign } as unknown as ChatomniLiveCampaignDto;
+              this.lstObjects[index] = {...this.lstObjects[index]};
+          }
       }
     })
   }
 
   loadAvailableCampaign(){
-    this.liveCampaignService.getAvailables().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.lstOfLiveCampaign = res.value;
-    },
-    err=>{
-      this.message.error(err?.error?.message || 'Không thể tải dữ liệu chiến dịch');
+    this.liveCampaignService.getAvailables().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstOfLiveCampaign = [...res.value];
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message || 'Không thể tải dữ liệu chiến dịch');
+      }
     })
   }
 
   //TODO: khi có comment mới vào bài viết
   loadBadgeComments() {
-    this.activityMatchingService.onGetComment$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.activityMatchingService.onGetComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         if(res){
             let post_id = res.object?.id;
             this.listBadge[post_id] = this.listBadge[post_id] || {};
             this.listBadge[post_id]["count"] = (this.listBadge[post_id]["count"] || 0) + 1;
         }
+      }
     });
   }
 
   onchangeType(event: any) {
-    console.log(event)
     this.currentType = this.lstType.find(x => x.id === event);
     this.queryObj = this.onSetFilterObject();
-    this.loadData(this.queryObj);
+
+    this.loadFilterDataSource();
   }
 
   onChangeSort(event: any) {
     this.currentSort = this.lstSort.find(x => x.id === event);
     this.queryObj = this.onSetFilterObject();
-    this.loadData(this.queryObj);
+
+    this.loadFilterDataSource();
   }
 
   onSetFilterObject() {
@@ -208,16 +217,18 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   onRefresh(event: any) {
-    this.queryObj = { type!: "", sort!: "", q!: "" };
+    this.queryObj = { } as any;
     this.isRefreshing = true;
-    this.loadData();
+    this.innerText.nativeElement.value = '';
+
+    this.loadFilterDataSource();
   }
 
-  loadData(queryObj?: any){
+  loadData(){
     this.isLoading = true;
     this.validateData();
 
-    this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, queryObj);
+    this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id);
     if(this.dataSource$) {
         this.loadObjects(this.dataSource$);
     }
@@ -242,36 +253,37 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   loadObjects(dataSource$: Observable<ChatomniObjectsDto>) {
-    dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
+    dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsDto) => {
+          if(res && res.Items) {
 
-        if(res && res.Items) {
-            this.lstObjects = [...res.Items];
+              this.lstObjects = [...res.Items];
+              if(TDSHelperArray.hasListValue(res.Items)){
+                  let exits = res.Items?.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
 
-            if(TDSHelperArray.hasListValue(res.Items)){
-                let exits = res.Items?.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
+                  if(TDSHelperObject.hasValue(exits)){
+                      this.selectPost(exits);
+                  } else {
+                      this.selectPost(res.Items[0]);
+                  }
+              }
+          }
 
-                if(TDSHelperObject.hasValue(exits)){
-                    this.selectPost(exits);
-                } else {
-                    this.selectPost(res.Items[0]);
-                }
-            }
-        }
-
-        this.isLoading = false;
-        setTimeout(() => {
-            this.isRefreshing = false;
-        }, 300);
-    }, error => {
-        this.isLoading = false;
-        this.isRefreshing = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.isLoading = false;
+          setTimeout(() => {
+              this.isRefreshing = false;
+          }, 300);
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.isRefreshing = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
     })
   }
 
   selectPost(item: ChatomniObjectsItemDto | any): any {
     if(TDSHelperObject.hasValue(item) && item.Data){
-
         this.currentPost = item;
 
         //TODO: Facebook load danh sách bài viết con từ bài viết chính
@@ -281,10 +293,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
               let x = item.Data as MDB_Facebook_Mapping_PostDto;
               if(x.parent_id) {
 
-                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe({
+                  next: (res: any) => {
                     if(res && TDSHelperArray.hasListValue(res.Items)) {
                         this.postChilds = [...res.Items];
                     }
+                  }
                 });
               }
             break;
@@ -312,16 +326,19 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
       this.isProcessing = true;
 
       this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
 
-          if(TDSHelperArray.hasListValue(res?.Items)) {
-              this.lstObjects = [...res.Items];
-          }
+        next: (res: ChatomniObjectsDto) => {
+            if(TDSHelperArray.hasListValue(res?.Items)) {
+                this.lstObjects = [...res.Items];
+            }
 
-          this.yiAutoScroll.scrollToElement('scrollObjects', 750);
-          this.isProcessing = false;
-      }, error => {
-          this.isProcessing = false;
+            this.yiAutoScroll.scrollToElement('scrollObjects', 750);
+            this.isProcessing = false;
+        },
+        error: (error: any) => {
+            this.isProcessing = false;
+        }
       })
     }
   }
@@ -359,14 +376,36 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
   ngAfterViewInit() {
     fromEvent(this.innerText?.nativeElement, 'keyup').pipe(
-      map((event: any) => { return event.target.value }),
-      debounceTime(750),distinctUntilChanged())
-        .subscribe((text: string) => {
-          this.keyFilter = text;
+      map((event: any) => {
+        return event.target.value
+      }),
+      debounceTime(750),distinctUntilChanged()).subscribe({
+        next: (text: string) => {
+            let value = TDSHelperString.stripSpecialChars(text.trim());
+            this.keyFilter = value;
 
-          this.queryObj = this.onSetFilterObject();
-          this.loadData(this.queryObj);
+            this.queryObj = {...this.onSetFilterObject()};
+            this.loadFilterDataSource();
+        }
       });
+  }
+
+  loadFilterDataSource() {
+    this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
+      next: (res: ChatomniObjectsDto) => {
+          this.lstObjects  = [...res.Items];
+
+          setTimeout(() => {
+              this.isRefreshing = false;
+          }, 300);
+      },
+      error: (error: any) => {
+          setTimeout(() => {
+             this.isRefreshing = false;
+          }, 300);
+          this.message.error(`${error?.error?.message}`);
+      }
+    })
   }
 
   validateData(){
@@ -378,7 +417,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   onChangeTabEvent() {
-    this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+    this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         if(res === ChangeTabConversationEnum.order) {
           this.changeTab(2, false);
         }
@@ -386,6 +426,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
         else if(res === ChangeTabConversationEnum.partner) {
           this.changeTab(1, false);
         }
+      }
     });
   }
 

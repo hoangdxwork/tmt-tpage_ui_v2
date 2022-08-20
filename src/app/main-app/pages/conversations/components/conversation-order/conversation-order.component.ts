@@ -628,7 +628,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             return false;
         }
     }
-
+    this.isLoading = true;
     this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
@@ -680,7 +680,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             return false;
         }
     }
-
+    this.isLoading = true;
     this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(!this.isEnableCreateOrder && type) {
@@ -1138,10 +1138,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           this.isLoading = false;
+          this.cdRef.markForCheck();
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(error.error.message || error.error.error_description);
+          this.cdRef.markForCheck();
       }
     })
 
@@ -1185,6 +1187,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           _districts: this._districts,
           _wards: this._wards,
           _street: this._street,
+          isSelectAddress: true
         }
       });
 

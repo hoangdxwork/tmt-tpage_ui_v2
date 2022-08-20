@@ -1,3 +1,6 @@
+import { SocketService } from '@app/services/socket-io/socket.service';
+import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
+import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto, QueryFilterConversationDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
@@ -26,6 +29,9 @@ import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-
 import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 
 @Component({
   selector: 'app-conversation-all-v2',
@@ -89,7 +95,9 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService,
     private destroy$: TDSDestroyService,
-    private chatomniEventEmiterService: ChatomniEventEmiterService) {
+    private chatomniConversationFacade: ChatomniConversationFacade,
+    private chatomniEventEmiterService: ChatomniEventEmiterService,
+    private socketService: SocketService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -133,6 +141,39 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.spinLoading();
 
     this.eventEmitter();
+    this.onEventSocket();
+  }
+
+  onEventSocket(){
+    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        const socket = JSON.parse(res) as SocketioOnMessageDto;
+
+        if(socket.Conversation && this.currentTeam?.ChannelId == socket.Conversation.ChannelId) {
+          // TODO: mapping dữ liệu danh sách conversation
+          let index = this.lstConversation.findIndex(x => x.ConversationId == socket.Conversation?.UserId);
+          if(index >- 1) {
+              let lastMessage = {
+                  Message: socket.Message?.Message,
+                  CreatedTime: socket.Message?.CreatedTime
+              } as ChatomniConversationMessageDto;
+
+              this.lstConversation[index].Message = socket.Message?.Message;
+              this.lstConversation[index].LatestMessage = {...lastMessage};
+
+              this.lstConversation[index] = {...this.lstConversation[index]};
+          }
+
+          // TODO: mapping dữ liệu khung chat hiện tại
+          let exist = this.conversationItem.ConversationId == socket.Conversation?.UserId;
+          if(exist) {
+              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(socket, this.conversationItem, this.currentTeam)}
+              this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
+          }
+          this.cdRef.detectChanges();
+        }
+      }
+    })
   }
 
   eventEmitter() {
@@ -186,6 +227,15 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.cdRef.detectChanges();
             }
+        }
+      }
+    })
+
+    // TODO: Chọn sản phẩm, nếu đang tab khách hàng chuyển sang đơn hàng
+    this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: string)=>{
+        if(res === ChangeTabConversationEnum.order) {
+          this.selectedIndex = 2;
         }
       }
     })
@@ -331,7 +381,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.crmService.onUpdateTeam(data);
   }
 
-  onRefresh(ev: boolean){
+  onRefresh(event: boolean){
     this.clickReload += 1;
 
     if (this.clickReload >= 5) {
@@ -352,6 +402,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.queryObj = {} as any;
         this.innerText.nativeElement.value = '';
 
+        this.isRefreshing = true;
         this.loadFilterDataSource();
         this.cdRef.markForCheck();
     }
@@ -502,9 +553,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
           this.totalConversations = res?.Items.length;
           this.isLoading = false;
+          this.isRefreshing = false;
       },
       error: (error: any) => {
           this.isLoading = false;
+          this.isRefreshing = false;
           this.message.error(`${error?.error?.message}`);
       }
     })
@@ -582,8 +635,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           this.conversationItem = data;
         }
 
-        let uri = 'conversation/all';
-        let uriParams = `${uri}?teamId=${team.Id}&type=all&csid=${csid}`;
+        let uriParams = `conversation/all?teamId=${team.Id}&type=all&csid=${csid}`;
 
         this.router.navigateByUrl(uriParams)
         this.notification.remove(this.notificationRef.messageId);

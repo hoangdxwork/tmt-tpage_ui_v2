@@ -117,7 +117,9 @@ export const Message = {
     FileNotFormat: 'File không đúng định dạng.',
     TextContentProductEmpty: 'Vui lòng nhập đầy đủ nội dung mẫu.',
     LoadConfigSuccess: 'Tải cấu hình thành công.',
-    TagOnPatternEmpty: 'Vui lòng nhập đầy đủ nhãn và nội dung.'
+    TagOnPatternEmpty: 'Vui lòng nhập đầy đủ nhãn và nội dung.',
+    CanNotLoadLiveCampaign: 'Không thể tải dữ liệu chiến dịch',
+    CanNotGetProduct: 'Không thể gán sản phẩm'
   },
   LiveCampaign: {
     ErrorNumberDetail: 'Số lượng, số tiền, giới hạn trên đơn không được để trống.',

@@ -20,7 +20,7 @@ export class FilterOptionPartnerComponent implements OnInit  {
   isActive: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef) {}
-  
+
   ngOnInit(): void {
   }
 

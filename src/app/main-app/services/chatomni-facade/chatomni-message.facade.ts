@@ -81,7 +81,6 @@ export class ChatomniMessageFacade extends BaseSevice  {
       CreatedTime: data.CreatedTime,
       Message: data.Message,
       Status: data.Status as number,
-      Error: data.Error,
       CreatedBy: data.CreatedBy,
       UserId: data.UserId
     } as unknown as ChatomniDataItemDto;

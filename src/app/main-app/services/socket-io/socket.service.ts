@@ -3,7 +3,6 @@ import { EventEmitter, Inject, Injectable, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
-import { TDSMessageService } from 'tds-ui/message';
 import { TDSNotificationService } from 'tds-ui/notification';
 
 @Injectable({

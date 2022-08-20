@@ -17,12 +17,12 @@
                                             [(ngModel)]="quickOrderModel.PartnerName" [ngModelOptions]="{standalone: true}"/>
                                     </tds-form-field>
 
-                                    <span class="text-primary-1 font-semibold">FB: {{quickOrderModel.Facebook_UserName}}</span>
+                                    <span class="text-primary-1 font-semibold xl:truncate">FB: {{quickOrderModel.Facebook_UserName}}</span>
                                 </div>
 
                                 <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()">
                                     <span class="flex items-center">
-                                        <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
+                                        <i [ngClass]="isEditPartner? 'tdsi-close-fill': 'tdsi-edit-fill'" class=" text-xl leading-none text-neutral-1-400"></i>
                                     </span>
                                 </button>
                             </div>
@@ -66,12 +66,12 @@
                         </div>
                     </div>
                     <div class="w-full pt-4 flex items-center bg-white">
-                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar w-3/4 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400">{{quickOrderModel.Note }}</textarea>
+                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar 2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400">{{quickOrderModel.Note }}</textarea>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [backdrop]="true" [tdsDropdownMenu]="menuUser"
-                            class="w-1/4 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">
+                            class="2xl:w-1/4 xl:w-2/5 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">
                             <div class="flex flex-col flex-auto items-start">
-                                <label class="text-neutral-1-400 font-regular text-body-2">Nhân viên</label>
+                                <label class="text-neutral-1-400 font-regular 2xl:text-body-2 xl:text-caption-1">Nhân viên</label>
                                 <span class="text-info-500 font-semibold text-body-2 max-w-[80px] truncate">{{ quickOrderModel?.User?.Name || 'N/A' }}</span>
                             </div>
 

@@ -1,3 +1,4 @@
+import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
@@ -134,26 +135,43 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.loadData(this.data);
     }
 
-    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        this.partner = res;
-      }
-    });
-
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
     this.onRetryMessage();
-    this.eventEmitter();
 
+    this.eventEmitter();
+    this.onEventSocket();
     this.yiAutoScroll?.forceScrollDown();
   }
 
   eventEmitter(){
-    this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.subscribe({
+    this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny)=>{
         if(res.UserId == this.data.ConversationId){
-          this.dataSource.Items = [...this.dataSource.Items, res]
+            this.dataSource.Items = [...this.dataSource.Items, ...[res]];
 
-          this.cdRef.detectChanges();
+            this.yiAutoScroll.forceScrollDown();
+            this.cdRef.detectChanges();
+        }
+      }
+    })
+
+    // TODO: mapping dữ liệu partner từ order
+    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.partner = {...res};
+      }
+    });
+  }
+
+  onEventSocket() {
+    // TODO: mapping tin nhắn từ socket-io
+    this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataItemDto) => {
+        if(res && res.UserId == this.data.ConversationId){
+            this.dataSource.Items = [...this.dataSource.Items, ...[res]];
+
+            this.yiAutoScroll.forceScrollDown();
+            this.cdRef.detectChanges();
         }
       }
     })
@@ -179,7 +197,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
               //TODO: truyền về conversation-all
               setTimeout(() => {
-                this.chatomniEventEmiter.countUnreadEmiter$.emit(this.data.ConversationId);
+                  this.chatomniEventEmiter.countUnreadEmiter$.emit(this.data.ConversationId);
               }, 300);
           }
 
@@ -236,7 +254,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
               this.chatomniEventEmiter.updateMarkSeenBadge$.emit(model);
               this.cdRef.markForCheck();
-        }, 
+        },
         error: error => {
             this.message.error(`markseen: ${error?.error?.message}`);
         }
@@ -311,7 +329,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         // that.conversationDataFacade.messageServer(res);
 
         that.message.success('Gửi thành công sản phẩm');
-       }, 
+       },
         error: error=> {
           this.message.error('Gửi sản phẩm thất bại');
         }
@@ -598,7 +616,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.messageResponse(res, model);
-        }, 
+        },
         error: error => {
           this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
         }
@@ -689,7 +707,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         if(this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
           // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
           this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
-        } else 
+        } else
         if(activityFinal?.Data?.id) {
           // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
           this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
@@ -790,7 +808,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       .subscribe({
         next: (res: ResponseAddMessCommentDtoV2[]) => {
           this.messageResponseV2(res, model);
-        }, 
+        },
         error: error => {
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
         }
@@ -871,7 +889,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.yiAutoScroll?.forceScrollDown();
 
         this.cdRef.detectChanges();
-      }, 
+      },
       error: error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
         this.cdRef.detectChanges();
@@ -898,7 +916,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
           if(this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
             // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
             this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
-          } else 
+          } else
           if(activityFinal?.Data?.id) {
             // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
             this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
@@ -917,7 +935,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
           this.cdRef.detectChanges();
           })
-      }, 
+      },
       error: error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
         this.cdRef.detectChanges();
@@ -1118,7 +1136,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
           this.cdRef.markForCheck();
         }
-      }, 
+      },
       error: error => {
         this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
       }

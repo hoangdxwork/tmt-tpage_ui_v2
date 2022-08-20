@@ -1,3 +1,4 @@
+import { PostOrderConfigV2DTO } from './../dto/configs/post/post-order-config-v2.dto';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -193,22 +194,22 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
   }
 
-  getOrderConfig(postId: string): Observable<AutoOrderConfigDTO> {
+  getOrderConfig(postId: string): Observable<any> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs`,
       method: CoreApiMethodType.get
     }
 
-    return this.apiService.getData<AutoOrderConfigDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
-  updateOrderConfig(postId: string, isImmediateApply: boolean, data: AutoOrderConfigDTO): Observable<undefined> {
+  updateOrderConfig(postId: string, isImmediateApply: boolean, data: PostOrderConfigV2DTO): Observable<any> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs?immediateApply=${isImmediateApply}`,
       method: CoreApiMethodType.put
     }
 
-    return this.apiService.getData<undefined>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   updateInteractionConfig(postId: string, data: AutoOrderConfigDTO): Observable<undefined> {
