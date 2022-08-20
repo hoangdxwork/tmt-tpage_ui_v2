@@ -331,7 +331,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.crmService.onUpdateTeam(data);
   }
 
-  onRefresh(ev: boolean){
+  onRefresh(event: boolean){
     this.clickReload += 1;
 
     if (this.clickReload >= 5) {
@@ -352,6 +352,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.queryObj = {} as any;
         this.innerText.nativeElement.value = '';
 
+        this.isRefreshing = true;
         this.loadFilterDataSource();
         this.cdRef.markForCheck();
     }
@@ -502,9 +503,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
           this.totalConversations = res?.Items.length;
           this.isLoading = false;
+          this.isRefreshing = false;
       },
       error: (error: any) => {
           this.isLoading = false;
+          this.isRefreshing = false;
           this.message.error(`${error?.error?.message}`);
       }
     })
@@ -582,8 +585,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           this.conversationItem = data;
         }
 
-        let uri = 'conversation/all';
-        let uriParams = `${uri}?teamId=${team.Id}&type=all&csid=${csid}`;
+        let uriParams = `conversation/all?teamId=${team.Id}&type=all&csid=${csid}`;
 
         this.router.navigateByUrl(uriParams)
         this.notification.remove(this.notificationRef.messageId);

@@ -246,7 +246,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     }
     model.to_id = item.UserId;
     model.to_name = item.Data?.from?.name;
-    model.post_id = item.Data.object?.id;
+    model.post_id = item.Data.object?.id || item.ObjectId;
     model.message = message;
     model.created_time = (new Date()).toISOString();
 

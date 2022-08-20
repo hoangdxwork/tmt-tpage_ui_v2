@@ -48,10 +48,12 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["item"] && !changes["item"].firstChange) {
-      this.item = {...changes["item"].currentValue};
-      this.lstOfLiveCampaign = [...changes["lstOfLiveCampaign"].currentValue];
-      
-      this.loadData();
+        this.item = {...changes["item"].currentValue};
+        this.loadData();
+    }
+
+    if(changes['lstOfLiveCampaign'] && !changes['lstOfLiveCampaign'].firstChange) {
+        this.lstOfLiveCampaign = [...changes['lstOfLiveCampaign'].currentValue];
     }
   }
 
@@ -103,20 +105,21 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     if(this.currentLiveCampaign){
       let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.item?.Data), this.currentLiveCampaign);
       let liveCampaignId = this.currentLiveCampaign?.Id || this.item?.LiveCampaignId;
-      
-      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$))
-        .subscribe(res => {
-          if(res.value){
-            this.item = this.fbPostHandler.updateLiveCampaignPost(this.item, this.currentLiveCampaign);
-            this.objectEvent.getObjectFBData$.emit(this.item);
-            this.message.success('Cập nhật chiến dịch thành công');
 
-            this.cdRef.markForCheck();
+      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              if(res.value){
+                  this.item = this.fbPostHandler.updateLiveCampaignPost(this.item, this.currentLiveCampaign);
+                  this.objectEvent.getObjectFBData$.emit(this.item);
+
+                  this.message.success('Cập nhật chiến dịch thành công');
+                  this.cdRef.markForCheck();
+              }
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
           }
-        },
-        err=>{
-          this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
-        })
+      })
 
       this.indClickTag = '';
     }
