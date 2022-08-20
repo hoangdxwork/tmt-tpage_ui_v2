@@ -83,20 +83,20 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         let socketData = JSON.parse(res) as SocketioOnMessageDto;
-        if(socketData.Conversation && socketData.Conversation.Id && this.team?.ChannelId == socketData.Conversation.ChannelId && this.data.ObjectId == socketData.Message.ObjectId) {
+        if(socketData.Conversation && this.team?.ChannelId == socketData.Conversation?.ChannelId && this.data.ObjectId == socketData.Message?.ObjectId) {
           let item: ChatomniDataItemDto = {
             Data: socketData.Message.Data as ChatomniFacebookDataDto, // gán tạm thời
             Id: socketData.Conversation.Id,
-            ObjectId: socketData.Message.ObjectId,
-            ParentId: socketData.Message.ParentId,
+            ObjectId: socketData.Message?.ObjectId,
+            ParentId: socketData.Message?.ParentId,
             Message: socketData.Message.Message,
             Type: socketData.Message.MessageType,
-            UserId: socketData.Message.UserId,
+            UserId: socketData.Message?.UserId,
             Status: 1,
             IsSystem: false,
             CreatedTime: socketData.Message.CreatedTime,
             ChannelCreatedTime: socketData.Message.ChannelCreatedTime,
-            IsOwner: false,           
+            IsOwner: false,
           }
 
           this.dataSource.Items = [...[item], ...this.dataSource.Items]

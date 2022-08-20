@@ -149,9 +149,9 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       next: (res: any) => {
         const socket = JSON.parse(res) as SocketioOnMessageDto;
 
-        if(socket.Conversation && socket.Conversation.Id && this.currentTeam?.ChannelId == socket.Conversation.ChannelId) {
+        if(socket.Conversation && this.currentTeam?.ChannelId == socket.Conversation.ChannelId) {
           // TODO: mapping dữ liệu danh sách conversation
-          let index = this.lstConversation.findIndex(x => x.ConversationId == socket.Conversation.UserId);
+          let index = this.lstConversation.findIndex(x => x.ConversationId == socket.Conversation?.UserId);
           if(index >- 1) {
               let lastMessage = {
                   Message: socket.Message?.Message,
