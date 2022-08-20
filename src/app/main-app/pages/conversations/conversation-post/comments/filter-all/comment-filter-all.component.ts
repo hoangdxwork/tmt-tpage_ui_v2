@@ -1,3 +1,5 @@
+import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
+import { SocketService } from '@app/services/socket-io/socket.service';
 import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
 import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -65,13 +67,43 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     public crmService: CRMTeamService,
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
-    private conversationOrderFacade: ConversationOrderFacade) {
+    private conversationOrderFacade: ConversationOrderFacade,
+    private socketService: SocketService) {
   }
 
   ngOnInit() {
     if(this.data && this.team) {
         this.loadData();
     }
+
+    this.onEventSocket();
+  }
+
+  onEventSocket(){
+    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        let socketData = JSON.parse(res) as SocketioOnMessageDto;
+        if(socketData.Conversation && socketData.Conversation.Id && this.team?.ChannelId == socketData.Conversation.ChannelId && this.data.ObjectId == socketData.Message.ObjectId) {
+          let item: ChatomniDataItemDto = {
+            Data: socketData.Message.Data as ChatomniFacebookDataDto, // gán tạm thời
+            Id: socketData.Conversation.Id,
+            ObjectId: socketData.Message.ObjectId,
+            ParentId: socketData.Message.ParentId,
+            Message: socketData.Message.Message,
+            Type: socketData.Message.MessageType,
+            UserId: socketData.Message.UserId,
+            Status: 1,
+            IsSystem: false,
+            CreatedTime: socketData.Message.CreatedTime,
+            ChannelCreatedTime: socketData.Message.ChannelCreatedTime,
+            IsOwner: false,           
+          }
+
+          this.dataSource.Items = [...[item], ...this.dataSource.Items]
+        }
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
