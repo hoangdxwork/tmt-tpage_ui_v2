@@ -22,7 +22,7 @@
 
                                 <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()">
                                     <span class="flex items-center">
-                                        <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
+                                        <i [ngClass]="isEditPartner? 'tdsi-close-fill': 'tdsi-edit-fill'" class=" text-xl leading-none text-neutral-1-400"></i>
                                     </span>
                                 </button>
                             </div>

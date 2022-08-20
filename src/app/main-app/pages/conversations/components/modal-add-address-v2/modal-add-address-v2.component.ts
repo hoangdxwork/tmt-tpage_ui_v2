@@ -1,4 +1,4 @@
-import { TDSModalRef } from 'tds-ui/modal';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -19,7 +19,8 @@ export class ModalAddAddressV2Component implements OnInit {
   public items!: ResultCheckAddressDTO;
 
   constructor(private fb: FormBuilder,
-    private modal: TDSModalRef) { }
+    private modal: TDSModalRef,
+    private modalService: TDSModalService) { }
 
   ngOnInit(): void {
   }
@@ -29,7 +30,15 @@ export class ModalAddAddressV2Component implements OnInit {
   }
 
   onCancel() {
-    this.modal.destroy(null);
+    this.modalService.warning({
+      title: 'Địa chỉ',
+      content: 'Bạn có muốn giữ địa chỉ này',
+      onOk: () => this.onSave(),
+      onCancel:()=>{ this.modal.destroy(null); },
+      okText:"Có",
+      cancelText:"Không",
+      confirmViewType: "compact",
+    }); 
   }
 
   onSave() {
