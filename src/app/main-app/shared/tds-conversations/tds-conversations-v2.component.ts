@@ -1,3 +1,4 @@
+import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
@@ -148,10 +149,21 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   eventEmitter(){
-    this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.subscribe({
+    this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny)=>{
         if(res.UserId == this.data.ConversationId){
-          this.dataSource.Items = [...this.dataSource.Items, res]
+          this.dataSource.Items = [...this.dataSource.Items, ...[res]]
+          this.yiAutoScroll.forceScrollDown();
+
+          this.cdRef.detectChanges();
+        }
+      }
+    })
+
+    this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataItemDto) => {
+        if(res.UserId == this.data.ConversationId){
+          this.dataSource.Items = [...this.dataSource.Items, ...[res]]
           this.yiAutoScroll.forceScrollDown();
 
           this.cdRef.detectChanges();
