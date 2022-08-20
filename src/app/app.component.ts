@@ -66,7 +66,7 @@ export class AppComponent {
                           let fbMessage = {
                               title: `Facebook: ${socketData.Conversation.Name} vừa nhắn tin`,
                               message: `${socketData.Message.Message}`,
-                              url: `/conversation/inbox?teamId=${this.team.Id}&type=message&csid=${socketData.Conversation.UserId}`
+                              url: `/conversation/inbox?teamId=${this.team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
                           } as any;
 
                           this.notification.template(this.templateNotificationMessNew, { data: fbMessage, placement: 'bottomLeft' });
@@ -77,7 +77,7 @@ export class AppComponent {
                           let fbComment = {
                               title: `Facebook: ${socketData.Conversation.Name} vừa bình luận`,
                               message: `${socketData.Message.Message}`,
-                              url: `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${socketData.Conversation.UserId}`
+                              url: `/conversation/comment?teamId=${this.team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
                           } as any;
 
                           this.notification.template(this.templateNotificationMessNew, { data: fbComment, placement: 'bottomLeft' });
@@ -88,7 +88,7 @@ export class AppComponent {
                           let tShopMessage = {
                               title: `TShop: ${socketData.Conversation.Name} vừa nhắn tin`,
                               message: `${socketData.Message.Message}`,
-                              url: `/conversation/all?teamId=${this.team.Id}&type=all&csid=${socketData.Conversation.UserId}`
+                              url: `/conversation/all?teamId=${this.team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
                           } as any;
 
                           this.notification.template(this.templateNotificationMessNew, {data: tShopMessage, placement: 'bottomLeft' });
@@ -99,7 +99,7 @@ export class AppComponent {
                           let tShopComment = {
                               title: `TShop: ${socketData.Conversation.Name} vừa nhắn tin`,
                               message: `${socketData.Message.Message}`,
-                              url: `/conversation/all?teamId=${this.team.Id}&type=all&csid=${socketData.Conversation.UserId}`
+                              url: `/conversation/all?teamId=${this.team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
                           } as any;
 
                           this.notification.template(this.templateNotificationMessNew, {data: tShopComment, placement: 'bottomLeft' });
@@ -110,7 +110,7 @@ export class AppComponent {
                           let dataDefault = {
                               title: `${socketData.Conversation.Name} vừa phản hồi`,
                               message: `${socketData.Message.Message}`,
-                              url: `/conversation/all?teamId=${this.team.Id}&type=all&csid=${socketData.Conversation.UserId}`
+                              url: `/conversation/all?teamId=${this.team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
                           } as any;
 
                           this.notification.template(this.templateNotificationMessNew, { data: dataDefault, placement: 'bottomLeft' });
