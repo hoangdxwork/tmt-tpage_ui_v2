@@ -21,12 +21,12 @@
                   </tds-form-field>
               </div>
               <div class="grid grid-cols-3 gap-y-4 items-center">
-                  <tds-label class="flex gap-x-1 items-center">
-                    <span>Sử dụng cho</span>
+                  <div class="flex gap-x-1 items-center">
+                    <tds-label>Sử dụng cho</tds-label>
                     <span class="flex items-center text-sm" tds-tooltip [tooltipTitle]="'Số đơn hàng được hưởng khuyến mãi (nếu để 0 là không giới hạn)'">
                         <i class="tdsi-bar-chart-circle-fill text-neutral-1-400"></i>
                     </span>
-                  </tds-label>
+                  </div>
                   <tds-form-field class="w-full col-span-2">
                       <tds-input-number formControlName="MaximumUseNumber" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                       <tds-error>
@@ -39,14 +39,14 @@
                   <div class="flex gap-x-2 col-span-2">
                     <div class="py-1.5 px-4 flex items-center border border-solid rounded-full mr-2 w-fit cursor-pointer" (click)="onChangeRewardType('discount')"
                       [ngClass]="getRewardTypeFormGroup == 'discount' ? 'border-primary-1 text-primary-1' : 'border-neutral-2-100 text-neutral-1-400'">
-                      <span class="flex items-center text-sm font-semibold">
+                      <span class="flex items-center 2xl:text-sm xl:text-caption-1 font-semibold">
                         <i class="tdsi-discount-fill text-lg leading-none mr-2"></i>Chiết khấu
                       </span>
                     </div>
 
                     <div class="py-1.5 px-4 flex items-center border border-solid rounded-full mr-2 w-fit cursor-pointer" (click)="onChangeRewardType('product')"
                       [ngClass]="getRewardTypeFormGroup == 'product' ? 'border-primary-1 text-primary-1' : 'border-neutral-2-100 text-neutral-1-400'">
-                      <span class="flex items-center text-sm font-semibold">
+                      <span class="flex items-center 2xl:text-sm xl:text-caption-1 font-semibold">
                         <i class="tdsi-gift-fill text-lg leading-none mr-2"></i>Quà tặng
                       </span>
                     </div>
@@ -93,8 +93,8 @@
                   <div *ngIf="isShow('DiscountApplyOn')" class="grid grid-cols-3 gap-y-4 items-baseline">
                       <tds-label>Chiết khấu trên</tds-label>
                       <tds-radio-group class="flex flex-col col-span-2 gap-y-2" formControlName="DiscountApplyOn">
-                          <label tds-radio value="on_order" class="w-1/2">Trên đơn hàng</label>
-                          <label tds-radio value="specific_product" class="w-1/2">Trên sản phẩm cụ thể</label>
+                          <label tds-radio value="on_order">Trên đơn hàng</label>
+                          <label tds-radio value="specific_product">Trên sản phẩm cụ thể</label>
                       </tds-radio-group>
                   </div>
               </div>

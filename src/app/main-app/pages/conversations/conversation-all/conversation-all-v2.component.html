@@ -39,7 +39,7 @@
           <!-- Xử lý click button checkbox -->
           <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white ">
               <div class="w-full flex justify-between items-center py-2 px-3.5">
-                  <div class="flex gap-x-2">
+                  <div class="gap-x-2 xl:hidden 2xl:flex">
                       <button tds-button color="primary" (click)="showModalSendMessage()">
                           <span class="flex items-center">
                               <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
@@ -58,8 +58,23 @@
                           <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
                       </ng-template>
                   </div>
+                  <div class="gap-x-2 xl:flex 2xl:hidden">
+                    <button tds-button-icon color="primary" (click)="showModalSendMessage()" tds-tooltip="Gửi tin nhắn">
+                        <i class="tdsi-messenger-fill text-lg leading-none"></i>
+                    </button>
 
-                  <tds-checkbox class="pr-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
+                    <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                        <button tds-button-icon color="info" (click)="printData()" tds-tooltip="In thông tin">
+                            <i class="tdsi-print-fill text-lg leading-none"></i>
+                        </button>
+                    </tds-spin>
+
+                    <ng-template #indicatorTemplate>
+                        <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+                    </ng-template>
+                  </div>
+
+                  <tds-checkbox class="px-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
               </div>
           </div>
 
