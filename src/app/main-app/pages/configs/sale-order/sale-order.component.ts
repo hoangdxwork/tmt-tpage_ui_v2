@@ -60,8 +60,6 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       this.createForm();
   }
 
-  urlLocation: any = `${this.document.location.protocol}//${this.document.location.hostname}${this.document.location.port}`;
-
   createForm() {
     this._form = this.fb.group({
       IsEnableOrder: [false],
