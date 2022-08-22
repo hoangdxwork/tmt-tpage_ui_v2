@@ -118,18 +118,20 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   eventEmitter(){
-    this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.data = {...res};
-        let data = this.availableCampaigns.find(f=>f.Id == res?.LiveCampaignId);
-        if(data){
-          this.currentLiveCampaign = {...data};
-        }
+    this.objectEvent.changeLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+
+        this.data.LiveCampaignId = res.LiveCampaignId;
+        this.data.LiveCampaign = {
+          Id: res.LiveCampaignId,
+          Name: res.LiveCampaign?.Name,
+          Note: res.LiveCampaign?.Note
+        };
 
         this.cdRef.markForCheck();
-        }
-      })
-    }
+      }
+    })
+  }
 
   loadOrderTotal(){
     this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -346,7 +348,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
       }
 
-      this.objectEvent.getObjectFBData$.emit(this.data);
+      this.objectEvent.changeLiveCampaignFromObject$.emit(this.data);
 
       this.cdRef.detectChanges();
     })
@@ -369,7 +371,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         next : res => {
           if(res.value){
             this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
-            this.objectEvent.getObjectFBData$.emit(this.data);
+            this.objectEvent.changeLiveCampaignFromObject$.emit(this.data);
             this.message.success('Cập nhật chiến dịch thành công');
 
             this.cdRef.markForCheck();
@@ -425,7 +427,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         size: "xl",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          data: this.data
+          data: this.data,
+          currentLiveCampaign: this.currentLiveCampaign
         }
       });
     }

@@ -97,6 +97,7 @@
                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                 </span>
             </tds-tag>
+
             <ng-template #contentAddtag>
                 <div class="w-[304px]">
                   <tds-form-field>
@@ -108,6 +109,7 @@
                   </tds-form-field>
                 </div>
               </ng-template>
+
               <ng-template #footerAddTag>
                 <div class="flex justify-end pt-2">
                   <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
@@ -115,7 +117,8 @@
                       <i class="tdsi-close-fill"></i>
                     </span>
                   </button>
-                  <button tds-button-icon type="button" size="sm" color="primary" (click)="addNewCampaign()">
+
+                  <button tds-button-icon type="button" size="sm" color="primary" (click)="insertLiveCampaign()">
                     <span class="flex items-center">
                       <i class="tdsi-tick-fill"></i>
                     </span>
@@ -123,6 +126,7 @@
                 </div>
             </ng-template>
         </div>
+
         <div *ngIf="item.LiveCampaign" class="flex">
             <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
                 tds-tooltip tooltipTitle="Bật tạo đơn tự động">

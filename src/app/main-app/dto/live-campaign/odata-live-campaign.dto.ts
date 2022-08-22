@@ -1,5 +1,4 @@
 export interface LiveCampaignModel {
-  map(arg0: (x: any) => any): string[];
   Id: string;
   Name: string;
   NameNoSign: string;

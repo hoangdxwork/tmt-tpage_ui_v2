@@ -1,9 +1,10 @@
+import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
 import { ConfigUserDTO } from './../../../../../dto/configs/post/post-order-config-v2.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
-import { finalize, takeUntil } from "rxjs/operators";
+import { map, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { ApplicationUserDTO } from "src/app/main-app/dto/account/application-user.dto";
 import { CRMTagDTO } from "src/app/main-app/dto/crm-tag/odata-crmtag.dto";
@@ -32,6 +33,7 @@ import * as XLSX from 'xlsx';
 export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
+  @Input() currentLiveCampaign?:LiveCampaignModel;
 
   dataModel!: PostOrderConfigV2DTO;
   tags: any[] = [];
@@ -49,7 +51,6 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   lstTags$!: Observable<CRMTagDTO[]>;
   lstUser$!: Observable<ApplicationUserDTO[]>;
-  currentLiveCampaign!: any | undefined;
 
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
@@ -81,7 +82,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   validateData() {
     this.data = null as any;
-    this.currentLiveCampaign = null;
+    this.currentLiveCampaign = undefined;
   }
 
   loadTag() {
@@ -111,17 +112,20 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
   loadData(postId: string) {
     this.isLoading = true;
 
-    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: PostOrderConfigV2DTO) => {
+    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$))
+      .pipe(map((x:PostOrderConfigV2DTO) => {
+        if(x && x.LiveCampaignId) {
+          this.loadLiveCampaignById(x.LiveCampaignId);
+        }
+        return x;
+      }))
+      .subscribe({
+        next: (res: any) => {
           if(res) {
               this.dataModel = {...res};
               this.setupIndex();
 
               this.cdRef.markForCheck();
-          }
-
-          if(res && res.LiveCampaignId) {
-            this.loadLiveCampaignById(res.LiveCampaignId);
           }
 
           this.isLoading = false;
