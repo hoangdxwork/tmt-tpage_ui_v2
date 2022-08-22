@@ -1,7 +1,7 @@
 import { ChatomniMessageType } from './main-app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef, Component, EventEmitter, NgZone, Output, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, Output, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
@@ -11,6 +11,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { SocketService } from './main-app/services/socket-io/socket.service';
 import { PageLoadingService } from './shared/services/page-loading.service';
+import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,7 @@ export class AppComponent {
     private cdRef: ChangeDetectorRef,
     private crmTeamService: CRMTeamService,
     private notification: TDSNotificationService,
+    private socketOnEventService: SocketOnEventService,
     private loader: PageLoadingService,
     private socketService: SocketService,
     private destroy$: TDSDestroyService) {
@@ -48,6 +50,14 @@ export class AppComponent {
           that.isLoaded = true;
       }
     });
+
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+          if(res && res.Notification) {
+            this.notification.template(this.templateNotificationMessNew, { data: res.Notification, placement: 'bottomLeft' });
+          }
+      }
+    })
 
     this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
