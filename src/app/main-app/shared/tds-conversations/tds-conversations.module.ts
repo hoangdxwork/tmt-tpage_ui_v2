@@ -51,7 +51,6 @@ const CMP =[
   TDSConversationItemComponent,
   TDSConversationItemV2Component,
   IconEmojiMartComponent,
-  ShowAttachmentComponent,
   ShowItemImageComponent,
   ConversationInfopostItemComponent
 ]

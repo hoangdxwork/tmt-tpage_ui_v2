@@ -1,6 +1,7 @@
-import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
-import { SocketService } from '@app/services/socket-io/socket.service';
-import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
+import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
 import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +9,6 @@ import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-message.dto';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { TDSMessageService } from 'tds-ui/message';
@@ -20,8 +20,8 @@ import { TDSModalService } from 'tds-ui/modal';
 import { ProductPagefbComponent } from '@app/pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ReplaceHelper } from '@app/shared/helper/replace.helper';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
-import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { ChatomniDataDto, ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniDataDto, ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto';
@@ -56,6 +56,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   isLoading: boolean = false;
   isHiddenComment: any = {};
 
+  conversationItem!: ChatomniConversationItemDto;
+
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
     private modalService: TDSModalService,
@@ -68,7 +70,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade,
-    private socketService: SocketService) {
+    private socketOnEventService: SocketOnEventService,
+    private chatomniConversationFacade: ChatomniConversationFacade) {
   }
 
   ngOnInit() {
@@ -80,27 +83,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onEventSocket(){
-    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        let socketData = JSON.parse(res) as SocketioOnMessageDto;
-        if(socketData.Conversation && this.team?.ChannelId == socketData.Conversation?.ChannelId && this.data.ObjectId == socketData.Message?.ObjectId) {
-          let item: ChatomniDataItemDto = {
-            Data: socketData.Message.Data as ChatomniFacebookDataDto, // gán tạm thời
-            Id: socketData.Conversation.Id,
-            ObjectId: socketData.Message?.ObjectId,
-            ParentId: socketData.Message?.ParentId,
-            Message: socketData.Message.Message,
-            Type: socketData.Message.MessageType,
-            UserId: socketData.Message?.UserId,
-            Status: 1,
-            IsSystem: false,
-            CreatedTime: socketData.Message.CreatedTime,
-            ChannelCreatedTime: socketData.Message.ChannelCreatedTime,
-            IsOwner: false,
-          }
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+        if(res && res.Data && res.Data.Conversation && this.team?.ChannelId == res.Data.Conversation?.ChannelId && this.data.ObjectId == res.Data.Message?.ObjectId){
+          let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
 
           this.dataSource.Items = [...[item], ...this.dataSource.Items]
         }
+
         this.cdRef.detectChanges();
       }
     })

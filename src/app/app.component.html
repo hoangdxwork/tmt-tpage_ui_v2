@@ -3,18 +3,5 @@
 
 <!-- Notification Tin nhắn mới -->
 <ng-template #templateNotificationMessNew let-data="data">
-    <div *ngIf="data" class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer pr-4" (click)="getLink(data.url)" >
-        <span class="tdsi-information-fill text-info-400 text-heading-4"></span>
-        <div class="flex flex-col gap-y-2 whitespace-pre-line break-words">
-            <span class="font-semibold text-body-2">{{data.title}}</span>
-
-            <!-- Tin nhắn nội dung -->
-            <div *ngIf="data.message && !data.attachments">
-                <div class=" text-body-2" [innerHTML]="data.message | formatIconLike | safeHtml"></div>
-            </div>
-
-            <!-- Tin nhắn hình ảnh -->
-
-        </div>
-    </div>
+    <notification-event-socket [data]="data"></notification-event-socket>
 </ng-template>

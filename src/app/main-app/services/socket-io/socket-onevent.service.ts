@@ -15,7 +15,8 @@ export interface SocketEventNotificationDto {
 
 export interface SocketEventSubjectDto {
   Notification: SocketEventNotificationDto,
-  Data: SocketioOnMessageDto
+  Data: SocketioOnMessageDto,
+  Team: CRMTeamDTO
 }
 
 @Injectable({
@@ -102,7 +103,11 @@ export class SocketOnEventService  {
             }
 
             // TODO: return dữ liệu
-            this.socketEvent$.next({ Notification: model,  Data: socketData });
+            this.socketEvent$.next({ 
+              Notification: model,
+              Data: socketData,
+              Team: team
+            });
           },
           error: (error: any) => {
                console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
