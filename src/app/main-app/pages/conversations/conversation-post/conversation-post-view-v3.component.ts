@@ -1,8 +1,5 @@
 import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
-import { ChatomniCommentService } from './../../../services/chatomni-service/chatomni-comment.service';
-import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
-import { PrepareFacebookPostHandler } from './../../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { LiveCampaignService } from './../../../services/live-campaign.service';
 import { LiveCampaignModel } from './../../../dto/live-campaign/odata-live-campaign.dto';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
@@ -37,9 +34,9 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
-  @Input() availableCampaigns!:Array<LiveCampaignModel>;
+  @Input() lstOfLiveCampaign!: LiveCampaignModel[];
 
-  currentLiveCampaign?:LiveCampaignModel;
+  currentLiveCampaign?: LiveCampaignModel;
   orderTotal = 0;
   indClickFilter = 0;
   isShowFilterUser = false;
@@ -94,12 +91,11 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     private viewContainerRef: ViewContainerRef,
     private chatomniCommentFacade: ChatomniCommentFacade,
     private cdRef: ChangeDetectorRef,
-    private objectEvent: ObjectFacebookPostEvent,
-    private prepareHandler: PrepareFacebookPostHandler,
     private fbPostHandler: FaceBookPostItemHandler,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private facebookCommentService: FacebookCommentService,
     private conversationPostEvent: ConversationPostEvent,
+    private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService) {
   }
@@ -107,7 +103,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   ngOnInit() {
     if (this.team!.Type == 'Facebook') {
       this.onSetCommentOrders();
-      this.currentLiveCampaign = this.availableCampaigns.find(f=> f.Id == this.data?.LiveCampaignId);
       this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
     }
 
@@ -117,17 +112,14 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     this.loadOrderTotal();
   }
 
-  eventEmitter(){
-    this.objectEvent.changeLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniObjectsItemDto) => {
-
-        this.data.LiveCampaignId = res.LiveCampaignId;
-        this.data.LiveCampaign = {
-          Id: res.LiveCampaignId,
-          Name: res.LiveCampaign?.Name,
-          Note: res.LiveCampaign?.Note
-        };
-
+  eventEmitter() {
+    // TODO: Cập nhật chiến lịch live từ object-facebook-post
+    this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res && res.LiveCampaignId &&  res.Id == this.data?.Id) {
+            this.data.LiveCampaignId = res.LiveCampaignId;
+            this.data.LiveCampaign = { ...res.LiveCampaign };
+        }
         this.cdRef.markForCheck();
       }
     })
@@ -211,39 +203,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         })
       }
     })
-
-    // this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
-    //   if (res.data) {
-    //     let data = res.data;
-    //     let userId = data.facebook_ASUserId;
-
-    //     if (data.facebook_PostId == this.data.ObjectId) {
-    //       let dataAdd = {} as any;
-
-    //       if (this.commentOrders[userId]) {
-    //         this.commentOrders[userId] = this.commentOrders[userId].filter((x: any) => x.id && !data.id);
-
-    //         dataAdd = {
-    //           code: data.code,
-    //           id: data.id,
-    //           index: data.index,
-    //           session: data.session
-    //         };
-    //       } else {
-    //         this.commentOrders[userId] = [];
-
-    //         dataAdd = {
-    //           code: data.code,
-    //           id: data.id,
-    //           index: data.index,
-    //           session: data.session
-    //         };
-    //       }
-
-    //       this.commentOrders[userId].push(dataAdd);
-    //     }
-    //   }
-    // })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -321,37 +280,37 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
     this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
       next :(res: any) => {
-        this.facebookCommentService.setSort(this.currentSort.value);
-        this.loadData();
+          this.facebookCommentService.setSort(this.currentSort.value);
+          this.loadData();
       },
       error: error => {
-        this.message.error('Thao tác thất bại');
+          this.message.error('Thao tác thất bại');
       }
     })
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
-    const modal = this.modalService.create({
-      title: 'Chiến dịch',
-      content: LiveCampaignPostComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        post: data,
-        currentLiveCampaign: this.currentLiveCampaign,
-        lstOfData: this.availableCampaigns
-      }
-    });
+    // const modal = this.modalService.create({
+    //   title: 'Chiến dịch',
+    //   content: LiveCampaignPostComponent,
+    //   size: "lg",
+    //   viewContainerRef: this.viewContainerRef,
+    //   componentParams:{
+    //     post: data,
+    //     currentLiveCampaign: this.currentLiveCampaign,
+    //     lstOfData: this.availableCampaigns
+    //   }
+    // });
 
-    modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
-      if(this.data?.Data){
-        this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
-      }
+    // modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
+    //   if(this.data?.Data){
+    //     this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
+    //   }
 
-      this.objectEvent.changeLiveCampaignFromObject$.emit(this.data);
+    //   this.objectEvent.changeLiveCampaignFromObject$.emit(this.data);
 
-      this.cdRef.detectChanges();
-    })
+    //   this.cdRef.detectChanges();
+    // })
   }
 
   openTag(id: string) {
@@ -363,27 +322,27 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   addNewCampaign() {
-    if(this.currentLiveCampaign){
-      let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.data?.Data), this.currentLiveCampaign);
-      let liveCampaignId = this.currentLiveCampaign?.Id || this.data?.LiveCampaignId;
+    // if(this.currentLiveCampaign){
+    //   let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.data?.Data), this.currentLiveCampaign);
+    //   let liveCampaignId = this.currentLiveCampaign?.Id || this.data?.LiveCampaignId;
 
-      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe({
-        next : res => {
-          if(res.value){
-            this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
-            this.objectEvent.changeLiveCampaignFromObject$.emit(this.data);
-            this.message.success('Cập nhật chiến dịch thành công');
+    //   this.liveCampaignService.updateFacebookByLiveCampaign(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe({
+    //     next : res => {
+    //       if(res.value){
+    //         this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, this.currentLiveCampaign);
+    //         this.objectEvent.changeLiveCampaignFromObject$.emit(this.data);
+    //         this.message.success('Cập nhật chiến dịch thành công');
 
-            this.cdRef.markForCheck();
-          }
-      },
-      error: err=>{
-        this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
-      }
-      })
+    //         this.cdRef.markForCheck();
+    //       }
+    //   },
+    //   error: err=>{
+    //     this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
+    //   }
+    //   })
 
-      this.indClickTag = '';
-    }
+    //   this.indClickTag = '';
+    // }
   }
 
   translateType(type: string, status: string) {

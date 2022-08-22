@@ -142,13 +142,13 @@
 
                             <ng-template #contentAddtag>
                                 <div class="w-[304px]">
-                                  <tds-form-field>
+                                  <!-- <tds-form-field>
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
                                         [(ngModel)]="currentLiveCampaign"
                                         [allowClear]="true" [valuePrimitive]="false" [data]="availableCampaigns"
                                         [autoClose]="true">
                                     </tds-select>
-                                  </tds-form-field>
+                                  </tds-form-field> -->
                                 </div>
                             </ng-template>
 
@@ -315,9 +315,7 @@
                             [commentOrders]="commentOrders">
                         </post-comment-all> -->
 
-                        <comment-filter-all 
-                        [data]="data" [team]="team"
-                        [commentOrders]="commentOrders" [partnerDict]="(partners$ | async)">
+                        <comment-filter-all  [data]="data" [team]="team" [commentOrders]="commentOrders" [partnerDict]="(partners$ | async)">
                         </comment-filter-all>
                     </div>
 

@@ -65,11 +65,11 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
     private liveCampaignService: LiveCampaignService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['data'] && !changes['data'].firstChange) {
-        this.validateData();
-        this.data = {...changes['data'].currentValue};
-        this.loadData(this.data.ObjectId);
-    }
+    // if(changes['data'] && !changes['data'].firstChange) {
+    //     this.validateData();
+    //     this.data = {...changes['data'].currentValue};
+    //     this.loadData(this.data.ObjectId);
+    // }
   }
 
   ngOnInit(): void {
@@ -82,7 +82,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   validateData() {
     this.data = null as any;
-    this.currentLiveCampaign = undefined;
+    this.currentLiveCampaign = null as any;
   }
 
   loadTag() {
@@ -378,7 +378,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
         let defaultProductConfig = this.prepareProduct(res);
         let content = this.getContentString(defaultProductConfig);
         let contentWithAttributes = this.getcontentWithAttributesString(defaultProductConfig);
-  
+
         let obj: TextContentToOrderDTO = {
           Product: defaultProductConfig || null,
           Content: content,
@@ -386,9 +386,9 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
           Index: index,
           IsActive: true
         }
-  
+
         let idx = this.dataModel.TextContentToOrders.findIndex(f=> f.Index == index);
-  
+
         this.dataModel.TextContentToOrders[idx] = {...obj};
 
         this.cdRef.detectChanges();
@@ -475,14 +475,14 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
       .subscribe({
         next:(res) => {
           let users: ConfigUserDTO[] | null = [];
-          
+
           if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
             users = this.prepareUser(res?.LiveCampaign?.Users);
             this.dataModel.IsEnableAutoAssignUser = true;
           }
-          
+
           this.dataModel.Users = users;
-  
+
           if(TDSHelperArray.hasListValue(res?.Details)) {
             this.dataModel.TextContentToOrders = [];
           }
@@ -491,11 +491,11 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
           this.message.info(Message.ConversationPost.LoadConfigSuccess);
 
           this.cdRef.markForCheck();
-        }, 
+        },
         error:(error) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-          
+
           this.cdRef.markForCheck();
         }
       });
@@ -536,7 +536,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   prepareModelOrderConfig() {
     let model = this.dataModel as PostOrderConfigV2DTO;
-    
+
     model.ExcludedPhones = model.ExcludedPhones || [];
     model.ExcludedStatusNames = model.ExcludedStatusNames || [];
     model.Users = this.prepareUser(model.Users || null);
@@ -561,7 +561,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
         }else{
           x.Product = null;
         }
-        
+
       });
     }
 
@@ -574,15 +574,15 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
       let result: ConfigUserDTO[] = data?.map((user: ConfigUserDTO) => {
 
         let inner = {} as ConfigUserDTO;
-        
+
         inner.Id = user.Id;
         inner.Avatar = user.Avatar || '';
         inner.Name = user.Name;
         inner.UserName = user.UserName;
-  
+
         return inner;
       });
-  
+
       return result;
     } else {
       return null;
@@ -591,7 +591,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   onSave() {
     let model = this.prepareModelOrderConfig();
-    
+
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
 
@@ -602,7 +602,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
             this.isLoading = false;
 
             this.cdRef.markForCheck();
-          }, 
+          },
           error:(error) => {
             this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
             this.isLoading = false;

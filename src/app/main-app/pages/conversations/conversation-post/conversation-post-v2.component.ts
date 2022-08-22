@@ -1,3 +1,4 @@
+import { LiveCampaign } from './../../../dto/facebook-post/facebook-post.dto';
 import { ChatomniLiveCampaignDto } from './../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
@@ -85,11 +86,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     private ngZone: NgZone,
+    private cdRef: ChangeDetectorRef,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private chatomniObjectService: ChatomniObjectService,
     private destroy$: TDSDestroyService,
-    private objectEvent: ObjectFacebookPostEvent) {
+    private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
 
@@ -139,14 +141,48 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.eventEmitter();
   }
 
-  eventEmitter(){
-    this.objectEvent.changeLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+  eventEmitter() {
+    // TODO: Cập nhật chiến lịch live từ object-facebook-post
+    this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
-          let index = this.lstObjects.findIndex(x=> x.Id == res.Id);
-          if(index >- 1) {
-              this.lstObjects[index].LiveCampaign = { ...res.LiveCampaign } as unknown as ChatomniLiveCampaignDto;
-              this.lstObjects[index] = {...this.lstObjects[index]};
+        if(res && res.LiveCampaignId) {
+            let index = this.lstObjects.findIndex(x => x.Id == res.Id);
+            if(index >- 1) {
+                this.lstObjects[index].LiveCampaignId = res.LiveCampaignId;
+                this.lstObjects[index].LiveCampaign = {...res.LiveCampaign};
+
+                this.lstObjects[index] = {...this.lstObjects[index]};
+            }
+
+            if(this.currentPost && res.Id == this.currentPost?.Id) {
+                this.currentPost.LiveCampaignId = res.LiveCampaignId;
+                this.currentPost.LiveCampaign = { ...res.LiveCampaign };
+            }
+        }
+
+        this.cdRef.markForCheck();
+      }
+    })
+
+    // TODO: sự kiện xóa chiến dịch live từ live-campaign-post
+    this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+          if(res && !res.LiveCampaignId) {
+            let index = this.lstObjects.findIndex(x => x.Id == res.Id);
+            if(index >- 1) {
+                this.lstObjects[index].LiveCampaignId = null as any;
+                this.lstObjects[index].LiveCampaign = null as any;
+
+                this.lstObjects[index] = {...this.lstObjects[index]};
+            }
+
+            if(this.currentPost && res.Id == this.currentPost?.Id) {
+                this.currentPost.LiveCampaignId = null as any;
+                this.currentPost.LiveCampaign = null as any;
+            }
           }
+
+          this.cdRef.markForCheck();
       }
     })
   }
