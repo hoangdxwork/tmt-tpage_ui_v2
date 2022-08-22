@@ -24,9 +24,10 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
 export class LiveCampaignPostComponent implements OnInit {
 
   @Input() post!: ChatomniObjectsItemDto;
-  @Input() currentLiveCampaign?: LiveCampaignModel;
   @Input() lstOfData: Array<LiveCampaignModel> = [];
   @Output() getCurrentLiveCampaign$: EventEmitter<LiveCampaignModel> = new EventEmitter<LiveCampaignModel>();
+
+  currentLiveCampaign: any;
 
   lstFilter!: Array<LiveCampaignModel>;
   isLoading: boolean = false;
@@ -168,8 +169,14 @@ export class LiveCampaignPostComponent implements OnInit {
       this.message.success(Message.UpdatedSuccess);
 
       this.post = this.fbPostHandler.updateLiveCampaignPost(this.post, res);
-      this.getCurrentLiveCampaign$.emit(this.currentLiveCampaign);
-      this.modalRef.destroy(null);
+      this.post.LiveCampaignId = res.Id;
+      this.post.LiveCampaign = {
+        Id: res.Id,
+        Name: res.Name,
+        Note: res.Note
+      }
+      // this.getCurrentLiveCampaign$.emit();
+      this.modalRef.destroy(this.post);
 
     }, error => {
       this.message.error(`${error?.error?.message || JSON.stringify(error)}`);

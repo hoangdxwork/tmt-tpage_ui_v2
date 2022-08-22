@@ -140,7 +140,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   eventEmitter(){
-    this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.objectEvent.changeLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
           let index = this.lstObjects.findIndex(x=> x.Id == res.Id);
           if(index >- 1) {

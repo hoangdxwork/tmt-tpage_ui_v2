@@ -5,13 +5,14 @@ import { PostOrderInteractionConfigComponent } from './interaction-config/post-o
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { PostOrderConfigComponent } from './order-config/post-order-config.component';
 import { TDSModalRef } from 'tds-ui/modal';
-import { Component, Input, ViewChild } from "@angular/core";
-import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
+import { Component, Input, ViewChild, ChangeDetectionStrategy } from "@angular/core";
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign.dto';
 
 @Component({
   selector: 'config-post-outlet',
-  templateUrl: './config-post-outlet.component.html'
+  templateUrl: './config-post-outlet.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ConfigPostOutletComponent  {
@@ -22,8 +23,10 @@ export class ConfigPostOutletComponent  {
   @ViewChild(AutoReplyConfigComponent ) autoReplyConfig !: TDSSafeAny;
   @ViewChild(AutoLabelConfigComponent ) autoLabelConfig !: TDSSafeAny;
 
-  selectedIndex: number = 0;
   @Input() data!: ChatomniObjectsItemDto;
+  @Input() currentLiveCampaign?:LiveCampaignModel;
+
+  selectedIndex: number = 0;
 
   constructor(private modalRef: TDSModalRef){
   }
