@@ -167,7 +167,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           // TODO: mapping dữ liệu khung chat hiện tại
           let exist = this.conversationItem.ConversationId == socket.Conversation?.UserId;
           if(exist) {
-              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(socket, this.conversationItem, this.currentTeam)}
+              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(socket, this.conversationItem)};
               this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
           }
           this.cdRef.detectChanges();
