@@ -1,3 +1,4 @@
+import { MainSharedModule } from './main-app/shared/shared.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -35,7 +36,8 @@ registerLocaleData(localeVi);
     SharedModule,
     TDSNotificationModule,
     PipeModule,
-    TDSMessageModule
+    TDSMessageModule,
+    MainSharedModule
   ],
   providers: [{ provide: TDS_I18N, useValue: vi_VN },
     TAuthGuardService, {

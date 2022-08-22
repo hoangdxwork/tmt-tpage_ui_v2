@@ -1,3 +1,5 @@
+import { ShowAttachmentComponent } from './show-attachment/show-attachment.component';
+import { NotificationEventSocketComponent } from './notification-event-socket/notification-event-socket.component';
 import { TableDetailReportComponent } from './table-detail-report/table-detail-report.component';
 import { TDSSwitchModule } from 'tds-ui/switch';
 import { RouterModule } from '@angular/router';
@@ -85,7 +87,9 @@ const cmp =[
   BillFilterOptionsComponent,
   TpageNotificationDropdownComponent,
   TableDetailReportComponent,
-  SuggestAddressV2Component
+  SuggestAddressV2Component,
+  NotificationEventSocketComponent,
+  ShowAttachmentComponent,
 ]
 
 const SERVICES = [
