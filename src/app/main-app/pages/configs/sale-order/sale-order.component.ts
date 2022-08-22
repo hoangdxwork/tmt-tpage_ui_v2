@@ -4,7 +4,6 @@ import { GeneralConfigService } from 'src/app/main-app/services/general-config.s
 import { AutoInteractionDTO, ShippingStatuesDTO } from 'src/app/main-app/dto/configs/general-config.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
-import { BaseHelper } from 'src/app/main-app/shared/helper/base.helper';
 import { ConfigSaleOrderDTO } from 'src/app/main-app/dto/configs/sale-order/config-sale-order.dto';
 import { DOCUMENT } from '@angular/common';
 
@@ -51,7 +50,6 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   areaText1 = 'Xin chào {partner.name}, bạn đã đặt hàng trên live {order.live_title} thành công.\n{order.comment}\n{order.product}\nTổng tiền trong đơn: {order.total_amount}';
   areaText2 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được tạo.\n{bill.details}\n{bill.note}\n{shipping.details}';
   areaText3 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được cập nhật trạng thái giao hàng.\n{shipping.details}';
-
 
   constructor(private fb: FormBuilder,
     @Inject(DOCUMENT) private document: Document,

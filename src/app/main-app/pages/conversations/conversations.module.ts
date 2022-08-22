@@ -1,7 +1,7 @@
 import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
 import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
-import { PrepareFacebookPostHandler } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
+import { PrepareUpdateFacebookByLiveCampaign } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { FaceBookPostItemHandler } from './../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignPostComponent } from './conversation-post/live-campaign-post/live-campaign-post.component';
@@ -210,7 +210,7 @@ const SERVICES = [
   SO_PrepareFastSaleOrderHandler,
   ObjectFacebookPostEvent,
   FaceBookPostItemHandler,
-  PrepareFacebookPostHandler,
+  PrepareUpdateFacebookByLiveCampaign,
   PrepareAddCampaignHandler,
   CsOrder_FromConversationHandler,
   ConversationPostEvent
