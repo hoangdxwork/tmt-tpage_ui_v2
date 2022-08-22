@@ -41,7 +41,7 @@ export class SocketOnEventService  {
       mergeMap((socketData: SocketioOnMessageDto) => {
           return this.crmTeamService.getActiveByPageIds$([socketData.Conversation?.ChannelId]).pipe((map((teams: CRMTeamDTO[]) => {
               let team = teams[0] as CRMTeamDTO;
-              return [socketData, team];
+              return [(socketData || {}), (team || {})];
           })))
       }))
       .subscribe({
@@ -53,8 +53,8 @@ export class SocketOnEventService  {
             switch(socketData.Message.MessageType) {
                 case ChatomniMessageType.FacebookMessage:
                   model = {
-                      Title: `Facebook: ${socketData.Conversation.Name} vừa nhắn tin`,
-                      Message: `${socketData.Message.Message}`,
+                      Title: `Facebook: ${socketData.Conversation?.Name} vừa nhắn tin`,
+                      Message: `${socketData.Message?.Message}`,
                       Attachments: socketData.Message.Data?.attachments,
                       Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
                   };
@@ -63,8 +63,8 @@ export class SocketOnEventService  {
 
                 case ChatomniMessageType.FacebookComment:
                   model = {
-                      Title: `Facebook: ${socketData.Conversation.Name} vừa bình luận`,
-                      Message: `${socketData.Message.Message}`,
+                      Title: `Facebook: ${socketData.Conversation?.Name} vừa bình luận`,
+                      Message: `${socketData.Message?.Message}`,
                       Attachments: socketData.Message.Data?.attachments,
                       Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
                   };
@@ -73,8 +73,8 @@ export class SocketOnEventService  {
 
                 case ChatomniMessageType.TShopMessage:
                   model = {
-                      Title: `TShop: ${socketData.Conversation.Name} vừa nhắn tin`,
-                      Message: `${socketData.Message.Message}`,
+                      Title: `TShop: ${socketData.Conversation?.Name} vừa nhắn tin`,
+                      Message: `${socketData.Message?.Message}`,
                       Attachments: socketData.Message.Data?.attachments,
                       Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
                   };
@@ -83,8 +83,8 @@ export class SocketOnEventService  {
 
                 case ChatomniMessageType.TShopComment:
                   model = {
-                      Title: `TShop: ${socketData.Conversation.Name} vừa nhắn tin`,
-                      Message: `${socketData.Message.Message}`,
+                      Title: `TShop: ${socketData.Conversation?.Name} vừa nhắn tin`,
+                      Message: `${socketData.Message?.Message}`,
                       Attachments: socketData.Message.Data?.attachments,
                       Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
                   } ;
@@ -92,8 +92,8 @@ export class SocketOnEventService  {
 
                 default:
                   model = {
-                      Title: `${socketData.Conversation.Name} vừa phản hồi`,
-                      Message: `${socketData.Message.Message}`,
+                      Title: `${socketData.Conversation?.Name} vừa phản hồi`,
+                      Message: `${socketData.Message?.Message}`,
                       Attachments: socketData.Message.Data?.attachments,
                       Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
                   };
