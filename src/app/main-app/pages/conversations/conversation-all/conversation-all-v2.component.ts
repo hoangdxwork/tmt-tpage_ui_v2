@@ -156,7 +156,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             if(res.Data.Message && res.Data.Message.Message){
               lastMessage.Message = res.Data.Message?.Message;
             }
-            
+
             if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data){
               lastMessage.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
             }
@@ -176,7 +176,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           this.cdRef.detectChanges();
           }
       }
-    })  
+    })
   }
 
   eventEmitter() {
@@ -557,11 +557,14 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           this.totalConversations = res?.Items.length;
           this.isLoading = false;
           this.isRefreshing = false;
+
+          this.cdRef.markForCheck();
       },
       error: (error: any) => {
           this.isLoading = false;
           this.isRefreshing = false;
           this.message.error(`${error?.error?.message}`);
+          this.cdRef.markForCheck();
       }
     })
   }

@@ -34,7 +34,7 @@ export class PrepareUpdateFacebookByLiveCampaign {
             name: (item.Data as MDB_Facebook_Mapping_PostDto)?.from?.name
           },
           created_time: (item.Data as MDB_Facebook_Mapping_PostDto)?.created_time,
-          facebook_id: (item.Data as MDB_Facebook_Mapping_PostDto)?.id,
+          facebook_id: item.ObjectId,
           full_picture: (item.Data as MDB_Facebook_Mapping_PostDto)?.full_picture,
           message: (item.Data as MDB_Facebook_Mapping_PostDto)?.message,
           picture: (item.Data as MDB_Facebook_Mapping_PostDto)?.picture,
