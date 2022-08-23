@@ -12,18 +12,20 @@ export class NotificationEventSocketComponent implements OnInit {
 
   @Input() data!: SocketEventSubjectDto;
 
-  constructor(
-    private router: Router,
-    private crmTeamService: CRMTeamService
-  ) { }
+  constructor(private router: Router,
+    private crmTeamService: CRMTeamService) { }
 
   ngOnInit(): void {
   }
 
   getLink(data: SocketEventSubjectDto) {
-    if(data && data.Notification && data.Notification.Url) {
-        this.router.navigateByUrl(data.Notification.Url);
-        this.crmTeamService.onUpdateTeam(data.Team);
+    if(data && data.Notification && data.Notification?.Url) {
+        if(data.Team && data.Team.Id) {
+            this.router.navigateByUrl(data.Notification.Url);
+            this.crmTeamService.onUpdateTeam(data.Team);
+        } else {
+            console.log('Không  tìm thấy teamId' + `channelId: ${data.Data.Conversation.ChannelId}`);
+        }
     }
   }
 

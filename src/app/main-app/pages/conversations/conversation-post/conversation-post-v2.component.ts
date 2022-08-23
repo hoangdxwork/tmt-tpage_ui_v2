@@ -168,18 +168,20 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
           if(res && !res.LiveCampaignId) {
-            let index = this.lstObjects.findIndex(x => x.Id == res.Id);
-            if(index >- 1) {
-                this.lstObjects[index].LiveCampaignId = null as any;
-                this.lstObjects[index].LiveCampaign = null as any;
+              let index = this.lstObjects.findIndex(x => x.Id == res.Id);
+              if(index >- 1) {
+                  this.lstObjects[index].LiveCampaignId = null as any;
+                  this.lstObjects[index].LiveCampaign = null as any;
 
-                this.lstObjects[index] = {...this.lstObjects[index]};
-            }
+                  this.lstObjects[index] = {...this.lstObjects[index]};
+              }
 
-            if(this.currentPost && res.Id == this.currentPost?.Id) {
-                this.currentPost.LiveCampaignId = null as any;
-                this.currentPost.LiveCampaign = null as any;
-            }
+              if(this.currentPost && res.Id == this.currentPost?.Id) {
+                  this.currentPost.LiveCampaignId = null as any;
+                  this.currentPost.LiveCampaign = null as any;
+
+                  this.currentPost = { ...this.currentPost};
+              }
           }
 
           this.cdRef.markForCheck();

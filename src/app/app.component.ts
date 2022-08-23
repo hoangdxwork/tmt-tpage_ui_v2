@@ -45,11 +45,11 @@ export class AppComponent {
 
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;      
-        let exist = this.router.url.startsWith('/conversation') &&  Number(this.route.snapshot.queryParams?.teamId) == res.Team.Id;
+        this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
+        let exist = this.router.url.startsWith('/conversation') &&  Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
 
         if(res && res.Notification && !exist) {
-          this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+            this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
         }
       }
     })

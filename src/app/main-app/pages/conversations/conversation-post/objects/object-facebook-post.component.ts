@@ -45,6 +45,16 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
         let exist = this.lstOfLiveCampaign.filter(x => x.Id == this.item.LiveCampaignId)[0] as LiveCampaignModel;
         this.currentLiveCampaign = exist;
     }
+
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+          this.currentLiveCampaign = null as any;
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {

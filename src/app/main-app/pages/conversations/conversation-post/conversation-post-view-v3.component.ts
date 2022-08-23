@@ -116,11 +116,27 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     // TODO: Cập nhật chiến lịch live từ object-facebook-post
     this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        if(res && res.LiveCampaignId &&  res.Id == this.data?.Id) {
-            this.data.LiveCampaignId = res.LiveCampaignId;
-            this.data.LiveCampaign = { ...res.LiveCampaign };
-        }
-        this.cdRef.markForCheck();
+          if(res && res.LiveCampaignId &&  res.Id == this.data?.Id) {
+              this.data.LiveCampaignId = res.LiveCampaignId;
+              this.data.LiveCampaign = { ...res.LiveCampaign };
+
+              this.data = {...this.data};
+          }
+
+          this.cdRef.markForCheck();
+      }
+    });
+
+    this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && res.LiveCampaignId &&  res.Id == this.data?.Id) {
+              this.data.LiveCampaignId = null as any;
+              this.data.LiveCampaign = null as any;
+
+              this.data = {...this.data};
+          }
+
+          this.cdRef.markForCheck();
       }
     })
   }
