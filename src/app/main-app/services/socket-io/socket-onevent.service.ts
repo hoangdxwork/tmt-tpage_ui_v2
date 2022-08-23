@@ -48,7 +48,7 @@ export class SocketOnEventService  {
       .subscribe({
           next: ([socketData, team]: any) => {
 
-            console.log(socketData);
+            // console.log(socketData);
             let model: SocketEventNotificationDto = {} as any;
 
             switch(socketData.Message.MessageType) {
@@ -103,7 +103,7 @@ export class SocketOnEventService  {
             }
 
             // TODO: return dữ liệu
-            this.socketEvent$.next({ 
+            this.socketEvent$.next({
               Notification: model,
               Data: socketData,
               Team: team
