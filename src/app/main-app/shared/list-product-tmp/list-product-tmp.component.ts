@@ -1,12 +1,13 @@
+import { Message } from 'src/app/lib/consts/message.const';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { mergeMap } from 'rxjs/operators';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
-import { debounceTime, finalize, map, takeUntil } from 'rxjs/operators';
-import { fromEvent, Subject } from 'rxjs';
+import { finalize, map, takeUntil } from 'rxjs/operators';
 import { orderBy as _orderBy } from 'lodash';
 import { ProductTemplateV2DTO } from '../../dto/product-template/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
@@ -20,19 +21,23 @@ import { TDSTableComponent } from 'tds-ui/table';
 @Component({
   selector: 'list-product-tmp',
   templateUrl: './list-product-tmp.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChanges {
 
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
   @ViewChild('innerText') innerText!: ElementRef;
 
   @Input() priceListItems: any;
-  @Output() onLoadProductToOrderLines: EventEmitter<any> = new EventEmitter<any>();
   @Input() isLoadingProduct: boolean = false;
+  @Input() inLiveCampaign: boolean = false;
 
-  private destroy$ = new Subject<void>();
+  @Output() onLoadProductToOrderLines: EventEmitter<any> = new EventEmitter<any>();
+  @Output() onLoadProductToLiveCampaign: EventEmitter<any> = new EventEmitter<any>();
+
   lstOfData!: DataPouchDBDTO[];
+  lstVariants: DataPouchDBDTO[] = [];
 
   indexDbVersion: number = 0;
   indexDbProductCount: number = -1;
@@ -49,6 +54,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   roleConfigs!: SaleSettingsDTO;
   inventories!: TDSSafeAny;
   isLoading: boolean = false;
+  indClick:number =  -1;
 
   options: Array<TDSSafeAny> = [
     { text: 'Tất cả', value: 'all' },
@@ -76,6 +82,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
       private commonService: CommonService,
       public apiService: TCommonService,
       private cdRef : ChangeDetectorRef,
+      private destroy$: TDSDestroyService,
       private viewContainerRef: ViewContainerRef) {
   }
 
@@ -85,27 +92,38 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   }
 
   loadData(reload?:boolean): void {
-    this.validateData();
     this.isLoading = true;
-    this.productIndexDBService.loadProductIndexDBV2(reload)
-      .pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
-      .subscribe((res: KeyCacheIndexDBDTO) => {
-        if(TDSHelperObject.hasValue(res)) {
-            this.indexDbProductCount = res.cacheCount;
-            this.indexDbVersion = res.cacheVersion;
-            this.indexDbStorage = res.cacheDbStorage;
-            this.loadDataTable();
-        }
-    })
+
+    this.validateData();
+
+    this.productIndexDBService.loadProductIndexDBV2(reload).pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
+      .subscribe({
+        next:(res: KeyCacheIndexDBDTO) => {
+          if(TDSHelperObject.hasValue(res)) {
+              this.indexDbProductCount = res.cacheCount;
+              this.indexDbVersion = res.cacheVersion;
+              this.indexDbStorage = res.cacheDbStorage;
+
+              this.loadDataTable();
+            }
+          },
+          error:(err) => {
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+          }
+      })
   }
 
   loadDataTable() {
     let data = this.indexDbStorage;
+
     if(TDSHelperObject.hasValue(this.currentOption)) {
+
         if(TDSHelperString.hasValueString(this.innerText)) {
             this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
         }
+
         switch(this.currentOption.value) {
+
           case "all":
             data = data.filter((x: DataPouchDBDTO) =>
               (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
@@ -135,24 +153,30 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     }
 
     if(TDSHelperObject.hasValue(this.currentType)) {
+
         switch(this.currentType.value) {
           case 'Id':
             data = _orderBy(data, ["Id"], ["desc"]);
           break;
+
           case 'Name':
             data = _orderBy(data, ["Name"], ["desc"]);
           break;
+
           case 'DefaultCode':
             data = _orderBy(data, ["DefaultCode"], ["desc"]);
           break;
+
           case 'PosSalesCount':
             data = _orderBy(data, ["PosSalesCount"], "desc");
           break;
+
           default: break;
         }
     }
 
     if(TDSHelperArray.hasListValue(this.priceListItems)) {
+
         data.forEach((x: DataPouchDBDTO) => {
           if(x.SaleOK && ! x.IsDiscount) {
               let price = this.priceListItems[`${x.ProductTmplId}_${x.UOMId}`];
@@ -171,16 +195,19 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     }
 
     this.cdRef.detectChanges();
+
     return this.lstOfData = data;
   }
 
   selectType(item: any): void {
     this.currentType = item;
+
     this.loadDataTable();
   }
 
   selectOption(item: any): void {
       this.currentOption = item;
+
       this.loadDataTable();
   }
 
@@ -192,13 +219,18 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     });
 
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
-      .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
-        mergeMap((warehouseId: any) => {
-           return this.commonService.getInventoryWarehouseId(warehouseId)
-        }))
-        .subscribe((obj: CompanyCurrentDTO) => {
-          this.inventories = obj;
-      });
+        .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
+          mergeMap((warehouseId: any) => {
+            return this.commonService.getInventoryWarehouseId(warehouseId)
+          }))
+        .subscribe({
+          next:(obj: CompanyCurrentDTO) => {
+            this.inventories = obj;
+          },
+          error:(err) => {
+            this.message.error(err?.error?.message || Message.Inventory.CanNotLoadInfo);
+          }
+        });
   }
 
   showModalAddProduct() {
@@ -217,31 +249,36 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        if(res) {
-          let productTmplItems = res[0];
-          if(res[1]) {
-            let cacheObject = res[1];
+      .subscribe({
+        next:(res: any) => {
+          if(res) {
+            let productTmplItems = res[0];
 
-            this.indexDbProductCount = cacheObject.cacheCount;
-            this.indexDbVersion = cacheObject.cacheVersion;
-            this.indexDbStorage = cacheObject.cacheDbStorage;
-          }
-
-          // TODO: trường hợp thêm mới push sp vào orderLines
-          if(productTmplItems?.Id) {
-            let item = this.indexDbStorage.filter((x: DataPouchDBDTO) =>
-            x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
-
-            if(!TDSHelperObject.hasValue(item)) {
-              this.message.error('Thêm mới sản phẩm danh sách xảy ra lỗi!');
-              return;
+            if(res[1]) {
+              let cacheObject = res[1];
+  
+              this.indexDbProductCount = cacheObject.cacheCount;
+              this.indexDbVersion = cacheObject.cacheVersion;
+              this.indexDbStorage = cacheObject.cacheDbStorage;
             }
-            this.addItem(item);
+  
+            // TODO: trường hợp thêm mới push sp vào orderLines
+            if(productTmplItems?.Id) {
+
+              let item = this.indexDbStorage.filter((x: DataPouchDBDTO) =>
+              x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
+  
+              if(!TDSHelperObject.hasValue(item)) {
+                this.message.error('Thêm mới sản phẩm danh sách xảy ra lỗi!');
+                return;
+              }
+
+              this.addItem(item);
+            }
           }
+          //TODO: reload sản phẩm
+          this.reloadIndexDB();
         }
-        //TODO: reload sản phẩm
-        this.reloadIndexDB();
       })
   }
 
@@ -252,6 +289,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     if(this.innerText?.nativeElement?.value) {
       this.innerText.nativeElement.value = '';
     }
+
     this.keyFilter = '';
 
     this.indexDbProductCount = -1;
@@ -264,14 +302,21 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     this.loadData(true);
   }
 
-  addItem(data: DataPouchDBDTO) {
-    this.onLoadProductToOrderLines.emit(data);
+  addItem(data: DataPouchDBDTO, index?: number) {
+    // TODO: trường hợp thêm sản phẩm vào đơn hàng
+    if (!this.inLiveCampaign) {
+      this.onLoadProductToOrderLines.emit(data);
+    } else {
+      this.lstVariants = this.lstOfData.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
+      this.indClick = index as number;
+    }
   }
 
   ngAfterViewInit(): void {
-    this.tableComponent?.cdkVirtualScrollViewport?.scrolledIndexChange
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: number) => {});
+    this.tableComponent?.cdkVirtualScrollViewport?.scrolledIndexChange.pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next:(data: number) => {}
+      });
 
     this.cdRef.detectChanges();
   }
@@ -292,11 +337,14 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["priceListItems"] && !changes["priceListItems"].firstChange) {
+
       this.priceListItems = changes["priceListItems"].currentValue;
+
       this.loadDataTable();
     }
 
     if(changes['isLoadingProduct'] && (changes['isLoadingProduct'].currentValue == true || changes['isLoadingProduct'].currentValue == false)) {
+
       this.isLoading = changes['isLoadingProduct'].currentValue;
     }
   }
@@ -304,17 +352,28 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   onInputKeyup(ev:TDSSafeAny){
     this.isLoading = true;
     this.keyFilter = ev.value;
+
     this.loadDataTable();
+
     this.isLoading = false;
   }
 
-  onSearch() {
-    this.search = !this.search
+  getAllVariants(){
+    // TODO: trường hợp thêm list các biến thể của sản phẩm vào chiến dịch
+    this.onLoadProductToLiveCampaign.emit(this.lstVariants);
+
+    this.indClick = -1;
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  getCurrentVariant(data: DataPouchDBDTO){
+    // TODO: trường hợp thêm sản phẩm vào chiến dịch
+    this.onLoadProductToLiveCampaign.emit(data);
+
+    this.indClick = -1;
+  }
+
+  onSearch() {
+    this.search = !this.search;
   }
 }
 
