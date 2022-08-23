@@ -1,3 +1,4 @@
+import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { ModalAddAddressV2Component } from './../../pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
@@ -454,26 +455,26 @@ export class TDSConversationItemV2Component implements OnInit {
 
   addQuickReplyComment(message: string) {
     this.isReply = false;
-    const model = this.prepareModel(message);
-    model.comment_id = this.dataItem.Data.id;
+    const model = this.prepareModelV2(message);
+    model.MessageType = 2;
+    model.RecipientId = this.dataItem.Data.id || null;
 
-    this.activityMatchingService.addQuickReplyComment(model)
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
+        next: (res: ResponseAddMessCommentDtoV2[]) => {
+          
+          if(TDSHelperArray.hasListValue(res)){
+            res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
+              x["Status"] = ChatomniStatus.Pending;
 
-        if(TDSHelperArray.hasListValue(res)){
-          res.forEach((x: ResponseAddMessCommentDto, i: number) => {
-            x["status"] = ChatomniStatus.Pending;
-            x.type = this.team.Type == CRMTeamType._Facebook ? 11 :(this.team.Type == CRMTeamType._TShop? 92 : 0);
+            let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+            this.dataSource.Items = [...this.dataSource.Items, data];
 
-            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
-
-            // TODO: Đẩy qua tds-conversation-v2
-            this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
-            //TODO: Đẩy qua conversation-all-v2
             if(i == res.length - 1){
               let itemLast = {...data}
+
               let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+              //TODO: Đẩy qua conversation-all-v2
               this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
             }
           });
@@ -511,6 +512,13 @@ export class TDSConversationItemV2Component implements OnInit {
     model.created_time = (new Date()).toISOString();
 
     return model
+  }
+
+  prepareModelV2(message: string): any {
+    const model = {} as ChatomniSendMessageModelDto;
+    model.Message = message;
+
+    return model;
   }
 
   showModalSuggestAddress(text: any){ 

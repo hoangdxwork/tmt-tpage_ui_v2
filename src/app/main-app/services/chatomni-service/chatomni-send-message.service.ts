@@ -31,11 +31,12 @@ export class ChatomniSendMessageService extends BaseSevice  {
     return this.apiService.getData<any>(api, data);
   }
 
-  retryMessage(id: string, page_id: string): Observable<TDSSafeAny> {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${id}/queueretrymessage?page_id=${page_id}`,
+  sendMessageManyPeople(teamId: number, data: any): Observable<TDSSafeAny> {
+
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}/messagesmanypeople`,
       method: CoreApiMethodType.post,
     }
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<any>(api, data);
   }
 }
