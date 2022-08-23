@@ -13,7 +13,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDS_I18N, vi_VN } from 'tds-ui/i18n';
-import { environment } from 'src/environments/environment';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { PipeModule } from '@app/shared/pipe/pipe.module';
 import { TDSMessageModule } from 'tds-ui/message';

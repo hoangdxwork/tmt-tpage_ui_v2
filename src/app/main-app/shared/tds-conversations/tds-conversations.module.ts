@@ -52,7 +52,7 @@ const CMP =[
   TDSConversationItemV2Component,
   IconEmojiMartComponent,
   ShowItemImageComponent,
-  ConversationInfopostItemComponent
+  ConversationInfopostItemComponent,
 ]
 
 @NgModule({
