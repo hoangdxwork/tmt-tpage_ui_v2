@@ -183,6 +183,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
                   this.currentPost = { ...this.currentPost};
               }
           }
+
           this.cdRef.markForCheck();
       }
     })
@@ -435,15 +436,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
           setTimeout(() => {
               this.isRefreshing = false;
           }, 300);
-
-          this.cdRef.markForCheck();
       },
       error: (error: any) => {
           setTimeout(() => {
              this.isRefreshing = false;
           }, 300);
           this.message.error(`${error?.error?.message}`);
-          this.cdRef.markForCheck();
       }
     })
   }

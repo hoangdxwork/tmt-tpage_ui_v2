@@ -861,7 +861,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false })).subscribe({
         next: (res: any) => {
         if (TDSHelperArray.hasListValue(res)) {
-
           res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
             x["Status"] = ChatomniStatus.Pending;
 
@@ -875,11 +874,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
             //TODO: Đẩy qua conversation-all-v2
             if(i == res.length - 1){
               let itemLast = {...data}
-
               if (TDSHelperArray.hasListValue(model.attachments)) {
                 itemLast.Message = x.Message ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
               }
-
               let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
               this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
             }

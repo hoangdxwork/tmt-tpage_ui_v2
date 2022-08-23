@@ -24,7 +24,7 @@ export class NotificationEventSocketComponent implements OnInit {
             this.router.navigateByUrl(data.Notification.Url);
             this.crmTeamService.onUpdateTeam(data.Team);
         } else {
-            console.log('Không  tìm thấy teamId' + `, channelId: ${data.Data.Conversation.ChannelId}`);
+            console.log('Không  tìm thấy teamId' + `channelId: ${data.Data.Conversation.ChannelId}`);
         }
     }
   }

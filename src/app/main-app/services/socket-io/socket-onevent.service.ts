@@ -88,7 +88,7 @@ export class SocketOnEventService  {
                       Message: `${socketData.Message?.Message}`,
                       Attachments: socketData.Message.Data?.attachments,
                       Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-                  };
+                  } ;
                 break;
 
                 default:
