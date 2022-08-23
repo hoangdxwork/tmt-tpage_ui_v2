@@ -42,8 +42,11 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   ngOnInit() {
     if(this.item && this.item.LiveCampaign) {
-        let exist = this.lstOfLiveCampaign.filter(x => x.Id == this.item.LiveCampaignId)[0] as LiveCampaignModel;
-        this.currentLiveCampaign = exist;
+        this.currentLiveCampaign = {
+            Id: this.item.LiveCampaignId,
+            Name: this.item.LiveCampaign?.Name,
+            Note: this.item.LiveCampaign?.Note
+        } as any;
     }
 
     this.eventEmitter();
@@ -62,8 +65,11 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
         this.item = {...changes["item"].currentValue};
 
         if(this.item && this.item.LiveCampaign) {
-            let exist = this.lstOfLiveCampaign.filter(x => x.Id == this.item.LiveCampaignId)[0] as LiveCampaignModel;
-            this.currentLiveCampaign = {...exist};
+            this.currentLiveCampaign = {
+                Id: this.item.LiveCampaignId,
+                Name: this.item.LiveCampaign?.Name,
+                Note: this.item.LiveCampaign?.Note
+            } as any;
         }
     }
   }
