@@ -289,7 +289,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationInfoDto) => {
           if(res) {
+              // Thông tin khách hàng
               this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+              // Thông tin đơn hàng
+              this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
           }
         },
@@ -317,7 +320,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
-    // TODO: Đẩy dữ liệu sang conversation-orer để tạo hà, insertfrompost
+    // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
     this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
   }

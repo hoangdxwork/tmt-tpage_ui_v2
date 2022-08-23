@@ -45,7 +45,10 @@ export class ConversationOrderFacade extends BaseSevice  {
   public onLoadedCommentByUser$:EventEmitter<TDSSafeAny> = new EventEmitter<TDSSafeAny>();
 
   // TODO: outPut thông tin khách hàng từ comment sang tab Khách hàng
-  public loadPartnerByPostComment$ = new EventEmitter<any>();
+  public loadPartnerByPostComment$ = new EventEmitter<ChatomniConversationInfoDto>();
+
+  // TODO: thông tin đơn hàng khi click khách hàng từ comment
+  public loadOrderByPartnerComment$ = new EventEmitter<ChatomniConversationInfoDto>();
 
   // TODO: outPut thông tin khách hàng từ comment sang tab Đơn hàng
   public loadInsertFromPostFromComment$ = new EventEmitter<any>();

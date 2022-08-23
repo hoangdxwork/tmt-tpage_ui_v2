@@ -5,6 +5,7 @@ import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { map, Subject, tap, mergeMap } from "rxjs";
 import { CRMTeamService } from "../crm-team.service";
 import { SocketService } from "./socket.service";
+import { ChatmoniSocketEventName } from "./soketio-event";
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -16,7 +17,8 @@ export interface SocketEventNotificationDto {
 export interface SocketEventSubjectDto {
   Notification: SocketEventNotificationDto,
   Data: SocketioOnMessageDto,
-  Team: CRMTeamDTO
+  Team: CRMTeamDTO,
+  EventName: string
 }
 
 @Injectable({
@@ -48,71 +50,85 @@ export class SocketOnEventService  {
       .subscribe({
           next: ([socketData, team]: any) => {
 
-            // console.log(socketData);
-            let model: SocketEventNotificationDto = {} as any;
+            console.log(socketData);
 
-            switch(socketData.Message.MessageType) {
-                case ChatomniMessageType.FacebookMessage:
-                  model = {
-                      Title: `Facebook: ${socketData.Conversation?.Name} vừa nhắn tin`,
-                      Message: `${socketData.Message?.Message}`,
-                      Attachments: socketData.Message.Data?.attachments,
-                      Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
-                  };
+            switch(socketData.EventName) {
+              case ChatmoniSocketEventName.chatomniOnMessage:
+                  let model = {...this.prepareChatomniOnMessage(socketData, team)};
+                  this.socketEvent$.next({
+                      Notification: model,
+                      Data: socketData,
+                      Team: team,
+                      EventName: socketData.EventName
+                  });
+                  break;
+              case ChatmoniSocketEventName.onUpdate:
 
                   break;
-
-                case ChatomniMessageType.FacebookComment:
-                  model = {
-                      Title: `Facebook: ${socketData.Conversation?.Name} vừa bình luận`,
-                      Message: `${socketData.Message?.Message}`,
-                      Attachments: socketData.Message.Data?.attachments,
-                      Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
-                  };
-
-                break;
-
-                case ChatomniMessageType.TShopMessage:
-                  model = {
-                      Title: `TShop: ${socketData.Conversation?.Name} vừa nhắn tin`,
-                      Message: `${socketData.Message?.Message}`,
-                      Attachments: socketData.Message.Data?.attachments,
-                      Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-                  };
-
-                break;
-
-                case ChatomniMessageType.TShopComment:
-                  model = {
-                      Title: `TShop: ${socketData.Conversation?.Name} vừa nhắn tin`,
-                      Message: `${socketData.Message?.Message}`,
-                      Attachments: socketData.Message.Data?.attachments,
-                      Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-                  } ;
-                break;
-
-                default:
-                  model = {
-                      Title: `${socketData.Conversation?.Name} vừa phản hồi`,
-                      Message: `${socketData.Message?.Message}`,
-                      Attachments: socketData.Message.Data?.attachments,
-                      Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-                  };
-
-                break;
             }
-
-            // TODO: return dữ liệu
-            this.socketEvent$.next({
-              Notification: model,
-              Data: socketData,
-              Team: team
-            });
           },
           error: (error: any) => {
                console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
           }
       })
+  }
+
+  prepareChatomniOnMessage(socketData: SocketioOnMessageDto, team: CRMTeamDTO) {
+    let model: SocketEventNotificationDto = {} as any;
+
+    switch(socketData.Message.MessageType) {
+        case ChatomniMessageType.FacebookMessage:
+          model = {
+              Title: `Facebook: ${socketData.Conversation?.Name} vừa nhắn tin`,
+              Message: `${socketData.Message?.Message}`,
+              Attachments: socketData.Message.Data?.attachments,
+              Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
+          };
+
+          break;
+
+        case ChatomniMessageType.FacebookComment:
+          model = {
+              Title: `Facebook: ${socketData.Conversation?.Name} vừa bình luận`,
+              Message: `${socketData.Message?.Message}`,
+              Attachments: socketData.Message.Data?.attachments,
+              Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
+          };
+
+        break;
+
+        case ChatomniMessageType.TShopMessage:
+          model = {
+              Title: `TShop: ${socketData.Conversation?.Name} vừa nhắn tin`,
+              Message: `${socketData.Message?.Message}`,
+              Attachments: socketData.Message.Data?.attachments,
+              Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+          };
+
+        break;
+
+        case ChatomniMessageType.TShopComment:
+          model = {
+              Title: `TShop: ${socketData.Conversation?.Name} vừa nhắn tin`,
+              Message: `${socketData.Message?.Message}`,
+              Attachments: socketData.Message.Data?.attachments,
+              Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+          } ;
+        break;
+
+        default:
+          model = {
+              Title: `${socketData.Conversation?.Name} vừa phản hồi`,
+              Message: `${socketData.Message?.Message}`,
+              Attachments: socketData.Message.Data?.attachments,
+              Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+          };
+
+        break;
+    }
+
+    return {...model};
+
   }
 
   public onEventSocket() {
