@@ -29,6 +29,7 @@ import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
 import { CheckTagSelectedPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
+import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -58,7 +59,8 @@ const cmp =[
   CheckTagSelectedPipe,
   ChatomniTShopType,
   ChatomniFacebookType,
-  ConverseTimePipe
+  ConverseTimePipe,
+  BBcodeConvertPipe
 ]
 
 @NgModule({
@@ -67,7 +69,8 @@ const cmp =[
     ],
     imports: [
       CommonModule,
-      FormsModule
+      FormsModule,
+
     ],
     exports:[
     ...cmp

@@ -11,7 +11,7 @@
 
           <!-- Tin nhắn văn bản -->
           <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.CreatedTime | yiDateTimeFormat}}">
-              <div class="text-left" [innerHTML]="dataItem.Message | formatIconLike | safeHtml" #contentMessage ></div>
+              <div class="text-left" [innerHTML]="dataItem.Message | formatIconLike | safeHtml " #contentMessage ></div>
           </div>
 
           <!-- Tin nhắn hình ảnh -->

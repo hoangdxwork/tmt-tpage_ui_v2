@@ -265,7 +265,8 @@ const SERVICES = [
     CommentFilterAllComponent,
     DrawerDetailBillComponent,
     LiveCampaignPostComponent,
-    ModalAddAddressV2Component
+    ModalAddAddressV2Component,
+
   ],
 
   imports: [
@@ -308,7 +309,7 @@ const SERVICES = [
     TDSUploadModule,
     DirectivesModule,
     ScrollingModule,
-    TDSButtonSpitModule
+    TDSButtonSpitModule,
   ],
   providers: [ ...SERVICES]
 })

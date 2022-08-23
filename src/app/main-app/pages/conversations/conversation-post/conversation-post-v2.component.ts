@@ -26,6 +26,7 @@ import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-o
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
   selector: 'app-conversation-post-v2',
@@ -76,6 +77,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
   queryObj?: any = { type!: "", sort!: "", q!: "" };
   isRefreshing: boolean = false;
+  partners$!: Observable<any>;
 
   constructor(private facebookPostService: FacebookPostService,
     private conversationPostFacade: ConversationPostFacade,
@@ -89,6 +91,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     private cdRef: ChangeDetectorRef,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     private chatomniObjectService: ChatomniObjectService,
     private destroy$: TDSDestroyService,
     private objectFacebookPostEvent: ObjectFacebookPostEvent) {
@@ -133,12 +136,20 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
           if(exist) {
               this.loadData();
               this.loadBadgeComments();
+              this.loadPartnerTimstamp();
           }
       }
     });
 
     this.onChangeTabEvent();
     this.eventEmitter();
+  }
+
+
+  loadPartnerTimstamp() {
+    if(this.currentTeam) {
+        this.chatomniCommentFacade.getParentTimeStamp(this.currentTeam.Id);
+    }
   }
 
   eventEmitter() {
@@ -295,6 +306,11 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
       next: (res: ChatomniObjectsDto) => {
           if(res && res.Items) {
 
+              // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+              if(res && TDSHelperArray.isArray(res.Items)) {
+                  res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
+              }
+
               this.lstObjects = [...res.Items];
               if(TDSHelperArray.hasListValue(res.Items)){
                   let exits = res.Items?.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
@@ -368,6 +384,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
         next: (res: ChatomniObjectsDto) => {
             if(TDSHelperArray.hasListValue(res?.Items)) {
+                // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+                res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
                 this.lstObjects = [...res.Items];
             }
 
@@ -431,6 +449,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   loadFilterDataSource() {
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
+          res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
           this.lstObjects  = [...res.Items];
 
           setTimeout(() => {

@@ -602,13 +602,35 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.orderPrintService.printOrder(res, comment.Message);
               this.message.success('Cập nhật đơn hàng thành công');
           }
-
           this.isLoading = false;
+          this.loadPartner(comment);
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       }
+    })
+  }
+
+  loadPartner(item: ChatomniDataItemDto) {
+      let psid = item.UserId || item.Data?.from?.id;
+      if (!psid) {
+          this.message.error("Không truy vấn được thông tin người dùng!");
+          return;
+      }
+
+      let teamId = this.quickOrderModel.CRMTeamId || this.team.Id;
+      // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
+      this.chatomniConversationService.getInfo(teamId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniConversationInfoDto) => {
+          if(res) {
+              // Thông tin khách hàng
+              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+          }
+        },
+        error: (error: any) => {
+            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+        }
     })
   }
 
@@ -638,6 +660,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             return false;
         }
     }
+
     this.isLoading = true;
     this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {

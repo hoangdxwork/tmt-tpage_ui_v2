@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { ChatomniObjectsDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";
+import { ChatomniObjectsDto, ChatomniObjectsItemDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";
 import { CoreAPIDTO } from "@core/dto";
 import { CoreApiMethodType } from "@core/enum";
 import { TCommonService } from "@core/services";
 import { map, Observable, shareReplay } from "rxjs";
-import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { ChatomniObjectFacade } from "../chatomni-facade/chatomni-object.facade";
 
@@ -61,6 +61,11 @@ export class ChatomniObjectService extends BaseSevice  {
 
     return this.get(teamId, queryObj).pipe(map((res: ChatomniObjectsDto) => {
 
+      // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+      if(res && TDSHelperArray.isArray(res.Items)) {
+          res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
+      }
+
       // TODO: load dữ liệu lần đầu tiên
       if (TDSHelperObject.hasValue(res)) {
           this.objFacade.setData(teamId, res);
@@ -94,6 +99,11 @@ export class ChatomniObjectService extends BaseSevice  {
               Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
               Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
           }
+        }
+
+        // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+        if(exist && TDSHelperArray.isArray(exist.Items)) {
+            exist.Items = exist.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
         }
 
         // TODO nếu trùng urlNext thì xóa không cho load
