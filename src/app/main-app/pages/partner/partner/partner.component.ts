@@ -251,7 +251,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkStatusText(text: string) {
-    let exits = this.partnerStatusReport.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
+    let exits = this.partnerStatusReport.filter(x => x.StatusText?.toLowerCase() == text.toLowerCase())[0] as any;
     if (exits) {
       return exits.StatusStyle;
     }
@@ -630,10 +630,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     // get data currentConversation
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
-        if (res) {        
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+        if (res) {
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
           this.currentConversation = { ...model };
-          
+
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }

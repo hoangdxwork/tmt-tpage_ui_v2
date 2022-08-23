@@ -48,11 +48,11 @@ export class LiveCampaignService extends BaseSevice {
 
   getAvailables(){
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAvailables?$orderby=DateCreated%20desc&$top=30`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAvailables?$orderby=DateCreated%20desc&$top=${30}`,
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getDetailAndAttributes(id: any): Observable<any> {
@@ -82,7 +82,7 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  updateLiveCampaignPost(id: string | undefined, data: any): Observable<any> {
+  updateFacebookByLiveCampaign(id: string, data: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/ODataService.UpdateFacebook`,
       method: CoreApiMethodType.post,

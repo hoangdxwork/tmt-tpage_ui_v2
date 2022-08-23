@@ -1,6 +1,8 @@
-import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
-import { SocketService } from '@app/services/socket-io/socket.service';
-import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
+import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
 import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +10,6 @@ import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-message.dto';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { TDSMessageService } from 'tds-ui/message';
@@ -20,8 +21,8 @@ import { TDSModalService } from 'tds-ui/modal';
 import { ProductPagefbComponent } from '@app/pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ReplaceHelper } from '@app/shared/helper/replace.helper';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
-import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { ChatomniDataDto, ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniDataDto, ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto';
@@ -45,7 +46,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   @Input() commentOrders!: any;
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
-  @Input() partnerDict!: {[key: string]: PartnerTimeStampItemDto};
+  partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
 
   dataSource$!: Observable<ChatomniDataDto>;
   dataSource!: ChatomniDataDto;
@@ -56,6 +57,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   isLoading: boolean = false;
   isHiddenComment: any = {};
 
+  conversationItem!: ChatomniConversationItemDto;
+  // messBB: string = "Xám [format type='text-copyable' value='0888033864']0888033864[end_format]";
+
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
     private modalService: TDSModalService,
@@ -64,43 +68,41 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private activityMatchingService: ActivityMatchingService,
     private chatomniConversationService: ChatomniConversationService,
     private chatomniCommentService: ChatomniCommentService,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     public crmService: CRMTeamService,
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade,
-    private socketService: SocketService) {
+    private socketOnEventService: SocketOnEventService,
+    private chatomniConversationFacade: ChatomniConversationFacade) {
   }
 
   ngOnInit() {
     if(this.data && this.team) {
         this.loadData();
+        this.loadPartnersByTimestamp();
     }
-
     this.onEventSocket();
   }
 
-  onEventSocket(){
-    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
+  loadPartnersByTimestamp() {
+    this.chatomniCommentFacade.partnerDict().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        let socketData = JSON.parse(res) as SocketioOnMessageDto;
-        if(socketData.Conversation && this.team?.ChannelId == socketData.Conversation?.ChannelId && this.data.ObjectId == socketData.Message?.ObjectId) {
-          let item: ChatomniDataItemDto = {
-            Data: socketData.Message.Data as ChatomniFacebookDataDto, // gán tạm thời
-            Id: socketData.Conversation.Id,
-            ObjectId: socketData.Message?.ObjectId,
-            ParentId: socketData.Message?.ParentId,
-            Message: socketData.Message.Message,
-            Type: socketData.Message.MessageType,
-            UserId: socketData.Message?.UserId,
-            Status: 1,
-            IsSystem: false,
-            CreatedTime: socketData.Message.CreatedTime,
-            ChannelCreatedTime: socketData.Message.ChannelCreatedTime,
-            IsOwner: false,
-          }
+          this.partnerDict = {...res};
+          this.cdRef.markForCheck();
+      }
+    })
+  }
 
-          this.dataSource.Items = [...[item], ...this.dataSource.Items]
+  onEventSocket(){
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+        if(res && res.Data && res.Data.Conversation && this.team?.ChannelId == res.Data.Conversation?.ChannelId && this.data.ObjectId == res.Data.Message?.ObjectId){
+          let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
+
+          this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])]
         }
+
         this.cdRef.detectChanges();
       }
     })
@@ -113,6 +115,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
       this.data = {...changes["data"].currentValue};
       this.loadData();
+      this.loadPartnersByTimestamp();
     }
   }
 
@@ -196,7 +199,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  onQuickReplySelected(event: any, partner: PartnerTimeStampItemDto) {
+  onQuickReplySelected(event: any, partner?: PartnerTimeStampItemDto) {
     let text = event.BodyPlain || event.BodyHtml || event.text;
 
     text = ReplaceHelper.quickReply(text, partner);
@@ -299,7 +302,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationInfoDto) => {
           if(res) {
+              // Thông tin khách hàng
               this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+              // Thông tin đơn hàng
+              this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
           }
         },
@@ -309,15 +315,31 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
-  loadOrderTab(orderId: any, item: ChatomniDataItemDto){
+  loadOrderByCode(orderId: any, item: ChatomniDataItemDto){
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
         return;
     }
 
-    this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
-    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
+    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationInfoDto) => {
+        if(res) {
+            // Thông tin khách hàng
+            this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+
+            this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
+            this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+        }
+      },
+      error: (error: any) => {
+          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+
+          this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
+          this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+      }
+    })
   }
 
   onInsertFromPost(item: ChatomniDataItemDto) {
@@ -327,7 +349,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
-    // TODO: Đẩy dữ liệu sang conversation-orer để tạo hà, insertfrompost
+    // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
     this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
   }

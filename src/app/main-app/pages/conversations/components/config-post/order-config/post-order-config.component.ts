@@ -1,9 +1,10 @@
+import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
 import { ConfigUserDTO } from './../../../../../dto/configs/post/post-order-config-v2.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
-import { finalize, takeUntil } from "rxjs/operators";
+import { map, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { ApplicationUserDTO } from "src/app/main-app/dto/account/application-user.dto";
 import { CRMTagDTO } from "src/app/main-app/dto/crm-tag/odata-crmtag.dto";
@@ -32,6 +33,7 @@ import * as XLSX from 'xlsx';
 export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
+  @Input() currentLiveCampaign?:LiveCampaignModel;
 
   dataModel!: PostOrderConfigV2DTO;
   tags: any[] = [];
@@ -49,7 +51,6 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   lstTags$!: Observable<CRMTagDTO[]>;
   lstUser$!: Observable<ApplicationUserDTO[]>;
-  currentLiveCampaign!: any | undefined;
 
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
@@ -64,11 +65,11 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
     private liveCampaignService: LiveCampaignService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['data'] && !changes['data'].firstChange) {
-        this.validateData();
-        this.data = {...changes['data'].currentValue};
-        this.loadData(this.data.ObjectId);
-    }
+    // if(changes['data'] && !changes['data'].firstChange) {
+    //     this.validateData();
+    //     this.data = {...changes['data'].currentValue};
+    //     this.loadData(this.data.ObjectId);
+    // }
   }
 
   ngOnInit(): void {
@@ -81,7 +82,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   validateData() {
     this.data = null as any;
-    this.currentLiveCampaign = null;
+    this.currentLiveCampaign = null as any;
   }
 
   loadTag() {
@@ -111,17 +112,20 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
   loadData(postId: string) {
     this.isLoading = true;
 
-    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: PostOrderConfigV2DTO) => {
+    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$))
+      .pipe(map((x:PostOrderConfigV2DTO) => {
+        if(x && x.LiveCampaignId) {
+          this.loadLiveCampaignById(x.LiveCampaignId);
+        }
+        return x;
+      }))
+      .subscribe({
+        next: (res: any) => {
           if(res) {
               this.dataModel = {...res};
               this.setupIndex();
 
               this.cdRef.markForCheck();
-          }
-
-          if(res && res.LiveCampaignId) {
-            this.loadLiveCampaignById(res.LiveCampaignId);
           }
 
           this.isLoading = false;
@@ -374,7 +378,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
         let defaultProductConfig = this.prepareProduct(res);
         let content = this.getContentString(defaultProductConfig);
         let contentWithAttributes = this.getcontentWithAttributesString(defaultProductConfig);
-  
+
         let obj: TextContentToOrderDTO = {
           Product: defaultProductConfig || null,
           Content: content,
@@ -382,9 +386,9 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
           Index: index,
           IsActive: true
         }
-  
+
         let idx = this.dataModel.TextContentToOrders.findIndex(f=> f.Index == index);
-  
+
         this.dataModel.TextContentToOrders[idx] = {...obj};
 
         this.cdRef.detectChanges();
@@ -471,14 +475,14 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
       .subscribe({
         next:(res) => {
           let users: ConfigUserDTO[] | null = [];
-          
+
           if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
             users = this.prepareUser(res?.LiveCampaign?.Users);
             this.dataModel.IsEnableAutoAssignUser = true;
           }
-          
+
           this.dataModel.Users = users;
-  
+
           if(TDSHelperArray.hasListValue(res?.Details)) {
             this.dataModel.TextContentToOrders = [];
           }
@@ -487,11 +491,11 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
           this.message.info(Message.ConversationPost.LoadConfigSuccess);
 
           this.cdRef.markForCheck();
-        }, 
+        },
         error:(error) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-          
+
           this.cdRef.markForCheck();
         }
       });
@@ -532,7 +536,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   prepareModelOrderConfig() {
     let model = this.dataModel as PostOrderConfigV2DTO;
-    
+
     model.ExcludedPhones = model.ExcludedPhones || [];
     model.ExcludedStatusNames = model.ExcludedStatusNames || [];
     model.Users = this.prepareUser(model.Users || null);
@@ -557,7 +561,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
         }else{
           x.Product = null;
         }
-        
+
       });
     }
 
@@ -570,15 +574,15 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
       let result: ConfigUserDTO[] = data?.map((user: ConfigUserDTO) => {
 
         let inner = {} as ConfigUserDTO;
-        
+
         inner.Id = user.Id;
         inner.Avatar = user.Avatar || '';
         inner.Name = user.Name;
         inner.UserName = user.UserName;
-  
+
         return inner;
       });
-  
+
       return result;
     } else {
       return null;
@@ -587,7 +591,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
 
   onSave() {
     let model = this.prepareModelOrderConfig();
-    
+
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
 
@@ -598,7 +602,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges {
             this.isLoading = false;
 
             this.cdRef.markForCheck();
-          }, 
+          },
           error:(error) => {
             this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
             this.isLoading = false;

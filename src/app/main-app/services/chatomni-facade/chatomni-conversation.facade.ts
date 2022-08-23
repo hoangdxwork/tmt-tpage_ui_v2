@@ -33,22 +33,22 @@ export class ChatomniConversationFacade extends BaseSevice  {
       return data;
   }
 
-  preapreMessageOnEventSocket(socket: SocketioOnMessageDto, conversationItem: ChatomniConversationItemDto, team?: CRMTeamDTO | null) {
+  preapreMessageOnEventSocket(socket: SocketioOnMessageDto, conversationItem: ChatomniConversationItemDto) {
     let item: ChatomniDataItemDto = {
-        Data: {...socket.Message.Data} as ChatomniFacebookDataDto, // gán tạm thời
-        // Id: conversationItem.Id,
-        ObjectId: socket.Message.ObjectId,
-        ParentId: socket.Message.ParentId,
-        Message: socket.Message.Message,
+        Data: {...socket.Message?.Data} as ChatomniFacebookDataDto, // gán tạm thời
+        Id: null,
+        ObjectId: socket.Message?.ObjectId,
+        ParentId: socket.Message?.ParentId,
+        Message: socket.Message?.Message,
         Source: null,
-        Type: socket.Message.MessageType,
+        Type: socket.Message?.MessageType,
         UserId: socket.Message?.UserId,
         Status: 1,
         IsSystem: false, // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
         CreatedById: null,
         CreatedBy: null,
-        CreatedTime: socket.Message.CreatedTime,
-        ChannelCreatedTime: socket.Message.ChannelCreatedTime,
+        CreatedTime: socket.Message?.CreatedTime,
+        ChannelCreatedTime: socket.Message?.ChannelCreatedTime,
         ChannelUpdatedTime: null,
         IsOwner: false
     } as any;

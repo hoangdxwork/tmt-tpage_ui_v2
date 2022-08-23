@@ -125,5 +125,9 @@ export const Message = {
     ErrorNumberDetail: 'Số lượng, số tiền, giới hạn trên đơn không được để trống.',
     ErrorRemoveLine: 'Sản phẩm đã có hóa đơn không thể xóa.',
     MethodPaymentEmpty: 'Chưa có phương thức thanh toán.'
+  },
+  Inventory: {
+    CanNotLoadData: 'Không thể tải danh sách kho',
+    CanNotLoadInfo: 'Không thể tải thông tin kho'
   }
 }
