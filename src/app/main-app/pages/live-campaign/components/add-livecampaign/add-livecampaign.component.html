@@ -13,6 +13,7 @@
       </div>
 
       <div class="flex gap-x-2">
+          <button tds-button color="info" type="button" (click)="onSave(true)">Cập nhật cấu hình bài viết</button>
           <button tds-button class="w-[100px]" color="primary" type="button" (click)="onSave()">Lưu lại</button>
           <button tds-button class="w-[100px]" color="secondary" type="button" (click)="onBack()">Hủy bỏ</button>
       </div>
@@ -155,7 +156,7 @@
 
       <div class="flex-auto flex gap-x-4">
         <div class="h-full w-1/3">
-            <list-product-tmp (onLoadProductToOrderLines)="onLoadProduct($event)"></list-product-tmp>
+            <list-product-tmp [inLiveCampaign]="true" (onLoadProductToLiveCampaign)="onLoadProduct($event)"></list-product-tmp>
         </div>
 
         <div class="h-full w-2/3">
@@ -186,6 +187,7 @@
                 </thead>
                 <tbody formArrayName="Details">
                   <tr *ngFor="let detail of detailsForm.controls; let index = index"  [formGroupName]="index">
+                      
                     <td> {{ index + 1 }} </td>
 
                     <!-- Sản phẩm -->

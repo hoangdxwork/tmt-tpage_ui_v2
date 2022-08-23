@@ -1,6 +1,7 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
-import { Component, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControl } from '@angular/forms';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
@@ -11,7 +12,7 @@ import { ApplicationUserService } from 'src/app/main-app/services/application-us
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -20,7 +21,8 @@ import { ModalAddQuickReplyComponent } from '../../../conversations/components/m
 
 @Component({
   selector: 'add-livecampaign',
-  templateUrl: './add-livecampaign.component.html'
+  templateUrl: './add-livecampaign.component.html',
+  providers: [TDSDestroyService]
 })
 export class AddLiveCampaignComponent implements OnInit {
 
@@ -43,7 +45,6 @@ export class AddLiveCampaignComponent implements OnInit {
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
-  private destroy$ = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -54,6 +55,7 @@ export class AddLiveCampaignComponent implements OnInit {
     private fastSaleOrderLineService: FastSaleOrderLineService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
+    private destroy$: TDSDestroyService,
     private router: Router) {
       this.createForm();
   }
@@ -96,30 +98,37 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   loadLiveCampaign(liveCampaignId: string, isCopy: boolean) {
+
     if(liveCampaignId) {
       this.isLoading = true;
 
-      this.liveCampaignService.getDetailById(liveCampaignId)
-          .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-          .subscribe(res => {
+      this.liveCampaignService.getDetailById(liveCampaignId).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+          .subscribe({
+            next:(res) => {
               if(res) {
                   delete res['@odata.context'];
+
                   if(res.StartDate) {
                       res.StartDate = new Date(res.StartDate)
                   }
+
                   if(res.EndDate) {
                       res.EndDate = new Date(res.EndDate)
                   }
 
                   this.dataModel = res;
+
                   //TODO: trường hợp copy sẽ xóa Id
                   if(isCopy == true) {
                       delete this.dataModel.Id;
                   }
+
                   this.updateForm(this.dataModel);
               }
-          }, error => {
+            }, 
+            error:(error) => {
               this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
+            }
           })
     }
   }
@@ -129,18 +138,25 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   loadQuickReply() {
-    this.quickReplyService.dataActive$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { })).subscribe(res => {
-      if (res) {
-        let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
-        this.lstQuickReplies = res.sort((a: TDSSafeAny, b: TDSSafeAny) => {
-          if (getArr != null) {
-            return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
-          }else
-          return
-        });
+    this.quickReplyService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+
+        if (res) {
+          let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
+
+          this.lstQuickReplies = res.sort((a: TDSSafeAny, b: TDSSafeAny) => {
+
+            if (getArr != null) {
+              return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
+            } else {
+              return
+            }
+          });
+        }
+      },
+      error:(err) => {
+          this.message.error(err?.error? err?.error.message: 'Load trả lời nhanh thất bại');
       }
-    },err => {
-        this.message.error(err?.error? err?.error.message: 'Load trả lời nhanh thất bại');
     });
   }
 
@@ -149,10 +165,13 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   updateForm(data: ODataLiveCampaignDetailDTO) {
+
     this._form.patchValue(data);
+
     if(data && data.Details) {
       data.Details.map((x: LiveCampaignDetailDTO) => this.addDetails(x))
     }
+
     this.datePicker = [data.StartDate, data.EndDate]
   }
 
@@ -162,6 +181,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
   initDetails(data: LiveCampaignDetailDTO | null) {
     if(data != null) {
+
       return this.fb.group({
           Id: [data.Id],
           ImageUrl: [data.ImageUrl],
@@ -183,6 +203,7 @@ export class AddLiveCampaignComponent implements OnInit {
           Tags: [ data.Tags.split(",")],
       })
     } else {
+
       return this.fb.group({
           Id: [null],
           ImageUrl: [null],
@@ -206,13 +227,30 @@ export class AddLiveCampaignComponent implements OnInit {
     }
   }
 
-  onLoadProduct(product: DataPouchDBDTO) {
+  onLoadProduct(data: TDSSafeAny) {
+    // TODO: cập nhật 1 sản phẩm hoặc các biến thể của sản phẩm vào danh sách
+    if(TDSHelperArray.isArray(data)) {
+      let datas = [...data] as DataPouchDBDTO[];
+
+      datas.forEach(x => {
+        this.addProduct(x);
+      });
+
+    } else {
+      let product = {...data};
+
+      this.addProduct(product);
+    }
+  }
+
+  addProduct(product: DataPouchDBDTO){
     let detailValue = this._form.controls['Details'].value;
 
     let indexExist = detailValue.findIndex((item: any) => `${item.ProductId}_${item.UOMId}` === product.Product_UOMId);
 
     if(indexExist > -1) {
       detailValue[indexExist].Quantity++;
+      
       const control = <FormArray>this._form.controls['Details'];
       control.at(indexExist).setValue(detailValue[indexExist]);
     }
@@ -300,33 +338,44 @@ export class AddLiveCampaignComponent implements OnInit {
     history.back();
   }
 
-
   removeDetail(index: number, detail: TDSSafeAny) {
-    if(TDSHelperString.hasValueString(detail?.Id) ) {
+    if(TDSHelperString.hasValueString(detail?.Id)) {
+
       this.isLoading = true;
-      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false)).subscribe(res => {
-        if(TDSHelperArray.hasListValue(res?.value)) {
-          this.message.error(Message.LiveCampaign.ErrorRemoveLine);
+
+      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false)).subscribe({
+        next:(res) => {
+          if(TDSHelperArray.hasListValue(res?.value)) {
+
+            this.message.error(Message.LiveCampaign.ErrorRemoveLine);
+
+          }
+          else {
+            const control = <FormArray>this._form.controls['Details'];
+
+            control.removeAt(index);
+          }
+  
+        },
+        error:(error) => {
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }
-        else {
-          const control = <FormArray>this._form.controls['Details'];
-          control.removeAt(index);
-        }
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });
     }
     else {
       const control = <FormArray>this._form.controls['Details'];
+
       control.removeAt(index);
     }
   }
 
-  onSave() {
+  onSave(isUpdate?: boolean) {
     if(this.isCheckValue() === 1) {   
+
       let model = this.prepareModel();
-      if(model.Id && this.liveCampaignId == model.Id ) {
-        this.update(model);
+
+      if( model.Id && this.liveCampaignId == model.Id ) {
+        this.update(model, isUpdate);
       }
       else {
         this.create(model);
@@ -337,26 +386,34 @@ export class AddLiveCampaignComponent implements OnInit {
   create(model: any) {
     if(!model.Name) {
       this.message.error('Vui lòng nhập tên chiến dịch');
+
       return
     }
+
     this.isLoading = true;
-    this.liveCampaignService.create(model)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.message.success(Message.ManipulationSuccessful);
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+
+    this.liveCampaignService.create(model).pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next:(res) => {
+          this.message.success(Message.ManipulationSuccessful);
+        }, 
+        error:(error) => {
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        }
       });
   }
 
-  update(model: any) {
+  update(model: any, isUpdate?: boolean) {
     this.isLoading = true;
-    this.liveCampaignService.update(model, false)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.message.success(Message.ManipulationSuccessful);
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+
+    this.liveCampaignService.update(model, isUpdate || false).pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next:(res) => {
+          this.message.success(Message.ManipulationSuccessful);
+        }, 
+        error:(error) => {
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        }
       });
   }
 
@@ -371,10 +428,12 @@ export class AddLiveCampaignComponent implements OnInit {
     model.Users = formValue.Users || [];
     model.Note = formValue.Note;
     model.ResumeTime = formValue.ResumeTime;
+
     if(this.datePicker){
       model.StartDate = this.datePicker[0];
       model.EndDate = this.datePicker[1];
     }
+
     model.Preliminary_Template = formValue.Preliminary_Template;
     model.ConfirmedOrder_Template = formValue.ConfirmedOrder_Template;
     model.MinAmountDeposit = formValue.MinAmountDeposit;
@@ -385,7 +444,9 @@ export class AddLiveCampaignComponent implements OnInit {
     model.ImageUrl = formValue.ImageUrl;
 
     if (TDSHelperArray.hasListValue(formValue.Details)) {
+
       formValue.Details.forEach((detail: any, index: number) => {
+
         detail["Index"] = index;
         detail.Tags = detail?.Tags.toString();
       });
@@ -403,8 +464,10 @@ export class AddLiveCampaignComponent implements OnInit {
 
     if(TDSHelperArray.hasListValue(details)) {
       let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price));
+
       if(find > -1) {
         this.message.error(Message.LiveCampaign.ErrorNumberDetail);
+
         return 0;
       }
     }
@@ -418,6 +481,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
   onChangeDate(event: any[]) {
     this.datePicker = [];
+    
     if(event) {
       event.forEach(x => {
           this.datePicker.push(x);
@@ -426,15 +490,18 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   showModalAddQuickReply() {
+
     let modal = this.modalService.create({
       title: 'Thêm mới trả lời nhanh',
       content: ModalAddQuickReplyComponent,
       viewContainerRef: this.viewContainerRef,
-      size: 'md',
-      componentParams: {}
+      size: 'md'
     });
-    modal.afterClose.subscribe(res=>{
-      this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
+
+    modal.afterClose.subscribe({
+      next:(res) => {
+        this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
+      }
     })
   }
 
