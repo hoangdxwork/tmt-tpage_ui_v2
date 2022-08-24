@@ -28,6 +28,7 @@ import { OrderPrintService } from '@app/services/print/order-print.service';
 import { CreateBillFastComponent } from '@app/pages/order/components/create-bill-fast/create-bill-fast.component';
 import { GetListOrderIdsDTO } from '@app/dto/saleonlineorder/list-order-ids.dto';
 import { FastSaleOrderService } from '@app/services/fast-sale-order.service';
+import { ModalHistoryChatComponent } from '@app/pages/order/components/modal-history-chat/modal-history-chat.component';
 
 @Component({
   selector: 'detail-order-livecampaign',
@@ -447,6 +448,24 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       return 0;
     }
     return 1;
+  }
+
+  showModalHistoryChat(orderId: string) {
+    const modal = this.modal.create({
+      title: 'Lịch sử gửi tin nhắn',
+      content: ModalHistoryChatComponent,
+      size: "xl",
+      bodyStyle: {
+        padding: '0px',
+      },
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        orderId: orderId,
+        type: "order"
+      }
+    });
+    modal.afterClose.subscribe(result => {
+    })
   }
 
   ngOnDestroy(): void {
