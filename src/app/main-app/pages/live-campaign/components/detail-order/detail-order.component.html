@@ -26,7 +26,7 @@
         [showSizeChanger]="true"
         [frontPagination]="false"
         [listData]="lstOfData"
-        [scroll]="{y:'auto'}"
+        [scroll]="{y:'auto', x: 'auto'}"
         [loading]="isLoading"
         [total]="count"
         [scroll]="{y:'auto'}"
@@ -34,6 +34,7 @@
         (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr>
+            <th [align]="'center'" width="33px" [tdsLeft]="true"></th>
             <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" [align]="'center'" [tdsLeft]="true"></th>
             <th [width]="'60px'" [tdsLeft]="true">STT</th>
             <th [width]="'170px'" [tdsLeft]="true">Mã đơn hàng</th>
@@ -48,76 +49,88 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let order of tableMessage.data; let index=index">
-            <td [checked]="setOfCheckedId.has(order.Id)" class="text-center" [tdsLeft]="true">
-            </td>
-            <td [tdsLeft]="true">
-              {{index + 1}}
-            </td>
+          <ng-template ngFor let-order [ngForOf]="tableMessage.data" let-odd='odd' let-index="index">
+            <tr>
+              <td [expand]="expandSet.has(order.Id)" class="text-center"
+                    (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true">
+              </td>
+              <td [checked]="setOfCheckedId.has(order.Id)" class="text-center" [tdsLeft]="true">
+              </td>
+              <td [tdsLeft]="true">
+                {{index + 1}}
+              </td>
 
-            <!-- Mã đơn hàng -->
-            <td [tdsLeft]="true">
-              {{order.Code}}
-            </td>
+              <!-- Mã đơn hàng -->
+              <td [tdsLeft]="true">
+                {{order.Code}}
+              </td>
 
-            <!-- Tên khách hàng -->
-            <td>
-              {{order.PartnerName}}
-            </td>
+              <!-- Tên khách hàng -->
+              <td>
+                {{order.PartnerName}}
+              </td>
 
-            <!-- Số điện thoại -->
-            <td>
-              {{order.Telephone}}
-            </td>
+              <!-- Số điện thoại -->
+              <td>
+                {{order.Telephone}}
+              </td>
 
-            <!-- Tổng tiền -->
-            <td>
-              {{order.TotalAmount || 0 | number}}
-            </td>
+              <!-- Tổng tiền -->
+              <td>
+                {{order.TotalAmount || 0 | number}}
+              </td>
 
-            <!-- Tổng sản phẩm chờ chốt -->
-            <td>
-              {{order.TotalAmount}}
-            </td>
+              <!-- Tổng sản phẩm chờ chốt -->
+              <td>
+                {{order.TotalAmount}}
+              </td>
 
-            <!-- Trạng thái -->
-            <td>
-              <tds-tag [status]="getColorStatusText(order.StatusText)" type="outline">
-                {{ order.StatusText }}
-              </tds-tag>
-            </td>
+              <!-- Trạng thái -->
+              <td>
+                <tds-tag [status]="getColorStatusText(order.StatusText)" type="outline">
+                  {{ order.StatusText }}
+                </tds-tag>
+              </td>
 
-            <!-- Nhân viên -->
-            <td>
-              {{order.UserName}}
-            </td>
+              <!-- Nhân viên -->
+              <td>
+                {{order.UserName}}
+              </td>
 
-            <!-- Thời gian -->
-            <td>
-              {{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}
-            </td>
+              <!-- Thời gian -->
+              <td>
+                {{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}
+              </td>
 
-            <!-- Thao tác -->
-            <td [tdsRight]="true">
-              <div class="flex gap-x-2">
-                <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(order)">
-                  <span class="flex items-center">
-                    <i class="tdsi-messenger-fill text-neutral-1-500"></i>
-                  </span>
-                </button>
-                <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order)">
-                  <span class="flex items-center text-neutral-1-500">
-                    <i class="tdsi-edit-fill"></i>
-                  </span>
-                </button>
-                <button tds-button-icon color="secondary" size="sm" (click)="onRemove(order.Id, order.Code)">
-                  <span class="flex items-center text-neutral-1-500">
-                    <i class="tdsi-trash-fill"></i>
-                  </span>
-                </button>
+              <!-- Thao tác -->
+              <td [tdsRight]="true">
+                <div class="flex gap-x-2">
+                  <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(order)">
+                    <span class="flex items-center">
+                      <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+                    </span>
+                  </button>
+                  <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order)">
+                    <span class="flex items-center text-neutral-1-500">
+                      <i class="tdsi-edit-fill"></i>
+                    </span>
+                  </button>
+                  <button tds-button-icon color="secondary" size="sm" (click)="onRemove(order.Id, order.Code)">
+                    <span class="flex items-center text-neutral-1-500">
+                      <i class="tdsi-trash-fill"></i>
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr [expand]="expandSet.has(order.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 w-full">
+              <div #billOrderLines
+                [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
+                <detail-expand *ngIf="expandSet.has(order.Id)" [dataOrder]="order">
+                </detail-expand>
               </div>
-            </td>
-          </tr>
+            </tr>
+          </ng-template>
         </tbody>
       </tds-table>
     </div>

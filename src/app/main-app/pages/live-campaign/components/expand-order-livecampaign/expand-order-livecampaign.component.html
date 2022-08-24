@@ -1,0 +1,141 @@
+<tds-spin [spinning]="isLoading">
+  <tds-tabset class="bg-white w-full border rounded-md">
+    <tds-tab [title]="'Thông tin'" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+      <div class="grid grid-cols-3 gap-x-4 mt-4">
+        <div class="col-span-1">
+          <div class="flex items-center gap-x-4 text-sm">
+            <p class="w-1/3">Mã</p>
+            <tds-label class="w-2/3">{{dataOrder.Code || 'N/A'}}</tds-label>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Điện thoại</p>
+              <tds-label class="w-2/3">{{ dataOrder.Telephone ? dataOrder.Telephone : '---' }}</tds-label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Trạng thái</p>
+              <tds-label class="w-2/3">{{ dataOrder.StatusText? dataOrder.StatusText : '---' }}</tds-label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-x-4 mt-4">
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Facebook</p>
+              <tds-label class="w-2/3">{{ dataOrder.Facebook_UserName? dataOrder.Facebook_UserName : '---' }}</tds-label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Tổng tiền</p>
+              <tds-label class="w-2/3">{{ dataOrder.TotalAmount | numberCustom:'.' }}</tds-label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Ngày tạo</p>
+              <tds-label class="w-2/3">{{dataOrder.DateCreated | date:"dd-MM-yyyy HH:mm" }}</tds-label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-x-4 mt-4">
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Tên</p>
+              <tds-label class="w-2/3 flex items-center gap-x-2">
+                {{ dataOrder.Name ? dataOrder.Name : '---' }}
+              </tds-label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Người tạo</p>
+              <tds-label class="w-2/3">{{ dataOrder.CreateByName ? dataOrder.CreateByName : '---' }}</tds-label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Kênh bán hàng</p>
+              <tds-label class="w-2/3">{{ dataOrder.CRMTeamName ? dataOrder.CRMTeamName : '---' }}</tds-label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-x-4 mt-4">
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Người bán</p>
+              <tds-label class="w-2/3">{{ dataOrder.UserName ? dataOrder.UserName : '---' }}</tds-label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div class="col-span-1">
+            <div class="flex items-center gap-x-4 text-sm">
+              <p class="w-1/3">Ghi chú</p>
+              <tds-label class="w-2/3">{{ dataOrder.Note ? dataOrder.Note : '---' }}</tds-label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+
+        </div>
+      </div>
+    </tds-tab>
+    <tds-tab [title]="'Chi tiết'" clsContent="border-t border-neutral-2-200 w-full h-full p-0 -mt-px">
+      <div class="w-full rounded-md h-[240px]" >
+        <div class="w-full h-full pb-2.5">
+          <tds-table #basicTable [listData]="lstDetail" [showPagination]="false" [scroll]="{y:'auto'}">
+            <thead class="rounded">
+                <tr>
+                    <th width="7%">STT</th>
+                    <th width="27%">Sản phẩm</th>
+                    <th width="27%">Đơn vị tính</th>
+                    <th width="27%">Số lượng</th>
+                    <th width="27%">Đơn giá</th>
+                </tr>
+            </thead>
+            <tbody>
+              <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
+                  <tr>
+                      <td> {{ index + 1 }} </td>
+                      <td>
+                        {{data.ProductNameGet}}
+                      </td>
+                      <td>
+                        {{data.UOMName}}
+                      </td>
+                      <td>
+                        {{data.Quantity}}
+                      </td>
+                      <td>
+                        {{data.Price | numberCustom:'.' }}
+                      </td>
+                  </tr>
+              </ng-template>
+          </tbody>
+          </tds-table>
+        </div>
+      </div>
+    </tds-tab>
+  </tds-tabset>
+</tds-spin>

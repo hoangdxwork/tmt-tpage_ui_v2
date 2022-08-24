@@ -88,6 +88,7 @@ import { TDSSwitchModule } from 'tds-ui/switch';
 import { ODataLiveCampaignService } from '../../services/mock-odata/odata-live-campaign.service';
 import { FilterOptionCampaignComponent } from './components/filter-option-campaign/filter-option-campaign.component';
 import { CommonHandler } from '../../handler-v2/common.handler';
+import { ExpandOrderLivecampaignComponent } from './components/expand-order-livecampaign/expand-order-livecampaign.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 const cmp =[
@@ -117,7 +118,8 @@ const cmp =[
   ModalConfirmedDepositComponent,
   ModalPaymentComponent,
   DrawerOrderMessageComponent,
-  FilterOptionCampaignComponent
+  FilterOptionCampaignComponent,
+  ExpandOrderLivecampaignComponent
 ]
 
 const SERVICES = [
