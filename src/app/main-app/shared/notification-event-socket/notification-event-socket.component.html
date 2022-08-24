@@ -5,7 +5,7 @@
 
         <!-- Tin nhắn nội dung -->
         <div *ngIf="data.Notification.Message && !data.Notification.Attachments">
-            <div class=" text-body-2" [innerHTML]="data.Notification.Message | formatIconLike | safeHtml"></div>
+            <div class=" text-body-2" [innerHTML]="data.Notification.Message | formatIconLike | bbcodeConvert | safeHtml"></div>
         </div>
 
         <!-- Tin nhắn hình ảnh -->
