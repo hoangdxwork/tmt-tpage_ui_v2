@@ -1,7 +1,7 @@
-<div *ngIf="data && data.Notification" class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer pr-4" (click)="getLink(data)" >
+<div *ngIf="data && data.Notification && data.EventName == 'chatomni.on-message'" class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer pr-4" (click)="getLink(data)" >
     <span class="tdsi-information-fill text-info-400 text-heading-4"></span>
     <div class="flex flex-col gap-y-2 whitespace-pre-line break-words">
-        <span class="font-semibold text-body-2">{{data.Notification.Title}}</span>
+        <div class="text-body-2" [innerHTML]="data.Notification.Title"></div>
 
         <!-- Tin nhắn nội dung -->
         <div *ngIf="data.Notification.Message && !data.Notification.Attachments">
@@ -11,16 +11,16 @@
         <!-- Tin nhắn hình ảnh -->
         <div *ngIf="data.Notification.Message && data.Notification.Attachments && data.Notification.Attachments.data">
             <div *ngIf="data.Notification.Attachments?.data!.length == 1">
-                <div *ngFor="let att of data.Notification.Attachments.data" class="flex gap-x-2 items-center">
+                <div *ngFor="let att of data.Notification.Attachments.data" class="flex gap-x-6 items-center">
                     <span class="text-body-2 text-neutral-1-900">Đã gửi hình ảnh</span>
-                    <a *ngIf="att.image_data" class="relative">
-                        <show-attachment class="w-full h-full" [type]="att.mime_type" [height]="'64px'" [url]="att.image_data.url">
+                    <a *ngIf="att.image_data" class="relative w-12 h-12 flex">
+                        <show-attachment class="w-full h-full" [type]="att.mime_type" [url]="att.image_data.url">
                         </show-attachment>
                     </a>
 
                     <a *ngIf="att.video_data">
                         <show-attachment [type]="att.mime_type" [url]="att.video_data?.url"
-                            [width]="'84px'" [height]="'64px'" [isMuted]="false">
+                            [width]="'48px'" [height]="'48px'" [isMuted]="false">
                         </show-attachment>
                     </a>
 
@@ -35,5 +35,19 @@
                 <span class="text-body-2 text-neutral-1-900">Đã gửi {{data.Notification.Attachments.data!.length}} hình ảnh</span>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Notification cho đơn hàng -->
+<div *ngIf="data && data.Notification && data.EventName == 'update'" class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer pr-4" (click)="showModalEditOrder(data)" >
+    <span class="tdsi-information-fill text-info-400 text-heading-4"></span>
+    <div class="flex flex-col gap-y-2 whitespace-pre-line break-words">
+        <div class="text-body-2" [innerHTML]="data.Notification.Title"></div>
+
+        <!-- Tin nhắn nội dung -->
+        <div *ngIf="data.Notification.Message">
+            <div class=" text-body-2" [innerHTML]="data.Notification.Message | formatIconLike | safeHtml"></div>
+        </div>
+
     </div>
 </div>

@@ -1,7 +1,7 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Observable , takeUntil} from 'rxjs';
+import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
@@ -19,6 +19,7 @@ export class AppComponent {
   title = 'T-Page';
   isLoaded: boolean = false;
   teamId!: number;
+  isShowModal: boolean = false;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   constructor(public libCommon: TCommonService,
@@ -38,18 +39,18 @@ export class AppComponent {
     let that = this;
     that.init().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.loader.hidden();
-          that.isLoaded = true;
+        this.loader.hidden();
+        that.isLoaded = true;
       }
     });
 
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
         this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
-        let exist = this.router.url.startsWith('/conversation') &&  Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+        let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
 
-        if(res && res.Notification && !exist) {
-            this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+        if (res && res.Notification && !exist) {
+          this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
         }
       }
     })
@@ -58,16 +59,16 @@ export class AppComponent {
   init(): Observable<boolean> {
     let that = this;
     return new Observable(obs => {
-        that.zone.runOutsideAngular(() => {
-            that.setGlobalConfig();
+      that.zone.runOutsideAngular(() => {
+        that.setGlobalConfig();
 
-            that.libCommon.init().subscribe({
-                next: (s: TDSSafeAny) => {
-                    obs.next(true);
-                    obs.complete();
-                }
-            });
+        that.libCommon.init().subscribe({
+          next: (s: TDSSafeAny) => {
+            obs.next(true);
+            obs.complete();
+          }
         });
+      });
     })
   }
 
@@ -86,5 +87,9 @@ export class AppComponent {
       }
     };
     Object.assign(TGlobalConfig, objConfig);
+  }
+
+  onShowModal(orderId:string) {
+    this.socketOnEventService.showModalSocketOrder(orderId);
   }
 }
