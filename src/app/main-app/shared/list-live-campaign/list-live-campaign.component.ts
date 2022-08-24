@@ -83,19 +83,19 @@ export class ListLiveCampaignComponent implements OnInit {
 
 
   onSave() {
-    let facebookPost = this.prepareFacebookPost();
-    let model =  this.prepareModel(facebookPost);
+    // let facebookPost = this.prepareFacebookPost();
+    // let model =  this.prepareModel(facebookPost);
 
-    let data = {} as any;
-    data.action = 'update';
-    data.model = model;
+    // let data = {} as any;
+    // data.action = 'update';
+    // data.model = model;
 
-    this.liveCampaignService.updateLiveCampaignPost(this.currentLiveCampaign?.Id, data).subscribe(res => {
-      this.message.success(Message.UpdatedSuccess);
-      this.updateLiveCampaignPost();
-    }, error => {
-      this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-    });
+    // this.liveCampaignService.updateLiveCampaignPost(this.currentLiveCampaign?.Id, data).subscribe(res => {
+    //   this.message.success(Message.UpdatedSuccess);
+    //   this.updateLiveCampaignPost();
+    // }, error => {
+    //   this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+    // });
   }
 
   updateLiveCampaignPost() {

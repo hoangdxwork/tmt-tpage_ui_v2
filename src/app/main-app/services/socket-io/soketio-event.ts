@@ -1,8 +1,9 @@
 
-export enum SocketIoEvents {
+export enum SocketIoEvent {
   onEvents = "on-events",
 }
 
-export enum ChatmoniSocketEventNames {
-  onMessage = "chatomni.on-message"
+export enum ChatmoniSocketEventName {
+  chatomniOnMessage = "chatomni.on-message",
+  onUpdate = "update"
 }

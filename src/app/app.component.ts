@@ -1,16 +1,12 @@
-import { ChatomniMessageType } from './main-app/dto/conversation-all/chatomni/chatomni-data.dto';
-import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef, Component, EventEmitter, NgZone, Output, TemplateRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
-import { CRMTeamService } from '@app/services/crm-team.service';
+import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable , takeUntil} from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
-import { SocketService } from './main-app/services/socket-io/socket.service';
 import { PageLoadingService } from './shared/services/page-loading.service';
+import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 
 @Component({
   selector: 'app-root',
@@ -22,8 +18,7 @@ export class AppComponent {
 
   title = 'T-Page';
   isLoaded: boolean = false;
-  url!: string;
-  team!: CRMTeamDTO;
+  teamId!: number;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   constructor(public libCommon: TCommonService,
@@ -31,11 +26,10 @@ export class AppComponent {
     public cache: THelperCacheService,
     public zone: NgZone,
     public router: Router,
-    private cdRef: ChangeDetectorRef,
-    private crmTeamService: CRMTeamService,
+    private route: ActivatedRoute,
     private notification: TDSNotificationService,
+    private socketOnEventService: SocketOnEventService,
     private loader: PageLoadingService,
-    private socketService: SocketService,
     private destroy$: TDSDestroyService) {
     this.loader.show();
   }
@@ -49,95 +43,16 @@ export class AppComponent {
       }
     });
 
-    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        let socketData = JSON.parse(res) as SocketioOnMessageDto;
-        console.log(socketData);
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+        this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
+        let exist = this.router.url.startsWith('/conversation') &&  Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
 
-        // TODO: thông báo tin nhắn
-        if(socketData && this.crmTeamService.getCurrentTeam()?.Id) {
-            this.crmTeamService.getActiveByPageIds$([socketData.Conversation.ChannelId]).pipe(takeUntil(this.destroy$)).subscribe({
-                next: (teams: CRMTeamDTO[]) => {
-                    this.team = teams[0];
-
-                    switch(socketData.Message.MessageType) {
-                        case ChatomniMessageType.FacebookMessage:
-
-                          let fbMessage = {
-                              title: `Facebook: ${socketData.Conversation.Name} vừa nhắn tin`,
-                              message: `${socketData.Message.Message}`,
-                              attachments: socketData.Message.Data?.attachments,
-                              url: `/conversation/inbox?teamId=${this.team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
-                          } as any;
-
-                          this.notification.template(this.templateNotificationMessNew, { data: fbMessage, placement: 'bottomLeft' });
-                          break;
-
-                        case ChatomniMessageType.FacebookComment:
-
-                          let fbComment = {
-                              title: `Facebook: ${socketData.Conversation.Name} vừa bình luận`,
-                              message: `${socketData.Message.Message}`,
-                              attachments: socketData.Message.Data?.attachments,
-                              url: `/conversation/comment?teamId=${this.team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
-                          } as any;
-
-                          this.notification.template(this.templateNotificationMessNew, { data: fbComment, placement: 'bottomLeft' });
-                        break;
-
-                        case ChatomniMessageType.TShopMessage:
-
-                          let tShopMessage = {
-                              title: `TShop: ${socketData.Conversation.Name} vừa nhắn tin`,
-                              message: `${socketData.Message.Message}`,
-                              attachments: socketData.Message.Data?.attachments,
-                              url: `/conversation/all?teamId=${this.team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-                          } as any;
-
-                          this.notification.template(this.templateNotificationMessNew, {data: tShopMessage, placement: 'bottomLeft' });
-                        break;
-
-                        case ChatomniMessageType.TShopComment:
-
-                          let tShopComment = {
-                              title: `TShop: ${socketData.Conversation.Name} vừa nhắn tin`,
-                              message: `${socketData.Message.Message}`,
-                              attachments: socketData.Message.Data?.attachments,
-                              url: `/conversation/all?teamId=${this.team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-                          } as any;
-
-                          this.notification.template(this.templateNotificationMessNew, {data: tShopComment, placement: 'bottomLeft' });
-                        break;
-
-                        default:
-
-                          let dataDefault = {
-                              title: `${socketData.Conversation.Name} vừa phản hồi`,
-                              message: `${socketData.Message.Message}`,
-                              attachments: socketData.Message.Data?.attachments,
-                              url: `/conversation/all?teamId=${this.team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-                          } as any;
-
-                          this.notification.template(this.templateNotificationMessNew, { data: dataDefault, placement: 'bottomLeft' });
-                        break;
-
-                    }
-                    this.cdRef.markForCheck();
-                },
-                error: (error: any) => {
-                    console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${socketData}`)
-                }
-            })
+        if(res && res.Notification && !exist) {
+            this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
         }
       }
-    });
-  }
-
-  getLink(url?: string) {
-    if(url) {
-        this.router.navigateByUrl(url);
-        this.crmTeamService.onUpdateTeam(this.team);
-    }
+    })
   }
 
   init(): Observable<boolean> {

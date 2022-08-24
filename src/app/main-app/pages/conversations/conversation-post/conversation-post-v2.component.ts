@@ -1,3 +1,4 @@
+import { LiveCampaign } from './../../../dto/facebook-post/facebook-post.dto';
 import { ChatomniLiveCampaignDto } from './../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
@@ -25,6 +26,7 @@ import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-o
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
   selector: 'app-conversation-post-v2',
@@ -75,6 +77,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
   queryObj?: any = { type!: "", sort!: "", q!: "" };
   isRefreshing: boolean = false;
+  partners$!: Observable<any>;
 
   constructor(private facebookPostService: FacebookPostService,
     private conversationPostFacade: ConversationPostFacade,
@@ -85,11 +88,13 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     private ngZone: NgZone,
+    private cdRef: ChangeDetectorRef,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     private chatomniObjectService: ChatomniObjectService,
     private destroy$: TDSDestroyService,
-    private objectEvent: ObjectFacebookPostEvent) {
+    private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
 
@@ -131,6 +136,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
           if(exist) {
               this.loadData();
               this.loadBadgeComments();
+              this.loadPartnerTimstamp();
           }
       }
     });
@@ -139,14 +145,57 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.eventEmitter();
   }
 
-  eventEmitter(){
-    this.objectEvent.getObjectFBData$.pipe(takeUntil(this.destroy$)).subscribe({
+
+  loadPartnerTimstamp() {
+    if(this.currentTeam) {
+        this.chatomniCommentFacade.getParentTimeStamp(this.currentTeam.Id);
+    }
+  }
+
+  eventEmitter() {
+    // TODO: Cập nhật chiến lịch live từ object-facebook-post
+    this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
-          let index = this.lstObjects.findIndex(x=> x.Id == res.Id);
-          if(index >- 1) {
-              this.lstObjects[index].LiveCampaign = { ...res.LiveCampaign } as unknown as ChatomniLiveCampaignDto;
-              this.lstObjects[index] = {...this.lstObjects[index]};
+        if(res && res.LiveCampaignId) {
+            let index = this.lstObjects.findIndex(x => x.Id == res.Id);
+            if(index >- 1) {
+                this.lstObjects[index].LiveCampaignId = res.LiveCampaignId;
+                this.lstObjects[index].LiveCampaign = {...res.LiveCampaign};
+
+                this.lstObjects[index] = {...this.lstObjects[index]};
+            }
+
+            if(this.currentPost && res.Id == this.currentPost?.Id) {
+                this.currentPost.LiveCampaignId = res.LiveCampaignId;
+                this.currentPost.LiveCampaign = { ...res.LiveCampaign };
+            }
+        }
+
+        this.cdRef.markForCheck();
+      }
+    })
+
+    // TODO: sự kiện xóa chiến dịch live từ live-campaign-post
+    this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+          if(res && !res.LiveCampaignId) {
+              let index = this.lstObjects.findIndex(x => x.Id == res.Id);
+              if(index >- 1) {
+                  this.lstObjects[index].LiveCampaignId = null as any;
+                  this.lstObjects[index].LiveCampaign = null as any;
+
+                  this.lstObjects[index] = {...this.lstObjects[index]};
+              }
+
+              if(this.currentPost && res.Id == this.currentPost?.Id) {
+                  this.currentPost.LiveCampaignId = null as any;
+                  this.currentPost.LiveCampaign = null as any;
+
+                  this.currentPost = { ...this.currentPost};
+              }
           }
+
+          this.cdRef.markForCheck();
       }
     })
   }
@@ -257,6 +306,11 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
       next: (res: ChatomniObjectsDto) => {
           if(res && res.Items) {
 
+              // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+              if(res && TDSHelperArray.isArray(res.Items)) {
+                  res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
+              }
+
               this.lstObjects = [...res.Items];
               if(TDSHelperArray.hasListValue(res.Items)){
                   let exits = res.Items?.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
@@ -330,6 +384,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
         next: (res: ChatomniObjectsDto) => {
             if(TDSHelperArray.hasListValue(res?.Items)) {
+                // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+                res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
                 this.lstObjects = [...res.Items];
             }
 
@@ -393,6 +449,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   loadFilterDataSource() {
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
+          res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
           this.lstObjects  = [...res.Items];
 
           setTimeout(() => {

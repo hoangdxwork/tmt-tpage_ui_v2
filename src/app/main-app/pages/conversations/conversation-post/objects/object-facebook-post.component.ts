@@ -1,4 +1,4 @@
-import { PrepareFacebookPostHandler } from './../../../../handler-v2/conversation-post/prepare-facebook-post.handler';
+import { PrepareUpdateFacebookByLiveCampaign } from './../../../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { FaceBookPostItemHandler } from './../../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignPostComponent } from './../live-campaign-post/live-campaign-post.component';
@@ -9,7 +9,7 @@ import { takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'object-facebook-post',
@@ -27,42 +27,50 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  mdbFbPost!: MDB_Facebook_Mapping_PostDto;
-  currentLiveCampaign?: LiveCampaignModel;
+  currentLiveCampaign!: LiveCampaignModel;
   indClickTag: string = '';
 
   constructor(private liveCampaignService: LiveCampaignService,
     private modal: TDSModalService,
     private message: TDSMessageService,
-    private objectEvent: ObjectFacebookPostEvent,
-    private fbPostHandler: FaceBookPostItemHandler,
-    private prepareHandler: PrepareFacebookPostHandler,
-    private viewContainerRef: ViewContainerRef,
     private cdRef: ChangeDetectorRef,
+    private objectFacebookPostEvent: ObjectFacebookPostEvent,
+    private prepareUpdateFacebookByLiveCampaign: PrepareUpdateFacebookByLiveCampaign,
+    private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService) {
   }
 
   ngOnInit() {
-    this.loadData();
+    if(this.item && this.item.LiveCampaign) {
+      this.currentLiveCampaign = {
+          Id: this.item.LiveCampaignId,
+          Name: this.item.LiveCampaign?.Name,
+          Note: this.item.LiveCampaign?.Note
+      } as any;
+    }
+
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+          this.currentLiveCampaign = null as any;
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["item"] && !changes["item"].firstChange) {
         this.item = {...changes["item"].currentValue};
-        this.loadData();
-    }
 
-    if(changes['lstOfLiveCampaign'] && !changes['lstOfLiveCampaign'].firstChange) {
-        this.lstOfLiveCampaign = [...changes['lstOfLiveCampaign'].currentValue];
-    }
-  }
-
-  loadData(){
-    if(this.item) {
-      this.mdbFbPost = this.item.Data as MDB_Facebook_Mapping_PostDto;
-
-      let liveId = this.item.LiveCampaignId;
-      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=> f.Id == liveId);
+        if(this.item && this.item.LiveCampaign) {
+            this.currentLiveCampaign = {
+                Id: this.item.LiveCampaignId,
+                Name: this.item.LiveCampaign?.Name,
+                Note: this.item.LiveCampaign?.Note
+            } as any;
+        }
     }
   }
 
@@ -73,20 +81,11 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        post: data,
-        currentLiveCampaign: this.currentLiveCampaign,
-        lstOfData: this.lstOfLiveCampaign
+          data: data,
+          currentLiveCampaign: this.currentLiveCampaign,
+          lstOfData: this.lstOfLiveCampaign
       }
     });
-
-    modal.componentInstance?.getCurrentLiveCampaign$.subscribe(res => {
-      if(this.item?.Data){
-        this.item = this.fbPostHandler.updateLiveCampaignPost(this.item, res);
-      }
-
-      this.objectEvent.getObjectFBData$.emit(this.item);
-
-    })
   }
 
   selectPost(item: ChatomniObjectsItemDto) {
@@ -99,29 +98,51 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   closeTag(): void {
     this.indClickTag = '';
+    if(!this.item.LiveCampaign && this.currentLiveCampaign) {
+        this.currentLiveCampaign = null as any;
+
+        this.item.LiveCampaignId = null as any;
+        this.item.LiveCampaign = null as any;
+    }
   }
 
-  addNewCampaign() {
-    if(this.currentLiveCampaign){
-      let data =  this.prepareHandler.prepareModel((<MDB_Facebook_Mapping_PostDto> this.item?.Data), this.currentLiveCampaign);
-      let liveCampaignId = this.currentLiveCampaign?.Id || this.item?.LiveCampaignId;
+  onChangeLiveCampaign(item: LiveCampaignModel) {
+    if(item) {
+        this.currentLiveCampaign = item;
+    }
+  }
 
-      this.liveCampaignService.updateLiveCampaignPost(liveCampaignId, data).pipe(takeUntil(this.destroy$)).subscribe({
+  updateFacebookByLiveCampaign() {
+    if(this.currentLiveCampaign) {
+
+        let id = this.currentLiveCampaign.Id;
+        let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.item, this.currentLiveCampaign, 'update')};
+
+        this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-              if(res.value){
-                  this.item = this.fbPostHandler.updateLiveCampaignPost(this.item, this.currentLiveCampaign);
-                  this.objectEvent.getObjectFBData$.emit(this.item);
+              if(res && res.value) {
 
+                  // TODO: gán lại cho item object hiện tại
+                  this.item.LiveCampaignId = this.currentLiveCampaign.Id;
+                  this.item.LiveCampaign = {
+                      Id: this.currentLiveCampaign.Id,
+                      Name:this.currentLiveCampaign.Name,
+                      Note: this.currentLiveCampaign.Note
+                  }
+
+                  // TODO: đẩy qua conversation-post-v2, conversation-post-view-v3
+                  this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.item);
+                  this.indClickTag = '';
                   this.message.success('Cập nhật chiến dịch thành công');
-                  this.cdRef.markForCheck();
               }
+
+              this.cdRef.markForCheck();
           },
           error: (err: any) => {
+              this.indClickTag = '';
               this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
           }
-      })
-
-      this.indClickTag = '';
+        })
     }
   }
 }

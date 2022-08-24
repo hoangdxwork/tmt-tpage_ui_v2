@@ -1,15 +1,15 @@
+import { SocketOnEventService, SocketEventSubjectDto } from './../../../services/socket-io/socket-onevent.service';
 import { SocketService } from '@app/services/socket-io/socket.service';
-import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto, QueryFilterConversationDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
-import { finalize, takeUntil, map, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs/operators';
+import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -26,11 +26,9 @@ import { OnChatBotSignalRModel, TypeOnChatBot } from 'src/app/main-app/dto/event
 import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
 import { TDSNotificationRef, TDSNotificationService } from 'tds-ui/notification';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
-import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
-import { ChatomniDataItemDto, ChatomniFacebookDataDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
-import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 
 @Component({
@@ -97,7 +95,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private destroy$: TDSDestroyService,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniEventEmiterService: ChatomniEventEmiterService,
-    private socketService: SocketService) {
+    private socketService: SocketService,
+    private socketOnEventService: SocketOnEventService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -145,33 +144,37 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   onEventSocket(){
-    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        const socket = JSON.parse(res) as SocketioOnMessageDto;
-
-        if(socket.Conversation && this.currentTeam?.ChannelId == socket.Conversation.ChannelId) {
-          // TODO: mapping dữ liệu danh sách conversation
-          let index = this.lstConversation.findIndex(x => x.ConversationId == socket.Conversation?.UserId);
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+          if(res && res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation.ChannelId) {
+            // TODO: mapping dữ liệu danh sách conversation
+          let index = this.lstConversation.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
           if(index >- 1) {
-              let lastMessage = {
-                  Message: socket.Message?.Message,
-                  CreatedTime: socket.Message?.CreatedTime
-              } as ChatomniConversationMessageDto;
+            let lastMessage = {
+              CreatedTime: res.Data.Message?.CreatedTime
+            } as ChatomniConversationMessageDto;
+            if(res.Data.Message && res.Data.Message.Message){
+              lastMessage.Message = res.Data.Message?.Message;
+            }
 
-              this.lstConversation[index].Message = socket.Message?.Message;
-              this.lstConversation[index].LatestMessage = {...lastMessage};
+            if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data){
+              lastMessage.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
+            }
 
-              this.lstConversation[index] = {...this.lstConversation[index]};
+            this.lstConversation[index].Message = res.Data.Message?.Message;
+            this.lstConversation[index].LatestMessage = {...lastMessage};
+
+            this.lstConversation[index] = {...this.lstConversation[index]};
           }
 
           // TODO: mapping dữ liệu khung chat hiện tại
-          let exist = this.conversationItem.ConversationId == socket.Conversation?.UserId;
+          let exist = this.conversationItem.ConversationId == res.Data.Conversation?.UserId;
           if(exist) {
-              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(socket, this.conversationItem, this.currentTeam)}
+              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
               this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
           }
           this.cdRef.detectChanges();
-        }
+          }
       }
     })
   }
@@ -541,7 +544,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     }
   }
 
-  onTabOderOutput(ev: boolean){
+  onTabOderOutput(ev: boolean){debugger
     this.selectedIndex = 1
   }
 
@@ -554,11 +557,14 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           this.totalConversations = res?.Items.length;
           this.isLoading = false;
           this.isRefreshing = false;
+
+          this.cdRef.markForCheck();
       },
       error: (error: any) => {
           this.isLoading = false;
           this.isRefreshing = false;
           this.message.error(`${error?.error?.message}`);
+          this.cdRef.markForCheck();
       }
     })
   }

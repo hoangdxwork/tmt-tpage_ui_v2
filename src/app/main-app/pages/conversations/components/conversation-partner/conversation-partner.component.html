@@ -283,7 +283,7 @@
             </tds-collapse>
           </div>
 
-          <div class="pt-1 flex-auto" *ngIf="!isEditPartner && totalBill < 1">
+          <div class="pt-1 flex-auto" *ngIf="!isEditPartner && totalBill < 1 && type != 'post'">
               <div class="flex flex-col gap-4 p-4 items-center bg-white h-full">
                   <img src="../../../assets/imagesv2/shop-empty.svg" alt="" class="mt-24 w-[110px] h-[82px]">
                   <span class="text-neutral-1-400 font-normal">Chưa có phiếu bán hàng nào</span>

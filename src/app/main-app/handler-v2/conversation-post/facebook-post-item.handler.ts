@@ -19,6 +19,7 @@ export class FaceBookPostItemHandler {
                     Note: liveCampaign.Note
                 }
             }else{
+                
                 data = { ...data, ...{ live_campaign_id: undefined, live_campaign: undefined } } as any;
             }
 

@@ -87,7 +87,7 @@ export class CsOrder_FromConversationHandler {
           }
       }
 
-      if(!order.CRMTeamId) {
+      if(!order.CRMTeamId && team) {
           order.CRMTeamId = team.Id;
           order.CRMTeamName = team.Name;
       }
