@@ -77,7 +77,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
     return  {...model};
   }
 
-  getParentTimeStamp(teamId: number) {
+  getPartnerTimeStamp(teamId: number) {
     let exist = this.partner![teamId] as any;
 
     if(exist && exist.length > 0) {
