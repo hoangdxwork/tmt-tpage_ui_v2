@@ -1,4 +1,5 @@
 import { Optional, Pipe, PipeTransform } from "@angular/core";
+import { TDSHelperString } from "tds-ui/shared/utility";
 
 @Pipe({
   name: 'bbcodeConvert'
@@ -10,17 +11,19 @@ export class BBcodeConvertPipe implements PipeTransform {
 
   transform(code: string) : any {
     const r = (f: (code: string) => string) => {
-      code = this.run(f, code)
+        code = this.run(f, code) as any;
     }
 
-    r(this.img)
-    r(this.size)
-    r(this.font)
-    r(this.color)
-    r(this.i)
-    r(this.b)
-    r(this.url)
-    r(this.html)
+    if(TDSHelperString.hasValueString(code)) {
+        r(this.img)
+        r(this.size)
+        r(this.font)
+        r(this.color)
+        r(this.i)
+        r(this.b)
+        r(this.url)
+        r(this.html)
+    }
 
     return code;
   }
