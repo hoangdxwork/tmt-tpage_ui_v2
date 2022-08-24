@@ -89,6 +89,7 @@ import { ODataLiveCampaignService } from '../../services/mock-odata/odata-live-c
 import { FilterOptionCampaignComponent } from './components/filter-option-campaign/filter-option-campaign.component';
 import { CommonHandler } from '../../handler-v2/common.handler';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { OrderModule } from '../order/order.module';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -192,7 +193,8 @@ const SERVICES = [
     TDSFilterStatusModule,
     TDSTimelineModule,
     TDSDrawerModule,
-    TDSConversationsModule
+    TDSConversationsModule,
+    OrderModule
   ],
   providers: [
     ...SERVICES
