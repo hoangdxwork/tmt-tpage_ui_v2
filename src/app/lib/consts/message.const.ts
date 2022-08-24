@@ -117,6 +117,12 @@ export const Message = {
     FileNotFormat: 'File không đúng định dạng.',
     TextContentProductEmpty: 'Vui lòng nhập đầy đủ nội dung mẫu.',
     LoadConfigSuccess: 'Tải cấu hình thành công.',
+    CanNotLoadOrderConfig: 'Không thể tải cấu hình chốt đơn',
+    CanNotLoadInteractionConfig: 'Không thể tải cấu hình tương tác chốt đơn',
+    CanNotLoadHiddenCommentConfig: 'Không thể tải cấu hình ẩn bình luận',
+    CanNotLoadLabelConfig: 'Không thể tải cấu hình gán thẻ hội thoại',
+    CanNotLoadReplyConfig: 'Không thể tải cấu hình phản hồi bình luận',
+    updateConfigFail: 'Cập nhật cấu hình thất bại',
     TagOnPatternEmpty: 'Vui lòng nhập đầy đủ nhãn và nội dung.',
     CanNotLoadLiveCampaign: 'Không thể tải dữ liệu chiến dịch',
     CanNotGetProduct: 'Không thể gán sản phẩm'
