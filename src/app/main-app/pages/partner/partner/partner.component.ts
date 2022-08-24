@@ -250,13 +250,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  checkStatusText(text: string) {
-    let exits = this.partnerStatusReport.filter(x => x.StatusText?.toLowerCase() == text.toLowerCase())[0] as any;
-    if (exits) {
-      return exits.StatusStyle;
-    }
-  }
-
   // Add tag
   addTag(id: number) {
     this.indClickTag = id;

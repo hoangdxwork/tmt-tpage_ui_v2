@@ -14,6 +14,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { vi_VN } from 'tds-ui/i18n';
+import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 
 @Component({
   selector: 'app-modal-edit-partner',
@@ -40,7 +41,9 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
+  innerText: string = '';
   private destroy$ = new Subject<void>();
+  chatomniEventEmiter: any;
 
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
@@ -555,6 +558,26 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     }
 
     return this.data;
+  }
+
+  showModalSuggestAddress(innerText : string){
+    let modal =  this.modalService.create({
+      title: 'Sửa địa chỉ',
+      content: ModalAddAddressV2Component,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        _street: innerText,
+      }
+    });
+
+    modal.afterClose.subscribe({
+      next: (result: ResultCheckAddressDTO) => {
+        if(result){
+         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+        }
+      }
+    })
   }
 
 }

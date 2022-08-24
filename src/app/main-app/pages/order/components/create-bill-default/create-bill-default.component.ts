@@ -12,6 +12,7 @@ import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carri
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
+import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 
 @Component({
   selector: 'app-create-bill-default',
@@ -24,6 +25,7 @@ export class CreateBillDefaultComponent implements OnInit {
   lstCarriers: Array<Carrier> = [];
   lstData: Array<OrderBillDefaultDTO> = [];
   lstLine: Array<LineV2> = [];
+  innerText: string = '';
 
   isApplyPromotion: boolean = false;
   carrier!: Carrier;
@@ -36,6 +38,7 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   private destroy$ = new Subject<void>();
+  chatomniEventEmiter: any;
 
   constructor(
     private message: TDSMessageService,
@@ -45,7 +48,7 @@ export class CreateBillDefaultComponent implements OnInit {
     private saleOnline_OrderService: SaleOnline_OrderService,
     private carrierService: DeliveryCarrierService,
     private fastSaleOrderService: FastSaleOrderService,
-    private printerService: PrinterService
+    private printerService: PrinterService,
   ) { }
 
   ngOnInit(): void {
@@ -291,6 +294,26 @@ export class CreateBillDefaultComponent implements OnInit {
 
   onCancel() {
     this.modalRef.destroy(null);
+  }
+
+  showModalSuggestAddress(innerText : string){
+    let modal =  this.modal.create({
+      title: 'Thêm địa chỉ',
+      content: ModalAddAddressV2Component,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        _street: innerText,
+      }
+    });
+
+    modal.afterClose.subscribe({
+      next: (result: ResultCheckAddressDTO) => {
+        if(result){
+         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+        }
+      }
+    })
   }
 
   ngOnDestroy(): void {

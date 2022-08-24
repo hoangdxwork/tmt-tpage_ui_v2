@@ -11,6 +11,7 @@ import { finalize } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSConfigService } from 'tds-ui/core/config';
 
 @Component({
   selector: 'app-config-promotion-combo',
@@ -38,6 +39,7 @@ export class ConfigPromotionComboComponent implements OnInit {
     private formBuilder:FormBuilder,
     private companyService: CompanyService,
     private message: TDSMessageService,
+    private readonly tdsConfigService: TDSConfigService,
     private productIndexDBService: ProductIndexDBService,
     private cacheApi: THelperCacheService,
   ) { }
@@ -55,6 +57,9 @@ export class ConfigPromotionComboComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.tdsConfigService.set('message', {
+      maxStack: 3
+    });
     this.loadCompany();
     this.loadProduct();
   }

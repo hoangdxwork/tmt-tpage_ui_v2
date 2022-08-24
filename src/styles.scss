@@ -51,7 +51,12 @@ select:-webkit-autofill:focus {
   height: 30%
 }
 
-.configs-activities a span.font-bold {
+.configs-activities a span.text-info {
   color: #2B88FB;
+  font-weight: normal;
+}
+
+.configs-activities span.text-danger {
+  color: #EB3B5B;
   font-weight: normal;
 }

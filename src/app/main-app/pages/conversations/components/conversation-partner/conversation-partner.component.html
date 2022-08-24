@@ -4,6 +4,13 @@
       <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-hidden overflow-y-auto tds-custom-scroll flex-col flex">
           <!-- Thông tin khách hàng -->
           <div class="bg-white px-4 py-4">
+              <div *ngIf="isEditPartner && partner" class="pb-6">
+                <button tds-button color="secondary" rounded="!rounded-full" (click)="onCancelEdit()">
+                  <span class="flex items-center">
+                    <i class="tdsi-back-fill text-neutral-1-400 text-lg leading-none mr-2"></i>Trờ lại
+                  </span>
+                </button>
+              </div>
               <div class="flex gap-6">
 
                 <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="conversationItem.ConversationId" [token]="team.ChannelToken">
@@ -14,7 +21,7 @@
                         <div class="font-sans font-semibold text-neutral-1-900 text-[20px]">
                             {{conversationItem.Name || partner.Name}}
                         </div>
-                        <button type="button" tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
+                        <button type="button" size="sm" tds-button-icon color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
                             <span class="flex items-center">
                               <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
                             </span>
@@ -298,8 +305,10 @@
                   </tds-form-field>
 
                   <div class="flex gap-5">
+
                       <tds-form-field class="w-1/2">
                           <tds-label> Số điện thoại</tds-label>
+                          <div tdsAddOnRight><i class="tdsi-search-fill text-xl leading-none"></i></div>
                           <input tdsInput placeholder="Nhập số điện thoại" [(ngModel)]="partner.Phone" [ngModelOptions]="{standalone: true}"/>
                       </tds-form-field>
 
@@ -318,7 +327,7 @@
                       <tds-label>Địa chỉ</tds-label>
                       <div class="flex gap-x-2 items-center">
                         <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
-                            <input tdsInput autocomplete="off" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
+                            <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
                         </tds-form-field>
                         <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip="Tìm kiếm địa chỉ">
                             <span class="flex items-center">
