@@ -81,6 +81,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         this.loadData();
         this.loadPartnersByTimestamp();
     }
+
     this.onEventSocket();
   }
 
@@ -96,7 +97,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        if(res && res.Data && res.Data.Conversation && this.team?.ChannelId == res.Data.Conversation?.ChannelId && this.data.ObjectId == res.Data.Message?.ObjectId){
+        if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
           let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
 
           this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])]

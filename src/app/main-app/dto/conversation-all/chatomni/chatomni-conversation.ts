@@ -22,7 +22,7 @@ export enum ChatomniMessageContentType {
 }
 
 export interface  ChatomniConversationMessageDto {
-  Id: string | null;
+  Id?: string | null;
   Message: string;
   MessageType: ChatomniMessageType;
   CreatedTime: Date | any;
