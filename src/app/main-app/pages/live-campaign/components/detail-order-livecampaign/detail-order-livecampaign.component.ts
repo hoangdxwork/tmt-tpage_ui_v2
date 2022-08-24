@@ -23,6 +23,11 @@ import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { PrinterService } from '@app/services/printer.service';
+import { OrderPrintService } from '@app/services/print/order-print.service';
+import { CreateBillFastComponent } from '@app/pages/order/components/create-bill-fast/create-bill-fast.component';
+import { GetListOrderIdsDTO } from '@app/dto/saleonlineorder/list-order-ids.dto';
+import { FastSaleOrderService } from '@app/services/fast-sale-order.service';
 
 @Component({
   selector: 'detail-order-livecampaign',
@@ -48,10 +53,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     tags: [],
     status: '',
     searchText: '',
-    dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
-    }
+    dateRange: { }
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -72,12 +74,14 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
 
-  constructor(
-    private message: TDSMessageService,
+  constructor(private message: TDSMessageService,
     private modal: TDSModalService,
+    private printerService: PrinterService,
+    private orderPrintService: OrderPrintService,
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    private oDataLiveCampaignOrderService: ODataLiveCampaignOrderService,
+    private odataLiveCampaignOrderService: ODataLiveCampaignOrderService,
+    private fastSaleOrderService: FastSaleOrderService,
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
@@ -88,8 +92,31 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
   }
 
+  updateCheckedSet(id: string, checked: boolean): void {
+    if (checked) {
+      this.setOfCheckedId.add(id);
+    } else {
+      this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: string, checked: boolean): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(value: boolean): void {
+    this.lstOfData.forEach(item => this.updateCheckedSet(item.Id, value));
+    this.refreshCheckedStatus();
+  }
+
+  refreshCheckedStatus(): void {
+    this.checked = this.lstOfData.every(item => this.setOfCheckedId.has(item.Id));
+    this.indeterminate = this.lstOfData.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
+  }
+
   loadData(pageSize: number, pageIndex: number) {
-    let filters = this.oDataLiveCampaignOrderService.buildFilter(this.filterObj);
+    let filters = this.odataLiveCampaignOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.getViewData(params).subscribe({
@@ -105,7 +132,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
 
   getViewData(params: string) {
     this.isLoading = true;
-    return this.oDataLiveCampaignOrderService
+    return this.odataLiveCampaignOrderService
         .getView(params, this.filterObj, this.liveCampaignId)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false ));
   }
@@ -135,10 +162,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       tags: [],
       status: '',
       searchText: '',
-      dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
-      }
+      dateRange: {}
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -239,48 +263,52 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
+    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any): any => {
 
-      let pageIds: any = [];
-      res.map((x: any) => {
-        pageIds.push(x.page_id);
-      });
+          let pageIds: any = [];
+          res.map((x: any) => {
+            pageIds.push(x.page_id);
+          });
 
-      if (pageIds.length == 0) {
-        return this.message.error('Không có kênh kết nối với khách hàng này.');
-      }
-
-      this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
-
-          if (teams.length == 0) {
+          if (pageIds.length == 0) {
             return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 
-          this.mappingTeams = [];
-          let pageDic = {} as any;
+          this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (teams: any): any => {
 
-          teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
+                if (teams.length == 0) {
+                  return this.message.error('Không có kênh kết nối với khách hàng này.');
+                }
 
-            if (exist && !pageDic[exist.page_id]) {
+                this.mappingTeams = [];
+                let pageDic = {} as any;
 
-              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                teams.map((x: any) => {
+                  let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
 
-              this.mappingTeams.push({
-                psid: exist.psid,
-                team: x
-              })
+                  if (exist && !pageDic[exist.page_id]) {
+
+                    pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+
+                    this.mappingTeams.push({
+                      psid: exist.psid,
+                      team: x
+                    })
+                  }
+                })
+
+                if (this.mappingTeams.length > 0) {
+                  this.currentMappingTeam = this.mappingTeams[0];
+                  this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+                }
             }
-          })
-
-          if (this.mappingTeams.length > 0) {
-            this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
-          }
-        });
-    }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+          });
+        },
+        error: (error: any) => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+        }
     })
   }
 
@@ -341,6 +369,84 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       }
 
     }, 500);
+  }
+
+  printCustomer() {
+    let obs: TDSSafeAny;
+    obs = this.printerService.printUrl(`/SaleOnline_LiveCampaign/PrintCustomerWaitCheckOut?id=${this.liveCampaignId}`);
+    obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      this.printerService.printHtml(res);
+          this.isLoading = false;
+
+      }, (error: TDSSafeAny) => {
+        this.isLoading = false;
+        if(error?.error?.message) {
+          this.message.error(error?.error?.message);
+        }
+    });
+
+    if(!obs) {
+      this.isLoading = false;
+    }
+  }
+
+  printMultiOrder() {
+    if (this.checkValueEmpty() == 1) {
+      let ids = [...this.setOfCheckedId];
+      ids.map((x: string) => {
+        this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+            if (res) {
+                this.orderPrintService.printIpFromOrder(res);
+            }
+          },
+          error: (error: any) => {
+            this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+          }
+        })
+      })
+    }
+  }
+
+  onCreateQuicklyFS() {debugger
+    if (this.checkValueEmpty() == 1) {
+      this.isLoading = true;
+      let ids = [...this.setOfCheckedId];
+      this.showModalCreateBillFast(ids)
+    }
+  }
+
+  showModalCreateBillFast(ids: string[]) {
+    this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if (res) {
+            this.modal.create({
+                title: 'Tạo hóa đơn nhanh',
+                content: CreateBillFastComponent,
+                centered: true,
+                size: 'xl',
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  lstData: [...res.value] as GetListOrderIdsDTO[]
+                }
+            });
+          }
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+          this.isLoading = false
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+        }
+      });
+  }
+
+  checkValueEmpty() {
+    let ids = [...this.setOfCheckedId];
+    if (ids.length == 0) {
+      this.message.error('Vui lòng chọn tối thiểu một dòng!');
+      return 0;
+    }
+    return 1;
   }
 
   ngOnDestroy(): void {

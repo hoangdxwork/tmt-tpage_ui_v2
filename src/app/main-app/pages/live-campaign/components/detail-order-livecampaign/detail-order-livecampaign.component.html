@@ -1,27 +1,36 @@
 <div class="w-full h-full bg-white rounded-xl pb-2">
   <div class="flex flex-col h-full">
     <div class="p-4 font-semibold text-xl flex gap-x-3 justify-end">
-      <button tds-button color="primary" class="w-[146px]">
-        <span class="flex items-center">
-          <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo nhanh HĐ
-        </span>
-      </button>
-      <button tds-button color="info" class="w-[135px]">
-        <span class="flex items-center">
-          <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In danh sách
-        </span>
-      </button>
-      <tds-form-field class="w-[320px]">
-        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keyup.enter)="onSearch($event)"/>
-        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-      </tds-form-field>
-      <button tds-button-icon color="secondary">
-        <i class="tdsi-filter-2-line text-neutral-1-500"></i>
-      </button>
-      <!-- <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options> -->
+        <button type="button" (click)="onCreateQuicklyFS()" tds-button color="primary" >
+            <span class="flex items-center">
+              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo nhanh HĐ
+            </span>
+        </button>
+
+        <button type="button" (click)="printCustomer()" tds-button color="info" tds-tooltip tooltipTitle="In danh sách khách hàng">
+            <span class="flex items-center">
+              <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In danh sách
+            </span>
+        </button>
+
+        <button type="button" (click)="printMultiOrder()" tds-button color="info"  tds-tooltip tooltipTitle="In phiếu đơn hàng">
+            <span class="flex items-center">
+              <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu
+            </span>
+        </button>
+
+        <tds-form-field class="w-[320px]">
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keyup.enter)="onSearch($event)"/>
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+
+        <button type="button" tds-button-icon color="secondary">
+          <i class="tdsi-filter-2-line text-neutral-1-500"></i>
+        </button>
+        <!-- <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options> -->
     </div>
 
-    <div  #WidthTable class="h-full text-body-2 text-neutral-1-900">
+    <div #WidthTable class="h-full text-body-2 text-neutral-1-900">
       <tds-table #rowSelectionTable
         [showSizeChanger]="true"
         [frontPagination]="false"
@@ -50,11 +59,18 @@
         </thead>
         <tbody>
           <ng-template ngFor let-order [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
-            <tr>
-              <td [expand]="expandSet.has(order.Id)" class="text-center" (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true">
+            <tr [ngClass]="setOfCheckedId.has(order.Id)?'bg-[#F2FCF5]':''">
+
+              <!-- Detail -->
+              <td [expand]="expandSet.has(order.Id)" class="text-center border-r"
+                (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
               </td>
 
-              <td [checked]="setOfCheckedId.has(order.Id)" class="text-center" [tdsLeft]="true"> </td>
+              <!-- Checked -->
+              <td [checked]="setOfCheckedId.has(order.Id)" (checkedChange)="onItemChecked(order.Id, $event)"
+                class="text-center border-r" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
+              </td>
+
               <td [tdsLeft]="true"> {{index + 1}} </td>
 
               <!-- Mã đơn hàng -->
