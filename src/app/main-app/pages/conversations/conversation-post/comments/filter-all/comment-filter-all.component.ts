@@ -86,10 +86,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadPartnersByTimestamp() {
+    this.partnerDict = {};
+    this.chatomniCommentFacade.getParentTimeStamp(this.team.Id);
     this.chatomniCommentFacade.partnerDict().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.partnerDict = {...res};
-          this.cdRef.markForCheck();
+          this.partnerDict = res;
       }
     })
   }

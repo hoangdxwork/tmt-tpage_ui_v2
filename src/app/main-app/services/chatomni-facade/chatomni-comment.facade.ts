@@ -99,7 +99,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
             this.partner$.next(this.partner[teamId])
         }
       }
-    }, shareReplay());
+    }, shareReplay({ bufferSize: 1, refCount: true}));
   }
 
   partnerDict() {

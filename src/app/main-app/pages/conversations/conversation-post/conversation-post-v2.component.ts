@@ -147,9 +147,9 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
 
   loadPartnerTimstamp() {
-    if(this.currentTeam) {
-        this.chatomniCommentFacade.getParentTimeStamp(this.currentTeam.Id);
-    }
+    // if(this.currentTeam) {
+    //     this.chatomniCommentFacade.getParentTimeStamp(this.currentTeam.Id).subscribe();
+    // }
   }
 
   eventEmitter() {
