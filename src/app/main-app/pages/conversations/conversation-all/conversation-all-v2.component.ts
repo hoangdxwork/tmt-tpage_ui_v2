@@ -136,7 +136,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     })
 
     this.hubEvents(); // các sự kiện realtime
-    this.notificationMessNew(); // thông báo tin nhắn mới
     this.spinLoading();
 
     this.eventEmitter();
@@ -646,16 +645,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.router.navigateByUrl(uriParams)
         this.notification.remove(this.notificationRef.messageId);
     }
-  }
-
-  notificationMessNew(){
-    this.conversationDataFacade.notificationMessNew$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          if(res) {
-              this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
-          }
-      }
-    })
   }
 
   validateData() {
