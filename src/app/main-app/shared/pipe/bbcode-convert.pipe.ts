@@ -1,5 +1,4 @@
 import { Optional, Pipe, PipeTransform } from "@angular/core";
-import { DomSanitizer } from "@angular/platform-browser";
 
 @Pipe({
   name: 'bbcodeConvert'
@@ -13,6 +12,7 @@ export class BBcodeConvertPipe implements PipeTransform {
     const r = (f: (code: string) => string) => {
       code = this.run(f, code)
     }
+
     r(this.img)
     r(this.size)
     r(this.font)
@@ -20,6 +20,7 @@ export class BBcodeConvertPipe implements PipeTransform {
     r(this.i)
     r(this.b)
     r(this.url)
+    r(this.html)
 
     return code;
   }
@@ -65,23 +66,29 @@ export class BBcodeConvertPipe implements PipeTransform {
       if (start === -1) {
         return code
       }
+
       let end = code.indexOf(']', start)
       if (end === -1) {
         return code
       }
+
       const attr = code.substring(start + o.start.length, end)
       const prefix = code.substring(0, start)
+
       start = end + 1
       if (start >= code.length) {
         return code
       }
+
       end = code.indexOf(o.end, start)
       if (end === -1) {
         return code
       }
+
       const body = code.substring(start, end)
       const suffix = code.substring(end + o.end.length)
       const span = o.f(attr, body)
+
       return prefix + span + suffix
     }
   }
@@ -118,6 +125,23 @@ export class BBcodeConvertPipe implements PipeTransform {
     },
   })
 
+  html = this.attr({
+    start: '[format',
+    end: '[end_format]',
+    f: (attr, body) => {
+
+      let value =  attr.indexOf('value');
+      if(value > 0) {
+          attr = attr.substring(0, value).trim();
+      }
+
+      attr = attr
+          .replace(/type=/g, '')
+          .replace(/'/g, '');
+
+      return `<span class="${attr} text-info-500 font-semibold">${body}</span>`;
+    },
+  })
 
 
 }

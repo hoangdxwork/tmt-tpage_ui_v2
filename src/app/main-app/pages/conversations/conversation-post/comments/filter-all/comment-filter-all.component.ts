@@ -58,7 +58,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   isHiddenComment: any = {};
 
   conversationItem!: ChatomniConversationItemDto;
-  // messBB: string = "Xám [format type='text-copyable' value='0888033864']0888033864[end_format]";
 
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,

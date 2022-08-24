@@ -30,12 +30,8 @@
 
                             <!-- nội dung bình luận -->
                             <div class="flex flex-row">
-                                <div [innerHTML]="item.Message | formatIconLike | safeHtml "></div>
+                                <div [innerHTML]="item.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
                             </div>
-<!--
-                            <div>
-                              <div [innerHTML]="messBB | bbcodeConvert | formatIconLike | safeHtml "></div>
-                            </div> -->
 
                             <!-- hình ảnh đính kèm -->
                             <div *ngIf="item.Data?.attachment">
