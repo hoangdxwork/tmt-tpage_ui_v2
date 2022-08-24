@@ -6,7 +6,7 @@ import { PartnerService } from './../../../../services/partner.service';
 import { ConversationMatchingItem } from './../../../../dto/conversation-all/conversation-all.dto';
 import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -23,18 +23,25 @@ import { TDSModalService } from 'tds-ui/modal';
 import { Subject } from 'rxjs';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 
 @Component({
   selector: 'detail-order',
   templateUrl: './detail-order.component.html'
 })
 export class DetailOrderComponent implements OnInit {
+  @ViewChild('WidthTable') widthTable!: ElementRef;
+  @ViewChild('billOrderLines') billOrderLines!: ElementRef;
 
   @Input() liveCampaignId!: string;
 
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
+  expandSet = new Set<string>();
+  marginLeftCollapse: number = 0;
+  widthCollapse: number = 0;
+  paddingCollapse: number = 36;
 
   public filterObj: any = {
     tags: [],
@@ -74,7 +81,8 @@ export class DetailOrderComponent implements OnInit {
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
-    private chatomniMessageFacade: ChatomniMessageFacade
+    private chatomniMessageFacade: ChatomniMessageFacade,
+    private resizeObserver: TDSResizeObserver,
   ) { }
 
   ngOnInit(): void {
@@ -286,6 +294,39 @@ export class DetailOrderComponent implements OnInit {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  onExpandChange(id: string, checked: boolean): void {
+    if (checked) {
+      this.expandSet.add(id);
+    } else {
+      this.expandSet.delete(id);
+    }
+  }
+
+  ngAfterViewInit(): void {
+
+    this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse
+    this.resizeObserver
+      .observe(this.widthTable)
+      .subscribe(() => {
+        this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+        this.widthTable?.nativeElement?.click()
+      });
+
+    setTimeout(() => {
+      let that = this;
+
+      if (that.billOrderLines) {
+        let wrapScroll = that.billOrderLines?.nativeElement?.closest('.tds-table-body');
+
+        wrapScroll?.addEventListener('scroll', function () {
+          let scrollleft = wrapScroll.scrollLeft;
+          that.marginLeftCollapse = scrollleft;
+        });
+      }
+
+    }, 500);
   }
 
   ngOnDestroy(): void {
