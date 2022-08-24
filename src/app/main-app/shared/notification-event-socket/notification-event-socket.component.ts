@@ -9,6 +9,7 @@ import { Component, Input, OnInit, ChangeDetectionStrategy, Output, EventEmitter
 @Component({
   selector: 'notification-event-socket',
   templateUrl: './notification-event-socket.component.html',
+  styleUrls : ['./notification-event-socket.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TDSDestroyService]
 })
