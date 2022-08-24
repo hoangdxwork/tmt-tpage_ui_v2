@@ -1,12 +1,11 @@
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { CRMMatchingService } from './../../../../services/crm-matching.service';
-import { MDBByPSIdDTO } from './../../../../dto/crm-matching/mdb-by-psid.dto';
-import { CRMTeamService } from './../../../../services/crm-team.service';
-import { PartnerService } from './../../../../services/partner.service';
-import { ConversationMatchingItem } from './../../../../dto/conversation-all/conversation-all.dto';
+import { CRMMatchingService } from '../../../../services/crm-matching.service';
+import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
+import { CRMTeamService } from '../../../../services/crm-team.service';
+import { PartnerService } from '../../../../services/partner.service';
 import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 
-import { Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -15,23 +14,25 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { TDSModalService } from 'tds-ui/modal';
-import { Subject } from 'rxjs';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
-  selector: 'detail-order',
-  templateUrl: './detail-order.component.html'
+  selector: 'detail-order-livecampaign',
+  templateUrl: './detail-order-livecampaign.component.html',
+  providers: [TDSDestroyService]
 })
-export class DetailOrderComponent implements OnInit {
+export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
+
   @ViewChild('WidthTable') widthTable!: ElementRef;
-  @ViewChild('billOrderLines') billOrderLines!: ElementRef;
+  @ViewChild('expandOrderLivecampaign') expandOrderLivecampaign!: ElementRef;
 
   @Input() liveCampaignId!: string;
 
@@ -70,7 +71,6 @@ export class DetailOrderComponent implements OnInit {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
-  private destroy$ = new Subject<void>();
 
   constructor(
     private message: TDSMessageService,
@@ -82,8 +82,8 @@ export class DetailOrderComponent implements OnInit {
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
     private chatomniMessageFacade: ChatomniMessageFacade,
-    private resizeObserver: TDSResizeObserver,
-  ) { }
+    private destroy$: TDSDestroyService,
+    private resizeObserver: TDSResizeObserver) { }
 
   ngOnInit(): void {
   }
@@ -92,11 +92,15 @@ export class DetailOrderComponent implements OnInit {
     let filters = this.oDataLiveCampaignOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: TDSSafeAny) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
-
-    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
+    this.getViewData(params).subscribe({
+      next: (res: TDSSafeAny) => {
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = [...res.value];
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || Message.CanNotLoadData);
+      }
+    });
   }
 
   getViewData(params: string) {
@@ -147,51 +151,63 @@ export class DetailOrderComponent implements OnInit {
 
   onEdit(item: QuickSaleOnlineOrderModel) {
     if(item && item.Id) {
-      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
 
-          if(res && res.Id) {
-            delete res['@odata.context'];
+            if(res && res.Id) {
+              delete res['@odata.context'];
 
-            const modal = this.modal.create({
-                content: EditOrderV2Component,
-                size: 'xl',
-                viewContainerRef: this.viewContainerRef,
-                componentParams: {
-                  dataItem: { ...res }
-                }
-            })
+              const modal = this.modal.create({
+                  content: EditOrderV2Component,
+                  size: 'xl',
+                  viewContainerRef: this.viewContainerRef,
+                  bodyStyle:{
+                    'padding': '0'
+                  },
+                  componentParams: {
+                    dataItem: { ...res }
+                  }
+              })
 
-            modal.afterClose?.subscribe((obs: string) => {
-                if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-                    this.loadData(this.pageSize, this.pageIndex);
-                }
-            })
+              modal.afterClose?.subscribe((obs: string) => {
+                  if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+                      this.loadData(this.pageSize, this.pageIndex);
+                  }
+              })
+            }
+          },
+          error: (error: any) => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
     }
   }
 
-  onRemove(id: string, code: string) {
+  onDelete(id: string, code?: string) {
     this.modal.error({
       title: 'Xóa đơn hàng',
       content: 'Bạn có chắc muốn xóa đơn hàng',
-      onOk: () => this.remove(id, code),
-      onCancel:()=>{},
-      okText:"Xóa",
-      cancelText:"Hủy"
+      onOk: () => this.removeOrder(id, code),
+      onCancel: () => { },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+      confirmViewType: "compact"
     });
   }
 
-  remove(id: string, code: string) {
+  removeOrder(id: string, code?: string) {
     this.isLoading = true;
-    this.saleOnline_OrderService.remove(id)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: TDSSafeAny) => {
-        this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
-        this.loadData(this.pageSize, this.pageIndex);
-      }, error => this.message.error(`${error?.error?.message}` || Message.ErrorOccurred));
+    this.saleOnline_OrderService.remove(id).subscribe({
+      next: (res: any) => {
+          this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
+          this.loadData(this.pageSize, this.pageIndex);
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
+      }
+    });
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
@@ -307,9 +323,7 @@ export class DetailOrderComponent implements OnInit {
   ngAfterViewInit(): void {
 
     this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse
-    this.resizeObserver
-      .observe(this.widthTable)
-      .subscribe(() => {
+    this.resizeObserver?.observe(this.widthTable).subscribe(() => {
         this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
         this.widthTable?.nativeElement?.click()
       });
@@ -317,8 +331,8 @@ export class DetailOrderComponent implements OnInit {
     setTimeout(() => {
       let that = this;
 
-      if (that.billOrderLines) {
-        let wrapScroll = that.billOrderLines?.nativeElement?.closest('.tds-table-body');
+      if (that.expandOrderLivecampaign) {
+        let wrapScroll = that.expandOrderLivecampaign?.nativeElement?.closest('.tds-table-body');
 
         wrapScroll?.addEventListener('scroll', function () {
           let scrollleft = wrapScroll.scrollLeft;

@@ -545,43 +545,44 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onEdit(item: ODataSaleOnline_OrderModel) {
     if(item && item.Id) {
-      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
 
-          if(res && res.Id) {
-            delete res['@odata.context'];
+              if(res && res.Id) {
+                delete res['@odata.context'];
 
-            const modal = this.modal.create({
-                title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
-                content: EditOrderV2Component,
-                size: 'xl',
-                viewContainerRef: this.viewContainerRef,
-                bodyStyle:{
-                  'padding':'0'
-                },
-                componentParams: {
-                  dataItem: { ...res }
-                },
+                const modal = this.modal.create({
+                    title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
+                    content: EditOrderV2Component,
+                    size: 'xl',
+                    viewContainerRef: this.viewContainerRef,
+                    bodyStyle:{
+                      'padding': '0'
+                    },
+                    componentParams: {
+                      dataItem: { ...res }
+                    }
+                })
 
-            })
-
-            modal.afterClose?.subscribe((obs: string) => {
-                if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-                    this.loadData(this.pageSize, this.pageIndex);
-                }
-            })
+                modal.afterClose?.subscribe((obs: string) => {
+                    if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+                        this.loadData(this.pageSize, this.pageIndex);
+                    }
+                })
+              }
+          },
+          error: (error: any) => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
     }
-
   }
 
-  onRemove(id: string, code: string) {
+  onDelete(id: string, code?: string) {
     this.modal.error({
       title: 'Xóa đơn hàng',
       content: 'Bạn có chắc muốn xóa đơn hàng',
-      onOk: () => this.remove(id, code),
+      onOk: () => this.removeOrder(id, code),
       onCancel: () => { },
       okText: "Xác nhận",
       cancelText: "Đóng",
@@ -589,15 +590,19 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  remove(id: string, code: string) {
+  removeOrder(id: string, code?: string) {
     this.isLoading = true;
-    this.saleOnline_OrderService.remove(id).pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: TDSSafeAny) => {
-        this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
-        this.refreshDataCurrent();
-      }, error => {
+    this.saleOnline_OrderService.remove(id).subscribe({
+      next: (res: any) => {
+          this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
+          this.refreshDataCurrent();
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
-      });
+      }
+    });
   }
 
   checkValueEmpty() {
