@@ -74,7 +74,18 @@
               <td [tdsLeft]="true"> {{index + 1}} </td>
 
               <!-- Mã đơn hàng -->
-              <td [tdsLeft]="true">{{order.Code}}</td>
+              <td [tdsLeft]="true">
+                <div class="w-full flex flex-col gap-y-2">
+                  <div>{{order.Code}}</div>
+                  <div class="font-z14" *ngIf="order.MessageCount > 0">
+                    <div title="Tin nhắn đã gửi" (click)="showModalHistoryChat(order.Id)"
+                      class="hover:text-info-400 text-neutral-1-400 cursor-pointer gap-x-1 flex items-center">
+                      <i class="tdsi-messenger-fill text-base"></i>
+                      <span>{{order.MessageCount}}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
 
               <!-- Tên khách hàng -->
               <td> {{order.PartnerName}}</td>
