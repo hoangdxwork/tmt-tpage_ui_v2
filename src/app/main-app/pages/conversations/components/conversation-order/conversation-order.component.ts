@@ -751,11 +751,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: Tạo hóa đơn thành công
           if(res?.Success) {
-              this.shipServices = [];
-              this.shipExtraServices = [];
-              delete this.saleModel.Ship_ServiceId;
-              delete this.saleModel.Ship_ServiceName;
-
               if(res.Message) {
                   this.notification.warning('Tạo hóa đơn thành công', res.Message);
               }
@@ -774,9 +769,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.printOrder(type, res);
           }
 
+          this.shipServices = [];
+          this.shipExtraServices = [];
+          delete this.saleModel.Ship_ServiceId;
+          delete this.saleModel.Ship_ServiceName;
+
+          this.quickOrderModel.Details = [];
+          this.saleModel = {} as any;
+          this.quickOrderModel.Id = null as any;
+
           this.isLoading = false;
           this.isEnableCreateOrder = false;
-          this.saleModel = {} as any;
       },
       error: (error: any) => {
           this.isLoading = false;
