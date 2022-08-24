@@ -88,6 +88,7 @@ import { TDSSwitchModule } from 'tds-ui/switch';
 import { ODataLiveCampaignService } from '../../services/mock-odata/odata-live-campaign.service';
 import { FilterOptionCampaignComponent } from './components/filter-option-campaign/filter-option-campaign.component';
 import { CommonHandler } from '../../handler-v2/common.handler';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -149,7 +150,8 @@ const SERVICES = [
   ChatomniMessageService,
   ChatomniMessageFacade,
   ActivityMatchingService,
-  ConversationService
+  ConversationService,
+  ChatomniCommentFacade
 ]
 
 @NgModule({
