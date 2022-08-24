@@ -21,8 +21,8 @@
       <!-- <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options> -->
     </div>
 
-    <div class="h-full text-body-2 text-neutral-1-900">
-      <tds-table #tableMessage
+    <div  #WidthTable class="h-full text-body-2 text-neutral-1-900">
+      <tds-table #rowSelectionTable
         [showSizeChanger]="true"
         [frontPagination]="false"
         [listData]="lstOfData"
@@ -49,41 +49,28 @@
           </tr>
         </thead>
         <tbody>
-          <ng-template ngFor let-order [ngForOf]="tableMessage.data" let-odd='odd' let-index="index">
+          <ng-template ngFor let-order [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
             <tr>
-              <td [expand]="expandSet.has(order.Id)" class="text-center"
-                    (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true">
+              <td [expand]="expandSet.has(order.Id)" class="text-center" (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true">
               </td>
-              <td [checked]="setOfCheckedId.has(order.Id)" class="text-center" [tdsLeft]="true">
-              </td>
-              <td [tdsLeft]="true">
-                {{index + 1}}
-              </td>
+
+              <td [checked]="setOfCheckedId.has(order.Id)" class="text-center" [tdsLeft]="true"> </td>
+              <td [tdsLeft]="true"> {{index + 1}} </td>
 
               <!-- Mã đơn hàng -->
-              <td [tdsLeft]="true">
-                {{order.Code}}
-              </td>
+              <td [tdsLeft]="true">{{order.Code}}</td>
 
               <!-- Tên khách hàng -->
-              <td>
-                {{order.PartnerName}}
-              </td>
+              <td> {{order.PartnerName}}</td>
 
               <!-- Số điện thoại -->
-              <td>
-                {{order.Telephone}}
-              </td>
+              <td> {{order.Telephone}}</td>
 
               <!-- Tổng tiền -->
-              <td>
-                {{order.TotalAmount || 0 | number}}
-              </td>
+              <td> {{order.TotalAmount || 0 | number}}</td>
 
               <!-- Tổng sản phẩm chờ chốt -->
-              <td>
-                {{order.TotalAmount}}
-              </td>
+              <td> {{order.TotalAmount}}</td>
 
               <!-- Trạng thái -->
               <td>
@@ -93,14 +80,10 @@
               </td>
 
               <!-- Nhân viên -->
-              <td>
-                {{order.UserName}}
-              </td>
+              <td>{{order.UserName}}</td>
 
               <!-- Thời gian -->
-              <td>
-                {{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}
-              </td>
+              <td>{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
 
               <!-- Thao tác -->
               <td [tdsRight]="true">
@@ -110,12 +93,14 @@
                       <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                     </span>
                   </button>
+
                   <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order)">
                     <span class="flex items-center text-neutral-1-500">
                       <i class="tdsi-edit-fill"></i>
                     </span>
                   </button>
-                  <button tds-button-icon color="secondary" size="sm" (click)="onRemove(order.Id, order.Code)">
+
+                  <button tds-button-icon color="secondary" size="sm" (click)="onDelete(order.Id, order.Code)">
                     <span class="flex items-center text-neutral-1-500">
                       <i class="tdsi-trash-fill"></i>
                     </span>
@@ -123,26 +108,30 @@
                 </div>
               </td>
             </tr>
+
             <tr [expand]="expandSet.has(order.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 w-full">
-              <div #billOrderLines
-                [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
-                <detail-expand *ngIf="expandSet.has(order.Id)" [dataOrder]="order">
-                </detail-expand>
+              <div #expandOrderLivecampaign [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
+                <expand-order-livecampaign *ngIf="expandSet.has(order.Id)" [dataOrder]="order">
+                </expand-order-livecampaign>
               </div>
             </tr>
+
           </ng-template>
         </tbody>
       </tds-table>
     </div>
   </div>
+
   <tds-drawer [visible]="isOpenDrawer"
     [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
     [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+
     <ng-template #titleMessage>
       <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
         Gửi tin nhắn Facebook
       </span>
     </ng-template>
+
     <ng-container *tdsDrawerContent>
       <div class="w-full h-full flex flex-col overflow-hidden text-body-2">
         <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>

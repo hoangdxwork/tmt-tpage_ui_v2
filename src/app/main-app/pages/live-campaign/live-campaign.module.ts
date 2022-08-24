@@ -36,7 +36,7 @@ import { ModalLiveCampaignBillComponent } from './components/modal-live-campaign
 import { ModalInfoOrderComponent } from './components/modal-info-order/modal-info-order.component';
 import { DetailMessageComponent } from './components/detail-message/detail-message.component';
 import { DetailProductComponent } from './components/detail-product/detail-product.component';
-import { DetailOrderComponent } from './components/detail-order/detail-order.component';
+import { DetailOrderLiveCampaignComponent } from './components/detail-order-livecampaign/detail-order-livecampaign.component';
 import { DetailBillPaymentComponent } from './components/detail-bill-payment/detail-bill-payment.component';
 import { DetailBillComponent } from './components/detail-bill/detail-bill.component';
 import { TableOrderMessageComponent } from './components/table-order-message/table-order-message.component';
@@ -105,7 +105,7 @@ const cmp =[
   ModalInfoOrderComponent,
   DetailMessageComponent,
   DetailProductComponent,
-  DetailOrderComponent,
+  DetailOrderLiveCampaignComponent,
   DetailBillPaymentComponent,
   DetailBillComponent,
   TableOrderMessageComponent,
