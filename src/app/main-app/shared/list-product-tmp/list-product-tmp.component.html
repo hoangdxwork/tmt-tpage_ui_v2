@@ -68,13 +68,12 @@
                         [frontPagination]="false" [virtualItemSize]="20" [loading]="isLoading" [virtualForTrackBy]="trackByIndex">
                         <thead>
                                 <tr>
-                                    <th width="20%">Ảnh</th>
-                                    <th width="40%">Tên sản phẩm</th>
-                                    <th width="20%">Đơn vị</th>
-                                    <th width="20%">Giá</th>
+                                        <th width="20%">Ảnh</th>
+                                        <th width="40%">Tên sản phẩm</th>
+                                        <th width="20%">Đơn vị</th>
+                                        <th width="20%">Giá</th>
                                 </tr>
                         </thead>
-                        
                         <tbody>
                                 <ng-template tds-virtual-scroll let-data let-index="index">
                                         <tr *ngIf="data" (click)="addItem(data, index)" tds-popover 
@@ -82,19 +81,19 @@
                                                 [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate" [popoverAutoClose]="true"
                                                 class="group hover:cursor-pointer">
                                                 <td>
-                                                    <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
-                                                    </tds-avatar>
+                                                        <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
+                                                        </tds-avatar>
                                                 </td>
                                                 <td>
                                                     <div class="flex flex-col">
                                                         <span class="text-body-2 w-[130px] truncate" tds-tooltip tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
                                                         <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                                                            <span class="text-primary-1"
-                                                                *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
+                                                                <span class="text-primary-1"
+                                                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
                                                         </span>
                                                         <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
-                                                            <span class="text-primary-1"
-                                                                *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
+                                                                <span class="text-primary-1"
+                                                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
                                                         </span>
                                                     </div>
                                                 </td>
@@ -119,7 +118,7 @@
                                             </div>
                                         </ng-template>
                                 </ng-template>
-                            </tbody>
+                        </tbody>
                 </tds-table>
         </div>
 </div>

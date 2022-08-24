@@ -2,7 +2,7 @@
 import { finalize } from 'rxjs/operators';
 import { Component, Input, OnInit } from '@angular/core';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
-import { TBotRequestCallbackFailedDTO } from 'src/app/main-app/dto/configs/post/order-config.dto';
+import { TBotRequestCallbackFailedDTO } from 'src/app/main-app/dto/configs/post/post-order-config.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 

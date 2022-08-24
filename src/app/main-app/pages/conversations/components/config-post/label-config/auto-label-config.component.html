@@ -1,104 +1,111 @@
 <tds-spin [spinning]="isLoading">
-  <form [formGroup]="formLabelConfig">
-    <div class="w-full h-full flex flex-col gap-y-4">
-      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4">
-        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình gán thẻ hội thoại</div>
+    <div class="w-full h-full flex flex-col gap-y-4" *ngIf="dataModel">
+        <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4">
+            <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình gán thẻ hội thoại</div>
 
-        <div class="w-full grid grid-cols-2 gap-y-4 gap-x-4">
-          <div class="flex flex-col gap-y-2">
-            <div class="flex w-full justify-start gap-x-2">
-              <tds-switch size="md" formControlName="AssignOnPhone"></tds-switch>
-              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn thẻ vào hội thoại có chứa số điện thoại?</div>
-            </div>
-            <tds-form-field *ngIf="formLabelConfig.value.AssignOnPhone">
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnPhone"
-                  disabledField="isActive" [data]="(lstTags$ | async) || []" [allowClear]="true" >
-              </tds-select>
-            </tds-form-field>
-          </div>
-          <div class="flex flex-col gap-y-2">
-            <div class="flex w-full justify-start gap-x-2">
-              <tds-switch size="md" formControlName="AssignOnBillDraft"></tds-switch>
-              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn nhãn vào hội thoại sau khi lưu nháp hóa đơn?</div>
-            </div>
-            <tds-form-field *ngIf="formLabelConfig.value.AssignOnBillDraft">
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnBillDraft"
-                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
-              </tds-select>
-            </tds-form-field>
-          </div>
-          <div class="flex flex-col gap-y-2">
-            <div class="flex w-full justify-start gap-x-2">
-              <tds-switch size="md" formControlName="AssignOnOrder"></tds-switch>
-              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gắn thẻ vào hội thoại sau khi tạo đơn hàng?</div>
-            </div>
-            <tds-form-field *ngIf="formLabelConfig.value.AssignOnOrder">
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnOrder"
-                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
-              </tds-select>
-            </tds-form-field>
-          </div>
-          <div class="flex flex-col gap-y-2">
-            <div class="flex w-full justify-start gap-x-2">
-              <tds-switch size="md" formControlName="AssignOnBillPrintShip"></tds-switch>
-              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gắn thẻ vào hội thoại sau khi tạo đơn hàng và in phiếu ship?</div>
-            </div>
-            <tds-form-field *ngIf="formLabelConfig.value.AssignOnBillPrintShip">
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnBillPrintShip"
-                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
-              </tds-select>
-            </tds-form-field>
-          </div>
-          <div class="flex flex-col gap-y-2">
-            <div class="flex w-full justify-start gap-x-2">
-              <tds-switch size="md" formControlName="AssignOnBillPrint"></tds-switch>
-              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gắn thẻ vào hội thoại sau khi tạo đơn hàng và in hóa đơn?</div>
-            </div>
-            <tds-form-field *ngIf="formLabelConfig.value.AssignOnBillPrint">
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnBillPrint"
-                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
-              </tds-select>
-            </tds-form-field>
-          </div>
-        </div>
-      </div>
+            <div class="w-full grid grid-cols-2 gap-y-4 gap-x-4">
+                <div class="flex flex-col gap-y-2">
+                    <div class="flex w-full justify-start gap-x-2">
+                        <tds-switch size="md" [(ngModel)]="dataModel.AssignOnPhone"></tds-switch>
+                        <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn thẻ vào hội thoại có chứa số điện thoại?</div>
+                    </div>
 
-      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4">
-        <div class="flex justify-between items-center">
-          <div class="flex w-full justify-start gap-x-2">
-            <tds-switch size="md" formControlName="AssignOnPattern"></tds-switch>
-            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn thẻ vào hội thoại có chứa từ khóa?</div>
-          </div>
-          <button tds-button color="success" size="md" type="button" (click)="addCRMKeyTag(null)" class="w-min" *ngIf="formLabelConfig.value.AssignOnPattern">
-            <span class="flex items-center">
-              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm nhãn
-            </span>
-          </button>
+                    <tds-form-field *ngIf="dataModel.AssignOnPhone">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnPhone"
+                            [data]="(lstTags$ | async) || []" [allowClear]="true" >
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+
+                <div class="flex flex-col gap-y-2">
+                    <div class="flex w-full justify-start gap-x-2">
+                        <tds-switch size="md" [(ngModel)]="dataModel.AssignOnBillDraft"></tds-switch>
+                        <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn nhãn vào hội thoại sau khi lưu nháp hóa đơn?</div>
+                    </div>
+
+                    <tds-form-field *ngIf="dataModel.AssignOnBillDraft">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnBillDraft"
+                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+
+                <div class="flex flex-col gap-y-2">
+                    <div class="flex w-full justify-start gap-x-2">
+                        <tds-switch size="md" [(ngModel)]="dataModel.AssignOnOrder"></tds-switch>
+                        <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gắn thẻ vào hội thoại sau khi tạo đơn hàng?</div>
+                    </div>
+
+                    <tds-form-field *ngIf="dataModel.AssignOnOrder">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnOrder"
+                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+
+                <div class="flex flex-col gap-y-2">
+                    <div class="flex w-full justify-start gap-x-2">
+                        <tds-switch size="md" [(ngModel)]="dataModel.AssignOnBillPrintShip"></tds-switch>
+                        <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gắn thẻ vào hội thoại sau khi tạo đơn hàng và in phiếu ship?</div>
+                    </div>
+
+                    <tds-form-field *ngIf="dataModel.AssignOnBillPrintShip">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnBillPrintShip"
+                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+
+                <div class="flex flex-col gap-y-2">
+                    <div class="flex w-full justify-start gap-x-2">
+                        <tds-switch size="md" [(ngModel)]="dataModel.AssignOnBillPrint"></tds-switch>
+                        <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gắn thẻ vào hội thoại sau khi tạo đơn hàng và in hóa đơn?</div>
+                    </div>
+
+                    <tds-form-field *ngIf="dataModel.AssignOnBillPrint">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnBillPrint"
+                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+            </div>
         </div>
 
-        <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4"
-          *ngIf="formLabelConfig.value.AssignOnPattern && tagOnPatternFormGroups.length > 0" formArrayName="TagOnPattern">
-          <div class="flex gap-x-4" *ngFor="let item of tagOnPatternFormGroups; let index=index" [formGroupName]="index">
-            <tds-form-field class="w-full">
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn'
-                  disabledField="isActive" [data]="(lstTags$ | async) || []" formControlName="CrmTag" [valuePrimitive]="false"
-                  [allowClear]="true">
-              </tds-select>
-            </tds-form-field>
-            <tds-form-field class="w-full">
-              <tds-select valueField="id" textField="name" formControlName="CrmKey" placeholder='Chọn từ khóa' mode="tags">
-              </tds-select>
-            </tds-form-field>
-            <button tds-button-icon color="error" size="md" (click)="deleteCRMKeyTag(index)" >
-                <span class="flex items-center">
-                    <i class="tdsi-trash-fill"></i>
-                </span>
-            </button>
-          </div>
+        <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4">
+            <div class="flex justify-between items-center">
+              <div class="flex w-full justify-start gap-x-2">
+                  <tds-switch size="md" [(ngModel)]="dataModel.AssignOnPattern"></tds-switch>
+                  <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn thẻ vào hội thoại có chứa từ khóa?</div>
+              </div>
+
+              <button tds-button color="success" size="md" type="button" (click)="addCRMKeyTag()" class="w-min" *ngIf="dataModel.AssignOnPattern">
+                  <span class="flex items-center">
+                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm nhãn
+                  </span>
+              </button>
+            </div>
+
+            <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4" *ngIf="dataModel.AssignOnPattern && lstTagOnPattern.length > 0">
+              <div class="flex gap-x-4" *ngFor="let item of lstTagOnPattern; let i =index">
+                <tds-form-field class="w-full">
+                  <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [(ngModel)]="item.CrmTag"
+                      [data]="(lstTags$ | async) || []" [valuePrimitive]="false"
+                      [allowClear]="true">
+                  </tds-select>
+                </tds-form-field>
+
+                <tds-form-field class="w-full">
+                    <tds-select [ngModel]="item.CrmKey" placeholder='Chọn từ khóa' mode="tags" (ngModelChange)="changeTagOnPattern($event, i)">
+                    </tds-select>
+                </tds-form-field>
+
+                <button tds-button-icon color="error" size="md" (click)="deleteCRMKeyTag(i)" >
+                    <span class="flex items-center">
+                        <i class="tdsi-trash-fill"></i>
+                    </span>
+                </button>
+              </div>
+            </div>
         </div>
-
-      </div>
-
     </div>
-  </form>
 </tds-spin>

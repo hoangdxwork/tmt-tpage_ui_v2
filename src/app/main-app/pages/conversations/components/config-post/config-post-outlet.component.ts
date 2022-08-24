@@ -28,8 +28,7 @@ export class ConfigPostOutletComponent  {
 
   selectedIndex: number = 0;
 
-  constructor(private modalRef: TDSModalRef){
-  }
+  constructor(private modalRef: TDSModalRef){ }
 
   onSave(){
     switch(this.selectedIndex){

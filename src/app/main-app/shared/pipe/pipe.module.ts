@@ -1,3 +1,4 @@
+import { ConvertToCRMTagsListPipe } from './convert-to-CRMTagList.pipe';
 import { ChatomniFacebookType, ChatomniTShopType } from './fb-post-type.pipe';
 import { GetStatusNamePipe } from './get-status-name.pipe';
 import { SelectMultipleValuePipe } from './select-multiple-value.pipe';
@@ -58,7 +59,8 @@ const cmp =[
   CheckTagSelectedPipe,
   ChatomniTShopType,
   ChatomniFacebookType,
-  ConverseTimePipe
+  ConverseTimePipe,
+  ConvertToCRMTagsListPipe
 ]
 
 @NgModule({

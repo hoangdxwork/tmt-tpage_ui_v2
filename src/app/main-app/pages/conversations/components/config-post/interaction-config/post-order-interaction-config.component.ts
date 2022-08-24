@@ -1,87 +1,75 @@
-import { finalize, takeUntil } from 'rxjs/operators';
-import { OnChanges, SimpleChanges } from '@angular/core';
+import { AutoOrderConfigDTO } from '@app/dto/configs/post/post-order-config.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { takeUntil } from 'rxjs/operators';
+import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
-import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
-import { FormGroup, FormBuilder } from '@angular/forms';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
-import { AutoOrderConfigDTO } from 'src/app/main-app/dto/configs/post/order-config.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString } from 'tds-ui/shared/utility';
-import { Subject } from 'rxjs';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'post-order-interaction-config',
-  templateUrl: './post-order-interaction-config.component.html'
+  templateUrl: './post-order-interaction-config.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
-export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
+export class PostOrderInteractionConfigComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
 
+  dataModel!:AutoOrderConfigDTO;
   isLoading: boolean = false;
   isEditSendMess: boolean = false;
-  private destroy$ = new Subject<void>();
-
-  formInteractionConfig!: FormGroup;
 
   constructor(
     private modalRef: TDSModalRef,
-    private formBuilder: FormBuilder,
     private message: TDSMessageService,
-    private facebookPostService: FacebookPostService
+    private facebookPostService: FacebookPostService,
+    private destroy$: TDSDestroyService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if(changes?.data?.firstChange === true) this.createForm();
-    else this.resetForm();
-
-    if(changes?.data?.currentValue) {
-      this.loadInteractionConfig(this.data.ObjectId);
-    }
-  }
-
   ngOnInit(): void {
-
+    this.loadData(this.data.ObjectId);
   }
 
-  loadInteractionConfig(postId: string) {
+  loadData(postId: string) {
     this.isLoading = false;
-    this.facebookPostService.getOrderConfig(postId)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.updateForm(res);
+
+    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next:(res) => {
+          this.dataModel = {...res};
+
+          let temp = document.createElement("div");
+
+          if (TDSHelperString.hasValueString(this.dataModel?.OrderReplyTemplate)) {
+            temp.innerHTML = this.dataModel?.OrderReplyTemplate;
+            this.dataModel.OrderReplyTemplate = temp.textContent || temp.innerText || "";
+          }
+
+          this.isLoading = false;
+
+          this.cdRef.detectChanges();
+        },
+        error:(err) => {
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadInteractionConfig);
+          this.isLoading = false;
+        }
       });
   }
 
-  createForm() {
-    this.formInteractionConfig = this.formBuilder.group({
-      IsEnableOrderReplyAuto: [false],
-      OrderReplyTemplate: [null],
-      IsEnableShopLink: [false],
-      ShopLabel: [null],
-      ShopLabel2: [null],
-      IsOrderAutoReplyOnlyOnce: [false],
-    });
-  }
-
-  resetForm() {
-    this.formInteractionConfig.reset();
-  }
-
   editSendMess(){
-    this.isEditSendMess = true
+    this.isEditSendMess = true;
   }
 
-  updateForm(data: AutoOrderConfigDTO) {
-    let temp = document.createElement("div");
-    if (TDSHelperString.hasValueString(data?.OrderReplyTemplate)) {
-      temp.innerHTML = data?.OrderReplyTemplate
-      data.OrderReplyTemplate = temp.textContent || temp.innerText || "";
-    }
-    this.formInteractionConfig.patchValue(data);
+  prepareModel() {
+    let model = {...this.dataModel} as AutoOrderConfigDTO;
+
+    return model;
   }
 
   onSave() {
@@ -89,37 +77,23 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
     let postId = this.data?.ObjectId;
 
     this.isLoading = true;
-    this.facebookPostService.updateInteractionConfig(postId, model)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.message.success(Message.UpdatedSuccess);
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+
+    this.facebookPostService.updateInteractionConfig(postId, model).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next:(res) => {
+          this.message.success(Message.UpdatedSuccess);
+          this.isLoading = false;
+
+          this.cdRef.detectChanges();
+        }, 
+        error:(error) => {
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+          this.isLoading = false;
+        }
       });
-  }
-
-  prepareModel() {
-    let formValue = this.formInteractionConfig.value;
-
-    let model = {} as AutoOrderConfigDTO;
-
-    model.IsEnableOrderReplyAuto = formValue.IsEnableOrderReplyAuto;
-    model.OrderReplyTemplate = formValue.OrderReplyTemplate;
-    model.IsEnableShopLink = formValue.IsEnableShopLink;
-    model.ShopLabel = formValue.ShopLabel;
-    model.ShopLabel2 = formValue.ShopLabel2;
-    model.IsOrderAutoReplyOnlyOnce = formValue.IsOrderAutoReplyOnlyOnce;
-    console.log(formValue.OrderReplyTemplate)
-    return model;
   }
 
   onCannel() {
     this.modalRef.destroy(null);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

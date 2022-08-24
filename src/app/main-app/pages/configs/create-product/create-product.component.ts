@@ -586,7 +586,7 @@ export class ConfigAddProductComponent implements OnInit {
             this.router.navigateByUrl('/configs/products');
           },
           err => {
-            this.message.error(err?.error?.message || Message.CanNotLoadData);
+            this.message.error(err?.error?.message || Message.UpdatedFail);
           }
         );
     }
