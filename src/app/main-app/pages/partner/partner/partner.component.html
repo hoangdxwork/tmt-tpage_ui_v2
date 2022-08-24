@@ -155,9 +155,9 @@
                                     </td>
                                     <td *ngIf="isHidden('StatusText')" class="border-r border-neutral-200">
                                         <div class="w-full flex items-center">
-                                            <span [ngStyle]="{'color': checkStatusText(data.StatusText)}"
+                                            <span [ngStyle]="{'color': data.StatusText | partnercolor: partnerStatusReport}"
                                                 class="tdsi-radio-circle-fill"></span>
-                                            <span class="ml-1">{{data.StatusText}}</span>
+                                            <span class="ml-1">{{data.StatusText }}</span>
                                         </div>
                                     </td>
                                     <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200">

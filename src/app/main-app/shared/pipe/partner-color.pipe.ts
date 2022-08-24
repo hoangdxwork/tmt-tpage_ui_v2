@@ -4,13 +4,15 @@ import { TagDTO } from "../../dto/tag/tag.dto";
 @Pipe({
   name: 'partnercolor'
 })
+
 export class PartnerColorPipe implements PipeTransform {
 
-    transform(arr: Array<TagDTO>, textStatus: string): any {
-        let exits = arr.find(x => x.Name.toLowerCase() == textStatus.toLowerCase());
-        if(exits) {
-            return exits.Color;
-        }
+    transform(text: string, partnerStatusReport: any[]): any {
+      let exits = partnerStatusReport?.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
+      if (exits) {
+        return exits.StatusStyle;
+      }
+      return '#2C80F8'
     }
 
 }

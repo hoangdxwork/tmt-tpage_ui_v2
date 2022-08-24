@@ -58,7 +58,8 @@ export class OdataTPosLoggingService extends BaseSevice {
         let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
         dataFilter.filters.push( {
             filters: [
-              { field: "Content", operator: OperatorEnum.contains, value: value }
+              { field: "Content", operator: OperatorEnum.contains, value: value },
+              { field: "User?.Name", operator: OperatorEnum.contains, value: value }
             ],
             logic: 'or'
         })

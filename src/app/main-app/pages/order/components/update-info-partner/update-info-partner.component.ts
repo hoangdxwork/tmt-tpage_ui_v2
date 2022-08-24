@@ -3,10 +3,11 @@ import { TDSMessageService } from 'tds-ui/message';
 import { takeUntil, Subject } from 'rxjs';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { TDSModalRef } from 'tds-ui/modal';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 
 @Component({
   selector: 'app-update-info-partner',
@@ -22,9 +23,13 @@ export class UpdateInfoPartnerComponent implements OnInit {
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
+  innerText: string = '';
+  chatomniEventEmiter: any;
 
   constructor(private fb: FormBuilder,
     private modalRef: TDSModalRef,
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
     private partnerService : PartnerService,
     private message: TDSMessageService) {
       this.createForm();
@@ -136,7 +141,7 @@ export class UpdateInfoPartnerComponent implements OnInit {
     this.partner.Phone = formValue["Phone"],
     this.partner.Street = formValue["Street"] ? formValue["Street"]: this.partner.Street,
     this.partner.City = formValue["City"]?.code? {
-      code: formValue["City"].code, 
+      code: formValue["City"].code,
       name: formValue["City"].name
     }: this.partner.City,
     this.partner.District = formValue["District"]?.code? {
@@ -153,6 +158,26 @@ export class UpdateInfoPartnerComponent implements OnInit {
 
   onCancel() {
     this.modalRef.destroy(null);
+  }
+
+  showModalSuggestAddress(innerText : string){
+    let modal =  this.modal.create({
+      title: 'Sửa địa chỉ',
+      content: ModalAddAddressV2Component,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        _street: innerText,
+      }
+    });
+
+    modal.afterClose.subscribe({
+      next: (result: ResultCheckAddressDTO) => {
+        if(result){
+         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+        }
+      }
+    })
   }
 
   ngOnDestroy(): void {
