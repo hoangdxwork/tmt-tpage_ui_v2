@@ -408,7 +408,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onCreateQuicklyFS() {debugger
+  onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
       let ids = [...this.setOfCheckedId];

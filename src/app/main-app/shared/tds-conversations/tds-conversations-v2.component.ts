@@ -147,7 +147,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny)=>{
         if(res.UserId == this.data.ConversationId){
-            this.dataSource.Items = [...this.dataSource.Items, ...[res]];
+            this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
 
             this.yiAutoScroll.forceScrollDown();
             this.cdRef.detectChanges();
@@ -168,10 +168,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataItemDto) => {
         if(res && res.UserId == this.data.ConversationId){
-            this.dataSource.Items = [...this.dataSource.Items, ...[res]];
+            this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
 
             this.yiAutoScroll.forceScrollDown();
-            this.cdRef.detectChanges();
+            this.cdRef.markForCheck();
         }
       }
     })
@@ -240,7 +240,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   private markSeen() {
     let assign_user_id = this.userLoggedId;
 
-    if(assign_user_id) {
+    if(assign_user_id && this.data!.ConversationId) {
       this.crmMatchingService.markSeen(this.pageId, this.data!.ConversationId, this.type, assign_user_id)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (x: any) => {
@@ -569,7 +569,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         if (this.type === 'all') {
           //TODO: Trả lời tin nhắn bình luận bằng tin nhắn
           this.sendPrivateRepliesV2(activityFinal, message);
-        } 
+        }
 
         else if (this.type === 'comment') {
           //TODO: Phản hồi bình lần bằng bình luận
@@ -679,7 +679,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     if(!TDSHelperArray.hasListValue(this.uploadedImages)){
       model.MessageType = 0;
     }
-    
+
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ResponseAddMessCommentDtoV2[]) => {
           this.messageResponseV2(res, model);
@@ -750,7 +750,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         error: error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
           this.isLoadingSendMess = false;
-          
+
           this.cdRef.detectChanges();
       }
     })

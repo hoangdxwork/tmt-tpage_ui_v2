@@ -42,8 +42,7 @@ export class SocketOnEventService  {
     private socketService: SocketService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private modalService: TDSModalService,
-    private message: TDSMessageService,
-    ) {
+    private message: TDSMessageService) {
         this.initialize();
   }
 
@@ -63,31 +62,34 @@ export class SocketOnEventService  {
       .subscribe({
           next: ([socketData, team]: any) => {
             if(!(team && team.Id)){
-              return
+                return;
             }
-
-            console.log(socketData);
 
             switch(socketData.EventName) {
               case ChatmoniSocketEventName.chatomniOnMessage:
-                socketData = {...socketData} as SocketioOnMessageDto;
+                  socketData = {...socketData} as SocketioOnMessageDto;
                   let model = {...this.prepareChatomniOnMessage(socketData, team)};
+
                   this.socketEvent$.next({
                       Notification: model,
                       Data: socketData,
                       Team: team,
                       EventName: socketData.EventName
                   });
+
                   break;
+
               case ChatmoniSocketEventName.onUpdate:
-                socketData = {...socketData} as SocketioOnOrderDto;
-                  let modelOrder = {...this.prepareChatomniOnOrder(socketData, team)};
+                  socketData = {...socketData} as SocketioOnOrderDto;
+                  let modelOrder = {...this.prepareChatomniOnOrder(socketData)};
+
                   this.socketEvent$.next({
-                    Notification: modelOrder,
+                      Notification: modelOrder,
                       Data: socketData,
                       Team: team,
                       EventName: socketData.EventName
                   })
+
                   break;
             }
           },
@@ -157,14 +159,15 @@ export class SocketOnEventService  {
 
   }
 
-  prepareChatomniOnOrder(socketData: SocketioOnOrderDto, team: CRMTeamDTO) {
+  prepareChatomniOnOrder(socketData: SocketioOnOrderDto) {
     let model: SocketEventNotificationDto = {} as any;
-      model = {
-        Title: `Order: ${socketData.Data?.Facebook_UserName} vừa cập nhật đơn hàng`,
-        Message: `${socketData.Message}`, 
-        Attachments: {} as any,
-        Url: ``
-      };
+    model = {
+      Title: `Order: ${socketData.Data?.Facebook_UserName} vừa cập nhật đơn hàng`,
+      Message: `${socketData.Message}`,
+      Attachments: {} as any,
+      Url: ''
+    } as any;
+
     return {...model};
   }
 
@@ -173,30 +176,21 @@ export class SocketOnEventService  {
       this.modalRef.destroy(null);
     }
 
-    this.saleOnline_OrderService.getById(orderId).subscribe(
-      {
+    this.saleOnline_OrderService.getById(orderId).subscribe({
         next: (res: any) => {
 
           if (res && res.Id) {
-            delete res['@odata.context'];           
+            delete res['@odata.context'];
 
             this.modalRef = this.modalService.create({
-              content: EditOrderV2Component,
-              title: res.Code ? `Thông tin đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Thông tin đơn hàng`,
-              size: 'xl',
-              componentParams: {
-                dataItem: { ...res }
-              },
-              autoClose:false
+                content: EditOrderV2Component,
+                title: res.Code ? `Thông tin đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Thông tin đơn hàng`,
+                size: 'xl',
+                componentParams: {
+                  dataItem: { ...res }
+                },
+                autoClose:false
             })
-            this.modalRef.afterClose.subscribe(
-              {
-                next: (result : TDSSafeAny) => {
-
-                }
-              }
-            )
-
           }
         },
         error: error => {
