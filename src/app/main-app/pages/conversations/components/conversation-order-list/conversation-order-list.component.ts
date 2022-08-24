@@ -3,7 +3,7 @@ import { ConversationOrderDTO } from './../../../../dto/coversation-order/conver
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, takeUntil, map } from 'rxjs/operators';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -15,10 +15,12 @@ import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonline
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
-import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
+import { ODataSaleOnline_OrderModel } from '@app/dto/saleonlineorder/odata-saleonline-order.dto';
+import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 
 @Component({
   selector: 'conversation-order-list',
@@ -61,8 +63,7 @@ export class ConversationOrderListComponent implements OnInit {
 
   count: number = 0;
 
-  constructor(
-    private conversationPostFacade: ConversationPostFacade,
+  constructor(private conversationPostFacade: ConversationPostFacade,
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
@@ -70,8 +71,9 @@ export class ConversationOrderListComponent implements OnInit {
     private conversationPostEvent: ConversationPostEvent,
     private modalService: TDSModalService,
     private destroy$: TDSDestroyService,
-    private excelExportService: ExcelExportService
-  ) { }
+    private viewContainerRef: ViewContainerRef,
+    private excelExportService: ExcelExportService) {
+  }
 
   ngOnInit(): void {
     this.loadPost();
@@ -82,7 +84,7 @@ export class ConversationOrderListComponent implements OnInit {
       .pipe(map((item: ChatomniObjectsItemDto) => {
 
         this.currentPost = item;
-        
+
         this.loadSummaryStatus();
         this.loadData(this.pageSize,this.pageIndex);
 
@@ -100,7 +102,7 @@ export class ConversationOrderListComponent implements OnInit {
         this.count = res['@odata.count'] as number;
 
         this.lstOfData = [...res.value];
-      }, 
+      },
       error:(error) => {
         this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
@@ -146,7 +148,7 @@ export class ConversationOrderListComponent implements OnInit {
   applyFilter(event: TDSSafeAny) {
     this.tabIndex = 1;
     this.pageIndex = 1;
-    
+
     this.filterObj.searchText = event.value;
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -186,7 +188,7 @@ export class ConversationOrderListComponent implements OnInit {
               break;
           }
         });
-        
+
         this.conversationPostEvent.getOrderTotal$.emit(total);
 
         this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
@@ -209,10 +211,6 @@ export class ConversationOrderListComponent implements OnInit {
 
   onActiveChange(order: any, event: boolean) {
     event && this.getLine(order.Id);
-  }
-
-  onEdit(order: TDSSafeAny) {
-    // this.conversationOrderFacade.editOrderFormPost(order);
   }
 
   onCheck(orderId: string, event: TDSCheckboxChange) {
@@ -309,10 +307,45 @@ export class ConversationOrderListComponent implements OnInit {
           this.message.success(Message.DeleteSuccess);
 
           this.loadData(this.pageSize, this.pageIndex);
-        }, 
+        },
         error:(error) => {
           this.message.error(error?.error?.message || JSON.stringify(error));
         }
       });
+  }
+
+  onEdit(item: any) {
+    if(item && item.Id) {
+      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+
+              if(res && res.Id) {
+                delete res['@odata.context'];
+
+                const modal = this.modalService.create({
+                    title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
+                    content: EditOrderV2Component,
+                    size: 'xl',
+                    viewContainerRef: this.viewContainerRef,
+                    bodyStyle:{
+                      'padding': '0'
+                    },
+                    componentParams: {
+                      dataItem: { ...res }
+                    }
+                })
+
+                modal.afterClose?.subscribe((obs: string) => {
+                    if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+                        this.loadData(this.pageSize, this.pageIndex);
+                    }
+                })
+              }
+          },
+          error: (error: any) => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+          }
+      });
+    }
   }
 }
