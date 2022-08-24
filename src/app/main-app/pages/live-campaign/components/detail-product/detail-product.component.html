@@ -34,18 +34,18 @@
             <tbody>
                 <ng-template ngFor let-product [ngForOf]="table.data">
                     <tr>
-                        <td [expand]="expandSet.has(product.ProductId)"
+                        <td class="border-r" [expand]="expandSet.has(product.ProductId)"
                             (expandChange)="onExpandChange(product.ProductId, $event)">
                         </td>
 
-                        <td class="font-semibold">{{ product.ProductName }}</td>
+                        <td class="font-semibold border-r">{{ product.ProductName }}</td>
 
-                        <td>{{ product.ProductQtyInCart || 0 |number }}</td>
-                        <td>{{ product.ProductQtyWaitCheckOut || 0 |number }}</td>
-                        <td>{{ product.ProductQtyCheckOut || 0 |number }}</td>
-                        <td>{{ product.ProductQtyCancelCheckOut || 0 |number }}</td>
+                        <td class="border-r">{{ product.ProductQtyInCart || 0 |number }}</td>
+                        <td class="border-r">{{ product.ProductQtyWaitCheckOut || 0 |number }}</td>
+                        <td class="border-r">{{ product.ProductQtyCheckOut || 0 |number }}</td>
+                        <td class="border-r">{{ product.ProductQtyCancelCheckOut || 0 |number }}</td>
 
-                        <td>
+                        <td class="border-r">
                             <div class="flex space-x-2 items-center">
                                 <div>{{ product.OrderQtyWaitCheckOut || 0 | number }}</div>
                                 <div>
@@ -59,9 +59,9 @@
                             </div>
                         </td>
 
-                        <td>{{ product.InvoiceQtyCheckOut || 0 | number }}</td>
+                        <td class="border-r">{{ product.InvoiceQtyCheckOut || 0 | number }}</td>
 
-                        <td>
+                        <td class="border-r">
                             <div class="flex space-x-2 items-center">
                                 <div>{{ product.InvoiceQtyCancelCheckOut || 0 | number }}</div>
                                 <div>
@@ -75,7 +75,7 @@
                             </div>
                         </td>
 
-                        <td>{{ product.OrderQtyWaitCheckOut || 0 | number }}</td>
+                        <td class="border-r">{{ product.OrderQtyWaitCheckOut || 0 | number }}</td>
                     </tr>
 
                     <tr [expand]="expandSet.has(product.ProductId)" *ngIf="expandSet.has(product.ProductId)"

@@ -108,10 +108,11 @@
             <thead class="rounded">
                 <tr>
                     <th width="7%">STT</th>
-                    <th width="27%">Sản phẩm</th>
-                    <th width="27%">Đơn vị tính</th>
-                    <th width="27%">Số lượng</th>
-                    <th width="27%">Đơn giá</th>
+                    <th width="18.6%">Sản phẩm</th>
+                    <th width="18.6%">Đơn vị tính</th>
+                    <th width="18.6%">Số lượng</th>
+                    <th width="18.6%">Đơn giá</th>
+                    <th width="18.6%">Tổng tiền</th>
                 </tr>
             </thead>
             <tbody>
@@ -122,13 +123,16 @@
                         {{data.ProductNameGet}}
                       </td>
                       <td>
-                        {{data.UOMName}}
+                        {{data.UOMName || '---'}}
                       </td>
                       <td>
                         {{data.Quantity}}
                       </td>
                       <td>
-                        {{data.Price | numberCustom:'.' }}
+                        {{ (data.Price | numberCustom:'.') || 0 }}
+                      </td>
+                      <td>
+                        {{ (data.Price*data.Quantity | numberCustom:'.') || 0 }}
                       </td>
                   </tr>
               </ng-template>
