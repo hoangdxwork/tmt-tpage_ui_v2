@@ -5,7 +5,6 @@ import { SelectMultipleValuePipe } from './select-multiple-value.pipe';
 import { ConvertListUrlPipe } from './convert-list-url.pipe';
 import { ButtonStatusColorPipe } from './button-status-color.pipe';
 import { ReplacePartnerPipe } from './replace-partner.pipe';
-
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -30,6 +29,7 @@ import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
 import { CheckTagSelectedPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
+import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -60,7 +60,8 @@ const cmp =[
   ChatomniTShopType,
   ChatomniFacebookType,
   ConverseTimePipe,
-  ConvertToCRMTagsListPipe
+  ConvertToCRMTagsListPipe,
+  BBcodeConvertPipe
 ]
 
 @NgModule({
@@ -69,7 +70,8 @@ const cmp =[
     ],
     imports: [
       CommonModule,
-      FormsModule
+      FormsModule,
+
     ],
     exports:[
     ...cmp

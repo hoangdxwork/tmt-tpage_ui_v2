@@ -19,6 +19,8 @@ export class ChatomniCommentFacade extends BaseSevice  {
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
 
+  private readonly partner$ = new Subject<any>();
+
   dataSource: { [id: string] : ChatomniDataDto } = {}; //this.postDataSource[id]
   partner: { [teamId: number] : PartnerTimeStampItemDto } = {};
 
@@ -75,37 +77,33 @@ export class ChatomniCommentFacade extends BaseSevice  {
     return  {...model};
   }
 
-  getParentTimeStamp(teamId: number): Observable<any> {
+  getPartnerTimeStamp(teamId: number) {
     let exist = this.partner![teamId] as any;
 
     if(exist && exist.length > 0) {
-
-        return new Observable((observer :any) => {
-            observer.next(exist);
-            observer.complete();
-        })
-
+        this.partner$.next(exist);
     } else {
-      return new Observable((observer: any) => {
-          this.loadPartnersByTimestamp(observer, teamId);
-      })
+        this.loadPartnersByTimestamp(teamId);
     }
   }
 
-  loadPartnersByTimestamp(observer: any, teamId: number, timestamp?: number) {
+  loadPartnersByTimestamp(teamId: number, timestamp?: number) {
 
     this.partnerService.getPartnersByTimestamp(teamId, timestamp).subscribe((res: PartnerTimeStampDto): any => {
       if(res) {
-        this.partner[teamId] = {...(this.partner[teamId] || {}), ...(res.Data || {})}
+        this.partner[teamId] = {...(this.partner[teamId] || {}), ...(res.Data || {})};
 
-        if(res.Last!= timestamp) {
-            this.loadPartnersByTimestamp(observer, teamId, res.Last);
+        if( res.Last && res.Last!= timestamp) {
+            this.loadPartnersByTimestamp(teamId, res.Last);
         } else {
-            observer.next(this.partner[teamId]);
-            observer.complete();
+            this.partner$.next(this.partner[teamId])
         }
       }
-    }, shareReplay())
+    }, shareReplay({ bufferSize: 1, refCount: true}));
+  }
+
+  partnerDict() {
+    return this.partner$.asObservable();
   }
 
 }

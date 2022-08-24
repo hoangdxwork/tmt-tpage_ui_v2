@@ -4,7 +4,7 @@
         <div class="flex flex-col bg-neutral-3-50 rounded-md gap-y-2.5 p-2.5">
             <div  class="w-full flex gap-x-2 justify-between">
                 <tds-form-field class="w-full">
-                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..."  class="w-full truncate" [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
                     <span *ngIf="tempAddresses.length > 0" tdsSuffix><i (click)="closeSearchAddress()"
                         class="text-neutral-1-500 tdsi-close-fill"></i></span>
                 </tds-form-field>
@@ -23,9 +23,9 @@
                         </a>
                     </li>
                 </ul>
-            </div> 
+            </div>
         </div>
-            
+
         <div class="flex flex-col overflow-hidden">
             <div class="w-full flex mb-2 pt-3">
                 <tds-form-field class="w-full">
@@ -59,7 +59,6 @@
                     <input tdsInput placeholder="Số nhà, đường" formControlName="Street"/>
                 </tds-form-field>
             </div>
-        </div>   
+        </div>
     </form>
   </div>
-  

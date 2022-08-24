@@ -136,7 +136,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     })
 
     this.hubEvents(); // các sự kiện realtime
-    this.notificationMessNew(); // thông báo tin nhắn mới
     this.spinLoading();
 
     this.eventEmitter();
@@ -146,34 +145,35 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-          if(res && res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation.ChannelId) {
-            // TODO: mapping dữ liệu danh sách conversation
-          let index = this.lstConversation.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
-          if(index >- 1) {
-            let lastMessage = {
-              CreatedTime: res.Data.Message?.CreatedTime
-            } as ChatomniConversationMessageDto;
-            if(res.Data.Message && res.Data.Message.Message){
-              lastMessage.Message = res.Data.Message?.Message;
-            }
+          if( res.Data?.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
+                // TODO: mapping dữ liệu danh sách conversation
+              let index = this.lstConversation.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
 
-            if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data){
-              lastMessage.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
-            }
+              if(index >- 1) {
 
-            this.lstConversation[index].Message = res.Data.Message?.Message;
-            this.lstConversation[index].LatestMessage = {...lastMessage};
+                this.lstConversation[index].LatestMessage = {
+                    CreatedTime: res.Data.Message?.CreatedTime,
+                    Message: res.Data.Message?.Message,
+                    MessageType: res.Data.Message?.MessageType,
+                } as any;
 
-            this.lstConversation[index] = {...this.lstConversation[index]};
-          }
+                // TODO: gán lại mess nếu gửi hình
+                if(res.Data.Message?.Data?.attachments?.data){
+                    this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data?.length} hình ảnh` as string;
+                }
 
-          // TODO: mapping dữ liệu khung chat hiện tại
-          let exist = this.conversationItem.ConversationId == res.Data.Conversation?.UserId;
-          if(exist) {
-              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
-              this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
-          }
-          this.cdRef.detectChanges();
+                this.lstConversation[index].Message = res.Data.Message?.Message;
+                this.lstConversation[index] = {...this.lstConversation[index]};
+              }
+
+              // TODO: mapping dữ liệu khung chat hiện tại
+              let exist = this.conversationItem.ConversationId == res.Data.Conversation?.UserId;
+              if(exist) {
+                  let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
+                  this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
+              }
+
+              this.cdRef.detectChanges();
           }
       }
     })
@@ -544,7 +544,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     }
   }
 
-  onTabOderOutput(ev: boolean){
+  onTabOderOutput(ev: boolean){debugger
     this.selectedIndex = 1
   }
 
@@ -646,16 +646,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.router.navigateByUrl(uriParams)
         this.notification.remove(this.notificationRef.messageId);
     }
-  }
-
-  notificationMessNew(){
-    this.conversationDataFacade.notificationMessNew$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          if(res) {
-              this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
-          }
-      }
-    })
   }
 
   validateData() {

@@ -1,4 +1,6 @@
-import { ResponseAddMessCommentDto } from './../../../../dto/conversation-all/chatomni/response-mess.dto';
+import { ChatomniSendMessageService } from './../../../../services/chatomni-service/chatomni-send-message.service';
+import { ChatomniSendMessageManyPeopleModelDto } from './../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
+import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from './../../../../app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
@@ -13,7 +15,7 @@ import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, Input, EventEmi
 import { Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ActivityStatus, SendMessageType } from 'src/app/lib/enum/message/coversation-message';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { ProductPagefbComponent } from '../product-pagefb/product-pagefb.component';
@@ -54,7 +56,8 @@ export class ModalSendMessageAllComponent implements OnInit {
     private activityMatchingService: ActivityMatchingService,
     private activityDataFacade: ActivityDataFacade,
     private omniMessageFacade: ChatomniMessageFacade,
-    private chatomniEventEmiter: ChatomniEventEmiterService) { }
+    private chatomniEventEmiter: ChatomniEventEmiterService,
+    private chatomniSendMessageService: ChatomniSendMessageService) { }
 
   ngOnInit(): void {
     this.sendMessageType = SendMessageType.Message;
@@ -134,6 +137,42 @@ export class ModalSendMessageAllComponent implements OnInit {
     }
 
     return result;
+  }
+
+  getCheckedV2(lstCheck: string[]){
+    let result: TDSSafeAny[] = [];
+    if(this.lstConversation) {
+      lstCheck.forEach(id=>{
+        let findData = this.lstConversation.find(x => x.ConversationId == id)
+        if(findData){
+          let item = {
+            UserId : findData.UserId
+          }
+          result.push(item)
+        }
+      })
+    }
+
+    return result;
+  }
+
+  prepareModelV2(message: string): any {
+    let model = { } as ChatomniSendMessageManyPeopleModelDto;
+    model.Message = message;
+
+    let lstCheck = [...this.setOfCheckedId]
+    if (lstCheck.length > 0) {
+      model.Recipients = [...this.getCheckedV2(lstCheck)];
+    }
+
+    let exist = TDSHelperArray.hasListValue(this.uploadedImages) && this.type != 'comment'
+    if (exist) {
+      model.Attachment = {} as TDSSafeAny;
+      model.Attachment.Type = 0;
+      model.Attachment.Data.Urls = [...this.uploadedImages];
+    }
+
+    return model;
   }
 
   prepareModel(message: string): any {
@@ -240,67 +279,71 @@ export class ModalSendMessageAllComponent implements OnInit {
       return;
     }
 
-    this.isSending = true;
-    let model = this.prepareModel(this.messageModel);
+    this.isSending = true;    
+    let model = this.prepareModelV2(this.messageModel);
+ 
     if (this.sendMessageType == SendMessageType.QuickMessage) {
-      this.activityMatchingService.addManyMailTemplateMessage(model)
-        .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { this.isSending = false }))
-        .subscribe(res => {
-          res.forEach((x: ResponseAddMessCommentDto) => {
-            x["status"] = ChatomniStatus.Pending;
-            x.type = 11;
-            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
-            let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
+      //TODO: Gửi tin nhắn nhanh chưa có api mapping {{..}}
+      // this.activityMatchingService.addManyMailTemplateMessage(model)
+      //   .pipe(takeUntil(this.destroy$))
+      //   .pipe(finalize(() => { this.isSending = false }))
+      //   .subscribe(res => {
+      //     res.forEach((x: ResponseAddMessCommentDto) => {
+      //       x["status"] = ChatomniStatus.Pending;
+      //       x.type = 11;
+      //       let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
+      //       let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
 
-            // TODO: Đẩy qua tds-conversation-v2
-            this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
-            // TODO: Đẩy qua conversation-all-v2
-            this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+      //       // TODO: Đẩy qua tds-conversation-v2
+      //       this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
+      //       // TODO: Đẩy qua conversation-all-v2
+      //       this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
-          });
+      //     });
 
-          this.messageModel = '';
-          this.currentImage = null;
-          this.uploadedImages = [];
+      //     this.messageModel = '';
+      //     this.currentImage = null;
+      //     this.uploadedImages = [];
 
-          this.message.success('Gửi tin nhắn thành công');
-          this.modal.destroy('success');
+      //     this.message.success('Gửi tin nhắn thành công');
+      //     this.modal.destroy('success');
 
-        }, error => {
-          this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn');
-        })
+      //   }, error => {
+      //     this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn');
+      //   })
 
     } else {
-      this.activityMatchingService.addManyMessage(model, this.team.ChannelId)
-        .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { this.isSending = false; }))
-        .subscribe((res) => {
-
-          res.forEach((x: ResponseAddMessCommentDto) => {
-            x["status"] = ChatomniStatus.Pending;
-            x.type = 11;
-
-            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
-            let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
-
-            // TODO: Đẩy qua tds-conversation-v2
-            this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
-            // TODO: Đẩy qua conversation-all-v2
-            this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-          });
-
-          this.messageModel = '';
-          this.currentImage = null;
-          this.uploadedImages = [];
-
-          this.message.success('Gửi tin nhắn thành công');
-          this.modal.destroy('success');
-
-          }, (error) => {
-            this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn')
+      this.chatomniSendMessageService.sendMessageManyPeople(this.team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ResponseAddMessCommentDtoV2[])=>{
+          if(TDSHelperArray.hasListValue(res)){
+            res.forEach((x: ResponseAddMessCommentDtoV2) => {
+              x["Status"] = ChatomniStatus.Pending;
+    
+              let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.ChannelId, data);
+    
+              // TODO: Đẩy qua tds-conversation-v2
+              this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
+              // TODO: Đẩy qua conversation-all-v2
+              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+    
+            });
+    
+            this.messageModel = '';
+            this.currentImage = null;
+            this.uploadedImages = [];
+            this.isSending = false;
+    
+            this.message.success('Gửi tin nhắn thành công');
+            this.modal.destroy('success');
           }
-        );
+        },
+        error:  error => {
+          this.isSending = false;
+          this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn');
+        }
+  
+      })
     }
   }
 

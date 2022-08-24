@@ -249,7 +249,6 @@
                             <th [width]="'132px'">Số tiền</th>
                             <th [width]="'137px'">% chiết khấu</th>
                             <th [width]="'113px'">Tiền chiết khấu tối đa</th>
-                            <th>Sản phẩm mua</th>
                             <th [width]="'137px'">Sản phẩm thưởng</th>
                             <!-- <th [width]="'400px'">Sản phẩm quà tặng</th>
                             <th>Số lượng quà</th> -->
@@ -298,16 +297,6 @@
                                   <input class="text-neutral-1-900 text-body-2 font-regular"
                                     tdsInput type="number" [min]="0" [step]="1000"/>
                               </div>
-                          </td>
-                          <!-- Sản phẩm mua -->
-                          <td>
-                              <tds-form-field>
-                                  <tds-select valueField="Id" textField="NameGet"
-                                      placeholder='Chọn sản phẩm' [valuePrimitive]="false"
-                                      disabledField="isActive" [data]="lstProduct" [allowClear]="true" mode="multiple">
-                                  </tds-select>
-                                  <tds-error>Vui lòng chọn sản phẩm mua</tds-error>
-                              </tds-form-field>
                           </td>
                           <!-- Sản phẩm thưởng -->
                           <td>

@@ -3,7 +3,7 @@ import { ChatomniSendMessageService } from './../../services/chatomni-service/ch
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
-import { ChatomniStatus, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -147,7 +147,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny)=>{
         if(res.UserId == this.data.ConversationId){
-            this.dataSource.Items = [...this.dataSource.Items, ...[res]];
+            this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
 
             this.yiAutoScroll.forceScrollDown();
             this.cdRef.detectChanges();
@@ -168,10 +168,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataItemDto) => {
         if(res && res.UserId == this.data.ConversationId){
-            this.dataSource.Items = [...this.dataSource.Items, ...[res]];
+            this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
 
             this.yiAutoScroll.forceScrollDown();
-            this.cdRef.detectChanges();
+            this.cdRef.markForCheck();
         }
       }
     })
@@ -240,7 +240,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   private markSeen() {
     let assign_user_id = this.userLoggedId;
 
-    if(assign_user_id) {
+    if(assign_user_id && this.data!.ConversationId) {
       this.crmMatchingService.markSeen(this.pageId, this.data!.ConversationId, this.type, assign_user_id)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (x: any) => {
@@ -536,22 +536,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
   }
 
-  // refetch(psid: string) {
-  //   this.crmMatchingService.refetch(psid, this.pageId).pipe(takeUntil(this.destroy$)).subscribe({
-  //     next: (res: any) => {
-
-  //       if (res?.conversation?.psid == this.data.Id) {
-  //           if (res.conversation?.name) {
-  //               this.data.Name = res.conversation.name;
-  //           }
-  //       }
-  //     },
-  //     error: (error: any) => {
-  //         this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
-  //     }
-  //   });
-  // }
-
   onClickSender() {
     this.messageSendingToServer();
   }
@@ -581,109 +565,36 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     let activityFinal = this.dataSource.Items ? this.dataSource.Items[this.dataSource.Items!.length - 1]: null
 
-    if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === 12 || activityFinal?.Type === 91)) {
-
+    if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === ChatomniMessageType.FacebookComment || activityFinal?.Type === ChatomniMessageType.TShopComment)) {
         if (this.type === 'all') {
-            this.sendPrivateRepliesV2(activityFinal, message);
-        } else if (this.type === 'comment') {
-            this.replyComment(activityFinal, message);
+          //TODO: Trả lời tin nhắn bình luận bằng tin nhắn
+          this.sendPrivateRepliesV2(activityFinal, message);
+        }
+
+        else if (this.type === 'comment') {
+          //TODO: Phản hồi bình lần bằng bình luận
+          this.replyComment(activityFinal, message);
         }
 
     } else {
-        this.sendMessageV2(message);
+      //TODO: trả lời tin nhắn thường
+      this.sendMessageV2(message);
     }
-
-
-    // if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === 12 || activityFinal?.Type === 91)) {
-    //   if (this.type === 'all') {
-    //         this.sendPrivateReplies(activityFinal, message);
-    //     } else if (this.type === 'comment') {
-    //         this.replyComment(activityFinal, message);
-    //     }
-    // } else {
-    //   this.sendMessage(message);
-    // }
   }
 
   sendIconLike() {
     const message = "(y)";
-    let model = this.prepareModel(message);
-    model.attachment = {
-      data: []
-    }
+    let model = this.prepareModelV2(message);
 
-    this.crmMatchingService.addMessage(this.data.ConversationId, model)
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-            this.messageResponse(res, model);
+            this.messageResponseV2(res, model);
         },
         error: error => {
           this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
         }
       });
-  }
-
-  sendMessage(message: string) {
-    const model = this.prepareModel(message);
-    this.crmMatchingService.addMessage(this.data.ConversationId, model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false }))
-      .subscribe({
-        next: (res: any) => {
-          this.messageResponse(res, model);
-      },
-      error: error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
-      }
-    });
-  }
-
-  sendPrivateReplies(activityFinal: any, message: string) {
-    const model = this.prepareModel(message);
-    model.to = {
-      id:  activityFinal?.Data?.from?.id || activityFinal?.UserId || null,
-      name: activityFinal?.Data?.from?.name || null
-    };
-
-    model.comment_id = activityFinal?.Data?.id || null;
-
-    this.crmMatchingService.addQuickReplyComment(model)
-      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false })).subscribe({
-        next: (res: any) => {
-
-        if (TDSHelperArray.hasListValue(res)) {
-          res.forEach((x: ResponseAddMessCommentDto, i: number) => {
-            x["status"] = ChatomniStatus.Pending;
-            x.type = this.team.Type == CRMTeamType._Facebook ? 11 :(this.team.Type == CRMTeamType._TShop? 92 : 0);
-
-            if (!x.message_formatted && TDSHelperArray.hasListValue(model.attachments)) {
-              x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
-            }
-
-            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
-            this.dataSource.Items = [...this.dataSource.Items, data];
-
-            //TODO: Đẩy qua conversation-all-v2
-            if(i == res.length - 1){
-              let itemLast = {...data}
-              if (TDSHelperArray.hasListValue(model.attachments)) {
-                itemLast.Message = x.message_formatted ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
-              }
-              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
-              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-            }
-          });
-        }
-
-        this.currentImage = null;
-        this.uploadedImages = [];
-        delete this.messageModel;
-        this.cdRef.detectChanges();
-
-      },
-      error: error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
-        this.cdRef.detectChanges();
-      }
-    })
   }
 
   replyComment(activityFinal: any, message: string) {
@@ -695,78 +606,44 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     model.to_name = activityFinal?.Data?.from?.name || null;
 
     this.activityMatchingService.replyComment(this.team?.Id, model)
-      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false; })).subscribe({
+      .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ResponseAddMessCommentDto) => {
-        // add vào dataSource tại đây
-        res["status"] = ChatomniStatus.Pending;
-        res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
-        res.name = this.team.Name;
 
-        let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
+          // add vào dataSource tại đây
+          res["status"] = ChatomniStatus.Pending;
+          res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
+          res.name = this.team.Name;
 
-        if(this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
-          // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
-          this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
-        } else
-        if(activityFinal?.Data?.id) {
-          // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
-          this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
-          this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
-        }
+          let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
 
-        //TODO: Đẩy qua conversation-all-v2
-        let itemLast = {...data}
-        let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
-        this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+          if(this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
+            // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
+            this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
+          } else
+          if(activityFinal?.Data?.id) {
+            // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
+            this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
+            this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
+          }
 
-        this.currentImage = null;
-        this.uploadedImages = [];
-        delete this.messageModel;
+          let itemLast = {...data}
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+          //TODO: Đẩy qua conversation-all-v2
+          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
-        this.cdRef.detectChanges();
+          this.currentImage = null;
+          this.uploadedImages = [];
+          delete this.messageModel;
+          this.isLoadingSendMess = false;
 
-      },error: error => {
+          this.cdRef.detectChanges();
+      },
+      error: error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
+        this.isLoadingSendMess = false;
         this.cdRef.detectChanges();
       }
     });
-  }
-
-  messageResponse(res: any, model: SendMessageModelDTO) {
-    if (TDSHelperArray.hasListValue(res)) {
-      res.map((x: ResponseAddMessCommentDto, i: number) => {
-        x["status"] = ChatomniStatus.Pending;
-        x.type = this.team.Type == CRMTeamType._Facebook ? 11 :(this.team.Type == CRMTeamType._TShop? 92 : 0);
-
-        if (TDSHelperArray.hasListValue(model.attachments) && !x.message_formatted) {
-          x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
-        }
-        let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
-        this.dataSource.Items = [...this.dataSource.Items, data];
-
-        //TODO: Đẩy qua conversation-all-v2
-        if(i == res.length - 1){
-
-          let itemLast = {...data}
-          if (TDSHelperArray.hasListValue(model.attachments)) {
-            itemLast.Message = x.message_formatted ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
-          }
-
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
-          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-        }
-      });
-    }
-
-    // TODO: Gửi tín hiệu phản hồi
-    this.onSendSucceed(res);
-
-    this.currentImage = null;
-    delete this.messageModel;
-    this.uploadedImages = [];
-
-    this.yiAutoScroll?.forceScrollDown();
-    this.cdRef.detectChanges();
   }
 
   onRetryMessage() {
@@ -788,13 +665,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     let exist = TDSHelperArray.hasListValue(this.uploadedImages) && this.type != 'comment'
     if (exist) {
-      model.Attactment = {} as TDSSafeAny;
-      model.Attactment.Type = 0;
-      this.uploadedImages.map((x: string) => {
-        (model.Attactment?.Data || []).push({
-          Url: x
-        });
-      });
+      model.Attachment = {} as TDSSafeAny;
+      model.Attachment.Type = 0;
+      model.Attachment.Data = {} as TDSSafeAny;
+      model.Attachment.Data.Urls = [...this.uploadedImages]
     }
 
     return model;
@@ -802,15 +676,17 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   sendMessageV2(message: string) {
     const model = this.prepareModelV2(message);
-    model.MessageType = 0;
+    if(!TDSHelperArray.hasListValue(this.uploadedImages)){
+      model.MessageType = 0;
+    }
 
-    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false }))
-      .subscribe({
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ResponseAddMessCommentDtoV2[]) => {
           this.messageResponseV2(res, model);
         },
         error: error => {
-            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
+          this.isLoadingSendMess = false;
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
         }
       }
     );
@@ -821,21 +697,21 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       res.map((x: ResponseAddMessCommentDtoV2, i: number) => {
         x["Status"] = ChatomniStatus.Pending;
 
-        if (TDSHelperArray.hasListValue(model.Attactment) && !x.Message) {
+        if (TDSHelperArray.hasListValue(model.Attachment) && !x.Message) {
           x["Attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
         }
         let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
         this.dataSource.Items = [...this.dataSource.Items, data];
 
-        //TODO: Đẩy qua conversation-all-v2
         if(i == res.length - 1){
 
           let itemLast = {...data}
-          if (TDSHelperArray.hasListValue(model.Attactment)) {
+          if (TDSHelperArray.hasListValue(model.Attachment)) {
             itemLast.Message = x.Message ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
           }
 
           let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+          //TODO: Đẩy qua conversation-all-v2
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
         }
       });
@@ -847,6 +723,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.currentImage = null;
     delete this.messageModel;
     this.uploadedImages = [];
+    this.isLoadingSendMess = false;
 
     this.yiAutoScroll?.forceScrollDown();
     this.cdRef.detectChanges();
@@ -857,91 +734,29 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     model.MessageType = 2;
     model.RecipientId = activityFinal?.Data?.id || null;
 
+    if(TDSHelperArray.hasListValue(this.uploadedImages) && model.Attachment.Data){
+      model.Attachment.Data.Url = this.uploadedImages[0];
+    }
+
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
-      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false })).subscribe({
+      .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-        if (TDSHelperArray.hasListValue(res)) {
-          res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-            x["Status"] = ChatomniStatus.Pending;
-
-            if (!x.Message && TDSHelperArray.hasListValue(model.attachments)) {
-              x["Attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
-            }
-
-            let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-            this.dataSource.Items = [...this.dataSource.Items, data];
-
-            //TODO: Đẩy qua conversation-all-v2
-            if(i == res.length - 1){
-              let itemLast = {...data}
-              if (TDSHelperArray.hasListValue(model.attachments)) {
-                itemLast.Message = x.Message ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
-              }
-              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
-              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-            }
-          });
-        }
-
-        this.currentImage = null;
-        this.uploadedImages = [];
-        delete this.messageModel;
-        this.yiAutoScroll?.forceScrollDown();
-
-        this.cdRef.detectChanges();
-      },
-      error: error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
-        this.cdRef.detectChanges();
-      }})
-  }
-
-
-  //Tạm vẫn api cũ
-  replyCommentV2(activityFinal: any, message: string) {
-    const model = this.prepareModelV2(message);
-    model.MessageType = 2;
-    model.RecipientId = activityFinal?.Data?.id || null;
-
-    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
-      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false; })).subscribe({
-        next: (res: ResponseAddMessCommentDtoV2[]) => {
-        res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-          x["Status"] = ChatomniStatus.Pending;
-          if(x.Data && x.Data.from)
-            x.Data.from.name = x.Data.from.name || this.team.Name;
-
-          let data = this.omniCommentFacade.mappingExtrasChildsDtoV2(x);
-
-          if(this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
-            // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
-            this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
-          } else
-          if(activityFinal?.Data?.id) {
-            // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
-            this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
-            this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
+          if(this.uploadedImages.length > 0) {
+            this.message.info('Trả lời tin nhắn bình luận chỉ gửi 1 hình ảnh')
           }
 
-          //TODO: Đẩy qua conversation-all-v2
-          let itemLast = {...data}
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
-          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-
-          this.currentImage = null;
-          this.uploadedImages = [];
-          delete this.messageModel;
-          this.yiAutoScroll?.forceScrollDown();
+          this.messageResponseV2(res, model);
+        },
+        error: error => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
+          this.isLoadingSendMess = false;
 
           this.cdRef.detectChanges();
-          })
-      },
-      error: error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-        this.cdRef.detectChanges();
-      }});
+      }
+    })
   }
 
+  //TODO: Vẫn dùng cho phản hồi bình luận
   prepareModel(message: string): any {
     const model = {} as SendMessageModelDTO;
     model.from = {
@@ -1122,10 +937,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     return this.sharedService.saveImageV2(formData)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {
-        this.displayDropZone = false;
-        this.isLoadingImage = false;
-      }))
       .subscribe({
       next: (res: any) => {
         if (Message.Upload.Success) {
@@ -1133,12 +944,16 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
           this.currentImage = x;
           const dataItem = [...this.uploadedImages, x];
           this.uploadedImages = dataItem;
+          this.displayDropZone = false;
+          this.isLoadingImage = false;
 
           this.cdRef.markForCheck();
         }
       },
       error: error => {
         this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
+        this.displayDropZone = false;
+        this.isLoadingImage = false;
       }
     });
   }

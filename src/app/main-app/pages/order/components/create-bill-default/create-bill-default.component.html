@@ -112,10 +112,16 @@
             <tr [classList]="'border-t-0'">
               <td></td>
               <td colspan="3">
-                <suggest-address [_isBtnExtend]="false" [_isExpanded]="false" [_cities]="data.Partner.City"
-                  [_districts]="data.Partner.District" [_wards]="data.Partner.Ward" [_street]="data.Partner.Street"
-                  (onLoadSuggestion)="onLoadSuggestion($event,index)">
-                </suggest-address>
+                <div class="flex gap-x-2">
+                  <tds-form-field class="w-full">
+                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+                  </tds-form-field>
+                  <button tds-button-icon color="primary" type="button" tds-tooltip="Kiểm tra địa chỉ" (click)="showModalSuggestAddress(innerText)">
+                      <span class="flex items-center">
+                        <i class="tdsi-location-fill"></i>
+                      </span>
+                  </button>
+                </div>
               </td>
               <td colspan="4" class="align-top">
                 <tds-form-field>

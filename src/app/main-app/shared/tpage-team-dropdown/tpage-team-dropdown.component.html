@@ -1,5 +1,5 @@
 <ng-container *ngIf="parentIsHeaderCpm; else conversation">
-    <div class="w-full flex items-center justify-center" tds-dropdown [clickHide]="false" [(visible)]="visible"
+    <div class="w-full flex items-center justify-center" tds-dropdown [placement]="'bottomRight'" [clickHide]="false" [(visible)]="visible"
         [tdsDropdownMenu]="dropdownTeam" trigger="click">
         <div>
             <tpage-avatar-facebook [fbid]="currentTeam?.Facebook_PageId || currentTeam?.Facebook_ASUserId || currentTeam?.ChannelId"
@@ -16,7 +16,7 @@
 </ng-container>
 <ng-template #conversation>
     <div class="w-full cursor-pointer border-2 border-neutral-2-50 border-solid rounded-lg py-2.5 px-3.5 flex justify-center items-center">
-        <div tds-dropdown [clickHide]="false" [(visible)]="visible" [tdsDropdownMenu]="dropdownTeam" trigger="click" class="flex-auto flex items-center">
+        <div tds-dropdown [clickHide]="false" [(visible)]="visible" [tdsDropdownMenu]="dropdownTeam" [placement]="'bottomRight'" trigger="click" class="flex-auto flex items-center">
            <div class="w-full flex items-center">
             <div>
                 <tpage-avatar-facebook [fbid]="currentTeam?.Facebook_PageId || currentTeam?.Facebook_ASUserId || currentTeam?.ChannelId"
@@ -24,7 +24,7 @@
                 </tpage-avatar-facebook>
             </div>
             <div class="flex-auto flex pr-4">
-                <div class="flex-auto relative  font-regular text-neutral-1-900">
+                <div class="flex-auto relative font-regular text-neutral-1-900">
                    <div class="absolute inset-0 pl-3 pr-1 text-body-2 truncate">
                     {{currentTeam?.Name}}
                    </div>
@@ -32,7 +32,6 @@
                 <div class="text-neutral-1-400">
                     <i class="text-base leading-4 tdsi-arrow-down-line"></i>
                 </div>
-
             </div>
            </div>
         </div>
@@ -46,7 +45,7 @@
 </ng-template>
 <tds-dropdown-menu #dropdownTeam="tdsDropdownMenu">
     <ng-container *ngIf="parentIsHeaderCpm; else dropDownconversation">
-        <div class="w-80 max-h-[500px] overflow-hidden overflow-y-auto tds-panel-scroll">
+        <div class="w-[337px] max-h-[328px] overflow-hidden overflow-y-auto tds-panel-scroll">
             <div class="w-full py-1">
                 <ng-container *ngIf="data$ | async as data">
                     <tds-collapse [expandIconPosition]="'right'" [bordered]="false">
@@ -79,8 +78,7 @@
                                                 {{child.Name}}
                                             </div>
                                             <div *ngIf="currentTeam?.Id == child.Id">
-                                                <span
-                                                    class="text-xl leading-5 tdsi-success-fill text-success-400"></span>
+                                                <span class="text-xl leading-5 tdsi-success-fill text-success-400"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -93,11 +91,10 @@
             </div>
         </div>
     </ng-container>
-
 </tds-dropdown-menu>
 
 <ng-template #dropDownconversation>
-    <div class="w-full py-1 max-h-[500px] overflow-hidden overflow-y-auto tds-panel-scroll">
+    <div class="w-[337px] py-1 max-h-[332px] overflow-hidden overflow-y-auto tds-panel-scroll">
         <ng-container *ngIf="data$ | async as data">
             <tds-collapse [expandIconPosition]="'right'" [bordered]="false">
                 <ng-template ngFor let-item [ngForOf]="data" let-i="index" let-last="last">

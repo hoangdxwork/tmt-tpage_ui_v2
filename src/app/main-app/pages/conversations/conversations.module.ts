@@ -148,6 +148,7 @@ import { DrawerDetailBillComponent } from './components/drawer-detail-bill/drawe
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ModalAddAddressV2Component } from './components/modal-add-address-v2/modal-add-address-v2.component';
+import { OrderModule } from '../order/order.module';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -265,7 +266,8 @@ const SERVICES = [
     CommentFilterAllComponent,
     DrawerDetailBillComponent,
     LiveCampaignPostComponent,
-    ModalAddAddressV2Component
+    ModalAddAddressV2Component,
+
   ],
 
   imports: [
@@ -308,7 +310,8 @@ const SERVICES = [
     TDSUploadModule,
     DirectivesModule,
     ScrollingModule,
-    TDSButtonSpitModule
+    TDSButtonSpitModule,
+    OrderModule
   ],
   providers: [ ...SERVICES]
 })

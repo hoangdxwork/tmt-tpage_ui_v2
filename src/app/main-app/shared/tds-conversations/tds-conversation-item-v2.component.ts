@@ -1,3 +1,4 @@
+import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { ModalAddAddressV2Component } from './../../pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
@@ -26,6 +27,7 @@ import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ActivityStatus } from '@core/enum/message/coversation-message';
 import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
+
 
 @Component({
   selector: "tds-conversation-item-v2",
@@ -171,7 +173,7 @@ export class TDSConversationItemV2Component implements OnInit {
         this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
 
         this.cdRef.markForCheck();
-        }, 
+        },
         error: error => {
         this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
         this.cdRef.markForCheck();
@@ -229,7 +231,7 @@ export class TDSConversationItemV2Component implements OnInit {
         this.dataItem.Data["is_error_attachment"] = false;
 
         this.cdRef.markForCheck();
-      }, 
+      },
       error: error => {
           this.tdsMessage.error(`${error?.error?.message}` || 'Không thành công');
       }
@@ -245,7 +247,7 @@ export class TDSConversationItemV2Component implements OnInit {
 
   //TODO: load lại tin nhắn lỗi
   retryMessage() {
-    let model = {   
+    let model = {
       MessageType: 1,
       RecipientId: this.dataItem.Id
     }
@@ -262,7 +264,7 @@ export class TDSConversationItemV2Component implements OnInit {
           }
 
           this.cdRef.detectChanges();
-        }, 
+        },
         error: error => {
           this.tdsMessage.error(`${error?.message}` || 'Không thành công');
       }
@@ -326,7 +328,7 @@ export class TDSConversationItemV2Component implements OnInit {
 
           this.tdsMessage.success('Gửi thành công sản phẩm');
           this.cdRef.markForCheck();
-        }, 
+        },
         error: error => {
           this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
           this.cdRef.markForCheck();
@@ -441,7 +443,7 @@ export class TDSConversationItemV2Component implements OnInit {
           this.isReplyingComment = false;
 
           this.cdRef.markForCheck();
-        }, 
+        },
         error: error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
           this.isReplyingComment = false;
@@ -454,26 +456,26 @@ export class TDSConversationItemV2Component implements OnInit {
 
   addQuickReplyComment(message: string) {
     this.isReply = false;
-    const model = this.prepareModel(message);
-    model.comment_id = this.dataItem.Data.id;
+    const model = this.prepareModelV2(message);
+    model.MessageType = 2;
+    model.RecipientId = this.dataItem.Data.id || null;
 
-    this.activityMatchingService.addQuickReplyComment(model)
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
+        next: (res: ResponseAddMessCommentDtoV2[]) => {
 
-        if(TDSHelperArray.hasListValue(res)){
-          res.forEach((x: ResponseAddMessCommentDto, i: number) => {
-            x["status"] = ChatomniStatus.Pending;
-            x.type = this.team.Type == CRMTeamType._Facebook ? 11 :(this.team.Type == CRMTeamType._TShop? 92 : 0);
+          if(TDSHelperArray.hasListValue(res)){
+            res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
+              x["Status"] = ChatomniStatus.Pending;
 
-            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
+            let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+            this.dataSource.Items = [...this.dataSource.Items, data];
 
-            // TODO: Đẩy qua tds-conversation-v2
-            this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
-            //TODO: Đẩy qua conversation-all-v2
             if(i == res.length - 1){
               let itemLast = {...data}
+
               let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+              //TODO: Đẩy qua conversation-all-v2
               this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
             }
           });
@@ -486,7 +488,7 @@ export class TDSConversationItemV2Component implements OnInit {
 
         this.cdRef.markForCheck();
 
-      }, 
+      },
       error: error => {
         this.isReplyingComment = false;
         this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Gửi tin nhắn thất bại");
@@ -513,9 +515,16 @@ export class TDSConversationItemV2Component implements OnInit {
     return model
   }
 
-  showModalSuggestAddress(text: any){ 
+  prepareModelV2(message: string): any {
+    const model = {} as ChatomniSendMessageModelDto;
+    model.Message = message;
+
+    return model;
+  }
+
+  showModalSuggestAddress(text: any){
     if(!TDSHelperString.hasValueString(text))
-      return 
+      return
     let modal =  this.modalService.create({
         title: 'Thêm địa chỉ',
         content: ModalAddAddressV2Component,

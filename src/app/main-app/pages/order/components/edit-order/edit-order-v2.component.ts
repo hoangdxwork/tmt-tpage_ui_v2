@@ -50,6 +50,7 @@ import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { Router } from '@angular/router';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
+import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 
 @Component({
   selector: 'edit-order-v2',
@@ -91,6 +92,7 @@ export class EditOrderV2Component implements OnInit {
   _districts!: SuggestDistrictsDTO | null;
   _wards!: SuggestWardsDTO | null;
   _street!: string;
+  innerText: string = '';
 
   selectedIndex: number = 0;
 
@@ -114,6 +116,7 @@ export class EditOrderV2Component implements OnInit {
   destroy$ = new Subject<void>();
   saleConfig!: InitSaleDTO;
   companyCurrents!: CompanyCurrentDTO;
+  chatomniEventEmiter: any;
 
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
@@ -852,5 +855,25 @@ export class EditOrderV2Component implements OnInit {
     if(checked == true) {
       this.selectedIndex = 0;
     }
+  }
+
+  showModalSuggestAddress(innerText : string){
+    let modal =  this.modal.create({
+      title: 'Sửa địa chỉ',
+      content: ModalAddAddressV2Component,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        _street: innerText,
+      }
+    });
+
+    modal.afterClose.subscribe({
+      next: (result: ResultCheckAddressDTO) => {
+        if(result){
+         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+        }
+      }
+    })
   }
 }

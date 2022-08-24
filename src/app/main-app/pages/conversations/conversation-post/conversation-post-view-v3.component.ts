@@ -74,7 +74,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   innerText: string = '';
   textSearchFilterComment: string = '';
 
-  partners$!: Observable<any>;
   facebookComment$!: Subscription;
   facebookScanData$!: Subscription;
   subSetCommentOrders$!: Subscription;
@@ -107,7 +106,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     }
 
     this.loadData();
-    this.loadPartnerTimstamp();
     this.eventEmitter();
     this.loadOrderTotal();
   }
@@ -148,10 +146,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         this.cdRef.detectChanges();
       }
     })
-  }
-
-  loadPartnerTimstamp() {
-    this.partners$ = this.chatomniCommentFacade.getParentTimeStamp(this.team.Id);
   }
 
   loadData() {
@@ -223,7 +217,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-        this.data = changes["data"].currentValue;
+        this.data = {...changes["data"].currentValue};
         this.loadData();
     }
   }

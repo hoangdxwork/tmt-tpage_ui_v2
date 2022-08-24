@@ -11,7 +11,7 @@
 
           <!-- Tin nhắn văn bản -->
           <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.CreatedTime | yiDateTimeFormat}}">
-              <div class="text-left" [innerHTML]="dataItem.Message | formatIconLike | safeHtml" #contentMessage ></div>
+              <div class="text-left" [innerHTML]="dataItem.Message | formatIconLike | bbcodeConvert | safeHtml " #contentMessage ></div>
           </div>
 
           <!-- Tin nhắn hình ảnh -->
@@ -173,7 +173,7 @@
                           <!--Nội dung-->
                           <div *ngIf="dataItem.Message">
                               <div class="name font-semibold pb-1">{{dataItem.Data?.from?.name}}</div>
-                              <div class="content-message font-regular" #contentMessage>{{dataItem.Message}}</div>
+                              <div class="content-message font-regular" [innerHTML]="dataItem.Message | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
                           </div>
                       </div>
                   </div>
@@ -301,7 +301,7 @@
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
                                   <div class="border-activety-comment" *ngIf="child.Message">
                                       <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
-                                      <div class="content-message font-regular" #contentMessage [innerHTML]="child.Message | formatIconLike | safeHtml"></div>
+                                      <div class="content-message font-regular" #contentMessage [innerHTML]="child.Message | formatIconLike | bbcodeConvert | safeHtml"></div>
                                   </div>
                               </div>
                           </div>
