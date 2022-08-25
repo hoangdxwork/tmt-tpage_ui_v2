@@ -41,12 +41,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    if(this.item && this.item.LiveCampaign) {
-      this.currentLiveCampaign = {
-          Id: this.item.LiveCampaignId,
-          Name: this.item.LiveCampaign?.Name,
-          Note: this.item.LiveCampaign?.Note
-      } as any;
+    if(this.item && this.item.LiveCampaignId) {
+      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.item.LiveCampaignId) as any;
     }
 
     this.eventEmitter();
@@ -64,12 +60,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     if(changes["item"] && !changes["item"].firstChange) {
         this.item = {...changes["item"].currentValue};
 
-        if(this.item && this.item.LiveCampaign) {
-            this.currentLiveCampaign = {
-                Id: this.item.LiveCampaignId,
-                Name: this.item.LiveCampaign?.Name,
-                Note: this.item.LiveCampaign?.Note
-            } as any;
+        if(this.item && this.item.LiveCampaignId) {
+            this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.item.LiveCampaignId) as any;
         }
     }
   }
@@ -100,15 +92,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     this.indClickTag = '';
     if(!this.item.LiveCampaign && this.currentLiveCampaign) {
         this.currentLiveCampaign = null as any;
-
         this.item.LiveCampaignId = null as any;
         this.item.LiveCampaign = null as any;
-    }
-  }
-
-  onChangeLiveCampaign(item: LiveCampaignModel) {
-    if(item) {
-        this.currentLiveCampaign = item;
     }
   }
 

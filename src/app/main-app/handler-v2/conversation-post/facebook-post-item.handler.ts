@@ -20,7 +20,7 @@ export class FaceBookPostItemHandler {
                 }
             }else{
                 
-                data = { ...data, ...{ live_campaign_id: undefined, live_campaign: undefined } } as any;
+                data = { ...data, ...{ live_campaign_id: null, live_campaign: null } } as any;
             }
 
             return {...data};

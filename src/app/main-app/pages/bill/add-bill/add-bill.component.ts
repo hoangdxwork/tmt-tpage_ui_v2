@@ -711,7 +711,7 @@ export class AddBillComponent implements OnInit {
     });
   }
 
-  copyOrderLine(x: OrderLineV2, index: number) {debugger
+  copyOrderLine(x: OrderLineV2, index: number) {
     let items = this._form.controls['OrderLines'].value;
     let item = this.prepareCopyItemHandler.prepareCopyModel(x, this.dataModel);
 

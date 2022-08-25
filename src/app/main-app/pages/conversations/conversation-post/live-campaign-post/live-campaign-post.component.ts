@@ -1,14 +1,13 @@
 import { ReportLiveCampaignDTO } from './../../../../dto/live-campaign/report-livecampain-overview.dto';
 import { FaceBookPostItemHandler } from './../../../../handler-v2/conversation-post/facebook-post-item.handler';
-import { EventEmitter, OnChanges } from '@angular/core';
-import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from './../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectsItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { LiveCampaignModel } from './../../../../dto/live-campaign/odata-live-campaign.dto';
 import { OverviewLiveCampaignComponent } from './../../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { AddLiveCampaignComponent } from './../../../../shared/add-live-campaign/add-live-campaign.component';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil, finalize } from 'rxjs';
-import { Component, Input, OnInit, Output, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -27,8 +26,6 @@ export class LiveCampaignPostComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
   @Input() lstOfData: Array<LiveCampaignModel> = [];
   @Input() currentLiveCampaign!: LiveCampaignModel;
-
-  @Output() getCurrentLiveCampaign$: EventEmitter<LiveCampaignModel> = new EventEmitter<LiveCampaignModel>();
 
   lstFilter!: Array<LiveCampaignModel>;
   isLoading: boolean = false;
@@ -55,6 +52,7 @@ export class LiveCampaignPostComponent implements OnInit {
 
   onSearch(event: TDSSafeAny) {
     let text = event.value;
+
     if(TDSHelperString.hasValueString(text)){
         this.lstFilter = this.lstOfData.filter(f=> f.Name?.toLowerCase().includes(text.toLowerCase()) || f.NameNoSign?.toLowerCase().includes(text.toLowerCase()));
     } else {
@@ -112,16 +110,15 @@ export class LiveCampaignPostComponent implements OnInit {
   removeLiveCampaign(){
     let id = this.currentLiveCampaign.Id;
     let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'cancel')};
-
     this.isLoading = true;
+
     this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.currentLiveCampaign = null as any;
-
           this.data.LiveCampaignId = null as any;
           this.data.LiveCampaign = null as any;
 
-          // TODO cập nhật ở conversation-post-v2, object-facebook-post
+          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view-v3
           this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
 
           this.isLoading = false;
@@ -190,8 +187,8 @@ export class LiveCampaignPostComponent implements OnInit {
   onSave() {
     let id = this.currentLiveCampaign.Id;
     let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
-
     this.isLoading = true;
+
     this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
@@ -202,7 +199,7 @@ export class LiveCampaignPostComponent implements OnInit {
               Note: this.currentLiveCampaign.Note
           };
 
-          // TODO cập nhật ở conversation-post-v2, object-facebook-post
+          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view-v3
           this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
 
           this.isLoading = false;
