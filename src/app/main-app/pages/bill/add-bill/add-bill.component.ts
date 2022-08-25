@@ -711,14 +711,12 @@ export class AddBillComponent implements OnInit {
     });
   }
 
-  copyOrderLine(x: OrderLineV2, index: number) {
+  copyOrderLine(x: OrderLineV2, index: number) {debugger
     let items = this._form.controls['OrderLines'].value;
     let item = this.prepareCopyItemHandler.prepareCopyModel(x, this.dataModel);
 
-    if (item.Id <= 0) {
-      item.Id = this.idPush - 1;
-      this.idPush = item.Id;
-    }
+    item.Id = this.idPush - 1;
+    this.idPush = item.Id;
 
     const insert = (arr: string | any[], index: number, ...newItems: any[]) => [
       // part of the array before the specified index
