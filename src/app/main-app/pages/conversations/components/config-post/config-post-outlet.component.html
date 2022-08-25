@@ -1,15 +1,11 @@
-<tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex"
-        class="border border-neutral-2-200 rounded-md text-body-2 text-neutral-1-900">
-
-        <tds-tab title="Chốt đơn"
-                clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+<tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex" class="border border-neutral-2-200 rounded-md text-body-2 text-neutral-1-900">
+        <tds-tab title="Chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
                 <div class="p-4" *ngIf="selectedIndex == 0">
                         <post-order-config [data]="data" [currentLiveCampaign]="currentLiveCampaign"></post-order-config>
                 </div>
         </tds-tab>
 
-        <tds-tab title="Tương tác chốt đơn"
-                clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+        <tds-tab title="Tương tác chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
                 <div class="p-4" *ngIf="selectedIndex == 1">
                         <post-order-interaction-config [data]="data"></post-order-interaction-config>
                 </div>
@@ -21,15 +17,13 @@
                 </div>
         </tds-tab>
 
-        <tds-tab title="Phản hồi bình luận"
-                clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
+        <tds-tab title="Phản hồi bình luận" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
                 <div class="p-4" *ngIf="selectedIndex == 3">
                         <auto-reply-config [data]="data"></auto-reply-config>
                 </div>
         </tds-tab>
 
-        <tds-tab title="Gán thẻ hội thoại"
-                clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
+        <tds-tab title="Gán thẻ hội thoại" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
                 <div class="p-4" *ngIf="selectedIndex == 4">
                         <auto-label-config [data]="data"></auto-label-config>
                 </div>
