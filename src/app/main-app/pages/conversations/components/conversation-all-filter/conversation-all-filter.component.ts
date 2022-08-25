@@ -137,15 +137,11 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   onSearchTags(event: any) {
     let value = TDSHelperString.stripSpecialChars(this.keyFilterTag.trim());
     this.lstOfTag = this.lstOfTagSearch.filter(x => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
-    event.preventDefault();
-    event.stopImmediatePropagation();
   }
 
   onSearchUser(event: any) {
-    let value = TDSHelperString.stripSpecialChars(this.keyFilterTag.trim());
+    let value = TDSHelperString.stripSpecialChars(this.keyFilterUser.trim());
     this.lstUser = this.lstUserSearch.filter(x => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
-    event.preventDefault();
-    event.stopImmediatePropagation();
   }
 
   onSubmit(): void {
