@@ -1,7 +1,5 @@
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { OrderEvent } from './../../../handler-v2/order-handler/order.event';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
-import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
@@ -38,7 +36,6 @@ import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
-// import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 
 @Component({
   selector: 'app-order',
@@ -127,7 +124,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
-    private orderEvent: OrderEvent,
     private cacheApi: THelperCacheService,
     private excelExportService: ExcelExportService,
     private resizeObserver: TDSResizeObserver,
@@ -147,14 +143,13 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-
-    this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse
-    this.resizeObserver
-      .observe(this.widthTable)
-      .subscribe(() => {
-        this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
-        this.widthTable?.nativeElement?.click()
-      });
+    this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+    this.resizeObserver.observe(this.widthTable).subscribe({
+      next: () => {
+          this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+          this.widthTable?.nativeElement?.click();
+      }
+    });
 
     setTimeout(() => {
       let that = this;
@@ -180,11 +175,14 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: any) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = [...res.value];
-    }, error => {
-      this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+    this.getViewData(params).subscribe({
+        next: (res: any) => {
+            this.count = res['@odata.count'] as number;
+            this.lstOfData = [...res.value];
+        },
+        error: (error: any) => {
+            this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+        }
     });
   }
 
@@ -216,11 +214,14 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: TDSSafeAny) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = [...res.value];
-    }, error => {
-      this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
+    this.getViewData(params).subscribe({
+      next: (res: TDSSafeAny) => {
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = [...res.value];
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
+      }
     });
   }
 
@@ -242,35 +243,38 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
-      finalize(() => this.isTabNavs = false)).subscribe((res: Array<TDSSafeAny>) => {
+      finalize(() => this.isTabNavs = false)).subscribe({
+        next: (res: Array<TDSSafeAny>) => {
+            let tabs: TabNavsDTO[] = [];
+            let total = 0;
 
-        let tabs: TabNavsDTO[] = [];
-        let total = 0;
-        res.map((x: TDSSafeAny, index: number) => {
+            res?.map((x: TDSSafeAny, index: number) => {
+                total += x.Total;
+                index = index + 2;
 
-          total += x.Total;
-          index = index + 2;
+                tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
+            });
 
-          tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
-        });
+            tabs.push({ Name: "Tất cả", Index: 1, Total: total });
+            tabs.sort((a, b) => a.Index - b.Index);
 
-        tabs.push({ Name: "Tất cả", Index: 1, Total: total });
-        tabs.sort((a, b) => a.Index - b.Index);
-
-        this.tabNavs = [...tabs];
-        this.lstOftabNavs = this.tabNavs;
+            this.tabNavs = [...tabs];
+            this.lstOftabNavs = this.tabNavs;
+        }
       });
   }
 
   loadGridConfig() {
     const key = this.saleOnline_OrderService._keyCacheGrid;
-    this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
-      if (res && res.value) {
-        let jsColumns = JSON.parse(res.value) as any;
-        this.hiddenColumns = jsColumns.value.columnConfig;
-      } else {
-        this.hiddenColumns = this.columns;
-      }
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
+            if (res && res.value) {
+              let jsColumns = JSON.parse(res.value) as any;
+              this.hiddenColumns = jsColumns.value.columnConfig;
+            } else {
+              this.hiddenColumns = this.columns;
+            }
+        }
     })
   }
 
@@ -340,20 +344,27 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
       let model = {
-        ids: [...this.setOfCheckedId]
+          ids: [...this.setOfCheckedId]
       }
-      this.isLoading = true;
 
-      this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res) => {
-        const key = this.saleOnline_OrderService._keyCreateBillOrder;
-        delete res['@odata.context'];
-        this.cacheApi.setItem(key, res);
-        // TODO: lưu filter cache trước khi load trang add bill
-        this.storeFilterCache();
-        this.router.navigateByUrl(`bill/create`);
-      },
-        error => {
-          this.message.error(error?.error?.message || 'Không thể tạo hóa đơn');
+      this.isLoading = true;
+      this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res) => {
+            delete res['@odata.context'];
+
+            const key = this.saleOnline_OrderService._keyCreateBillOrder;
+            this.cacheApi.setItem(key, res);
+
+            // TODO: lưu filter cache trước khi load trang add bill
+            this.storeFilterCache();
+
+            this.router.navigateByUrl(`bill/create`);
+            this.isLoading = false
+        },
+        error: (error: any) => {
+            this.isLoading = false
+            this.message.error(error?.error?.message || 'Không thể tạo hóa đơn');
+        }
       })
     }
   }
@@ -388,23 +399,24 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   assignTags(id: string, tags: TDSSafeAny) {
     let model = { OrderId: id, Tags: tags };
-    this.saleOnline_OrderService.assignSaleOnlineOrder(model)
-      .subscribe((res: TDSSafeAny) => {
+    this.saleOnline_OrderService.assignSaleOnlineOrder(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
         if (res && res.OrderId) {
-          let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
-          if (exits) {
-            exits.Tags = JSON.stringify(tags)
-          }
+            let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+            if (exits) {
+              exits.Tags = JSON.stringify(tags)
+            }
 
-          this.indClickTag = "";
-          this.modelTags = [];
-          this.message.success(Message.Tag.InsertSuccess);
+            this.indClickTag = "";
+            this.modelTags = [];
+            this.message.success(Message.Tag.InsertSuccess);
         }
-
-      }, error => {
-        this.indClickTag = "";
-        this.message.error(`${error?.error?.message}` || Message.Tag.InsertFail);
-      });
+      },
+      error: (error: any) => {
+          this.indClickTag = "";
+          this.message.error(`${error?.error?.message}` || Message.Tag.InsertFail);
+      }
+    });
   }
 
   showModalHistoryChat(orderId: string) {
@@ -421,29 +433,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
         type: "order"
       }
     });
-    modal.afterClose.subscribe(result => {
-    })
   }
-
-  // getColorStatusText(status: string): TDSTagStatusType {
-  //   let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
-  //   switch (value) {
-  //     case "Đơn hàng":
-  //       return "primary";
-  //     case "Nháp":
-  //       return "info";
-  //     case "Hủy":
-  //       return "warning";
-  //     case "Hủy bỏ":
-  //       return "secondary";
-  //     case "Bom hàng":
-  //       return "error";
-  //     case "Đã thanh toán":
-  //       return "success";
-  //     default:
-  //       return "secondary";
-  //   }
-  // }
 
   isHidden(columnName: string) {
     return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
@@ -461,23 +451,26 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     const key =  this.saleOnline_OrderService._keyCacheFilter;
-    this.cacheApi.getItem(key).subscribe((res)=>{
 
-      if(TDSHelperObject.hasValue(res)){
-        let dataObj = JSON.parse(res.value)?.value;
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
 
-        if(dataObj){
-          this.filterObj = dataObj.filterObj;
-          this.filterObj.dateRange.startDate = new Date(dataObj.filterObj.dateRange.startDate);
-          this.filterObj.dateRange.endDate = new Date(dataObj.filterObj.dateRange.endDate);
-          this.pageIndex = dataObj.pageIndex;
-          this.pageSize = dataObj.pageSize;
-        }
-      }else{
-        this.pageSize = params.pageSize;
+          if(TDSHelperObject.hasValue(res)){
+            let dataObj = JSON.parse(res.value)?.value;
+            if(dataObj){
+                this.filterObj = dataObj.filterObj;
+                this.filterObj.dateRange.startDate = new Date(dataObj.filterObj.dateRange.startDate);
+                this.filterObj.dateRange.endDate = new Date(dataObj.filterObj.dateRange.endDate);
+                this.pageIndex = dataObj.pageIndex;
+                this.pageSize = dataObj.pageSize;
+            }
+          } else {
+            this.pageSize = params.pageSize;
+          }
+
+          this.removeFilterCache();
+          this.loadData(params.pageSize, params.pageIndex);
       }
-      this.removeFilterCache();
-      this.loadData(params.pageSize, params.pageIndex);
     })
   }
 
@@ -596,7 +589,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   removeOrder(id: string, code?: string) {
     this.isLoading = true;
-    this.saleOnline_OrderService.remove(id).subscribe({
+    this.saleOnline_OrderService.remove(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
           this.refreshDataCurrent();
@@ -688,14 +681,14 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        this.message.success('Cập nhật thành công');
-        data.StatusText = status.Text;
+          this.message.success('Cập nhật thành công');
+          data.StatusText = status.Text;
 
-        this.loadSummaryStatus();
-        this.cdRef.markForCheck();
+          this.loadSummaryStatus();
+          this.cdRef.markForCheck();
       },
       error: (error: any) => {
-        this.message.error(error.error.message || 'Cập nhật thất bại');
+          this.message.error(error.error.message || 'Cập nhật thất bại');
       }
     });
   }
@@ -726,48 +719,50 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
+    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (obs: any): any => {
 
-      let pageIds: any = [];
-      res.map((x: any) => {
-        pageIds.push(x.page_id);
-      });
+          let pageIds: any = [];
+          obs?.map((x: any) => {
+              pageIds.push(x.page_id);
+          });
 
-      if (pageIds.length == 0) {
-        return this.message.error('Không có kênh kết nối với khách hàng này.');
-      }
-
-      this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
-
-          if (teams.length == 0) {
-            return this.message.error('Không có kênh kết nối với khách hàng này.');
+          if (pageIds.length == 0) {
+              return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 
-          this.mappingTeams = [];
-          let pageDic = {} as any;
+          this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (teams: any): any => {
 
-          teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
+                if (teams?.length == 0) {
+                    return this.message.error('Không có kênh kết nối với khách hàng này.');
+                }
 
-            if (exist && !pageDic[exist.page_id]) {
+                this.mappingTeams = [];
+                let pageDic = {} as any;
 
-              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                teams.map((x: any) => {
+                  let exist = obs.filter((r: any) => r.page_id == x.ChannelId)[0];
 
-              this.mappingTeams.push({
-                psid: exist.psid,
-                team: x
-              })
+                  if (exist && !pageDic[exist.page_id]) {
+                    pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                    this.mappingTeams.push({
+                        psid: exist.psid,
+                        team: x
+                    })
+                  }
+                })
+
+                if (this.mappingTeams.length > 0) {
+                    this.currentMappingTeam = this.mappingTeams[0];
+                    this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+                }
             }
-          })
-
-          if (this.mappingTeams.length > 0) {
-            this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
-          }
-        });
-    }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+          });
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
+      }
     })
   }
 
@@ -776,18 +771,20 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: MDBByPSIdDTO) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
+            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+            this.currentConversation = { ...model };
 
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
+            this.psid = res.psid;
+            this.isOpenDrawer = true;
         }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-      })
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   selectMappingTeam(item: any) {
