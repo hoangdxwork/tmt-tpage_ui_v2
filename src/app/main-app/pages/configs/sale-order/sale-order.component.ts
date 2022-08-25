@@ -1,4 +1,4 @@
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
 import { AutoInteractionDTO, ShippingStatuesDTO } from 'src/app/main-app/dto/configs/general-config.dto';
@@ -19,7 +19,6 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   lstShippingStatus: ShippingStatuesDTO[] = [];
   private destroy$ = new Subject<void>();
-  dataModel!: ConfigSaleOrderDTO;
 
   tagHelpers = [
     { id: "Bài live", value: "{order.live_title}" },
@@ -65,7 +64,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       IsEnableShipping: [false],
       IsEnableBill: [false],
       IsUsingProviderTemplate: [false],
-      OrderTemplate: [`${this.areaText1}`],
+      OrderTemplate: new FormControl(`${this.areaText1}`, [Validators.required]),
       ShopLabel: [null],
       ShopLabel2: [null],
       BillTemplate: [`${this.areaText2}`],
@@ -84,8 +83,13 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   }
 
   loadShippingStatus() {
-    this.generalConfigService.getShippingStatues().pipe(takeUntil(this.destroy$)).subscribe(res => {
+    this.generalConfigService.getShippingStatues().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
         this.lstShippingStatus = res;
+      },
+      error:(err)=>{
+        this.message.error(err?.error?.message)
+      }
     });
   }
 
@@ -93,25 +97,30 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     let name = "AutoInteraction";
     this.isLoading  = true;
 
-    this.generalConfigService.getByName(name)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((res: ConfigSaleOrderDTO) => {
-        if (res.ShippingTemplate) {
-          res.ShippingTemplate = res.ShippingTemplate.replace(/\\n/, "<p><br></p>")
-        }
-        if (res.BillTemplate) {
-          res.BillTemplate = res.BillTemplate.replace(/\\n/, "<p><br></p>")
-        }
-        if (res.OrderTemplate) {
-          res.OrderTemplate = res.OrderTemplate.replace(/\\n/, "<p><br></p>")
-        }
+    this.generalConfigService.getByName(name).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next:(res: ConfigSaleOrderDTO) => {
 
-        this.dataModel = res;
-        this.updateForm(res);
-
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-    })
+          // if (res.ShippingTemplate) {
+          //   res.ShippingTemplate = res.ShippingTemplate.replace(/\\n/, "<p><br></p>")
+          // }
+  
+          // if (res.BillTemplate) {
+          //   res.BillTemplate = res.BillTemplate.replace(/\\n/, "<p><br></p>")
+          // }
+  
+          // if (res.OrderTemplate) {
+          //   res.OrderTemplate = res.OrderTemplate.replace(/\\n/, "<p><br></p>")
+          // }
+  
+          this.updateForm(res);
+          this.isLoading = false;
+        }, 
+        error:(err) => {
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          this.isLoading = false;
+        }
+      })
   }
 
   changeIsEnableOrder(event: any) {
@@ -129,7 +138,6 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   onSave() {
     let name = "AutoInteraction";
     let model = this.prepareModel();
-
     this.isLoading = true;
 
     this.generalConfigService.update(name, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
@@ -164,5 +172,4 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       this.destroy$.next();
       this.destroy$.complete();
   }
-
 }

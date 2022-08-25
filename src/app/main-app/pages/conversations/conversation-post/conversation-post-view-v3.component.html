@@ -142,15 +142,15 @@
 
                             <ng-template #contentAddtag>
                                 <div class="w-[304px]">
-                                  <!-- <tds-form-field>
-                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
-                                        [(ngModel)]="currentLiveCampaign"
-                                        [allowClear]="true" [valuePrimitive]="false" [data]="availableCampaigns"
-                                        [autoClose]="true">
-                                    </tds-select>
-                                  </tds-form-field> -->
+                                    <tds-form-field>
+                                        <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
+                                            [(ngModel)]="currentLiveCampaign" [data]="lstOfLiveCampaign"
+                                            [ngModelOptions]="{standalone: true}"
+                                            [allowClear]="true" [valuePrimitive]="false" [autoClose]="false">
+                                        </tds-select>
+                                    </tds-form-field>
                                 </div>
-                            </ng-template>
+                              </ng-template>
 
                             <ng-template #footerAddTag>
                                 <div class="flex justify-end pt-2">
@@ -159,7 +159,7 @@
                                       <i class="tdsi-close-fill"></i>
                                     </span>
                                   </button>
-                                  <button tds-button-icon type="button" size="sm" color="primary" (click)="addNewCampaign()">
+                                  <button tds-button-icon type="button" size="sm" color="primary" (click)="updateFacebookByLiveCampaign()">
                                     <span class="flex items-center">
                                       <i class="tdsi-tick-fill"></i>
                                     </span>
