@@ -63,7 +63,7 @@ export class ChatomniObjectService extends BaseSevice  {
 
       // TODO: sort lại dữ liệu theo ngày tạo mới nhất
       if(res && TDSHelperArray.isArray(res.Items)) {
-          res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
+          res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
       }
 
       // TODO: load dữ liệu lần đầu tiên
