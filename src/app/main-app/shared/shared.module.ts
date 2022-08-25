@@ -6,15 +6,12 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TpageTeamDropdownComponent } from './tpage-team-dropdown/tpage-team-dropdown.component';
 import { TpageBaseComponent } from './tpage-base/tpage-base.component';
-import { TpageAvatarFacebookComponent } from './upload-image/tpage-avatar-facebook/tpage-avatar-facebook.component';
 import { TpageMenuLayoutComponent } from './tpage-menu-layout/tpage-menu-layout.component';
 import { TpageMenuItemComponent } from './tpage-menu-item/tpage-menu-item.component';
 import { SendMessageComponent } from './tpage-send-message/send-message.component';
 import { PipeModule } from './pipe/pipe.module';
-import { BrowserModule } from '@angular/platform-browser';
 import { ModalProductTemplateComponent } from './tpage-add-product/modal-product-template.component';
 import { TpageAddCategoryComponent } from './tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from './tpage-search-uom/tpage-search-uom.component';
@@ -29,7 +26,6 @@ import { TpageAvatarGroupFacebookComponent } from './tpage-avatar-group-facebook
 import { UploadImageModule } from './upload-image/tpage-avatar-facebook/upload-image.module';
 import { TpageConfigProductComponent } from './tpage-config-product/tpage-config-product.component';
 import { ProductPriceListService } from '../services/product-price-list.service';
-import { TpageConversationAddressComponent } from './tpage-conversation-address/tpage-conversation-address.component';
 import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.component';
 import { ListLiveCampaignComponent } from './list-live-campaign/list-live-campaign.component';
 import { ODataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
@@ -78,7 +74,6 @@ const cmp =[
   ListProductTmpComponent,
   TpageAvatarGroupFacebookComponent,
   TpageConfigProductComponent,
-  TpageConversationAddressComponent,
   UploadPicturesWallComponent,
   ListLiveCampaignComponent,
   AddLiveCampaignComponent,
