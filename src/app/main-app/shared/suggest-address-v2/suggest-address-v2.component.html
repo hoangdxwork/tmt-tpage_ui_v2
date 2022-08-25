@@ -30,8 +30,8 @@
             <div class="w-full flex mb-2 pt-3">
                 <tds-form-field class="w-full">
                     <tds-select valueField="code" textField="name" placeholder='Tỉnh/Thành'
-                        [valuePrimitive]="false" [allowClear]="true" (onSearch)="handleCityFilter($event)"
-                        formControlName="City" disabledField="isActive" [data]="lstCities"
+                        [valuePrimitive]="false" (onSearch)="handleCityFilter($event)"
+                        formControlName="City" disabledField="isActive" [data]="lstCity"
                         [allowClear]="true" (selectChange)="changeCity($event)">
                     </tds-select>
                 </tds-form-field>
@@ -39,8 +39,8 @@
             <div class="w-full flex mb-2">
                 <tds-form-field class="w-full">
                     <tds-select valueField="code" textField="name" placeholder='Quận/Huyện'
-                        [valuePrimitive]="false" [allowClear]="true" (onSearch)="handleFilterDistrict($event)"
-                        formControlName="District" disabledField="isActive" [data]="lstDistricts"
+                        [valuePrimitive]="false" (onSearch)="handleFilterDistrict($event)"
+                        formControlName="District" disabledField="isActive" [data]="lstDistrict"
                         [allowClear]="true" (selectChange)="changeDistrict($event)">
                     </tds-select>
                 </tds-form-field>
@@ -48,9 +48,9 @@
             <div class="w-full flex mb-2">
                 <tds-form-field class="w-full">
                     <tds-select valueField="code" textField="name" placeholder='Phường/Xã'
-                        [valuePrimitive]="false" [allowClear]="true" (onSearch)="handleFilterWard($event)"
-                        formControlName="Ward" disabledField="isActive" [data]="lstWards"
-                        [allowClear]="true"  (selectChange)="changeWard($event)">
+                        [valuePrimitive]="false" (onSearch)="handleFilterWard($event)"
+                        formControlName="Ward" disabledField="isActive" [data]="lstWard"
+                        [allowClear]="true" (selectChange)="changeWard($event)">
                     </tds-select>
                 </tds-form-field>
             </div>

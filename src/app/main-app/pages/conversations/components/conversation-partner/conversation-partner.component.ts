@@ -496,6 +496,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   validateData() {
+    this.isEditPartner = false;
     this.conversationInfo = null;
     (this.partner as any) = null;
     (this.revenue as any) = null;

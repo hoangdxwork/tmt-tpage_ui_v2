@@ -1,5 +1,5 @@
 import { eventCollapTrigger } from './../helper/event-animations.helper';
-import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy, HostBinding } from '@angular/core';
+import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy, HostBinding, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
@@ -19,7 +19,7 @@ const ESCAPE_ENTER = 'Enter';
   animations: [ eventCollapTrigger ]
 })
 
-export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDestroy {
+export class SuggestAddressComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   // @ViewChild('streetInput') streetInput!: ElementRef;
@@ -54,7 +54,10 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
       private message: TDSMessageService,
       private suggestService: SuggestAddressService) {
         this.createForm();
-        this.loadCity();
+  }
+
+  ngOnInit(): void {
+    this.loadCity();
   }
 
   createForm() {
@@ -100,29 +103,34 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   loadCity(): void {
-    this.suggestService.getCities().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstCities = res;
+    this.suggestService.setCity();
+    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.lstCities = [...res];
         this.citySubject.next(res);
     });
   }
 
   loadDistricts(code: string) {
-    this.suggestService.getDistricts(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstDistricts = res;
+    this.suggestService.setDistrict(code);
+    this.suggestService.getDistrict().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.lstDistricts = [...res];
         this.districtSubject.next(res);
-      });
+    });
   }
 
   loadWards(code: string) {
-    this.suggestService.getWards(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstWards = res;
+    this.suggestService.setWard(code);
+    this.suggestService.getWard().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.lstWards = [...res];
         this.wardSubject.next(res);
-      });
+    });
   }
 
   handleCityFilter(value: string) {
-      var result = this.lstCities.filter((x: SuggestCitiesDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstCities?.filter((x: SuggestCitiesDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
       this.citySubject.next(result);
+    }
   }
 
   handleFilterDistrict(value: string) {
