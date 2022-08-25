@@ -30,7 +30,7 @@
                         <!-- droupdown filter -->
                         <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
                             <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="onchangeType(item.id)" class="w-full flex justify-between items-center">
+                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="onchangeType(item)" class="w-full flex justify-between items-center">
                                     {{item.name}}
                                     <span *ngIf="item?.name == currentType?.name" class="tdsi-success-fill text-success-500"></span>
                                 </div>
@@ -41,7 +41,7 @@
                             <span class="flex text-neutral-1-500 w-[34px] h-[34px] relative">
                                 <i class="tdsi-sort-up-down-fill text-xl leading-5 h-full w-full flex items-center justify-center"></i>
 
-                                <div *ngIf="currentSort.id != 'ChannelCreatedTime desc'" style="transform: translate(30%, -30%); transform-origin: 100% 0px;"
+                                <div *ngIf="currentSort && currentSort.id" style="transform: translate(30%, -30%); transform-origin: 100% 0px;"
                                     class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center">
                                     <span class="text-[7px] leading-[5px] tdsi-tick-fill"></span>
                                 </div>
@@ -51,9 +51,9 @@
                         <!-- droupdown up down -->
                         <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
                             <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstSort" (click)="onChangeSort(item.id)" class="w-full flex justify-between items-center">
+                                <div tds-dropdown-item *ngFor="let item of lstSort" (click)="onChangeSort(item)" class="w-full flex justify-between items-center">
                                     {{item.name}}
-                                    <span class="tdsi-success-fill text-success-500" *ngIf="item?.name == currentSort?.name"></span>
+                                    <span class="tdsi-success-fill text-success-500" *ngIf="currentSort && item?.name == currentSort?.name"></span>
                                 </div>
                             </div>
                         </tds-dropdown-menu>
