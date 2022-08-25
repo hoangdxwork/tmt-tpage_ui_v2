@@ -98,8 +98,7 @@
                     <div class="w-[304px]">
                         <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
-                                [ngModel]="currentLiveCampaign" [data]="lstOfLiveCampaign"
-                                (ngModelChange)="onChangeLiveCampaign($event)" [ngModelOptions]="{standalone: true}"
+                                [(ngModel)]="currentLiveCampaign" [data]="lstOfLiveCampaign"
                                 [allowClear]="true" [valuePrimitive]="false" [autoClose]="false">
                             </tds-select>
                         </tds-form-field>
