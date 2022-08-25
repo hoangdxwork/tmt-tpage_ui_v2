@@ -29,4 +29,5 @@ import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
     TDSSpinnerModule
   ]
 })
+
 export class AccountModule { }
