@@ -56,8 +56,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     { id: 'ChannelUpdatedTime asc', name: 'Ngày update cũ nhất' }
   ];
 
-  currentType: any =  { id: 'all', name: 'Tất cả bài viết' };
-  currentSort: any =  { id: 'ChannelCreatedTime desc', name: 'Ngày tạo mới nhất' };
+  currentType: any = { id: 'all', name: 'Tất cả bài viết' };
+  currentSort: any = {};
 
   postId: any;
   postChilds: TDSSafeAny[] = [];
@@ -136,20 +136,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
           if(exist) {
               this.loadData();
               this.loadBadgeComments();
-              this.loadPartnerTimstamp();
           }
       }
     });
 
     this.onChangeTabEvent();
     this.eventEmitter();
-  }
-
-
-  loadPartnerTimstamp() {
-    // if(this.currentTeam) {
-    //     this.chatomniCommentFacade.getParentTimeStamp(this.currentTeam.Id).subscribe();
-    // }
   }
 
   eventEmitter() {
@@ -368,28 +360,27 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   nextData(event: any): any {
-    if(event) {
-      if (this.isProcessing) {
-          return false;
-      }
-      this.isProcessing = true;
-
-      this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-
-        next: (res: ChatomniObjectsDto) => {
-            if(TDSHelperArray.hasListValue(res?.Items)) {
-                this.lstObjects = [...res.Items];
-            }
-
-            this.yiAutoScroll.scrollToElement('scrollObjects', 750);
-            this.isProcessing = false;
-        },
-        error: (error: any) => {
-            this.isProcessing = false;
-        }
-      })
+    if (this.isProcessing) {
+        return;
     }
+
+    this.isProcessing = true;
+
+    this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+
+      next: (res: ChatomniObjectsDto) => {
+          if(TDSHelperArray.hasListValue(res?.Items)) {
+              this.lstObjects = [...res.Items];
+          }
+
+          this.isProcessing = false;
+          this.yiAutoScroll.scrollToElement('scrollObjects', 750);
+      },
+      error: (error: any) => {
+          this.isProcessing = false;
+      }
+    })
   }
 
   trackByIndex(_: number, data: any): number {

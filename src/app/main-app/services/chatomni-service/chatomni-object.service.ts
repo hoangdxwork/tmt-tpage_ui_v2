@@ -61,11 +61,6 @@ export class ChatomniObjectService extends BaseSevice  {
 
     return this.get(teamId, queryObj).pipe(map((res: ChatomniObjectsDto) => {
 
-      // TODO: sort lại dữ liệu theo ngày tạo mới nhất
-      if(res && TDSHelperArray.isArray(res.Items)) {
-          res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
-      }
-
       // TODO: load dữ liệu lần đầu tiên
       if (TDSHelperObject.hasValue(res)) {
           this.objFacade.setData(teamId, res);
@@ -84,7 +79,7 @@ export class ChatomniObjectService extends BaseSevice  {
     let exist = this.objFacade.getData(teamId);
 
     if (exist && !TDSHelperString.hasValueString(this.urlNext)) {
-        return Observable.create((obs: any) => {
+        return new Observable((obs: any) => {
             obs.next();
             obs.complete();
         })
@@ -99,11 +94,6 @@ export class ChatomniObjectService extends BaseSevice  {
               Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
               Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
           }
-        }
-
-        // TODO: sort lại dữ liệu theo ngày tạo mới nhất
-        if(exist && TDSHelperArray.isArray(exist.Items)) {
-            exist.Items = exist.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
         }
 
         // TODO nếu trùng urlNext thì xóa không cho load

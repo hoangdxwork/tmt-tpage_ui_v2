@@ -84,7 +84,7 @@ export class ChatomniConversationService extends BaseSevice {
     let exist = this.csFacade.getData(teamId);
 
     if (exist && !TDSHelperString.hasValueString(this.urlNext)) {
-        return Observable.create((obs: any) => {
+        return new Observable((obs: any) => {
             obs.next();
             obs.complete();
         })

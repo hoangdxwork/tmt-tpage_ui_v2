@@ -19,13 +19,10 @@ export class SuggestAddressService extends BaseSevice {
   _keyCacheWards!: "_key_wards";
 
   private readonly _cities = new ReplaySubject<any[]>();
-  public lstCity: any[] = []
+  public lstCity: any[] = [];
 
   private readonly _districts = new ReplaySubject<any[]>();
-  public lstDistrict: any[] = [];
-
   private readonly _wards = new ReplaySubject<any[]>();
-  public lstWard: any[] = []
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -61,16 +58,11 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   setDistrict(code: string) {
-    if(TDSHelperArray.hasListValue(this.lstDistrict)) {
-        this._districts.next(this.lstDistrict);
-    } else {
-      this.apiDistrict(code).subscribe({
-        next: (res: any) => {
-            this.lstDistrict = [...res];
-            this._districts.next(this.lstDistrict);
-        }
-      })
-    }
+    this.apiDistrict(code).subscribe({
+      next: (res: any) => {
+          this._districts.next(res);
+      }
+    })
   }
 
   apiDistrict(code: string): Observable<any> {
@@ -87,16 +79,11 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   setWard(code: string) {
-    if(TDSHelperArray.hasListValue(this.lstWard)) {
-        this._wards.next(this.lstWard);
-    } else {
-      this.apiWard(code).subscribe({
-        next: (res: any) => {
-            this.lstWard = [...res];
-            this._wards.next(this.lstWard);
-        }
-      })
-    }
+    this.apiWard(code).subscribe({
+      next: (res: any) => {
+          this._wards.next(res);
+      }
+    })
   }
 
   apiWard(code: string): Observable<any> {
