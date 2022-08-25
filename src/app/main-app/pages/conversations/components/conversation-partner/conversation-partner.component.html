@@ -308,7 +308,7 @@
 
                       <tds-form-field class="w-1/2">
                           <tds-label> Số điện thoại</tds-label>
-                          <div tdsAddOnRight><i class="tdsi-search-fill text-xl leading-none"></i></div>
+                          <div tdsAddOnRight tds-tooltip="Kiểm tra số điện thoại"><i class="tdsi-search-fill text-xl leading-none"></i></div>
                           <input tdsInput placeholder="Nhập số điện thoại" [(ngModel)]="partner.Phone" [ngModelOptions]="{standalone: true}"/>
                       </tds-form-field>
 
@@ -329,7 +329,7 @@
                         <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
                             <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
                         </tds-form-field>
-                        <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip="Tìm kiếm địa chỉ">
+                        <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip="Kiểm tra địa chỉ">
                             <span class="flex items-center">
                             <i class="tdsi-location-fill"></i>
                             </span>

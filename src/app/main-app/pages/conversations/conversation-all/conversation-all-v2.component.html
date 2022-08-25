@@ -37,7 +37,7 @@
           </div>
 
           <!-- Xử lý click button checkbox -->
-          <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white ">
+          <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white">
               <div class="w-full flex justify-between items-center py-2 px-3.5">
                   <div class="gap-x-2 xl:hidden 2xl:flex">
                       <button tds-button color="primary" (click)="showModalSendMessage()">
@@ -47,10 +47,16 @@
                       </button>
 
                       <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-                          <button tds-button color="info" (click)="printData()">
+                          <!-- <button tds-button color="info" (click)="printData()">
                               <span class="flex items-center">
                                   <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
                               </span>
+                          </button> -->
+                          <button (click)="printData()" tds-button color="custom"
+                            class="text-white  bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
+                            <span class="flex items-center">
+                              <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
+                            </span>
                           </button>
                       </tds-spin>
 
