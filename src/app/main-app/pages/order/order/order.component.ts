@@ -289,7 +289,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onCreateBillFast() {
+  onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
       let ids = [...this.setOfCheckedId];
@@ -298,22 +298,26 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showModalCreateBillFast(ids: string[]) {
-    this.fastSaleOrderService.getListOrderIds({ids: ids})
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
-        if (res) {
-          this.modal.create({
-            title: 'Tạo hóa đơn nhanh',
-            content: CreateBillFastComponent,
-            centered: true,
-            size: 'xl',
-            viewContainerRef: this.viewContainerRef,
-            componentParams: {
-              lstData: [...res.value] as GetListOrderIdsDTO[]
-            }
-          });
+    this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if (res) {
+            this.modal.create({
+                title: 'Tạo hóa đơn nhanh',
+                content: CreateBillFastComponent,
+                centered: true,
+                size: 'xl',
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  lstData: [...res.value] as GetListOrderIdsDTO[]
+                }
+            });
+          }
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
-      }, error => {
-        this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
       });
   }
 
@@ -545,43 +549,44 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onEdit(item: ODataSaleOnline_OrderModel) {
     if(item && item.Id) {
-      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
 
-          if(res && res.Id) {
-            delete res['@odata.context'];
+              if(res && res.Id) {
+                delete res['@odata.context'];
 
-            const modal = this.modal.create({
-                title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
-                content: EditOrderV2Component,
-                size: 'xl',
-                viewContainerRef: this.viewContainerRef,
-                bodyStyle:{
-                  'padding':'0'
-                },
-                componentParams: {
-                  dataItem: { ...res }
-                },
+                const modal = this.modal.create({
+                    title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
+                    content: EditOrderV2Component,
+                    size: 'xl',
+                    viewContainerRef: this.viewContainerRef,
+                    bodyStyle:{
+                      'padding': '0'
+                    },
+                    componentParams: {
+                      dataItem: { ...res }
+                    }
+                })
 
-            })
-
-            modal.afterClose?.subscribe((obs: string) => {
-                if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-                    this.loadData(this.pageSize, this.pageIndex);
-                }
-            })
+                modal.afterClose?.subscribe((obs: string) => {
+                    if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+                        this.loadData(this.pageSize, this.pageIndex);
+                    }
+                })
+              }
+          },
+          error: (error: any) => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
     }
-
   }
 
-  onRemove(id: string, code: string) {
+  onDelete(id: string, code?: string) {
     this.modal.error({
       title: 'Xóa đơn hàng',
       content: 'Bạn có chắc muốn xóa đơn hàng',
-      onOk: () => this.remove(id, code),
+      onOk: () => this.removeOrder(id, code),
       onCancel: () => { },
       okText: "Xác nhận",
       cancelText: "Đóng",
@@ -589,15 +594,19 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  remove(id: string, code: string) {
+  removeOrder(id: string, code?: string) {
     this.isLoading = true;
-    this.saleOnline_OrderService.remove(id).pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: TDSSafeAny) => {
-        this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
-        this.refreshDataCurrent();
-      }, error => {
+    this.saleOnline_OrderService.remove(id).subscribe({
+      next: (res: any) => {
+          this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
+          this.refreshDataCurrent();
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
-      });
+      }
+    });
   }
 
   checkValueEmpty() {
@@ -677,14 +686,17 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   updateStatusSaleOnline(data: any, status: any) {
     let value = status.Text;
 
-    this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe((res) => {
-      this.message.success('Cập nhật thành công');
-      data.StatusText = status.Text;
+    this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.message.success('Cập nhật thành công');
+        data.StatusText = status.Text;
 
-      this.loadSummaryStatus();
-      this.cdRef.markForCheck();
-    }, error => {
-      this.message.error(error.error.message ?? 'Cập nhật thất bại');
+        this.loadSummaryStatus();
+        this.cdRef.markForCheck();
+      },
+      error: (error: any) => {
+        this.message.error(error.error.message || 'Cập nhật thất bại');
+      }
     });
   }
 
@@ -692,12 +704,15 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
       ids.map((x: string) => {
-        this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          if (res) {
-            this.orderPrintService.printIpFromOrder(res);
-          }
-        }, error => {
-          this.message.error('Load thông tin đơn hàng đã xảy ra lỗi');
+        this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+              if (res) {
+                  this.orderPrintService.printIpFromOrder(res);
+              }
+            },
+            error: (error: any) => {
+              this.message.error( `${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+            }
         })
       })
     }
@@ -797,7 +812,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       this.onCreateBillDefault();
     }
     else if (event.key === 'F10') {
-      this.onCreateBillFast();
+      this.onCreateQuicklyFS();
     }
   }
 

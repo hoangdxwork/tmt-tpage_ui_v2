@@ -58,7 +58,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   isHiddenComment: any = {};
 
   conversationItem!: ChatomniConversationItemDto;
-  // messBB: string = "Xám [format type='text-copyable' value='0888033864']0888033864[end_format]";
 
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
@@ -82,14 +81,17 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         this.loadData();
         this.loadPartnersByTimestamp();
     }
+
     this.onEventSocket();
   }
 
   loadPartnersByTimestamp() {
+    this.partnerDict = {};
+    this.chatomniCommentFacade.getPartnerTimeStamp(this.team.Id);
     this.chatomniCommentFacade.partnerDict().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.partnerDict = {...res};
-          this.cdRef.markForCheck();
+          this.partnerDict = res;
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -97,7 +99,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        if(res && res.Data && res.Data.Conversation && this.team?.ChannelId == res.Data.Conversation?.ChannelId && this.data.ObjectId == res.Data.Message?.ObjectId){
+        if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
           let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
 
           this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])]

@@ -95,8 +95,6 @@ export class TDSConversationItemV2Component implements OnInit {
           this.dataItem.Data!.is_error_attachment = true;
         }
     }
-
-
   }
 
   selectOrder(type: string): any {

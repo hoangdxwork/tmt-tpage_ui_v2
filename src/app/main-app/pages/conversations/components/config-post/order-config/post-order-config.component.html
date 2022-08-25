@@ -7,21 +7,18 @@
           <div class="flex flex-col gap-y-4 pt-4">
             <div class="flex flex-col gap-y-4">
                 <div class="flex gap-x-2 items-center">
-                    <tds-switch size="md" [ngModel]="dataModel.IsEnableOrderAuto" 
-                        (ngModelChange)="changeIsEnableOrderAuto($event)"></tds-switch>
+                    <tds-switch size="md" [(ngModel)]="dataModel.IsEnableOrderAuto"></tds-switch>
                     <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật tạo đơn tự động?</div>
                 </div>
 
                 <div class="pl-4 flex gap-x-2 items-center" *ngIf="dataModel.IsEnableOrderAuto">
-                    <tds-switch size="md" [ngModel]="dataModel.IsForceOrderWithAllMessage"
-                        (ngModelChange)="changeIsForceOrderWithAllMessage($event)"></tds-switch>
+                    <tds-switch size="md" [(ngModel)]="dataModel.IsForceOrderWithAllMessage"></tds-switch>
                     <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tạo tự động với bình luận bất kỳ?</div>
                 </div>
             </div>
 
             <div class="flex gap-x-2 items-center">
-                <tds-switch size="md" [ngModel]="isImmediateApply"
-                    (ngModelChange)="changeIsImmediateApply($event)"></tds-switch>
+                <tds-switch size="md" [(ngModel)]="isImmediateApply"></tds-switch>
                 <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Áp dụng ngay cho những bình luận đã có?</div>
             </div>
 
@@ -58,23 +55,23 @@
 
         <div class="flex flex-col gap-y-4 pt-4">
           <div class="flex items-center gap-x-2">
-              <tds-switch size="md" [ngModel]="dataModel.IsOnlyOrderWithPartner" (ngModelChange)="changeIsOnlyOrderWithPartner($event)"></tds-switch>
+              <tds-switch size="md" [(ngModel)]="dataModel.IsOnlyOrderWithPartner"></tds-switch>
               <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận của khách đã có thông tin (điện thoại, địa chỉ)</div>
           </div>
 
           <div class="flex flex-col gap-y-4">
               <div class="flex items-center gap-x-2">
-                  <tds-switch size="md" [ngModel]="dataModel.IsOnlyOrderWithPhone" (ngModelChange)="changeIsOnlyOrderWithPhone($event)"></tds-switch>
+                  <tds-switch size="md" [(ngModel)]="dataModel.IsOnlyOrderWithPhone"></tds-switch>
                   <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận có số điện thoại</div>
               </div>
               <div class="flex items-center gap-x-2 pl-4" *ngIf="dataModel.IsOnlyOrderWithPhone">
-                  <tds-switch size="md" [ngModel]="dataModel.IsForceOrderWithPhone" (ngModelChange)="changeIsForceOrderWithPhone($event)"></tds-switch>
+                  <tds-switch size="md" [(ngModel)]="dataModel.IsForceOrderWithPhone"></tds-switch>
                   <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc tạo đơn với số điện thoại</div>
               </div>
 
               <div class="flex items-center gap-x-2 pl-4"
                   *ngIf="dataModel.IsForceOrderWithPhone && dataModel.IsOnlyOrderWithPhone">
-                      <tds-switch size="md" [ngModel]="dataModel.IsForcePrintWithPhone" (ngModelChange)="changeIsForcePrintWithPhone($event)"></tds-switch>
+                      <tds-switch size="md" [(ngModel)]="dataModel.IsForcePrintWithPhone"></tds-switch>
                       <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc in nhiều lần với số điện thoại</div>
               </div>
             </div>
@@ -190,14 +187,15 @@
                       </div>
                     </div>
                     <div class="pt-3">
-                      <tds-checkbox [(ngModel)]="product.IsEnableRegexAttributeValues">
-                        Kiểm tra thuộc tính? ([{{product.DescriptionAttributeValues | json}}])
+                      <tds-checkbox [(ngModel)]="product.IsEnableRegexAttributeValues" (ngModelChange)="enableRegexAttributeValues($event, configProduct.Index)">
+                        Kiểm tra thuộc tính? 
+                        <span *ngIf="product.DescriptionAttributeValues">([{{product.DescriptionAttributeValues | json}}])</span>
                       </tds-checkbox>
                     </div>
                     <div class="pt-3" *ngIf="product.IsEnableRegexAttributeValues">
                       <div class="flex p-2 bg-white rounded-md gap-x-1">
                         <tds-form-field class="p-3 w-full">
-                          <tds-select [ngModel]="(configProduct.ContentWithAttributes | stringToStringArray) || []"
+                          <tds-select [ngModel]="configProduct.ContentWithAttributes | stringToStringArray"
                               (ngModelChange)="selectContentWithAttributes($event, configProduct.Index)"
                               placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10">
                           </tds-select>
@@ -205,12 +203,12 @@
                       </div>
                     </div>
                     <div class="pt-3">
-                      <tds-checkbox [(ngModel)]="product.IsEnableRegexQty" >
+                      <tds-checkbox [(ngModel)]="product.IsEnableRegexQty" (ngModelChange)="enableRegexQty($event, configProduct.Index)">
                         Bật xử lý số lượng?
                       </tds-checkbox>
                     </div>
                     <div class="pt-3">
-                      <tds-checkbox [(ngModel)]="product.IsEnableOrderMultiple">
+                      <tds-checkbox [(ngModel)]="product.IsEnableOrderMultiple" (ngModelChange)="enableOrderMultiple($event, configProduct.Index)">
                         Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)
                       </tds-checkbox>
                     </div>
@@ -239,18 +237,17 @@
           <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Không tạo đơn với</div>
           
           <div class="pt-4 grid grid-cols-2 gap-x-4">
-            <!--  -->
             <tds-form-field>
                 <tds-label>Khách hàng thuộc trạng thái</tds-label>
                 <tds-select valueField="Name" textField="Name" placeholder='Nhập nội dung và nhấn [Enter]' [valuePrimitive]="false"
-                    [ngModel]="dataModel.ExcludedStatusNames" [data]="(lstTags$ | async) || []" mode="tags" [maxTagCount]="10" 
-                    (ngModelChange)="changeExcludedStatusNames($event)">
+                    [data]="(lstTags$ | async) || []" mode="tags" [maxTagCount]="10" 
+                    [ngModel]="dataModel.ExcludedStatusNames | convertToCRMTagsList" (ngModelChange)="changeExcludedStatusNames($event)">
                 </tds-select>
             </tds-form-field>
 
             <tds-form-field>
                 <tds-label>Bình luận có nội dung</tds-label>
-                    <tds-select [ngModel]="(dataModel.TextContentToExcludeOrder | stringToStringArray) || []" placeholder='Nhập nội dung và nhấn [Enter]'
+                    <tds-select [ngModel]="lstTextContentToExcludeOrder" placeholder='Nhập nội dung và nhấn [Enter]'
                         mode="tags" [maxTagCount]="10"
                         (ngModelChange)="changeTextContentToExcludeOrder($event)">
                 </tds-select>
@@ -281,7 +278,7 @@
         <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Phân công hội thoại tự động</div>
         <div class="flex flex-col gap-y-4 pt-4">
           <div class="flex gap-x-2 items-center">
-            <tds-switch [ngModel]="dataModel.IsEnableAutoAssignUser" (ngModelChange)="changeIsEnableAutoAssignUser($event)" size="md"></tds-switch>
+            <tds-switch [(ngModel)]="dataModel.IsEnableAutoAssignUser" size="md"></tds-switch>
             <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật phân công đơn hàng tự động cho nhân viên?</div>
           </div>
 

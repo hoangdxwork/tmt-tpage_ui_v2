@@ -1,34 +1,33 @@
 <tds-spin [spinning]="isLoading">
-  <form [formGroup]="formHiddenComment">
-    <div class="w-full h-full flex flex-col gap-y-3">
-      <div class="flex items-center gap-x-2">
-        <tds-switch size="md" formControlName="IsEnableAutoHideComment"></tds-switch>
-        <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động ẩn bình luận?</div>
-      </div>
-
-      <div class="flex flex-col gap-y-3 px-4" *ngIf="formHiddenComment.value.IsEnableAutoHideComment">
-        <div class="flex items-center gap-x-2">
-          <tds-switch size="md" formControlName="IsEnableAutoHideAllComment"></tds-switch>
-          <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn tất cả bình luận</div>
-        </div>
-
-        <div class="flex flex-col gap-y-3" *ngIf="!formHiddenComment.value.IsEnableAutoHideAllComment">
+    <div class="w-full h-full flex flex-col gap-y-3" *ngIf="dataModel">
           <div class="flex items-center gap-x-2">
-            <tds-switch size="md" formControlName="IsEnableAutoHideCommentWithPhone"></tds-switch>
-            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn bình luận có điện thoại</div>
+              <tds-switch size="md" [(ngModel)]="dataModel.IsEnableAutoHideComment"></tds-switch>
+              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động ẩn bình luận?</div>
           </div>
-          <div class="flex items-center gap-x-2">
-            <tds-switch size="md" formControlName="IsEnableAutoHideCommentWithEmail"></tds-switch>
-            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn bình luận có địa chỉ email</div>
+
+          <div class="flex flex-col gap-y-3 px-4" *ngIf="dataModel.IsEnableAutoHideComment">
+              <div class="flex items-center gap-x-2">
+                  <tds-switch size="md"  [(ngModel)]="dataModel.IsEnableAutoHideAllComment"></tds-switch>
+                  <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn tất cả bình luận</div>
+              </div>
+
+              <div class="flex flex-col gap-y-3" *ngIf="!dataModel.IsEnableAutoHideAllComment">
+                  <div class="flex items-center gap-x-2">
+                      <tds-switch size="md" [(ngModel)]="dataModel.IsEnableAutoHideCommentWithPhone"></tds-switch>
+                      <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn bình luận có điện thoại</div>
+                  </div>
+                  <div class="flex items-center gap-x-2">
+                      <tds-switch size="md" [(ngModel)]="dataModel.IsEnableAutoHideCommentWithEmail"></tds-switch>
+                      <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn bình luận có địa chỉ email</div>
+                  </div>
+                  <tds-form-field class="mt-1">
+                      <tds-label>Ẩn nếu bình luận chứa nội dung bất kỳ:</tds-label>
+                      
+                      <tds-select [ngModel]="lstContentOfCommentForAutoHide" placeholder='Nhập nội dung và nhấn [Enter]'
+                          mode="tags" [maxTagCount]="20" (ngModelChange)="changeContentOfCommentForAutoHide($event)">
+                      </tds-select>
+                  </tds-form-field>
+              </div>
           </div>
-          <tds-form-field class="mt-1">
-            <tds-label>Ẩn nếu bình luận chứa nội dung bất kỳ:</tds-label>
-            <tds-select valueField="id" textField="name" placeholder='Nhập nội dung và nhấn [Enter]' formControlName="selectedWord1s"
-                mode="tags" [maxTagCount]="20" >
-            </tds-select>
-          </tds-form-field>
-        </div>
-      </div>
     </div>
-  </form>
 </tds-spin>

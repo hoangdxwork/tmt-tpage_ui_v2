@@ -1,0 +1,174 @@
+<div class="w-full h-full bg-white rounded-xl pb-2">
+  <div class="flex flex-col h-full">
+    <div class="p-4 font-semibold text-xl flex gap-x-3 justify-end">
+        <button type="button" (click)="onCreateQuicklyFS()" tds-button color="primary" >
+            <span class="flex items-center">
+              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo nhanh HĐ
+            </span>
+        </button>
+
+        <button type="button" (click)="printCustomer()" tds-button color="info" tds-tooltip tooltipTitle="In danh sách khách hàng">
+            <span class="flex items-center">
+              <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In danh sách
+            </span>
+        </button>
+
+        <button type="button" (click)="printMultiOrder()" tds-button color="info"  tds-tooltip tooltipTitle="In phiếu đơn hàng">
+            <span class="flex items-center">
+              <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu
+            </span>
+        </button>
+
+        <tds-form-field class="w-[320px]">
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keyup.enter)="onSearch($event)"/>
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+
+        <button type="button" tds-button-icon color="secondary">
+          <i class="tdsi-filter-2-line text-neutral-1-500"></i>
+        </button>
+        <!-- <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options> -->
+    </div>
+
+    <div #WidthTable class="h-full text-body-2 text-neutral-1-900">
+      <tds-table #rowSelectionTable
+        [showSizeChanger]="true"
+        [frontPagination]="false"
+        [listData]="lstOfData"
+        [scroll]="{y:'auto', x: 'auto'}"
+        [loading]="isLoading"
+        [total]="count"
+        [scroll]="{y:'auto'}"
+        (clickRefresh)="refreshData()"
+        (queryParams)="onQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th [align]="'center'" width="33px" [tdsLeft]="true"></th>
+            <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" [align]="'center'" [tdsLeft]="true"></th>
+            <th [width]="'60px'" [tdsLeft]="true">STT</th>
+            <th [width]="'170px'" [tdsLeft]="true">Mã đơn hàng</th>
+            <th [width]="'170px'">Tên khách hàng</th>
+            <th [width]="'170px'">Số điện thoại</th>
+            <th [width]="'170px'">Tổng tiền</th>
+            <th [width]="'170px'" class="w-full truncate">Tổng sản phẩm chờ chốt</th>
+            <th [width]="'170px'">Trạng thái</th>
+            <th [width]="'170px'">Nhân viên</th>
+            <th [width]="'170px'">Thời gian</th>
+            <th [width]="'170px'" [tdsRight]="true">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-template ngFor let-order [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
+            <tr [ngClass]="setOfCheckedId.has(order.Id)?'bg-[#F2FCF5]':''">
+
+              <!-- Detail -->
+              <td [expand]="expandSet.has(order.Id)" class="text-center border-r"
+                (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
+              </td>
+
+              <!-- Checked -->
+              <td [checked]="setOfCheckedId.has(order.Id)" (checkedChange)="onItemChecked(order.Id, $event)"
+                class="text-center border-r" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
+              </td>
+
+              <td [tdsLeft]="true"> {{index + 1}} </td>
+
+              <!-- Mã đơn hàng -->
+              <td [tdsLeft]="true">
+                <div class="w-full flex flex-col gap-y-2">
+                  <div>{{order.Code}}</div>
+                  <div class="font-z14" *ngIf="order.MessageCount > 0">
+                    <div title="Tin nhắn đã gửi" (click)="showModalHistoryChat(order.Id)"
+                      class="hover:text-info-400 text-neutral-1-400 cursor-pointer gap-x-1 flex items-center">
+                      <i class="tdsi-messenger-fill text-base"></i>
+                      <span>{{order.MessageCount}}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Tên khách hàng -->
+              <td> {{order.PartnerName}}</td>
+
+              <!-- Số điện thoại -->
+              <td> {{order.Telephone}}</td>
+
+              <!-- Tổng tiền -->
+              <td> {{order.TotalAmount || 0 | number}}</td>
+
+              <!-- Tổng sản phẩm chờ chốt -->
+              <td> {{order.TotalAmount}}</td>
+
+              <!-- Trạng thái -->
+              <td>
+                <tds-tag [status]="getColorStatusText(order.StatusText)" type="outline">
+                  {{ order.StatusText }}
+                </tds-tag>
+              </td>
+
+              <!-- Nhân viên -->
+              <td>{{order.UserName}}</td>
+
+              <!-- Thời gian -->
+              <td>{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
+
+              <!-- Thao tác -->
+              <td [tdsRight]="true">
+                <div class="flex gap-x-2">
+                  <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(order)">
+                    <span class="flex items-center">
+                      <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+                    </span>
+                  </button>
+
+                  <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order)">
+                    <span class="flex items-center text-neutral-1-500">
+                      <i class="tdsi-edit-fill"></i>
+                    </span>
+                  </button>
+
+                  <button tds-button-icon color="secondary" size="sm" (click)="onDelete(order.Id, order.Code)">
+                    <span class="flex items-center text-neutral-1-500">
+                      <i class="tdsi-trash-fill"></i>
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr [expand]="expandSet.has(order.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 w-full">
+              <div #expandOrderLivecampaign [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
+                <expand-order-livecampaign *ngIf="expandSet.has(order.Id)" [dataOrder]="order">
+                </expand-order-livecampaign>
+              </div>
+            </tr>
+
+          </ng-template>
+        </tbody>
+      </tds-table>
+    </div>
+  </div>
+
+  <tds-drawer [visible]="isOpenDrawer"
+    [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+
+    <ng-template #titleMessage>
+      <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
+        Gửi tin nhắn Facebook
+      </span>
+    </ng-template>
+
+    <ng-container *tdsDrawerContent>
+      <div class="w-full h-full flex flex-col overflow-hidden text-body-2">
+        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
+          <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
+            <shared-tds-conversations-v2 class="flex w-full h-full" [team]="currentMappingTeam?.team"
+              [data]="currentConversation" [type]="'all'">
+            </shared-tds-conversations-v2>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </tds-drawer>
+</div>

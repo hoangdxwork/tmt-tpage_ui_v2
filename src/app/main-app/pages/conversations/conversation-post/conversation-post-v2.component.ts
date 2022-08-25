@@ -147,9 +147,9 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
 
   loadPartnerTimstamp() {
-    if(this.currentTeam) {
-        this.chatomniCommentFacade.getParentTimeStamp(this.currentTeam.Id);
-    }
+    // if(this.currentTeam) {
+    //     this.chatomniCommentFacade.getParentTimeStamp(this.currentTeam.Id).subscribe();
+    // }
   }
 
   eventEmitter() {
@@ -306,11 +306,6 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
       next: (res: ChatomniObjectsDto) => {
           if(res && res.Items) {
 
-              // TODO: sort lại dữ liệu theo ngày tạo mới nhất
-              if(res && TDSHelperArray.isArray(res.Items)) {
-                  res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
-              }
-
               this.lstObjects = [...res.Items];
               if(TDSHelperArray.hasListValue(res.Items)){
                   let exits = res.Items?.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
@@ -384,8 +379,6 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
         next: (res: ChatomniObjectsDto) => {
             if(TDSHelperArray.hasListValue(res?.Items)) {
-                // TODO: sort lại dữ liệu theo ngày tạo mới nhất
-                res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
                 this.lstObjects = [...res.Items];
             }
 

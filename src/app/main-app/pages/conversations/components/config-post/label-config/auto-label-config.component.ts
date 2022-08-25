@@ -1,56 +1,44 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
-import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
 import { ChatomniObjectsItemDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";
-import { Observable, Subject } from "rxjs";
+import { Observable } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
-import { AutoLabelConfigDTO, TagControlLabelDTO } from "src/app/main-app/dto/configs/post/order-config.dto";
 import { CRMTagDTO } from "src/app/main-app/dto/crm-tag/odata-crmtag.dto";
-import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
 import { CRMTagService } from "src/app/main-app/services/crm-tag.service";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalRef } from "tds-ui/modal";
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
+import { AutoLabelConfigDTO, TagOnPatternDTO } from '@app/dto/configs/post/post-order-config.dto';
 
 @Component({
   selector: 'auto-label-config',
-  templateUrl: './auto-label-config.component.html'
+  templateUrl: './auto-label-config.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 
-export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
+export class AutoLabelConfigComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
 
-  formLabelConfig!: FormGroup;
+  dataModel!: AutoLabelConfigDTO;
+  lstTagOnPattern: any[] = [];
   isLoading: boolean = false;
 
   lstTags$!: Observable<CRMTagDTO[]>;
-  private destroy$ = new Subject<void>();
 
-  constructor(
-    private fb: FormBuilder,
-    private message: TDSMessageService,
+  constructor(private message: TDSMessageService,
     private modalRef: TDSModalRef,
     private facebookPostService: FacebookPostService,
-    private crmTagService: CRMTagService
-  ) {
-  }
-
-  get tagOnPatternFormGroups() {
-    return (this.formLabelConfig.get('TagOnPattern') as FormArray).controls;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if(changes?.data?.firstChange === true) this.createForm();
-    else this.resetForm();
-
-    if(changes?.data?.currentValue) {
-      this.loadAutoLabelConfigs(this.data.ObjectId);
-    }
-  }
+    private crmTagService: CRMTagService,
+    private destroy$: TDSDestroyService,
+    private cdRef: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
+    this.loadData(this.data.ObjectId);
     this.loadCRMTag();
   }
 
@@ -58,125 +46,106 @@ export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
     this.lstTags$ = this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$));
   }
 
-  loadAutoLabelConfigs(pageId: string) {
+  loadData(pageId: string) {
     this.isLoading = true;
-    this.facebookPostService.getAutoLabelConfigs(pageId)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoading = false }))
-      .subscribe(res => {
-        this.updateForm(res);
+
+    this.facebookPostService.getAutoLabelConfigs(pageId).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next:res => {
+          this.dataModel = {...res};
+
+          if (TDSHelperArray.hasListValue(this.dataModel?.TagOnPattern)) {
+            this.lstTagOnPattern = this.dataModel.TagOnPattern.map(tag => {
+              return {
+                CrmTag: tag.CrmTag,
+                CrmKey: tag.CrmKey?.split(",") || []
+              }
+            });
+          }
+
+          this.isLoading = false;
+
+          this.cdRef.detectChanges();
+        },
+        error:(err) => {
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadLabelConfig);
+          this.isLoading = false;
+
+          this.cdRef.detectChanges();
+        }
       });
   }
 
-  createForm() {
-    this.formLabelConfig = this.fb.group({
-      AssignOnPhone: [false],
-      AssignOnOrder: [false],
-      AssignOnPattern: [false],
-      AssignOnBillDraft: [false],
-      AssignOnBillPrint: [false],
-      AssignOnBillPrintShip: [false],
-      TagOnPhone: [null],
-      TagOnOrder: [null],
-      TagOnPattern: this.fb.array([]),
-      TagOnBillDraft: [null],
-      TagOnBillPrint: [null],
-      TagOnBillPrintShip: [null]
+  addCRMKeyTag(){
+    this.lstTagOnPattern.push({
+      CrmTag: null,
+      CrmKey: []
     })
   }
 
-  resetForm() {
-    this.formLabelConfig.reset();
+  deleteCRMKeyTag(index: number) {
+    this.lstTagOnPattern.splice(index, 1);
   }
 
-  updateForm(data: AutoLabelConfigDTO) {
-    this.formLabelConfig.patchValue(data);
-
-    if (TDSHelperArray.hasListValue(data?.TagOnPattern)) {
-      data.TagOnPattern.forEach(Tag => {
-          this.addCRMKeyTag(Tag);
-      });
-    }
-  }
-
-  addCRMKeyTag(data: TagControlLabelDTO | null) {
-    const model = <FormArray>this.formLabelConfig.controls['TagOnPattern'];
-    model.push(this.initCRMKeyTag(data));
-  }
-
-  initCRMKeyTag(data: TagControlLabelDTO | null) {
-    let crmKey = data?.CrmKey?.split(',');
-
-    let result = this.fb.group({
-      CrmTag: [data?.CrmTag],
-      CrmKey: [crmKey || []]
+  changeTagOnPattern(event:string[], index: number) {
+    event.forEach(x => {
+      if(x.includes(',')){
+        this.message.error('Ký tự không hợp lệ');
+        event.pop();
+      }
     });
 
-    return result;
+    this.lstTagOnPattern[index].CrmKey = [...event];
   }
 
-  deleteCRMKeyTag(i: number) {
-    const model = <FormArray>this.formLabelConfig.controls['TagOnPattern'];
-    model.removeAt(i);
-  }
-
-  onSave(): any {
+  onSave() {
     let model = this.prepareModel();
     let postId = this.data?.ObjectId;
-
-    if(this.isCheckValue() === 1) {
+    
+    if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
-      this.facebookPostService.updateAutoLabelConfigs(postId, model)
-        .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe((res: any) => {
-          this.message.success(Message.UpdatedSuccess);
-        }, error => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+
+      this.facebookPostService.updateAutoLabelConfigs(postId, model).pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next:(res: any) => {
+            this.message.success(Message.UpdatedSuccess);
+            this.isLoading = false;
+
+            this.cdRef.detectChanges();
+          }, 
+          error:(err) => {
+            this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
+            this.isLoading = false;
+
+            this.cdRef.detectChanges();
+          }
         });
     }
   }
 
-  prepareModel(): any {
-    let formValue = this.formLabelConfig.value;
+  prepareModel(): AutoLabelConfigDTO {
+    let model = {...this.dataModel} as AutoLabelConfigDTO;
 
-    let model = {} as AutoLabelConfigDTO;
-
-    model.AssignOnPhone = formValue.AssignOnPhone;
-    model.AssignOnOrder = formValue.AssignOnOrder;
-    model.AssignOnPattern = formValue.AssignOnPattern;
-    model.AssignOnBillDraft = formValue.AssignOnBillDraft;
-    model.AssignOnBillPrint = formValue.AssignOnBillPrint;
-    model.AssignOnBillPrintShip = formValue.AssignOnBillPrintShip;
-    model.TagOnPattern = formValue.TagOnPattern;
-    model.TagOnPhone = formValue.TagOnPhone;
-    model.TagOnOrder = formValue.TagOnOrder;
-    model.TagOnBillDraft = formValue.TagOnBillDraft;
-    model.TagOnBillPrint = formValue.TagOnBillPrint;
-    model.TagOnBillPrintShip = formValue.TagOnBillPrintShip;
-
-    if(TDSHelperArray.hasListValue(formValue.TagOnPattern)) {
-      model.TagOnPattern = formValue.TagOnPattern.map((tag: TagControlLabelDTO) => {
-        tag.CrmKey = tag.CrmKey.toString();
-        return tag;
-      });
-    }
+    model.TagOnPattern = this.lstTagOnPattern.map((tag: any) => {
+      return {
+        CrmTag: tag.CrmTag,
+        CrmKey: tag.CrmKey?.join(",") || null
+      }
+    });
 
     return model;
   }
 
-  isCheckValue(): number {
-    let isAssignOnPattern = this.formLabelConfig.value.AssignOnPattern;
+  isCheckValue(model: AutoLabelConfigDTO): number {
+    let isAssignOnPattern = model.AssignOnPattern;
 
     if(isAssignOnPattern === true) {
-      let tagOnPattern: TagControlLabelDTO[] = this.formLabelConfig.value.TagOnPattern;
-
-      if(!TDSHelperArray.hasListValue(tagOnPattern)) {
+      if(!TDSHelperArray.hasListValue(model.TagOnPattern)) {
         this.message.error(Message.ConversationPost.TagOnPatternEmpty);
         return 0;
       }
 
-      let checkTagOnPattern = tagOnPattern.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag));
+      let checkTagOnPattern = model.TagOnPattern.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag));
 
       if(checkTagOnPattern > -1) {
         this.message.error(Message.ConversationPost.TagOnPatternEmpty);
@@ -190,10 +159,4 @@ export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
   onCannel() {
     this.modalRef.destroy(null);
   }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
 }

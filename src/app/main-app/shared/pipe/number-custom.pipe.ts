@@ -10,9 +10,12 @@ export class NumberCustomPipe implements PipeTransform {
 
   constructor(){}
 
-  transform(value: any, form:string): any {
-    let format = formatNumber(value,vi_VN.locale).replace(',',form);
-    return format
+  transform(value: any, form: string): any {
+    if(value) {
+      let format = formatNumber(value, vi_VN.locale).replace(',', form);
+      return format
+    }
+    return null;
   }
 
 }

@@ -36,7 +36,7 @@ import { ModalLiveCampaignBillComponent } from './components/modal-live-campaign
 import { ModalInfoOrderComponent } from './components/modal-info-order/modal-info-order.component';
 import { DetailMessageComponent } from './components/detail-message/detail-message.component';
 import { DetailProductComponent } from './components/detail-product/detail-product.component';
-import { DetailOrderComponent } from './components/detail-order/detail-order.component';
+import { DetailOrderLiveCampaignComponent } from './components/detail-order-livecampaign/detail-order-livecampaign.component';
 import { DetailBillPaymentComponent } from './components/detail-bill-payment/detail-bill-payment.component';
 import { DetailBillComponent } from './components/detail-bill/detail-bill.component';
 import { TableOrderMessageComponent } from './components/table-order-message/table-order-message.component';
@@ -88,6 +88,9 @@ import { TDSSwitchModule } from 'tds-ui/switch';
 import { ODataLiveCampaignService } from '../../services/mock-odata/odata-live-campaign.service';
 import { FilterOptionCampaignComponent } from './components/filter-option-campaign/filter-option-campaign.component';
 import { CommonHandler } from '../../handler-v2/common.handler';
+import { ExpandOrderLivecampaignComponent } from './components/expand-order-livecampaign/expand-order-livecampaign.component';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { OrderModule } from '../order/order.module';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -102,7 +105,7 @@ const cmp =[
   ModalInfoOrderComponent,
   DetailMessageComponent,
   DetailProductComponent,
-  DetailOrderComponent,
+  DetailOrderLiveCampaignComponent,
   DetailBillPaymentComponent,
   DetailBillComponent,
   TableOrderMessageComponent,
@@ -116,7 +119,8 @@ const cmp =[
   ModalConfirmedDepositComponent,
   ModalPaymentComponent,
   DrawerOrderMessageComponent,
-  FilterOptionCampaignComponent
+  FilterOptionCampaignComponent,
+  ExpandOrderLivecampaignComponent
 ]
 
 const SERVICES = [
@@ -149,7 +153,8 @@ const SERVICES = [
   ChatomniMessageService,
   ChatomniMessageFacade,
   ActivityMatchingService,
-  ConversationService
+  ConversationService,
+  ChatomniCommentFacade
 ]
 
 @NgModule({
@@ -190,7 +195,8 @@ const SERVICES = [
     TDSFilterStatusModule,
     TDSTimelineModule,
     TDSDrawerModule,
-    TDSConversationsModule
+    TDSConversationsModule,
+    OrderModule
   ],
   providers: [
     ...SERVICES

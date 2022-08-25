@@ -183,6 +183,9 @@ const SERVICES = [
     DirectivesModule,
     TDSEmptyModule
   ],
+  exports: [
+    EditOrderV2Component
+  ],
   providers: [
     ...SERVICES,
   ],

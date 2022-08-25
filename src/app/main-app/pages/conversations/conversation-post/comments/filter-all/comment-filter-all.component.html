@@ -30,12 +30,8 @@
 
                             <!-- nội dung bình luận -->
                             <div class="flex flex-row">
-                                <div [innerHTML]="item.Message | formatIconLike | safeHtml "></div>
+                                <div [innerHTML]="item.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
                             </div>
-<!--
-                            <div>
-                              <div [innerHTML]="messBB | bbcodeConvert | formatIconLike | safeHtml "></div>
-                            </div> -->
 
                             <!-- hình ảnh đính kèm -->
                             <div *ngIf="item.Data?.attachment">
@@ -49,8 +45,8 @@
                             <div class="flex items-center pt-3">
                                 <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
 
-                                <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng" tooltipPlacement="top"
-                                    (click)="loadPartnerTab(item)" tds-tooltip>
+                                <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
+                                    tooltipPlacement="top" (click)="loadPartnerTab(item)" tds-tooltip>
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-information-fill text-neutral-1-500"></i>
                                     </span>

@@ -15,9 +15,5 @@ export class StringToStringArrayPipe implements PipeTransform {
         if(TDSHelperArray.isArray(value)){
             return value;
         }
-
-        if(!value){
-            return [];
-        }
     }
   }

@@ -3,17 +3,17 @@
     <tds-timeline>
 
       <tds-timeline-item *ngFor="let data of lstData" [tdsDot]="dotTemplate">
-        <div class="px-6 py-4 mb-8 w-full border rounded-xl flex justify-between">
-          <div class="flex space-x-8">
+        <div class="px-4 py-3 mb-4 w-full border rounded-xl flex justify-between">
+          <div class="flex space-x-6">
             <div class="flex items-center">
               <img src="../../../assets/imagesv2/live-campaign/detail-product-modal.svg" alt="">
             </div>
-            <div class="flex flex-col space-y-3" *ngIf="convertNameEvent(data.EventName) as convert">
-              <div class="text-body-1 text-neutral-1-600">{{ data.DateCreated | date: "dd/MM/yyyy HH:mm:ss" }}</div>
-              <div class="text-header-1 font-semibold {{convert.color}}">{{ convert.name }}</div>
+            <div class="flex flex-col space-y-2" *ngIf="convertNameEvent(data.EventName) as convert">
+              <div class="text-caption-1 text-neutral-1-600">{{ data.DateCreated | date: "dd/MM/yyyy HH:mm:ss" }}</div>
+              <div class="text-body-1 font-semibold {{convert.color}}">{{ convert.name }}</div>
             </div>
           </div>
-          <div class="flex items-center text-info-400 text-title-1 font-semibold">Số lượng: {{data.Quantity}}</div>
+          <div class="flex items-center text-info-400 text-body-2 font-semibold">Số lượng: {{data.Quantity}}</div>
         </div>
       </tds-timeline-item>
     </tds-timeline>
@@ -26,5 +26,5 @@
 </div>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-  <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Đóng</button>
+  <button tds-button class="min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
 </div>

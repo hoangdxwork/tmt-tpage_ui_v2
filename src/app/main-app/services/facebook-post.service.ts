@@ -1,11 +1,10 @@
-import { PostOrderConfigV2DTO } from './../dto/configs/post/post-order-config-v2.dto';
-import { EventEmitter, Injectable, OnDestroy, OnInit } from '@angular/core';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { AutoOrderConfigDTO, ConversationPostConfigDTO, TBotRequestCallbackFailedDTO, AutoLabelConfigDTO, AutoHiddenConfigDTO } from '../dto/configs/post/post-order-config.dto';
+import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { AutoReplyConfigDTO } from '../dto/configs/page-config.dto';
-import { AutoHiddenConfigDTO, AutoLabelConfigDTO, AutoOrderConfigDTO, MDBFacebookMappingPostAutoConfigDTO, TBotRequestCallbackFailedDTO } from '../dto/configs/post/order-config.dto';
 import { FacebookPostDTO, FacebookPostItem } from '../dto/facebook-post/facebook-post.dto';
 import { BaseSevice } from './base.service';
 
@@ -170,12 +169,12 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     return this.apiService.getData<AutoReplyConfigDTO>(api, null);
   }
 
-  updateAutoReplyConfigs(postId: string, data: AutoReplyConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
+  updateAutoReplyConfigs(postId: string, data: AutoReplyConfigDTO): Observable<ConversationPostConfigDTO> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoreplyconfigs`,
       method: CoreApiMethodType.put
     }
-    return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
+    return this.apiService.getData<ConversationPostConfigDTO>(api, data);
   }
 
   getAutoLabelConfigs(pageId: string): Observable<AutoLabelConfigDTO> {
@@ -186,12 +185,12 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     return this.apiService.getData<AutoLabelConfigDTO>(api, null);
   }
 
-  updateAutoLabelConfigs(pageId: string, data: AutoLabelConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
+  updateAutoLabelConfigs(pageId: string, data: AutoLabelConfigDTO): Observable<ConversationPostConfigDTO> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${pageId}/autolabelconfigs`,
       method: CoreApiMethodType.put
     }
-    return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
+    return this.apiService.getData<ConversationPostConfigDTO>(api, data);
   }
 
   getOrderConfig(postId: string): Observable<any> {
@@ -203,7 +202,7 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     return this.apiService.getData<any>(api, null);
   }
 
-  updateOrderConfig(postId: string, isImmediateApply: boolean, data: PostOrderConfigV2DTO): Observable<any> {
+  updateOrderConfig(postId: string, isImmediateApply: boolean, data: AutoOrderConfigDTO): Observable<any> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs?immediateApply=${isImmediateApply}`,
       method: CoreApiMethodType.put
@@ -212,7 +211,7 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     return this.apiService.getData<any>(api, data);
   }
 
-  updateInteractionConfig(postId: string, data: AutoOrderConfigDTO): Observable<undefined> {
+  updateInteractionConfig(postId: string, data: any): Observable<undefined> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderreplyconfigs`,
       method: CoreApiMethodType.put
@@ -230,13 +229,13 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     return this.apiService.getData<AutoHiddenConfigDTO>(api, null);
   }
 
-  updateHiddenCommentConfigs(postId: string, data: AutoHiddenConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
+  updateHiddenCommentConfigs(postId: string, data: AutoHiddenConfigDTO): Observable<ConversationPostConfigDTO> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/AutoHiddenConfigs`,
       method: CoreApiMethodType.put
     }
 
-    return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
+    return this.apiService.getData<ConversationPostConfigDTO>(api, data);
   }
 
   getReport(postId: string): Observable<TBotRequestCallbackFailedDTO[]> {

@@ -58,6 +58,7 @@ import { AddBillHandler } from 'src/app/main-app/handler-v2/bill-handler/add-bil
 import { CreateFormBillHandler } from 'src/app/main-app/handler-v2/bill-handler/create-form-bill.handler';
 import { PrinterService } from '@app/services/printer.service';
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
+import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 
 @Component({
   selector: 'app-add-bill',
@@ -84,6 +85,7 @@ export class AddBillComponent implements OnInit {
   lstUser!: Observable<ApplicationUserDTO[]>;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
   lstTax!: TaxDTO[];
+  innerText: string = '';
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -130,6 +132,7 @@ export class AddBillComponent implements OnInit {
     }
     return value
   };
+  chatomniEventEmiter: any;
 
   constructor(private fb: FormBuilder,
     private router: Router,
@@ -1162,9 +1165,9 @@ export class AddBillComponent implements OnInit {
     this.totalAmountLines = cacl.totalAmountLines;
   }
 
-  onLoadSuggestion(item: ResultCheckAddressDTO) {
-    this.prepareSuggestionsBill.onLoadSuggestion(this._form, item);
-  }
+  // onLoadSuggestion(item: ResultCheckAddressDTO) {
+  //   this.prepareSuggestionsBill.onLoadSuggestion(this._form, item);
+  // }
 
   loadCustomers() {
     return this.partnerService.getCustomers(this.page, this.limit, this.keyFilter)
@@ -1194,5 +1197,25 @@ export class AddBillComponent implements OnInit {
   loadListPrice() {
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
     return this.commonService.getPriceListAvailable(date).pipe(map(res => res.value))
+  }
+
+  showModalSuggestAddress(innerText : string){
+    let modal =  this.modalService.create({
+      title: 'Thêm địa chỉ',
+      content: ModalAddAddressV2Component,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        _street: innerText,
+      }
+    });
+
+    modal.afterClose.subscribe({
+      next: (result: ResultCheckAddressDTO) => {
+        if(result){
+         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+        }
+      }
+    })
   }
 }
