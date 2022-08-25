@@ -1,11 +1,9 @@
-import { Data } from './../../dto/saleonlineorder/create-fastsaleorder.dto';
 import { ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
-import { Injectable, OnDestroy } from "@angular/core";
-import { map, Observable, shareReplay, Subject, takeUntil } from "rxjs";
+import { Injectable } from "@angular/core";
+import { ReplaySubject, shareReplay, Subject } from "rxjs";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { CRMTeamService } from "../crm-team.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { PartnerService } from '../partner.service';
@@ -19,7 +17,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
 
-  private readonly partner$ = new Subject<any>();
+  private readonly partner$ = new ReplaySubject<any>();
 
   dataSource: { [id: string] : ChatomniDataDto } = {}; //this.postDataSource[id]
   partner: { [teamId: number] : PartnerTimeStampItemDto } = {};
