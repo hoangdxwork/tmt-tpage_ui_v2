@@ -69,10 +69,6 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
 
-    // if(!TDSHelperArray.hasListValue(this.lstCity)) {
-    //   this.loadCity();
-    // }
-
     if (this._cities && this._cities.code) {
       this._form.controls['City'].patchValue(this._cities);
 
