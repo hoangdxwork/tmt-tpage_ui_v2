@@ -111,7 +111,7 @@ export interface Thumbnail {
   Url: string;
 }
 export interface ChatomniDataItemDto {
-  Data: ChatomniFacebookDataDto;
+  Data: ChatomniFacebookDataDto; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
   Id: string;
   ObjectId: string;
   ParentId?: string;
@@ -186,5 +186,68 @@ export interface ExtrasChildsDto {
   ChannelCreatedTime: Date;
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
+}
+
+export interface ChatomniTShopDataDto {
+  Id: any;
+  Content: any;
+  Type: number;
+  Status: boolean;
+  Sender: Sender;
+  ShopId: string;
+  ConversationId: string;
+  Recipient: Recipient;
+  AttachmentDto: AttachmentDto[];
+  ListUserId: string[];
+  MessageLinkDto: any[];
+  SocketId: string;
+  CookieId?: any;
+  CreationTime: Date;
+  ExtraProperties: ExtraProperties;
+  ObjectKind: string;
+  ObjectKindValue?: number;
+  ObjectId?: number;
+  ParentCommentId?: any;
+  UserId: string;
+  Actor: Actor;
+  CreatorId: string;
+}
+
+export interface Sender {
+  Id: string;
+  Name: string;
+  Avatar?: any;
+  UserName?: any;
+}
+
+export interface Recipient {
+  Id: string;
+  Name: string;
+  Avatar?: any;
+  UserName?: any;
+}
+
+export interface AttachmentDto {
+  id: string;
+  untrustedNameForDisplay: string;
+  downloadUrl: string;
+  size: number;
+  fileExtension: string;
+  status?: any;
+  fileUrl: string;
+  conversationId: string;
+  messageId: string;
+  attachmentType: number;
+  creationTime: Date;
+}
+
+export interface ExtraProperties {
+  sendFrom: string;
+}
+
+export interface Actor {
+  Id: string;
+  Name: string;
+  AvatarUrl: string;
 }
 

@@ -62,9 +62,9 @@
             </div>
 
             <div class="overflow-hidden flex flex-auto">
-                <div class="overflow-hidden flex flex-col relative flex-auto px-1 pt-1" *ngIf="lstObjects && lstObjects.length > 0">
+                <div class="overflow-hidden flex flex-col relative flex-auto px-1 pt-1 gap-y-1" *ngIf="lstObjects && lstObjects.length > 0">
 
-                    <div class="overflow-y-auto tds-custom-scroll flex flex-col flex-auto gap-y-1" id="scrollObjects" is-lock="true"
+                    <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollObjects" is-lock="true"
                         observe-attributes yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
                         <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex">
@@ -81,6 +81,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="bg-white flex-auto"></div>
                 </div>
             </div>
         </div>
