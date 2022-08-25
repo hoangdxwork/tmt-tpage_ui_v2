@@ -68,7 +68,7 @@
                     </tds-form-field>
                     <div class="flex justify-between mb-2 mt-4">
                         <tds-label >Mật khẩu</tds-label>
-                        <a routerLink="/account/forgot-password" class="text-neutral-1-500 text-caption-2 font-regular">Quên mật khẩu</a>
+                        <a (click)="forgotPassword()" class="text-neutral-1-500 text-caption-2 font-regular" style="cursor: pointer;">Quên mật khẩu</a>
                     </div>
                     <tds-form-field class=" bg-neutral-3-50  rounded" [color]="'dark'">
                         <input tdsInput autocomplete="off" (change)="onChangeInputPass()" formControlName="password" [type]="isShowPass?'text':'password'"

@@ -25,7 +25,6 @@ import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ActivityStatus } from '@core/enum/message/coversation-message';
 import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
 
 
@@ -87,8 +86,8 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   ngOnInit(): void {
-    if(this.dataItem && this.dataItem.Id && !this.dataItem.Message) {
-        let exist = this.dataItem.Data.attachments.data;
+    if(this.dataItem && !this.dataItem.Message) {
+        let exist = this.dataItem.Data?.attachments?.data;
         if(exist) {
           this.dataItem.Data!.is_error_attachment = false;
         } else {
