@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from './base.service';
 
 @Injectable({
@@ -18,47 +18,81 @@ export class SuggestAddressService extends BaseSevice {
   _keyCacheDistricts!: "_key_districts";
   _keyCacheWards!: "_key_wards";
 
+  private readonly _cities = new ReplaySubject<any[]>();
+  public lstCity: any[] = [];
+
+  private readonly _districts = new ReplaySubject<any[]>();
+  private readonly _wards = new ReplaySubject<any[]>();
+
   constructor(private apiService: TCommonService) {
     super(apiService)
   }
 
-  getCities(): Observable<any> {
+  getCity(): Observable<any> {
+      return this._cities.asObservable();
+  }
+
+  setCity() {
+    if(TDSHelperArray.hasListValue(this.lstCity)) {
+        this._cities.next(this.lstCity);
+    } else {
+      this.apiCity().subscribe({
+        next: (res: any) => {
+            this.lstCity = [...res];
+            this._cities.next(res);
+        }
+      })
+    }
+  }
+
+  apiCity() {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/getcities`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/getcities`,
+        method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, { provider: "Undefined" });
+  }
+
+  getDistrict(): Observable<any> {
+      return this._districts.asObservable();
+  }
+
+  setDistrict(code: string) {
+    this.apiDistrict(code).subscribe({
+      next: (res: any) => {
+          this._districts.next(res);
+      }
+    })
+  }
+
+  apiDistrict(code: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getdistricts(${code})`,
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getCacheData<TDSSafeAny>(api, { provider: "Undefined" });
+    return this.apiService.getData<TDSSafeAny>(api, { provider: "Undefined" });
   }
 
-  removeKeyCities() {
-      this.apiService.removeCacheAPI(this._keyCacheCities);
+  getWard(): Observable<any> {
+      return this._wards.asObservable();
   }
 
-  getDistricts(value: string): Observable<any> {
+  setWard(code: string) {
+    this.apiWard(code).subscribe({
+      next: (res: any) => {
+          this._wards.next(res);
+      }
+    })
+  }
+
+  apiWard(code: string): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/getdistricts(${value})`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/getwards(${code})`,
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getCacheData<TDSSafeAny>(api, { provider: "Undefined" });
-  }
-
-  removeKeyDistricts() {
-      this.apiService.removeCacheAPI(this._keyCacheDistricts);
-  }
-
-  getWards(value: string): Observable<any> {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/getwards(${value})`,
-      method: CoreApiMethodType.post,
-    }
-
-    return this.apiService.getCacheData<TDSSafeAny>(api, { provider: "Undefined" });
-  }
-
-  removeKeyWards() {
-      this.apiService.removeCacheAPI(this._keyCacheWards);
+    return this.apiService.getData<TDSSafeAny>(api, { provider: "Undefined" });
   }
 
   checkAddress(value: string): Observable<any> {
@@ -67,7 +101,7 @@ export class SuggestAddressService extends BaseSevice {
         method: CoreApiMethodType.get
     }
 
-    return this.apiService.getCacheData<TDSSafeAny>(api, null);
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   suggest(value: string): Observable<any> {
@@ -76,7 +110,7 @@ export class SuggestAddressService extends BaseSevice {
         method: CoreApiMethodType.get
     }
 
-    return this.apiService.getCacheData<TDSSafeAny>(api, null);
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
 }

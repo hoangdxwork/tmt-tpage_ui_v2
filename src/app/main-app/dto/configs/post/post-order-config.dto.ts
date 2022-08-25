@@ -39,7 +39,7 @@ export interface ConfigUserDTO {
     Id: string;
     UserName: string;
     Name: string;
-    Avatar: string;
+    Avatar?: string;
 }
 
 export interface AutoOrderConfigDTO {

@@ -26,7 +26,8 @@ import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
     TDSButtonModule,
     TDSCheckBoxModule,
     TDSMessageModule,
-    TDSSpinnerModule,
+    TDSSpinnerModule
   ]
 })
+
 export class AccountModule { }

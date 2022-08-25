@@ -1,5 +1,5 @@
-import { eventCollapTrigger } from './../helper/event-animations.helper';
-import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy, HostBinding, ChangeDetectionStrategy } from '@angular/core';
+
+import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy, HostBinding, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
@@ -19,18 +19,18 @@ const ESCAPE_ENTER = 'Enter';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
+export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
-  // @ViewChild('streetInput') streetInput!: ElementRef;
   _form!: FormGroup;
+
   @Input() _street!: string;
   @Input() _cities!: SuggestCitiesDTO | null;
   @Input() _districts!: SuggestDistrictsDTO | null;
   @Input() _wards!: SuggestWardsDTO | null;
 
-  lstCities!: Array<SuggestCitiesDTO>;
-  lstDistricts!: Array<SuggestDistrictsDTO>;
-  lstWards!: Array<SuggestWardsDTO>;
+  lstCity!: Array<SuggestCitiesDTO>;
+  lstDistrict!: Array<SuggestDistrictsDTO>;
+  lstWard!: Array<SuggestWardsDTO>;
   innerText: string = '';
 
   tempAddresses: Array<ResultCheckAddressDTO> = [];
@@ -48,10 +48,14 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
+      private cdRef: ChangeDetectorRef,
       private message: TDSMessageService,
       private suggestService: SuggestAddressService) {
         this.createForm();
-        this.loadCity();
+  }
+
+  ngOnInit(): void {
+    this.loadCity();
   }
 
   createForm() {
@@ -64,12 +68,13 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+
     if (this._cities && this._cities.code) {
       this._form.controls['City'].patchValue(this._cities);
 
       const code = this._cities.code;
       this.loadDistricts(code);
-    }else{
+    } else {
       this._form.controls['City'].patchValue(null);
     }
 
@@ -78,13 +83,13 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
 
       const code = this._districts.code;
       this.loadWards(code);
-    }else{
+    } else {
       this._form.controls['District'].patchValue(null);
     }
 
     if(this._wards && this._wards.code) {
       this._form.controls['Ward'].patchValue(this._wards);
-    }else{
+    } else {
       this._form.controls['Ward'].patchValue(null);
     }
 
@@ -92,47 +97,52 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
         this._form.controls['Street'].setValue(this._street);
         this.innerText = this._street;
         this.checkAddress(null);
-    }else{
-      this._form.controls['Street'].setValue(null);
+    } else {
+        this._form.controls['Street'].setValue(null);
     }
   }
 
   loadCity(): void {
-    this.suggestService.getCities().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstCities = res;
+    this.suggestService.setCity();
+    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.lstCity = [...res];
         this.citySubject.next(res);
     });
   }
 
   loadDistricts(code: string) {
-    this.suggestService.getDistricts(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstDistricts = res;
+    this.suggestService.setDistrict(code);
+    this.suggestService.getDistrict().subscribe((res: any) => {
+        this.lstDistrict = [...res];
         this.districtSubject.next(res);
-      });
+    });
   }
 
   loadWards(code: string) {
-    this.suggestService.getWards(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstWards = res;
+    this.suggestService.setWard(code);
+    this.suggestService.getWard().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.lstWard = [...res];
         this.wardSubject.next(res);
-      });
+    });
   }
 
   handleCityFilter(value: string) {
-      var result = this.lstCities.filter((x: SuggestCitiesDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstCity?.filter((x: SuggestCitiesDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
       this.citySubject.next(result);
+    }
   }
 
   handleFilterDistrict(value: string) {
     if(TDSHelperString.hasValueString(value)){
-      var result = this.lstDistricts.filter((x: SuggestDistrictsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      let result = this.lstDistrict?.filter((x: SuggestDistrictsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
       this.districtSubject.next(result);
     }
   }
 
   handleFilterWard(value: string) {
     if(TDSHelperString.hasValueString(value)){
-      var result = this.lstWards.filter((x: SuggestWardsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      let result = this.lstWard?.filter((x: SuggestWardsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
       this.wardSubject.next(result);
     }
   }
@@ -162,6 +172,7 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
     let street = (this._form.controls['Ward'].value?.name ? (this._form.controls['Ward'].value.name + ', '): '')
       + (this._form.controls['District'].value?.name ? (this._form.controls['District'].value.name + ', '): '')
       + (this._form.controls['City'].value?.name ? this._form.controls['City'].value?.name: '')
+
     this._form.controls['Street'].setValue(street);
   }
 
@@ -189,8 +200,9 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
       }
       this.onLoadSuggestion.emit(item);
     } else {
-      this.lstDistricts = [];
-      this.lstWards = []
+      this.lstDistrict = [];
+      this.lstWard = [];
+
       this._form.controls['City'].setValue(null);
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
@@ -237,7 +249,8 @@ export class SuggestAddressV2Component implements  OnChanges, OnDestroy {
 
       this.onLoadSuggestion.emit(item);
     }else{
-      this.lstWards = []
+      this.lstWard = [];
+
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
 

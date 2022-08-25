@@ -357,24 +357,29 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   nextData(event: any) {
-    if(event) {
-      this.isLoading = true;
-      let id = `${this.team.Id}_${this.data.ObjectId}`;
+    if(this.isLoading) {
+      return;
+    }
 
-      this.dataSource$ = this.chatomniCommentService.nextDataSource(id);
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+    this.isLoading = true;
+    let id = `${this.team.Id}_${this.data.ObjectId}`;
+
+    this.dataSource$ = this.chatomniCommentService.nextDataSource(id);
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataDto) => {
 
           if(TDSHelperArray.hasListValue(res?.Items)) {
               this.dataSource.Items = [...res.Items];
           }
 
-          this.isLoading = false;
           this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
-          this.cdRef.markForCheck();
-      }, error => {
           this.isLoading = false;
-      })
-    }
+          this.cdRef.markForCheck();
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+      }
+    })
   }
 
   trackByIndex(i: any) {

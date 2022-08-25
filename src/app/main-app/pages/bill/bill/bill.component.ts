@@ -1,5 +1,4 @@
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { GetSummaryStatusInputDTO } from './../../../dto/fastsaleorder/fastsaleorder.dto';
 import { Message } from './../../../../lib/consts/message.const';
 import { GenerateMessageTypeEnum } from './../../../dto/conversation/message.dto';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
@@ -7,7 +6,6 @@ import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto'
 import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
-import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
@@ -29,7 +27,6 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { TDSNotificationService } from 'tds-ui/notification';
 import { TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 
@@ -155,9 +152,11 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadTags();
     this.loadGridConfig();
 
-    this.fastSaleOrderService.onLoadPage$.pipe(takeUntil(this.destroy$)).subscribe((obs) => {
-      if (TDSHelperString.hasValueString(obs && obs == "onLoadPage")) {
-        this.loadData(this.pageSize, this.pageIndex);
+    this.fastSaleOrderService.onLoadPage$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (obs) => {
+        if (TDSHelperString.hasValueString(obs && obs == "onLoadPage")) {
+          this.loadData(this.pageSize, this.pageIndex);
+        }
       }
     })
 
@@ -181,33 +180,37 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.isTabNavs = true;
     this.fastSaleOrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
-      finalize(() => this.isTabNavs = false)).subscribe((res: Array<TDSSafeAny>) => {
-        let tabs: TabNavsDTO[] = [];
-        let total = 0;
-        res.map((x: TDSSafeAny, index: number) => {
+      finalize(() => this.isTabNavs = false)).subscribe({
+          next: (res: Array<TDSSafeAny>) => {
+              let tabs: TabNavsDTO[] = [];
+              let total = 0;
+              res.map((x: TDSSafeAny, index: number) => {
 
-          total += x.Total;
-          index = index + 2;
+                total += x.Total;
+                index = index + 2;
 
-          tabs.push({ Name: x.Type, Index: index, Total: x.Total });
-        });
+                tabs.push({ Name: x.Type, Index: index, Total: x.Total });
+              });
 
-        tabs.push({ Name: "Tất cả", Index: 1, Total: total });
-        tabs.sort((a, b) => a.Index - b.Index);
+              tabs.push({ Name: "Tất cả", Index: 1, Total: total });
+              tabs.sort((a, b) => a.Index - b.Index);
 
-        this.tabNavs = [...tabs];
-        this.lstOftabNavs = this.tabNavs;
+              this.tabNavs = [...tabs];
+              this.lstOftabNavs = this.tabNavs;
+          }
       });
   }
 
   loadGridConfig() {
     const key = this.fastSaleOrderService._keyCacheGrid;
-    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      if (res && res.value) {
-        var jsColumns = JSON.parse(res.value) as any;
-        this.hiddenColumns = jsColumns.value.columnConfig;
-      } else {
-        this.hiddenColumns = this.columns;
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        if (res && res.value) {
+          let jsColumns = JSON.parse(res.value) as any;
+          this.hiddenColumns = jsColumns.value.columnConfig;
+        } else {
+          this.hiddenColumns = this.columns;
+        }
       }
     })
   }
@@ -264,11 +267,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: ODataFastSaleOrderDTO) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = [...res.value];
-    }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Tải dữ liệu phiếu bán hàng thất bại!');
+    this.getViewData(params).subscribe({
+      next: (res: ODataFastSaleOrderDTO) => {
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = [...res.value];
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || 'Tải dữ liệu phiếu bán hàng thất bại!');
+      }
     });
   }
 
@@ -281,8 +287,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadTags() {
     let type = "fastsaleorder";
-    this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      this.lstTags = res.value;
+    this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstTags = res.value;
+      }
     })
   }
 
@@ -306,30 +314,32 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   assignTags(id: number, tags: TDSSafeAny) {
     let model = { OrderId: id, Tags: tags };
-    this.fastSaleOrderService.assignTagFastSaleOrder(model).pipe(takeUntil(this.destroy$))
-      .subscribe((res: TDSSafeAny) => {
+    this.fastSaleOrderService.assignTagFastSaleOrder(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+
         if (res && res.OrderId) {
-          var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
-          if (exits) {
-            exits.Tags = JSON.stringify(tags)
-          }
+            let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+            if (exits) {
+              exits.Tags = JSON.stringify(tags);
+            }
 
-          this.indClickTag = -1;
-          this.modelTags = [];
-          this.message.success(Message.Tag.UpdateSuccess);
+            this.indClickTag = -1;
+            this.modelTags = [];
+            this.message.success(Message.Tag.UpdateSuccess);
         }
-
-      }, error => {
-        this.indClickTag = -1;
-        this.message.error(Message.Tag.UpdateFail);
-      });
+      },
+      error: (error: any) => {
+          this.indClickTag = -1;
+          this.message.error(Message.Tag.UpdateFail);
+      }
+    });
   }
 
   openShipStatus(data: FastSaleOrderDTO, dataId: number) {
     this.indClickStatus = dataId;
     this.currentStatus = {
-      value: data.ShipStatus,
-      text: data.ShowShipStatus
+        value: data.ShipStatus,
+        text: data.ShowShipStatus
     }
   }
 
@@ -345,28 +355,28 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.currentStatus) {
       let model = { id: dataId, status: this.currentStatus.value };
 
-      this.fastSaleOrderService.updateShipStatus(model).pipe(takeUntil(this.destroy$)).subscribe(
-        (res) => {
-          if (res.success) {
-            this.lstOfData.map((fso: FastSaleOrderDTO) => {
-              if (fso.Id == dataId) {
-                fso.ShipStatus = this.currentStatus.value;
-                fso.ShowShipStatus = this.currentStatus.text;
-              }
-            });
+      this.fastSaleOrderService.updateShipStatus(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if (res && res.success) {
+              this.lstOfData.map((fso: FastSaleOrderDTO) => {
+                if (fso.Id == dataId) {
+                    fso.ShipStatus = this.currentStatus.value;
+                    fso.ShowShipStatus = this.currentStatus.text;
+                }
+              });
 
-            this.message.success(Message.UpdatedSuccess);
+              this.message.success(Message.UpdatedSuccess);
           } else {
-            this.message.error(Message.UpdatedFail);
+              this.message.error(Message.UpdatedFail);
           }
 
           this.indClickStatus = -1;
         },
-        err => {
-          this.message.error(err?.error?.message || Message.UpdatedFail);
-          this.indClickStatus = -1;
+        error: (error: any) => {
+            this.message.error(error?.error?.message || Message.UpdatedFail);
+            this.indClickStatus = -1;
         }
-      )
+      })
     } else {
       this.message.error('Vui lòng chọn đối soát giao hàng');
     }
@@ -392,12 +402,13 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse
-    this.resizeObserver
-      .observe(this.widthTable)
-      .subscribe(() => {
-        this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
-        this.widthTable?.nativeElement?.click()
-      });
+    this.resizeObserver.observe(this.widthTable).subscribe({
+      next: () => {
+          this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+          this.widthTable?.nativeElement?.click();
+      }
+    });
+
     setTimeout(() => {
       let that = this;
 
@@ -428,12 +439,15 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
         return this.getViewData(params);
       })
-    ).subscribe((res: any) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = res.value;
-      this.cdRef.detectChanges();
-    }, error => {
-      this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+    ).subscribe({
+      next: (res: any) => {
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = res.value;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+      }
     });
   }
 
@@ -510,11 +524,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       title: 'Xóa hóa đơn',
       content: 'Bạn có muốn xóa hóa đơn',
       onOk: () => {
-        this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(() => {
-          this.message.success('Xóa hóa đơn thành công!');
-          this.loadData(this.pageSize, this.pageIndex);
-        }, error => {
-          this.message.error(`${error?.error?.message}`);
+        this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: () => {
+              this.message.success('Xóa hóa đơn thành công!');
+              this.loadData(this.pageSize, this.pageIndex);
+          },
+          error: (error: any) => {
+              this.message.error(`${error?.error?.message}`);
+          }
         })
       },
       onCancel: () => { },
@@ -532,47 +549,50 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
+    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (obs: any): any => {
 
-      let pageIds: any = [];
-      res.map((x: any) => {
-        pageIds.push(x.page_id);
-      });
+          let pageIds: any = [];
+          obs?.map((x: any) => {
+              pageIds.push(x.page_id);
+          });
 
-      if (pageIds.length == 0) {
-        return this.message.error('Không có kênh kết nối với khách hàng này.');
-      }
-
-      this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
-
-          if (teams.length == 0) {
-            return this.message.error('Không có kênh kết nối với khách hàng này.');
+          if (pageIds.length == 0) {
+              return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 
-          this.mappingTeams = [];
-          let pageDic = {} as any;
+          this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (teams: any): any => {
+                if (teams?.length == 0) {
+                    return this.message.error('Không có kênh kết nối với khách hàng này.');
+                }
 
-          teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
+                this.mappingTeams = [];
+                let pageDic = {} as any;
 
-            if (exist && !pageDic[exist.page_id]) {
-              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                teams.map((x: any) => {
+                    let exist = obs?.filter((r: any) => r.page_id == x.ChannelId)[0];
 
-              this.mappingTeams.push({
-                psid: exist.psid,
-                team: x
-              })
+                    if (exist && !pageDic[exist.page_id]) {
+                        pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+
+                        this.mappingTeams.push({
+                            psid: exist.psid,
+                            team: x
+                        })
+                    }
+                })
+
+                if (this.mappingTeams.length > 0) {
+                    this.currentMappingTeam = this.mappingTeams[0];
+                    this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
+                }
             }
           })
-
-          if (this.mappingTeams.length > 0) {
-            this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
-          }
-        })
-    }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+      }
     })
   }
 
@@ -581,18 +601,20 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
-        if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
-          this.currentConversation = { ...model };
-          
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
-        }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-      })
+    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: MDBByPSIdDTO) => {
+          if (res) {
+            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+            this.currentConversation = { ...model };
+
+            this.psid = res.psid;
+            this.isOpenDrawer = true;
+          }
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+      }
+    })
   }
 
   selectMappingTeam(item: any) {

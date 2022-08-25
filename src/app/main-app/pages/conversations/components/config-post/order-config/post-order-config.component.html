@@ -139,8 +139,8 @@
           </div>
 
           <!-- Config Product -->
-          <div class="grid grid-cols-2 gap-4" *ngIf="dataModel.TextContentToOrders">
-              <div *ngFor="let configProduct of dataModel.TextContentToOrders"
+          <div class="grid grid-cols-2 gap-4" *ngIf="lstTextContentToOrders">
+              <div *ngFor="let configProduct of lstTextContentToOrders"
                   class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
                   <div class="flex gap-2.5 items-center">
                       <tds-badge [count]="iconTemplate" (click)="showModalListProduct(configProduct.Index)">
