@@ -65,6 +65,8 @@ export class SocketOnEventService  {
                 return;
             }
 
+            console.log(socketData)
+
             switch(socketData.EventName) {
               case ChatmoniSocketEventName.chatomniOnMessage:
                   socketData = {...socketData} as SocketioOnMessageDto;
