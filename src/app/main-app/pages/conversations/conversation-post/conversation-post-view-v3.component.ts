@@ -44,8 +44,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   checked: boolean = false;
 
   sortOptions: any[] = [
-    { value: "DateCreated desc", text: "Mới nhất" },
-    { value: "DateCreated asc", text: "Cũ nhất" },
+    { value: "CreatedTime desc", text: "Mới nhất" },
+    { value: "CreatedTime asc", text: "Cũ nhất" },
   ];
   currentSort: any = this.sortOptions[0];
 
@@ -60,8 +60,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   filterExcel: any[] = [
     { value: "excel", text: "Tải file excel" },
-    { value: "excel_phone", text: "Tải file excel có SĝT" },
-    { value: "excel_phone_distinct", text: "Tải file excel lờc trùng SĝT" },
+    { value: "excel_phone", text: "Tải file excel có SĐT" },
+    { value: "excel_phone_distinct", text: "Tải file excel lờc trùng SĐT" },
   ];
 
   filterOptionsComment: any[] = [
