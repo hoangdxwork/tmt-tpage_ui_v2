@@ -7,7 +7,6 @@ import { FacebookPostService } from 'src/app/main-app/services/facebook-post.ser
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperString } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
@@ -22,7 +21,7 @@ export class PostOrderInteractionConfigComponent implements OnInit {
 
   dataModel!:AutoOrderConfigDTO;
   isLoading: boolean = false;
-  isEditSendMess: boolean = false;
+  isEditReply: boolean = false;
 
   constructor(
     private modalRef: TDSModalRef,
@@ -43,16 +42,9 @@ export class PostOrderInteractionConfigComponent implements OnInit {
       .subscribe({
         next:(res) => {
           this.dataModel = {...res};
-
-          let temp = document.createElement("div");
-
-          if (TDSHelperString.hasValueString(this.dataModel?.OrderReplyTemplate)) {
-            temp.innerHTML = this.dataModel?.OrderReplyTemplate;
-            this.dataModel.OrderReplyTemplate = temp.textContent || temp.innerText || "";
-          }
+          this.dataModel.OrderReplyTemplate = this.dataModel.OrderReplyTemplate.replace(/<p>|<\/p>/g, '');
 
           this.isLoading = false;
-
           this.cdRef.detectChanges();
         },
         error:(err) => {
@@ -62,14 +54,19 @@ export class PostOrderInteractionConfigComponent implements OnInit {
       });
   }
 
-  editSendMess(){
-    this.isEditSendMess = true;
+  onEditReply(){
+    this.isEditReply = !this.isEditReply;
   }
 
   prepareModel() {
-    let model = {...this.dataModel} as AutoOrderConfigDTO;
-
-    return model;
+    return {
+      IsEnableOrderReplyAuto: this.dataModel.IsEnableOrderReplyAuto,
+      IsEnableShopLink: this.dataModel.IsEnableShopLink,
+      IsOrderAutoReplyOnlyOnce: this.dataModel.IsOrderAutoReplyOnlyOnce,
+      OrderReplyTemplate: `<p>${this.dataModel.OrderReplyTemplate}</p>`,
+      ShopLabel: this.dataModel.ShopLabel,
+      ShopLabel2: this.dataModel.ShopLabel2
+    } as AutoOrderConfigDTO;
   }
 
   onSave() {
