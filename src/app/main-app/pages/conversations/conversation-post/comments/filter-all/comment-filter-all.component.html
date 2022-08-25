@@ -31,10 +31,10 @@
                             <!-- nội dung bình luận -->
                             <div class="flex flex-row gap-x-3">
                                 <div [innerHTML]="item.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
-                                <button tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top"
+                                <!-- <button tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top"
                                     class="rounded-full h-5 w-5 border border-primary-1 text-primary-1 flex justify-center items-center">
                                     <span class="tdsi-plus-fill"></span>
-                                </button>
+                                </button> -->
                             </div>
 
                             <!-- hình ảnh đính kèm -->
@@ -237,7 +237,7 @@
                       <div *ngFor="let data of childsComment; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
                         <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3" @eventFadeState>
         
-                            <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="data.UserId" [token]="team.ChannelToken">
+                            <tpage-avatar-facebook [shape]="'circle'" [size]="'md'" [psid]="data.UserId" [token]="team.ChannelToken">
                             </tpage-avatar-facebook>
         
                             <div class="ml-2 w-full h-full">
@@ -261,10 +261,10 @@
                                     <!-- nội dung bình luận -->
                                     <div class="flex flex-row gap-x-3">
                                         <div [innerHTML]="data.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
-                                        <button *ngIf="!data.IsOwner" tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top"
+                                        <!-- <button *ngIf="!data.IsOwner" tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top"
                                             class="rounded-full h-5 w-5 border border-primary-1 text-primary-1 flex justify-center items-center">
                                             <span class="tdsi-plus-fill"></span>
-                                        </button>
+                                        </button> -->
                                     </div>
         
                                     <!-- hình ảnh đính kèm -->
@@ -276,7 +276,7 @@
                                     </div>
         
                                     <!-- thao tác -->
-                                    <div class="flex items-center pt-3" *ngIf="!data.IsOwner; else isOwner">
+                                    <div class="flex items-center pt-3" *ngIf="!data.IsOwner">
                                         <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
         
                                         <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
@@ -372,16 +372,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <ng-template #isOwner>
-                                        <div class="flex items-center pt-3">
-                                            <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin"
-                                            tooltipPlacement="top" tds-tooltip>
-                                            <span class="flex items-center justify-center">
-                                                <i class="tdsi-information-fill text-neutral-1-500"></i>
-                                            </span>
-                                            </button>
-                                        </div>
-                                    </ng-template>
+                                   
                                 </div>                         
                             </div>
                         </div>

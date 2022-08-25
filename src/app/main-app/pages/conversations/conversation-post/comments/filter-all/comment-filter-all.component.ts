@@ -1,3 +1,4 @@
+import { ChatomniSendMessageModelDto } from './../../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
 import { CRMTeamType } from './../../../../../dto/team/chatomni-channel.dto';
@@ -253,9 +254,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
         // TODO: gửi về tin nhắn
         if(item.Data.is_private_reply){
+          let modelv2 = this.prepareModelV2(msg);
+          modelv2.RecipientId = item.Data?.id || item.ObjectId || null;
+          modelv2.MessageType = 2;
 
-          model.comment_id = item.Id;
-          this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, model).pipe(takeUntil(this.destroy$)).subscribe(
+          this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe(
             {
               next: (res: ResponseAddMessCommentDtoV2[]) => {
 
@@ -263,13 +266,15 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                 this.isReplyingComment = false;
                 this.message.success('Gửi tin thành công'); 
 
+                this.cdRef.detectChanges();
               },
               error: error => {
 
                 item.Data.is_reply = false;
                 this.isReplyingComment = false;
                 this.message.error(`${error.error?.message}` || 'Gửi tin nhắn thất bại');
-              
+
+                this.cdRef.detectChanges();
               }
             }
           )
@@ -324,6 +329,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     model.post_id = item.Data.object?.id || item.ObjectId;
     model.message = message;
     model.created_time = (new Date()).toISOString();
+
+    return model;
+  }
+
+  prepareModelV2(message: string): any {
+    const model = {} as ChatomniSendMessageModelDto;
+    model.Message = message;
 
     return model;
   }

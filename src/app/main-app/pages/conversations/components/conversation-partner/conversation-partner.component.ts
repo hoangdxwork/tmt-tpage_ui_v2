@@ -301,9 +301,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(TDSHelperArray.hasListValue(this.lstPartnerStatus)) {
         let value = this.lstPartnerStatus.find(x => x.text == statusText);
         if(value) return value.value;
-        else return '#e5e7eb';
+        else return '#28A745';
     }
-    else return '#e5e7eb';
+    else return '#28A745';
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
