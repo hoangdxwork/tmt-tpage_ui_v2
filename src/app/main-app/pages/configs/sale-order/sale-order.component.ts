@@ -100,22 +100,9 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     this.generalConfigService.getByName(name).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: ConfigSaleOrderDTO) => {
-
-          // if (res.ShippingTemplate) {
-          //   res.ShippingTemplate = res.ShippingTemplate.replace(/\\n/, "<p><br></p>")
-          // }
-  
-          // if (res.BillTemplate) {
-          //   res.BillTemplate = res.BillTemplate.replace(/\\n/, "<p><br></p>")
-          // }
-  
-          // if (res.OrderTemplate) {
-          //   res.OrderTemplate = res.OrderTemplate.replace(/\\n/, "<p><br></p>")
-          // }
-  
           this.updateForm(res);
           this.isLoading = false;
-        }, 
+        },
         error:(err) => {
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
           this.isLoading = false;
