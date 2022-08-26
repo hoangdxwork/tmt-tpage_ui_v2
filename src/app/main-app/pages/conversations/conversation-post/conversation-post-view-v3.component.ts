@@ -1,7 +1,7 @@
 import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
 import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { LiveCampaignService } from './../../../services/live-campaign.service';
-import { LiveCampaignModel } from './../../../dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel } from '../../../dto/live-campaign/odata-live-campaign-model.dto';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';

@@ -7,7 +7,7 @@ import { PostOrderConfigComponent } from './order-config/post-order-config.compo
 import { TDSModalRef } from 'tds-ui/modal';
 import { Component, Input, ViewChild, ChangeDetectionStrategy } from "@angular/core";
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 
 @Component({
   selector: 'config-post-outlet',

@@ -1,5 +1,5 @@
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { LiveCampaignModel } from './../../dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel } from '../../dto/live-campaign/odata-live-campaign-model.dto';
 import { Injectable } from "@angular/core";
 import { TDSHelperObject } from "tds-ui/shared/utility";
 

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
-import { ODataLiveCampaignDTO } from '../../dto/live-campaign/odata-live-campaign.dto';
+import { ODataLiveCampaignModelDTO } from '../../dto/live-campaign/odata-live-campaign-model.dto';
 import { BaseSevice } from '../base.service';
 import { Guid } from "guid-typescript";
 
@@ -30,13 +30,13 @@ export class ODataLiveCampaignService extends BaseSevice {
       super(apiService)
   }
 
-  getView(params: string): Observable<ODataLiveCampaignDTO>{
+  getView(params: string): Observable<ODataLiveCampaignModelDTO>{
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
         method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
+    return this.apiService.getData<ODataLiveCampaignModelDTO>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjLiveCampaignDTO) {
