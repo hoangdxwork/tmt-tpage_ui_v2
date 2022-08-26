@@ -96,7 +96,7 @@ export class TDSConversationItemV2Component implements OnInit {
     }
   }
 
-  selectOrder(type: string): any {
+  selectOrder(type: string, message?: string): any {
     let data = { phone: null, address: null, note: null } as any;
 
     let value = this.getTextOfContentMessage();
@@ -115,9 +115,10 @@ export class TDSConversationItemV2Component implements OnInit {
       }
 
     } else if (type == 'note') {
-      data.note = value;
-      if (value) {
-        this.tdsMessage.info("Chọn làm ghi chú thành công");
+      if (message)
+        data.note = message;
+      else {
+        data.note = value;
       }
     }
 

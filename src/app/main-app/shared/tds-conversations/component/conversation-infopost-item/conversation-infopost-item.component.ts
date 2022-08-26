@@ -1,4 +1,5 @@
-import { ChatomniDataItemDto, ExtrasObjectDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from './../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniDataItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { ModalPostComponent } from './../../../../pages/conversations/components/modal-post/modal-post.component';
@@ -6,7 +7,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Router } from '@angular/router';
 import { CRMTeamType } from './../../../../dto/team/chatomni-channel.dto';
 import { ChatomniDataTShopPostDto } from './../../../../dto/conversation-all/chatomni/chatomni-tshop-post.dto';
-import { Facebook_Graph_Post } from './../../../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 import { Component, OnInit, ChangeDetectionStrategy, Input, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
@@ -19,10 +19,10 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
 
   @Input() team!: CRMTeamDTO;
   @Input() typeNumber!: number;
-  @Input() data! : ExtrasObjectDto;
+  @Input() data! : ChatomniObjectsItemDto;
   @Input() item!: ChatomniDataItemDto;
 
-  dataFacebook!: Facebook_Graph_Post;
+  dataFacebook!: MDB_Facebook_Mapping_PostDto;
   dataTshop!: ChatomniDataTShopPostDto;
 
   postPictureError: any[] = [];
@@ -36,7 +36,7 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(this.team.Type == CRMTeamType._Facebook && this.typeNumber == 12){
-      this.dataFacebook = this.data.Data as Facebook_Graph_Post;
+      this.dataFacebook = this.data.Data as MDB_Facebook_Mapping_PostDto;
     }else if(this.team.Type == CRMTeamType._TShop && this.typeNumber == 91) {
       this.dataTshop = this.data.Data as ChatomniDataTShopPostDto
     }
@@ -53,8 +53,9 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
       bodyStyle: { padding : '0px'},
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        data: this.dataFacebook,
-        objectId: this.data.ObjectId
+        data: this.data,
+        objectId: this.data.ObjectId,
+        currentTeam: this.team
       }
     });
   }

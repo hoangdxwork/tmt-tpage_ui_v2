@@ -1,63 +1,73 @@
-<div class="w-full text-body-2 text-neutral-1-900 flex justify-between">
+<div class="w-full text-body-2 text-neutral-1-900 flex justify-between" >
   <tds-tabset [tabBarExtraContent]="extraTemplate" [(selectedIndex)]="selectedIndex">
     <tds-tab title="Tổng quan" clsContent="py-4 p-4 w-full h-full border-t">
-      <div class="flex flex-col gap-6">
-        <div class="w-full flex gap-x-6">
-          <div class="w-4/5 flex flex-col gap-y-2">
-            <span class="text-neutral-1-500">Đã đăng: {{data.created_time | yiDateTimeV3}}</span>
-            <span>{{data.message}}</span>
-          </div>
-          <div class="w-1/5 max-h-[150px] flex justify-end">
-            <img [src]="data.full_picture" alt="" class="rounded-xl max-w-full max-h-full object-cover">
-          </div>
-        </div>
-        <div class="w-full py-2 px-4 grid grid-cols-4 gap-4">
-          <div class="flex gap-x-2">
-            <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
-              <img src="../../../assets/imagesv2/conversation/iconFacebokkComment.svg" alt="">
+
+      <!-- post của facebook -->
+      <div *ngIf="data && data.Data && currentTeam!.Type == 'Facebook'">
+        <div class="flex flex-col gap-6">
+          <div class="w-full flex gap-x-6">
+            <div class="w-4/5 flex flex-col gap-y-2">
+              <span class="text-neutral-1-500">Đã đăng: {{data.CreatedTime | yiDateTimeV3}}</span>
+              <span>{{(data.Data | facebookType)?.message}}</span>
             </div>
-            <div class="flex flex-col gap-y-1.5">
-              <span class="font-semibold">Bình luận</span>
-              <div>
-                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.comments?.summary?.total_count || 0}}</span>
+            <div class="w-1/5 max-h-[150px] flex justify-end">
+              <img [src]="(data.Data | facebookType)?.picture" alt="" class="rounded-xl max-w-full max-h-full object-cover">
+            </div>
+          </div>
+          <div class="w-full py-2 px-4 grid grid-cols-4 gap-4">
+            <div class="flex gap-x-2">
+              <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
+                <img src="../../../assets/imagesv2/conversation/iconFacebokkComment.svg" alt="">
+              </div>
+              <div class="flex flex-col gap-y-1.5">
+                <span class="font-semibold">Bình luận</span>
+                <div>
+                  <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{(data.Data | facebookType)?.comments?.summary?.total_count || 0}}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="flex gap-x-2">
-            <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
-              <img src="../../../assets/imagesv2/conversation/iconShare.svg" alt="">
-            </div>
-            <div class="flex flex-col gap-y-1.5">
-              <span class="font-semibold">Chia sẻ</span>
-              <div>
-                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.reactions?.summary?.total_count || 0}}</span>
+            <div class="flex gap-x-2">
+              <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
+                <img src="../../../assets/imagesv2/conversation/iconShare.svg" alt="">
+              </div>
+              <div class="flex flex-col gap-y-1.5">
+                <span class="font-semibold">Chia sẻ</span>
+                <div>
+                  <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{(data.Data | facebookType)?.reactions?.summary?.total_count || 0}}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="flex gap-x-2">
-            <div class="p-2 bg-warning-400 bg-opacity-30 rounded-2xl">
-              <img src="../../../assets/imagesv2/conversation/iconOrder.svg" alt="">
-            </div>
-            <div class="flex flex-col gap-y-1.5">
-              <span class="font-semibold">Đơn hàng</span>
-              <div>
-                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{ 0}}</span>
+            <div class="flex gap-x-2">
+              <div class="p-2 bg-warning-400 bg-opacity-30 rounded-2xl">
+                <img src="../../../assets/imagesv2/conversation/iconOrder.svg" alt="">
+              </div>
+              <div class="flex flex-col gap-y-1.5">
+                <span class="font-semibold">Đơn hàng</span>
+                <div>
+                  <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{ 0}}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="flex gap-x-2">
-            <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
-              <img src="../../../assets/imagesv2/dashboard/customers-icon.svg" class="h-[33px]" alt="">
-            </div>
-            <div class="flex flex-col gap-y-1.5">
-              <span class="font-semibold">Khách hàng</span>
-              <div>
-                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{0}}</span>
+            <div class="flex gap-x-2">
+              <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
+                <img src="../../../assets/imagesv2/dashboard/customers-icon.svg" class="h-[33px]" alt="">
+              </div>
+              <div class="flex flex-col gap-y-1.5">
+                <span class="font-semibold">Khách hàng</span>
+                <div>
+                  <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{0}}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- post của TShop -->
+      <div *ngIf="data && data.Data && currentTeam!.Type == 'TShop'">
+          
+      </div> 
+
     </tds-tab>
     <tds-tab title="Bình luận" clsContent="max-h-[calc(65vh)] overflow-hidden flex">
       <div class="w-full max-h-full overflow-hidden p-1 bg-neutral-3-100">
@@ -87,14 +97,8 @@
               </span>
           </tds-form-field>
         </div>
-        <item-post-comment [post]="dataPost" 
-        [sort]="currentSort" 
-        [filter]="currentFilter"
-        [isShowCheckboxComent]="isShowCheckbox"
-        [currentFilterComment]="currentFilterComment"
-        [textSearchFilterComment]="textSearchFilterComment"
-        class="h-full w-full overflow-hidden">
-        </item-post-comment>
+        <comment-filter-all [data]="data" [team]="currentTeam" [commentOrders]="commentOrders">
+        </comment-filter-all>
       </div>
     </tds-tab>
     <ng-template #extraTemplate>
