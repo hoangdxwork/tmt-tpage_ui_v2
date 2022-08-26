@@ -196,8 +196,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             this.partner.Street = res.address;
         }
         if(res && TDSHelperString.hasValueString(res.note) && this.partner) {
+          let exist = (this.partner.Comment || "" as string).includes(res.note)
+          if(!exist){
             let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + res.note : res.note);
             this.partner.Comment = text;
+            this.message.info("Chọn làm ghi chú thành công");
+          } else {
+            this.message.info('Ghi chú đã được chọn');
+          }
+            
         }
     })
   }

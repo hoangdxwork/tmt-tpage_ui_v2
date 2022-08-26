@@ -7,14 +7,27 @@
             <div *ngFor="let item of dataSource.Items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
                 <div *ngIf="item" class="flex flex-auto w-full" @eventFadeState>
 
-                    <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
-                    </tpage-avatar-facebook>
+                    <div *ngIf="item.Type == 12">
+                        <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
+                        </tpage-avatar-facebook>
+                    </div>
+
+                    <div *ngIf="item.Type == 91">
+                        <tds-avatar [tdsSrc]="(item.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
+                    </div>
+                    
 
                     <div class="ml-2 w-full h-full">
                         <div class="bg-white rounded-2xl px-4 py-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex gap-x-2">
-                                    <label class="font-semibold" *ngIf="item.Data && item.Data?.from">{{ item.Data.from.name }} </label>
+                                    <div *ngIf="item.Type == 12">
+                                        <label class="font-semibold" *ngIf="item.Data && item.Data?.from">{{ item.Data.from.name }} </label>
+                                    </div>
+                
+                                    <div *ngIf="item.Type == 91">
+                                        <label class="font-semibold" *ngIf="item.Data">{{ (item.Data | tShopDataMessage).Actor?.Name }} </label>
+                                    </div>
 
                                     <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
                                         <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
@@ -59,6 +72,12 @@
                                 <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item)">
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-reply-fill text-neutral-1-500"></i>
+                                    </span>
+                                </button>
+
+                                <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                                    <span class="flex items-center justify-center">
+                                        <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
 
@@ -292,6 +311,12 @@
                                             </span>
                                         </button>
 
+                                        <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                                            <span class="flex items-center justify-center">
+                                                <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+                                            </span>
+                                        </button>
+        
                                         <div *ngIf="childs[data.Id]">
                                             <button type="button" *ngIf="isHiddenComment[data.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
                                                 <span class="flex items-center justify-center">
@@ -383,3 +408,22 @@
         </div>
     </div>
 </tds-spin>
+
+<tds-drawer [visible]="isOpenDrawer"
+    [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'50vw'">
+    <ng-template #titleMessage>
+      <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
+        Gửi tin nhắn Facebook
+      </span>
+    </ng-template>
+    <ng-container *tdsDrawerContent>   
+        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
+          <div *ngIf="currentConversation && team" class="w-full">
+            <shared-tds-conversations-v2 class="flex w-full h-full" [team]="team"
+              [data]="currentConversation" [type]="'all'">
+            </shared-tds-conversations-v2>
+          </div>
+        </div>
+    </ng-container>
+</tds-drawer>

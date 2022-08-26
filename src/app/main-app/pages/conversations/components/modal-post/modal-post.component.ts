@@ -1,39 +1,46 @@
-import { FacebookPostItem } from './../../../../dto/facebook-post/facebook-post.dto';
-import { Facebook_Graph_Post } from './../../../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { takeUntil } from 'rxjs';
+import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from './../../../../dto/conversation/post/comment-order-post.dto';
+import { ChatomniObjectsItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
+import { CRMTeamDTO } from './../../../../dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { TDSMessageService } from 'tds-ui/message';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-post',
   templateUrl: './modal-post.component.html',
+  providers: [ TDSDestroyService ]
 })
 export class ModalPostComponent implements OnInit {
 
-  @Input() data!: Facebook_Graph_Post;
+  @Input() data!: ChatomniObjectsItemDto; // ChatomniObjectsItemDto
   @Input() objectId!: string;
+  @Input() currentTeam!: CRMTeamDTO;
 
-  dataPost!: FacebookPostItem;
   isShowCheckbox: boolean = false;
   selectedIndex: number = 0;
+  commentOrders: any = [];
   constructor(
     private modal: TDSModalRef,
     private message: TDSMessageService,
     private facebookCommentService: FacebookCommentService,
+    private destroy$: TDSDestroyService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   sortOptions: any[] = [
     { value: "DateCreated desc", text: "Mới nhất" },
-    { value: "DateCreated asc", text: "Cũ nhất" },
+    // { value: "DateCreated asc", text: "Cũ nhất" },
   ];
   currentSort: any = this.sortOptions[0];
 
   filterOptions: TDSSafeAny[] = [
     { value: "all", text: "Tất cả bình luận", icon: 'tdsi-livechat-line' },
-    { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
-    { value: "filter", text: "Tìm kiếm bình luận", icon: 'tdsi-search-fill' },
+    // { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
+    // { value: "filter", text: "Tìm kiếm bình luận", icon: 'tdsi-search-fill' },
   ]
   currentFilter: any = this.filterOptions[0];
 
@@ -47,19 +54,38 @@ export class ModalPostComponent implements OnInit {
   textSearchFilterComment: string = '';
 
   ngOnInit(): void {
-    this.dataPost = this.mappingFacebookPostItemDto();
+    this.getCommentOrders(this.objectId);
   }
 
-  mappingFacebookPostItemDto(){
-    let model = {} as FacebookPostItem;
+  getCommentOrders(posId: string) {
+    this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: OdataCommentOrderPostDTO) => {
+        if(res && res.value) {
+            let comments = [...res.value];
 
-    model.DateCreated = this.data.created_time;
-    model.LastUpdated = this.data.updated_time;
-    model.account_id = this.data.from?.id;
-    model.object_id = this.objectId;
-    model.fbid = this.objectId;
+            comments.map((x: CommentOrderPost) => {
+                this.commentOrders[x.asuid] = [];
+                this.commentOrders[x.uid] = [];
 
-    return model
+                x.orders?.map((a: CommentOrder) => {
+                    this.commentOrders[x.asuid].push(a);
+                });
+
+                if (x.uid && x.uid != x.asuid) {
+                  x.orders?.map((a: any) => {
+                      this.commentOrders[x.uid].push(a);
+                  });
+                }
+            });
+        }
+
+        this.cdRef.markForCheck();
+      }, error: (error: any) => {
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.markForCheck();
+        }
+    });
+
   }
 
   onChangeFilter(event: any): any {

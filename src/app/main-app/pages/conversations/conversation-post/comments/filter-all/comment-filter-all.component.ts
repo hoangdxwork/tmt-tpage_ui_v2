@@ -1,3 +1,4 @@
+import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { ChatomniSendMessageModelDto } from './../../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
@@ -20,7 +21,7 @@ import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-mess
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { TDSModalService } from 'tds-ui/modal';
@@ -64,8 +65,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   isLoading: boolean = false;
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
+  isOpenDrawer: boolean = false;
 
   conversationItem!: ChatomniConversationItemDto;
+  currentConversation!: ChatomniConversationItemDto;
+
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
   constructor(private message: TDSMessageService,
@@ -83,7 +87,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private conversationOrderFacade: ConversationOrderFacade,
     private socketOnEventService: SocketOnEventService,
     private chatomniConversationFacade: ChatomniConversationFacade,
-    private chatomniSendMessageService: ChatomniSendMessageService) {
+    private chatomniSendMessageService: ChatomniSendMessageService,
+    private chatomniMessageFacade: ChatomniMessageFacade) {
   }
 
   ngOnInit() {
@@ -462,6 +467,38 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime)) 
 
       this.childsComment = [...model];
+  }
+
+  openMiniChat(data: ChatomniDataItemDto) {
+    if(data && this.team){
+      this.loadMDBByPSId(this.team.ChannelId, data.UserId);
+    }
+  }
+
+  loadMDBByPSId(pageId: string, psid: string) {
+    // Xoá hội thoại hiện tại
+    (this.currentConversation as any) = null;
+
+    // get data currentConversation
+    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: MDBByPSIdDTO) => {
+        if (res) {
+            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+            this.currentConversation = { ...model };
+
+            this.isOpenDrawer = true;
+
+            this.cdRef.detectChanges();
+        }
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  closeDrawer(){
+    this.isOpenDrawer = false;
   }
 
   ngOnDestroy(): void {
