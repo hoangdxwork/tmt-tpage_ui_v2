@@ -3,118 +3,109 @@
     <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
       <tds-tab title="Thông tin" clsContent="p-4 border-t border-neutral-2-200">
         <div class="w-full h-full grid grid-cols-2 gap-y-4 gap-x-8">
-          <div class="grid grid-cols-1 gap-y-4">
+          <div class="grid grid-cols-3 gap-y-4 gap-x-3">
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Tên chiến dịch</tds-label>
-              <tds-form-field class="w-2/3">
+            <tds-label>Tên chiến dịch</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                 <input tdsInput placeholder="Nhập tên chiến dịch" [required]='true' formControlName="Name" />
                 <tds-error>
                     Vui lòng nhập tên chiến dịch
                 </tds-error>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Chốt đơn xác nhận</tds-label>
-              <tds-form-field class="w-2/3">
+            <tds-label>Chốt đơn xác nhận</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="value" textField="text"
                     placeholder='Trạng thái chốt đơn' [valuePrimitive]="false" formControlName="Config"
                     disabledField="isActive" [data]="lstConfig" [allowClear]="true">
                 </tds-select>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Nhân viên chốt đơn</tds-label>
-              <tds-form-field class="w-2/3">
+            <tds-label>Nhân viên chốt đơn</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn nhân viên chốt đơn' [valuePrimitive]="false" mode="multiple" formControlName="Users"
                     disabledField="isActive" [data]="(lstUser$ | async) || []" [allowClear]="true">
                 </tds-select>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Ghi chú</tds-label>
-              <tds-form-field class="w-2/3">
-                <input tdsInput placeholder="Nhập ghi chú" formControlName="Note" />
-              </tds-form-field>
-            </div>
+            <tds-label>Ghi chú</tds-label>
+            <tds-form-field class="col-span-2 w-full">
+              <input tdsInput placeholder="Nhập ghi chú" formControlName="Note" />
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Mẫu tin chốt đơn</tds-label>
-              <tds-form-field class="w-2/3">
+            <tds-label>Mẫu tin chốt đơn</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="ConfirmedOrder_Template"
                     disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                 </tds-select>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Mẫu tin dự bị</tds-label>
-              <tds-form-field class="w-2/3">
+            <tds-label>Mẫu tin dự bị</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="Preliminary_Template"
                     disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                 </tds-select>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-          </div>
-          <div class="grid grid-cols-1 gap-y-4">
-
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Thời gian tổng hợp (phút)</tds-label>
-              <tds-form-field class="w-2/3" class="w-full">
+            <tds-label>Thời gian tổng hợp (phút)</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                   <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
                   ></tds-input-number>
                   <!-- <tds-error>
                       Vui lòng nhập số tiền tối thiểu
                   </tds-error> -->
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Ngày bắt đầu</tds-label>
-              <tds-form-field class="w-2/3" class="w-full">
+            <tds-label>Ngày bắt đầu</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                   <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime [ngModel]="_form.value.StartDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate" 
                   (ngModelChange)="onChangeDate($event,0)">
                   </tds-date-picker>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Ngày kết thúc</tds-label>
-              <tds-form-field class="w-2/3" class="w-full">
+            <tds-label>Ngày kết thúc</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                   <tds-date-picker placeholder="Chọn ngày kết thúc" showTime [ngModel]="_form.value.EndDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate" 
                   (ngModelChange)="onChangeDate($event,1)">
                   </tds-date-picker>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
+          </div>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Số tiền cọc bắt buộc</tds-label>
-              <tds-form-field class="w-2/3" class="w-full">
+          <div class="grid grid-cols-3 gap-y-4 gap-x-3">
+            <tds-label>Số tiền cọc bắt buộc</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                   <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
                   ></tds-input-number>
-              </tds-form-field>
-            </div>
+            </tds-form-field>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Số tiền tối thiểu đặt cọc</tds-label>
-              <tds-form-field class="w-2/3" class="w-full">
+            <tds-label>Số tiền tối thiểu đặt cọc</tds-label>
+              <tds-form-field class="col-span-2 w-full">
                   <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit"
                   ></tds-input-number>
-              </tds-form-field>
+            </tds-form-field>
+
+            <tds-label>Bật xử lý chốt đơn tự động</tds-label>
+            <div class="col-span-2 w-full">
+              <tds-checkbox formControlName="IsEnableAuto"></tds-checkbox>
             </div>
 
-            <div class="flex items-center gap-x-2">
-              <tds-label class="w-1/3">Bật số lượng</tds-label>
+            <tds-label>Bật số lượng</tds-label>
+            <div class="col-span-2 w-full">
               <tds-checkbox formControlName="EnableQuantityHandling"></tds-checkbox>
             </div>
 
+            <tds-label>Tổng hợp đơn hàng trong thời gian ca làm việc</tds-label>
+            <div class="col-span-2 w-full">
+              <tds-checkbox formControlName="IsShift"></tds-checkbox>
+            </div>
+            
+            <tds-label>Không cho phép gán nhân viên vào cuộc hội thoại</tds-label>
+            <div class="col-span-2 w-full">
+              <tds-checkbox formControlName="IsAssignToUserNotAllowed"></tds-checkbox>
+            </div>
           </div>
         </div>
       </tds-tab>
