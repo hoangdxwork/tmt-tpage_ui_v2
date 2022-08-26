@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
+import { ODataLiveCampaignDTO } from "@app/dto/live-campaign/odata-live-campaign.dto";
 import { BehaviorSubject, Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { GetAllFacebookPostDTO } from "../dto/live-campaign/getall-facebook-post.dto";
-import { ODataLiveCampaignDTO } from "../dto/live-campaign/odata-live-campaign.dto";
+import { ODataLiveCampaignModelDTO } from "../dto/live-campaign/odata-live-campaign-model.dto";
 import { ODataModelDTO, ODataResponsesDTO } from "../dto/odata/odata.dto";
 import { BaseSevice } from "./base.service";
 
@@ -19,13 +20,13 @@ export class LiveCampaignService extends BaseSevice {
     super(apiService);
   }
 
-  get(): Observable<ODataLiveCampaignDTO>{
+  get(): Observable<ODataLiveCampaignModelDTO>{
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
         method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
+    return this.apiService.getData<ODataLiveCampaignModelDTO>(api, null);
   }
 
   getById(id: any): Observable<any> {
@@ -37,13 +38,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
 	}
 
-  getDetailById(id: string ): Observable<any> {
+  getDetailById(id: string ): Observable<ODataLiveCampaignDTO> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,Users,Preliminary_Template,ConfirmedOrder_Template`,
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
   }
 
   getAvailables(){

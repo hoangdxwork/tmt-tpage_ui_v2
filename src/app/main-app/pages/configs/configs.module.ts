@@ -111,7 +111,7 @@ import { CreateComboModalComponent } from './components/create-combo-modal/creat
 import { UpdateInitInventoryComponent } from './components/update-init-inventory/update-init-inventory.component';
 import { DefaultOrderComponent } from './default-order/default-order.component';
 import { CreateDefaultProductComponent } from './components/create-default-product/create-default-product.component';
-
+import { TDSAlertModule } from 'tds-ui/alert';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -231,7 +231,8 @@ const SERVICES = [
     TDSEditorModule,
     TDSNotificationModule,
     TDSCollapseModule,
-    TDSEmptyModule
+    TDSEmptyModule,
+    TDSAlertModule
   ],
   providers:[
     ...SERVICES

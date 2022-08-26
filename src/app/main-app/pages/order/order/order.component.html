@@ -90,50 +90,49 @@
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
       </div>
-      <div #WidthTable class="flex-auto w-full pb-2.5" >
+      <div #WidthTable class="flex-auto w-full pb-2.5">
         <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstOfData"
           [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"
           [loading]="isLoading" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
-              <th [align]="'center'" width="33px" [tdsLeft]="true" class="border-r"></th>
-              <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" class="border-r" [align]="'center'"
+              <th [align]="'center'" width="33px" [tdsLeft]="true"></th>
+              <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" class="border-l" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
-              <th width="64px" [tdsLeft]="true" class="border-r">STT</th>
-              <th *ngIf="isHidden('Code')" width="200px" [tdsLeft]="true" class="border-r">Mã</th>
-              <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-r">Kênh kết nối</th>
-              <th *ngIf="isHidden('Name')" width="240px" class="border-r">Khách hàng</th>
-              <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
-              <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-r text-right">Tổng tiền</th>
-              <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-r">Tổng SL</th>
-              <th *ngIf="isHidden('DateCreated')" width="155px" class="border-r">Ngày tạo đơn</th>
-              <th *ngIf="isHidden('StatusText')" width="160px" class="border-r">Trạng thái</th>
-              <th *ngIf="isHidden('UserName')" width="126px" class="border-r">Nhân viên</th>
-              <th width="130px" [tdsRight]="true" class="border-r">Thao tác</th>
+              <th width="64px" [tdsLeft]="true" class="border-l">STT</th>
+              <th *ngIf="isHidden('Code')" width="200px" [tdsLeft]="true" class="border-l">Mã</th>
+              <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-l">Kênh kết nối</th>
+              <th *ngIf="isHidden('Name')" width="240px" class="border-l">Khách hàng</th>
+              <th *ngIf="isHidden('Address')" width="380px" class="border-l">Địa chỉ</th>
+              <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-l text-right">Tổng tiền</th>
+              <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-l">Tổng SL</th>
+              <th *ngIf="isHidden('DateCreated')" width="155px" class="border-l">Ngày tạo đơn</th>
+              <th *ngIf="isHidden('StatusText')" width="160px" class="border-l">Trạng thái</th>
+              <th *ngIf="isHidden('UserName')" width="126px" class="border-l">Nhân viên</th>
+              <th width="130px" [tdsRight]="true" class="border-l">Thao tác</th>
             </tr>
           </thead>
           <tbody>
             <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
-              <tr class="text-body-2 text-neutral-900 font-regular"
-                [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
+              <tr class="text-body-2 text-neutral-900 font-regular" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
 
                 <!-- Detail -->
-                <td [expand]="expandSet.has(data.Id)" class="text-center border-r"
+                <td [expand]="expandSet.has(data.Id)" class="text-center"
                   (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
                 </td>
 
                 <!-- Checked -->
                 <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
-                  class="text-center border-r" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                  class="text-center border-l" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
                 </td>
 
                 <!-- STT -->
-                <td class="border-r" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                <td class="border-l" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
                   <span> {{ data.SessionIndex }}</span>
                 </td>
 
                 <!-- Code -->
-                <td *ngIf="isHidden('Code')" class="border-r" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                <td *ngIf="isHidden('Code')" class="border-l" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
                   <div class="w-full flex ">
                     <span [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
                   </div>
@@ -207,7 +206,7 @@
                 </td>
 
                 <!-- Kênh kết nối -->
-                <td *ngIf="isHidden('CRMTeamName')" class="border-r">
+                <td *ngIf="isHidden('CRMTeamName')" class="border-l">
                   <div class="w-full flex">
                     <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
                     <span class="ml-1">{{data.CRMTeamName}}</span>
@@ -215,7 +214,7 @@
                 </td>
 
                 <!-- Tên -->
-                <td *ngIf="isHidden('Name')" class="border-r">
+                <td *ngIf="isHidden('Name')" class="border-l">
                   <div class="w-full">
                     <p>{{data.PartnerName}}</p>
 
@@ -234,28 +233,28 @@
                 </td>
 
                 <!-- Địa chỉ -->
-                <td *ngIf="isHidden('Address')" class="border-r">
+                <td *ngIf="isHidden('Address')" class="border-l">
                   <span>{{data.Address}}</span>
                 </td>
 
                 <!-- Tổng tiền -->
-                <td *ngIf="isHidden('TotalAmount')" class="border-r text-right">
+                <td *ngIf="isHidden('TotalAmount')" class="border-l text-right">
                   <span>{{data.TotalAmount || 0 | numberCustom :'.' }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
-                <td *ngIf="isHidden('TotalQuantity')" class="border-r">
+                <td *ngIf="isHidden('TotalQuantity')" class="border-l">
                   <span>{{data.TotalQuantity || 0 | numberCustom:'.' }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
-                <td *ngIf="isHidden('DateCreated')" class="border-r">
+                <td *ngIf="isHidden('DateCreated')" class="border-l">
                   <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm:ss"}}</span>
                 </td>
 
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
-                <td *ngIf="isHidden('StatusText')" class="border-r">
+                <td *ngIf="isHidden('StatusText')" class="border-l">
                   <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
                     tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
                     popoverTrigger="click">
@@ -276,14 +275,14 @@
                 </td>
 
                 <!-- Nhân viên -->
-                <td *ngIf="isHidden('UserName')" class="border-r">
+                <td *ngIf="isHidden('UserName')" class="border-l">
                   <span>{{data.UserName}}</span>
                 </td>
 
                 <!-- Thao tác -->
-                <td [tdsRight]="true" class="border-r" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
-                  <div class="flex justify-center gap-x-2">
-                    <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
+                <td [tdsRight]="true" class="border-l" >
+                  <div class="flex justify-between">
+                    <button tds-button-icon color="secondary"  tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                       </span>

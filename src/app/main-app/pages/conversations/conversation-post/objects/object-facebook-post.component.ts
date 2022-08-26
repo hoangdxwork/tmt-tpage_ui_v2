@@ -2,7 +2,7 @@ import { PrepareUpdateFacebookByLiveCampaign } from './../../../../handler-v2/co
 import { FaceBookPostItemHandler } from './../../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignPostComponent } from './../live-campaign-post/live-campaign-post.component';
-import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
@@ -67,6 +67,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
+    // this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == data.LiveCampaignId) as any;
+
     const modal = this.modal.create({
       title: 'Chiến dịch',
       content: LiveCampaignPostComponent,

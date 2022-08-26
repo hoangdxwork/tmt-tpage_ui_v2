@@ -1,4 +1,3 @@
-import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnDestroy } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -365,7 +364,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
 
     const modal = this.modalService.create({
       title: 'Chỉnh sửa địa chỉ',
-      content: ModalAddAddressComponent,
+      content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -393,34 +392,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
         };
 
         (this._form.controls.Addresses as FormArray).at(index).patchValue(item);
-      }
-    });
-  }
-
-  showModalAddAddress() {
-    const modal = this.modalService.create({
-      title: 'Thêm địa chỉ',
-      content: ModalAddAddressComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef
-    });
-
-    modal.afterClose.subscribe((res: ResultCheckAddressDTO) => {
-      if (TDSHelperObject.hasValue(res)) {
-        let item: AddressesV2 = {
-          Id: 0,
-          PartnerId: this.partnerId,
-          CityCode: res.CityCode,
-          CityName: res.CityName,
-          DistrictCode: res.DistrictCode,
-          DistrictName: res.DistrictName,
-          WardCode: res.WardCode,
-          WardName: res.WardName,
-          IsDefault: null,
-          Street: res.Address,
-          Address: res.Address
-        };
-        this.addAddresses(item);
       }
     });
   }
@@ -560,24 +531,53 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     return this.data;
   }
 
-  showModalSuggestAddress(innerText : string){
+  showModalSuggestAddress(){
     let modal =  this.modalService.create({
       title: 'Sửa địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: innerText,
+        _street: this.innerText,
       }
     });
 
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result){
-         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+          this.onLoadSuggestion(result);
+          this.innerText = result.Address;
         }
       }
     })
+  }
+
+  showModalAddAddress(){
+    let modal =  this.modalService.create({
+      title: 'Thêm địa chỉ',
+      content: ModalAddAddressV2Component,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+    });
+
+    modal.afterClose.subscribe((res: ResultCheckAddressDTO) => {
+      if (TDSHelperObject.hasValue(res)) {
+        let item: AddressesV2 = {
+          Id: 0,
+          PartnerId: this.partnerId,
+          CityCode: res.CityCode,
+          CityName: res.CityName,
+          DistrictCode: res.DistrictCode,
+          DistrictName: res.DistrictName,
+          WardCode: res.WardCode,
+          WardName: res.WardName,
+          IsDefault: null,
+          Street: res.Address,
+          Address: res.Address
+        };
+        this.addAddresses(item);
+      }
+    });
   }
 
 }

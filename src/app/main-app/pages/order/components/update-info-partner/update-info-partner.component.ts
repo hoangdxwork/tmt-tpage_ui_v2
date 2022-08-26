@@ -160,21 +160,22 @@ export class UpdateInfoPartnerComponent implements OnInit {
     this.modalRef.destroy(null);
   }
 
-  showModalSuggestAddress(innerText : string){
-    let modal =  this.modal.create({
+  showModalSuggestAddress(){
+    let modal = this.modal.create({
       title: 'Sửa địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: innerText,
+        _street: this.innerText,
       }
     });
 
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result){
-         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+          this.onLoadSuggestion(result);
+          this.innerText = result.Address;
         }
       }
     })

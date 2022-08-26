@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { addDays } from "date-fns";
 import { Observable } from "rxjs";
 import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
-import { LiveCampaignModel, ODataLiveCampaignDTO } from "src/app/main-app/dto/live-campaign/odata-live-campaign.dto";
+import { LiveCampaignModel, ODataLiveCampaignModelDTO } from "@app/dto/live-campaign/odata-live-campaign-model.dto";
 import { TDSDateRangeDTO } from "src/app/main-app/handler-v2/common.handler";
 import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
 import { LiveCampaignService } from "src/app/main-app/services/live-campaign.service";
@@ -25,7 +25,7 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
 
 
   datePicker: any = [];
-  lstSelectLive: ODataLiveCampaignDTO[] = [];
+  lstSelectLive: ODataLiveCampaignModelDTO[] = [];
   orders = [
     { text: 'Chưa có đơn hàng', value: false },
     { text: 'Đã có đơn hàng', value: true },
@@ -37,7 +37,7 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
 
   isActive: boolean = false;
   isVisible: boolean = false;
-  lstLiveCampaigns!: Observable<ODataLiveCampaignDTO>;
+  lstLiveCampaigns!: Observable<ODataLiveCampaignModelDTO>;
 
   constructor(
     private liveCampaignService: LiveCampaignService) {

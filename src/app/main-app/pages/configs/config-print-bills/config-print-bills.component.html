@@ -5,41 +5,47 @@
                 <tds-avatar class="bg-primary-1 text-white" icon="tdsi-setting-print-fill"></tds-avatar>
                 <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">KẾT NỐI/ CẤU HÌNH IN ĐƠN HÀNG</span>
             </div>
-            <button tds-button color="primary" (click)="onSaveConfig($event)">
-                <span class="flex items-center">
-                  <i class="tdsi-save-fill text-lg leading-none mr-2"></i>
-                  <span class="text-body-2 font-semibold">Lưu cấu hình</span>
-                </span>
-            </button>
         </div>
         <div class="p-4">
             <tds-tabset>
                 <tds-tab title="Kết nối in">
+                    <div class="text-body-2 font-semibold text-info-500">
+                        Hỗ trợ kết nối in đơn khi cấu hình chốt đơn tự động.
+                        Chỉ nên kết nối trên một thiết bị có kết nối máy in duy nhất, để tránh lỗi in trùng đơn.
+                    </div>
                     <div class="flex flex-row items-center pt-6 pb-4">
-                        <tds-switch size="md" [(ngModel)]="enablePrintSwitch" (ngModelChange)="onPrintSwitchChange($event)"></tds-switch>
+                        <tds-switch size="md" [(ngModel)]="isEnablePrint" (ngModelChange)="onPrintSwitchChange($event)"></tds-switch>
                         <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Bật in</span>
                     </div>
-                    <button tds-button color="primary" class="mb-4" (click)="onConnectPrinter($event)">
-                        <span class="flex items-center">
-                          <i class="tdsi-setting-print-fill text-lg leading-none mr-2"></i>
-                          <span class="text-body-2 font-semibold">Kết nối máy in</span>
-                        </span>
-                    </button>
-                    <div class="flex flex-col">
+
+                    <div class="flex items-center mb-4">
+                        <button *ngIf="!isConnected" tds-button color="primary" (click)="onConnectPrinter('connect')">
+                            <span class="flex items-center">
+                              <i class="tdsi-setting-print-fill text-lg leading-none mr-2"></i>
+                              <span class="text-body-2 font-semibold {{ printHubConnected ? 'text-info-500' : ''}}">Kết nối máy in</span>
+                            </span>
+                        </button>
+                        <span class="ml-3" *ngIf="printHubConnected">Đang kết nối ({{ printHubSaleOnlineOrderCount | number }})</span>
+
+                        <button *ngIf="isConnected" tds-button color="primary" (click)="onConnectPrinter('disconnect')">
+                            <span class="flex items-center">
+                              <i class="tdsi-setting-print-fill text-lg leading-none mr-2"></i>
+                              <span class="text-body-2 font-semibold {{ printHubConnected ? 'text-info-500' : ''}}">Ngắt kết nối</span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col" *ngIf="connectedUsers">
                         <span class="text-neutral-1-900 text-title-1 font-semibold py-4">Danh sách kết nối</span>
-                        <div *ngFor="let item of printerList; let i= index">
+                        <div *ngFor="let item of connectedUsers; let i= index">
                             <div class="flex flex-row items-center justify-between pb-4">
                                 <div class="flex flex-row items-center">
-                                    <div class="py-2 px-4 bg-neutral-3-50 rounded-md relative">
-                                        <img src="../../../assets/imagesv2/config/config-printer.svg">
-                                        <span class="tdsi-success-fill leading-4 text-primary-1 h-4 w-4 absolute bottom-1 right-1 {{item.status == 1 ? '' : 'hidden'}}"></span>
-                                    </div>
                                     <div class="flex flex-col pl-3">
-                                        <span class="text-neutral-1-900 text-body-2 font-semibold">HP LaserJet Pro MFP M428FDN Printer W1A29A</span>
-                                        <span class="text-neutral-1-400 text-body-2 font-regular">{{item.status == 1 ? 'Đã kết nối' : 'Chưa kết nối'}}</span>
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold">{{ item.connectionId }}</span>
+                                        <span class="text-neutral-1-400 text-body-2 font-regular">{{item.connectionId ? 'Đã kết nối' : 'Chưa kết nối'}}</span>
                                     </div>
                                 </div>
-                                <button tds-flat-button (click)="onRemovePrinter($event,i)">
+                                <button tds-flat-button (click)="forceDisconnect($event, i)" *ngIf="isConnected && item.connectionId != connectionId">
                                     <span class="flex items-center text-error-400 text-caption-1 font-semibold">
                                         <i class="tdsi-trash-line leading-none mr-2"></i>
                                         Xoá thiết bị
@@ -48,9 +54,38 @@
                             </div>
                         </div>
                     </div>
+
+                    <div *ngIf="connectedUsers?.length == 0">
+                      <tds-alert type="info" message="Chưa có thiết bị nào được kết nối"> </tds-alert>
+                    </div>
+
                 </tds-tab>
                 <tds-tab title="Lịch sử đơn hàng đã in">
-
+                    <tds-table templateMode>
+                      <thead>
+                          <tr>
+                              <th>STT</th>
+                              <th>Mã ĐH</th>
+                              <th>Lỗi in</th>
+                              <th>In lại</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let item of saleOnlineOrders; let i=index;">
+                              <td>{{i+1}}</td>
+                              <td>{{item.Code || 'N/A'}}</td>
+                              <td>{{item.printErrorMessage || 'In thành công'}}</td>
+                              <td>
+                                <button (click)="printAgain(item)" [disabled]="item.isPrinting" type="button" tds-button size="sm" color="primary">In phiếu</button>
+                              </td>
+                          </tr>
+                          <tr>
+                            <td colspan="4">
+                                <tds-alert type="success" message="Chưa có đơn hàng nào"></tds-alert>
+                            </td>
+                          </tr>
+                      </tbody>
+                    </tds-table>
                 </tds-tab>
             </tds-tabset>
         </div>

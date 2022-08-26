@@ -525,7 +525,7 @@ export class TDSConversationItemV2Component implements OnInit {
   showModalSuggestAddress(text: any){
     if(!TDSHelperString.hasValueString(text))
       return
-    let modal =  this.modalService.create({
+    let modal = this.modalService.create({
         title: 'Thêm địa chỉ',
         content: ModalAddAddressV2Component,
         size: "lg",

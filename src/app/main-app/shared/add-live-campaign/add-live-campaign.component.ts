@@ -1,6 +1,6 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
-import { LiveCampaignModel } from './../../dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel } from '../../dto/live-campaign/odata-live-campaign-model.dto';
 import { finalize, mergeMap } from 'rxjs/operators';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
@@ -84,9 +84,10 @@ export class AddLiveCampaignComponent implements OnInit {
       ConfirmedOrder_Template: [null],
       MinAmountDeposit: [0],
       MaxAmountDepositRequired: [0],
+      IsEnableAuto: [false],
       EnableQuantityHandling: [false],
       IsAssignToUserNotAllowed: [false],
-      // IsShift: [false]
+      IsShift: [false]
     });
   }
 

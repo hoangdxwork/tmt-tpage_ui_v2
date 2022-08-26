@@ -43,7 +43,7 @@ export class ModalAddAddressV2Component implements OnInit {
       okText:"Có",
       cancelText:"Không",
       confirmViewType: "compact",
-    }); 
+    });
   }
 
   onSave() {

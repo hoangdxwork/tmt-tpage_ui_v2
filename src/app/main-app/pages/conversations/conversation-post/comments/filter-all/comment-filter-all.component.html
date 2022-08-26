@@ -169,7 +169,7 @@
                           <div class="flex justify-between gap-2 pb-2">
 
                               <textarea #contentReply tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi" [(ngModel)]="messageModel"
-                                  [ngModelOptions]="{standalone: true}" (keydown.enter)="onEnter(item, $event)" class="resize-none" rows="3"></textarea>
+                                  [ngModelOptions]="{standalone: true}" (keydown.enter)="onEnter(item, $event)" class="resize-none" rows="2"></textarea>
 
                               <button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer(item)">
                                   <span class="flex items-center px-5">
@@ -255,16 +255,16 @@
                       <!-- Phản hồi bình luận -->
                       <div *ngFor="let data of childsComment; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
                         <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3" @eventFadeState>
-        
+
                             <tpage-avatar-facebook [shape]="'circle'" [size]="'md'" [psid]="data.UserId" [token]="team.ChannelToken">
                             </tpage-avatar-facebook>
-        
+
                             <div class="ml-2 w-full h-full">
                                 <div class="bg-white rounded-2xl px-4 py-3">
                                     <div class="flex items-center justify-between">
                                         <div class="flex gap-x-2">
                                             <label class="font-semibold" *ngIf="data.Data && data.Data?.from">{{ data.Data.from.name }} </label>
-        
+
                                             <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
                                                 <div *ngFor="let order of commentOrders[data.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                                     <div class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order.id, item)">
@@ -273,10 +273,10 @@
                                                 </div>
                                             </div>
                                         </div>
-        
+
                                         <span class="text-neutral-1-400 text-right text-caption-1">{{data.CreatedTime | date:'dd/MM/yyyy HH:mm aa'}}</span>
                                     </div>
-        
+
                                     <!-- nội dung bình luận -->
                                     <div class="flex flex-row gap-x-3">
                                         <div [innerHTML]="data.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
@@ -285,7 +285,7 @@
                                             <span class="tdsi-plus-fill"></span>
                                         </button> -->
                                     </div>
-        
+
                                     <!-- hình ảnh đính kèm -->
                                     <div *ngIf="data.Data?.attachment">
                                         <img tds-image *ngIf="data.Data?.attachment?.type != 'sticker'" [tdsSrc]="data.Data.attachment?.media?.image?.src"
@@ -293,18 +293,18 @@
                                         <img tds-image *ngIf="data.Data?.attachment?.type == 'sticker'" [tdsSrc]="data.Data.attachment?.media?.image?.src"
                                           class="max-w-[100px]" />
                                     </div>
-        
+
                                     <!-- thao tác -->
                                     <div class="flex items-center pt-3" *ngIf="!data.IsOwner">
                                         <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
-        
+
                                         <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                             tooltipPlacement="top" (click)="loadPartnerTab(item)" tds-tooltip>
                                             <span class="flex items-center justify-center">
                                                 <i class="tdsi-information-fill text-neutral-1-500"></i>
                                             </span>
                                         </button>
-        
+
                                         <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item, 'child')">
                                             <span class="flex items-center justify-center">
                                                 <i class="tdsi-reply-fill text-neutral-1-500"></i>
@@ -323,35 +323,35 @@
                                                     <i class="tdsi-eye-close-fill text-neutral-1-500"></i>
                                                 </span>
                                             </button>
-        
+
                                             <button type="button" *ngIf="!isHiddenComment[data.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, false)" class="mr-2" size="sm" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
                                                 <span class="flex items-center justify-center">
                                                     <i class="tdsi-eye-line text-neutral-1-500"></i>
                                                 </span>
                                             </button>
                                         </div>
-        
+
                                         <div *ngIf="partnerDict && partnerDict[data.UserId]" class="w-full flex flex-row items-center justify-between">
                                             <!-- trạng thái khách hàng & mã đơn hàng -->
                                             <div class="flex items-center gap-1.5">
-        
+
                                                 <!-- trạng thái khách hàng -->
                                                 <div *ngIf="partnerDict[data.UserId]" class="button-status flex items-center gap-1.5 mr-4">
                                                     <span *ngIf="partnerDict[data.UserId].p" class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer">
                                                         <i class="tdsi-call-fill text-body-2 leading-none text-white"></i>
                                                     </span>
-        
+
                                                     <span *ngIf="partnerDict[data.UserId].a" class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer">
                                                         <i class="tdsi-pin-fill text-body-2 leading-none text-white"></i>
                                                     </span>
-        
+
                                                     <div *ngIf="partnerDict[data.UserId].st" [ngStyle]="{'background-color': partnerDict[data.UserId].ss+'30', 'border-color': partnerDict[data.UserId].ss, 'color': partnerDict[data.UserId].ss}"
                                                         class="border font-semibold px-2 py-0.5 rounded text-caption-2 ">
                                                         {{partnerDict[data.UserId].st}}
                                                     </div>
                                                 </div>
                                             </div>
-        
+
                                             <div *ngIf="partnerDict[data.UserId].t" class="justify-end flex-col gap-2 tag-status flex-auto xl:hidden 2xl:flex">
                                                 <div class="flex gap-2">
                                                     <div class="flex-auto flex flex-nowrap gap-1 justify-end items-center overflow-hidden" #currentWidthTag>
@@ -369,14 +369,14 @@
                                                             </div>
                                                         </div>
                                                     </div>
-        
+
                                                     <div class="flex gap-1.5 items-center"  *ngIf="partnerDict[data.UserId].t.length > 3">
                                                         <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" tds-popover
                                                             [popoverContent]="popoverContentTag"
                                                             popoverPlacement="topRight">
                                                             +{{partnerDict[data.UserId].t.length - 3}}
                                                         </div>
-        
+
                                                         <ng-template #popoverContentTag>
                                                             <div class="flex gap-x-2 flex-wrap max-w-[500px]">
                                                                 <div *ngFor="let tag of partnerDict[data.UserId].t | slice: 3:(partnerDict[data.UserId].t.length)" #widthTag
@@ -397,8 +397,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                   
-                                </div>                         
+
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,15 +1,18 @@
 import { Injectable, OnDestroy } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSMessageService } from "tds-ui/message";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { GeneralConfigsFacade } from "../facades/general-config.facade";
 import { takeUntil } from 'rxjs/operators';
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 import { InitSaleDTO } from "../../dto/setting/setting-sale-online.dto";
+import { TDSNotificationService } from "tds-ui/notification";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
+
 export class OrderPrintService extends BaseSevice implements OnDestroy {
 
   prefix: string = "";
@@ -20,12 +23,11 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
   private configModel: any;
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private apiService: TCommonService,
-    private message: TDSMessageService,
+  constructor(private apiService: TCommonService,
+    private notificationService: TDSNotificationService,
     private generalConfigsFacade: GeneralConfigsFacade) {
     super(apiService);
-    this.initialize();
+      this.initialize();
   }
 
   initialize() {
@@ -100,32 +102,31 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: model.PartnerCode,
           phone: model.Telephone,
           uid: model.Facebook_UserId,
-          product: product
+          product: product || "null"
         }
       });
 
       this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe(res => {
         if (typeof res === "string") {
-          res = JSON.parse(res);
+            res = JSON.parse(res);
         }
 
         if (!res.Success) {
-          this.message.error(`Không thể in: ${res.Message}`);
+            this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${res.Message}`,  { placement: 'bottomLeft'});
         }
       }, error => {
-        this.message.error(JSON.stringify(error));
+            this.notificationService.warning('Lỗi in đơn hàng', `${JSON.stringify(error)}`,  { placement: 'bottomLeft'});
       });
     }
-    else
-    {
-      this.message.error("Không thể tải cấu hình. Không thể in.");
+    else {
+      this.notificationService.warning('Không thể in.', `Không thể tải cấu hình`,  { placement: 'bottomLeft'});
     }
   }
 
   printIpFromOrder(model: any): any {
     let exist = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null;
     if(!exist) {
-      return this.message.error('"Không thể tải cấu hình.", "Không thể in."')
+      this.notificationService.warning('Không thể in', `Không thể tải cấu hình`,  { placement: 'bottomLeft'});
     }
 
     let lsProduct: any = [];
@@ -183,7 +184,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: model.PartnerCode,
           phone: model.Telephone,
           uid: model.Facebook_UserId,
-          product: product,
+          product: product || "null",
           address: model.Address,
           dateInvoice: model.DateCreated,
           userName: model.User ? model.User.Name : "",
@@ -192,13 +193,18 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
       }
     } as any;
 
-    this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe((data) => {
-      if (typeof data === "string") {
-        data = JSON.parse(data);
-      }
+    this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data) => {
+        if (typeof data === "string") {
+          data = JSON.parse(data);
+        }
 
-      if (!data.Success) {
-        this.message.error(`Không thể in: ${data.Message}`);
+        if (!data.Success) {
+          this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${data.Message}`,  { placement: 'bottomLeft'});
+        }
+      },
+      error: (error) => {
+        this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
       }
     });
   }
@@ -259,7 +265,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: quickOrderModel.PartnerCode,
           phone: quickOrderModel.Telephone,
           uid: quickOrderModel.Facebook_UserId,
-          product: product,
+          product: product || "null",
           address: quickOrderModel.Address,
           userName: quickOrderModel.User ? quickOrderModel.User.Name:"",
           dateInvoice: quickOrderModel.DateCreated,
@@ -268,13 +274,18 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
       }
     }
 
-    this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe((data) => {
-      if (typeof data === "string") {
-        data = JSON.parse(data);
-      }
+    this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data) => {
+        if (typeof data === "string") {
+          data = JSON.parse(data);
+        }
 
-      if (!data.Success) {
-        this.message.error(`Không thể in: ${data.Message}`);
+        if (!data.Success) {
+          this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${data.Message}`,  { placement: 'bottomLeft'});
+        }
+      },
+      error: (error) => {
+        this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
       }
     });
   }

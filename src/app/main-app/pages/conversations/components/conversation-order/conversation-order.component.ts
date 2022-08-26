@@ -1231,7 +1231,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalSuggestAddress(){
     let modal =  this.modal.create({
-        title: 'Thêm địa chỉ',
+        title: 'Sửa địa chỉ',
         content: ModalAddAddressV2Component,
         size: "lg",
         viewContainerRef: this.viewContainerRef,
