@@ -35,6 +35,7 @@ import { ModalHistoryChatComponent } from '@app/pages/order/components/modal-his
   templateUrl: './detail-order-livecampaign.component.html',
   providers: [TDSDestroyService]
 })
+
 export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
 
   @ViewChild('WidthTable') widthTable!: ElementRef;

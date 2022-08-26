@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { PrintHubConnectionResolver } from '@app/services/print/printhub-connection.resolver';
+import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
@@ -6,37 +8,29 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
   templateUrl: './config-print-bills.component.html'
 })
 export class ConfigPrintBillsComponent implements OnInit {
-  printerList:TDSSafeAny[] = [];
-  enablePrintSwitch!:boolean;
 
-  constructor() { }
+  printerList:TDSSafeAny[] = [];
+  isEnablePrint!:boolean;
+
+  constructor(private printHub: PrintHubConnectionResolver,
+    private notificationService: TDSNotificationService) { }
 
   ngOnInit(): void {
-    this.loadData();
+    this.isEnablePrint = this.printHub.isEnablePrint;
   }
 
-  loadData(){
-    this.enablePrintSwitch = true;
-    this.printerList = [
-      {
-        id:1,
-        name:'HP LaserJet Pro MFP M428FDN Printer W1A29A',
-        status:1
-      },
-      {
-        id:1,
-        name:'HP LaserJet Pro MFP M428FDN Printer W1A29A',
-        status:1
-      },
-    ];
-  }
+  onPrintSwitchChange(event: boolean){
+    this.isEnablePrint = event;
+    this.printHub.isEnablePrint = event;
 
-  onPrintSwitchChange(value:boolean){
-    this.enablePrintSwitch = value;
+    if(event) {
+        this.notificationService.success('Kết nối máy in', 'Bật in thành công', { placement: 'bottomLeft'});
+    } else {
+        this.notificationService.success('Kết nối máy in', 'Đã tắt bật in' , { placement: 'bottomLeft'});
+    }
   }
 
   onConnectPrinter(data:TDSSafeAny){
-
   }
 
   onSaveConfig(data:TDSSafeAny){

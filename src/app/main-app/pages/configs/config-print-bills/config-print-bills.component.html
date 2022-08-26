@@ -5,26 +5,27 @@
                 <tds-avatar class="bg-primary-1 text-white" icon="tdsi-setting-print-fill"></tds-avatar>
                 <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">KẾT NỐI/ CẤU HÌNH IN ĐƠN HÀNG</span>
             </div>
-            <button tds-button color="primary" (click)="onSaveConfig($event)">
-                <span class="flex items-center">
-                  <i class="tdsi-save-fill text-lg leading-none mr-2"></i>
-                  <span class="text-body-2 font-semibold">Lưu cấu hình</span>
-                </span>
-            </button>
         </div>
         <div class="p-4">
             <tds-tabset>
                 <tds-tab title="Kết nối in">
+                    <div class="text-body-2 font-semibold text-info-500">
+                        Hỗ trợ kết nối in đơn khi cấu hình chốt đơn tự động.
+                        Chỉ nên kết nối trên một thiết bị có kết nối máy in duy nhất, để tránh lỗi in trùng đơn.
+                    </div>
+
                     <div class="flex flex-row items-center pt-6 pb-4">
-                        <tds-switch size="md" [(ngModel)]="enablePrintSwitch" (ngModelChange)="onPrintSwitchChange($event)"></tds-switch>
+                        <tds-switch size="md" [(ngModel)]="isEnablePrint" (ngModelChange)="onPrintSwitchChange($event)"></tds-switch>
                         <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Bật in</span>
                     </div>
+
                     <button tds-button color="primary" class="mb-4" (click)="onConnectPrinter($event)">
                         <span class="flex items-center">
                           <i class="tdsi-setting-print-fill text-lg leading-none mr-2"></i>
                           <span class="text-body-2 font-semibold">Kết nối máy in</span>
                         </span>
                     </button>
+
                     <div class="flex flex-col">
                         <span class="text-neutral-1-900 text-title-1 font-semibold py-4">Danh sách kết nối</span>
                         <div *ngFor="let item of printerList; let i= index">
