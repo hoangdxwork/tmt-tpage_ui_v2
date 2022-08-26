@@ -49,11 +49,11 @@
             <span *ngIf="item.Description.length > 50">...</span>
         </span>
 
-        <span *ngIf="item.ChannelCreatedTime | compareToday" class="text-neutral-1-400">
-            {{ item.ChannelCreatedTime | yiDateTimeFormat }}
+        <span *ngIf="item.CreatedTime | compareToday" class="text-neutral-1-400">
+            {{ item.CreatedTime | yiDateTimeFormat }}
         </span>
-        <span *ngIf="!(item.ChannelCreatedTime | compareToday)" class="text-neutral-1-400">
-            {{ item.ChannelCreatedTime | date:'dd/MM/yyyy HH:mm' }}
+        <span *ngIf="!(item.CreatedTime | compareToday)" class="text-neutral-1-400">
+            {{ item.CreatedTime | date:'dd/MM/yyyy HH:mm' }}
         </span>
 
         <!-- <div class="w-full flex justify-between items-center flex-wrap gap-y-2">

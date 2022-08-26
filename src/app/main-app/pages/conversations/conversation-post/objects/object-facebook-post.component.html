@@ -65,8 +65,8 @@
             <span *ngIf="(item.Data | facebookType)?.message!.length > 50">...</span>
         </span>
 
-        <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" title="Cập nhật lần cuối lúc {{item.ChannelCreatedTime | date:'dd/MM/yyyy HH:mm'}}">
-            {{item.ChannelCreatedTime | date:'dd/MM/yyyy'}}
+        <span *ngIf="item.CreatedTime" class="text-neutral-1-400" title="Cập nhật lần cuối lúc {{item.CreatedTime | date:'dd/MM/yyyy HH:mm'}}">
+            {{item.CreatedTime | date:'dd/MM/yyyy'}}
         </span>
 
         <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
