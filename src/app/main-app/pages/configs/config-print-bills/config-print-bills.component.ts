@@ -121,11 +121,10 @@ export class ConfigPrintBillsComponent implements OnInit {
     this.printHub.forceDisconnect(item.connectionId).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
           this.message.success('Thao tác thành công');
+          this.connectedUsers.slice(index, 1);
       }
     });
   }
-
-
 
   onRemovePrinter(data:TDSSafeAny,index:number){
 
