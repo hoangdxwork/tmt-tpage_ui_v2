@@ -217,17 +217,25 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   onchangeType(event: any) {
-    this.currentType = this.lstType.find(x => x.id === event);
-    this.queryObj = this.onSetFilterObject();
+    if(event) {
+      this.currentType = this.lstType.find(x => x.id === event.id);
 
-    this.loadFilterDataSource();
+      this.queryObj = this.onSetFilterObject();
+      this.loadFilterDataSource();
+    }
   }
 
   onChangeSort(event: any) {
-    this.currentSort = this.lstSort.find(x => x.id === event);
-    this.queryObj = this.onSetFilterObject();
+    if(event) {
+      if(this.currentSort && event.id == this.currentSort?.id) {
+          delete this.currentSort;
+      } else {
+          this.currentSort = this.lstSort.find(x => x.id === event.id);
+      }
 
-    this.loadFilterDataSource();
+      this.queryObj = this.onSetFilterObject();
+      this.loadFilterDataSource();
+    }
   }
 
   onSetFilterObject() {
@@ -433,7 +441,6 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   loadFilterDataSource() {
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
-          res.Items = res.Items.sort((a: ChatomniObjectsItemDto, b: ChatomniObjectsItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
           this.lstObjects  = [...res.Items];
 
           setTimeout(() => {

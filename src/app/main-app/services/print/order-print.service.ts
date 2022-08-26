@@ -100,7 +100,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: model.PartnerCode,
           phone: model.Telephone,
           uid: model.Facebook_UserId,
-          product: product
+          product: product || "null"
         }
       });
 
@@ -183,7 +183,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: model.PartnerCode,
           phone: model.Telephone,
           uid: model.Facebook_UserId,
-          product: product,
+          product: product || "null",
           address: model.Address,
           dateInvoice: model.DateCreated,
           userName: model.User ? model.User.Name : "",
@@ -259,7 +259,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: quickOrderModel.PartnerCode,
           phone: quickOrderModel.Telephone,
           uid: quickOrderModel.Facebook_UserId,
-          product: product,
+          product: product || "null",
           address: quickOrderModel.Address,
           userName: quickOrderModel.User ? quickOrderModel.User.Name:"",
           dateInvoice: quickOrderModel.DateCreated,

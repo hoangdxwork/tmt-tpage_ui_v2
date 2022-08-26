@@ -1,9 +1,15 @@
+import { ChatomniSendMessageModelDto } from './../../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
+import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade/chatomni-message.facade';
+import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
+import { CRMTeamType } from './../../../../../dto/team/chatomni-channel.dto';
+import { ChatomniStatus } from './../../../../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -51,13 +57,16 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   dataSource$!: Observable<ChatomniDataDto>;
   dataSource!: ChatomniDataDto;
   childs: any = {} // dictionary return ChatomniDataItemDto[]
+  childsComment: ChatomniDataItemDto[] = [];
 
   enumActivityStatus = ActivityStatus;
   messageModel!: string;
   isLoading: boolean = false;
   isHiddenComment: any = {};
+  isReplyingComment: boolean = false;
 
   conversationItem!: ChatomniConversationItemDto;
+  @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
@@ -73,7 +82,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade,
     private socketOnEventService: SocketOnEventService,
-    private chatomniConversationFacade: ChatomniConversationFacade) {
+    private chatomniConversationFacade: ChatomniConversationFacade,
+    private chatomniSendMessageService: ChatomniSendMessageService) {
   }
 
   ngOnInit() {
@@ -103,6 +113,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
           let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
 
           this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])]
+          this.sortChildComment(this.dataSource.Items);
         }
 
         this.cdRef.detectChanges();
@@ -128,6 +139,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       if(this.dataSource$) {
         this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
             this.dataSource = {...res};
+            this.sortChildComment(this.dataSource.Items);
 
             this.isLoading = false;
             this.cdRef.markForCheck();
@@ -143,7 +155,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     item.Data.is_private_reply = !item.Data.is_private_reply;
   }
 
-  isReply(item: ChatomniDataItemDto) {
+  isReply(item: ChatomniDataItemDto, child?: string) {
+    if(child){
+      item.Data.is_reply = true;
+      return
+    }
     item.Data.is_reply = !item.Data.is_reply;
   }
 
@@ -232,24 +248,36 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   replyComment(item: ChatomniDataItemDto, msg:string){
+    this.isReplyingComment = true;
     if(TDSHelperString.hasValueString(msg)) {
         const model = this.prepareModel(item, msg);
 
         // TODO: gửi về tin nhắn
         if(item.Data.is_private_reply){
+          let modelv2 = this.prepareModelV2(msg);
+          modelv2.RecipientId = item.Data?.id || item.ObjectId || null;
+          modelv2.MessageType = 2;
 
-            model.comment_id = item.Id;
-            this.crmMatchingService.addQuickReplyComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe(
+            {
+              next: (res: ResponseAddMessCommentDtoV2[]) => {
 
-                  this.message.success('Gửi tin thành công');
-                  if(TDSHelperArray.hasListValue(res)){
-                      res.forEach((x: any) => {
-                          x["status"] = ActivityStatus.sending;
-                      });
-                  }
-              }, error => {
+                item.Data.is_reply = false;
+                this.isReplyingComment = false;
+                this.message.success('Gửi tin thành công'); 
+
+                this.cdRef.detectChanges();
+              },
+              error: error => {
+
+                item.Data.is_reply = false;
+                this.isReplyingComment = false;
                 this.message.error(`${error.error?.message}` || 'Gửi tin nhắn thất bại');
-            })
+
+                this.cdRef.detectChanges();
+              }
+            }
+          )
 
       } else {
           // TODO: Trả lời bình luận
@@ -260,11 +288,26 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             .pipe(takeUntil(this.destroy$)).subscribe({
               next:(res: any) => {
 
+                res["status"] = ChatomniStatus.Pending;
+                res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
+                res.name = this.team.Name;
+                let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res)
+                
                 this.message.success("Trả lời bình luận thành công.");
-                this.addReplyComment(item, model);
+
+                this.addReplyComment(item, model, data);
+
+                item.Data.is_reply = false;
+                this.isReplyingComment = false;
+
+                this.cdRef.detectChanges();
               },
               error: error => {
+
+                item.Data.is_reply = false;
+                this.isReplyingComment = false;
                 this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
+              
               }
             })
       }
@@ -290,7 +333,21 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     return model;
   }
 
-  addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO) {
+  prepareModelV2(message: string): any {
+    const model = {} as ChatomniSendMessageModelDto;
+    model.Message = message;
+
+    return model;
+  }
+
+  addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO, data: ChatomniDataItemDto) {
+    if(data){
+      data.ParentId = model.parent_id;
+      data.ObjectId = item.ObjectId
+      
+    }
+
+    this.childsComment = [...this.childsComment, ...[data]];
   }
 
   loadPartnerTab(item: ChatomniDataItemDto) {
@@ -370,6 +427,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
           if(TDSHelperArray.hasListValue(res?.Items)) {
               this.dataSource.Items = [...res.Items];
+              this.sortChildComment(this.dataSource.Items);
           }
 
           this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
@@ -392,6 +450,18 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       } else {
           this.isHiddenComment[item.id] = true;
       }
+  }
+
+  sortChildComment(data: ChatomniDataItemDto[]){
+    let model: ChatomniDataItemDto[] = [];
+      data.map(x=>{
+          if(x.ParentId){
+            model = [...model, ...[x]]
+          }
+      })
+      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime)) 
+
+      this.childsComment = [...model];
   }
 
   ngOnDestroy(): void {

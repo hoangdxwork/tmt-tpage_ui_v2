@@ -544,8 +544,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     }
   }
 
-  onTabOderOutput(ev: boolean){debugger
-    this.selectedIndex = 1
+  onTabOderOutput(ev: boolean){
+    this.selectedIndex = 1;
   }
 
   loadFilterDataSource() {

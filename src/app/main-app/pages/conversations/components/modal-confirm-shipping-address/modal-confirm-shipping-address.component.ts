@@ -1,12 +1,11 @@
+import { SuggestAddressService } from './../../../../services/suggest-address.service';
 import { takeUntil, Subject } from 'rxjs';
-import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from './../../../../dto/suggest-address/suggest-address.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { FastSaleOrder_DefaultDTOV2 } from './../../../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
-import { AddressService } from 'src/app/main-app/services/address.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
@@ -30,7 +29,7 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
     private fb: FormBuilder,
     private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService,
-    private addressService: AddressService,
+    private suggestAddressService: SuggestAddressService,
     private cdref: ChangeDetectorRef
   ) {
     this.createForm();
@@ -65,20 +64,22 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
   }
 
   getCities() {
-    this.addressService.getCities().subscribe((res: any) => {
-      this.lstCities = res;
+    this.suggestAddressService.getCity().subscribe((res: any) => {
+      this.lstCities = [...res];
     })
   }
 
   getDistrict(id: any) {
-    this.addressService.getDistricts(id).subscribe((res: any) => {
-      this.lstDistricts = res;
+    this.suggestAddressService.setDistrict(id);
+    this.suggestAddressService.getDistrict().subscribe((res: any) => {
+      this.lstDistricts = [...res];
     })
   }
 
   getWard(id: any) {
-    this.addressService.getWards(id).subscribe((res: any) => {
-      this.lstWards = res;
+    this.suggestAddressService.setWard(id);
+    this.suggestAddressService.getWard().subscribe((res: any) => {
+      this.lstWards = [...res];
     })
   }
 

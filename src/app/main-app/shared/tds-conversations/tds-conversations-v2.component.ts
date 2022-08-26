@@ -343,12 +343,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       viewContainerRef: this.viewContainerRef,
       size: 'xl'
     });
-
-    modal.afterClose.subscribe((res: DataPouchDBDTO) => {
-      if (TDSHelperObject.hasValue(res)) {
-        // this.conversationOrderFacade.onAddProductOrder.emit(res);
-      }
-    });
   }
 
   showModalListBill(data: ChatomniConversationItemDto) {
