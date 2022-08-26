@@ -5,6 +5,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
+import { OrderPrintService } from '@app/services/print/order-print.service';
 
 @Component({
   selector: 'app-config-print-bills',
@@ -27,6 +28,7 @@ export class ConfigPrintBillsComponent implements OnInit {
 
   constructor(private printHub: PrintHubConnectionResolver,
     private notificationService: TDSNotificationService,
+    private orderPrintService: OrderPrintService,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService) {
       this.printHub.init();
@@ -49,6 +51,7 @@ export class ConfigPrintBillsComponent implements OnInit {
           this.printHub.getConnectedUsers().pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
               this.connectedUsers = [...this.printHub.connectedUsers];
+              console.log(this.connectedUsers)
             }
           });
         }
@@ -126,7 +129,9 @@ export class ConfigPrintBillsComponent implements OnInit {
     });
   }
 
-  onRemovePrinter(data:TDSSafeAny,index:number){
-
+  printAgain(item: any) {
+    item.isPrinting = true;
+    this.orderPrintService.printOrder(item);
   }
+
 }
