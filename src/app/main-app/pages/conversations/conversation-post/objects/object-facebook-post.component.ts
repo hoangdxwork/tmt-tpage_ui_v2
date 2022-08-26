@@ -67,6 +67,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
+    // this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == data.LiveCampaignId) as any;
+
     const modal = this.modal.create({
       title: 'Chiến dịch',
       content: LiveCampaignPostComponent,

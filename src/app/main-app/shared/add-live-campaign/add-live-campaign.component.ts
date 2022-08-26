@@ -84,6 +84,7 @@ export class AddLiveCampaignComponent implements OnInit {
       ConfirmedOrder_Template: [null],
       MinAmountDeposit: [0],
       MaxAmountDepositRequired: [0],
+      IsEnableAuto: [false],
       EnableQuantityHandling: [false],
       IsAssignToUserNotAllowed: [false],
       // IsShift: [false]
