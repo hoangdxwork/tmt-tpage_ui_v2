@@ -22,7 +22,10 @@ export class SuggestAddressService extends BaseSevice {
   public lstCity: any[] = [];
 
   private readonly _districts = new ReplaySubject<any[]>();
+  public lstDistrict: any = {};
+
   private readonly _wards = new ReplaySubject<any[]>();
+  public lstWard: any = {};
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -58,11 +61,16 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   setDistrict(code: string) {
-    this.apiDistrict(code).subscribe({
-      next: (res: any) => {
-          this._districts.next(res);
-      }
-    })
+    if(TDSHelperArray.hasListValue(this.lstDistrict[code])) {
+        this._districts.next(this.lstDistrict[code]);
+    } else {
+      this.apiDistrict(code).subscribe({
+        next: (res: any) => {
+            this.lstDistrict[code] = [...res];
+            this._districts.next(res);
+        }
+      })
+    }
   }
 
   apiDistrict(code: string): Observable<any> {
@@ -79,11 +87,16 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   setWard(code: string) {
-    this.apiWard(code).subscribe({
-      next: (res: any) => {
-          this._wards.next(res);
-      }
-    })
+    if(TDSHelperArray.hasListValue(this.lstWard[code])) {
+        this._districts.next(this.lstWard[code]);
+    } else {
+      this.apiWard(code).subscribe({
+        next: (res: any) => {
+            this.lstWard[code] = [...res];
+            this._wards.next(res);
+        }
+      })
+    }
   }
 
   apiWard(code: string): Observable<any> {
