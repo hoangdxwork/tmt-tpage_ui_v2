@@ -16,7 +16,7 @@ import { Observable, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { LiveCampaignDetailDTO, ODataLiveCampaignDetailDTO } from 'src/app/main-app/dto/live-campaign/odata-livecampaign-detail.dto';
+import { LiveCampaignProductDTO, LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 
 @Component({
@@ -41,7 +41,7 @@ export class AddLiveCampaignComponent implements OnInit {
   datePicker: Date[] = [];
   tagsProduct: string[] = [];
 
-  dataModel!: ODataLiveCampaignDetailDTO;
+  dataModel!: LiveCampaignDTO;
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
@@ -165,22 +165,22 @@ export class AddLiveCampaignComponent implements OnInit {
     return this._form.controls["Details"] as FormArray;
   }
 
-  updateForm(data: ODataLiveCampaignDetailDTO) {
+  updateForm(data: LiveCampaignDTO) {
 
     this._form.patchValue(data);
 
     if(data && data.Details) {
-      data.Details.map((x: LiveCampaignDetailDTO) => this.addDetails(x))
+      data.Details.map((x: LiveCampaignProductDTO) => this.addDetails(x))
     }
 
     this.datePicker = [data.StartDate, data.EndDate]
   }
 
-  addDetails(x: LiveCampaignDetailDTO) {
+  addDetails(x: LiveCampaignProductDTO) {
     this.detailsForm.push(this.initDetails(x));
   }
 
-  initDetails(data: LiveCampaignDetailDTO | null) {
+  initDetails(data: LiveCampaignProductDTO | null) {
     if(data != null) {
 
       return this.fb.group({
@@ -439,6 +439,7 @@ export class AddLiveCampaignComponent implements OnInit {
     model.ConfirmedOrder_Template = formValue.ConfirmedOrder_Template;
     model.MinAmountDeposit = formValue.MinAmountDeposit;
     model.MaxAmountDepositRequired = formValue.MaxAmountDepositRequired;
+    model.IsEnableAuto = formValue.IsEnableAuto;
     model.EnableQuantityHandling = formValue.EnableQuantityHandling;
     model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
     model.IsShift = formValue.IsShift;

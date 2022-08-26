@@ -5,7 +5,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TdsSwitchChange } from 'tds-ui/switch';
 import { Subject, takeUntil } from 'rxjs';
 import { GetAllFacebookPostDTO } from 'src/app/main-app/dto/live-campaign/getall-facebook-post.dto';
-import { ODataLiveCampaignDetailDTO } from 'src/app/main-app/dto/live-campaign/odata-livecampaign-detail.dto';
+import { LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 
 @Component({
   selector: 'expand-live-campaign',
@@ -17,7 +17,7 @@ export class ExpandLiveCampaignComponent implements OnInit, OnDestroy {
   @Input() liveCampaignId!: string;
 
   isLoading: boolean = false;
-  liveCampaigns!: ODataLiveCampaignDetailDTO;
+  liveCampaigns!: LiveCampaignDTO;
   facebookPosts: GetAllFacebookPostDTO[] = [];
 
   private destroy$ = new Subject<void>();

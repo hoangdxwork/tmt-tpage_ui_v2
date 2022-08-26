@@ -1,6 +1,6 @@
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { EventEmitter, Injectable } from "@angular/core";
-import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 
 @Injectable()
 
