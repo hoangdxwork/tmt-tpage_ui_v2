@@ -1,4 +1,5 @@
-import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignProductDTO } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
@@ -376,10 +377,12 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   getContentString(productConfig: AutoOrderProductDTO) {
-    let productName = productConfig.ProductNameGet;
+    let productName = productConfig.ProductName;
 
-    productName =  productName.replace(`[${productConfig.ProductCode}]`,``);
-    productName =  productName.trim();
+    if(!productName){
+      productName = productConfig.ProductNameGet.replace(`[${productConfig.ProductCode}]`,``) || '';
+      productName = productConfig.ProductNameGet.trim();
+    }
 
     return this.handleWord(productName, productConfig.ProductCode);
   }
@@ -428,8 +431,42 @@ export class PostOrderConfigComponent implements OnInit {
           this.dataModel.Users = users;
 
           if(TDSHelperArray.hasListValue(res?.Details)) {
-            this.lstTextContentToOrders = [];
+            let details = res.Details as LiveCampaignProductDTO[];
+
+            details.map(x => {
+              let product:AutoOrderProductDTO = {
+                ProductId: x.ProductId,
+                ProductCode: x.ProductCode,
+                ProductName: x.ProductName,
+                ProductNameGet: x.ProductNameGet,
+                Price: x.Price,
+                UOMId: x.UOMId,
+                UOMName: x.UOMName,
+                Quantity: x.Quantity,
+                QtyLimit: x.LimitedQuantity,
+                QtyDefault: x.Quantity,
+                IsEnableRegexQty: false,
+                IsEnableRegexAttributeValues: false,
+                IsEnableOrderMultiple: false,
+                AttributeValues: [],
+                DescriptionAttributeValues: []
+              };
+
+              let content = this.getContentString(product);
+              let contentWithAttributes = this.getcontentWithAttributesString(product);
+              let index = this.indexPush;
+              this.indexPush += 1;
+
+              this.lstTextContentToOrders.push({
+                Product: product || null,
+                Content: content,
+                ContentWithAttributes: contentWithAttributes ? contentWithAttributes : null,
+                Index: index,
+                IsActive: true
+              })
+            })
           }
+          console.log(this.lstTextContentToOrders)
 
           this.isLoading = false;
           this.message.info(Message.ConversationPost.LoadConfigSuccess);

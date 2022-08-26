@@ -1,7 +1,7 @@
-import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { FormGroup } from '@angular/forms';
 import { Injectable } from "@angular/core";
+import { ODataLiveCampaignModelDTO, LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 
 @Injectable()
 
@@ -24,9 +24,10 @@ export class PrepareAddCampaignHandler {
         model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_Template?.Id;
         model.MinAmountDeposit = formValue.MinAmountDeposit;
         model.MaxAmountDepositRequired = formValue.MaxAmountDepositRequired;
+        model.IsEnableAuto = formValue.IsEnableAuto;
         model.EnableQuantityHandling = formValue.EnableQuantityHandling;
         model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
-        // model.IsShift = formValue.IsShift;
+        model.IsShift = formValue.IsShift;
     
         if (TDSHelperArray.hasListValue(formValue.Details)) {
           formValue.Details.forEach((detail: any, index: number) => {

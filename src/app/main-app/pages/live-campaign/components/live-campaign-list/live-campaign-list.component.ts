@@ -5,7 +5,7 @@ import { finalize, map, takeUntil, debounceTime, distinctUntilChanged, switchMap
 import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
-import { LiveCampaignModel, ODataLiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignModel, ODataLiveCampaignModelDTO } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { FilterObjLiveCampaignDTO, ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
@@ -44,7 +44,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
 
   lstOfData: Array<LiveCampaignModel> = [];
   expandSet = new Set<string | undefined>();
-  lstLiveCampaigns!: Observable<ODataLiveCampaignDTO>;
+  lstLiveCampaigns!: Observable<ODataLiveCampaignModelDTO>;
 
   isLoading: boolean = false;
   pageSize = 20;
@@ -139,7 +139,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     let filters = this.odataLiveCampaignService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: ODataLiveCampaignDTO) => {
+    this.getViewData(params).subscribe((res: ODataLiveCampaignModelDTO) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = [...res.value];
     }, error => {
@@ -147,7 +147,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     });
   }
 
-  getViewData(params: string): Observable<ODataLiveCampaignDTO> {
+  getViewData(params: string): Observable<ODataLiveCampaignModelDTO> {
     this.isLoading = true;
     return this.odataLiveCampaignService
       .getView(params).pipe(takeUntil(this.destroy$))
