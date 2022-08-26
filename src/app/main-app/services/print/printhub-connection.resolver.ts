@@ -55,8 +55,6 @@ export class PrintHubConnectionResolver {
     this.createConnection();
     this.startConnection();
     this.addEvents();
-
-    console.log("SignalR resolved.");
   }
 
   public init() {
@@ -69,8 +67,7 @@ export class PrintHubConnectionResolver {
   }
 
   public stop() {
-    this._hubConnection.stop()
-      .then(res => {
+    this._hubConnection.stop().then(res => {
         this.onConnectionClosed$.emit(res);
       });
   }
@@ -85,7 +82,6 @@ export class PrintHubConnectionResolver {
     this._hubConnection.on('onSaleOnlineOrderCreated', (model: any) => {
       if (this.isEnablePrint) { // Nếu bật in thì mới in
         model.isPrinting = true;
-
         this.orderPrintService.printOrder(model);
       }
 
@@ -106,7 +102,6 @@ export class PrintHubConnectionResolver {
     });
 
     this._hubConnection.on('onForceDisconnect', (data) => {
-      console.log(data);
       this.onForceDisconnect$.emit(data);
       this._hubConnection.stop();
     });
@@ -121,13 +116,11 @@ export class PrintHubConnectionResolver {
   }
 
   public getConnectedUsers() {
-    return this.invoke('GetConnectedUsers', null)
-      .pipe(map(res => {
+    return this.invoke('GetConnectedUsers', null).pipe(map(res => {
         this.connectedUsers = res;
         if (this.connectedUsers.length == 1) { // Nếu chỉ có 1 kết nối thì bật enable print
           this.isEnablePrint = true;
         }
-
         return res;
       }));
   }
@@ -137,9 +130,7 @@ export class PrintHubConnectionResolver {
   }
 
   public forceDisconnect(connectionId: string) {
-    return this.invoke('ForceDisconnect', connectionId)
-      .pipe(map(res => {
-        // this.connectedUsers = res;
+    return this.invoke('ForceDisconnect', connectionId).pipe(map(res => {
         return res;
       }));
   }
@@ -198,13 +189,10 @@ export class PrintHubConnectionResolver {
       this.init();
     }
 
-    return this._hubConnection
-      .start()
-      .then(() => {
+    return this._hubConnection.start().then(() => {
         this.isConnecting = false;
         this.isConnectionEstablished = true;
         this.connectionId = this._hubConnection.connectionId;
-        console.log('Hub connection started');
         this.onConnectionEstablished$.emit(true);
       })
       .catch((error) => {
