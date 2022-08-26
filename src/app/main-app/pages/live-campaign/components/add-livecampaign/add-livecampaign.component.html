@@ -13,7 +13,7 @@
       </div>
 
       <div class="flex gap-x-2">
-          <button tds-button color="info" type="button" (click)="onSave(true)">Cập nhật cấu hình bài viết</button>
+          <button tds-button color="info" type="button" (click)="onSave(true)" *ngIf="liveCampaignId">Cập nhật cấu hình bài viết</button>
           <button tds-button class="w-[100px]" color="primary" type="button" (click)="onSave()">Lưu lại</button>
           <button tds-button class="w-[100px]" color="secondary" type="button" (click)="onBack()">Hủy bỏ</button>
       </div>
@@ -121,6 +121,10 @@
               </div>
 
               <div class="row-span-2 flex flex-col gap-y-4 items-center pt-3">
+                <div class="flex justify-between items-center w-full">
+                  <tds-label class="w-1/3">Bật xử lý chốt đơn tự động</tds-label>
+                  <tds-checkbox formControlName="IsEnableAuto"></tds-checkbox>
+                </div>
                 <div class="flex justify-between items-center w-full">
                   <tds-label>Bật số lượng</tds-label>
                   <tds-checkbox formControlName="EnableQuantityHandling"></tds-checkbox>

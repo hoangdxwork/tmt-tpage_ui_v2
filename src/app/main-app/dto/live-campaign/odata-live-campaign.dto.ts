@@ -18,6 +18,7 @@ export interface LiveCampaignModel {
   ShowConfig: string;
   MinAmountDeposit: number;
   MaxAmountDepositRequired: number;
+  IsEnableAuto: boolean;
   EnableQuantityHandling?: any;
   IsAssignToUserNotAllowed?: any;
   SumQtyInCart: number;

@@ -103,7 +103,6 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   ngOnInit() {
     if (this.team!.Type == 'Facebook') {
       this.onSetCommentOrders();
-      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.data.LiveCampaignId) as any;
     }
 
     this.loadData();
@@ -120,7 +119,10 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
               this.data.LiveCampaign = { ...res.LiveCampaign };
 
               this.data = {...this.data};
-              this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.data.LiveCampaignId) as any;
+
+              if(this.data && this.data.LiveCampaignId) {
+                this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.data.LiveCampaignId) as any;
+              }
           }
 
           this.cdRef.markForCheck();
@@ -154,6 +156,10 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   loadData() {
     let postId = this.data.ObjectId;
     this.getCommentOrders(postId);
+    
+    if(this.data && this.data.LiveCampaignId) {
+      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.data.LiveCampaignId) as any;
+    }
   }
 
   getCommentOrders(posId: string) {
@@ -303,6 +309,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
+    // this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == data.LiveCampaignId) as any;
+    
     const modal = this.modalService.create({
       title: 'Chiến dịch',
       content: LiveCampaignPostComponent,
