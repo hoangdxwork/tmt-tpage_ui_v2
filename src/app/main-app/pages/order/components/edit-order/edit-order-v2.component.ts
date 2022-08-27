@@ -606,11 +606,7 @@ export class EditOrderV2Component implements OnInit {
     }
 
     if(type == 'printShip') {
-      if (this.saleModel.Carrier) {
-          obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, { ids: [res?.Data.Id]})
-      } else {
-          obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
-      }
+        obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
     }
 
     if (obs) {

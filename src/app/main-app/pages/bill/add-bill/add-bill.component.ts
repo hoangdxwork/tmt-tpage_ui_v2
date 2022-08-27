@@ -322,11 +322,11 @@ export class AddBillComponent implements OnInit {
         data.DateInvoice = new Date();
         this.dataModel = data;
         this._form.patchValue(data);
-        
+
         // Trường hợp Tạo hóa đơn F10 bên Đơn hàng
         this.socketEvent.getOrderBill().pipe(takeUntil(this.destroy$)).subscribe({
           next:(res: FastSaleOrder_DefaultDTOV2) => {
-            
+
             data = {...data,...res};
             console.log(data)
             //TODO: cập nhật thông tin khách hàng
@@ -344,7 +344,7 @@ export class AddBillComponent implements OnInit {
         })
 
         this.isLoading = false;
-      }, 
+      },
       error:(err) => {
           this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
           this.isLoading = false;
@@ -1037,11 +1037,7 @@ export class AddBillComponent implements OnInit {
             break;
 
         case "printShip":
-          if(this.dataModel.Carrier) {
-              obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${id}` + "&carrierid=" + `${this.dataModel.CarrierId}`);
-          } else {
-              obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${id}`);
-          }
+            obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${id}`);
           break;
         default: break;
     }

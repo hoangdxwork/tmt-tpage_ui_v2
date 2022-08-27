@@ -25,6 +25,10 @@ export class AddBillHandler {
       _form.controls['CarrierId'].setValue(data.CarrierId);
     }
 
+    if(data.CarrierId == 0 || data.CarrierId == null) {
+      delete data.CarrierId;
+    }
+
     data.CompanyId = Number(data.Company?.Id || data.CompanyId);
     if(data.CompanyId && data.CompanyId != 0) {
       _form.controls['CompanyId'].setValue(data.CompanyId);

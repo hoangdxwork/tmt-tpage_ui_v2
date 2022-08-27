@@ -515,6 +515,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     if(event) {
         this.calcFee();
     }
+
+    this.cdRef.detectChanges();
   }
 
   onEditPartner() {
@@ -608,14 +610,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.saleOnline_OrderService.setCommentOrder(res, fbid);
 
               if(!this.saleOnlineSettings.isDisablePrint) {
-                  this.orderPrintService.printOrder(res, comment.Message);
+                  this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               }
 
               this.message.success('Tạo đơn hàng thành công');
           }
           else
           if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
-              this.orderPrintService.printOrder(res, comment.Message);
+              this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               this.message.success('Cập nhật đơn hàng thành công');
           }
           this.isLoading = false;
@@ -684,7 +686,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.quickOrderModel = {...res};
 
           if(!this.isEnableCreateOrder && type == 'print') {
-              this.orderPrintService.printOrder(res);
+              this.orderPrintService.printId(res.Id, this.quickOrderModel);
           }
 
           if(this.isEnableCreateOrder) {
@@ -831,11 +833,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     if(type == 'printShip') {
-      if (this.saleModel.Carrier) {
-          obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, { ids: [res?.Data.Id]})
-      } else {
-          obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
-      }
+        obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
     }
 
     if (obs) {
@@ -1189,15 +1187,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               if(res?.error?.message) {
                 this.message.error(res.error.message);
               }
-
-              this.isLoading = false;
-              this.cdRef.markForCheck();
           }
+
+          this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || error?.error?.error_description);
-          this.cdRef.markForCheck();
+          this.cdRef.detectChanges();
       }
     })
   }

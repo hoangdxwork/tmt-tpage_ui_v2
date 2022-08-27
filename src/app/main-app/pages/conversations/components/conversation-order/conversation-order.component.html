@@ -67,7 +67,7 @@
                         </div>
                     </div>
                     <div class="w-full pt-4 flex items-center bg-white">
-                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar 2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400">{{quickOrderModel.Note }}</textarea>
+                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar 2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400">{{quickOrderModel.Note | formatIconLike | bbcodeConvert }}</textarea>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [backdrop]="true" [tdsDropdownMenu]="menuUser"
                             class="2xl:w-1/4 xl:w-2/5 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">
@@ -536,6 +536,7 @@
           <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type != 'post'">
               <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSave()">Lưu nháp</button>
               <button tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen')">Xác nhận</button>
+              <button tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print')">Xác nhận và in</button>
 
               <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')">
                   <span class="flex items-center">

@@ -259,7 +259,7 @@ export class SocketOnEventService {
     this.saleOnline_OrderService.getDetails(model).subscribe({
       next: (res) => {
         delete res['@odata.context'];
-        
+
         this.socketOrderBill$.next(this.prepareOrderBill(res));
       },
       error: (err: any) => {

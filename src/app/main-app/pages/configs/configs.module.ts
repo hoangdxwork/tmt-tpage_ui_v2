@@ -112,6 +112,8 @@ import { UpdateInitInventoryComponent } from './components/update-init-inventory
 import { DefaultOrderComponent } from './default-order/default-order.component';
 import { CreateDefaultProductComponent } from './components/create-default-product/create-default-product.component';
 import { TDSAlertModule } from 'tds-ui/alert';
+import { QuillModule } from 'ngx-quill';
+import { quillOptions } from 'src/app/app.module';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -232,7 +234,8 @@ const SERVICES = [
     TDSNotificationModule,
     TDSCollapseModule,
     TDSEmptyModule,
-    TDSAlertModule
+    TDSAlertModule,
+    QuillModule.forRoot(quillOptions),
   ],
   providers:[
     ...SERVICES
