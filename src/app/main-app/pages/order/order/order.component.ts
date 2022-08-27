@@ -36,6 +36,7 @@ import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 
 @Component({
   selector: 'app-order',
@@ -117,6 +118,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
     private tagService: TagService,
+    private socketEvent: SocketOnEventService,
     private router: Router,
     private orderPrintService: OrderPrintService,
     private modal: TDSModalService,
@@ -343,29 +345,13 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
-      let model = {
-          ids: [...this.setOfCheckedId]
-      }
+      let ids = [...this.setOfCheckedId];
+      
+      this.socketEvent.setOrderBill(ids);
+      // TODO: lưu filter cache trước khi load trang add bill
+      this.storeFilterCache();
 
-      this.isLoading = true;
-      this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res) => {
-            delete res['@odata.context'];
-
-            const key = this.saleOnline_OrderService._keyCreateBillOrder;
-            this.cacheApi.setItem(key, res);
-
-            // TODO: lưu filter cache trước khi load trang add bill
-            this.storeFilterCache();
-
-            this.router.navigateByUrl(`bill/create`);
-            this.isLoading = false
-        },
-        error: (error: any) => {
-            this.isLoading = false
-            this.message.error(error?.error?.message || 'Không thể tạo hóa đơn');
-        }
-      })
+      this.router.navigateByUrl(`bill/create`);
     }
   }
 

@@ -1,9 +1,9 @@
+import { SocketOnEventService } from './../../../services/socket-io/socket-onevent.service';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { OrderEvent } from './../../../handler-v2/order-handler/order.event';
 import { PrepareCopyItemHandler } from '@app/handler-v2/bill-handler/prepare-copy-item.handler';
 import { PreparePartnerHandler } from './../../../handler-v2/bill-handler/prepare-partner.handler';
-import { UpdateFromCacheHandler } from './../../../handler-v2/bill-handler/update-from-cache.handler';
 import { CalculateBillFeeHandler } from './../../../handler-v2/bill-handler/calculate-bill-fee.handler';
 import { UpdateOrderLinesHandler } from './../../../handler-v2/bill-handler/update-order-lines.handler';
 import { GetServiceHandler } from './../../../handler-v2/bill-handler/get-services.handler';
@@ -137,6 +137,7 @@ export class AddBillComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
+    private socketEvent: SocketOnEventService,
     private partnerService: PartnerService,
     private message: TDSMessageService,
     private deliveryCarrierService: DeliveryCarrierService,
@@ -153,7 +154,6 @@ export class AddBillComponent implements OnInit {
     private updateOrderLinesHandler: UpdateOrderLinesHandler,
     private calculateBillFee: CalculateBillFeeHandler,
     private getServiceHandler: GetServiceHandler,
-    private updateFromCache: UpdateFromCacheHandler,
     private updateShipExtraHandler: UpdateShipExtraHandler,
     private preparePartnerHandler: PreparePartnerHandler,
     private prepareCopyItemHandler: PrepareCopyItemHandler,
@@ -315,16 +315,20 @@ export class AddBillComponent implements OnInit {
     this.isLoading = true;
     let model = { Type: 'invoice', SaleOrderIds:[] };
 
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(finalize(() => this.isLoading = false)).subscribe((data: any) => {
+    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(data: any) => {
         delete data['@odata.context'];
 
         data.DateInvoice = new Date();
         this.dataModel = data;
         this._form.patchValue(data);
-
-        // Trường hợp Tạo hóa đơn F10 bên Đơn hàng thì update thông tin từ cache
-        this.updateFromCache.loadCacheOrder(data).subscribe(res => {
-
+        
+        // Trường hợp Tạo hóa đơn F10 bên Đơn hàng
+        this.socketEvent.getOrderBill().pipe(takeUntil(this.destroy$)).subscribe({
+          next:(res: FastSaleOrder_DefaultDTOV2) => {
+            
+            data = {...data,...res};
+            console.log(data)
             //TODO: cập nhật thông tin khách hàng
             if (res.PartnerId && res.Partner?.Id) {
                 this.changePartner(res.PartnerId);
@@ -336,13 +340,15 @@ export class AddBillComponent implements OnInit {
 
             this.calcTotal();
             this.dataModel = data;
+          }
+        })
 
-        },  err => {
-            this.message.error(err?.error?.message || 'Không thể tải dữ liệu từ cache');
-        });
-
-    }, error => {
-        this.message.error(error?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
+        this.isLoading = false;
+      }, 
+      error:(err) => {
+          this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
+          this.isLoading = false;
+      }
     });
   }
 
@@ -1127,7 +1133,7 @@ export class AddBillComponent implements OnInit {
                   }
 
                 } else {
-                  if(TDSHelperString.hasValueString(res.error.message)) {
+                  if(res?.error?.message) {
                     this.message.error(res.error.message);
                   }
                 }
