@@ -1,3 +1,4 @@
+import { TDSEmptyModule } from 'tds-ui/empty';
 import { ShowAttachmentComponent } from './show-attachment/show-attachment.component';
 import { NotificationEventSocketComponent } from './notification-event-socket/notification-event-socket.component';
 import { TableDetailReportComponent } from './table-detail-report/table-detail-report.component';
@@ -133,7 +134,8 @@ const SERVICES = [
     TDSPopoverModule,
     TDSMessageModule,
     DirectivesModule,
-    TDSSwitchModule
+    TDSSwitchModule,
+    TDSEmptyModule
   ],
   exports:[
    ...cmp

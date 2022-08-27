@@ -10,7 +10,7 @@
             </div>
 
             <!-- Cấu hình nội dung mẫu chốt đơn -->
-            <div class="flex flex-col pb-4  w-full">
+            <div class="flex flex-col pb-4 w-full">
                 <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình nội dung mẫu chốt đơn</span>
                 <div class="flex flex-row items-center pt-4">
                     <tds-switch size="md" formControlName="IsEnableOrder" (ngModelChange)="changeIsEnableOrder($event)"></tds-switch>
@@ -48,7 +48,7 @@
             </div>
 
             <!-- Cấu hình nội dung mẫu tạo hóa đơn -->
-            <div class="flex flex-col pb-4  w-full">
+            <div class="flex flex-col pb-4 w-full">
                 <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình nội dung mẫu tạo hóa đơn</span>
                 <div class="flex flex-row items-center pt-4">
                     <tds-switch size="md" formControlName="IsEnableBill" (ngModelChange)="changeIsEnableBill($event)"></tds-switch>
@@ -70,7 +70,7 @@
             </div>
 
             <!-- Trạng thái vận chuyển -->
-            <div class="flex flex-col pb-4  w-full">
+            <div class="flex flex-col pb-4 w-full">
                 <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Trạng thái vận chuyển</span>
                 <div class="flex flex-row items-center pt-4">
                     <tds-switch size="md" formControlName="IsEnableShipping"></tds-switch>
@@ -90,6 +90,11 @@
                         <tds-editor [height]="104" class="bg-white w-full" formControlName="ShippingTemplate" [mentionSuggest]="tagHelpers"
                             [mention]="'value'" [mentionKey]="'@'"></tds-editor>
                     </div>
+                </div>
+
+                <div class="flex items-center gap-x-2 pt-4">
+                    <tds-switch size="md" formControlName="IsOrderAutoReplyOnlyOnce"></tds-switch>
+                    <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Chỉ gửi tin nhắn thông báo lần đầu?</div>
                 </div>
             </div>
 

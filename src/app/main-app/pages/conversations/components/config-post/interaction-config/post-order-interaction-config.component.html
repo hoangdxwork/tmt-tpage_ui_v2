@@ -11,14 +11,15 @@
         
                 <div class="w-full h-full flex flex-col gap-y-4" *ngIf="dataModel.IsEnableOrderReplyAuto">
 
-                    <div class="rounded-xl bg-light-100 p-4 relative" *ngIf="!isEditReply">
+                    <div *ngIf="!isEditReply" class="rounded-xl bg-light-100 p-4 relative">
                         <div [innerHtml]="dataModel.OrderReplyTemplate | safeHtml" class="whitespace-pre-wrap"></div>
                         <span class="absolute bottom-4 right-4 tdsi-edit-fill text-neutral-1-500 cursor-pointer" (click)="onEditReply()"></span>           
                     </div>
 
                     <div *ngIf="isEditReply">
-                        <tds-form-field>
+                        <tds-form-field class="relative">
                             <textarea class="resize-none h-[80px]" tdsInput placeholder="Nhập nội dung" [(ngModel)]="dataModel.OrderReplyTemplate"></textarea>
+                            <span class="tdsi-error-fill absolute top-0.5 right-0.5 hover:cursor-pointer" (click)="onEditReply()"></span>
                         </tds-form-field>
                     </div>
                     <div class="w-full h-full flex flex-col gap-y-4 px-4">
