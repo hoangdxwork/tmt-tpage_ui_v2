@@ -97,7 +97,6 @@ import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
-import { TDSEditorModule } from 'tds-editor';
 import { CreateVariantsModalComponent } from './components/create-variants-modal/create-variants-modal.component';
 import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
 import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
@@ -230,7 +229,6 @@ const SERVICES = [
     PipeModule,
     TDSFilterStatusModule,
     UploadImageModule,
-    TDSEditorModule,
     TDSNotificationModule,
     TDSCollapseModule,
     TDSEmptyModule,

@@ -34,7 +34,6 @@
     "quill": "^1.3.7",
     "quill-mention": "^3.1.0",
     "socket.io-client": "^4.5.1",
-    "tds-editor": "https://tang-ui.tpos.dev/lib/tds-editor-1.1.0.tgz",
     "tds-report": "https://tang-ui.tpos.dev/lib/tds-report-2.0.0.tgz",
     "tds-ui": "https://tang-ui.tpos.dev/lib/tds-ui-2.1.2.tgz",
     "tinymce": "^5.10.3",
