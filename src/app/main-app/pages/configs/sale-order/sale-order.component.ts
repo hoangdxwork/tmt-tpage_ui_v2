@@ -20,6 +20,10 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   lstShippingStatus: ShippingStatuesDTO[] = [];
   private destroy$ = new Subject<void>();
 
+  init = {
+    document_base_url: "https://test.tpos.dev"
+  }
+
   tagHelpers = [
     { id: "Bài live", value: "{order.live_title}" },
     { id: "Tên KH", value: "{partner.name}" },
