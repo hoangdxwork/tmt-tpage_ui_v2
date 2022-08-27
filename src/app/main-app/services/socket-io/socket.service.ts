@@ -37,7 +37,7 @@ export class SocketService  {
 
         if(this.retryNoti == 1) {
           this.notificationService.error(
-              'Kết nối socket-io xảy ra lỗi', 
+              'Kết nối socket-io xảy ra lỗi',
               `${err.message}`,
               {placement: 'bottomLeft'})
         }

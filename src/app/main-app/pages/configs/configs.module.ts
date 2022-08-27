@@ -97,7 +97,6 @@ import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
-import { TDSEditorModule } from 'tds-editor';
 import { CreateVariantsModalComponent } from './components/create-variants-modal/create-variants-modal.component';
 import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
 import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
@@ -112,6 +111,8 @@ import { UpdateInitInventoryComponent } from './components/update-init-inventory
 import { DefaultOrderComponent } from './default-order/default-order.component';
 import { CreateDefaultProductComponent } from './components/create-default-product/create-default-product.component';
 import { TDSAlertModule } from 'tds-ui/alert';
+import { QuillModule } from 'ngx-quill';
+import { quillOptions } from 'src/app/app.module';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -228,11 +229,11 @@ const SERVICES = [
     PipeModule,
     TDSFilterStatusModule,
     UploadImageModule,
-    TDSEditorModule,
     TDSNotificationModule,
     TDSCollapseModule,
     TDSEmptyModule,
-    TDSAlertModule
+    TDSAlertModule,
+    QuillModule.forRoot(quillOptions),
   ],
   providers:[
     ...SERVICES

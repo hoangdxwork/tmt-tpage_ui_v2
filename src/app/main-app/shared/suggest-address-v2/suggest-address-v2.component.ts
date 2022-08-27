@@ -8,6 +8,7 @@ import { ResultCheckAddressDTO } from '../../dto/address/address.dto';
 import { map, takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSConfigService } from 'tds-ui/core/config';
 
 const ESCAPE_KEYUP = 'ArrowUp';
 const ESCAPE_KEYDOWN = 'ArrowDown';
@@ -32,6 +33,8 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   lstDistrict!: Array<SuggestDistrictsDTO>;
   lstWard!: Array<SuggestWardsDTO>;
   innerText: string = '';
+  isAlert : boolean = false;
+  isLoading : boolean = false;
 
   tempAddresses: Array<ResultCheckAddressDTO> = [];
   index: number = 0;
@@ -50,12 +53,16 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   constructor(private fb: FormBuilder,
       private cdRef: ChangeDetectorRef,
       private message: TDSMessageService,
+      private readonly tdsConfigService: TDSConfigService,
       private suggestService: SuggestAddressService) {
         this.createForm();
   }
 
   ngOnInit(): void {
     this.loadCity();
+    this.tdsConfigService.set('message', {
+      maxStack: 3
+    });
   }
 
   createForm() {
@@ -327,18 +334,28 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
     let text = this.innerText;
 
     if(!TDSHelperString.hasValueString(text)) {
-        this.message.error('Vui lòng nhập dữ liệu trước khi kiểm tra!');
+      this.message.error('Vui lòng nhập dữ liệu trước khi kiểm tra!');
+      return
     }
-
+    this.isAlert = false;
+    this.isLoading = true;
     text = encodeURIComponent(text);
-    this.suggestService.checkAddress(text).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+    this.suggestService.checkAddress(text).pipe(takeUntil(this.destroy$)).subscribe({
+      next : (res: any) => {
         if (res.success && TDSHelperArray.isArray(res.data)) {
           this.index = 0;
           this.selectAddress(res.data[0], 0);
           this.tempAddresses = res.data;
-      } else {
+        }
+        if (res.data?.length == 0) {
+          this.isAlert = true;
+        }
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      }, error: (error: any) => {
+        this.isAlert = true;
         this.message.error('Không tìm thấy kết quả phù hợp!');
+        this.isLoading = false;
       }
     })
   }

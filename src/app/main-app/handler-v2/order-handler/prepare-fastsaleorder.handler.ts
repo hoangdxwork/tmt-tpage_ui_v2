@@ -35,6 +35,10 @@ export class SO_PrepareFastSaleOrderHandler {
       } as any;
 
       saleModel.CarrierId = saleModel.Carrier?.Id;
+      if(saleModel.CarrierId == 0 ||  saleModel.CarrierId == null) {
+        delete saleModel.CarrierId;
+      }
+
       saleModel.CompanyId = quickOrderModel.CompanyId;
       saleModel.WarehouseId = saleModel.Warehouse?.Id;
       saleModel.FacebookId = quickOrderModel.Facebook_ASUserId;
@@ -54,7 +58,6 @@ export class SO_PrepareFastSaleOrderHandler {
             ProductUOMId: x.UOMId,
             ProductUOMQty: x.Quantity,
             Type: 'fixed',
-
         } as any;
 
         saleModel.OrderLines?.push(item);

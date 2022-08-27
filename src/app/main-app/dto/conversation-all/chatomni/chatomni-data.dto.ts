@@ -1,3 +1,4 @@
+import { ChatomniObjectsItemDto } from './chatomni-objects.dto';
 import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
@@ -8,7 +9,7 @@ export interface ChatomniDataDto {
 }
 
 export interface ExtrasDto {
-  Objects: { [key: string]: ExtrasObjectDto };
+  Objects: { [key: string]: ChatomniObjectsItemDto };
   Childs: { [key: string]: ExtrasChildsDto[] };
 }
 
@@ -155,6 +156,7 @@ export enum ChatomniMessageType {
   TShopMessage = 92
 }
 
+// Lấy ChatomniObjectsItemDto thay ExtrasObjectDto
 export interface ExtrasObjectDto {
   Data: Facebook_Graph_Post | ChatomniDataTShopPostDto;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
   Id: string;

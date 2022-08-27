@@ -254,12 +254,13 @@ export class ConversationOrderListComponent implements OnInit {
   printMulti() {
     this.isLoadingActive = true;
     let ids = [...this.setOfCheckedId];
-    let data = this.lstOfData.filter(x => ids.includes(x.Id));
+    let datas = this.lstOfData.filter(x => ids.includes(x.Id));
 
-    if(TDSHelperArray.hasListValue(data)) {
-      data.forEach(order => {
-        this.orderPrintService.printOrder(order);
+    if(TDSHelperArray.hasListValue(datas)) {
+      datas.forEach(x => {
+          this.orderPrintService.printIpFromOrder(x);
       });
+
       this.isLoadingActive = false;
     }
   }

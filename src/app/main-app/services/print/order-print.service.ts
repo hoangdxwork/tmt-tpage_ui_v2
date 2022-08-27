@@ -35,93 +35,111 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.saleConfig = res;
+    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        this.saleConfig = res;
+      }
     });
 
-    this.generalConfigsFacade.getSaleOnineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.configModel = res;
+    this.generalConfigsFacade.getSaleOnineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        this.configModel = res;
+      }
     });
   }
 
-  printOrder(model: any, commentMessage?: string) {
+  // printOrder(quickOrderModel: any, message?: any) {
 
-    let lsProduct = [];
-    let product = "";
+  //   let exist = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null;
+  //   if(!exist) {
+  //     this.notificationService.warning('Không thể in', `Không thể tải cấu hình`,  { placement: 'bottomLeft'});
+  //   }
 
-    if (model.Details) {
-      model.Details.forEach((x: any) => {
-        lsProduct.push(`${x.ProductName}\nSL: ${x.Quantity} Giá: ${x.Price.toLocaleString()}`);
-      });
-    }
+  //   let printer = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs.filter((x: any) =>  {
+  //       return x.Code == "03";
+  //   })[0];
 
-    if (model.Address) {
-      lsProduct.push(model.Address);
-    }
+  //   if (!printer.Template) {
+  //       printer.Template = this.saleConfig.configs.DefaultPrinterTemplate;
+  //   }
 
-    if (lsProduct) {
-      product = lsProduct.join('\n');
-    }
+  //   let note = printer.Note;
+  //   if (this.configModel && this.configModel.enablePrintComment) {
+  //     if (!message || this.configModel.isPrintNote) {
+  //         message = quickOrderModel.Note;
+  //     }
 
-    if(this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null) {
+  //     if (message) {
+  //         if (note) {
+  //             note = message + "\n-------------\n" + note;
+  //         } else {
+  //             note = message;
+  //         }
+  //     }
+  //   }
 
-      let printer = this.saleConfig.configs.PrinterConfigs.filter(function (x: any) {
-        return x.Code === "03";
-      })[0];
+  //   if (this.configModel.enablePrintAddress) {
+  //       if (quickOrderModel.Address) {
+  //           note = `Đc: ${quickOrderModel.Address}` + '\n-------------\n' + note;
+  //       }
+  //   }
+  //   let lsProduct: any = [];
+  //   let product = "";
 
-      if (!printer.Template) {
-        printer.Template = this.saleConfig.configs.DefaultPrinterTemplate;
-      }
+  //   var checkQuanlityProduct = printer.Others.find(x => x.Key == "config.hide_quantity_product")?.Value;
+  //   var checkQuanlityPrice = printer.Others.find(x => x.Key == "config.hide_price_product")?.Value;
+  //   var showPageName = printer.Others.find(x => x.Key == "config.show_page_name")?.Value;
+  //   var showPartnerStatus = printer.Others.find(x => x.Key == "config.show_partner_status")?.Value;
 
-      let note = printer.Note;
-      if (this.configModel && this.configModel.enablePrintComment) {
+  //   if (quickOrderModel.Details) {
+  //       quickOrderModel.Details.forEach((x: any) => {
+  //           lsProduct.push((`${x.ProductName}\n ${(!checkQuanlityProduct) ? `SL: ${x.Quantity}` : ""} ${(!checkQuanlityPrice) ? `Giá: ${x.Price.toLocaleString()}` : ""} `).trim());
+  //       });
+  //   }
 
-        if (model.Note) {
-          let prepareNote = Object.assign(model.Note);
+  //   if (lsProduct) {
+  //       product = lsProduct.join('\n');
+  //   }
+  //   var noteHeader = printer.NoteHeader ? printer.NoteHeader : "";
+  //   var header = showPageName ? noteHeader + "\n" + quickOrderModel.CRMTeamName : noteHeader;
+  //   var partnerStatus = showPartnerStatus ? (quickOrderModel.Partner ? quickOrderModel.Partner.StatusText : "") : "";
 
-          if(!this.configModel.isPrintNote && commentMessage) {
-            prepareNote = commentMessage;
-          }
+  //   let body = {
+  //     size: printer.Template,
+  //     html: '',
+  //     note: note,
+  //     json: {
+  //         index: (this.configModel && this.configModel.sessionEnable) ? quickOrderModel.SessionIndex : '',
+  //         code: quickOrderModel.Code,
+  //         header: header,
+  //         name: quickOrderModel.Facebook_UserName,
+  //         partnerCode: quickOrderModel.PartnerCode,
+  //         phone: quickOrderModel.Telephone,
+  //         uid: quickOrderModel.Facebook_UserId,
+  //         product: product || "",
+  //         address: quickOrderModel.Address,
+  //         userName: quickOrderModel.User ? quickOrderModel.User?.Name : "",
+  //         dateInvoice: quickOrderModel.DateCreated,
+  //         details: quickOrderModel.Details,
+  //         partnerStatus: partnerStatus
+  //     }
+  //   }
 
-          if (note && this.configModel.isPrintNote) {
-            note = prepareNote + '\n-------------\n' + note;
-          } else {
-            note = prepareNote;
-          }
-        }
-      }
-      let body = JSON.stringify({
-        size: printer.Template,
-        note: note,
-        html: '',
-        json: {
-          index: (this.configModel && this.configModel.sessionEnable) ? model.SessionIndex : '',
-          code: model.Code,
-          header: printer.NoteHeader,
-          name: model.Facebook_UserName,
-          partnerCode: model.PartnerCode,
-          phone: model.Telephone,
-          uid: model.Facebook_UserId,
-          product: product || "null"
-        }
-      });
+  //   this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (data) => {
+  //       if (typeof data === "string") {
+  //         data = JSON.parse(data);
+  //       }
 
-      this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe(res => {
-        if (typeof res === "string") {
-            res = JSON.parse(res);
-        }
-
-        if (!res.Success) {
-            this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${res.Message}`,  { placement: 'bottomLeft'});
-        }
-      }, error => {
-            this.notificationService.warning('Lỗi in đơn hàng', `${JSON.stringify(error)}`,  { placement: 'bottomLeft'});
-      });
-    }
-    else {
-      this.notificationService.warning('Không thể in.', `Không thể tải cấu hình`,  { placement: 'bottomLeft'});
-    }
-  }
+  //       if (!data.Success) {
+  //         this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${data.Message}`,  { placement: 'bottomLeft'});
+  //       }
+  //     },
+  //     error: (error) => {
+  //       this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
+  //     }
+  //   });
+  // }
 
   printIpFromOrder(model: any): any {
     let exist = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null;
@@ -184,7 +202,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: model.PartnerCode,
           phone: model.Telephone,
           uid: model.Facebook_UserId,
-          product: product || "null",
+          product: product || "",
           address: model.Address,
           dateInvoice: model.DateCreated,
           userName: model.User ? model.User.Name : "",
@@ -193,23 +211,16 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
       }
     } as any;
 
-    this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data) => {
-        if (typeof data === "string") {
-          data = JSON.parse(data);
-        }
-
-        if (!data.Success) {
-          this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${data.Message}`,  { placement: 'bottomLeft'});
-        }
-      },
-      error: (error) => {
-        this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
-      }
-    });
+    // Gửi lệnh in
+    this.printRequest(printer.Ip, printer.Port, body);
   }
 
-  printId(id: string, quickOrderModel: QuickSaleOnlineOrderModel) {
+  printId(id: string, quickOrderModel: QuickSaleOnlineOrderModel, message?: any) {
+    let exist = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null;
+    if(!exist) {
+      this.notificationService.warning('Lỗi in', `Không thể tải cấu hình`,  { placement: 'bottomLeft'});
+    }
+
     let printer = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs.filter((x: any) =>  {
         return x.Code == "03";
     })[0];
@@ -217,8 +228,23 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
     if (!printer.Template) {
         printer.Template = this.saleConfig.configs.DefaultPrinterTemplate;
     }
+
     let note = printer.Note;
-    if (this.configModel && this.configModel.enablePrintComment) {
+
+    if(message) {
+      if (!message || this.configModel.isPrintNote) {
+          message = quickOrderModel.Note;
+      }
+
+      if (message) {
+          if (note) {
+              note = message + "\n-------------\n" + note;
+          } else {
+              note = message;
+          }
+      }
+    } else {
+      if (this.configModel && this.configModel.enablePrintComment) {
         if (quickOrderModel.Note) {
             if (note) {
                 note = quickOrderModel.Note + '\n-------------\n' + note;
@@ -226,12 +252,16 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
                 note = quickOrderModel.Note;
             }
         }
+      }
+
+      if (this.configModel.enablePrintAddress) {
+          if (quickOrderModel.Address) {
+              note = `Đc: ${quickOrderModel.Address}` + '\n-------------\n' + note;
+          }
+      }
     }
-    if (this.configModel.enablePrintAddress) {
-        if (quickOrderModel.Address) {
-            note = `Đc: ${quickOrderModel.Address}` + '\n-------------\n' + note;
-        }
-    }
+
+
     let lsProduct: any = [];
     let product = "";
 
@@ -265,32 +295,37 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           partnerCode: quickOrderModel.PartnerCode,
           phone: quickOrderModel.Telephone,
           uid: quickOrderModel.Facebook_UserId,
-          product: product || "null",
+          product: product || "",
           address: quickOrderModel.Address,
-          userName: quickOrderModel.User ? quickOrderModel.User.Name:"",
+          userName: quickOrderModel.User ? quickOrderModel.User?.Name : "",
           dateInvoice: quickOrderModel.DateCreated,
           details: quickOrderModel.Details,
           partnerStatus: partnerStatus
       }
     }
 
-    this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data) => {
-        if (typeof data === "string") {
-          data = JSON.parse(data);
-        }
+    // Gửi lệnh in
+    this.printRequest(printer.Ip, printer.Port, body);
+  }
 
-        if (!data.Success) {
-          this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${data.Message}`,  { placement: 'bottomLeft'});
-        }
+  printRequest(printerIp: string, printerPort: string, body: TDSSafeAny) {
+    this.printPort(printerIp, printerPort, body).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data) => {
+          if (typeof data === "string") {
+            data = JSON.parse(data);
+          }
+
+          if (!data.Success) {
+            this.notificationService.warning('Lỗi in đơn hàng', `Không thể in: ${data.Message}`,  { placement: 'bottomLeft'});
+          }
       },
       error: (error) => {
-        this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
+          this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
       }
     });
   }
 
-  printRequest(printerIp: string, printerPort: string, body: TDSSafeAny): Observable<TDSSafeAny> {
+  printPort(printerIp: string, printerPort: string, body: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
       url: `http://${printerIp}:${printerPort}/print/html`,
       method: CoreApiMethodType.post,

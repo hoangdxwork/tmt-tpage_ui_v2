@@ -1,3 +1,4 @@
+import { TDSEmptyModule } from 'tds-ui/empty';
 import { ShowAttachmentComponent } from './show-attachment/show-attachment.component';
 import { NotificationEventSocketComponent } from './notification-event-socket/notification-event-socket.component';
 import { TableDetailReportComponent } from './table-detail-report/table-detail-report.component';
@@ -59,6 +60,7 @@ import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { DirectivesModule } from './directives/directives.module';
 import { SuggestAddressV2Component } from './suggest-address-v2/suggest-address-v2.component';
+import { TDSAlertModule } from 'tds-ui/alert';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -133,7 +135,9 @@ const SERVICES = [
     TDSPopoverModule,
     TDSMessageModule,
     DirectivesModule,
-    TDSSwitchModule
+    TDSSwitchModule,
+    TDSEmptyModule,
+    TDSAlertModule,
   ],
   exports:[
    ...cmp

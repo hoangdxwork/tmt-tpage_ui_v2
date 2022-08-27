@@ -24,11 +24,11 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
             },
         ]
     },
-    {
-      name: "Cấu hình in đơn hàng",
-      icon: "tdsi-print-fill",
-      link: '/configs/tpos-printer',
-    },
+    // {
+    //   name: "Cấu hình in đơn hàng",
+    //   icon: "tdsi-print-fill",
+    //   link: '/configs/tpos-printer',
+    // },
     {
         name: "Nhãn hội thoại",
         icon: "tdsi-tag-fill",

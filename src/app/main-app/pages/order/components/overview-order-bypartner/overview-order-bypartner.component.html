@@ -1,117 +1,119 @@
-
-<div class="w-full flex flex-col gap-y-4">
-  <div class="w-full flex gap-x-4">
-    <tds-form-field class="w-full">
-        <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
+<tds-spin [spinning]="isLoading" class="w-full h-full">
+  <div class="w-full flex flex-col gap-y-4">
+    <div class="w-full flex gap-x-4">
+      <tds-form-field class="w-full">
+        <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [tdsInputDebounce]="750"
+          (inputKeyup)="onSearch($event)" />
         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-    </tds-form-field>
+      </tds-form-field>
 
-    <div class="w-96">
-      <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+      <div class="w-96">
+        <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+      </div>
     </div>
-</div>
     <div class="border rounded-md border-neutral-2-200 pb-2.5">
-        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" class="px-4">
-            <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-                </tds-filter-status-item>
+      <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" class="px-4">
+        <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+          <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
+          </tds-filter-status-item>
+        </ng-template>
+      </tds-filter-status>
+      <div class="2xl:max-h-[450px] 2xl:h-[450px] xl:max-h-[300px] xl:h-[300px]">
+        <tds-table class="w-full h-full" #productTable [listData]="lstOrder" [pageIndex]="pageIndex"
+          [pageSize]="pageSize" [total]="count" (queryParams)="onQueryParamsChange($event)">
+          <thead class="rounded">
+            <tr>
+              <th [width]="'48px'">STT</th>
+              <th [width]="'166px'">Số HĐ</th>
+              <th [width]="'150px'">Thông tin</th>
+              <th [width]="'123px'">Ngày tạo đơn</th>
+              <th [width]="'150px'">Đối tác giao hàng</th>
+              <th [width]="'113px'">Mã vận đơn</th>
+              <th [width]="'113px'" [align]="'right'">Tổng tiền</th>
+              <th [width]="'113px'" [align]="'right'">Còn nợ</th>
+              <th [width]="'113px'">Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-template ngFor let-data [ngForOf]="productTable.data">
+              <tr>
+                <!-- STT -->
+                <td>1</td>
+
+                <!-- Số HĐ -->
+                <td>
+                  <div class="w-full flex font-semibold text-center pb-2 cursor-pointer"
+                    (click)="onBillDetail($event, data)">
+                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{ data.Number || 'N/A' }}</span>
+                  </div>
+                  <!-- Nhãn -->
+                </td>
+
+                <!-- Thông tin -->
+                <td>
+                  <div class="w-full flex">
+                    <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span class="ml-1">---</span>
+                  </div>
+                </td>
+
+                <!-- Ngày tạo đơn -->
+                <td>
+                  <div class="w-full">
+                    <span>{{ data.DateCreated | yiDateTimeFormat }}</span>
+                  </div>
+                </td>
+
+                <!-- Đối tác GH -->
+                <td>
+                  <div class="w-full">
+                    <span class="text-info-400 font-semibold">{{ data.ShowShipStatus }}</span>
+                  </div>
+                </td>
+
+                <!-- Mã vận đơn -->
+                <td>
+                  <div class="w-full">
+                    <span class="text-info-400 font-semibold">{{ data.TrackingRef }}</span>
+                  </div>
+                </td>
+
+                <!-- Tổng tiền -->
+                <td>
+                  <div class="w-full" [align]="'right'">
+                    <span>{{ data.AmountTotal || 0 | number :'1.0-3' }} đ</span>
+                  </div>
+                </td>
+
+                <!-- Còn nợ -->
+                <td>
+                  <div class="w-full" [align]="'right'">
+                    <span>{{ data.Residual || 0 | number :'1.0-3' }} đ</span>
+                  </div>
+                </td>
+
+                <!-- Trạng thái -->
+                <td>
+                  <div class="w-full">
+                    <tds-tag *ngIf="data.State ==='draft'" status='secondary' type="outline">{{
+                      data.ShowState }}
+                    </tds-tag>
+                    <tds-tag *ngIf="data.State ==='paid'" status='primary' type="outline">{{
+                      data.ShowState }}</tds-tag>
+                    <tds-tag *ngIf="data.State ==='open'" status='info' type="outline">{{ data.ShowState
+                      }}
+                    </tds-tag>
+                    <tds-tag *ngIf="data.State ==='cancel'" status='error' type="outline">{{
+                      data.ShowState }}</tds-tag>
+                    <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi
+                      yêu cầu thanh toán</p>
+                  </div>
+                </td>
+              </tr>
             </ng-template>
-        </tds-filter-status>
-        <div class="2xl:max-h-[450px] 2xl:h-[450px] xl:max-h-[300px] xl:h-[300px]">
-            <tds-table class="w-full h-full" #productTable [listData]="lstOrder"
-                [pageIndex]="pageIndex" [pageSize]="pageSize" [total]="count" [loading]="isLoading"
-                (queryParams)="onQueryParamsChange($event)">
-                <thead class="rounded">
-                    <tr>
-                        <th [width]="'50px'">STT</th>
-                        <th>Số HĐ</th>
-                        <th>Thông tin</th>
-                        <th>Ngày tạo đơn</th>
-                        <th>Đối tác giao hàng</th>
-                        <th>Mã vận đơn</th>
-                        <th [align]="'right'">Tổng tiền</th>
-                        <th [align]="'right'">Còn nợ</th>
-                        <th>Trạng thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <ng-template ngFor let-data [ngForOf]="productTable.data">
-                        <tr>
-                            <!-- STT -->
-                            <td>1</td>
-
-                            <!-- Số HĐ -->
-                            <td>
-                                <div class="w-full flex font-semibold text-center pb-2 cursor-pointer" (click)="onBillDetail($event, data)">
-                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'" >{{ data.Number || 'N/A' }}</span>
-                                </div>
-                                <!-- Nhãn -->
-                            </td>
-
-                            <!-- Thông tin -->
-                            <td>
-                                <div class="w-full flex">
-                                    <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                                    <span class="ml-1">---</span>
-                                </div>
-                            </td>
-
-                            <!-- Ngày tạo đơn -->
-                            <td>
-                                <div class="w-full">
-                                    <span>{{ data.DateCreated | yiDateTimeFormat }}</span>
-                                </div>
-                            </td>
-
-                            <!-- Đối tác GH -->
-                            <td>
-                                <div class="w-full">
-                                    <span class="text-info-400 font-semibold">{{ data.ShowShipStatus }}</span>
-                                </div>
-                            </td>
-
-                            <!-- Mã vận đơn -->
-                            <td>
-                                <div class="w-full">
-                                    <span class="text-info-400 font-semibold">{{ data.TrackingRef }}</span>
-                                </div>
-                            </td>
-
-                            <!-- Tổng tiền -->
-                            <td>
-                                <div class="w-full" [align]="'right'">
-                                    <span>{{ data.AmountTotal || 0 | number :'1.0-3' }} đ</span>
-                                </div>
-                            </td>
-
-                            <!-- Còn nợ -->
-                            <td>
-                                <div class="w-full" [align]="'right'">
-                                    <span>{{ data.Residual || 0 | number :'1.0-3' }} đ</span>
-                                </div>
-                            </td>
-
-                            <!-- Trạng thái -->
-                            <td>
-                                <div class="w-full">
-                                    <tds-tag *ngIf="data.State ==='draft'" status='secondary' type="outline">{{
-                                        data.ShowState }}
-                                    </tds-tag>
-                                    <tds-tag *ngIf="data.State ==='paid'" status='primary' type="outline">{{
-                                        data.ShowState }}</tds-tag>
-                                    <tds-tag *ngIf="data.State ==='open'" status='info' type="outline">{{ data.ShowState
-                                        }}
-                                    </tds-tag>
-                                    <tds-tag *ngIf="data.State ==='cancel'" status='error' type="outline">{{
-                                        data.ShowState }}</tds-tag>
-                                    <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi
-                                        yêu cầu thanh toán</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </tbody>
-            </tds-table>
-        </div>
+          </tbody>
+        </tds-table>
+      </div>
     </div>
-</div>
+  </div>
+</tds-spin>

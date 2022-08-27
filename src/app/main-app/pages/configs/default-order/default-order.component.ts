@@ -74,7 +74,7 @@ export class DefaultOrderComponent implements OnInit {
     const modal = this.modalService.create({
       title: 'Chọn sản phẩm',
       content: CreateDefaultProductComponent,
-      size: "md",
+      size: "lg",
       viewContainerRef: this.viewContainerRef
     });
 
@@ -87,7 +87,7 @@ export class DefaultOrderComponent implements OnInit {
     })
   }
 
-  prepareModel(data:TDSSafeAny){
+  prepareModel(data: TDSSafeAny){
     return {
       Id: null,
       Quantity: 1,

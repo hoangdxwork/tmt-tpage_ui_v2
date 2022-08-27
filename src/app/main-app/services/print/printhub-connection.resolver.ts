@@ -82,7 +82,7 @@ export class PrintHubConnectionResolver {
     this._hubConnection.on('onSaleOnlineOrderCreated', (model: any) => {
       if (this.isEnablePrint) { // Nếu bật in thì mới in
         model.isPrinting = true;
-        this.orderPrintService.printOrder(model);
+        this.orderPrintService.printId(model.Id, model);
       }
 
       this.saleOnlineOrders = [...[model], ...this.saleOnlineOrders];

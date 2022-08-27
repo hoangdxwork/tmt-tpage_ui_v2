@@ -606,11 +606,7 @@ export class EditOrderV2Component implements OnInit {
     }
 
     if(type == 'printShip') {
-      if (this.saleModel.Carrier) {
-          obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, { ids: [res?.Data.Id]})
-      } else {
-          obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
-      }
+        obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
     }
 
     if (obs) {
@@ -756,7 +752,7 @@ export class EditOrderV2Component implements OnInit {
                   }
 
                 } else {
-                  if(TDSHelperString.hasValueString(res.error.message)) {
+                  if(res?.error?.message) {
                     this.message.error(res.error.message);
                   }
                 }
@@ -859,21 +855,22 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
-  showModalSuggestAddress(innerText : string){
+  showModalSuggestAddress(){
     let modal =  this.modal.create({
       title: 'Sửa địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: innerText,
+        _street: this.innerText,
       }
     });
 
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result){
-         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+          this.onLoadSuggestion(result);
+          this.innerText = result.Address;
         }
       }
     })

@@ -65,7 +65,7 @@ export class OverviewOrderBypartnerComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-
+    this.isLoading = true;
     let startDate = new Date(this.filterObj?.dateRange?.startDate.setHours(0, 0, 0, 0)).toISOString();
     let endDate = new Date(this.filterObj?.dateRange?.endDate).toISOString();
 

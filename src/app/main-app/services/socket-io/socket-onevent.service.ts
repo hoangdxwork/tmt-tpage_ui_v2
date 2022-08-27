@@ -1,3 +1,4 @@
+import { FastSaleOrder_DefaultDTOV2 } from './../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 import { TDSModalService, TDSModalRef } from 'tds-ui/modal';
@@ -33,9 +34,11 @@ export interface SocketEventSubjectDto {
   providedIn: 'root'
 })
 
-export class SocketOnEventService  {
+export class SocketOnEventService {
 
   private readonly socketEvent$ = new Subject<any>();
+  private readonly socketOrderBill$ = new Subject<any>();
+
   private modalRef!: TDSModalRef;
 
   constructor(private crmTeamService: CRMTeamService,
@@ -43,7 +46,7 @@ export class SocketOnEventService  {
     private saleOnline_OrderService: SaleOnline_OrderService,
     private modalService: TDSModalService,
     private message: TDSMessageService) {
-        this.initialize();
+    this.initialize();
   }
 
   // TODO: event socket
@@ -54,110 +57,110 @@ export class SocketOnEventService  {
         return socketData;
       }),
       mergeMap((socketData: SocketioOnMessageDto) => {
-          return this.crmTeamService.getActiveByPageIds$([socketData.Conversation?.ChannelId]).pipe((map((teams: CRMTeamDTO[]) => {
-              let team = teams[0] as CRMTeamDTO;
-              return [(socketData || {}), (team || {})];
-          })))
+        return this.crmTeamService.getActiveByPageIds$([socketData.Conversation?.ChannelId]).pipe((map((teams: CRMTeamDTO[]) => {
+          let team = teams[0] as CRMTeamDTO;
+          return [(socketData || {}), (team || {})];
+        })))
       }))
       .subscribe({
-          next: ([socketData, team]: any) => {
-            if(!(team && team.Id)){
-                return;
-            }
-
-            console.log(socketData)
-
-            switch(socketData.EventName) {
-              case ChatmoniSocketEventName.chatomniOnMessage:
-                  socketData = {...socketData} as SocketioOnMessageDto;
-                  let model = {...this.prepareChatomniOnMessage(socketData, team)};
-
-                  this.socketEvent$.next({
-                      Notification: model,
-                      Data: socketData,
-                      Team: team,
-                      EventName: socketData.EventName
-                  });
-
-                  break;
-
-              case ChatmoniSocketEventName.onUpdate:
-                  socketData = {...socketData} as SocketioOnOrderDto;
-                  let modelOrder = {...this.prepareChatomniOnOrder(socketData)};
-
-                  this.socketEvent$.next({
-                      Notification: modelOrder,
-                      Data: socketData,
-                      Team: team,
-                      EventName: socketData.EventName
-                  })
-
-                  break;
-            }
-          },
-          error: (error: any) => {
-               console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
+        next: ([socketData, team]: any) => {
+          if (!(team && team.Id)) {
+            return;
           }
+
+          console.log(socketData)
+
+          switch (socketData.EventName) {
+            case ChatmoniSocketEventName.chatomniOnMessage:
+              socketData = { ...socketData } as SocketioOnMessageDto;
+              let model = { ...this.prepareChatomniOnMessage(socketData, team) };
+
+              this.socketEvent$.next({
+                Notification: model,
+                Data: socketData,
+                Team: team,
+                EventName: socketData.EventName
+              });
+
+              break;
+
+            case ChatmoniSocketEventName.onUpdate:
+              socketData = { ...socketData } as SocketioOnOrderDto;
+              let modelOrder = { ...this.prepareChatomniOnOrder(socketData) };
+
+              this.socketEvent$.next({
+                Notification: modelOrder,
+                Data: socketData,
+                Team: team,
+                EventName: socketData.EventName
+              })
+
+              break;
+          }
+        },
+        error: (error: any) => {
+          console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
+        }
       })
   }
 
   prepareChatomniOnMessage(socketData: SocketioOnMessageDto, team: CRMTeamDTO) {
     let model: SocketEventNotificationDto = {} as any;
 
-    switch(socketData.Message.MessageType) {
-        case ChatomniMessageType.FacebookMessage:
-          model = {
-              Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name} </span> vừa nhắn tin`,
-              Message: `${socketData.Message?.Message}`,
-              Attachments: socketData.Message.Data?.attachments,
-              Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
-          };
-
-          break;
-
-        case ChatomniMessageType.FacebookComment:
-          model = {
-              Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name} </span> vừa bình luận`,
-              Message: `${socketData.Message?.Message}`,
-              Attachments: socketData.Message.Data?.attachments,
-              Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
-          };
+    switch (socketData.Message.MessageType) {
+      case ChatomniMessageType.FacebookMessage:
+        model = {
+          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name} </span> vừa nhắn tin`,
+          Message: `${socketData.Message?.Message}`,
+          Attachments: socketData.Message.Data?.attachments,
+          Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
+        };
 
         break;
 
-        case ChatomniMessageType.TShopMessage:
-          let message = {...socketData.Message?.Data} as DataMessageTshop;
-          model = {
-              Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || message?.Recipient?.Name} </span> vừa nhắn tin`,
-              Message: `${socketData.Message?.Message}`,
-              Attachments: socketData.Message.Data?.attachments,
-              Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-          };
+      case ChatomniMessageType.FacebookComment:
+        model = {
+          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name} </span> vừa bình luận`,
+          Message: `${socketData.Message?.Message}`,
+          Attachments: socketData.Message.Data?.attachments,
+          Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
+        };
 
         break;
 
-        case ChatomniMessageType.TShopComment:
-          let comment = {...socketData.Message?.Data} as DataComentTShop;
-          model = {
-              Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || comment?.Actor?.Name} </span> vừa binh luận`,
-              Message: `${socketData.Message?.Message}`,
-              Attachments: socketData.Message.Data?.attachments,
-              Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-          } ;
+      case ChatomniMessageType.TShopMessage:
+        let message = { ...socketData.Message?.Data } as DataMessageTshop;
+        model = {
+          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || message?.Recipient?.Name} </span> vừa nhắn tin`,
+          Message: `${socketData.Message?.Message}`,
+          Attachments: socketData.Message.Data?.attachments,
+          Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+        };
+
         break;
 
-        default:
-          model = {
-              Title: `${socketData.Conversation?.Name} vừa phản hồi`,
-              Message: `${socketData.Message?.Message}`,
-              Attachments: socketData.Message.Data?.attachments,
-              Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-          };
+      case ChatomniMessageType.TShopComment:
+        let comment = { ...socketData.Message?.Data } as DataComentTShop;
+        model = {
+          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || comment?.Actor?.Name} </span> vừa binh luận`,
+          Message: `${socketData.Message?.Message}`,
+          Attachments: socketData.Message.Data?.attachments,
+          Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+        };
+        break;
+
+      default:
+        model = {
+          Title: `${socketData.Conversation?.Name} vừa phản hồi`,
+          Message: `${socketData.Message?.Message}`,
+          Attachments: socketData.Message.Data?.attachments,
+          Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+        };
 
         break;
     }
 
-    return {...model};
+    return { ...model };
 
   }
 
@@ -170,38 +173,106 @@ export class SocketOnEventService  {
       Url: ''
     } as any;
 
-    return {...model};
+    return { ...model };
   }
 
-  showModalSocketOrder(orderId : string){
-    if(this.modalRef){
+  showModalSocketOrder(orderId: string) {
+    if (this.modalRef) {
       this.modalRef.destroy(null);
     }
 
     this.saleOnline_OrderService.getById(orderId).subscribe({
-        next: (res: any) => {
+      next: (res: any) => {
 
-          if (res && res.Id) {
-            delete res['@odata.context'];
+        if (res && res.Id) {
+          delete res['@odata.context'];
 
-            this.modalRef = this.modalService.create({
-                content: EditOrderV2Component,
-                title: res.Code ? `Thông tin đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Thông tin đơn hàng`,
-                size: 'xl',
-                componentParams: {
-                  dataItem: { ...res }
-                },
-                autoClose:false
-            })
-          }
-        },
-        error: error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+          this.modalRef = this.modalService.create({
+            content: EditOrderV2Component,
+            title: res.Code ? `Thông tin đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Thông tin đơn hàng`,
+            size: 'xl',
+            componentParams: {
+              dataItem: { ...res }
+            },
+            autoClose: false
+          })
         }
+      },
+      error: error => {
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+      }
+    });
+  }
+
+  public prepareOrderBill(data: any): FastSaleOrder_DefaultDTOV2 {
+    let model = {} as FastSaleOrder_DefaultDTOV2;
+
+    model.SaleOnlineIds = data.ids;
+    model.Reference = data.Reference;
+    model.Partner = data.partner;
+    model.Comment = data.comment || '';
+    model.FacebookId = data.facebookId;
+    model.FacebookName = data.facebookName;
+    model.IsProductDefault = data.isProductDefault;
+    model.PartnerId = data.Id;
+    //Check kho hàng
+    if (data.warehouse) {
+      model.Warehouse = data.warehouse;
+    }
+    model.ReceiverName = data.partner.DisplayName;
+    let orderLines: any[] = [];
+
+    for (var item of data.orderLines) {
+      orderLines.push({
+        AccountId: item.AccountId,
+        Discount: item.Discount || 0,
+        Discount_Fixed: item.Discount_Fixed || 0,
+        Note: item.Note,
+        PriceRecent: item.PriceRecent || 0,
+        PriceSubTotal: item.PriceSubTotal || 0,
+        PriceTotal: item.PriceTotal || 0,
+        PriceUnit: item.PriceUnit || 0,
+        Product: item.Product,
+        ProductId: item.ProductId,
+        ProductName: item.ProductName,
+        ProductNameGet: item.Product.NameGet,
+        ProductUOM: item.ProductUOM,
+        ProductUOMId: item.ProductUOMId,
+        ProductUOMName: item.ProductUOMName,
+        ProductUOMQty: item.ProductUOMQty,
+        Type: item.Product.Type,
+        Weight: item.Weight || 0,
+        WeightTotal: 0
       });
+    }
+
+    model.OrderLines = [...orderLines];
+
+    return model;
+  }
+
+  public setOrderBill(ids: string[]) {
+    let model = {
+      ids: ids
+    }
+
+    this.saleOnline_OrderService.getDetails(model).subscribe({
+      next: (res) => {
+        delete res['@odata.context'];
+
+        this.socketOrderBill$.next(this.prepareOrderBill(res));
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
+      }
+    })
+  }
+
+  public getOrderBill() {
+    return this.socketOrderBill$.asObservable();
   }
 
   public onEventSocket() {
-      return this.socketEvent$.asObservable();
+    return this.socketEvent$.asObservable();
   }
 }

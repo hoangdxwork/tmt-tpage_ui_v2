@@ -1,7 +1,7 @@
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { FormGroup } from '@angular/forms';
 import { Injectable } from "@angular/core";
-import { ODataLiveCampaignModelDTO, LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 
 @Injectable()
 
@@ -36,7 +36,7 @@ export class PrepareAddCampaignHandler {
         }
     
         model.Details = formValue.Details;
-    
+        
         return {...model};
     }
 }

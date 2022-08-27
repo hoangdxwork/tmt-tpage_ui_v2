@@ -90,7 +90,7 @@
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[50%] flex flex-col h-full overflow-hidden">
             <div *ngIf="currentPost && currentTeam" class="h-full w-full">
-                <conversation-post-view-v3 [data]="currentPost" [team]="currentTeam" [lstOfLiveCampaign]="lstOfLiveCampaign"></conversation-post-view-v3>
+                <conversation-post-view [data]="currentPost" [team]="currentTeam" [lstOfLiveCampaign]="lstOfLiveCampaign"></conversation-post-view>
             </div>
             <div *ngIf="!currentPost" class="h-full w-full text-center">
                 <p class="text-body-2"> Hãy chọn một bài viết</p>
@@ -116,7 +116,7 @@
                 </tds-tab>
 
                 <!-- tab Khách hàng -->
-                <tds-tab [title]="titlePartner" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
+                <tds-tab [title]="titlePartner" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTabPartner">
                     <ng-template #titlePartner let-active="active">
                         <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                             [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
@@ -129,7 +129,7 @@
                 </tds-tab>
 
                 <!-- tab đơn hàng -->
-                <tds-tab [title]="titleOrder" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
+                <tds-tab [title]="titleOrder" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTabOrder">
                     <ng-template #titleOrder let-active="active">
                         <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                             [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>

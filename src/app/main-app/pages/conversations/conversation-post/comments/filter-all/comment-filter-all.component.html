@@ -7,14 +7,27 @@
             <div *ngFor="let item of dataSource.Items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
                 <div *ngIf="item" class="flex flex-auto w-full" @eventFadeState>
 
-                    <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
-                    </tpage-avatar-facebook>
+                    <div *ngIf="item.Type == 12">
+                        <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
+                        </tpage-avatar-facebook>
+                    </div>
+
+                    <div *ngIf="item.Type == 91">
+                        <tds-avatar [tdsSrc]="(item.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
+                    </div>
+                    
 
                     <div class="ml-2 w-full h-full">
                         <div class="bg-white rounded-2xl px-4 py-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex gap-x-2">
-                                    <label class="font-semibold" *ngIf="item.Data && item.Data?.from">{{ item.Data.from.name }} </label>
+                                    <div *ngIf="item.Type == 12">
+                                        <label class="font-semibold" *ngIf="item.Data && item.Data?.from">{{ item.Data.from.name }} </label>
+                                    </div>
+                
+                                    <div *ngIf="item.Type == 91">
+                                        <label class="font-semibold" *ngIf="item.Data">{{ (item.Data | tShopDataMessage).Actor?.Name }} </label>
+                                    </div>
 
                                     <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
                                         <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
@@ -47,10 +60,10 @@
 
                             <!-- thao tác -->
                             <div class="flex items-center pt-3">
-                                <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
+                                <button *ngIf="!isShowModal" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
 
-                                <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
-                                    tooltipPlacement="top" (click)="loadPartnerTab(item)" tds-tooltip>
+                                <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
+                                    tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-information-fill text-neutral-1-500"></i>
                                     </span>
@@ -59,6 +72,12 @@
                                 <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item)">
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-reply-fill text-neutral-1-500"></i>
+                                    </span>
+                                </button>
+
+                                <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                                    <span class="flex items-center justify-center">
+                                        <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
 
@@ -190,50 +209,7 @@
                       </div>
 
                       <!-- Trả lời bình luận -->
-                      <div *ngIf="childs[item.Id] && isHiddenComment[item.Id]" @eventFadeState>
-                          <div *ngFor="let child of childs[item.Id]" class="mt-3">
-                              <div *ngIf="child" class="flex">
-
-                                  <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="child.from?.id" [token]="team.ChannelToken">
-                                  </tpage-avatar-facebook>
-
-                                  <div class="list bg-white rounded-2xl ml-2 p-4 w-full">
-
-                                      <div class="flex justify-between">
-                                          <div class="flex flex-row items-center">
-                                              <label class="font-semibold">{{child.from?.name}}</label>
-
-                                              <div *ngIf="commentOrders">
-                                                  <a class="text-info-500 font-semibold" *ngFor="let order of commentOrders[child.from.id]"
-                                                      (click)="loadOrderByCode(order.id, child)"> {{order.code}} </a>
-                                              </div>
-                                          </div>
-                                          <span class="text-neutral-1-400 text-right text-caption-1">{{child.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>
-                                      </div>
-
-                                      <!-- nội dung tin nhắn -->
-                                      <div [innerHTML]="child.message | safeHtml"></div>
-
-                                      <!-- hình ảnh -->
-                                      <div *ngIf="child.attachment">
-                                          <img tds-image *ngIf="child.attachment?.type != 'sticker'"
-                                            [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 200px;"/>
-                                          <img tds-image *ngIf="child.attachment?.type == 'sticker'"
-                                            [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 100px;"/>
-                                      </div>
-
-                                      <div class="flex pt-4">
-                                          <button (click)="loadPartnerTab(child)" type="button" tds-button-icon color="secondary" class="mr-2"
-                                              tooltipTitle="Thông tin" tooltipPlacement="top" tds-tooltip >
-                                              <span class="flex items-center justify-center"> <i class="tdsi-information-fill"></i></span>
-                                          </button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-
-                      <!-- Phản hồi bình luận -->
+                      
                       <div *ngFor="let data of childsComment; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
                         <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3" @eventFadeState>
 
@@ -246,7 +222,7 @@
                                         <div class="flex gap-x-2">
                                             <label class="font-semibold" *ngIf="data.Data && data.Data?.from">{{ data.Data.from.name }} </label>
 
-                                            <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
+                                            <div *ngIf="commentOrders && data?.Data?.from" class="flex flex-row items-center">
                                                 <div *ngFor="let order of commentOrders[data.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                                     <div class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order.id, item)">
                                                         <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
@@ -277,10 +253,10 @@
 
                                     <!-- thao tác -->
                                     <div class="flex items-center pt-3" *ngIf="!data.IsOwner">
-                                        <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
+                                        <button *ngIf="!isShowModal" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
 
-                                        <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
-                                            tooltipPlacement="top" (click)="loadPartnerTab(item)" tds-tooltip>
+                                        <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
+                                            tooltipPlacement="top" (click)="loadPartnerTab(data, commentOrders ? commentOrders[data.Data?.from!.id]: '')" tds-tooltip>
                                             <span class="flex items-center justify-center">
                                                 <i class="tdsi-information-fill text-neutral-1-500"></i>
                                             </span>
@@ -292,6 +268,12 @@
                                             </span>
                                         </button>
 
+                                        <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                                            <span class="flex items-center justify-center">
+                                                <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+                                            </span>
+                                        </button>
+        
                                         <div *ngIf="childs[data.Id]">
                                             <button type="button" *ngIf="isHiddenComment[data.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
                                                 <span class="flex items-center justify-center">
@@ -383,3 +365,22 @@
         </div>
     </div>
 </tds-spin>
+
+<tds-drawer [visible]="isOpenDrawer"
+    [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'50vw'">
+    <ng-template #titleMessage>
+      <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
+        Gửi tin nhắn Facebook
+      </span>
+    </ng-template>
+    <ng-container *tdsDrawerContent>   
+        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
+          <div *ngIf="currentConversation && team" class="w-full">
+            <shared-tds-conversations class="flex w-full h-full" [team]="team"
+              [data]="currentConversation" [type]="'all'">
+            </shared-tds-conversations>
+          </div>
+        </div>
+    </ng-container>
+</tds-drawer>

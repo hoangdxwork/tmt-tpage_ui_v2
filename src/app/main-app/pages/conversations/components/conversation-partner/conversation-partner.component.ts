@@ -151,6 +151,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     if(conversationInfo && conversationInfo.Bill && conversationInfo.Bill.Data) {
+        this.totalBill = 0;
         this.lstBill = [...conversationInfo.Bill.Data];
         this.lstBill.map(x => {
           this.totalBill = this.totalBill + x.Total;
@@ -166,8 +167,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (order: QuickSaleOnlineOrderModel) => {
         if(order) {
-           let partner = {...this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, order)};
-           this.partner = partner;
+          let partner = {...this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, order)};
+          this.partner = partner;
         }
       }
     });
@@ -196,8 +197,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             this.partner.Street = res.address;
         }
         if(res && TDSHelperString.hasValueString(res.note) && this.partner) {
+          let exist = (this.partner.Comment || "" as string).includes(res.note)
+          if(!exist){
             let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + res.note : res.note);
             this.partner.Comment = text;
+            this.message.info("Chọn làm ghi chú thành công");
+          } else {
+            this.message.info('Ghi chú đã được chọn');
+          }
+            
         }
     })
   }
@@ -466,7 +474,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   showModalSuggestAddress(){
     let modal =  this.modalService.create({
-      title: 'Thêm địa chỉ',
+      title: 'Sửa địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,

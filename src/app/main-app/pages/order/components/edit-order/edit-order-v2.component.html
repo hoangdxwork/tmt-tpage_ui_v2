@@ -66,7 +66,7 @@
                           <tds-form-field class="w-full">
                             <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
                           </tds-form-field>
-                          <button tds-button-icon color="primary" type="button" tds-tooltip="Kiểm tra địa chỉ" (click)="showModalSuggestAddress(innerText)">
+                          <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="innerText ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress()">
                               <span class="flex items-center">
                                 <i class="tdsi-location-fill"></i>
                               </span>
@@ -85,6 +85,14 @@
                             [ngModelOptions]="{standalone: true}">
                           </tds-select>
                         </tds-form-field>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-x-4">
+                      <div class="flex items-center">
+                        <tds-label>Chiến dịch live</tds-label>
+                      </div>
+                      <div class="col-span-3 h-8 flex items-center pl-4">
+                        {{ quickOrderModel?.LiveCampaignName || 'N/A' }}
                       </div>
                     </div>
                   </div>
@@ -141,7 +149,6 @@
                         <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
                             [(ngModel)]="textSearchProduct" [ngModelOptions]="{standalone: true}"
                             (inputKeyup)="onSearchProduct($event)">
-
                         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
 
                         <span *ngIf="textSearchProduct" tdsSuffix>
@@ -304,7 +311,7 @@
                         </div>
                         <div class="col-span-2">
                           <tds-form-field>
-                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.DeliveryPrice"  (ngModelChange)="changeDeliveryPrice($event)"
+                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.DeliveryPrice" (ngModelChange)="changeDeliveryPrice($event)"
                               [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                             </tds-input-number>
                           </tds-form-field>
@@ -331,7 +338,7 @@
                         </div>
                         <div class="col-span-2">
                           <tds-form-field>
-                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.AmountDeposit"  (ngModelChange)="changeAmountDeposit($event)"
+                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.AmountDeposit" (ngModelChange)="changeAmountDeposit($event)"
                               [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                             </tds-input-number>
                           </tds-form-field>
