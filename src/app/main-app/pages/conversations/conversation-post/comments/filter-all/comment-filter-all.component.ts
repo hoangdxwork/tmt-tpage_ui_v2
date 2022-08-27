@@ -53,6 +53,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   @Input() commentOrders!: any;
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
+  @Input() isShowModal: boolean = false;
+
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
 
   dataSource$!: Observable<ChatomniDataDto>;
@@ -98,6 +100,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.onEventSocket();
+    console.log(this.commentOrders)
   }
 
   loadPartnersByTimestamp() {
@@ -355,7 +358,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     this.childsComment = [...this.childsComment, ...[data]];
   }
 
-  loadPartnerTab(item: ChatomniDataItemDto) {
+  loadPartnerTab(item: ChatomniDataItemDto, orderCode: string) {
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
@@ -369,8 +372,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
               // Thông tin khách hàng
               this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
               // Thông tin đơn hàng
-              this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
+              if(TDSHelperString.hasValueString(orderCode)){
+                this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
+              }
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+
+              // Truyền sang coversation-post
+              this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
           }
         },
         error: (error: any) => {

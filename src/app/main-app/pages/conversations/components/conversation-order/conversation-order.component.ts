@@ -1186,13 +1186,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
           } else {
-            if(res?.error?.message) {
-              this.message.error(res.error.message);
-            }
-          }
+              if(res?.error?.message) {
+                this.message.error(res.error.message);
+              }
 
-          this.isLoading = false;
-          this.cdRef.markForCheck();
+              this.isLoading = false;
+              this.cdRef.markForCheck();
+          }
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -1200,7 +1200,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.cdRef.markForCheck();
       }
     })
-
   }
 
   selectShipServiceV2(x: CalculateFeeServiceResponseDto) {

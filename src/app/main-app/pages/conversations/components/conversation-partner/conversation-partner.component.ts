@@ -151,6 +151,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     if(conversationInfo && conversationInfo.Bill && conversationInfo.Bill.Data) {
+        this.totalBill = 0;
         this.lstBill = [...conversationInfo.Bill.Data];
         this.lstBill.map(x => {
           this.totalBill = this.totalBill + x.Total;
@@ -166,8 +167,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (order: QuickSaleOnlineOrderModel) => {
         if(order) {
-           let partner = {...this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, order)};
-           this.partner = partner;
+          let partner = {...this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, order)};
+          this.partner = partner;
         }
       }
     });

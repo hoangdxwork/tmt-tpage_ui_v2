@@ -47,12 +47,7 @@ export class ChatomniMessageService extends BaseSevice  {
       let id = `${teamId}_${psid}`;
 
       return this.get(teamId, psid, type).pipe(map((res: ChatomniDataDto) => {
-
-          // TODO: sort lại dữ liệu theo ngày tạo mới nhất
-          if(res && TDSHelperArray.isArray(res.Items)) {
-              res.Items = res.Items.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
-          }
-
+     
           // TODO: load dữ liệu lần đầu tiên
           if(TDSHelperObject.hasValue(res)) {
               this.omniFacade.setData(id, res);
@@ -89,11 +84,6 @@ export class ChatomniMessageService extends BaseSevice  {
 
           exist.Items = [ ...exist.Items, ...res.Items ];
           exist.Paging = { ...res.Paging };
-
-          // TODO: sort lại dữ liệu theo ngày tạo mới nhất
-          if(exist && TDSHelperArray.isArray(exist.Items)) {
-            exist.Items = exist.Items.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
-          }
 
           // TODO nếu trùng urlNext thì xóa không cho load
           if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {

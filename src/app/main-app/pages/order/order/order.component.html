@@ -371,9 +371,9 @@
         </div>
         <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
           <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
-            <shared-tds-conversations-v2 class="flex w-full h-full" [team]="currentMappingTeam?.team"
+            <shared-tds-conversations class="flex w-full h-full" [team]="currentMappingTeam?.team"
               [data]="currentConversation" [type]="'all'">
-            </shared-tds-conversations-v2>
+            </shared-tds-conversations>
           </div>
         </div>
       </div>

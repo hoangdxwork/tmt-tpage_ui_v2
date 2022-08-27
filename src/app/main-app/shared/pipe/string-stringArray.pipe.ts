@@ -6,8 +6,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class StringToStringArrayPipe implements PipeTransform {
 
-    transform(value: string | string[]): any {
-        
+    transform(value: string): any {
+
         if(TDSHelperString.isString(value)){
             return (value as string).split(",");
         }
