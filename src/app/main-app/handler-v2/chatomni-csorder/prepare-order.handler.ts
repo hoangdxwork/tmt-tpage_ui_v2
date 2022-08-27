@@ -114,7 +114,7 @@ export class CsOrder_PrepareModelHandler {
   public prepareFacebookComment(comment: ChatomniDataItemDto) {
     let item = {} as SaleOnline_Order_Facebook_CommentDto;
 
-    item["id"] = comment.Id;
+    item["id"] = comment.Data.id;
     item["message"] = comment.Message;
     item["created_time"] = String(comment.CreatedTime);
     item["created_time_converted"] = comment.CreatedTime;
