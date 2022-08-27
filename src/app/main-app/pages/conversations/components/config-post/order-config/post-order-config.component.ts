@@ -93,10 +93,6 @@ export class PostOrderConfigComponent implements OnInit {
           })
         }
 
-        if(res && res.LiveCampaignId) {
-          this.loadLiveCampaignById(res.LiveCampaignId);
-        }
-
         this.isLoading = false;
         this.cdRef.detectChanges();
       },
@@ -107,16 +103,6 @@ export class PostOrderConfigComponent implements OnInit {
     });
   }
 
-  loadLiveCampaignById(id: string) {
-    this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-          this.currentLiveCampaign = res;
-        },
-        error: (err) => {
-          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-        }
-      });
-  }
 
   addContentToOrders(x?: TextContentToOrderDTO) {
     if(x) {
@@ -139,8 +125,8 @@ export class PostOrderConfigComponent implements OnInit {
   setIndexToOrder(data: TextContentToOrderDTO[]): number {
     let indexs = data?.map(x => x.Index);
     if(indexs && indexs.length > 0)
-        return Math.max(...indexs);
-    return 0;
+        return Math.max(...indexs) + 1;
+    return 1;
   }
 
   // Khách hàng không thuộc trạng thái
@@ -168,32 +154,32 @@ export class PostOrderConfigComponent implements OnInit {
     this.dataModel.ExcludedPhones = [...event];
   }
 
-  prepareInputMatch(strs: string[]) {
+ checkInputMatch(strs: string[]) {
     let datas = strs as any[];
     let pop!: string;
 
-    if(strs.length == 1) {
-        pop = datas[0];
+    if(strs && strs.length == 0) {
+      pop = datas[0];
     } else {
-        pop = datas.splice(-1)[0] as string;
+      pop = datas[strs.length - 1];
     }
 
     let match = pop?.match(/[~!@#$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);
     let matchRex = match && match.length > 0;
-debugger
+
     // TODO: check kí tự đặc biệt
     if(matchRex) {
         this.message.warning('Ký tự không hợp lệ');
-        return [...strs];
-    } else {
-        return [...strs];
+        datas = datas.filter(x => x!= pop);
     }
+
+    return datas;
   }
 
   selectContent(event: string[], item: TextContentToOrderDTO) {
-    let strs = [...this.prepareInputMatch(event)];
-
+    let strs = [...this.checkInputMatch(event)];
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
+
     if(idx >= 0) {
       this.dataModel.TextContentToOrders[idx].Content = strs.join(',') || null;
       this.dataModel.TextContentToOrders[idx] = {...this.dataModel.TextContentToOrders[idx]};
@@ -204,10 +190,10 @@ debugger
 
   // TODO: cập nhật danh sách thuộc tính sản phẩm
   selectContentWithAttributes(event: string[], item: TextContentToOrderDTO) {
-    let strs = [...this.prepareInputMatch(event)];
-
+    let strs = [...this.checkInputMatch(event)];
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
-    if(idx) {
+
+    if(idx >= 0) {
       this.dataModel.TextContentToOrders[idx].ContentWithAttributes = strs.join(',') || null;
       this.dataModel.TextContentToOrders[idx] = {...this.dataModel.TextContentToOrders[idx]};
     }

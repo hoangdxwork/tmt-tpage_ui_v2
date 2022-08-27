@@ -54,7 +54,6 @@ export class SO_PrepareFastSaleOrderHandler {
             ProductUOMId: x.UOMId,
             ProductUOMQty: x.Quantity,
             Type: 'fixed',
-
         } as any;
 
         saleModel.OrderLines?.push(item);

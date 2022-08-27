@@ -227,12 +227,12 @@
                   </div>
               </div>
 
-              <div>
-                <button tds-button color="secondary" (click)="addContentToOrders()">
-                  <span class="flex items-center text-primary-1">
-                    <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
-                  </span>
-                </button>
+              <div *ngIf="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length > 0">
+                  <button tds-button color="secondary" (click)="addContentToOrders()">
+                      <span class="flex items-center text-primary-1">
+                        <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
+                      </span>
+                  </button>
               </div>
           </div>
         </div>
