@@ -7,7 +7,6 @@ import { CalculateBillFeeHandler } from './../../handler-v2/bill-handler/calcula
 import { GetServiceHandler } from './../../handler-v2/bill-handler/get-services.handler';
 import { PrepareSuggestionsBillHandler } from './../../handler-v2/bill-handler/prepare-suggestions-bill.handler';
 import { UpdateOrderLinesHandler } from './../../handler-v2/bill-handler/update-order-lines.handler';
-import { UpdateFromCacheHandler } from './../../handler-v2/bill-handler/update-from-cache.handler';
 import { OdataProductService } from './../../services/mock-odata/odata-product.service';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
 import { AttachmentService } from '../../services/attachment.service';
@@ -136,7 +135,6 @@ const SERVICES = [
   PrepareModelFeeV2Handler,
   SelectShipServiceV2Handler,
   UpdateShipmentDetailAshipHandler,
-  UpdateFromCacheHandler,
   UpdateOrderLinesHandler,
   PrepareSuggestionsBillHandler,
   GetServiceHandler,
