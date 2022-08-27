@@ -50,15 +50,15 @@ import { DOCUMENT } from '@angular/common';
 import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
 
 @Component({
-  selector: 'shared-tds-conversations-v2',
-  templateUrl: './tds-conversations-v2.component.html',
+  selector: 'shared-tds-conversations',
+  templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   animations: [eventFadeStateTrigger],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class TDSConversationsV2Component implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
@@ -789,8 +789,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
     this.isLoadingSelectUser = true;
     this.activityMatchingService.assignUserToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
+      .pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
         this.data.AssignedTo = res;
         this.message.success('Thao tác thành công');

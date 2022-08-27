@@ -8,7 +8,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
-import { TDSConversationItemComponent } from './tds-conversation-item.component';
 import { IconEmojiMartComponent } from '../emoji-mart/icon-emoji-mart.component';
 import { UploadImageModule } from '../upload-image/tpage-avatar-facebook/upload-image.module';
 import { ShowAttachmentComponent } from '../show-attachment/show-attachment.component';
@@ -42,14 +41,13 @@ import { TDSMessageModule } from 'tds-ui/message';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { FormatIconLikePipe } from '../pipe/format-icon-like.pipe';
-import { TDSConversationsV2Component } from './tds-conversations-v2.component';
-import { TDSConversationItemV2Component } from './tds-conversation-item-v2.component';
+import { TDSConversationsComponent } from './tds-conversations.component';
+import { TDSConversationItemComponent } from './tds-conversation-item.component';
 import { ConversationInfopostItemComponent } from './component/conversation-infopost-item/conversation-infopost-item.component';
 
 const CMP =[
-  TDSConversationsV2Component,
+  TDSConversationsComponent,
   TDSConversationItemComponent,
-  TDSConversationItemV2Component,
   IconEmojiMartComponent,
   ShowItemImageComponent,
   ConversationInfopostItemComponent,

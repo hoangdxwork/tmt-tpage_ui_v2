@@ -51,12 +51,8 @@ import { PipeModule } from '../../shared/pipe/pipe.module';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
 import { ExcelExportService } from '../../services/excel-export.service';
-import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
 import { ConfigPostOutletComponent } from './components/config-post/config-post-outlet.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
-import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
-import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
-import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ConversationOrderListComponent } from './components/conversation-order-list/conversation-order-list.component';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
 import { AttachmentDataFacade } from '../../services/facades/attachment-data.facade';
@@ -78,8 +74,6 @@ import { ModalListCollectionComponent } from './components/modal-list-collection
 import { ModalTaxComponent } from './components/modal-tax/modal-tax.component';
 import { AccountTaxService } from '../../services/account-tax.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
-import { ConversationPostViewComponent } from './conversation-post/conversation-post-view.component';
-import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-block-phone.component';
 import { TDSAvatarModule } from 'tds-ui/avatar';
 import { TDSSelectModule } from 'tds-ui/select';
@@ -120,7 +114,6 @@ import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-m
 import { CrmMatchingV2Facade } from '../../services/matching-v2-facade/crm-matching-v2.facade';
 import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-matching-v2.service';
 import { ChatomniConversationService } from '../../services/chatomni-service/chatomni-conversation.service';
-import { ConversationAllV2Component } from './conversation-all/conversation-all-v2.component';
 import { CurrentConversationItemV2Component } from './components/current-conversation-item/current-conversation-item-v2.component';
 import { CsPartner_SuggestionHandler } from '../../handler-v2/chatomni-cspartner/prepare-suggestion.handler';
 import { CsPartner_PrepareModelHandler } from '../../handler-v2/chatomni-cspartner/prepare-partner.handler';
@@ -149,6 +142,7 @@ import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/pr
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ModalAddAddressV2Component } from './components/modal-add-address-v2/modal-add-address-v2.component';
 import { OrderModule } from '../order/order.module';
+import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -230,13 +224,7 @@ const SERVICES = [
     ModalConfirmPaymentComponent,
     ModalAddQuickReplyComponent,
     ModalBlockPhoneComponent,
-    ConversationPostViewComponent,
-    ItemPostCommentComponent,
     ModalListBlockComponent,
-    PostCommentAllComponent,
-    PostCommentGroupComponent,
-    PostCommentFilterComponent,
-    ManagePostCommentComponent,
     ConfigPostOutletComponent,
     ConversationAllFilterComponent,
     ConversationOrderListComponent,
@@ -257,7 +245,7 @@ const SERVICES = [
     ModalApplyPromotionComponent,
     ModalPostComponent,
     ModalRenameAttachmentComponent,
-    ConversationAllV2Component,
+    ConversationAllComponent,
     CurrentConversationItemV2Component,
     ConversationPostV2Component,
     ConversationPostViewV3Component,
