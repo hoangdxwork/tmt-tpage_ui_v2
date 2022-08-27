@@ -28,9 +28,7 @@ export interface AutoOrderProductDTO {
 export interface TextContentToOrderDTO {
     Index: number;
     Content: any;
-    // selectedWord2s?: string[];
     ContentWithAttributes?: any;
-    // selectedWord3s?: string[];
     IsActive: boolean;
     Product: AutoOrderProductDTO | null;
 }

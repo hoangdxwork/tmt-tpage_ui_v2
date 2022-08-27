@@ -23,7 +23,7 @@ export class SocketService  {
   }
 
   initSocket(): void {
-    let hostname = this.document.location.hostname;
+    let hostname = 'test.tpos.dev';
 
     this.socket = io(environment.socketUrl, {
         transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
@@ -37,7 +37,7 @@ export class SocketService  {
 
         if(this.retryNoti == 1) {
           this.notificationService.error(
-              'Kết nối socket-io xảy ra lỗi',
+              'Kết nối socket-io xảy ra lỗi', 
               `${err.message}`,
               {placement: 'bottomLeft'})
         }

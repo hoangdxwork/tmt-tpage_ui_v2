@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  signalRAppend: "?host=test.tpos.dev",
+  signalRAppend: "",
   urlLogin:'/account/login',
   socketUrl: 'https://rt.tpos.app/chatomni',
   apiAccount:{

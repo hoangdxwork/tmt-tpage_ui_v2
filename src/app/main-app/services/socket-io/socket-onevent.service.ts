@@ -180,7 +180,6 @@ export class SocketOnEventService  {
 
     this.saleOnline_OrderService.getById(orderId).subscribe({
         next: (res: any) => {
-
           if (res && res.Id) {
             delete res['@odata.context'];
 
