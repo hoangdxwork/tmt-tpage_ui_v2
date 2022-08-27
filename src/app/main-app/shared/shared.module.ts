@@ -60,6 +60,7 @@ import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { DirectivesModule } from './directives/directives.module';
 import { SuggestAddressV2Component } from './suggest-address-v2/suggest-address-v2.component';
+import { TDSAlertModule } from 'tds-ui/alert';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -135,7 +136,8 @@ const SERVICES = [
     TDSMessageModule,
     DirectivesModule,
     TDSSwitchModule,
-    TDSEmptyModule
+    TDSEmptyModule,
+    TDSAlertModule,
   ],
   exports:[
    ...cmp
