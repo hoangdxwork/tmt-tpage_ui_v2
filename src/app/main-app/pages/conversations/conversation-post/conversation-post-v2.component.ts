@@ -31,7 +31,6 @@ import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-co
 @Component({
   selector: 'app-conversation-post-v2',
   templateUrl: './conversation-post-v2.component.html',
-  styleUrls: ['./conversation-post.component.scss'],
   providers: [ TDSDestroyService ]
 })
 
@@ -70,7 +69,9 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   isProcessing: boolean = false;
 
   selectedIndex: number = 0;
-  isDisableTab: boolean = true;
+  isDisableTabPartner: boolean = true;
+  isDisableTabOrder: boolean = true;
+
 
   dataSource$?: Observable<ChatomniObjectsDto> ;
   lstObjects!: ChatomniObjectsItemDto[];
@@ -188,6 +189,15 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
           }
 
           this.cdRef.markForCheck();
+      }
+    })
+
+    //TODO: Check có orderCode thì mở disable tab đơn hàng
+    this.conversationOrderFacade.hasValueOrderCode$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(TDSHelperString.hasValueString(res)){
+          this.isDisableTabOrder = false;
+        }
       }
     })
   }
@@ -468,19 +478,23 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res === ChangeTabConversationEnum.order) {
-          this.changeTab(2, false);
+          this.changeTab(2, true);
+          this.isDisableTabPartner = false;
+          this.isDisableTabOrder = false;
         }
 
         else if(res === ChangeTabConversationEnum.partner) {
-          this.changeTab(1, false);
+          this.changeTab(1, true);
+          this.isDisableTabPartner = false;
         }
       }
     });
   }
 
-  changeTab(tabIndex: number, isDisable: boolean = true) {
+  changeTab(tabIndex: number, isDisable: boolean) {
     this.selectedIndex = tabIndex;
-    this.isDisableTab = isDisable;
+    this.isDisableTabPartner = isDisable;
+    this.isDisableTabOrder = isDisable;
   }
 
 }

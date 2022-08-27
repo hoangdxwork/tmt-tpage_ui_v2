@@ -130,12 +130,12 @@
   <div class="flex 2xl:w-[48%] w-[45%]">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
         <div class="flex w-full flex-col h-full" *ngIf="conversationItem && currentTeam" @eventFadeState>
-            <shared-tds-conversations-v2
+            <shared-tds-conversations
                 class="flex w-full h-full"
                 [data]="conversationItem"
                 [state]="conversationItem.State"
                 [type]="type" [team]="currentTeam">
-            </shared-tds-conversations-v2>
+            </shared-tds-conversations>
         </div>
     </div>
   </div>
