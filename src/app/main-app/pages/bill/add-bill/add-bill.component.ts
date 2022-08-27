@@ -1127,7 +1127,9 @@ export class AddBillComponent implements OnInit {
                   }
 
                 } else {
-                  this.message.error(res.error?.message);
+                  if(TDSHelperString.hasValueString(res.error.message)) {
+                    this.message.error(res.error.message);
+                  }
                 }
             }
 
