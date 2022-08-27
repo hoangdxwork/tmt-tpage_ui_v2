@@ -100,7 +100,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.onEventSocket();
-    console.log(this.commentOrders)
   }
 
   loadPartnersByTimestamp() {
@@ -296,7 +295,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             .pipe(takeUntil(this.destroy$)).subscribe({
               next:(res: any) => {
 
-                res["status"] = ChatomniStatus.Pending;
+                res["status"] = ChatomniStatus.Done;
                 res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
                 res.name = this.team.Name;
                 let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res)

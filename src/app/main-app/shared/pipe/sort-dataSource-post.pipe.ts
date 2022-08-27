@@ -20,3 +20,19 @@ export class SortDataSourcePostPipe implements PipeTransform {
   }
 }
 
+@Pipe({
+  name: 'sortDataSourceMessage'
+})
+
+export class SortDataSourceMessagePipe implements PipeTransform {
+
+  constructor(){}
+
+  transform(data: ChatomniDataItemDto[]): any {
+    let model: ChatomniDataItemDto[] = [];
+    model = data.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime))
+
+    return [...model];
+  }
+}
+

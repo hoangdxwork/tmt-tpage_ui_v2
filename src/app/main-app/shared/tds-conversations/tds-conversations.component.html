@@ -121,7 +121,7 @@
             </div>
 
             <div *ngIf="dataSource && dataSource?.Items" >
-                <div *ngFor="let item of dataSource!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex" >
+                <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
                   <div *ngIf="item" @eventFadeState>
                     <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
                         <div class="w-full relative">

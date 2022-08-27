@@ -289,7 +289,7 @@ export class ModalSendMessageAllComponent implements OnInit {
       //   .pipe(finalize(() => { this.isSending = false }))
       //   .subscribe(res => {
       //     res.forEach((x: ResponseAddMessCommentDto) => {
-      //       x["status"] = ChatomniStatus.Pending;
+      //       x["status"] = ChatomniStatus.Done;
       //       x.type = 11;
       //       let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
       //       let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
@@ -317,7 +317,7 @@ export class ModalSendMessageAllComponent implements OnInit {
         next: (res: ResponseAddMessCommentDtoV2[])=>{
           if(TDSHelperArray.hasListValue(res)){
             res.forEach((x: ResponseAddMessCommentDtoV2) => {
-              x["Status"] = ChatomniStatus.Pending;
+              x["Status"] = ChatomniStatus.Done;
     
               let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
               let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.ChannelId, data);
