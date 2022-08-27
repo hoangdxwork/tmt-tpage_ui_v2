@@ -129,10 +129,10 @@ import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cac
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { ConversationPostV2Component } from './conversation-post/conversation-post-v2.component';
+import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
+import { ConversationPostViewComponent } from './conversation-post/conversation-post-view.component';
 import { ObjectFacebookPostComponent } from './conversation-post/objects/object-facebook-post.component';
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
@@ -247,8 +247,8 @@ const SERVICES = [
     ModalRenameAttachmentComponent,
     ConversationAllComponent,
     CurrentConversationItemV2Component,
-    ConversationPostV2Component,
-    ConversationPostViewV3Component,
+    ConversationPostComponent,
+    ConversationPostViewComponent,
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
     CommentFilterAllComponent,

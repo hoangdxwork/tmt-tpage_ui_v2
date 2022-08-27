@@ -117,7 +117,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
                       Note: this.currentLiveCampaign.Note
                   }
 
-                  // TODO: đẩy qua conversation-post-v2, conversation-post-view-v3
+                  // TODO: đẩy qua conversation-post-v2, conversation-post-view
                   this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.item);
                   this.indClickTag = '';
                   this.message.success('Cập nhật chiến dịch thành công');

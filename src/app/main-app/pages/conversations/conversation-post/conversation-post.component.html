@@ -90,7 +90,7 @@
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[50%] flex flex-col h-full overflow-hidden">
             <div *ngIf="currentPost && currentTeam" class="h-full w-full">
-                <conversation-post-view-v3 [data]="currentPost" [team]="currentTeam" [lstOfLiveCampaign]="lstOfLiveCampaign"></conversation-post-view-v3>
+                <conversation-post-view [data]="currentPost" [team]="currentTeam" [lstOfLiveCampaign]="lstOfLiveCampaign"></conversation-post-view>
             </div>
             <div *ngIf="!currentPost" class="h-full w-full text-center">
                 <p class="text-body-2"> Hãy chọn một bài viết</p>

@@ -29,12 +29,12 @@ import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/ch
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
-  selector: 'app-conversation-post-v2',
-  templateUrl: './conversation-post-v2.component.html',
+  selector: 'app-conversation-post',
+  templateUrl: './conversation-post.component.html',
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostV2Component extends TpageBaseComponent implements OnInit, AfterViewInit {
+export class ConversationPostComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
   @ViewChild('innerText') innerText!: ElementRef;
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
