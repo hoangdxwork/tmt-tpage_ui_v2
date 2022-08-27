@@ -4,6 +4,7 @@ import { ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni
 import { SaleOnlineSettingDTO } from "@app/dto/setting/setting-sale-online.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { CRMTeamService } from "@app/services/crm-team.service";
+import { TDSHelperString } from "tds-ui/shared/utility";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
 @Injectable()
@@ -18,6 +19,11 @@ export class CsOrder_PrepareModelHandler {
   public prepareInsertFromMessage(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
 
     let x = {} as InsertFromMessageDto;
+    if(!TDSHelperString.hasValueString(model.Id)) {
+        delete x.Id;
+    } else {
+        x.Id = model.Id;
+    }
 
     x.Address = model.Address;
     x.CityCode = model.CityCode;
@@ -33,7 +39,7 @@ export class CsOrder_PrepareModelHandler {
     x.Facebook_ASUserId = model.Facebook_ASUserId;
     x.Facebook_UserId = model.Facebook_UserId;
     x.Facebook_UserName = model.Facebook_UserName;
-    x.Id = model.Id;
+
     x.Name = model.Name;
     x.Note = model.Note;
     x.PartnerId = model.PartnerId;

@@ -52,7 +52,7 @@ export class SO_PrepareFastSaleOrderHandler {
             PriceUnit: x.Price,
             ProductId: x.ProductId,
             ProductUOMId: x.UOMId,
-            ProductQuantity: x.Quantity,
+            ProductUOMQty: x.Quantity,
             Type: 'fixed',
 
         } as any;

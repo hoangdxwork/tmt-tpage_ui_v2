@@ -1171,7 +1171,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               }
           }
           else {
-              this.message.error(res.error? res.error.message: 'Lỗi chọn đối tác');
+            if(TDSHelperString.hasValueString(res.error.message)) {
+               this.message.error(res.error.message);
+            }
           }
 
           this.isLoading = false;
@@ -1179,11 +1181,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(error.error.message || error.error.error_description);
+          this.message.error(error?.error?.message || error?.error?.error_description);
           this.cdRef.markForCheck();
       }
     })
-
   }
 
   selectShipServiceV2(x: CalculateFeeServiceResponseDto) {
