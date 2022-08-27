@@ -72,6 +72,7 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
   }
 
   loadData(pageSize: number, pageIndex: number) {
+    this.isLoading = true;
     if (this.partnerId) {
       this.lstOrder = [];
       let filters = this.odataGetOrderPartnerIdService.buildFilter(this.filterObj);
@@ -80,8 +81,10 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
       this.odataGetOrderPartnerIdService.getOrdersByPartner(this.partnerId, params).pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.count = res["@odata.count"];
         this.lstOrder = res.value;
+        this.isLoading = false;
       }, err => {
         this.message.error(err?.error?.message || Message.CanNotLoadData);
+        this.isLoading = false;
       })
     }
   }
