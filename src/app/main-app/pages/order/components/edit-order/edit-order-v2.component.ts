@@ -756,7 +756,7 @@ export class EditOrderV2Component implements OnInit {
                   }
 
                 } else {
-                  if(TDSHelperString.hasValueString(res.error.message)) {
+                  if(res?.error?.message) {
                     this.message.error(res.error.message);
                   }
                 }

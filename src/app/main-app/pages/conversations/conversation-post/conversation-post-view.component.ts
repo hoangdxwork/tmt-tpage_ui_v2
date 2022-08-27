@@ -26,13 +26,13 @@ import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-po
 import { PrepareUpdateFacebookByLiveCampaign } from '@app/handler-v2/conversation-post/prepare-facebook-post.handler';
 
 @Component({
-  selector: 'conversation-post-view-v3',
-  templateUrl: './conversation-post-view-v3.component.html',
+  selector: 'conversation-post-view',
+  templateUrl: './conversation-post-view.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDestroy {
+export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;

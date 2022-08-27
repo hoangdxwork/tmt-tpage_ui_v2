@@ -3,15 +3,18 @@
 
     <tds-spin [spinning]="isLoading" class="w-full col-span-3">
         <tds-form-field class="w-full">
-            <tds-select valueField="Id" textField="NameGet" [valuePrimitive]="false" placeholder='Chọn sản phẩm'
+            <tds-select valueField="Id" textField="NameGet" [valuePrimitive]="false" placeholder='Chọn sản phẩm' [classList]="'hover:bg-neutral-3-400'"
                 [ngModel]="defaultProduct" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" (selectChange)="onChangeProduct($event)"
                 [data]="lstProduct" [allowClear]="true">
+
                 <ng-template tds-label-tmp let-item="item">
                     {{ item.data.NameGet }}
                 </ng-template>
+
                 <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
                     <div class="flex flex-col gap-y-2.5">
                         <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{ item.NameGet || item.Name }}</span>
+
                         <div *ngIf="lstInventory && lstInventory[item.Id]" class="flex gap-x-1">
                             <span class="text-neutral-1-400">Tồn kho: </span>
                             <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/

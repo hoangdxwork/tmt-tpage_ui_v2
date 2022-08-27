@@ -1185,15 +1185,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
-          }
-          else {
-            if(TDSHelperString.hasValueString(res.error.message)) {
-               this.message.error(res.error.message);
-            }
-          }
+          } else {
+              if(res?.error?.message) {
+                this.message.error(res.error.message);
+              }
 
-          this.isLoading = false;
-          this.cdRef.markForCheck();
+              this.isLoading = false;
+              this.cdRef.markForCheck();
+          }
       },
       error: (error: any) => {
           this.isLoading = false;
