@@ -131,7 +131,7 @@ export class ConfigPrintBillsComponent implements OnInit {
 
   printAgain(item: any) {
     item.isPrinting = true;
-    this.orderPrintService.printOrder(item);
+    // this.orderPrintService.printOrder(item);
   }
 
 }

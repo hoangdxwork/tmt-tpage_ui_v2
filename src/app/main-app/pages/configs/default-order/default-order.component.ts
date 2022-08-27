@@ -87,7 +87,7 @@ export class DefaultOrderComponent implements OnInit {
     })
   }
 
-  prepareModel(data:TDSSafeAny){
+  prepareModel(data: TDSSafeAny){
     return {
       Id: null,
       Quantity: 1,

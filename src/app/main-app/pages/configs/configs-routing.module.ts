@@ -57,10 +57,10 @@ const routes: Routes = [
         path:'auto-reply',
         component: AutoQuickReplyComponent
       },
-      {
-        path:'tpos-printer',
-        component: ConfigPrintBillsComponent
-      },
+      // {
+      //   path:'tpos-printer',
+      //   component: ConfigPrintBillsComponent
+      // },
       {
         path:'sms-messages',
         component: ConfigSmsMessagesComponent

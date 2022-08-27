@@ -10,9 +10,6 @@
 
 @import "../node_modules/tds-ui/assets/scss/carousel.scss";
 
-@import "../node_modules/tds-editor/assets/tdsskin.scss";
-@import "../node_modules/tds-editor/assets/tdscontent.scss";
-
 @import "./assets/font-icon/style.css";
 @import "./assets/scss/table-custom.scss";
 @import "./assets/scss/collapse-custom.scss";
@@ -44,9 +41,11 @@ select:-webkit-autofill:focus {
   color: #006EEF;
   font-weight: 600;
 }
+
 .phone.info.text-copyable:hover {
   cursor: pointer;
 }
+
 .tds-custom-scroll::-webkit-scrollbar-thumb {
   height: 30%
 }
@@ -60,3 +59,19 @@ select:-webkit-autofill:focus {
   color: #EB3B5B;
   font-weight: normal;
 }
+
+.input-quill-editor .ql-container {
+  background-color: #fff;
+  min-height: 100px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.input-quill-editor .ql-mention-list-item {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 6px;
+}
+

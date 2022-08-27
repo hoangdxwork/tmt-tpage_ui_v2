@@ -6,6 +6,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { ConfigSaleOrderDTO } from 'src/app/main-app/dto/configs/sale-order/config-sale-order.dto';
 import { DOCUMENT } from '@angular/common';
+import { MentionConfig } from 'angular-mentions';
 
 @Component({
   selector: 'sale-order',
@@ -49,6 +50,37 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     { id: "Hiển thị giảm giá", value: "{bill.discount}" },
     { id: "Ghi chú hóa đơn", value: "{bill.note}" },
   ];
+
+  quillTagHelpers = {
+    toolbar: null,
+    mention: {
+      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+      // readOnly: true,
+      mentionDenotationChars: ["@"],
+      showDenotationChar: false,
+      positioningStrategy: "relative",
+      defaultMenuOrientation: "bottom",
+      mentionContainerClass: "ql-mention-list-container",
+      renderItem: (item: { id: any; }, searItem: any) => {
+        return item.id;
+      },
+      source: (searchTerm: string, renderList: (arg0: { id: string; value: string; }[], arg1: any) => void, mentionChar: any) => {
+        let values;
+        values = this.tagHelpers as any;
+
+        if (searchTerm.length === 0) {
+          renderList(values, searchTerm);
+        } else {
+          const matches = [];
+          for (var i = 0; i < values.length; i++)
+            if (  ~values[i].id.toLowerCase().indexOf(searchTerm.toLowerCase()))
+              matches.push(values[i]);
+
+          renderList(matches, searchTerm);
+        }
+      },
+    } as any
+  } as any;
 
   areaText1 = 'Xin chào {partner.name}, bạn đã đặt hàng trên live {order.live_title} thành công.\n{order.comment}\n{order.product}\nTổng tiền trong đơn: {order.total_amount}';
   areaText2 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được tạo.\n{bill.details}\n{bill.note}\n{shipping.details}';
