@@ -197,12 +197,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             this.partner.Street = res.address;
         }
         if(res && TDSHelperString.hasValueString(res.note) && this.partner) {
-
-            let expreg = new RegExp(/^(?:[^>-]+[^\S\r\n]*->[^\S\r\n]*[^>-]+)?$/);
-            let b = expreg.test(this.partner.Comment);
-
+          let exist = (this.partner.Comment || "" as string).includes(res.note)
+          if(!exist){
             let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + res.note : res.note);
             this.partner.Comment = text;
+            this.message.info("Chọn làm ghi chú thành công");
+          } else {
+            this.message.info('Ghi chú đã được chọn');
+          }
+            
         }
     })
   }
@@ -471,7 +474,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   showModalSuggestAddress(){
     let modal =  this.modalService.create({
-      title: 'Thêm địa chỉ',
+      title: 'Sửa địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,

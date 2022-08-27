@@ -49,14 +49,12 @@
                     disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                 </tds-select>
             </tds-form-field>
+          </div>
 
+          <div class="grid grid-cols-3 gap-y-4 gap-x-3">
             <tds-label>Thời gian tổng hợp (phút)</tds-label>
               <tds-form-field class="col-span-2 w-full">
-                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
-                  ></tds-input-number>
-                  <!-- <tds-error>
-                      Vui lòng nhập số tiền tối thiểu
-                  </tds-error> -->
+                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"></tds-input-number>
             </tds-form-field>
 
             <tds-label>Ngày bắt đầu</tds-label>
@@ -72,9 +70,7 @@
                   (ngModelChange)="onChangeDate($event,1)">
                   </tds-date-picker>
             </tds-form-field>
-          </div>
 
-          <div class="grid grid-cols-3 gap-y-4 gap-x-3">
             <tds-label>Số tiền cọc bắt buộc</tds-label>
               <tds-form-field class="col-span-2 w-full">
                   <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
@@ -87,25 +83,30 @@
                   ></tds-input-number>
             </tds-form-field>
 
-            <tds-label>Bật xử lý chốt đơn tự động</tds-label>
-            <div class="col-span-2 w-full">
-              <tds-checkbox formControlName="IsEnableAuto"></tds-checkbox>
+            <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">
+              <div class="flex justify-between gap-x-3">
+                <tds-label>Bật xử lý chốt đơn tự động</tds-label>
+                <tds-checkbox formControlName="IsEnableAuto"></tds-checkbox>
+              </div>
+
+              <div class="flex justify-between gap-x-3">
+                <tds-label>Bật số lượng</tds-label>
+                <tds-checkbox formControlName="EnableQuantityHandling"></tds-checkbox>
+              </div>
             </div>
 
-            <tds-label>Bật số lượng</tds-label>
-            <div class="col-span-2 w-full">
-              <tds-checkbox formControlName="EnableQuantityHandling"></tds-checkbox>
+            <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">
+              <div class="flex justify-between gap-x-3">
+                <tds-label>Tổng hợp đơn hàng trong thời gian ca làm việc</tds-label>
+                <tds-checkbox formControlName="IsShift"></tds-checkbox>
+              </div>
+
+              <div class="flex justify-between gap-x-3">
+                <tds-label>Không cho phép gán nhân viên vào cuộc hội thoại</tds-label>
+                <tds-checkbox formControlName="IsAssignToUserNotAllowed"></tds-checkbox>
+              </div>
             </div>
 
-            <tds-label>Tổng hợp đơn hàng trong thời gian ca làm việc</tds-label>
-            <div class="col-span-2 w-full">
-              <tds-checkbox formControlName="IsShift"></tds-checkbox>
-            </div>
-            
-            <tds-label>Không cho phép gán nhân viên vào cuộc hội thoại</tds-label>
-            <div class="col-span-2 w-full">
-              <tds-checkbox formControlName="IsAssignToUserNotAllowed"></tds-checkbox>
-            </div>
           </div>
         </div>
       </tds-tab>
@@ -114,13 +115,50 @@
 
           <div class="w-full">
             <div class="w-1/2 flex gap-x-2">
-              <tds-form-field class="w-full">
-                <input tdsInput placeholder="Tìm kiếm tên sản phẩm" autocomplete="off"/>
-                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-              </tds-form-field>
-              <button tds-button color="primary" size="md">
+              <div class="relative w-full">
+                <tds-form-field>
+                  <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
+                      [(ngModel)]="textSearchProduct" [ngModelOptions]="{standalone: true}"
+                      (inputKeyup)="onSearchProduct($event)">
+
+                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+
+                  <span *ngIf="textSearchProduct" tdsSuffix>
+                    <i (click)="closeSearchProduct()" class="text-neutral-1-500 tdsi-close-fill"></i>
+                  </span>
+                </tds-form-field>
+
+                <div *ngIf="textSearchProduct && lstProductSearch.length > 0; else noDataProduct"
+                  class="absolute left-0 right-0 -bottom-2 top-full p-2 h-56 text-caption-1 overflow-hidden overflow-y-auto tds-panel-scroll z-10 bg-white flex flex-col gap-y-2 shadow-md">
+                  <tds-spin [spinning]="isLoadingProduct">
+                      <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
+                          class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
+
+                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom:'.' }}đ </span>
+
+                          <div *ngIf="lstInventory && lstInventory[item.Id]">
+                              <span class="text-neutral-1-400">Tồn kho: </span>
+                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
+                              <span class="text-neutral-1-400">Tồn dự báo: </span>
+                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
+                          </div>
+                      </span>
+                  </tds-spin>
+                </div>
+
+                <ng-template #noDataProduct>
+                  <div *ngIf="textSearchProduct"
+                    class="absolute left-0 right-0 -bottom-2 top-full p-2 h-44 overflow-hidden z-10 bg-white shadow-md">
+                    <tds-spin [spinning]="isLoadingProduct">
+                      <tds-empty></tds-empty>
+                    </tds-spin>
+                  </div>
+                </ng-template>
+              </div>
+
+              <button tds-button color="primary" size="md" (click)="createProduct()">
                 <span class="flex items-center">
-                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+                  <i class="tdsi-plus-fill text-lg leading-none mr-2"></i>Thêm mới
                 </span>
               </button>
             </div>
@@ -168,7 +206,7 @@
                           <!-- Số lượng -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="1" [step]="1" formControlName="Quantity">
+                              <tds-input-number [min]="1" [step]="1" [(ngModel)]="detail.value.Quantity" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </td>
@@ -176,7 +214,7 @@
                           <!-- Giới hạn trên đơn -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="1" [step]="1" formControlName="LimitedQuantity">
+                              <tds-input-number [min]="0" [step]="1" [(ngModel)]="detail.value.LimitedQuantity" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </td>
@@ -184,7 +222,7 @@
                           <!-- Giá bán -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1000" formControlName="Price">
+                              <tds-input-number [min]="0" [step]="1000" [(ngModel)]="detail.value.Price" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </td>

@@ -20,7 +20,7 @@
                                 class="rounded-xl"></tds-avatar>
                             <div class="flex flex-col gap-y-2 w-[250px]">
                                 <tds-label>{{ data.ProductName }}</tds-label>
-                                <div class="flex flex-wrap items-center gap-1">
+                                <div *ngIf="data.Tags" class="flex flex-wrap items-center gap-1">
                                     <tds-tag *ngFor="let item of data.Tags | stringToStringArray" tds-tooltip
                                         tooltipTitle="{{item}}" status='secondary' size="sm">
                                         {{item}}

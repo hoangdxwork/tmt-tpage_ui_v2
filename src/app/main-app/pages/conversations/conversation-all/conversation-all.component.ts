@@ -32,13 +32,13 @@ import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 
 @Component({
-  selector: 'app-conversation-all-v2',
-  templateUrl: './conversation-all-v2.component.html',
+  selector: 'app-conversation-all',
+  templateUrl: './conversation-all.component.html',
   animations: [eventFadeStateTrigger, eventCollapTrigger],
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationAllV2Component extends TpageBaseComponent implements OnInit, AfterViewInit {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 

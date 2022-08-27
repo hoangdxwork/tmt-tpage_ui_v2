@@ -68,6 +68,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       IsEnableShipping: [false],
       IsEnableBill: [false],
       IsUsingProviderTemplate: [false],
+      IsOrderAutoReplyOnlyOnce:[false],
       OrderTemplate: new FormControl(`${this.areaText1}`, [Validators.required]),
       ShopLabel: [null],
       ShopLabel2: [null],

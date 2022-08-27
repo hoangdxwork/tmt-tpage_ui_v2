@@ -1,3 +1,5 @@
+import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
+import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
@@ -168,7 +170,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private destroy$: TDSDestroyService,
     private chatomniConversationService: ChatomniConversationService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
-    private omniEventEmiter: ChatomniEventEmiterService) {
+    private omniEventEmiter: ChatomniEventEmiterService,
+    private socketOnEventService: SocketOnEventService) {
   }
 
   ngOnInit(): void {
@@ -185,6 +188,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     this.onSelectOrderFromMessage();
     this.eventEmitter();
+    this.onEventSocket();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -194,6 +198,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         let x = {...changes["conversationInfo"].currentValue};
         this.loadData(x);
     }
+  }
+
+  onEventSocket(){
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+        if( res.Data?.Facebook_PageId && this.conversationInfo && this.conversationInfo?.Conversation?.UserId == res.Data.Facebook_ASUserId && res.EventName == ChatmoniSocketEventName.onUpdate ) {
+          this.conversationInfo.Order = {...res.Data?.Data};
+
+          this.loadData(this.conversationInfo);
+        }
+      }
+    })
   }
 
   eventEmitter(){
@@ -1216,7 +1232,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalSuggestAddress(){
     let modal =  this.modal.create({
-        title: 'Thêm địa chỉ',
+        title: 'Sửa địa chỉ',
         content: ModalAddAddressV2Component,
         size: "lg",
         viewContainerRef: this.viewContainerRef,

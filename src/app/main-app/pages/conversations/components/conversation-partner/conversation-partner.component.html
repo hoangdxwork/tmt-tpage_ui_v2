@@ -151,7 +151,7 @@
 
                                 <drawer-detail-bill [isBillNearest]="true" [bill]="lastBill"></drawer-detail-bill>
 
-                                <tds-tag status='primary' type="outline" [status]="getColorStatusText(lastBill.ShowState)">
+                                <tds-tag status='primary' class="w-full truncate" type="outline" [status]="getColorStatusText(lastBill.ShowState)">
                                   {{ lastBill.ShowState }}
                                 </tds-tag>
 
@@ -185,7 +185,7 @@
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
                         {{ lastBill.Phone }} - {{ lastBill.Address }} </div>
 
-                    <div class="text-body-2 font-semibold font-sans text-accent-3"> {{ lastBill.DeliveryNote }} </div>
+                    <div class="text-caption-1 font-semibold font-sans text-accent-3"> {{ lastBill.DeliveryNote }} </div>
                 </div>
               </tds-collapse-panel>
             </tds-collapse>
@@ -329,7 +329,7 @@
                         <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
                             <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
                         </tds-form-field>
-                        <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip="Kiểm tra địa chỉ">
+                        <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip [tooltipTitle]="partner.Street ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
                             <span class="flex items-center">
                             <i class="tdsi-location-fill"></i>
                             </span>

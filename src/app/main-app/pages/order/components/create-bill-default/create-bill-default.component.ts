@@ -296,21 +296,22 @@ export class CreateBillDefaultComponent implements OnInit {
     this.modalRef.destroy(null);
   }
 
-  showModalSuggestAddress(innerText : string){
+  showModalSuggestAddress(index: number){
     let modal =  this.modal.create({
       title: 'Thêm địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: innerText,
+        _street: this.innerText,
       }
     });
 
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result){
-         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+          this.onLoadSuggestion(result, index);
+          this.innerText = result.Address;
         }
       }
     })

@@ -1199,21 +1199,22 @@ export class AddBillComponent implements OnInit {
     return this.commonService.getPriceListAvailable(date).pipe(map(res => res.value))
   }
 
-  showModalSuggestAddress(innerText : string){
+  showModalSuggestAddress(){
     let modal =  this.modalService.create({
       title: 'Thêm địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: innerText,
+        _street: this.innerText,
       }
     });
 
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result){
-         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+          this.prepareSuggestionsBill.onLoadSuggestion(this._form, result);
+          this.innerText = result.Address;
         }
       }
     })

@@ -1,9 +1,13 @@
+import { TAuthService } from './../../../lib/services/auth.service';
+import { ODataProductDTOV2, ProductDTOV2 } from './../../dto/product/odata-product.dto';
+import { ProductTemplateUOMLineService } from './../../services/product-template-uom-line.service';
+import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
-import { LiveCampaignModel } from '../../dto/live-campaign/odata-live-campaign-model.dto';
+
 import { finalize, mergeMap } from 'rxjs/operators';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { id } from 'date-fns/locale';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -15,8 +19,14 @@ import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { compareAsc, differenceInCalendarDays } from 'date-fns';
+import { GetInventoryDTO } from '@app/dto/product/product.dto';
+import { ProductService } from '@app/services/product.service';
+import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
+import { indexOf } from 'lodash';
+import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
+import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 
 @Component({
   selector: 'add-live-campaign',
@@ -38,8 +48,11 @@ export class AddLiveCampaignComponent implements OnInit {
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
-
+  lstProductSearch: ProductDTOV2[] = [];
+  lstInventory!: GetInventoryDTO;
+  textSearchProduct!: string;
   isLoading: boolean = false;
+  isLoadingProduct: boolean = false;
   _form!: FormGroup;
 
   constructor(
@@ -50,8 +63,12 @@ export class AddLiveCampaignComponent implements OnInit {
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private fastSaleOrderLineService: FastSaleOrderLineService,
+    private productTemplateUOMLineService: ProductTemplateUOMLineService,
+    private productService: ProductService,
+    private auth: TAuthService,
     private message: TDSMessageService,
     private prepareHandler: PrepareAddCampaignHandler,
+    private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService
   ) {
     this.createForm();
@@ -62,11 +79,10 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
-
     this.loadData(this.id);
     this.loadUser();
     this.loadQuickReply();
+    this.loadUserInfo();
   }
 
   createForm() {
@@ -99,19 +115,64 @@ export class AddLiveCampaignComponent implements OnInit {
     this.lstQuickReplies$ = this.quickReplyService.dataActive$;
   }
 
+  loadProduct(textSearch: string) {
+    this.isLoadingProduct = true;
+    let top = 20;
+    let skip = 0;
+
+    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: ODataProductDTOV2) => {
+        this.lstProductSearch = [...res.value];
+        this.isLoadingProduct = false;
+      },
+      error:(err) =>{
+       this.message.error(err?.error?.message || 'Không thể tải danh sách sản phẩm');
+      }
+    });
+  }
+
+  loadInventoryWarehouseId(warehouseId: number) {
+    this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+      next:res => {
+        this.lstInventory = res;
+      }, 
+      error:(err) => {
+          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+      }
+    });
+  }
+
+  loadUserInfo() {
+    this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        if(res && res.Company?.Id) {
+          this.loadInventoryWarehouseId(res.Company.Id);
+        }
+      }, 
+      error:(err) => {
+          this.message.error(err?.error?.message || 'Không thể tải thông tin user');
+      }
+    });
+  }
+
   loadData(id?: string) {
     if(id) {
       this.isLoading = true;
       
       this.liveCampaignService.getDetailById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-        .subscribe(res => {
-          this.updateForm(res);
+        .subscribe({
+          next:(res) => {
+            this.updateForm(res);
+          },
+          error:(err) => {
+            this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          }
         });
     }
   }
 
   updateForm(data: any) {
-    if(!this.isCopy) data.Id = undefined;
+    if(!this.isCopy) delete data["Id"];
 
     this._form.patchValue(data);
 
@@ -130,15 +191,17 @@ export class AddLiveCampaignComponent implements OnInit {
   disabledDate = (current: Date): boolean => differenceInCalendarDays(current, new Date()) < 0;
 
   initFormDetails(details: any[]) {
+
     if(TDSHelperArray.hasListValue(details)) {
       details.forEach(detail => {
+
         const control = <FormArray>this._form.controls['Details'];
         control.push(this.initDetail(detail));
       });
     }
   }
 
-  initDetail(detail?: any) {
+  initDetail(detail?: LiveCampaignProductDTO) {
     let detailFormGroup = this.formBuilder.group({
         Id: [null],
         Index: [null],
@@ -172,26 +235,128 @@ export class AddLiveCampaignComponent implements OnInit {
       this.isLoading = true;
 
       this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe(res => {
+      .subscribe({
+        next:(res) => {
           if(TDSHelperArray.hasListValue(res?.value)) {
             this.message.error(Message.LiveCampaign.ErrorRemoveLine);
-          }
-          else {
-            const control = <FormArray>this._form.controls['Details'];
+          }else {
+            const control = this.detailsFormGroups;
             control.removeAt(index);
           }
-        }, error => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-        });
+        }, 
+        error:(err) => {
+          this.message.error(`${err?.error?.message || JSON.stringify(err)}`);
+        }
+      });
     }
     else {
-      const control = <FormArray>this._form.controls['Details'];
+      const control = this.detailsFormGroups;
       control.removeAt(index);
     }
   }
 
   removeAllDetail() {
     this.message.info('Chưa thể xóa tất cả sản phẩm.');
+  }
+
+  createProduct() {
+    const modal = this.modal.create({
+        title: 'Thêm sản phẩm',
+        content: ModalProductTemplateComponent,
+        size: 'xl',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          typeComponent: null,
+        }
+    });
+
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)) {
+        let data = result[0] as ProductTemplateV2DTO;
+
+        let product = {
+          Id: this.id,
+          Quantity: 1,
+          LimitedQuantity: 0,
+          Price: data.ListPrice || 0,
+          Note: null,
+          ProductId: data.Id,
+          ProductName: data.Name,
+          ProductNameGet: data.NameGet,
+          RemainQuantity: 0,
+          ScanQuantity: 0,
+          Tags: data.Tags || '',
+          UOMId: data.UOMId,
+          UOMName: data.UOMName,
+          ProductCode: data.DefaultCode,
+          ImageUrl: data.ImageUrl,
+          IsActive: data.Active,
+          UsedQuantity: 0
+        } as LiveCampaignProductDTO;
+
+        const formArray = this.detailsFormGroups;
+        // TODO: thêm sản phẩm vào đầu danh sách nếu đã chưa tồn tại
+        let lstProduct =  formArray.value as LiveCampaignProductDTO[];
+        lstProduct.unshift(product);
+
+        //TODO: cập nhật lại danh sách sản phẩm
+        formArray.clear();
+        this.initFormDetails(lstProduct);
+      }
+    })
+  }
+
+  onSearchProduct(event: any) {
+    let text = this.textSearchProduct;
+    this.loadProduct(text);
+  }
+
+  closeSearchProduct(){
+    this.textSearchProduct = '';
+  }
+
+  selectProduct(data: ProductDTOV2){
+    const formArray = this.detailsFormGroups;
+
+    let exist = formArray.value.find((f:LiveCampaignProductDTO)=>f.ProductId == data.Id);
+    // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
+    if(!exist){
+      let product = {
+        Id: this.id,
+        Quantity: 1,
+        LimitedQuantity: 0,
+        Price: data.Price || 0,
+        Note: data.Note || null,
+        ProductId: data.Id,
+        ProductName: data.Name,
+        ProductNameGet: data.NameGet,
+        RemainQuantity: 0,
+        ScanQuantity: 0,
+        Tags:'',
+        UOMId: data.UOMId,
+        UOMName: data.UOMName,
+        ProductCode: data.DefaultCode,
+        ImageUrl: data.ImageUrl,
+        IsActive: data.Active,
+        UsedQuantity: 0
+      } as LiveCampaignProductDTO;
+
+      // TODO: thêm sản phẩm vào đầu danh sách nếu đã chưa tồn tại
+      let lstProduct =  formArray.value as LiveCampaignProductDTO[];
+      lstProduct.unshift(product);
+
+      //TODO: cập nhật lại danh sách sản phẩm
+      formArray.clear();
+      this.initFormDetails(lstProduct);
+    }else{
+      exist.Quantity += 1;
+
+      // TODO: cập nhật lượng lên 1
+      let formControl = formArray.at(indexOf(formArray.value, exist)) as FormGroup;
+      formControl.controls["Quantity"].setValue(exist.Quantity);
+    }
+
+    this.closeSearchProduct();
   }
 
   onSave() {
