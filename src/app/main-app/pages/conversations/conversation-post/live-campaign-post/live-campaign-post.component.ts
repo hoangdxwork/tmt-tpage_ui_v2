@@ -118,7 +118,7 @@ export class LiveCampaignPostComponent implements OnInit {
           this.data.LiveCampaignId = null as any;
           this.data.LiveCampaign = null as any;
 
-          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view-v3
+          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
           this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
 
           this.isLoading = false;
@@ -199,7 +199,7 @@ export class LiveCampaignPostComponent implements OnInit {
               Note: this.currentLiveCampaign.Note
           };
 
-          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view-v3
+          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
           this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
 
           this.isLoading = false;
