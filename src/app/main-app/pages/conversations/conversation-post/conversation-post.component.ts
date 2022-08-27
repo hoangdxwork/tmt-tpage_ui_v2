@@ -71,7 +71,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   selectedIndex: number = 0;
   isDisableTabPartner: boolean = true;
   isDisableTabOrder: boolean = true;
-
+  codeOrder!: string | null;
 
   dataSource$?: Observable<ChatomniObjectsDto> ;
   lstObjects!: ChatomniObjectsItemDto[];
@@ -195,7 +195,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     //TODO: Check có orderCode thì mở disable tab đơn hàng
     this.conversationOrderFacade.hasValueOrderCode$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        if(TDSHelperString.hasValueString(res)){
+        if(TDSHelperArray.hasListValue(res)){
+          this.codeOrder = res[0].code;
           this.isDisableTabOrder = false;
         }
       }
@@ -495,6 +496,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.selectedIndex = tabIndex;
     this.isDisableTabPartner = isDisable;
     this.isDisableTabOrder = isDisable;
+    this.codeOrder = null;
   }
 
 }

@@ -314,7 +314,9 @@ export class ConversationOrderListComponent implements OnInit {
       });
   }
 
-  onEdit(item: any) {
+  onEdit(item: any, event: TDSSafeAny) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
     if(item && item.Id) {
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {

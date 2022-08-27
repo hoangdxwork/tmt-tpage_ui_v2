@@ -133,7 +133,7 @@
                     <ng-template #titleOrder let-active="active">
                         <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                             [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
-                            <span class="mr-2">Đơn hàng</span>
+                            <span class="mr-2">Đơn hàng <tds-tag *ngIf="codeOrder" status='primary'>#{{codeOrder}}</tds-tag></span>
                         </div>
                     </ng-template>
                     <div *ngIf="currentTeam">

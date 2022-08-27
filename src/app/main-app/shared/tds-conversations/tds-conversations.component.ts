@@ -604,7 +604,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         next: (res: ResponseAddMessCommentDto) => {
 
           // add vào dataSource tại đây
-          res["status"] = ChatomniStatus.Pending;
+          res["status"] = ChatomniStatus.Done;
           res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
           res.name = this.team.Name;
 
@@ -689,7 +689,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   messageResponseV2(res: any, model: ChatomniSendMessageModelDto) {
     if (TDSHelperArray.hasListValue(res)) {
       res.map((x: ResponseAddMessCommentDtoV2, i: number) => {
-        x["Status"] = ChatomniStatus.Pending;
+        x["Status"] = ChatomniStatus.Done;
 
         if (TDSHelperArray.hasListValue(model.Attachment) && !x.Message) {
           x["Attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
