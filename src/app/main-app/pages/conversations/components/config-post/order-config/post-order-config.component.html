@@ -19,7 +19,7 @@
 
             <div class="flex gap-x-2 items-center">
                 <tds-switch size="md" [(ngModel)]="isImmediateApply"></tds-switch>
-                <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Áp dụng ngay cho những bình luận đã có?</div>
+                <div class="text-body-2 text-info-500 font-semibold"> Áp dụng ngay cho những bình luận đã có?</div>
             </div>
 
             <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
@@ -98,7 +98,7 @@
                       </span>
                   </button>
 
-                  <button tds-button color="secondary" (click)="removeAllTemplate()">
+                  <button tds-button color="secondary" (click)="removeAllTemplate()" [disabled]="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length == 0">
                       <span class="flex items-center text-accent-3">
                           <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa hết mẫu
                       </span>
@@ -134,7 +134,7 @@
 
               <div class="flex justify-end gap-2.5 pt-4">
                   <button tds-button color="secondary" (click)="onCannelMoreTemplate()" >Hủy bỏ</button>
-                  <button tds-button color="primary" (click)="addMoreTemplate()" >Tạo mẫu</button>
+                  <button tds-button color="primary" (click)="generateRangeTemplates()" >Tạo mẫu</button>
               </div>
           </div>
 
@@ -157,7 +157,7 @@
                       </div>
 
                       <ng-template #notProduct>
-                          <div class="text-info-500 text-body-2 font-semibold ">
+                          <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(item)">
                             Chưa gán sản phẩm
                           </div>
                       </ng-template>
@@ -174,28 +174,28 @@
                       </div>
                   </div>
 
-                  <div *ngIf="item.Product as product">
+                  <div *ngIf="item.Product">
                     <div class="pt-4 flex items-center">
                       <div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
                       <div class="w-3/4">
                         <tds-form-field class="w-full">
-                          <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="product.Quantity">
+                          <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="item.Product.Quantity">
                           </tds-input-number>
                         </tds-form-field>
                       </div>
                     </div>
 
                     <div class="pt-3">
-                      <tds-checkbox [(ngModel)]="product.IsEnableRegexAttributeValues" (ngModelChange)="enableRegexAttributeValues($event, item)">
+                      <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexAttributeValues" (ngModelChange)="enableRegexAttributeValues($event, item)">
                         Kiểm tra thuộc tính?
-                        <span *ngIf="product.DescriptionAttributeValues">([{{product.DescriptionAttributeValues | json}}])</span>
+                        <span *ngIf="item.Product.DescriptionAttributeValues">({{item.Product.DescriptionAttributeValues | json}})</span>
                       </tds-checkbox>
                     </div>
 
-                    <div class="pt-3" *ngIf="product.IsEnableRegexAttributeValues">
+                    <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues && item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
                       <div class="flex p-2 bg-white rounded-md gap-x-1">
                         <tds-form-field class="p-3 w-full">
-                          <tds-select [ngModel]="item.ContentWithAttributes | stringToStringArray"
+                          <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []"
                               (ngModelChange)="selectContentWithAttributes($event, item)"
                               placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10">
                           </tds-select>
@@ -204,13 +204,13 @@
                     </div>
 
                     <div class="pt-3">
-                      <tds-checkbox [(ngModel)]="product.IsEnableRegexQty" (ngModelChange)="enableRegexQty($event, item)">
+                      <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexQty" (ngModelChange)="enableRegexQty($event, item)">
                         Bật xử lý số lượng?
                       </tds-checkbox>
                     </div>
 
                     <div class="pt-3">
-                      <tds-checkbox [(ngModel)]="product.IsEnableOrderMultiple" (ngModelChange)="enableOrderMultiple($event, item)">
+                      <tds-checkbox [(ngModel)]="item.Product.IsEnableOrderMultiple" (ngModelChange)="enableOrderMultiple($event, item)">
                         Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)
                       </tds-checkbox>
                     </div>
@@ -252,7 +252,7 @@
 
             <tds-form-field>
                 <tds-label>Bình luận có nội dung</tds-label>
-                    <tds-select [ngModel]="lstTextContentToExcludeOrder" placeholder='Nhập nội dung và nhấn [Enter]'
+                    <tds-select [ngModel]="(dataModel.TextContentToExcludeOrder | stringToStringArray) || []" placeholder='Nhập nội dung và nhấn [Enter]'
                         mode="tags" [maxTagCount]="10" (ngModelChange)="changeTextContentToExcludeOrder($event)">
                 </tds-select>
             </tds-form-field>
