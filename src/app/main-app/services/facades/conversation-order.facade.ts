@@ -39,7 +39,7 @@ export class ConversationOrderFacade extends BaseSevice  {
   public onSelectOrderFromMessage$: EventEmitter<any> = new EventEmitter<any>();
 
   // TODO: chọn sản phẩm từ tds-conversation sang tab đơn hàng
-  public onAddProductOrder$:EventEmitter<DataPouchDBDTO> = new EventEmitter<DataPouchDBDTO>();
+  public onAddProductOrder$:EventEmitter<any> = new EventEmitter<any>();
 
   // TODO: outPut thông tin khách hàng từ comment sang tab đơn hàng
   public onLoadedCommentByUser$:EventEmitter<TDSSafeAny> = new EventEmitter<TDSSafeAny>();
