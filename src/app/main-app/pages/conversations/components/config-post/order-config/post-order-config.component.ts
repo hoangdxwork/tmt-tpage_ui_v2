@@ -88,7 +88,11 @@ export class PostOrderConfigComponent implements OnInit {
     this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
         this.dataModel = res;
-        this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
+        if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
+          this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
+        } else {
+          this.dataModel.TextContentToOrders = [];
+        }
 
         this.isLoading = false;
         this.cdRef.detectChanges();
