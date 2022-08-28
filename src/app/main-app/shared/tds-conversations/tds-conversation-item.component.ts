@@ -9,7 +9,7 @@ import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni
 import { ChatomniDataItemDto, ChatomniMessageType, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { Facebook } from './../../../lib/dto/facebook.dto';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
 import { finalize, Subject, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
@@ -67,6 +67,7 @@ export class TDSConversationItemComponent implements OnInit {
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
+  @ViewChildren('contentMessageChild') contentMessageChild: any;
 
   constructor(private element: ElementRef,
     private modalService: TDSModalService,
@@ -96,7 +97,7 @@ export class TDSConversationItemComponent implements OnInit {
     }
   }
 
-  selectOrder(type: string, message?: string): any {
+  selectOrder(type: string, index?: number): any {
     let data = { phone: null, address: null, note: null } as any;
 
     let value = this.getTextOfContentMessage();
@@ -115,8 +116,9 @@ export class TDSConversationItemComponent implements OnInit {
       }
 
     } else if (type == 'note') {
-      if (message)
-        data.note = message;
+      if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
+        data.note = this.contentMessageChild._results[index].nativeElement.outerText;
+      }
       else {
         data.note = value;
       }
@@ -257,7 +259,7 @@ export class TDSConversationItemComponent implements OnInit {
           this.tdsMessage.success("Thao tác thành công");
           if (TDSHelperArray.hasListValue(res)) {
             res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-              x["Status"] = ChatomniStatus.Pending;
+              x["Status"] = ChatomniStatus.Done;
               let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
               this.dataItem  = {...data}
             });
@@ -424,7 +426,7 @@ export class TDSConversationItemComponent implements OnInit {
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: ResponseAddMessCommentDto) => {
-          res["status"] = ChatomniStatus.Pending;
+          res["status"] = ChatomniStatus.Done;
           res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
           res.name = this.team.Name;
 
@@ -466,7 +468,7 @@ export class TDSConversationItemComponent implements OnInit {
 
           if(TDSHelperArray.hasListValue(res)){
             res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-              x["Status"] = ChatomniStatus.Pending;
+              x["Status"] = ChatomniStatus.Done;
 
             let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
             this.dataSource.Items = [...this.dataSource.Items, data];
@@ -522,16 +524,22 @@ export class TDSConversationItemComponent implements OnInit {
     return model;
   }
 
-  showModalSuggestAddress(text: any){
-    if(!TDSHelperString.hasValueString(text))
-      return
+  showModalSuggestAddress(index?: number){
+    let value: string = '';
+    if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText) {
+      value = this.contentMessageChild._results[index].nativeElement.outerText;
+    } else {
+      value = this.getTextOfContentMessage();
+    }
+   
+    console.log(this.contentMessageChild)
     let modal = this.modalService.create({
         title: 'Thêm địa chỉ',
         content: ModalAddAddressV2Component,
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          _street: text,
+          _street: value,
         }
       });
 

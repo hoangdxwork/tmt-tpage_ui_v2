@@ -4,9 +4,10 @@
       <div class="chat-body w-full">
           <div *ngIf="!dataItem.IsOwner " class="mr-2 flex flex-col justify-end">
 
-              <tpage-avatar-facebook [shape]="'circle'" [size]="36"
-                  [psid]="dataItem.Data?.from?.id" [token]="team.ChannelToken">
-              </tpage-avatar-facebook>
+            <tpage-avatar-facebook [shape]="'circle'" [size]="36"
+                [psid]="dataItem.Data?.from?.id" [token]="team.ChannelToken">
+            </tpage-avatar-facebook>
+
           </div>
 
           <!-- Tin nhắn văn bản -->
@@ -104,7 +105,7 @@
                       <span class="tdsi-call-fill text-md text-white"></span>
                   </span>
 
-                  <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress(dataItem.Message)"
+                  <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress()"
                       class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                       <span class="tdsi-pin-fill text-md text-white"></span>
                   </span>
@@ -142,10 +143,16 @@
 
           <!-- Avatar Facebook_PageId -->
           <div class="mr-2">
-              <tpage-avatar-facebook [shape]="'circle'" [size]="36"
-                  [psid]="!dataItem.IsOwner ? dataItem.UserId : team.ChannelId"
-                  [token]="team.ChannelToken">
-              </tpage-avatar-facebook>
+            <div *ngIf="dataItem.Type == 12">
+                <tpage-avatar-facebook [shape]="'circle'" [size]="36"
+                    [psid]="!dataItem.IsOwner ? dataItem.UserId : team.ChannelId"
+                    [token]="team.ChannelToken">
+                </tpage-avatar-facebook>
+            </div>
+
+            <div *ngIf="dataItem.Type == 91">
+                <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
+            </div>
           </div>
 
         <!-- comment block -->
@@ -172,8 +179,15 @@
                       <div class="flex flex-auto">
                           <!--Nội dung-->
                           <div *ngIf="dataItem.Message">
-                              <div class="name font-semibold pb-1">{{dataItem.Data?.from?.name}}</div>
-                              <div class="content-message font-regular" [innerHTML]="dataItem.Message | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
+                            <div *ngIf="dataItem.Type == 12">
+                                <div class="name font-semibold pb-1">{{dataItem.Data?.from?.name}}</div>
+                            </div>
+
+                            <div *ngIf="dataItem.Type == 91">
+                                <div class="name font-semibold pb-1" *ngIf="dataItem.Data">{{ (dataItem.Data | tShopDataMessage).Actor?.Name }} </div>
+                            </div>
+
+                            <div class="content-message font-regular" [innerHTML]="dataItem.Message | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
                           </div>
                       </div>
                   </div>
@@ -191,7 +205,7 @@
                         class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                         <i class="tdsi-call-fill text-md text-white"></i>
                     </span>
-                    <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress(dataItem.Message)"
+                    <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress()"
                         class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                         <i class="tdsi-pin-fill text-md text-white"></i>
                     </span>
@@ -301,7 +315,7 @@
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
                                   <div class="border-activety-comment" *ngIf="child.Message">
                                       <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
-                                      <div class="content-message font-regular" #contentMessage [innerHTML]="child.Message | formatIconLike | bbcodeConvert | safeHtml"></div>
+                                      <div class="content-message font-regular" #contentMessageChild [innerHTML]="child.Message | formatIconLike | bbcodeConvert | safeHtml"></div>
                                   </div>
                               </div>
                           </div>
@@ -316,13 +330,13 @@
 
                                 <span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
                                     class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
-                                    (click)="showModalSuggestAddress(child.Message)">
+                                    (click)="showModalSuggestAddress(i)">
                                     <i class="tdsi-pin-fill text-md text-white"></i>
                                 </span>
 
                                 <span tds-tooltip tooltipTitle="Thêm vào ghi chú"
                                     class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
-                                    (click)="selectOrder('note', child.Message)">
+                                    (click)="selectOrder('note', i)">
                                     <i class="tdsi-note-2-fill text-md text-white"></i>
                                 </span>
                             </div>

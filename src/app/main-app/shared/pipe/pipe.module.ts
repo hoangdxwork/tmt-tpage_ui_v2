@@ -1,4 +1,4 @@
-import { SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
+import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
 import { ConvertToCRMTagsListPipe } from './convert-to-CRMTagList.pipe';
 import { ChatomniFacebookType, ChatomniTShopType, ChatomniTShopData, ChatomniFacebookData } from './fb-post-type.pipe';
 import { GetStatusNamePipe } from './get-status-name.pipe';
@@ -65,7 +65,8 @@ const cmp =[
   ConverseTimePipe,
   ConvertToCRMTagsListPipe,
   BBcodeConvertPipe,
-  SortDataSourcePostPipe
+  SortDataSourcePostPipe,
+  SortDataSourceMessagePipe
 ]
 
 @NgModule({

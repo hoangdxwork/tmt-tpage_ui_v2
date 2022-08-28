@@ -10,7 +10,6 @@ import { DataPouchDBDTO, KeyCacheIndexDBDTO } from 'src/app/main-app/dto/product
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { debounceTime, finalize, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { orderBy as _orderBy } from 'lodash';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
@@ -55,6 +54,7 @@ export class ModalListProductComponent implements OnInit {
   constructor(private modal: TDSModalRef,
     private sharedService: SharedService,
     private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService,
     private commonService: CommonService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -92,12 +92,18 @@ export class ModalListProductComponent implements OnInit {
     this.isLoading = true;
 
     this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex - 1, this.pageSize, this.textSearchProduct)
-    .pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
-    .subscribe(res=>{
-      this.lstOfData = [...res.value];
-      this.count = res['@odata.count'] as number;
-    },err=>{
-      this.message.error(err.error? err.error.message: 'Tải dữ liệu thất bại')
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res :any) => {
+            this.lstOfData = [...res.value];
+            this.count = res['@odata.count'] as number;
+
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+        },
+        error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error.error || 'Tải dữ liệu thất bại')
+        }
     })
   }
 
@@ -107,16 +113,15 @@ export class ModalListProductComponent implements OnInit {
     this.loadData();
   }
 
-  addItem(item: DataPouchDBDTO) {
+  addItem(item: any) {
     if(this.isPostConfig){
       this.modal.destroy(item);
-    }else{
+    } else {
       this.conversationOrderFacade.onAddProductOrder$.emit(item);
     }
   }
 
   refreshData(){
-
   }
 
   cancel(){
