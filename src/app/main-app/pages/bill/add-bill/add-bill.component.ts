@@ -1009,16 +1009,20 @@ export class AddBillComponent implements OnInit {
   }
 
   prepareModelFeeV2() {
-    let companyId = this.roleConfigs.CompanyId;
-    let model = this.prepareModelFeeV2Handler.prepareModelFeeV2(this.shipExtraServices, this._form, companyId, this.insuranceInfo );
+    let companyId = this.companyCurrents.CompanyId;
+    let model = {...this.prepareModelFeeV2Handler.prepareModelFeeV2(this.shipExtraServices, this._form, companyId, this.insuranceInfo )};
     return model;
   }
 
   prepareModel(): any {
-    let x = this.addBillHandler.prepareModel(this.dataModel, this._form) as any;
+    let x = {...this.addBillHandler.prepareModel(this.dataModel, this._form)} as any;
+    
+    if(!x.CompanyId || x.CompanyId == 0) {
+        x.CompanyId = this.companyCurrents?.CompanyId;
+    }
 
     if(!TDSHelperString.hasValueString(x.FormAction)) {
-      x.FormAction = 'draft';
+        x.FormAction = 'draft';
     }
 
     if(x.AccountId){

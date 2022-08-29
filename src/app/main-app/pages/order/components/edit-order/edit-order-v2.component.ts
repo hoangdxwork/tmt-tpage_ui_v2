@@ -226,14 +226,17 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadCurrentCompany() {
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
-      this.companyCurrents = res;
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res;
 
-      if(this.companyCurrents?.DefaultWarehouseId) {
-        this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+        if(this.companyCurrents?.DefaultWarehouseId) {
+          this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+        }
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
       }
-    }, error => {
-      this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
     });
   }
 
@@ -522,6 +525,9 @@ export class EditOrderV2Component implements OnInit {
       this.updateShipmentDetailsAship();
 
       fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
+      if(!fs_model.CompanyId || fs_model.CompanyId == 0) {
+          fs_model.CompanyId = this.companyCurrents?.CompanyId;
+      }
 
       if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
           this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
@@ -683,7 +689,7 @@ export class EditOrderV2Component implements OnInit {
 
   loadUser() {
     this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
+      next: (res: any) => {
         this.lstUser = [...res.value];
       },
       error: (error: any) => {
@@ -720,11 +726,14 @@ export class EditOrderV2Component implements OnInit {
         status: `${status.value}_${status.text}`
       }
 
-      this.partnerService.updateStatus(this.quickOrderModel.PartnerId, data).subscribe(res => {
+      this.partnerService.updateStatus(this.quickOrderModel.PartnerId, data).pipe(takeUntil(this.destroy$)).subscribe({
+        next: res => {
           this.message.success(Message.Partner.UpdateStatus);
           this.quickOrderModel.Partner.StatusText = status.text;
-      },err=>{
-          this.message.error(err.error ? err.error.message : 'Cập nhật trạng thái thất bại');
+        },
+        error: (error: any) => {
+          this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
+        }
       });
     }
     else {
@@ -794,7 +803,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   selectShipServiceV2(x: CalculateFeeServiceResponseDto) {
-    let data = this.selectShipServiceV2Handler.so_selectShipServiceV2(x, this.shipExtraServices, this.saleModel);
+    let data = {...this.selectShipServiceV2Handler.so_selectShipServiceV2(x, this.shipExtraServices, this.saleModel)};
 
     this.saleModel = data.saleModel;
 
@@ -803,10 +812,10 @@ export class EditOrderV2Component implements OnInit {
   }
 
   prepareModelFeeV2() {
-    let companyId = this.saleConfig.configs?.CompanyId;
+    let companyId = this.companyCurrents.CompanyId;
 
     let model = {...this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel, companyId, this.insuranceInfo)};
-    return model;
+    return {...model};
   }
 
   openPopoverShipExtraMoney(value: number) {

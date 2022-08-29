@@ -7,7 +7,7 @@ import { SuggestAddressService } from '../../services/suggest-address.service';
 import { ResultCheckAddressDTO } from '../../dto/address/address.dto';
 import { map, takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSConfigService } from 'tds-ui/core/config';
 
 const ESCAPE_KEYUP = 'ArrowUp';
@@ -28,6 +28,7 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   @Input() _cities!: SuggestCitiesDTO | null;
   @Input() _districts!: SuggestDistrictsDTO | null;
   @Input() _wards!: SuggestWardsDTO | null;
+  @Input() isSelectAddress!: boolean; // chọn mở modal từ tab partner và order
 
   lstCity!: Array<SuggestCitiesDTO>;
   lstDistrict!: Array<SuggestDistrictsDTO>;
@@ -103,7 +104,9 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
     if(this._street) {
         this._form.controls['Street'].setValue(this._street);
         this.innerText = this._street;
-        this.checkAddress(null);
+        if(!this.isSelectAddress){
+          this.checkAddress(null);
+        }
     } else {
         this._form.controls['Street'].setValue(null);
     }
