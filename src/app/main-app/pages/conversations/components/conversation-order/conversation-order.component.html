@@ -398,7 +398,7 @@
                       </div>
 
                       <!-- thông tin dịch vụ -->
-                      <div class="grid  gap-y-4" >
+                      <div class="grid gap-y-4" *ngIf="saleModel.Carrier">
 
                           <!-- không có dịch vụ -->
                           <div class="w-full" *ngIf="shipServices && shipServices.length == 0 && shipExtraServices && shipExtraServices.length == 0">
@@ -586,7 +586,6 @@
                   </span>
               </button>
           </div>
-
 
           <!-- Button Footer conversation post-->
           <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post'">

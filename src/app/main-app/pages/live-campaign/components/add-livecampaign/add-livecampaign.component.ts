@@ -73,8 +73,8 @@ export class AddLiveCampaignComponent implements OnInit {
       MinAmountDeposit: [0],
       MaxAmountDepositRequired: [0],
       IsEnableAuto: [false],
-      EnableQuantityHandling: [false],
-      IsAssignToUserNotAllowed: [false],
+      EnableQuantityHandling: [true],
+      IsAssignToUserNotAllowed: [true],
       IsShift: [false],
       Details: this.fb.array([]),
     })
@@ -126,7 +126,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
                   this.updateForm(this.dataModel);
               }
-            }, 
+            },
             error:(error) => {
               this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
             }
@@ -251,7 +251,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
     if(indexExist > -1) {
       detailValue[indexExist].Quantity++;
-      
+
       const control = <FormArray>this._form.controls['Details'];
       control.at(indexExist).setValue(detailValue[indexExist]);
     }
@@ -278,7 +278,7 @@ export class AddLiveCampaignComponent implements OnInit {
     });
 
     if(product) {
-      let generateTag = this.generateTagDetail(product.NameGet, product.DefaultCode);
+      let generateTag = this.generateTagDetail(product.NameGet, product.DefaultCode, product.Tags);
 
       model.controls.Tags.setValue(generateTag);
       model.controls.ProductName.setValue(product.NameGet);
@@ -293,7 +293,7 @@ export class AddLiveCampaignComponent implements OnInit {
     return model;
   }
 
-  generateTagDetail(productName: string, code?: string) {
+  generateTagDetail(productName: string, code: string, tags: string) {
     productName = productName.replace(`[${code}]`, "");
     productName = productName.trim();
 
@@ -315,6 +315,14 @@ export class AddLiveCampaignComponent implements OnInit {
 
     if(TDSHelperString.hasValueString(code) && code) {
       result.push(code);
+    }
+
+    if(TDSHelperString.hasValueString(tags)){
+      let tagArr = tags.split(',');
+      tagArr.map(x=>{
+        if(!result.find(y=> y == x))
+          result.push(x);
+      })
     }
 
     return result;
@@ -356,7 +364,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
             control.removeAt(index);
           }
-  
+
         },
         error:(error) => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
@@ -371,7 +379,7 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   onSave(isUpdate?: boolean) {
-    if(this.isCheckValue() === 1) {   
+    if(this.isCheckValue() === 1) {
 
       let model = this.prepareModel();
 
@@ -397,7 +405,7 @@ export class AddLiveCampaignComponent implements OnInit {
       .subscribe({
         next:(res) => {
           this.message.success(Message.ManipulationSuccessful);
-        }, 
+        },
         error:(error) => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }
@@ -411,7 +419,7 @@ export class AddLiveCampaignComponent implements OnInit {
       .subscribe({
         next:(res) => {
           this.message.success(Message.ManipulationSuccessful);
-        }, 
+        },
         error:(error) => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }
@@ -483,7 +491,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
   onChangeDate(event: any[]) {
     this.datePicker = [];
-    
+
     if(event) {
       event.forEach(x => {
           this.datePicker.push(x);
@@ -505,6 +513,26 @@ export class AddLiveCampaignComponent implements OnInit {
         this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
       }
     })
+  }
+
+  onDeleteAll(){
+    const control = <FormArray>this._form.controls['Details'];
+    if(control.length > 0){
+      this.modalService.error({
+        title: 'Xóa sản phẩm',
+        content: 'Bạn muốn xóa tất cả sản phẩm?',
+        onOk: () => {
+          control.clear();
+        },
+        onCancel: () => { },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+        confirmViewType: "compact"
+      });
+    } else {
+      this.message.error('Chưa có sản phẩm nào được chọn');
+    }
+
   }
 
   directPage(route: string) {

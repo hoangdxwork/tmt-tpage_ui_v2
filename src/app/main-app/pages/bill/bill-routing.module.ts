@@ -16,10 +16,6 @@ const routes: Routes = [
     component: AddBillComponent
   },
   {
-    path: 'copy/:id',
-    component: AddBillComponent
-  },
-  {
     path: 'edit/:id',
     component: AddBillComponent
   },

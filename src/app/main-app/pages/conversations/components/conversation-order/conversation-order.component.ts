@@ -37,10 +37,8 @@ import { GetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
-import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { CsOrder_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { CsOrder_PrepareModelHandler, InsertFromPostDto } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-order.handler';
 import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from '@app/dto/carrierV2/delivery-carrier-response.dto';
@@ -65,7 +63,6 @@ import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/pr
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
-import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -362,14 +359,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   loadCurrentCompany() {
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
 
         if(this.companyCurrents.DefaultWarehouseId) {
           this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
         }
-    }, error => {
+      },
+      error: (error: any) => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
     });
   }
 
@@ -739,8 +739,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               this.createFastSaleOrder(fs_model, type);
-          }
-          else {
+          } else {
               this.isLoading = false;
               if(model.Id && model.Code) {
                   this.message.success('Cập nhật đơn hàng thành công');
@@ -783,20 +782,26 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.printOrder(type, res);
           }
 
+         // gọi load lại thông tin khách hàng + đơn hàng
+         let csid = this.quickOrderModel.Facebook_ASUserId as string;
+         this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$)).subscribe({
+             next: (info: ChatomniConversationInfoDto) => {
+                 this.isLoading = false;
+                 this.conversationOrderFacade.loadGetInfoConversation$.emit(info);
+             }, error: (error: any) => {
+                 this.isLoading = false;
+             }
+         })
+
           this.shipServices = [];
           this.shipExtraServices = [];
           delete this.saleModel.Ship_ServiceId;
           delete this.saleModel.Ship_ServiceName;
 
-          this.quickOrderModel.Details = [];
+          this.quickOrderModel = {} as any;
           this.saleModel = {} as any;
-          this.quickOrderModel.Id = null as any;
-          this.quickOrderModel.Code = null as any;
-
-          this.isLoading = false;
-          this.isEnableCreateOrder = false;
-
           this.cdRef.detectChanges();
+
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -1149,7 +1154,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   prepareModelFeeV2() {
-      let companyId = this.saleConfig.configs.CompanyId;
+      let companyId = this.companyCurrents.CompanyId;
 
       let model = {...this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel,  companyId, this.insuranceInfo )};
       return model;
