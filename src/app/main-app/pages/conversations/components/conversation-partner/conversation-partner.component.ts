@@ -205,7 +205,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           } else {
             this.message.info('Ghi chú đã được chọn');
           }
-            
+
         }
     })
   }
@@ -219,7 +219,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
-    let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(item, this.partner);
+    let partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(item, this.partner)};
     this.partner = partner;
   }
 
@@ -365,8 +365,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     });
 
-    modal.componentInstance?.changeReportPartner.subscribe(res => {
+    modal.componentInstance?.changeReportPartner.subscribe({
+      next: (res: any) => {
         this.partner.PhoneReport = res;
+     }
     });
   }
 
@@ -395,14 +397,17 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
         // Xử lý meger map để để gán lên trên
         if(TDSHelperString.hasValueString(phone)) {
-          this.crmMatchingService.checkPhoneReport(phone).pipe(takeUntil(this.destroy$)).subscribe((obs) => {
+          this.crmMatchingService.checkPhoneReport(phone).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (obs) => {
               this.partner.PhoneReport = obs.is_report;
-          }, error => {
+            },
+            error: (error: any) => {
               this.message.error(`${error?.error?.message}`);
+            }
           })
         }
 
-        let partnerUpdate = this.csPartner_PrepareModelHandler.updatePartnerModel(this.partner, x);
+        let partnerUpdate = {...this.csPartner_PrepareModelHandler.updatePartnerModel(this.partner, x)};
         if(partnerUpdate && this.conversationInfo) {
             this.partner = {...partnerUpdate};
             this.conversationInfo.Partner = {...partnerUpdate};
@@ -410,7 +415,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
         // cập nhật dữ liệu khách hàng sang form conversation-order
         // Chỗ này chưa xử lý bên order
-        this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
+        this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);debugger
 
         this.isEditPartner = false;
         this.isLoading = false
@@ -423,7 +428,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   prepareModel() {
-    let model = this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem);
+    let model = {...this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem)};
     return model;
   }
 
@@ -464,7 +469,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   mappingAddress(partner: ConversationPartnerDto) {
-    let data = this.csPartner_SuggestionHandler.mappingAddress(partner);
+    let data = {...this.csPartner_SuggestionHandler.mappingAddress(partner)};
 
     this._cities = data._cities;
     this._districts = data._districts;
@@ -490,7 +495,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   modal.afterClose.subscribe({
     next: (result: ResultCheckAddressDTO) => {
       if(result){
-        let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner);
+        let partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner)};
         this.partner = partner;
         this.mappingAddress(this.partner);
       }
