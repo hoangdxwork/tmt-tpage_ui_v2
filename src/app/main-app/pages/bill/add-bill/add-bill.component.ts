@@ -622,8 +622,8 @@ export class AddBillComponent implements OnInit {
     this.coDAmount();
   }
 
-  changeShipWeight(event: any): any {
-    this._form.controls['ShipWeight'].setValue(event);
+  changeShipWeight(): any {
+    this._form.controls['ShipWeight'].setValue(this.dataModel.ShipWeight);
     this.calcFee();
   }
 

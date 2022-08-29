@@ -971,16 +971,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
-  visibleChange($event: TDSSafeAny) {
-    console.log($event)
-  }
-
   closePriceDetail() {
     this.visibleIndex = -1;
   }
 
-  changeShipWeight(value: number) {
-    this.saleModel.ShipWeight = value;
+  changeShipWeight() {
     if(this.saleModel.Carrier) {
       this.calcFee();
     }
