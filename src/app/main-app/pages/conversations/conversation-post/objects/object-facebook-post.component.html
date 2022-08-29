@@ -65,9 +65,9 @@
             <span *ngIf="(item.Data | facebookType)?.message!.length > 50">...</span>
         </span>
 
-        <div class="flex gap-x-2 items-center">
-            <span *ngIf="item.CreatedTime" class="text-neutral-1-400" >
-                {{item.CreatedTime | date:'dd/MM/yyyy'}}
+        <div class="flex justify-between items-center">
+            <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" >
+                {{item.ChannelCreatedTime | date:'dd/MM/yyyy'}}
             </span>
 
             <span *ngIf="item.ChannelUpdatedTime" class="text-neutral-1-400 tdsi-time-line" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc {{item.ChannelUpdatedTime | date:'dd/MM/yyyy HH:mm'}}">

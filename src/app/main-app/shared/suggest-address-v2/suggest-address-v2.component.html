@@ -58,7 +58,7 @@
         </div>
         <div class="w-full flex">
           <tds-form-field class="w-full">
-            <input tdsInput placeholder="Số nhà, đường" formControlName="Street" />
+            <input tdsInput placeholder="Số nhà, đường" formControlName="Street" (change)="changeStreet($event)"/>
           </tds-form-field>
         </div>
       </div>

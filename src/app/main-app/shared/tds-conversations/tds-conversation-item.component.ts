@@ -532,7 +532,6 @@ export class TDSConversationItemComponent implements OnInit {
       value = this.getTextOfContentMessage();
     }
    
-    console.log(this.contentMessageChild)
     let modal = this.modalService.create({
         title: 'Thêm địa chỉ',
         content: ModalAddAddressV2Component,

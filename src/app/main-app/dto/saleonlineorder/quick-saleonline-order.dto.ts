@@ -10,12 +10,12 @@ export interface Detail_QuickSaleOnlineOrder {
   UOMName: string;
   Note?: any;
   Factor: number;
-  OrderId: string;
-  Priority: number;
+  OrderId?: string | null;
+  Priority: number | null;
   ImageUrl?: any;
-  LiveCampaign_DetailId: string;
-  IsOrderPriority: boolean;
-  QuantityRegex?: any;
+  LiveCampaign_DetailId?: string | null;
+  IsOrderPriority?: boolean;
+  QuantityRegex?: any | null;
 }
 
 export interface Partner {

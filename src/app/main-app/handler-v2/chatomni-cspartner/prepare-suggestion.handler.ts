@@ -44,6 +44,7 @@ export class CsPartner_SuggestionHandler {
   }
 
   public mappingAddress(partner: ConversationPartnerDto) {
+    this.validateData();
     if (partner && partner.City?.code) {
         this._cities = {
             code: (partner.CityCode || partner.City?.code) as any,
@@ -81,5 +82,12 @@ export class CsPartner_SuggestionHandler {
       _wards: this._wards || null,
       _street: this._street
     }
+  }
+
+  validateData(){
+    (this._cities as any) = null;
+    (this._districts as any) = null;
+    (this._wards as any) = null;
+    (this._street as any) = null;
   }
 }
