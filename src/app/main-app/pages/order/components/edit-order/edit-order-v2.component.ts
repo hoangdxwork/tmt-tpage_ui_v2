@@ -226,14 +226,17 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadCurrentCompany() {
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
-      this.companyCurrents = res;
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res;
 
-      if(this.companyCurrents?.DefaultWarehouseId) {
-        this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+        if(this.companyCurrents?.DefaultWarehouseId) {
+          this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+        }
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
       }
-    }, error => {
-      this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
     });
   }
 
@@ -522,6 +525,9 @@ export class EditOrderV2Component implements OnInit {
       this.updateShipmentDetailsAship();
 
       fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
+      if(!fs_model.CompanyId || fs_model.CompanyId == 0) {
+          fs_model.CompanyId = this.companyCurrents?.CompanyId;
+      }
 
       if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
           this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
