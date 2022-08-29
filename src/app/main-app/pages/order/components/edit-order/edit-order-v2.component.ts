@@ -812,7 +812,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   prepareModelFeeV2() {
-    let companyId = this.saleConfig.configs?.CompanyId;
+    let companyId = this.companyCurrents.CompanyId;
 
     let model = {...this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel, companyId, this.insuranceInfo)};
     return {...model};

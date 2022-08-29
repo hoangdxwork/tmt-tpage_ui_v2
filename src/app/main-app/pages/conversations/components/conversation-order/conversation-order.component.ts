@@ -175,6 +175,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if(this.conversationInfo && this.team && this.type) {
+        this.conversationInfo = {...this.conversationInfo };
         this.loadData(this.conversationInfo);
     }
 
@@ -362,14 +363,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   loadCurrentCompany() {
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
 
         if(this.companyCurrents.DefaultWarehouseId) {
           this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
         }
-    }, error => {
+      },
+      error: (error: any) => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
     });
   }
 
@@ -739,8 +743,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               this.createFastSaleOrder(fs_model, type);
-          }
-          else {
+          } else {
               this.isLoading = false;
               if(model.Id && model.Code) {
                   this.message.success('Cập nhật đơn hàng thành công');
@@ -783,20 +786,26 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.printOrder(type, res);
           }
 
+         // gọi load lại thông tin khách hàng + đơn hàng
+         let csid = this.quickOrderModel.Facebook_ASUserId as string;
+         this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$)).subscribe({
+             next: (info: ChatomniConversationInfoDto) => {
+                 this.isLoading = false;
+                 this.conversationOrderFacade.loadGetInfoConversation$.emit(info);
+             }, error: (error: any) => {
+                 this.isLoading = false;
+             }
+         })
+
           this.shipServices = [];
           this.shipExtraServices = [];
           delete this.saleModel.Ship_ServiceId;
           delete this.saleModel.Ship_ServiceName;
 
-          this.quickOrderModel.Details = [];
+          this.quickOrderModel = {} as any;
           this.saleModel = {} as any;
-          this.quickOrderModel.Id = null as any;
-          this.quickOrderModel.Code = null as any;
-
-          this.isLoading = false;
-          this.isEnableCreateOrder = false;
-
           this.cdRef.detectChanges();
+
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -1149,7 +1158,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   prepareModelFeeV2() {
-      let companyId = this.saleConfig.configs.CompanyId;
+      let companyId = this.companyCurrents.CompanyId;
 
       let model = {...this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel,  companyId, this.insuranceInfo )};
       return model;
