@@ -5,7 +5,7 @@ import { FastSaleOrder_DefaultDTOV2 } from "@app/dto/fastsaleorder/fastsaleorder
 
 export class PrepareCopyBill {
 
-    public prepareModel(dataModel:any, fs_default: FastSaleOrder_DefaultDTOV2){
+    public prepareModel(dataModel:any, fs_default?: FastSaleOrder_DefaultDTOV2){
         let model = dataModel;
 
         model.TrackingRef = "";
@@ -40,53 +40,53 @@ export class PrepareCopyBill {
           delete item["AccountId"];
         });
 
-        if(fs_default.WarehouseId) {
+        if(fs_default?.WarehouseId) {
           model.WarehouseId = fs_default.WarehouseId;
         }
-        if(fs_default.Warehouse) {
+        if(fs_default?.Warehouse) {
           model.Warehouse = fs_default.Warehouse;
         }
 
-        if(fs_default.PaymentJournal) {
+        if(fs_default?.PaymentJournal) {
           model.PaymentJournal = fs_default.PaymentJournal;
         }
 
-        if(fs_default.PaymentJournalId) {
+        if(fs_default?.PaymentJournalId) {
           model.PaymentJournalId = fs_default.PaymentJournalId;
         }
 
-        if(fs_default.Account) {
+        if(fs_default?.Account) {
           model.Account = fs_default.Account;
         }
 
-        if(fs_default.AccountId) {
+        if(fs_default?.AccountId) {
           model.AccountId = fs_default.AccountId;
         }
 
-        if(fs_default.Company) {
+        if(fs_default?.Company) {
           model.Company = fs_default.Company;
         }
 
-        if(fs_default.CompanyId) {
+        if(fs_default?.CompanyId) {
           model.CompanyId = fs_default.CompanyId;
         }
 
-        if(fs_default.Journal) {
+        if(fs_default?.Journal) {
           model.Journal = fs_default.Journal;
         }
 
-        if(fs_default.JournalId) {
+        if(fs_default?.JournalId) {
           model.JournalId = fs_default.JournalId;
         }
 
-        if(fs_default.PaymentInfo) {
+        if(fs_default?.PaymentInfo) {
           model.PaymentInfo = fs_default.PaymentInfo;
         }
 
-        if(fs_default.User) {
+        if(fs_default?.User) {
           model.User = fs_default.User;
         }
-        if(fs_default.UserId) {
+        if(fs_default?.UserId) {
           model.UserId = fs_default.UserId;
           model.UserName = fs_default.UserName;
         }
