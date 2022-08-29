@@ -1,5 +1,3 @@
-import { CopyBillHandler } from './../../../handler-v2/bill-handler/copy-bill.handler';
-import { ModalPaymentComponent } from './../../partner/components/modal-payment/modal-payment.component';
 import { Component, OnDestroy, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -54,7 +52,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     private cRMTeamService: CRMTeamService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
-    private copyBillHandler: CopyBillHandler,
     private prepareCopyBill:PrepareCopyBill,
     private modalService: TDSModalService,
     private printerService: PrinterService,
@@ -399,20 +396,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   copyInvoice() {
-    let model = { Type: 'invoice', SaleOrderIds:[] };
-
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
-      next:(data: any) => {
-        delete data['@odata.context'];
-        let detailData = {...this.prepareCopyBill.prepareModel(this.dataModel, data)};
-        this.copyBillHandler.onCopyInvoice$.next(detailData);
-        this.onCopy();
-      },
-      error:(err) => {
-        this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
-        this.isLoading = false;
-      }
-    })
+    this.onCopy();
   }
 
   onCreate(){
@@ -424,7 +408,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   onCopy(){
-    this.router.navigateByUrl(`bill/copy/${this.id}`);
+    this.router.navigateByUrl(`bill/edit/${this.id}?isCopy=true`);
   }
 
   onBack(){
