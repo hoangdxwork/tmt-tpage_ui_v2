@@ -9,6 +9,8 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { TDSMessageService } from 'tds-ui/message';
 import { Component, OnInit } from '@angular/core';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
   selector: 'app-create-default-product',
@@ -20,19 +22,20 @@ export class CreateDefaultProductComponent implements OnInit {
   lstProduct: ProductDTOV2[] = [];
   lstInventory!: GetInventoryDTO;
   defaultProduct?: ProductDTOV2;
+  companyCurrents!: CompanyCurrentDTO;
   isLoading = false;
 
   constructor(private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private auth: TAuthService,
+    private sharedService: SharedService,
     private productService: ProductService,
     private modal: TDSModalRef,
     private destroy$: TDSDestroyService,
-    private message: TDSMessageService
-  ) { }
+    private message: TDSMessageService) { }
 
   ngOnInit(): void {
     this.loadProduct();
-    this.loadInventory();
+    this.loadCurrentCompany();
   }
 
   loadProduct(textSearch?: string) {
@@ -51,19 +54,27 @@ export class CreateDefaultProductComponent implements OnInit {
       });
   }
 
-  loadInventory() {
-    this.auth.getUserInit().pipe(takeUntil(this.destroy$))
-      .pipe(mergeMap(item => {
-        return this.productService.getInventoryWarehouseId(item?.Company?.Id) as Observable<GetInventoryDTO>
-      }))
-      .subscribe({
-        next:(res) => {
-          this.lstInventory = {...res};
-        },
-        error:(err) => {
-          this.message.error(err?.error?.message || 'Không thể tải dữ liệu kho');
+  loadCurrentCompany() {
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res;
+
+        if(this.companyCurrents.DefaultWarehouseId) {
+            this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
         }
-      });
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
+    });
+  }
+
+  loadInventoryWarehouseId(warehouseId: number) {
+    this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        this.lstInventory = res;
+      }
+    });
   }
 
   onChangeProduct(data: ProductDTOV2){
@@ -72,7 +83,7 @@ export class CreateDefaultProductComponent implements OnInit {
 
   onSearch(event:any){
     let text = event.keyupEvent.target.value;
-    
+
     this.loadProduct(text);
   }
 

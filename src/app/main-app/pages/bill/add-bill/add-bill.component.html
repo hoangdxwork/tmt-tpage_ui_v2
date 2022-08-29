@@ -52,7 +52,7 @@
                   <tds-form-field>
                     <tds-select valueField="Id" textField="DisplayName" [valuePrimitive]="false"
                       placeholder='Chọn tên khách hàng' formControlName="Partner" (onSearch)="onSearchPartner($event)"
-                      (selectChange)="selectChangePartner($event)" disabledField="isActive"
+                      (selectChange)="selectChangePartner($event)"
                       [data]="(lstCustomers | async) || []" [allowClear]="true">
 
                       <ng-template tds-label-tmp let-item="item">
@@ -136,7 +136,7 @@
                   <tds-form-field>
                     <tds-select valueField="Id" textField="Name" (selectChange)="onChangePriceList($event)"
                       placeholder='Chọn bảng giá' formControlName="PriceList" [valuePrimitive]="false"
-                      disabledField="isActive" [data]="(lstPrices | async) || []" [allowClear]="true">
+                      [data]="(lstPrices | async) || []" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
                 </div>
@@ -179,7 +179,7 @@
                   <tds-form-field>
                     <tds-select valueField="Id" textField="NameGet" (selectChange)="onChangeWarehouse($event)"
                       placeholder='Chọn bảng giá' formControlName="Warehouse" [valuePrimitive]="false"
-                      disabledField="isActive" [data]="(lstWareHouses | async) || []" [allowClear]="true">
+                      [data]="(lstWareHouses | async) || []" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
                 </div>
@@ -204,7 +204,7 @@
                   <tds-form-field>
                     <tds-select valueField="Id" textField="Name" (selectChange)="onChangePayment($event)"
                       placeholder='Chọn tên phương thức' formControlName="PaymentJournal" [valuePrimitive]="false"
-                      disabledField="isActive" [data]="(lstPaymentJournals | async) || []" [allowClear]="true">
+                      [data]="(lstPaymentJournals | async) || []" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
                 </div>
@@ -221,7 +221,7 @@
                 <div class="w-2/3" *ngIf="dataModel.State == 'draft'">
                   <tds-form-field>
                     <tds-select valueField="Id" textField="Name" (selectChange)="onChangeTeam($event)"
-                      placeholder='Chọn kênh' formControlName="Team" [valuePrimitive]="false" disabledField="isActive"
+                      placeholder='Chọn kênh' formControlName="Team" [valuePrimitive]="false"
                       [data]="(lstTeams | async) || []" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
@@ -245,7 +245,7 @@
                   <tds-form-field class="flex flex-auto">
                     <tds-select valueField="Id" textField="Name" (ngModelChange)="onChangeCarrierV2($event)"
                       [(ngModel)]="dataModel.Carrier" [ngModelOptions]="{standalone: true}"
-                      placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false" disabledField="isActive"
+                      placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false"
                       [data]="(lstCarriers | async) || []" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
@@ -322,7 +322,7 @@
                 <span class="col-span-1 w-full font-semibold">Khối lượng ship (g)</span>
                 <tds-form-field class="col-span-2 w-full" *ngIf="dataModel.State != 'open'">
                   <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
-                    placeholder="Nhập khối lượng" (ngModelChange)="changeShipWeight($event)"
+                    placeholder="Nhập khối lượng" (tdsBlur)="changeShipWeight()"
                     [(ngModel)]="dataModel.ShipWeight" [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
@@ -404,7 +404,7 @@
                   <tds-form-field>
                     <tds-select valueField="Id" textField="Name" (selectChange)="onChangeUser($event)"
                       placeholder='Chọn người bán' formControlName="User" [valuePrimitive]="false"
-                      disabledField="isActive" [data]="(lstUser | async) || []" [allowClear]="true">
+                      [data]="(lstUser | async) || []" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
                 </div>
@@ -521,7 +521,7 @@
                     <tds-form-field class="w-3/4">
                       <tds-select valueField="ServiceId" textField="ServiceName"
                         (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
-                        [valuePrimitive]="false" formControlName="Ship_ServiceId" disabledField="isActive"
+                        [valuePrimitive]="false" formControlName="Ship_ServiceId"
                         [data]="shipServices" [allowClear]="true">
 
                         <ng-template tds-label-tmp let-item="item"> {{item.data.ServiceName}}
@@ -816,7 +816,7 @@
                           <tds-select valueField="Id" textField="Name"
                             (selectChange)="onAddUserOrderLines($event, data, i)" placeholder='Chọn nhân viên'
                             [valuePrimitive]="false" [(ngModel)]="data.User" [ngModelOptions]="{standalone: true}"
-                            disabledField="isActive" [data]="(lstUser | async) || []" [allowClear]="true">
+                            [data]="(lstUser | async) || []" [allowClear]="true">
                           </tds-select>
                         </tds-form-field>
                       </div>

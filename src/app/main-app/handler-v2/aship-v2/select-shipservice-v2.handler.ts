@@ -49,7 +49,7 @@ export class SelectShipServiceV2Handler {
             shipExtraServices.push(item);
       })
 
-      return shipExtraServices;
+      return [...shipExtraServices];
     }
   }
 

@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
-import { TDSSafeAny } from "tds-ui/shared/utility";
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +39,7 @@ export class UpdateShipExtraHandler {
       saleModel.Ship_Extras.InsuranceFee = saleModel.Ship_InsuranceFee;
     }
 
-    return saleModel;
+    return {...saleModel};
   }
 
 }

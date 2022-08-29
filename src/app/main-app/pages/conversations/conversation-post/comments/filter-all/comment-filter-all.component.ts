@@ -10,7 +10,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -49,6 +49,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
+  @ViewChildren('contentMessage') contentMessage: any;
+  @ViewChildren('contentMessageChild') contentMessageChild: any;
 
   @Input() commentOrders!: any;
   @Input() data!: ChatomniObjectsItemDto;
@@ -506,6 +508,29 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   closeDrawer(){
     this.isOpenDrawer = false;
+  }
+
+  selectNote(index: number, child?: string){
+    let data = { phone: null, address: null, note: null } as any;
+
+    let value = this.getTextOfContentMessage(index);
+    if (child && index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
+      data.note = this.contentMessageChild._results[index].nativeElement.outerText;
+    }
+    else {
+      data.note = value;
+    }
+
+    this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
+  }
+
+  getTextOfContentMessage(index: number) {//TODO: thêm xử lý với tin nhắn phản hồi
+    if (this.contentMessage && this.contentMessage._results[index] && this.contentMessage._results[index].nativeElement && this.contentMessage._results[index].nativeElement.outerText) {
+      return this.contentMessage._results[index].nativeElement.outerText;
+    }
+
+    this.message.info("Không thể lấy thông tin");
+    return null;
   }
 
   ngOnDestroy(): void {

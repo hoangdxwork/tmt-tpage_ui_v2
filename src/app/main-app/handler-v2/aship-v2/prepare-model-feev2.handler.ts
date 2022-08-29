@@ -79,7 +79,7 @@ export class PrepareModelFeeV2Handler {
           }
       }
 
-      return model;
+      return {...model};
     }
 
     public so_prepareModelFeeV2(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel, companyId: number, insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null) {
@@ -145,6 +145,6 @@ export class PrepareModelFeeV2Handler {
           } : null
       }
 
-      return model;
+      return {...model};
     }
 }

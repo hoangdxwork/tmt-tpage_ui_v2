@@ -214,11 +214,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         icon: "tdsi-facebook-2-fill",
         link: `/facebook`,
       },
-      {
-        name: "Thống kê",
-        icon: "tdsi-chart-pie-fill",
-        link: `/report`,
-      },
+      // {
+      //   name: "Thống kê",
+      //   icon: "tdsi-chart-pie-fill",
+      //   link: `/report`,
+      // },
       {
         name: "Cấu hình",
         icon: "tdsi-gear-line",

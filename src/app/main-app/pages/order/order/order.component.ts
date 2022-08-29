@@ -1,3 +1,5 @@
+import { PrepareOrderBill } from '@app/handler-v2/order-handler/prepare-order-bill.handler';
+import { OrderBillHandler } from '../../../handler-v2/order-handler/order-bill.handler';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
@@ -36,7 +38,7 @@ import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
-import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
 
 @Component({
   selector: 'app-order',
@@ -118,7 +120,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
     private tagService: TagService,
-    private socketEvent: SocketOnEventService,
+    private orderBillHandler: OrderBillHandler,
+    private prepareOrderBill: PrepareOrderBill,
     private router: Router,
     private orderPrintService: OrderPrintService,
     private modal: TDSModalService,
@@ -345,13 +348,29 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
-      let ids = [...this.setOfCheckedId];
-      
-      this.socketEvent.setOrderBill(ids);
-      // TODO: lưu filter cache trước khi load trang add bill
-      this.storeFilterCache();
 
-      this.router.navigateByUrl(`bill/create`);
+      let model = {
+        ids: [...this.setOfCheckedId]
+      }
+
+      this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res) => {
+          delete res['@odata.context'];
+
+          res = res as SaleOnlineOrderGetDetailsDto;
+          let data = this.prepareOrderBill.prepareModel(res)
+
+          this.orderBillHandler.orderBillEvent$.next(data);
+          // TODO: lưu filter cache trước khi load trang add bill
+          this.storeFilterCache();
+
+          this.router.navigateByUrl(`bill/create`);
+          this.cdRef.detectChanges();
+        },
+        error: (err) => {
+          this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
+        }
+      })
     }
   }
 

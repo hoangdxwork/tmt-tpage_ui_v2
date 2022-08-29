@@ -6,7 +6,6 @@ import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { ConfigSaleOrderDTO } from 'src/app/main-app/dto/configs/sale-order/config-sale-order.dto';
 import { DOCUMENT } from '@angular/common';
-import { MentionConfig } from 'angular-mentions';
 
 @Component({
   selector: 'sale-order',

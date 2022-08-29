@@ -59,32 +59,32 @@ export class CsOrder_FromConversationHandler {
       }
       // TODO: trường hợp ko có thì load dữ liệu mặc định từ conversationItem + partner
       else {
-          let x = this.productTemplateUOMLineService.getDefaultProduct() as  Detail_QuickSaleOnlineOrder;debugger
+          let x = this.productTemplateUOMLineService.getDefaultProduct() as Detail_QuickSaleOnlineOrder;
           order.Details = [];
 
-          // if(x && x.ProductId) {
-          //     let item = {
-          //         Id: null,
-          //         Quantity: 1,
-          //         Price: x.Price,
-          //         ProductId: x.ProductId,
-          //         ProductName: x.ProductName,
-          //         ProductNameGet: x.ProductNameGet,
-          //         ProductCode: x.ProductCode,
-          //         UOMId: x.UOMId,
-          //         UOMName: x.UOMName,
-          //         Note: x.Note,
-          //         Factor: x.Factor,
-          //         OrderId: x.OrderId,
-          //         Priority: x.Priority,
-          //         ImageUrl: x.ImageUrl,
-          //         LiveCampaign_DetailId: x.LiveCampaign_DetailId,
-          //         IsOrderPriority: x.IsOrderPriority,
-          //         QuantityRegex: x.QuantityRegex
-          //     } as Detail_QuickSaleOnlineOrder;
+          if(x && x.ProductId) {
+              let item = {
+                  Id: null,
+                  Quantity: 1,
+                  Price: x.Price,
+                  ProductId: x.ProductId,
+                  ProductName: x.ProductName,
+                  ProductNameGet: x.ProductNameGet,
+                  ProductCode: x.ProductCode,
+                  UOMId: x.UOMId,
+                  UOMName: x.UOMName,
+                  Note: x.Note,
+                  Factor: x.Factor,
+                  OrderId: null,
+                  Priority: null,
+                  ImageUrl: x.ImageUrl,
+                  LiveCampaign_DetailId: null,
+                  IsOrderPriority: false,
+                  QuantityRegex: null
+              } as Detail_QuickSaleOnlineOrder;
 
-          //     order.Details.push(item);
-          // }
+              order.Details.push(item);
+          }
       }
 
       if(!order.CRMTeamId && team) {

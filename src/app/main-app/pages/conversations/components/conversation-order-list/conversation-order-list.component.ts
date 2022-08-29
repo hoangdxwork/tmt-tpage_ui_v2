@@ -213,8 +213,12 @@ export class ConversationOrderListComponent implements OnInit {
     event && this.getLine(order.Id);
   }
 
-  onCheck(orderId: string, event: TDSCheckboxChange) {
-    if (event?.checked) {
+  onCheck(orderId: string, event: TDSSafeAny) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    let exist = this.setOfCheckedId.has(orderId);
+    if (!exist) {
       this.setOfCheckedId.add(orderId);
     } else {
       this.setOfCheckedId.delete(orderId);
