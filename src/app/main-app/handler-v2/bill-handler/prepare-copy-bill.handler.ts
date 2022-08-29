@@ -5,7 +5,7 @@ import { FastSaleOrder_DefaultDTOV2 } from "@app/dto/fastsaleorder/fastsaleorder
 
 export class PrepareCopyBill {
 
-    public prepareModel(dataModel:any, data?: any){
+    public prepareModel(dataModel:any, fs_default: FastSaleOrder_DefaultDTOV2){
         let model = dataModel;
 
         model.TrackingRef = "";
@@ -36,43 +36,60 @@ export class PrepareCopyBill {
         delete model["MoveId"];
 
         model.OrderLines.map((item:any) => {
-        delete item["Account"];
-        delete item["AccountId"];
+          delete item["Account"];
+          delete item["AccountId"];
         });
 
-        // if(data.Warehouse){
-        //     model.WareHouse = data.WareHouse;
-        //     model.WareHouseId = data.WareHouse.Id;
-        // }
+        if(fs_default.WarehouseId) {
+          model.WarehouseId = fs_default.WarehouseId;
+        }
+        if(fs_default.Warehouse) {
+          model.Warehouse = fs_default.Warehouse;
+        }
 
-        // if(data.PaymentJournal){
-        //     model.PaymentJournal = data.PaymentJournal;
-        //     model.PaymentJournalId = data.PaymentJournal.Id;
-        // }
+        if(fs_default.PaymentJournal) {
+          model.PaymentJournal = fs_default.PaymentJournal;
+        }
 
-        // if(data.Account){
-        //     model.Account = data.Account;
-        //     model.AccountId = data.Account.Id;
-        // }
+        if(fs_default.PaymentJournalId) {
+          model.PaymentJournalId = fs_default.PaymentJournalId;
+        }
 
-        // if(data.Company){
-        //     model.Company = data.Company;
-        //     model.CompanyId = data.Company.Id;
-        // }
+        if(fs_default.Account) {
+          model.Account = fs_default.Account;
+        }
 
-        // if(data.Journal){
-        //     model.Journal = data.Journal;
-        //     model.JournalId = data.Journal.Id;
-        // }
+        if(fs_default.AccountId) {
+          model.AccountId = fs_default.AccountId;
+        }
 
-        // if(data.PaymentInfo){
-        //     model.PaymentInfo = data.PaymentInfo
-        // }
+        if(fs_default.Company) {
+          model.Company = fs_default.Company;
+        }
 
-        // if(data.User){
-        //     model.User = data.User;
-        //     model.UserId = data.User.Id;
-        // } 
+        if(fs_default.CompanyId) {
+          model.CompanyId = fs_default.CompanyId;
+        }
+
+        if(fs_default.Journal) {
+          model.Journal = fs_default.Journal;
+        }
+
+        if(fs_default.JournalId) {
+          model.JournalId = fs_default.JournalId;
+        }
+
+        if(fs_default.PaymentInfo) {
+          model.PaymentInfo = fs_default.PaymentInfo;
+        }
+
+        if(fs_default.User) {
+          model.User = fs_default.User;
+        }
+        if(fs_default.UserId) {
+          model.UserId = fs_default.UserId;
+          model.UserName = fs_default.UserName;
+        }
 
         return {...model} as FastSaleOrder_DefaultDTOV2;
     }
