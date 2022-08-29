@@ -1093,7 +1093,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     if (index < 0){
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
 
-        this.quickOrderModel.Details = [...this.quickOrderModel.Details, item];
+        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
     } else{
         this.quickOrderModel.Details[index].Quantity += 1;
     }
