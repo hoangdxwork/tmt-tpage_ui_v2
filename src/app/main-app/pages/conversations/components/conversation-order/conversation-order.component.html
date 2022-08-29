@@ -477,14 +477,14 @@
 
                         <div class="col-span-3 w-full flex flex-col">
                             <tds-label class="pr-3">Khối lượng ship(g)</tds-label>
-    
+
                                 <div class="flex flex-row items-center gap-x-2 w-full">
                                   <tds-form-field class="flex flex-auto">
                                     <tds-input-number [min]="0" [step]="100" [ngModel]="saleModel.ShipWeight" (ngModelChange)="changeShipWeight($event)"
                                         [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                                     </tds-input-number>
                                   </tds-form-field>
-    
+
                                   <!-- <button tds-button-icon tds-tooltip tooltipTitle="Gán bằng tổng giá trị hoá đơn" color="primary"
                                       class="flex items-center justify-center" (click)="signAmountTotalToInsuranceFee()">
                                       <i class="tdsi-in-out-fill text-xl"></i>
@@ -494,7 +494,7 @@
 
                         <div class="col-span-3 w-full flex flex-col">
                             <tds-label class="pr-3">Phí giao hàng</tds-label>
-    
+
                             <div class="flex flex-row items-center gap-x-2 w-full">
                                   <tds-form-field class="flex flex-auto">
                                     <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.DeliveryPrice" (ngModelChange)="changeDeliveryPrice($event)"
@@ -506,7 +506,7 @@
 
                         <div class="col-span-3 w-full flex flex-col">
                                 <tds-label class="pr-3">Giao hàng thu tiền</tds-label>
-    
+
                                 <div class="flex flex-row items-center gap-x-2 w-full">
                                   <tds-form-field class="flex flex-auto">
                                     <tds-input-number [min]="1" [step]="1000" [ngModel]="saleModel.CashOnDelivery"
