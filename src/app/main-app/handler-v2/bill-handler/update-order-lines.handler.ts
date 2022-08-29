@@ -36,7 +36,7 @@ export class UpdateOrderLinesHandler {
         PriceSubTotal: [Number(data.PriceSubTotal)],
         Weight: [data.Weight],
         WeightTotal: [data.WeightTotal],
-        AccountId: [data.AccountId || dataModel.AccountId],
+        // AccountId: [data.AccountId || dataModel.AccountId],
         PriceRecent: [data.PriceRecent],
         Name: [data.Name],
         IsName: [data.IsName],
@@ -58,7 +58,7 @@ export class UpdateOrderLinesHandler {
         PromotionProgramComboId: [data.PromotionProgramComboId],
         Product: [data.Product],
         ProductUOM: [data.ProductUOM],
-        Account: [data.Account || dataModel.Account],
+        // Account: [data.Account || dataModel.Account],
         SaleLine: [data.SaleLine],
         User: [data.User]
       });
@@ -76,7 +76,7 @@ export class UpdateOrderLinesHandler {
         PriceSubTotal: [0],
         Weight: [0],
         WeightTotal: [0],
-        AccountId: [null],
+        // AccountId: [null],
         PriceRecent: [0],
         Name: [null],
         IsName: [false],
@@ -98,7 +98,7 @@ export class UpdateOrderLinesHandler {
         PromotionProgramComboId: [null],
         Product: [null],
         ProductUOM: [null],
-        Account: [null],
+        // Account: [null],
         SaleLine: [null],
         User: [null]
       });
