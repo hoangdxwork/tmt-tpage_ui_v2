@@ -1009,6 +1009,9 @@ export class AddBillComponent implements OnInit {
 
   prepareModel(): any {
     let x = this.addBillHandler.prepareModel(this.dataModel, this._form);
+    if(!x.CompanyId || x.CompanyId == 0) {
+      x.CompanyId = this.companyCurrents?.CompanyId;
+    }
 
     if(!TDSHelperString.hasValueString(x.FormAction)) {
       x.FormAction = 'draft';

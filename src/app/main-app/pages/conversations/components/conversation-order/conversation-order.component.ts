@@ -791,9 +791,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.quickOrderModel.Details = [];
           this.saleModel = {} as any;
           this.quickOrderModel.Id = null as any;
+          this.quickOrderModel.Code = null as any;
 
           this.isLoading = false;
           this.isEnableCreateOrder = false;
+
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -804,6 +807,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -817,6 +821,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.updateShipmentDetailsAship();
 
     fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
+    if(!fs_model.CompanyId || fs_model.CompanyId == 0) {
+      fs_model.CompanyId = this.companyCurrents?.CompanyId;
+    }
+
     fs_model.FormAction = model.FormAction;
 
     return {...fs_model};
