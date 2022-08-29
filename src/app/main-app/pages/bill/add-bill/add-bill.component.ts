@@ -184,11 +184,11 @@ export class AddBillComponent implements OnInit {
     this.path = this.route.snapshot?.routeConfig?.path || '';
 
     if (this.id) {
-      
+
       if(this.path.includes('copy')){
         // Trường hợp copy
         this.loadCopyData();
-      }else{
+      } else {
         // Trường hợp edit
         this.loadBill(this.id);
       }
@@ -309,18 +309,9 @@ export class AddBillComponent implements OnInit {
     this.isLoading = true;
     let model = { Type: 'invoice', SaleOrderIds:[] };
 
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$))
-      // .pipe(mergeMap((x)=>{
-      //   return this.orderBillHandler.orderBillEvent$.pipe(map(res=>{
-      //     console.log(res)
-      //     return {...x,...res}
-      //   }))
-      // }))
-      .subscribe({
+    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
       next:(data: any) => {
         delete data['@odata.context'];
-        // console.log(data)
-        // Trường hợp thêm mới
         data.DateInvoice = new Date();
         this.dataModel = data;
 
@@ -328,15 +319,15 @@ export class AddBillComponent implements OnInit {
         if (partnerId) {
           this.changePartner(partnerId);
         }
+
         this._form.patchValue(data);
 
-        // Trường hợp Tạo hóa đơn F10 bên ĝơn hàng
+        // Trường hợp Tạo hóa đơn F10 bên đơn hàng
         this.orderBillHandler.orderBillEvent$.pipe(takeUntil(this.destroy$)).subscribe({
-          next:(res) => {debugger
+          next:(res) => {
             if(res){
-              console.log(res)
               data = { ...data, ...res };
-              
+
               //TODO: cập nhật thông tin khách hàng
               if (res.PartnerId && res.Partner?.Id) {
                   this.changePartner(res.PartnerId);
@@ -356,7 +347,7 @@ export class AddBillComponent implements OnInit {
             this.message.error(err);
           }
         })
-        
+
         this.isLoading = false;
       },
       error:(err) => {
@@ -369,7 +360,7 @@ export class AddBillComponent implements OnInit {
   loadCopyData(){
     delete this.id;
     this.isLoading = true;
-    
+
     this.copyBillHandler.onCopyInvoice$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
 
@@ -379,7 +370,7 @@ export class AddBillComponent implements OnInit {
           res.ReceiverDate = res.ReceiverDate ? new Date(res.ReceiverDate) : null;
 
           //TODO: cập nhật thông tin khách hàng
-          if (res.PartnerId && res.Partner?.Id) {debugger
+          if (res.PartnerId && res.Partner?.Id) {
             this.changePartner(res.PartnerId);
           }
 
@@ -429,11 +420,14 @@ export class AddBillComponent implements OnInit {
   }
 
   loadTeamById(id: any) {
-    this.crmTeamService.getTeamById(id).subscribe((team: any) => {
+    this.crmTeamService.getTeamById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team: any) => {
         this.dataModel.Team!.Name = team?.Name;
         this.dataModel.Team!.Facebook_PageName = team?.Facebook_PageName;
-    },  err=>{
-        this.message.error(err?.error?.message)
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message)
+      }
     })
   }
 
@@ -447,18 +441,24 @@ export class AddBillComponent implements OnInit {
   }
 
   loadConfig() {
-    this.sharedService.getConfigs().subscribe((res: InitSaleDTO) => {
-        this.roleConfigs = res.SaleSetting;
-    }, error => {
-        this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
+    this.sharedService.getConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+       next: (res: InitSaleDTO) => {
+          this.roleConfigs = res.SaleSetting;
+        },
+        error: (error: any) => {
+          this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
+        }
     });
   }
 
   loadCurrentCompany() {
-    this.sharedService.getCurrentCompany().subscribe((res: CompanyCurrentDTO) => {
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
-    }, error => {
+      },
+      error: (error: any) => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
     });
   }
 

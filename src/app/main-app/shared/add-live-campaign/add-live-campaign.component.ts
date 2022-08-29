@@ -27,6 +27,8 @@ import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campai
 import { indexOf } from 'lodash';
 import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
   selector: 'add-live-campaign',
@@ -54,6 +56,7 @@ export class AddLiveCampaignComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
   _form!: FormGroup;
+  companyCurrents!: CompanyCurrentDTO;
 
   constructor(
     private modal: TDSModalService,
@@ -65,12 +68,12 @@ export class AddLiveCampaignComponent implements OnInit {
     private fastSaleOrderLineService: FastSaleOrderLineService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productService: ProductService,
+    private sharedService: SharedService,
     private auth: TAuthService,
     private message: TDSMessageService,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
-    private destroy$: TDSDestroyService
-  ) {
+    private destroy$: TDSDestroyService) {
     this.createForm();
    }
 
@@ -82,7 +85,7 @@ export class AddLiveCampaignComponent implements OnInit {
     this.loadData(this.id);
     this.loadUser();
     this.loadQuickReply();
-    this.loadUserInfo();
+    this.loadCurrentCompany();
   }
 
   createForm() {
@@ -135,30 +138,29 @@ export class AddLiveCampaignComponent implements OnInit {
     this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
       next:res => {
         this.lstInventory = res;
-      }, 
+      },
       error:(err) => {
           this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
       }
     });
   }
 
-  loadUserInfo() {
-    this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
-        if(res && res.Company?.Id) {
-          this.loadInventoryWarehouseId(res.Company.Id);
-        }
-      }, 
-      error:(err) => {
-          this.message.error(err?.error?.message || 'Không thể tải thông tin user');
+  loadCurrentCompany() {
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
+      this.companyCurrents = res;
+
+      if(this.companyCurrents.DefaultWarehouseId) {
+          this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
       }
-    });
+  }, error => {
+      this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+  });
   }
 
   loadData(id?: string) {
     if(id) {
       this.isLoading = true;
-      
+
       this.liveCampaignService.getDetailById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
         .subscribe({
           next:(res) => {
@@ -243,7 +245,7 @@ export class AddLiveCampaignComponent implements OnInit {
             const control = this.detailsFormGroups;
             control.removeAt(index);
           }
-        }, 
+        },
         error:(err) => {
           this.message.error(`${err?.error?.message || JSON.stringify(err)}`);
         }
@@ -363,7 +365,7 @@ export class AddLiveCampaignComponent implements OnInit {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModel(this._form);
       this.isLoading = true;
-      
+
       if(this.id){
         model.Id = this.id;
 
@@ -379,7 +381,7 @@ export class AddLiveCampaignComponent implements OnInit {
         });
 
       }else{
-        
+
         this.liveCampaignService.create(model).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
         .subscribe((res:LiveCampaignModel) => {
 
@@ -391,7 +393,7 @@ export class AddLiveCampaignComponent implements OnInit {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         });
       }
-      
+
     }
   }
 
@@ -413,9 +415,9 @@ export class AddLiveCampaignComponent implements OnInit {
         return 0;
       }
     }
-    
+
     let compare = compareAsc(new Date(formValue.StartDate).getTime(), new Date(formValue.EndDate).getTime());
-    
+
     if(compare >= 0){
       this.message.error('Vui lòng nhập thời gian Kết thúc lớn hơn thời gian Bắt đầu');
 

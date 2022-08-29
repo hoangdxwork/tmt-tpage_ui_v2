@@ -364,6 +364,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   loadCurrentCompany() {
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
+
+        if(this.companyCurrents.DefaultWarehouseId) {
+          this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+        }
     }, error => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
     });
@@ -433,9 +437,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.userInit =  {...res};
-          if(this.userInit?.Company?.Id) {
-              this.loadInventoryWarehouseId(this.userInit?.Company?.Id);
-          }
       },
       error: (error: any) => {
         this.message.error(`${error?.error?.message}`);

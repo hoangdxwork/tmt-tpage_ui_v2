@@ -228,6 +228,10 @@ export class EditOrderV2Component implements OnInit {
   loadCurrentCompany() {
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
       this.companyCurrents = res;
+
+      if(this.companyCurrents?.DefaultWarehouseId) {
+        this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+      }
     }, error => {
       this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
     });
@@ -641,9 +645,6 @@ export class EditOrderV2Component implements OnInit {
       next: res => {
         if(res) {
             this.userInit = res || {};
-            if(this.userInit?.Company?.Id) {
-                this.loadInventoryWarehouseId(this.userInit?.Company?.Id);
-            }
         }
       },
       error: (error: any) => {
