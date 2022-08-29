@@ -12,7 +12,7 @@ export class CsOrder_SuggestionHandler {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  public onLoadSuggestion(item: ResultCheckAddressDTO, quickOrderModel: QuickSaleOnlineOrderModel) {
+  public onLoadSuggestion(item: ResultCheckAddressDTO, quickOrderModel: QuickSaleOnlineOrderModel) {debugger
     quickOrderModel.Address = item.Address;
 
     quickOrderModel.CityCode = item.CityCode;
@@ -29,8 +29,8 @@ export class CsOrder_SuggestionHandler {
 
   validateData(){
     (this._cities as any) = null;
-    (this._districts as any) = null; 
-    (this._wards as any) = null; 
+    (this._districts as any) = null;
+    (this._wards as any) = null;
     (this._street as any) = null;
   }
 

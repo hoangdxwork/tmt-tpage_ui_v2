@@ -1,7 +1,9 @@
+// import { prepareEditBillHandler } from '../../handler-v2/bill-handler/prepare-edit-bill.handler';
+import { PrepareCopyBill } from './../../handler-v2/bill-handler/prepare-copy-bill.handler';
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { OrderEvent } from './../../handler-v2/order-handler/order.event';
+import { OrderBillHandler } from '../../handler-v2/order-handler/order-bill.handler';
 import { PreparePartnerHandler } from './../../handler-v2/bill-handler/prepare-partner.handler';
 import { CalculateBillFeeHandler } from './../../handler-v2/bill-handler/calculate-bill-fee.handler';
 import { GetServiceHandler } from './../../handler-v2/bill-handler/get-services.handler';
@@ -142,13 +144,15 @@ const SERVICES = [
   CalculateBillFeeHandler,
   PreparePartnerHandler,
   PrepareCopyItemHandler,
-  OrderEvent,
+  OrderBillHandler,
   ChatomniMessageService,
   ChatomniMessageFacade,
   ActivityMatchingService,
   ConversationService,
   SO_ComputeCaclHandler,
-  CalculateFeeAshipHandler
+  CalculateFeeAshipHandler,
+  // prepareEditBillHandler,
+  PrepareCopyBill
 ]
 
 @NgModule({

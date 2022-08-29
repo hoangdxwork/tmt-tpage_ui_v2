@@ -28,7 +28,7 @@ export class UpdateShipServiceExtrasHandler {
         })
       }
 
-      return saleModel;
+      return {...saleModel};
     }
 
     public addShip_ServiceExtras(x: any, _form: FormGroup, fb: FormBuilder) {

@@ -1,7 +1,7 @@
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { OrderEvent } from './../../handler-v2/order-handler/order.event';
+import { OrderBillHandler } from '../../handler-v2/order-handler/order-bill.handler';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { DirectivesModule } from './../../shared/directives/directives.module';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
@@ -87,6 +87,7 @@ import { ConvertCustomersComponent } from './components/convert-customers/conver
 import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { PrepareOrderBill } from '@app/handler-v2/order-handler/prepare-order-bill.handler';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -120,7 +121,8 @@ const SERVICES = [
   SO_ComputeCaclHandler,
   CalculateFeeAshipHandler,
   CsOrder_SuggestionHandler,
-  OrderEvent,
+  OrderBillHandler,
+  PrepareOrderBill,
   ChatomniMessageService,
   ChatomniMessageFacade,
   ActivityMatchingService,

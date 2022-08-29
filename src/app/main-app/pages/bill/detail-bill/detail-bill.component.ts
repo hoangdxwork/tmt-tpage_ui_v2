@@ -1,4 +1,3 @@
-import { ModalPaymentComponent } from './../../partner/components/modal-payment/modal-payment.component';
 import { Component, OnDestroy, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -16,6 +15,7 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { THelperCacheService } from 'src/app/lib';
 import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.handler';
 
 @Component({
   selector: 'app-detail-bill',
@@ -52,6 +52,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     private cRMTeamService: CRMTeamService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
+    private prepareCopyBill:PrepareCopyBill,
     private modalService: TDSModalService,
     private printerService: PrinterService,
     private message: TDSMessageService,
@@ -93,7 +94,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         }
 
         this.dataModel = res;
-        console.log(this.dataModel)
 
         for (var item of this.dataModel.OrderLines) {
           this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
@@ -396,41 +396,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   copyInvoice() {
-    let model = this.dataModel;
-
-    model.TrackingRef = "";
-    model.TrackingRefSort = "";
-    model.State = 'draft';
-    model.ShipStatus = 'none';
-    model.ShipPaymentStatus = '';
-    model.DateInvoice = new Date();
-    model.Comment = "";
-
-    //Truong hop nhieu cong ty copy tu cong ty khac
-    delete model["Id"];
-    delete model["Number"];
-    delete model["Warehouse"];
-    delete model["WarehouseId"];
-    delete model["PaymentJournal"];
-    delete model["PaymentJournalId"];
-    delete model["Account"];
-    delete model["AccountId"];
-    delete model["Company"];
-    delete model["CompanyId"];
-    delete model["Journal"];
-    delete model["JournalId"];
-    delete model["PaymentInfo"];
-    delete model["User"];
-    delete model["UserId"];
-    delete model["UserName"];
-
-    model.OrderLines.map((item) => {
-      delete item["Account"];
-      delete item["AccountId"];
-    });
-
-    let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
-    this.cacheApi.setItem(keyCache, JSON.stringify(model));
     this.onCopy();
   }
 
@@ -443,7 +408,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   onCopy(){
-    this.router.navigateByUrl(`bill/copy/${this.id}`);
+    this.router.navigateByUrl(`bill/edit/${this.id}?isCopy=true`);
   }
 
   onBack(){

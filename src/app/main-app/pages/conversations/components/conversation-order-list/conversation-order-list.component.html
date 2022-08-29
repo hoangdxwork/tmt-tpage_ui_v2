@@ -90,7 +90,7 @@
                               <i class="tdsi-edit-fill text-neutral-1-500"></i>
                           </span>
                       </button>
-                      <tds-checkbox (change)="onCheck(order.Id, $event)"></tds-checkbox>
+                      <tds-checkbox [checked]="setOfCheckedId.has(order.Id)" (click)="onCheck(order.Id, $event)"></tds-checkbox>
                   </div>
                 </ng-template>
                 <!-- Content  -->

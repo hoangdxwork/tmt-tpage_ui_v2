@@ -2,7 +2,7 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-modal-add-address-v2',
@@ -47,6 +47,9 @@ export class ModalAddAddressV2Component implements OnInit {
   }
 
   onSave() {
-    this.modal.destroy(this.items);
+    if(this.items){
+      this.modal.destroy(this.items);
+    }
+    
   }
 }

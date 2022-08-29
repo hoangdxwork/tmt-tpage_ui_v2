@@ -43,8 +43,8 @@
 
                             <!-- nội dung bình luận -->
                             <div class="flex flex-row gap-x-3">
-                                <div [innerHTML]="item.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
-                                <!-- <button tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top"
+                                <div #contentMessage [innerHTML]="item.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
+                                <!-- <button tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top" (click)="selectNote(i)"
                                     class="rounded-full h-5 w-5 border border-primary-1 text-primary-1 flex justify-center items-center">
                                     <span class="tdsi-plus-fill"></span>
                                 </button> -->
@@ -236,8 +236,8 @@
 
                                     <!-- nội dung bình luận -->
                                     <div class="flex flex-row gap-x-3">
-                                        <div [innerHTML]="data.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
-                                        <!-- <button *ngIf="!data.IsOwner" tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top"
+                                        <div #contentMessageChild [innerHTML]="data.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
+                                        <!-- <button *ngIf="!data.IsOwner" tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top" (click)="selectNote(i, 'child')"
                                             class="rounded-full h-5 w-5 border border-primary-1 text-primary-1 flex justify-center items-center">
                                             <span class="tdsi-plus-fill"></span>
                                         </button> -->
