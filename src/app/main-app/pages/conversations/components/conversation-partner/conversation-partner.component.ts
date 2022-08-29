@@ -511,6 +511,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this.lastBill as any) = null;
     (this.lstBill as any) = null;
     this.totalBill = 0;
+    (this._cities as any) = null;
+    (this._districts as any) = null;
+    (this._wards as any) = null;
+    (this._street as any) = null;
   }
 
 }
