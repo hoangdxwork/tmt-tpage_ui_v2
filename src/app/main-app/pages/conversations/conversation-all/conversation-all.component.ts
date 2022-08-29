@@ -137,7 +137,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     })
 
     this.hubEvents(); // các sự kiện realtime
-    this.spinLoading();
 
     this.eventEmitter();
     this.onEventSocket();
@@ -243,9 +242,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       }
     })
-  }
 
-  spinLoading() {
+    //TODO: cập nhật lại khách hàng và đơn hàng nháp cuối cùng sau khi tạo hóa đơn conversation-order
+    this.conversationOrderFacade.loadGetInfoConversation$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (info: ChatomniConversationInfoDto) => {
+        if(info) {
+            this.conversationInfo = {...info};
+            this.cdRef.detectChanges();
+        }
+      }
+    })
   }
 
   loadData(team: any) {
