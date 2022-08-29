@@ -1258,6 +1258,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     (this.quickOrderModel as any) = null;
     (this.saleModel as any) = null;
     (this._cities as any) = null;
+    this.isEnableCreateOrder = false;
     (this._districts as any) = null;
     (this._wards as any) = null;
     (this._street as any) = null;
