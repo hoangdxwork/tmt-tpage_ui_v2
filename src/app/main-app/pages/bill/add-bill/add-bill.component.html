@@ -5,20 +5,20 @@
         <tds-breadcrumb tds-page-header-breadcrumb>
           <tds-breadcrumb-item (click)="directPage('bill')">Phiếu bán hàng</tds-breadcrumb-item>
           <span class="tdsi-arrow-right-line ml-1 mr-1"></span>
-          <span *ngIf="path?.includes('create')">
+          <span *ngIf="!id && !isCopy">
             <tds-breadcrumb-item>Thêm mới</tds-breadcrumb-item>
           </span>
-          <span *ngIf="path?.includes('edit')">
+          <span *ngIf="id && !isCopy">
             <tds-breadcrumb-item>Chỉnh sửa</tds-breadcrumb-item>
           </span>
-          <span *ngIf="path?.includes('copy')">
+          <span *ngIf="isCopy">
             <tds-breadcrumb-item>Sao chép</tds-breadcrumb-item>
           </span>
         </tds-breadcrumb>
         <div class="pl-4 pb-2.5">
-          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="path?.includes('create')">Thêm mới phiếu bán hàng</span>
-          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="path?.includes('edit')">Chỉnh sửa phiếu bán hàng</span>
-          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="path?.includes('copy')">Sao chép phiếu bán hàng</span>
+          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="!id && !isCopy">Thêm mới phiếu bán hàng</span>
+          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="id && !isCopy">Chỉnh sửa phiếu bán hàng</span>
+          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="isCopy">Sao chép phiếu bán hàng</span>
         </div>
       </div>
 
