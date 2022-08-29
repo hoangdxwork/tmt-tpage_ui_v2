@@ -37,7 +37,6 @@ export interface SocketEventSubjectDto {
 export class SocketOnEventService {
 
   private readonly socketEvent$ = new Subject<any>();
-  private readonly socketOrderBill$ = new Subject<any>();
 
   private modalRef!: TDSModalRef;
 
@@ -202,74 +201,6 @@ export class SocketOnEventService {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       }
     });
-  }
-
-  public prepareOrderBill(data: any): FastSaleOrder_DefaultDTOV2 {
-    let model = {} as FastSaleOrder_DefaultDTOV2;
-
-    model.SaleOnlineIds = data.ids;
-    model.Reference = data.Reference;
-    model.Partner = data.partner;
-    model.Comment = data.comment || '';
-    model.FacebookId = data.facebookId;
-    model.FacebookName = data.facebookName;
-    model.IsProductDefault = data.isProductDefault;
-    model.PartnerId = data.Id;
-    //Check kho hàng
-    if (data.warehouse) {
-      model.Warehouse = data.warehouse;
-    }
-    model.ReceiverName = data.partner.DisplayName;
-    let orderLines: any[] = [];
-
-    for (var item of data.orderLines) {
-      orderLines.push({
-        AccountId: item.AccountId,
-        Discount: item.Discount || 0,
-        Discount_Fixed: item.Discount_Fixed || 0,
-        Note: item.Note,
-        PriceRecent: item.PriceRecent || 0,
-        PriceSubTotal: item.PriceSubTotal || 0,
-        PriceTotal: item.PriceTotal || 0,
-        PriceUnit: item.PriceUnit || 0,
-        Product: item.Product,
-        ProductId: item.ProductId,
-        ProductName: item.ProductName,
-        ProductNameGet: item.Product.NameGet,
-        ProductUOM: item.ProductUOM,
-        ProductUOMId: item.ProductUOMId,
-        ProductUOMName: item.ProductUOMName,
-        ProductUOMQty: item.ProductUOMQty,
-        Type: item.Product.Type,
-        Weight: item.Weight || 0,
-        WeightTotal: 0
-      });
-    }
-
-    model.OrderLines = [...orderLines];
-
-    return model;
-  }
-
-  public setOrderBill(ids: string[]) {
-    let model = {
-      ids: ids
-    }
-
-    this.saleOnline_OrderService.getDetails(model).subscribe({
-      next: (res) => {
-        delete res['@odata.context'];
-        
-        this.socketOrderBill$.next(this.prepareOrderBill(res));
-      },
-      error: (err: any) => {
-        this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
-      }
-    })
-  }
-
-  public getOrderBill() {
-    return this.socketOrderBill$.asObservable();
   }
 
   public onEventSocket() {

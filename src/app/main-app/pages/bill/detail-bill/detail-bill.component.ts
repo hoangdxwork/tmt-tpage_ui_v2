@@ -1,3 +1,4 @@
+import { CopyBillHandler } from './../../../handler-v2/bill-handler/copy-bill.handler';
 import { ModalPaymentComponent } from './../../partner/components/modal-payment/modal-payment.component';
 import { Component, OnDestroy, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,6 +17,7 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { THelperCacheService } from 'src/app/lib';
 import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.handler';
 
 @Component({
   selector: 'app-detail-bill',
@@ -52,6 +54,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     private cRMTeamService: CRMTeamService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
+    private copyBillHandler: CopyBillHandler,
+    private prepareCopyBill:PrepareCopyBill,
     private modalService: TDSModalService,
     private printerService: PrinterService,
     private message: TDSMessageService,
@@ -93,7 +97,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         }
 
         this.dataModel = res;
-        console.log(this.dataModel)
 
         for (var item of this.dataModel.OrderLines) {
           this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
@@ -396,42 +399,20 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   copyInvoice() {
-    let model = this.dataModel;
+    let model = { Type: 'invoice', SaleOrderIds:[] };
 
-    model.TrackingRef = "";
-    model.TrackingRefSort = "";
-    model.State = 'draft';
-    model.ShipStatus = 'none';
-    model.ShipPaymentStatus = '';
-    model.DateInvoice = new Date();
-    model.Comment = "";
-
-    //Truong hop nhieu cong ty copy tu cong ty khac
-    delete model["Id"];
-    delete model["Number"];
-    delete model["Warehouse"];
-    delete model["WarehouseId"];
-    delete model["PaymentJournal"];
-    delete model["PaymentJournalId"];
-    delete model["Account"];
-    delete model["AccountId"];
-    delete model["Company"];
-    delete model["CompanyId"];
-    delete model["Journal"];
-    delete model["JournalId"];
-    delete model["PaymentInfo"];
-    delete model["User"];
-    delete model["UserId"];
-    delete model["UserName"];
-
-    model.OrderLines.map((item) => {
-      delete item["Account"];
-      delete item["AccountId"];
-    });
-
-    let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
-    this.cacheApi.setItem(keyCache, JSON.stringify(model));
-    this.onCopy();
+    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(data: any) => {
+        delete data['@odata.context'];
+        let detailData = {...this.prepareCopyBill.prepareModel(this.dataModel, data)};
+        this.copyBillHandler.onCopyInvoice$.next(detailData);
+        this.onCopy();
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
+        this.isLoading = false;
+      }
+    })
   }
 
   onCreate(){
