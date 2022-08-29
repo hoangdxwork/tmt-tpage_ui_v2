@@ -831,8 +831,7 @@ export class EditOrderV2Component implements OnInit {
     this.coDAmount();
   }
 
-  changeShipWeight(value: number) {
-    this.saleModel.ShipWeight = value;
+  changeShipWeight() {
     if(this.saleModel.Carrier) {
       this.calcFee();
     }
