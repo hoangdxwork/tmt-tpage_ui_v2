@@ -1,4 +1,4 @@
-<div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900">
+<div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900 relative">
 
   <!-- conversation list -->
   <div class="2xl:w-1/5 w-1/4 h-full">
@@ -20,13 +20,13 @@
                       </conversation-all-filter>
 
                       <button (click)="setSort()" tds-tooltip [tooltipTitle]="isSort ? 'Hội thoại cũ nhất' : 'Hội thoại mới nhất'"
-                          class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
-                          <span class="flex items-center text-primary-1">
-                              <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill' : 'tdsi-sort-arrow-down-fill'" class="text-xl leading-5"></i>
+                          class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"  [ngClass]="isSort ? 'bg-primary-3' : ''">
+                          <span>
+                              <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill text-primary-1' : 'tdsi-sort-up-down-fill text-neutral-1-500'" class="text-xl leading-5"></i>
                           </span>
                       </button>
 
-                      <button class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
+                      <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
                           [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
                           <span class="flex items-center ">
                               <i class="tdsi-success-line text-xl leading-5"></i>
@@ -118,9 +118,16 @@
               </div>
 
               <ng-template #noOmcs>
-                  <div class="flex-auto flex items-center justify-center bg-white">
-                      <tds-empty></tds-empty>
-                  </div>
+                <div class="flex flex-auto items-center justify-center bg-white">
+                  <tds-empty [notFoundContent]="contentTpl">
+                    <ng-template #contentTpl>
+                      <div class="flex flex-col justify-center items-center">
+                        <div>Không tìm thấy hội thoại nào</div>
+                        <div class="w-[300px] text-body-2 font-regular mt-3 text-center">Hãy thử với từ khóa khác: nhập tên khách hàng, nội dung tin nhắn, số điện thoại</div>
+                      </div>
+                    </ng-template>
+                  </tds-empty>
+                </div>
               </ng-template>
           </tds-spin>
       </div>
