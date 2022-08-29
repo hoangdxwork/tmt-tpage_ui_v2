@@ -37,10 +37,8 @@ import { GetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
-import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { CsOrder_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { CsOrder_PrepareModelHandler, InsertFromPostDto } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-order.handler';
 import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from '@app/dto/carrierV2/delivery-carrier-response.dto';
@@ -65,7 +63,6 @@ import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/pr
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
-import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -175,7 +172,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if(this.conversationInfo && this.team && this.type) {
-        this.conversationInfo = {...this.conversationInfo };
         this.loadData(this.conversationInfo);
     }
 
