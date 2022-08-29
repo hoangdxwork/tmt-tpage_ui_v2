@@ -28,11 +28,17 @@ export class SO_PrepareFastSaleOrderHandler {
       saleModel.Address = quickOrderModel.Address || quickOrderModel.Partner?.Street;
       saleModel.Name = quickOrderModel.Name;
 
+      // khi ko phải là khách hàng
       saleModel.PartnerId = quickOrderModel.PartnerId ||  quickOrderModel.Partner?.Id;
-      saleModel.Partner = {
-         Id: quickOrderModel.PartnerId || quickOrderModel.Partner?.Id,
-         Name: quickOrderModel.PartnerName || quickOrderModel.Partner?.Name
-      } as any;
+      if(Number(saleModel.PartnerId)) {
+          saleModel.Partner = {
+            Id: saleModel.PartnerId,
+            Name: quickOrderModel.PartnerName || quickOrderModel.Partner?.Name
+        } as any;
+      } else {
+          delete saleModel.PartnerId;
+          delete saleModel.Partner;
+      }
 
       saleModel.CarrierId = saleModel.Carrier?.Id;
       if(saleModel.CarrierId == 0 ||  saleModel.CarrierId == null) {
