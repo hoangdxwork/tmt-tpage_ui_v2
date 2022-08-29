@@ -74,6 +74,6 @@ export class UpdateShipmentDetailAshipHandler {
         saleModel.ShipmentDetailsAship?.ConfigsProvider.push(item);
     })
 
-    return saleModel;
+    return {...saleModel};
   }
 }
