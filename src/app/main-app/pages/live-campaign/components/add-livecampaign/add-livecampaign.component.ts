@@ -278,7 +278,7 @@ export class AddLiveCampaignComponent implements OnInit {
     });
 
     if(product) {
-      let generateTag = this.generateTagDetail(product.NameGet, product.DefaultCode);
+      let generateTag = this.generateTagDetail(product.NameGet, product.DefaultCode, product.Tags);
 
       model.controls.Tags.setValue(generateTag);
       model.controls.ProductName.setValue(product.NameGet);
@@ -293,7 +293,7 @@ export class AddLiveCampaignComponent implements OnInit {
     return model;
   }
 
-  generateTagDetail(productName: string, code?: string) {
+  generateTagDetail(productName: string, code: string, tags: string) {
     productName = productName.replace(`[${code}]`, "");
     productName = productName.trim();
 
@@ -315,6 +315,14 @@ export class AddLiveCampaignComponent implements OnInit {
 
     if(TDSHelperString.hasValueString(code) && code) {
       result.push(code);
+    }
+
+    if(TDSHelperString.hasValueString(tags)){
+      let tagArr = tags.split(',');
+      tagArr.map(x=>{
+        if(!result.find(y=> y == x))
+          result.push(x);
+      })    
     }
 
     return result;
@@ -505,6 +513,26 @@ export class AddLiveCampaignComponent implements OnInit {
         this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
       }
     })
+  }
+
+  onDeleteAll(){
+    const control = <FormArray>this._form.controls['Details'];
+    if(control.length > 0){
+      this.modalService.error({
+        title: 'Xóa sản phẩm',
+        content: 'Bạn muốn xóa tất cả sản phẩm?',
+        onOk: () => {
+          control.clear();
+        },
+        onCancel: () => { },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+        confirmViewType: "compact"
+      });
+    } else {
+      this.message.error('Chưa có sản phẩm nào được chọn');
+    }
+    
   }
 
   directPage(route: string) {
