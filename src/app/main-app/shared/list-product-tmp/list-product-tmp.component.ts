@@ -273,7 +273,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
                 return;
               }
 
-              this.addItem(item);
+              this.addItem(item, undefined, productTmplItems);
             }
           }
           //TODO: reload sản phẩm
@@ -302,12 +302,14 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
     this.loadData(true);
   }
 
-  addItem(data: DataPouchDBDTO, index?: number) {
+  addItem(data: DataPouchDBDTO, index?: number, productTmplItems?: any) {
     // TODO: trường hợp thêm sản phẩm vào đơn hàng
     if (!this.inLiveCampaign) {
       this.onLoadProductToOrderLines.emit(data);
     } else {
-      this.lstVariants = this.lstOfData.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
+      data.Tags = productTmplItems?.Tags || null;
+      this.onLoadProductToLiveCampaign.emit(data);
+      // this.lstVariants = this.lstOfData.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
       this.indClick = index as number;
     }
   }
