@@ -68,7 +68,7 @@ export class DashboardFacebookReportComponent implements OnInit {
         let newArr: any[] = [];
 
         res.forEach((a: any) => {
-          let find = res.find(x =>  x.Date == x.Date);
+          let find = newArr?.find(x =>  x.Date == x.Date);
           if(!find) {
             newArr.push(a);
           }
