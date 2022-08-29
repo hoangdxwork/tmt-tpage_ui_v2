@@ -252,13 +252,13 @@ export class AddBillComponent implements OnInit {
 
     this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         delete res['@odata.context'];
-        
+
         if(this.isCopy == "true"){
           // Trường hợp sao chép
           this.loadCopyData(res);
         }else{
           let obs = res as FastSaleOrder_DefaultDTOV2;
-          
+
           obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
           obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
           obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
@@ -296,7 +296,7 @@ export class AddBillComponent implements OnInit {
           //TODO: cập nhật địa chỉ
           this.mappingDataAddress(obs);
           this.loadConfigProvider(this.dataModel);
-          
+
           this._form.patchValue(this.dataModel);
           this.calcTotal();
           this.isLoading = false;
@@ -371,7 +371,7 @@ export class AddBillComponent implements OnInit {
       next:(res: any) => {
         delete res['@odata.context'];
         let obs = {...this.prepareCopyBill.prepareModel(data, res)};
-        
+
         obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
         obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
         obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
@@ -1016,47 +1016,29 @@ export class AddBillComponent implements OnInit {
 
   prepareModel(): any {
     let x = {...this.addBillHandler.prepareModel(this.dataModel, this._form)} as any;
-    
-    if(!x.CompanyId || x.CompanyId == 0) {
-        x.CompanyId = this.companyCurrents?.CompanyId;
-    }
+    x.CompanyId = this.companyCurrents?.CompanyId;
 
     if(!TDSHelperString.hasValueString(x.FormAction)) {
         x.FormAction = 'draft';
     }
 
-    if(x.AccountId){
-      delete x["Account"];
-      delete x["AccountId"];
+    if(this.isCopy) {
+      x.OrderLines?.map((item: any) => {
+          delete item.Account;
+          delete item.AccountId;
+      })
     }
 
-    // if(x.Number){
-    //   delete x["Number"];
-    // }
-    
-    // if(x.Warehouse){
-    //   delete x["Warehouse"];
-    //   delete x["WarehouseId"];
-    // }
-    
-    if(x.CompanyId){
-      delete x["Company"];
-      delete x["CompanyId"];
-      delete x["CompanyName"];
+    if(this.id && !this.isCopy) {
+      x.OrderLines?.map((item: any) => {
+        item.AccountId = x.AccountId;
+        if(x.Account) {
+            item.Account = x.Account;
+        }
+      })
     }
 
-    if(x.MoveId){
-      delete x["MoveId"];
-    }
-
-    if(x.OrderLines){
-      x.OrderLines.map((item:any) => {
-        delete item["Account"];
-        delete item["AccountId"];
-      });
-    }
-
-    return x;
+    return { ...x };
   }
 
   confirmShipService(carrier: TDSSafeAny) {
@@ -1077,7 +1059,7 @@ export class AddBillComponent implements OnInit {
     this.updateShipmentDetailsAship();
 
     let model = this.prepareModel();
-    
+
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
     }
