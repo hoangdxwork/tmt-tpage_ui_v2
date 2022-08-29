@@ -689,7 +689,7 @@ export class EditOrderV2Component implements OnInit {
 
   loadUser() {
     this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
+      next: (res: any) => {
         this.lstUser = [...res.value];
       },
       error: (error: any) => {
@@ -726,11 +726,14 @@ export class EditOrderV2Component implements OnInit {
         status: `${status.value}_${status.text}`
       }
 
-      this.partnerService.updateStatus(this.quickOrderModel.PartnerId, data).subscribe(res => {
+      this.partnerService.updateStatus(this.quickOrderModel.PartnerId, data).pipe(takeUntil(this.destroy$)).subscribe({
+        next: res => {
           this.message.success(Message.Partner.UpdateStatus);
           this.quickOrderModel.Partner.StatusText = status.text;
-      },err=>{
-          this.message.error(err.error ? err.error.message : 'Cập nhật trạng thái thất bại');
+        },
+        error: (error: any) => {
+          this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
+        }
       });
     }
     else {
@@ -800,7 +803,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   selectShipServiceV2(x: CalculateFeeServiceResponseDto) {
-    let data = this.selectShipServiceV2Handler.so_selectShipServiceV2(x, this.shipExtraServices, this.saleModel);
+    let data = {...this.selectShipServiceV2Handler.so_selectShipServiceV2(x, this.shipExtraServices, this.saleModel)};
 
     this.saleModel = data.saleModel;
 
@@ -812,7 +815,7 @@ export class EditOrderV2Component implements OnInit {
     let companyId = this.saleConfig.configs?.CompanyId;
 
     let model = {...this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel, companyId, this.insuranceInfo)};
-    return model;
+    return {...model};
   }
 
   openPopoverShipExtraMoney(value: number) {
