@@ -966,7 +966,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       if(res) {
           this.saleModel.Tax = res;
           this.saleModel.TaxId = res.Id;
-
           this.calcTotal();
       }
     });
@@ -1072,8 +1071,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   loadInventoryWarehouseId(warehouseId: number) {
     this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
+      next: (res: any) => {
         this.lstInventory = res;
+      },
+      error: (err: any) => {
+        this.message.error(err.error? err.error.message: Message)
       }
     });
   }

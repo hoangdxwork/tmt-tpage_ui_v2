@@ -66,10 +66,10 @@
         </span>
 
         <div class="flex justify-between items-center">
-            <span *ngIf="item.CreatedTime" class="text-neutral-1-400" >
-                {{item.CreatedTime | date:'dd/MM/yyyy'}}
+            <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" >
+                {{item.ChannelCreatedTime | date:'dd/MM/yyyy'}}
             </span>
-    
+
             <span *ngIf="item.ChannelUpdatedTime" class="text-neutral-1-400 tdsi-time-line" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc {{item.ChannelUpdatedTime | date:'dd/MM/yyyy HH:mm'}}">
             </span>
         </div>
