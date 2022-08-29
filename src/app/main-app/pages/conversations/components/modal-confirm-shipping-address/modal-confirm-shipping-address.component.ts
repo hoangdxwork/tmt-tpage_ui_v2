@@ -163,7 +163,7 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
     const formModel = this._form.value;
     var model = this.data;
 
-    model.Partner.Phone = String(model.Partner.Phone).replace("+","");
+    model.Partner!.Phone = String(model.Partner?.Phone).replace("+","");
 
     model.Ship_Receiver.Name = formModel.Name ? formModel.Name : '';
     model.Ship_Receiver.Phone = formModel.Phone ? formModel.Phone : formModel.Phone;

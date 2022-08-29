@@ -554,7 +554,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     PrintDeliveryCount: number;
     PaymentMessageCount: number;
     PaymentMethod?: string;
-    PartnerId: number;
+    PartnerId?: number;
     PartnerDisplayName: string;
     PartnerEmail: string;
     PartnerFacebookId: string;
@@ -657,7 +657,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Ship_Extras: ShipExtras | null;
     PaymentInfo: any[];
     Search?: any;
-    Partner: Partner;
+    Partner?: Partner;
     User: User | any;
     Warehouse: Warehouse;
     Company: Company;

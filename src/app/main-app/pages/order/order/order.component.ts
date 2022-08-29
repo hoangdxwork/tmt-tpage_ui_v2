@@ -38,6 +38,7 @@ import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
 
 @Component({
   selector: 'app-order',
@@ -347,16 +348,18 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
-      
+
       let model = {
         ids: [...this.setOfCheckedId]
       }
-  
+
       this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           delete res['@odata.context'];
-          let data = this.prepareOrderBill.prepareModel(res);
-          
+
+          res = res as SaleOnlineOrderGetDetailsDto;
+          let data = this.prepareOrderBill.prepareModel(res)
+
           this.orderBillHandler.orderBillEvent$.next(data);
           // TODO: lưu filter cache trước khi load trang add bill
           this.storeFilterCache();
