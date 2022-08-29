@@ -1254,6 +1254,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   validateData(){
     this.isEditPartner = false;
+    this.isEnableCreateOrder = false;
     (this.conversationInfo as any) = null;
     (this.quickOrderModel as any) = null;
     (this.saleModel as any) = null;
