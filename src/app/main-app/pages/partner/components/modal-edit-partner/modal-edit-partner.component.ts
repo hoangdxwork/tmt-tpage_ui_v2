@@ -539,6 +539,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         _street: this.innerText,
+        isSelectAddress: true
       }
     });
 
