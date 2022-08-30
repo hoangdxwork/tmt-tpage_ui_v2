@@ -285,9 +285,10 @@ export class AddBillComponent implements OnInit {
 
   loadDefault() {
     let model = { Type: 'invoice', SaleOrderIds:[] };
-
     this.isLoading = true;
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+
+    this.fastSaleOrderService.setDefaultV2({ model: model });
+    this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
       next:(data: any) => {
           delete data['@odata.context'];
           data.DateInvoice = new Date();
@@ -317,7 +318,8 @@ export class AddBillComponent implements OnInit {
     delete this.id;
     let model = { Type: 'invoice', SaleOrderIds:[] };
 
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+    this.fastSaleOrderService.setDefaultV2({ model: model });
+    this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
         delete res['@odata.context'];
         let obs = {...this.prepareCopyBill.prepareModel(data, res)};
@@ -1230,10 +1232,6 @@ export class AddBillComponent implements OnInit {
     this.totalQtyLines = cacl.totalAmountLines;
     this.totalAmountLines = cacl.totalAmountLines;
   }
-
-  // onLoadSuggestion(item: ResultCheckAddressDTO) {
-  //   this.prepareSuggestionsBill.onLoadSuggestion(this._form, item);
-  // }
 
   loadCustomers() {
     return this.partnerService.getCustomers(this.page, this.limit, this.keyFilter)

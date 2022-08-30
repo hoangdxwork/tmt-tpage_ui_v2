@@ -332,12 +332,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.isLoading = true;
     let model = { Type: 'invoice' };
 
-    this.fastSaleOrderService.defaultGetV2({model: model}).pipe(takeUntil(this.destroy$)).subscribe(res => {
-        if(res) {
-            delete res["@odata.context"];
-
+    this.fastSaleOrderService.setDefaultV2({ model: model });
+    this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res) {
+            delete res['@odata.context'];
             res.DateInvoice = new Date();
-            this.saleModel = res;
+            this.saleModel = res as FastSaleOrder_DefaultDTOV2;
 
             // Khởi tạo saleModel mặc định
             this.saleModel = Object.assign({
@@ -352,11 +353,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.calcTotal();
 
             this.loadConfigProvider(this.saleModel);
-            this.isLoading = false;
-        }
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+          }
+
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+      }
     });
   }
 
@@ -625,8 +629,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
           this.loadConversationInfo();
-
-          this.isLoading = false;
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -732,7 +734,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.createFastSaleOrder(fs_model, type);
 
           } else {
-              this.isLoading = false;
 
               if (model.Id || model.Code) {
                   this.message.success('Cập nhật đơn hàng thành công');
@@ -817,8 +818,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.chatomniConversationService.getInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (info: ChatomniConversationInfoDto) => {
         if(info && info.Conversation) {
-          this.conversationOrderFacade.loadGetInfoConversation$.emit(info);
+            this.conversationOrderFacade.loadGetInfoConversation$.emit(info);
+            this.isLoading = false;
         }
+      },
+      error: (error: any) => {
+          this.isLoading = false;
       }
     })
   }
@@ -1086,7 +1091,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   loadInventoryWarehouseId(warehouseId: number) {
-    this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.lstInventory = res;
       },

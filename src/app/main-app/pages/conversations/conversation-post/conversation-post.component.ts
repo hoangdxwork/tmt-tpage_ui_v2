@@ -370,6 +370,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
 
         this.changeTab(0, true);
+
+        // TODO:
         this.chatomniObjectFacade.onChangeOrderListFromObjects$.emit(item);
 
         let uri = this.router.url.split("?")[0];

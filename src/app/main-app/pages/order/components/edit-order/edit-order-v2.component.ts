@@ -182,29 +182,34 @@ export class EditOrderV2Component implements OnInit {
     this.isLoading = true;
     let model = { Type: 'invoice' };
 
-    this.fastSaleOrderService.defaultGetV2({model: model}).pipe(takeUntil(this.destroy$)).subscribe(res => {
-        delete res["@odata.context"];
+    this.fastSaleOrderService.setDefaultV2({ model: model });
+    this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res) {
+            delete res['@odata.context'];
+            res.DateInvoice = new Date();
+            this.saleModel = res as FastSaleOrder_DefaultDTOV2;
 
-        res.DateInvoice = new Date();
-        this.saleModel = res;
+            // Khởi tạo saleModel mặc định
+            this.saleModel = Object.assign({
+                AmountTotal: 0,
+                CashOnDelivery: 0,
+                ShipWeight: 100,
+                DeliveryPrice: 0
+            }, this.saleModel);
 
-        // Khởi tạo saleModel mặc định
-        this.saleModel = Object.assign({
-            AmountTotal: 0,
-            CashOnDelivery: 0,
-            ShipWeight: 100,
-            DeliveryPrice: 0
-        }, this.saleModel);
+            this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
+            this.coDAmount();
+            this.calcTotal();
 
-        this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
-        this.coDAmount();
-        this.calcTotal();
-
-        this.loadConfigProvider(this.saleModel);
-        this.isLoading = false;
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+            this.loadConfigProvider(this.saleModel);
+          }
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+      }
     });
   }
 
@@ -659,12 +664,13 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadInventoryWarehouseId(warehouseId: number) {
-    this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.lstInventory = res;
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstInventory = res;
       },
       error: (err: any) => {
-        this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
       }
     });
   }

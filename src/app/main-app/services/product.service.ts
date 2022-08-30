@@ -1,6 +1,6 @@
 import { ProductDTO } from './../dto/product/product.dto';
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
 import { TDSSafeAny } from 'tds-ui/shared/utility';
@@ -15,6 +15,9 @@ export class ProductService extends BaseSevice {
   table: string = "Product";
   baseRestApi: string = "rest/v1.0/product";
 
+  lstInventory: any;
+  private readonly _inventorySubject$ = new ReplaySubject<any>();
+
   constructor(private apiService: TCommonService) {
     super(apiService)
   }
@@ -28,7 +31,26 @@ export class ProductService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  getInventoryWarehouseId(warehouseId: number): Observable<TDSSafeAny> {
+  getInventoryWarehouseId(){
+    return this._inventorySubject$.asObservable();
+  }
+
+  setInventoryWarehouseId(warehouseId: number) {
+    if(this.lstInventory) {
+        this._inventorySubject$.next(this.lstInventory);
+    } else {
+        this.apiInventoryWarehouseId(warehouseId).subscribe({
+          next: (res: any) => {
+            if(res) {
+                this.lstInventory = res;
+                this._inventorySubject$.next(this.lstInventory);
+            }
+          }
+        })
+    }
+  }
+
+  apiInventoryWarehouseId(warehouseId: number): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getinventory?WarehouseId=${warehouseId}`,
         method: CoreApiMethodType.get,

@@ -71,9 +71,10 @@ export class CreateDefaultProductComponent implements OnInit {
   }
 
   loadInventoryWarehouseId(warehouseId: number) {
-    this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.lstInventory = res;
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstInventory = res;
       }
     });
   }
