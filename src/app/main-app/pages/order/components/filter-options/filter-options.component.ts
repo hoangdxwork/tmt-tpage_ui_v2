@@ -21,6 +21,7 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   @Input() tabNavs!: TabNavsDTO[];
   @Input() lstDataTag: Array<TDSSafeAny> = [];
   @Input() filterObj!: FilterObjSOOrderModel;
+  @Input() isLiveCamp!: boolean;
 
   datePicker: any = [addDays(new Date(), -30), new Date()];
   lstTags: Array<TDSSafeAny> = [];

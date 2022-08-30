@@ -324,7 +324,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           }
       },
       error: (error) => {
-          this.notificationService.warning('Lỗi in đơn hàng', 'Máy in chưa kết nối',  { placement: 'bottomLeft'});
+        this.notificationService.warning('Lỗi in đơn hàng', 'Máy in chưa kết nối',  { placement: 'bottomLeft'});
       }
     });
   }

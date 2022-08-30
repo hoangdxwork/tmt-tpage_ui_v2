@@ -1,10 +1,10 @@
 <div *ngIf="dataItem && team" class="px-2">
 	<!--Lọc theo Messages-->
-	<div *ngIf="dataItem.Type == 11 || dataItem.Type == 92" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}">
-      <div class="chat-body w-full">
+	<div *ngIf="dataItem.Type == 11 || dataItem.Type == 92" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
+      <div class="chat-body w-full" [ngClass]="dataItem.IsShowAvatar? '': '!my-2 pl-9'">
           <div *ngIf="!dataItem.IsOwner " class="mr-2 flex flex-col justify-end">
 
-            <tpage-avatar-facebook [shape]="'circle'" [size]="36"
+            <tpage-avatar-facebook *ngIf="dataItem.IsShowAvatar" [shape]="'circle'" [size]="36"
                 [psid]="dataItem.Data?.from?.id" [token]="team.ChannelToken">
             </tpage-avatar-facebook>
 

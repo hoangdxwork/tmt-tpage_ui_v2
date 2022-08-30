@@ -1,9 +1,10 @@
+import { FilterObjSOOrderModel } from './odata-saleonlineorder.service';
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { ODataResponsesDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
 
@@ -19,7 +20,7 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
       super(apiService)
   }
 
-  getView(params: string, filterObj: any, liveCampaignId: string): Observable<ODataResponsesDTO<any>>{
+  getView(params: string, filterObj: FilterObjSOOrderModel, liveCampaignId: string): Observable<ODataResponsesDTO<any>>{
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?TagIds=${filterObj.tags}&liveCampaignId=${liveCampaignId}&${params}&$count=true`,
         method: CoreApiMethodType.get,
@@ -61,20 +62,23 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
               { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.searchText},
               { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText}
             ],
             logic: 'or'
         })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.status })
-      dataFilter.logic = "and";
+    if (TDSHelperArray.hasListValue(filterObj.status)) {
+      dataFilter.filters.push({
+        filters: filterObj.status.map((x:any) => ({
+          field: "StatusText",
+          operator: "eq",
+          value: x,
+        })),
+
+        logic: "or"
+      })
     }
 
     return dataFilter;

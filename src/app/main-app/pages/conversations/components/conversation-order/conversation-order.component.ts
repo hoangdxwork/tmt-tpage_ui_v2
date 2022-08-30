@@ -922,7 +922,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalAddPromotion(){
     // this.modal.create({
-    //   title: 'Chờn khuyến mãi',
+    //   title: 'Chọn khuyến mãi',
     //   content: ModalApplyPromotionComponent,
     //   size: "lg",
     //   viewContainerRef: this.viewContainerRef
@@ -933,7 +933,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalConfigProduct() {
     this.modal.create({
-        title: 'Chờn bảng giá',
+        title: 'Chọn bảng giá',
         content: TpageConfigProductComponent,
         size: "lg",
         viewContainerRef: this.viewContainerRef
@@ -942,7 +942,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   showModalListProduct(){
     const modal = this.modal.create({
-        title: 'Chờn sản phẩm',
+        title: 'Chọn sản phẩm',
         content: ModalListProductComponent,
         viewContainerRef: this.viewContainerRef,
         size: 'xl'

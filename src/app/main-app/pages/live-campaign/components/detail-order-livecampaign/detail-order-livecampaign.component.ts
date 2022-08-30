@@ -1,3 +1,5 @@
+import { TagService } from './../../../../services/tag.service';
+import { FilterObjSOOrderModel } from './../../../../services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CRMMatchingService } from '../../../../services/crm-matching.service';
 import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
@@ -51,12 +53,17 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
   widthCollapse: number = 0;
   paddingCollapse: number = 36;
 
-  public filterObj: any = {
+  public filterObj: FilterObjSOOrderModel = {
     tags: [],
-    status: '',
+    status: [],
     searchText: '',
-    dateRange: { }
+    dateRange: {
+      startDate: addDays(new Date(), -30),
+      endDate: new Date()
+    }
   }
+
+  public lstDataTag: Array<TDSSafeAny> = [];
 
   sort: Array<SortDataRequestDTO>= [{
     field: "DateCreated",
@@ -89,9 +96,11 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     private crmMatchingService: CRMMatchingService,
     private chatomniMessageFacade: ChatomniMessageFacade,
     private destroy$: TDSDestroyService,
-    private resizeObserver: TDSResizeObserver) { }
+    private resizeObserver: TDSResizeObserver,
+    private tagService: TagService) { }
 
   ngOnInit(): void {
+    this.loadTags();
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -162,9 +171,9 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
 
     this.filterObj = {
       tags: [],
-      status: '',
+      status: [],
       searchText: '',
-      dateRange: {}
+      dateRange: {} as any
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -187,6 +196,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
                   content: EditOrderV2Component,
                   size: 'xl',
                   viewContainerRef: this.viewContainerRef,
+                  title: res.Code ? `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Sửa đơn hàng`,
                   bodyStyle:{
                     'padding': '0'
                   },
@@ -249,12 +259,30 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSearch(event: TDSSafeAny) {
-    let text =  event?.target.value;
-
+  onSearch(data: TDSSafeAny) {
+    this.tabIndex = 1;
     this.pageIndex = 1;
-    this.filterObj.searchText = text;
-    this.loadData(this.pageSize, this.pageIndex);
+    this.filterObj.searchText = data.value;
+
+    let filters = this.odataLiveCampaignOrderService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
+
+    this.getViewData(params).subscribe({
+        next: (res: any) => {
+            this.count = res['@odata.count'] as number;
+            this.lstOfData = [...res.value];
+        },
+        error: (error: any) => {
+            this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+        }
+    });
+  }
+
+  loadTags() {
+    let type = "saleonline";
+    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+      this.lstDataTag = [...res.value];
+    });
   }
 
   openMiniChat(data: TDSSafeAny) {

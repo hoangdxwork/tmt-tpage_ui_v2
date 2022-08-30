@@ -414,6 +414,8 @@ export class DetailBillComponent implements OnInit{
   }
 
   copyInvoice() {
+    let key = this.fastSaleOrderService._keyCacheCopyInvoice;
+    localStorage.setItem(key, JSON.stringify(this.dataModel));
     this.onCopy();
   }
 
