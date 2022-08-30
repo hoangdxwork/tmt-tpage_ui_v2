@@ -1,5 +1,4 @@
-import { PrepareOrderBill } from '@app/handler-v2/order-handler/prepare-order-bill.handler';
-import { OrderBillHandler } from '../../../handler-v2/order-handler/order-bill.handler';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
@@ -16,8 +15,8 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { FilterObjSOOrderModel, OdataSaleOnline_OrderService, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
-import { Subject, fromEvent, Observable } from 'rxjs';
-import { takeUntil, finalize, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { CreateBillFastComponent } from '../components/create-bill-fast/create-bill-fast.component';
 import { CreateBillDefaultComponent } from '../components/create-bill-default/create-bill-default.component';
 import { Router } from '@angular/router';
@@ -42,10 +41,11 @@ import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
 
 @Component({
   selector: 'app-order',
-  templateUrl: './order.component.html'
+  templateUrl: './order.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
+export class OrderComponent implements OnInit, AfterViewInit {
 
   @ViewChild('WidthTable') widthTable!: ElementRef;
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
@@ -115,13 +115,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   isTabNavs: boolean = false;
   isProcessing: boolean = false;
 
-  private destroy$ = new Subject<void>();
-
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
     private tagService: TagService,
-    private orderBillHandler: OrderBillHandler,
-    private prepareOrderBill: PrepareOrderBill,
     private router: Router,
     private orderPrintService: OrderPrintService,
     private modal: TDSModalService,
@@ -137,7 +133,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
     private modalService: TDSModalService,
-    private chatomniMessageFacade: ChatomniMessageFacade) {
+    private chatomniMessageFacade: ChatomniMessageFacade,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
@@ -356,16 +353,17 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           delete res['@odata.context'];
+          
+          const keyCreateBill = this.saleOnline_OrderService._keyCreateBillOrder;
+          let item = JSON.stringify(res);
 
-          res = res as SaleOnlineOrderGetDetailsDto;
-          let data = this.prepareOrderBill.prepareModel(res)
+          localStorage.setItem(keyCreateBill, item);
 
-          this.orderBillHandler.orderBillEvent$.next(data);
           // TODO: lưu filter cache trước khi load trang add bill
-          this.storeFilterCache();
+          const key =  this.saleOnline_OrderService._keyCacheFilter;
+          this.cacheApi.setItem(key,{filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
 
-          this.router.navigateByUrl(`bill/create`);
-          this.cdRef.detectChanges();
+          this.router.navigateByUrl(`bill/create?isorder=true`);
         },
         error: (err) => {
           this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
@@ -442,11 +440,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isHidden(columnName: string) {
     return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
-  }
-
-  storeFilterCache(){
-    const key =  this.saleOnline_OrderService._keyCacheFilter;
-    this.cacheApi.setItem(key,{filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
   }
 
   removeFilterCache(){
@@ -816,10 +809,5 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (event.key === 'F10') {
       this.onCreateQuicklyFS();
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
