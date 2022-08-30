@@ -103,6 +103,7 @@ export interface OrderLine {
     Note?: any;
     Product: Product;
     ProductUOM: ProductUOM;
+    Discount_Fixed?:number;
 }
 
 export interface Partner {
