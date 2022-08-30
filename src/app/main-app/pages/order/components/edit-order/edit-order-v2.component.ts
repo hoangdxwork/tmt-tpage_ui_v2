@@ -30,7 +30,6 @@ import { CommentsOfOrderDTO } from 'src/app/main-app/dto/saleonlineorder/comment
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { formatNumber } from '@angular/common';
-import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { InitSaleDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
@@ -134,7 +133,6 @@ export class EditOrderV2Component implements OnInit {
     private applicationUserService: ApplicationUserService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
-    private generalConfigsFacade: GeneralConfigsFacade,
     private deliveryCarrierService: DeliveryCarrierService,
     private prepareModelFeeV2Handler: PrepareModelFeeV2Handler,
     private selectShipServiceV2Handler: SelectShipServiceV2Handler,
@@ -267,14 +265,12 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.saleConfig = res;
-      },
-      error: (error: any) => {
-        this.message.error(error?.error?.message || 'Không thể tải cấu hình bán hàng');
+          this.saleConfig = {...res};
       }
-    });
+    })
   }
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
