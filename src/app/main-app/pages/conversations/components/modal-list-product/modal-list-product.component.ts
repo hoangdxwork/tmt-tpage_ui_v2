@@ -16,6 +16,7 @@ import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.
 import { TDSTableComponent, TDSTableQueryParams } from 'tds-ui/table';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef } from 'tds-ui/modal';
+import { ProductService } from '@app/services/product.service';
 
 @Component({
   selector: 'app-modal-list-product',
@@ -47,6 +48,7 @@ export class ModalListProductComponent implements OnInit {
   }
 
   inventories!: TDSSafeAny;
+  companyCurrents!: CompanyCurrentDTO;
   priceListItems: any;
   currentOption: any = { text: 'Tất cả', value: 'all'};
   currentType: any =  { text: "Bán chạy", value: "PosSalesCount" };
@@ -56,13 +58,13 @@ export class ModalListProductComponent implements OnInit {
     private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService,
-    private commonService: CommonService,
+    private productService: ProductService,
     private conversationOrderFacade: ConversationOrderFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService) {
   }
 
   ngOnInit(): void {
-    this.loadConfig();
+    this.loadCurrentCompany();
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -70,16 +72,32 @@ export class ModalListProductComponent implements OnInit {
     this.loadData();
   }
 
-  loadConfig() {
+  loadCurrentCompany() {
     this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
-      .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
-        mergeMap((warehouseId: any) => {
-          return this.commonService.getInventoryWarehouseId(warehouseId)
-        }))
-        .subscribe((obj: CompanyCurrentDTO) => {
-            this.inventories = obj;
-      });
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res;
+
+        if(this.companyCurrents?.DefaultWarehouseId) {
+          this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+        }
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
+    });
+  }
+
+  loadInventoryWarehouseId(warehouseId: number) {
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.inventories = res;
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+      }
+    });
   }
 
   validateData(){

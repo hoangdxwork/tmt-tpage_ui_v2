@@ -77,15 +77,6 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  getInventoryWarehouseId(warehouseId: number): Observable<TDSSafeAny> {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v1.0/product/getinventory?WarehouseId=${warehouseId}`,
-      method: CoreApiMethodType.get,
-    }
-
-    return this.apiService.getData<TDSSafeAny>(api, null);
-  }
-
   getPriceListItems(id: number): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getpricelistitems?id=${id}`,

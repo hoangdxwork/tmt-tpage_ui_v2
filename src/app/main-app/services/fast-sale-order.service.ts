@@ -1,6 +1,6 @@
 import { GenerateMessageDTO } from './../dto/conversation/inner.dto';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
@@ -28,6 +28,9 @@ export class FastSaleOrderService extends BaseSevice {
   public readonly _keyCacheDHSDetails = '_keycache_dhs_details';
   public readonly _keyCacheCopyInvoice = '_keycache_copy_invoice';
 
+  fastsaleorderDefault!: FastSaleOrder_DefaultDTOV2;
+  public readonly fsDefaultSubject$ = new ReplaySubject<FastSaleOrder_DefaultDTOV2>();
+
   public onLoadPage$: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private apiService: TCommonService) {
@@ -43,7 +46,25 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api, null);
   }
 
-  defaultGetV2(data: any): Observable<any> {
+  getDefaultV2() {
+    return this.fsDefaultSubject$.asObservable();
+  }
+
+  setDefaultV2(data: any) {
+    if(this.fastsaleorderDefault) {
+        this.fsDefaultSubject$.next(this.fastsaleorderDefault);
+    } else {
+        this.apiDefaultGetV2(data).subscribe({
+          next: (res: any) => {
+              delete data['@odata.context'];
+              this.fastsaleorderDefault = {...res};
+              this.fsDefaultSubject$.next(res);
+          }
+        })
+    }
+  }
+
+  apiDefaultGetV2(data: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder`,
       method: CoreApiMethodType.post,
