@@ -186,7 +186,8 @@ const SERVICES = [
     TDSEmptyModule
   ],
   exports: [
-    EditOrderV2Component
+    EditOrderV2Component,
+    FilterOptionsComponent
   ],
   providers: [
     ...SERVICES,
