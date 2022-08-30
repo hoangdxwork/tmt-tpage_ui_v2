@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from "@angular/core";
+import { EventEmitter, Injectable, OnDestroy } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
@@ -14,6 +14,12 @@ export class ChatomniObjectFacade extends BaseSevice  {
   baseRestApi: string = "rest/v2.0/chatomni";
 
   dataSource: { [id: string] : ChatomniObjectsDto } = {}; //this.objectsDataSource[id]
+
+  // Thay đổi bài objects load danh sách đơn hàng
+  public onChangeOrderListFromObjects$ = new EventEmitter<any>();
+
+  // Tạo đơn hàng từ commment, lại danh sách đơn hàng
+  public loadOrderListFromCreateOrderComment$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

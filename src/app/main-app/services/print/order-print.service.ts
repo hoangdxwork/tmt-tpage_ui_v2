@@ -261,7 +261,6 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
       }
     }
 
-
     let lsProduct: any = [];
     let product = "";
 
@@ -320,7 +319,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           }
       },
       error: (error) => {
-          this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
+          this.notificationService.warning('Lỗi in đơn hàng', 'Máy in chưa kết nối',  { placement: 'bottomLeft'});
       }
     });
   }

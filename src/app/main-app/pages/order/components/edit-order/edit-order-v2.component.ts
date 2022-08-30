@@ -226,6 +226,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
@@ -525,9 +526,7 @@ export class EditOrderV2Component implements OnInit {
       this.updateShipmentDetailsAship();
 
       fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-      if(!fs_model.CompanyId || fs_model.CompanyId == 0) {
-          fs_model.CompanyId = this.companyCurrents?.CompanyId;
-      }
+      fs_model.CompanyId = this.companyCurrents?.CompanyId;
 
       if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
           this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');

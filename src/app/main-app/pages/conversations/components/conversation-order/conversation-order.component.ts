@@ -63,6 +63,7 @@ import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/pr
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 
 @Component({
   selector: 'conversation-order',
@@ -138,6 +139,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private conversationOrderFacade: ConversationOrderFacade,
     private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
     private applicationUserService: ApplicationUserService,
+    private chatomniObjectFacade: ChatomniObjectFacade,
     private modal: TDSModalService,
     private generalConfigsFacade: GeneralConfigsFacade,
     private deliveryCarrierService: DeliveryCarrierService,
@@ -359,6 +361,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
@@ -616,35 +619,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               this.message.success('Cập nhật đơn hàng thành công');
           }
+
+          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
+          this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+
+          // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
+          this.loadConversationInfo();
+
           this.isLoading = false;
-          this.loadPartner(comment);
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       }
-    })
-  }
-
-  loadPartner(item: ChatomniDataItemDto) {
-      let psid = item.UserId || item.Data?.from?.id;
-      if (!psid) {
-          this.message.error("Không truy vấn được thông tin người dùng!");
-          return;
-      }
-
-      let teamId = this.quickOrderModel.CRMTeamId || this.team.Id;
-      // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-      this.chatomniConversationService.getInfo(teamId, psid).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ChatomniConversationInfoDto) => {
-          if(res) {
-              // Thông tin khách hàng
-              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
-          }
-        },
-        error: (error: any) => {
-            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-        }
     })
   }
 
@@ -689,13 +676,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               this.createFastSaleOrder(fs_model, type);
+
           } else {
               this.isLoading = false;
               this.message.success('Cập nhật đơn hàng thành công');
-          }
 
-          // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
-          this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
+              // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
+              this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+
+              // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
+              this.loadConversationInfo();
+          }
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -739,17 +730,22 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               this.createFastSaleOrder(fs_model, type);
+
           } else {
               this.isLoading = false;
-              if(model.Id && model.Code) {
+
+              if (model.Id || model.Code) {
                   this.message.success('Cập nhật đơn hàng thành công');
               } else {
                   this.message.success('Tạo đơn hàng thành công');
               }
-          }
 
-          // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
-          this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
+              // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
+              this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
+
+              // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
+              this.loadConversationInfo();
+          }
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -763,10 +759,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: any) => {
 
           // TODO: Tạo hóa đơn thành công
-          if(res?.Success) {
-              if(res.Message) {
-                  this.notification.warning('Tạo hóa đơn thành công', res.Message);
-              }
+          if(res?.Success && res.Message) {
+              this.notification.warning('Tạo hóa đơn thành công', res.Message);
           }
 
           // TODO: trường hợp gửi vận đơn lỗi
@@ -782,16 +776,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.printOrder(type, res);
           }
 
-         // gọi load lại thông tin khách hàng + đơn hàng
-         let csid = this.quickOrderModel.Facebook_ASUserId as string;
-         this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$)).subscribe({
-             next: (info: ChatomniConversationInfoDto) => {
-                 this.isLoading = false;
-                 this.conversationOrderFacade.loadGetInfoConversation$.emit(info);
-             }, error: (error: any) => {
-                 this.isLoading = false;
-             }
-         })
+          this.loadConversationInfo();
+
+          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng nếu là từ comment bài viết
+          this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
 
           this.shipServices = [];
           this.shipExtraServices = [];
@@ -817,6 +805,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
+  loadConversationInfo() {
+    // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
+    let csid = this.quickOrderModel.Facebook_ASUserId as string;
+    let teamId = this.team?.Id || this.quickOrderModel.CRMTeamId;
+    if(!csid) {
+        this.message.error("Không truy vấn được thông tin người dùng!");
+        return;
+    }
+
+    this.chatomniConversationService.getInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (info: ChatomniConversationInfoDto) => {
+        if(info && info.Conversation) {
+          this.conversationOrderFacade.loadGetInfoConversation$.emit(info);
+        }
+      }
+    })
+  }
+
   prepareCsFastSaleOrder(model: any): any {
     //TODO: gán model cho tạo hóa đơn
     let fs_model = {} as FastSaleOrder_DefaultDTOV2;
@@ -826,10 +832,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.updateShipmentDetailsAship();
 
     fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-    if(!fs_model.CompanyId || fs_model.CompanyId == 0) {
-      fs_model.CompanyId = this.companyCurrents?.CompanyId;
-    }
-
+    fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = model.FormAction;
 
     return {...fs_model};
