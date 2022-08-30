@@ -396,6 +396,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   copyInvoice() {
+    let key = this.fastSaleOrderService._keyCacheCopyInvoice;
+    localStorage.setItem(key, JSON.stringify(this.dataModel));
     this.onCopy();
   }
 
