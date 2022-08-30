@@ -11,7 +11,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
-import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -141,7 +140,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private applicationUserService: ApplicationUserService,
     private chatomniObjectFacade: ChatomniObjectFacade,
     private modal: TDSModalService,
-    private generalConfigsFacade: GeneralConfigsFacade,
     private deliveryCarrierService: DeliveryCarrierService,
     private auth: TAuthService,
     private partnerService: PartnerService,
@@ -441,36 +439,30 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   loadUserLogged() {
-    this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.setUserLogged();
+    this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.userInit =  {...res};
-      },
-      error: (error: any) => {
-        this.message.error(`${error?.error?.message}`);
+          this.userInit = res || {};
       }
     })
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.saleConfig = {...res};
-      },
-      error: (error: any) => {
-          this.message.error(`${error?.error?.message}`);
       }
-    });
+    })
   }
 
   loadSaleOnineSettingConfig() {
-    this.generalConfigsFacade.getSaleOnineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.setSaleOnlineSettingConfig();
+    this.sharedService.getSaleOnlineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-            this.saleOnlineSettings = {...res};
-      },
-      error: (error: any) => {
-          this.message.error(`${error?.error?.message}`);
+          this.saleOnlineSettings = {...res};
       }
-    });
+    })
   }
 
   loadCarrier() {

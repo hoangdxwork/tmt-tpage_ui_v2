@@ -53,10 +53,10 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
     private message: TDSMessageService,
     private auth: TAuthService) {
     this.createForm();
+    this.loadUserLogged();
   }
 
   ngOnInit(): void {
-    this.loadUserLogged();
     this.loadUserRole();
     this.loadUser(this.userId);
   }
@@ -74,11 +74,12 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   }
 
   loadUserLogged() {
-    this.auth.getUserInit().subscribe(res => {
-        if(res) {
-            this.userInit = res || {};
-        }
-    });
+    this.sharedService.setUserLogged();
+    this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.userInit = res || {};
+      }
+    })
   }
 
   loadUser(userId: string) {

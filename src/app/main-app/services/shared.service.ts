@@ -1,10 +1,9 @@
-import { GreetingDTO } from 'src/app/main-app/dto/configs/page-config.dto';
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
-import { InitSaleDTO, SaleOnlineSettingDTO } from '../dto/setting/setting-sale-online.dto';
+import { InitSaleDTO } from '../dto/setting/setting-sale-online.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
 
@@ -23,17 +22,26 @@ export class SharedService extends BaseSevice {
   table: string = "";
   baseRestApi: string = "";
 
-  public userLogged: any;
   public settings!: AppSettings;
+
+  public userLogged: any;
+  private readonly _userLoggedSubject$ = new ReplaySubject<any>();
 
   currentCompany!: CompanyCurrentDTO;
   private readonly _currentCompany$ = new ReplaySubject<any>();
+
+  getsaleconfig: any;
+  private readonly _getsaleconfigSubject$ = new ReplaySubject<any>();
+
+  saleOnlineSettings: any;
+  private readonly _saleOnlineSettingsSubject$ = new ReplaySubject<any>();
 
   _keyCacheConfigs = "_keycache_configs";
 
   constructor(private apiService: TCommonService,
     private auth: TAuthService) {
     super(apiService);
+
     this.settings = <AppSettings>{
         appName: "T-Page",
         appVersion: "1.06.1.7"
@@ -44,27 +52,76 @@ export class SharedService extends BaseSevice {
   }
 
   loadUserLogged() {
-    this.auth.getUserInit().subscribe(res => {
-      this.userLogged = res;
-    });
+   this.setUserLogged();
   }
 
-  getConfigs(): Observable<InitSaleDTO> {
+  getUserLogged() {
+    return  this._userLoggedSubject$.asObservable();
+  }
+
+  setUserLogged() {
+    if(this.userLogged) {
+        this._userLoggedSubject$.next(this.userLogged);
+    } else {
+        this.auth.getUserInit().subscribe({
+          next: (res: any) => {
+              this.userLogged = res;
+              this._userLoggedSubject$.next(res);
+          }
+        });
+    }
+  }
+
+  getSaleConfig() {
+    return this._getsaleconfigSubject$.asObservable();
+  }
+
+  setSaleConfig() {
+    if(this.getsaleconfig) {
+        this._getsaleconfigSubject$.next(this.getsaleconfig);
+    } else {
+        this.apiSaleConfig().subscribe({
+            next: (res: any) => {
+                this.getsaleconfig = res;
+                this._getsaleconfigSubject$.next(res);
+            }
+        })
+    }
+  }
+
+  apiSaleConfig(): Observable<any> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/api/common/getsaleconfig`,
         method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getCacheData<InitSaleDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
-  getSaleOnineSettingConfig(): Observable<any> {
+  getSaleOnlineSettingConfig() {
+    return this._saleOnlineSettingsSubject$.asObservable();
+  }
+
+  setSaleOnlineSettingConfig() {
+    if(this.saleOnlineSettings) {
+        this._saleOnlineSettingsSubject$.next(this.saleOnlineSettings);
+    } else {
+        this.apiSaleOnlineSettingConfig().subscribe({
+            next: (res: any) => {
+                this.saleOnlineSettings = res;
+                this._saleOnlineSettingsSubject$.next(res);
+            }
+        })
+    }
+  }
+
+  apiSaleOnlineSettingConfig(): Observable<any> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/odata/SaleOnlineSetting`,
         method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getCacheData<InitSaleDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getCurrentCompany() {
@@ -90,7 +147,7 @@ export class SharedService extends BaseSevice {
         method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getCacheData<CompanyCurrentDTO>(api, null);
+    return this.apiService.getData<CompanyCurrentDTO>(api, null);
   }
 
 

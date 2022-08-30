@@ -76,7 +76,7 @@ export class AddBillComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
   dataModel!: FastSaleOrder_DefaultDTOV2;
-  roleConfigs!: SaleSettingsDTO;
+  saleConfig!: SaleSettingsDTO;
   companyCurrents!: CompanyCurrentDTO;
   lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
   lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
@@ -194,7 +194,7 @@ export class AddBillComponent implements OnInit {
       this.loadDefault();
     }
 
-    this.loadConfig();
+    this.loadSaleConfig();
     this.lstCarriers = this.loadCarrier();
     this.lstPaymentJournals = this.loadPaymentJournals();
     this.lstPrices = this.loadListPrice();
@@ -404,15 +404,13 @@ export class AddBillComponent implements OnInit {
     this._street = result?._street || this._street;
   }
 
-  loadConfig() {
-    this.sharedService.getConfigs().pipe(takeUntil(this.destroy$)).subscribe({
-       next: (res: InitSaleDTO) => {
-          this.roleConfigs = res.SaleSetting;
-        },
-        error: (error: any) => {
-          this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
-        }
-    });
+  loadSaleConfig() {
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.saleConfig = {...res};
+      }
+    })
   }
 
   loadCurrentCompany() {
@@ -1034,7 +1032,7 @@ export class AddBillComponent implements OnInit {
 
     //TODO ràng buộc COD
     let COD = model.AmountTotal + model.DeliveryPrice - model.AmountDeposit;
-    let exist = this.roleConfigs?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
+    let exist = this.saleConfig?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
 
     if (exist) {
       this.modal.warning({
@@ -1227,7 +1225,7 @@ export class AddBillComponent implements OnInit {
   }
 
   calcTotal() {
-    let cacl = this.calculateBillFee.fs_calcTotal(this._form, this.roleConfigs);
+    let cacl = this.calculateBillFee.fs_calcTotal(this._form, this.saleConfig);
 
     this.totalQtyLines = cacl.totalAmountLines;
     this.totalAmountLines = cacl.totalAmountLines;
