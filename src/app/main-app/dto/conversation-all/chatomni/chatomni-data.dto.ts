@@ -126,9 +126,10 @@ export interface ChatomniDataItemDto {
   CreatedById?: string | any;
   CreatedBy?: ChatomniInnerUser | any;
   CreatedTime: Date | any;
-  ChannelCreatedTime: Date;
+  ChannelCreatedTime: Date | any;
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
+  IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
 }
 
 export interface PagingTimestamp {

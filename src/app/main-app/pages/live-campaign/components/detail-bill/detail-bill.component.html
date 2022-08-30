@@ -1,8 +1,11 @@
 <div class="w-full h-full bg-white rounded-xl pb-2">
   <div class="flex flex-col h-full">
-    <div class="p-4 font-semibold text-xl flex gap-x-2 justify-end">
-      <tds-form-field>
-        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keyup.enter)="onSearch($event)"/>
+    <div class="p-4 font-semibold text-xl flex gap-x-3 justify-end">
+      <tds-form-field class="w-[320px]">
+        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" 
+          [(ngModel)]="filterObj.searchText"
+          [tdsInputDebounce]="750"
+          (inputKeyup)="onSearch($event)" />
         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
       <bill-filter-options (onLoadOption)="onLoadOption($event)"></bill-filter-options>
