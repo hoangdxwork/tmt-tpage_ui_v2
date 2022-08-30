@@ -237,7 +237,7 @@ export class PartnerService extends BaseSevice {
         url: `${this._BASE_URL}/${this.baseRestApi}/getfacebookdictionarybytimestamp?teamId=${teamId}&timestamp=${timestamp}`,
         method: CoreApiMethodType.get,
     }
-    return this.apiService.getCacheData<PartnerTimeStampDto>(api, null);
+    return this.apiService.getData<PartnerTimeStampDto>(api, null);
   }
 
   getAllByMDBPartnerId(partnerId: any): Observable<TDSSafeAny> {

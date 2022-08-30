@@ -1,7 +1,7 @@
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
-import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { takeUntil } from 'rxjs/operators';
@@ -30,7 +30,6 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenueDto, Conversation_LastBillDto, GroupBy_ConversationBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
-import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -76,6 +75,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private cdRef: ChangeDetectorRef,
     private conversationDataFacade: ConversationDataFacade,
     private chatomniConversationService: ChatomniConversationService,
     private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
@@ -161,6 +161,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(conversationInfo && conversationInfo.Revenue) {
         this.revenue = {...conversationInfo.Revenue};
     }
+
+    this.cdRef.detectChanges();
   }
 
   loadPartnerFromTabOrder() {
@@ -415,7 +417,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
         // cập nhật dữ liệu khách hàng sang form conversation-order
         // Chỗ này chưa xử lý bên order
-        this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);debugger
+        this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
 
         this.isEditPartner = false;
         this.isLoading = false
