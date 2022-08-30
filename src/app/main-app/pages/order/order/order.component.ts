@@ -353,15 +353,15 @@ export class OrderComponent implements OnInit, AfterViewInit {
       this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           delete res['@odata.context'];
-          
+          res = res as SaleOnlineOrderGetDetailsDto;
+
           const keyCreateBill = this.saleOnline_OrderService._keyCreateBillOrder;
           let item = JSON.stringify(res);
-
           localStorage.setItem(keyCreateBill, item);
 
           // TODO: lưu filter cache trước khi load trang add bill
           const key =  this.saleOnline_OrderService._keyCacheFilter;
-          this.cacheApi.setItem(key,{filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
+          this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
 
           this.router.navigateByUrl(`bill/create?isorder=true`);
         },
