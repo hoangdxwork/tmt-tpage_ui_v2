@@ -291,7 +291,7 @@ export class AddBillComponent implements OnInit {
           this.updateForm(obs);
           this.isLoading = false;
         }
-      }, 
+      },
       error:(error) => {
         this.message.error(error?.error?.message || 'Load hóa đơn đã xảy ra lỗi!');
         this.isLoading = false;
@@ -372,10 +372,7 @@ export class AddBillComponent implements OnInit {
 
     this.shipExtraServices = this.getServiceHandler.getShipExtrasService(data) || [];
 
-    //TODO: nếu Team thiếu thông tin thì map dữ liệu
-    if (data.TeamId) {
-        this.loadTeamById(data.TeamId);
-    }
+    //TODO: nếu Team thiếu thông tin thì map dữ liệu-> check lại hàm này
 
     //TODO: cập nhật price of product theo bảng giá
     if (data.PriceListId) {
@@ -400,18 +397,6 @@ export class AddBillComponent implements OnInit {
     this.loadConfigProvider(this.dataModel);
     this._form.patchValue(this.dataModel);
     this.calcTotal();
-  }
-
-  loadTeamById(id: any) {
-    this.crmTeamService.getTeamById(id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (team: any) => {
-            this.dataModel.Team!.Name = team?.Name;
-            this.dataModel.Team!.Facebook_PageName = team?.Facebook_PageName;
-      },
-      error: (error: any) => {
-            this.message.error(error?.error?.message)
-      }
-    })
   }
 
   mappingDataAddress(data:TDSSafeAny){
