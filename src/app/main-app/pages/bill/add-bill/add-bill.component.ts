@@ -1190,7 +1190,7 @@ export class AddBillComponent implements OnInit {
                       let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
                       this.selectShipServiceV2(x);
 
-                      this.message.success(`ĝối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
                   }
                 }
             }
