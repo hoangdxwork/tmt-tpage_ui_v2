@@ -1,16 +1,17 @@
 import { Injectable } from "@angular/core";
+import { SaleOnlineOrderGetDetailsDto } from "@app/dto/order/so-orderlines.dto";
 import { FastSaleOrder_DefaultDTOV2 } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
 
 @Injectable()
 
-export class PrepareOrderBill {
+export class PrepareDetailsOrderLineHandler {
     
-    public prepareModel(data: any): FastSaleOrder_DefaultDTOV2 {
-        let model = {} as FastSaleOrder_DefaultDTOV2;
+    public prepareModel(dataModel: FastSaleOrder_DefaultDTOV2, data: SaleOnlineOrderGetDetailsDto): FastSaleOrder_DefaultDTOV2 {
+        let model = {...dataModel} as FastSaleOrder_DefaultDTOV2;
     
         model.SaleOnlineIds = data.ids;
         model.Reference = data.Reference;
-        model.Partner = data.partner;
+        model.Partner = data.partner as any;
         model.Comment = data.comment || '';
         model.FacebookId = data.facebookId;
         model.FacebookName = data.facebookName;
@@ -46,9 +47,9 @@ export class PrepareOrderBill {
             WeightTotal: 0
           });
         }
-    
+        
         model.OrderLines = [...orderLines];
-    
+        
         return {...model};
     }
 }
