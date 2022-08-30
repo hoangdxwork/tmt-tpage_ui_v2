@@ -80,7 +80,7 @@
                       </div>
                       <div class="col-span-3">
                         <tds-form-field *ngIf="lstUser">
-                          <tds-select valueField="Id" textField="Name" placeholder='Chờn người bán' [valuePrimitive]="false"
+                          <tds-select valueField="Id" textField="Name" placeholder='Chọn người bán' [valuePrimitive]="false"
                             [allowClear]="true" [ngModel]="quickOrderModel?.User" disabledField="isActive" [data]="lstUser"
                             [ngModelOptions]="{standalone: true}">
                           </tds-select>
@@ -279,7 +279,7 @@
                         </div>
                         <div class="col-span-2 flex gap-x-2" *ngIf="lstCarrier">
                           <tds-form-field class="w-full">
-                            <tds-select valueField="Id" textField="Name" placeholder='Chờn đối tác giao hàng'
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
                                 [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
                                 [data]="lstCarrier" [ngModel]="saleModel.Carrier"
                                 [ngModelOptions]="{standalone: true}" [allowClear]="false"
@@ -377,7 +377,7 @@
 
                                     <tds-form-field class="w-3/4">
                                         <tds-select valueField="ServiceId" textField="ServiceName"
-                                            (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chờn dịch vụ'
+                                            (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
                                             disabledField="isActive" [valuePrimitive]="false" [data]="shipServices"
                                             [ngModel]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}">
 
@@ -411,7 +411,7 @@
                                     <div class="col-span-3 flex flex-row items-center" *ngIf="!item.IsHidden">
                                         <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
                                         <tds-form-field class="w-3/4">
-                                            <tds-select valueField="Id" textField="Name" placeholder='Chờn option'
+                                            <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
                                                 [data]="item.ConfigsValue" [ngModel]="item.ConfigValue" [allowClear]="true"
                                                 [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
                                             </tds-select>
@@ -422,7 +422,7 @@
                                 <!-- <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
                                   <tds-label class="w-1/4">Phương thức thanh toán<span class="text-error-400">*</span></tds-label>
                                   <tds-form-field class="w-3/4">
-                                    <tds-select valueField="Id" textField="Name" placeholder='Chờn option'
+                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
                                       [valuePrimitive]="false" disabledField="isActive"
                                       [data]="[]" [allowClear]="false">
                                     </tds-select>
@@ -432,7 +432,7 @@
                                 <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
                                   <tds-label class="w-1/4">Phương thức lấy hàng<span class="text-error-400">*</span></tds-label>
                                   <tds-form-field class="w-3/4">
-                                    <tds-select valueField="Id" textField="Name" placeholder='Chờn option'
+                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
                                       [valuePrimitive]="false" disabledField="isActive"
                                       [data]="[]" [allowClear]="false">
                                     </tds-select>
@@ -442,7 +442,7 @@
                                 <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
                                   <tds-label class="w-1/4">Lưu ý giao hàng<span class="text-error-400">*</span></tds-label>
                                   <tds-form-field class="w-3/4">
-                                    <tds-select valueField="Id" textField="Name" placeholder='Chờn option'
+                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
                                       [valuePrimitive]="false" disabledField="isActive"
                                       [data]="[]" [allowClear]="false">
                                     </tds-select>

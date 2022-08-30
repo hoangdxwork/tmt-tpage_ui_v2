@@ -3,7 +3,7 @@ import { ConversationOrderDTO } from './../../../../dto/coversation-order/conver
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, takeUntil, map } from 'rxjs/operators';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -28,6 +28,11 @@ import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edi
   providers: [TDSDestroyService]
 })
 export class ConversationOrderListComponent implements OnInit {
+
+  isOpenCollapCheck: boolean = false;
+  indeterminate: boolean = false;
+  checked: boolean = false;
+  isCheckedAll: boolean = false;
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -72,6 +77,7 @@ export class ConversationOrderListComponent implements OnInit {
     private modalService: TDSModalService,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
+    private cdr: ChangeDetectorRef,
     private excelExportService: ExcelExportService) {
   }
 
@@ -242,6 +248,35 @@ export class ConversationOrderListComponent implements OnInit {
           break;
       }
     }
+  }
+
+  setCheck(){
+    this.isOpenCollapCheck = !this.isOpenCollapCheck;
+  }
+
+  onAllChecked(value: TDSSafeAny): void {
+    this.lstOfData.forEach(x => this.updateCheckedSet(x.Id, value.checked));
+
+    this.refreshCheckedStatus();
+    this.isCheckedAll = !this.isCheckedAll;
+  }
+
+  refreshCheckedStatus(): void {
+    this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
+  }
+
+  updateCheckedSet(id: string, checked: boolean): void {
+    if (checked) {
+        this.setOfCheckedId.add(id);
+    } else {
+        this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: string, checked: TDSSafeAny): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
   }
 
   checkValueEmpty() {

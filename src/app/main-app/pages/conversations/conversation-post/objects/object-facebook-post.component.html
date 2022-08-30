@@ -65,7 +65,7 @@
             <span *ngIf="(item.Data | facebookType)?.message!.length > 50">...</span>
         </span>
 
-        <div class="flex justify-between items-center">
+        <div class="flex gap-x-2 items-center">
             <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" >
                 {{item.ChannelCreatedTime | date:'dd/MM/yyyy'}}
             </span>

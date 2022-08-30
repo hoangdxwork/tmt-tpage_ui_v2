@@ -842,7 +842,7 @@ export class AddBillComponent implements OnInit {
   onLoadProductToOrderLines(event: DataPouchDBDTO): any {
 
     if (!this._form.controls['Partner'].value) {
-      return this.message.error('Vui lòng chờn khách hàng!');
+      return this.message.error('Vui lòng chọn khách hàng!');
     }
 
     let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
@@ -1065,10 +1065,10 @@ export class AddBillComponent implements OnInit {
     }
 
     if (!TDSHelperObject.hasValue(this._form.controls['Partner'].value) && !this._form.controls['PartnerId'].value) {
-        return this.message.error('Vui lòng chờn khách hàng!');
+        return this.message.error('Vui lòng chọn khách hàng!');
     }
     if (!TDSHelperArray.hasListValue(this._form.controls['OrderLines'].value)) {
-        return this.message.error('Vui lòng chờn ít nhất 1 sản phẩm!');
+        return this.message.error('Vui lòng chọn ít nhất 1 sản phẩm!');
     }
 
     //TODO ràng buộc COD
@@ -1202,10 +1202,10 @@ export class AddBillComponent implements OnInit {
 
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
     if (!this._form.controls['Carrier'].value ) {
-      return this.message.error('Vui lòng chờn  đối tác giao hàng');
+      return this.message.error('Vui lòng chọn  đối tác giao hàng');
     }
     if (!this._form.controls['ShipWeight'].value ) {
-      return this.message.error('Vui lòng chờn nhập khối lượng');
+      return this.message.error('Vui lòng chọn nhập khối lượng');
     }
 
     let model = this.prepareModelFeeV2();
