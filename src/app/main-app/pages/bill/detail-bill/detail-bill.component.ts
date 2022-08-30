@@ -16,6 +16,8 @@ import { THelperCacheService } from 'src/app/lib';
 import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.handler';
+import { SharedService } from '@app/services/shared.service';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 
 @Component({
   selector: 'app-detail-bill',
@@ -44,11 +46,13 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   isStatusStep: TDSStatusType = 'process';
   isButtonComfirm: boolean = false;
   teamId!:TDSSafeAny;
+  companyCurrents!: CompanyCurrentDTO;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
     private notificationService: TDSNotificationService,
     private cacheApi: THelperCacheService,
+    private sharedService: SharedService,
     private cRMTeamService: CRMTeamService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
@@ -63,10 +67,11 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
     this.loadData();
+    this.loadCurrentCompany();
   }
 
   directPage(route:string){
-    this.router.navigateByUrl(route);
+      this.router.navigateByUrl(route);
   }
 
   loadData(): void {
@@ -74,10 +79,22 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     this.loadPaymentInfoJson();
   }
 
+  loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res;
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
+    });
+  }
+
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         delete res['@odata.context'];
 
         if (res.DateCreated) {
@@ -117,30 +134,37 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
         //TODO: nếu Team thiếu thông tin thì map dữ liệu
         if(res.TeamId) {
-          this.loadTeamById(res.TeamId);
+            this.loadTeamById(res.TeamId);
         }
 
         this.isLoading = false;
-    }, error => {
+      },
+      error: (error: any) => {
         this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
+      }
     })
   }
 
   loadTeamById(id: any) {
-    this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
+    this.cRMTeamService.getTeamById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team: any) => {
         if(team) {
           this.dataModel.Team.Name = team.Name;
           this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
         }
+      }
     })
   }
 
   loadPaymentInfoJson() {
-    this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         this.payments = [...res.value];
-    }, error => {
-      this.message.error('Load thông tin thanh toán đã lỗi!');
+      },
+      error: (error: any) => {
+        this.message.error('Load thông tin thanh toán đã lỗi!');
+      }
     })
   }
 
@@ -192,7 +216,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     }
     if (TDSHelperObject.hasValue(obs)) {
       this.isProcessing = true;
-      obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      obs.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           that.printerService.printHtml(res);
           that.isProcessing = false;
       })
@@ -214,15 +238,16 @@ export class DetailBillComponent implements OnInit, OnDestroy{
           let model = { id: parseInt(that.id) }
           this.isLoading = true;
 
-          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe({
+            next: (res: TDSSafeAny) => {
               that.message.success('Xác nhận gửi vận đơn thành công!');
               that.loadData();
-
-          }, error => {
-
-            let err = error.error.message.split('Error:')?.[1];
-            that.message.error(err ?? 'Gửi vận đơn thất bại');
-            this.isLoading = false;
+            },
+            error: (error: any) => {
+              let err = error.error.message.split('Error:')?.[1];
+              that.message.error(err ?? 'Gửi vận đơn thất bại');
+              this.isLoading = false;
+            }
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -248,11 +273,14 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               ids: [parseInt(that.id)]
           }
 
-          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe(() => {
+          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe({
+            next: () => {
               that.message.success('Xác nhận hủy hóa đơn thành công!');
               this.loadData();
-          }, error => {
+            },
+            error: (error: any) => {
               that.message.error(error.error.message ?? 'Xác nhận hủy hóa đơn thất bại');
+            }
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -303,11 +331,14 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
           let model = { id: parseInt(that.id) };
 
-          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe({
+            next: (res: TDSSafeAny) => {
               that.message.success('Tạo trả hàng thành công!');
               this.loadData();
-          }, error => {
+            },
+            error: (error: any) => {
               that.message.error(error.error.message ?? 'Tạo trả hàng thất bại');
+            }
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -331,43 +362,46 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         let model = { ids: [parseInt(that.id)] };
         this.isLoading = true;
 
-        that.fastSaleOrderService.actionInvoiceOpen(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          if(res && res.Success) {
+        that.fastSaleOrderService.actionInvoiceOpen(model).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+            if(res && res.Success) {
 
-              that.message.success('Xác nhận bán hàng thành công!');
+                that.message.success('Xác nhận bán hàng thành công!');
 
-              let obs: TDSSafeAny;
-              switch (type) {
-                case "print":
-                  obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${[parseInt(that.id)]}`);
-                  break;
+                let obs: TDSSafeAny;
+                switch (type) {
+                  case "print":
+                    obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${[parseInt(that.id)]}`);
+                    break;
 
-                case "printship":
-                  if(this.dataModel.Carrier) {
-                    obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${that.id}` + "&carrierid=" + `${that.dataModel.Carrier.Id}`);
-                  } else {
-                    obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${that.id}`);
-                  }
-                  break;
-                default: break;
+                  case "printship":
+                    if(this.dataModel.Carrier) {
+                      obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${that.id}` + "&carrierid=" + `${that.dataModel.Carrier.Id}`);
+                    } else {
+                      obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${that.id}`);
+                    }
+                    break;
+                  default: break;
+                }
+
+                if (obs) {
+                  obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
+                      that.printerService.printHtml(res);
+                  })
+                }
+
+                this.loadData();
+                this.loadInventoryIds();
+
+                that.isProcessing = false;
+                this.isLoading = false;
               }
-
-              if (obs) {
-                obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
-                    that.printerService.printHtml(res);
-                })
-              }
-
-              this.loadData();
-              this.loadInventoryIds();
-
-              that.isProcessing = false;
+            },
+            error: (error: any) => {
+              this.isProcessing = false;
               this.isLoading = false;
-          }
-        }, error => {
-            this.isProcessing = false;
-            this.isLoading = false;
-            that.message.error(`${error.error.message || 'Xác nhận bán hàng thất bại'}`);
+              that.message.error(`${error.error.message || 'Xác nhận bán hàng thất bại'}`);
+            }
         })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -387,11 +421,11 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       });
     }
 
-    let warehouseId = this.dataModel.WarehouseId;
-    this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    let warehouseId = this.companyCurrents.DefaultWarehouseId;
+    this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
-    }, error => {
-        this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
+      }
     })
   }
 
