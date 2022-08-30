@@ -181,7 +181,6 @@ export interface Partner {
 }
 
 export interface SaleOnlineOrderGetDetailsDto {
-    '@odata.context'?: string;
     Id: number;
     facebookId: string;
     facebookName: string;
