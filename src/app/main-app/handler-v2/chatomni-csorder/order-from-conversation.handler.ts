@@ -3,8 +3,8 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto } from "@app/dto/co
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { ProductTemplateUOMLineService } from "@app/services/product-template-uom-line.service";
+import { SharedService } from "@app/services/shared.service";
 import { UserInitDTO } from "@core/dto";
-import { TAuthService } from "@core/services";
 import { TDSHelperArray, TDSHelperObject } from "tds-ui/shared/utility";
 
 @Injectable()
@@ -13,7 +13,7 @@ export class CsOrder_FromConversationHandler {
 
     private userInit!: UserInitDTO;
 
-    constructor(private auth: TAuthService,
+    constructor(private sharedService: SharedService,
       private productTemplateUOMLineService: ProductTemplateUOMLineService){
       this.loadUserLogged();
     }
@@ -182,10 +182,11 @@ export class CsOrder_FromConversationHandler {
     }
 
     loadUserLogged() {
-      this.auth.getUserInit().subscribe({
+      this.sharedService.setUserLogged();
+      this.sharedService.getUserLogged().subscribe({
         next: (res: any) => {
-            this.userInit = {...res};
+            this.userInit = res || {};
         }
-      });
+      })
     }
 }

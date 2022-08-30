@@ -30,7 +30,6 @@ import { CommentsOfOrderDTO } from 'src/app/main-app/dto/saleonlineorder/comment
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { formatNumber } from '@angular/common';
-import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { InitSaleDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
@@ -134,7 +133,6 @@ export class EditOrderV2Component implements OnInit {
     private applicationUserService: ApplicationUserService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
-    private generalConfigsFacade: GeneralConfigsFacade,
     private deliveryCarrierService: DeliveryCarrierService,
     private prepareModelFeeV2Handler: PrepareModelFeeV2Handler,
     private selectShipServiceV2Handler: SelectShipServiceV2Handler,
@@ -182,29 +180,34 @@ export class EditOrderV2Component implements OnInit {
     this.isLoading = true;
     let model = { Type: 'invoice' };
 
-    this.fastSaleOrderService.defaultGetV2({model: model}).pipe(takeUntil(this.destroy$)).subscribe(res => {
-        delete res["@odata.context"];
+    this.fastSaleOrderService.setDefaultV2({ model: model });
+    this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res) {
+            delete res['@odata.context'];
+            res.DateInvoice = new Date();
+            this.saleModel = res as FastSaleOrder_DefaultDTOV2;
 
-        res.DateInvoice = new Date();
-        this.saleModel = res;
+            // Khởi tạo saleModel mặc định
+            this.saleModel = Object.assign({
+                AmountTotal: 0,
+                CashOnDelivery: 0,
+                ShipWeight: 100,
+                DeliveryPrice: 0
+            }, this.saleModel);
 
-        // Khởi tạo saleModel mặc định
-        this.saleModel = Object.assign({
-            AmountTotal: 0,
-            CashOnDelivery: 0,
-            ShipWeight: 100,
-            DeliveryPrice: 0
-        }, this.saleModel);
+            this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
+            this.coDAmount();
+            this.calcTotal();
 
-        this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
-        this.coDAmount();
-        this.calcTotal();
-
-        this.loadConfigProvider(this.saleModel);
-        this.isLoading = false;
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+            this.loadConfigProvider(this.saleModel);
+          }
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+      }
     });
   }
 
@@ -226,6 +229,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
@@ -261,14 +265,12 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.saleConfig = res;
-      },
-      error: (error: any) => {
-        this.message.error(error?.error?.message || 'Không thể tải cấu hình bán hàng');
+          this.saleConfig = {...res};
       }
-    });
+    })
   }
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
@@ -525,9 +527,7 @@ export class EditOrderV2Component implements OnInit {
       this.updateShipmentDetailsAship();
 
       fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-      if(!fs_model.CompanyId || fs_model.CompanyId == 0) {
-          fs_model.CompanyId = this.companyCurrents?.CompanyId;
-      }
+      fs_model.CompanyId = this.companyCurrents?.CompanyId;
 
       if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
           this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
@@ -660,12 +660,13 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadInventoryWarehouseId(warehouseId: number) {
-    this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.lstInventory = res;
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstInventory = res;
       },
       error: (err: any) => {
-        this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
       }
     });
   }
