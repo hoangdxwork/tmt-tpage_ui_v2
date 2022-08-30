@@ -1,11 +1,9 @@
 import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
-import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { LiveCampaignService } from './../../../services/live-campaign.service';
 import { LiveCampaignModel } from '../../../dto/live-campaign/odata-live-campaign-model.dto';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
@@ -21,7 +19,6 @@ import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/c
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
-import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { PrepareUpdateFacebookByLiveCampaign } from '@app/handler-v2/conversation-post/prepare-facebook-post.handler';
 
@@ -32,7 +29,7 @@ import { PrepareUpdateFacebookByLiveCampaign } from '@app/handler-v2/conversatio
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestroy {
+export class ConversationPostViewComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
@@ -75,11 +72,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
 
   innerText: string = '';
   textSearchFilterComment: string = '';
-
-  facebookComment$!: Subscription;
-  facebookScanData$!: Subscription;
-  subSetCommentOrders$!: Subscription;
-  commentOrders: any = [];
+  commentOrders?: any = {};
 
   isLoading: boolean = false;
   isProcessing: boolean = false;
@@ -156,13 +149,14 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   loadData() {
     let postId = this.data.ObjectId;
     this.getCommentOrders(postId);
-    
+
     if(this.data && this.data.LiveCampaignId) {
-      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.data.LiveCampaignId) as any;
+      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f => f.Id == this.data.LiveCampaignId) as any;
     }
   }
 
   getCommentOrders(posId: string) {
+    this.isLoading = true;
     this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: OdataCommentOrderPostDTO) => {
         if(res && res.value) {
@@ -183,18 +177,18 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
                 }
             });
         }
-
-        this.cdRef.markForCheck();
-      }, error: (error: any) => {
-        this.message.error(`${error?.error?.message}`);
-        this.cdRef.markForCheck();
-        }
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      }
     });
-
   }
 
   onSetCommentOrders() {
-    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders$.subscribe({
+    this.saleOnline_OrderService.onSetCommentOrders$.pipe(takeUntil(this.destroy$)).subscribe({
       next : (res: any) => {
         let data = res?.data as QuickSaleOnlineOrderModel;
 
@@ -202,24 +196,28 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
             this.commentOrders[res.fbid] = [];
         }
 
-        if (this.commentOrders[res.fbid].filter((x: any) => x.id === data.Id).length === 0) {
-            this.commentOrders[res.fbid].push({
+        if (this.commentOrders[res.fbid]?.filter((x: any) => x.id === data.Id).length === 0) {
+            this.commentOrders[res.fbid]?.push({
                 session: data.Session,
                 index: data.SessionIndex,
                 code: data.SessionIndex > 0 ? `#${data.SessionIndex}. ${data.Code}` : data.Code,
                 id: data.Id
             });
         }
+
+        this.cdRef.detectChanges();
       }
     });
 
-    this.facebookPostService.onRemoveOrderComment$.subscribe({
+    this.facebookPostService.onRemoveOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         let keys = Object.keys(this.commentOrders);
 
         keys.forEach(key => {
             this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
         })
+
+        this.cdRef.detectChanges();
       }
     })
   }
@@ -249,18 +247,18 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     switch (event.value) {
       case "excel":
         this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}`, null, `comments-${this.data.ObjectId}`)
-          .pipe(finalize(() => this.isProcessing = false)).subscribe();
+          .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
         break;
 
       case "excel_phone":
         this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true&isFilterPhone=true`, null, `comments-${this.data.ObjectId}-with-distinct-phone`)
-          .pipe(finalize(() => this.isProcessing = false)).subscribe();
+          .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
         break;
 
       case "excel_phone_distinct":
         this.excelExportService.exportPost(
           `/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true`, null, `comments-${this.data.ObjectId}-with-phone`)
-          .pipe(finalize(() => this.isProcessing = false)).subscribe();
+          .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
         break;
 
       default:
@@ -310,7 +308,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
     // this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == data.LiveCampaignId) as any;
-    
+
     const modal = this.modalService.create({
       title: 'Chiến dịch',
       content: LiveCampaignPostComponent,
@@ -387,8 +385,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
 
   //tính năng đang chưa được dùng
   refetch() {
-    this.facebookPostService.refetch(this.data.ObjectId)
-      .subscribe((res: any) => {
+    this.facebookPostService.refetch(this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if (res.id === this.data.ObjectId) {
           // this.data.Data.count_comments = res.count_comments;
         }
@@ -435,9 +432,4 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     this.indeterminate = event;
   }
 
-  ngOnDestroy(): void {
-    this.subSetCommentOrders$?.unsubscribe();
-    this.facebookComment$?.unsubscribe();
-    this.facebookScanData$?.unsubscribe();
-  }
 }

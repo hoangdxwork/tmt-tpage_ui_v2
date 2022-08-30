@@ -15,7 +15,7 @@
                     <div *ngIf="item.Type == 91">
                         <tds-avatar [tdsSrc]="(item.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
                     </div>
-                    
+
 
                     <div class="ml-2 w-full h-full">
                         <div class="bg-white rounded-2xl px-4 py-3">
@@ -24,7 +24,7 @@
                                     <div *ngIf="item.Type == 12">
                                         <label class="font-semibold" *ngIf="item.Data && item.Data?.from">{{ item.Data.from.name }} </label>
                                     </div>
-                
+
                                     <div *ngIf="item.Type == 91">
                                         <label class="font-semibold" *ngIf="item.Data">{{ (item.Data | tShopDataMessage).Actor?.Name }} </label>
                                     </div>
@@ -209,7 +209,7 @@
                       </div>
 
                       <!-- Trả lời bình luận -->
-                      
+
                       <div *ngFor="let data of childsComment; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
                         <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3" @eventFadeState>
 
@@ -273,7 +273,7 @@
                                                 <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                                             </span>
                                         </button>
-        
+
                                         <div *ngIf="childs[data.Id]">
                                             <button type="button" *ngIf="isHiddenComment[data.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
                                                 <span class="flex items-center justify-center">
@@ -374,7 +374,7 @@
         Gửi tin nhắn Facebook
       </span>
     </ng-template>
-    <ng-container *tdsDrawerContent>   
+    <ng-container *tdsDrawerContent>
         <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
           <div *ngIf="currentConversation && team" class="w-full">
             <shared-tds-conversations class="flex w-full h-full" [team]="team"

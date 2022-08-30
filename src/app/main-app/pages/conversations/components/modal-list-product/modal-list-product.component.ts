@@ -71,6 +71,7 @@ export class ModalListProductComponent implements OnInit {
   }
 
   loadConfig() {
+    this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
       .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
         mergeMap((warehouseId: any) => {

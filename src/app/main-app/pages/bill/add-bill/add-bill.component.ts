@@ -206,8 +206,10 @@ export class AddBillComponent implements OnInit {
   }
 
   loadPartnerStatus() {
-    this.commonService.getPartnerStatus().subscribe(res => {
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         this.lstPartnerStatus = [...res];
+      }
     });
   }
 
@@ -218,7 +220,7 @@ export class AddBillComponent implements OnInit {
             status: `${item.value}_${item.text}`
         }
 
-        this.partnerService.updateStatus(partnerId, data).subscribe(res => {
+        this.partnerService.updateStatus(partnerId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
             this._form.controls['Partner'].value.StatusText = item.text;
         }, error => {
@@ -259,7 +261,7 @@ export class AddBillComponent implements OnInit {
         if(this.isCopy == "true"){
           // Trường hợp sao chép
           this.loadCopyData(res);
-        }else{
+        } else {
           let obs = res as FastSaleOrder_DefaultDTOV2;
 
           obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
@@ -408,6 +410,7 @@ export class AddBillComponent implements OnInit {
   }
 
   loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;

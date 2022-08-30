@@ -218,19 +218,20 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
         this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
     });
 
+    this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
-        .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
-          mergeMap((warehouseId: any) => {
-            return this.commonService.getInventoryWarehouseId(warehouseId)
-          }))
-        .subscribe({
-          next:(obj: CompanyCurrentDTO) => {
-            this.inventories = obj;
-          },
-          error:(err) => {
-            this.message.error(err?.error?.message || Message.Inventory.CanNotLoadInfo);
-          }
-        });
+      .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
+        mergeMap((warehouseId: any) => {
+          return this.commonService.getInventoryWarehouseId(warehouseId)
+        }))
+      .subscribe({
+        next:(obj: CompanyCurrentDTO) => {
+          this.inventories = obj;
+        },
+        error:(err) => {
+          this.message.error(err?.error?.message || Message.Inventory.CanNotLoadInfo);
+        }
+      });
   }
 
   showModalAddProduct() {
@@ -256,18 +257,18 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
 
             if(res[1]) {
               let cacheObject = res[1];
-  
+
               this.indexDbProductCount = cacheObject.cacheCount;
               this.indexDbVersion = cacheObject.cacheVersion;
               this.indexDbStorage = cacheObject.cacheDbStorage;
             }
-  
+
             // TODO: trường hợp thêm mới push sp vào orderLines
             if(productTmplItems?.Id) {
 
               let item = this.indexDbStorage.filter((x: DataPouchDBDTO) =>
               x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
-  
+
               if(!TDSHelperObject.hasValue(item)) {
                 this.message.error('Thêm mới sản phẩm danh sách xảy ra lỗi!');
                 return;

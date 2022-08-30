@@ -1,8 +1,8 @@
 import { GreetingDTO } from 'src/app/main-app/dto/configs/page-config.dto';
 import { Injectable, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
 import { InitSaleDTO, SaleOnlineSettingDTO } from '../dto/setting/setting-sale-online.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
@@ -25,6 +25,10 @@ export class SharedService extends BaseSevice {
 
   public userLogged: any;
   public settings!: AppSettings;
+
+  currentCompany!: CompanyCurrentDTO;
+  private readonly _currentCompany$ = new ReplaySubject<any>();
+
   _keyCacheConfigs = "_keycache_configs";
 
   constructor(private apiService: TCommonService,
@@ -63,7 +67,24 @@ export class SharedService extends BaseSevice {
     return this.apiService.getCacheData<InitSaleDTO>(api, null);
   }
 
-  getCurrentCompany(): Observable<TDSSafeAny> {
+  getCurrentCompany() {
+    return this._currentCompany$.asObservable();
+  }
+
+  setCurrentCompany() {
+    if(TDSHelperObject.hasValue(this.currentCompany)) {
+        this._currentCompany$.next(this.currentCompany);
+    } else {
+        this.apiCurrentCompany().subscribe({
+          next: (company: CompanyCurrentDTO) => {
+              this.currentCompany = {...company};
+              this._currentCompany$.next(company);
+          }
+        })
+    }
+  }
+
+  apiCurrentCompany(): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/api/common/getcompanycurrent`,
         method: CoreApiMethodType.get,
@@ -71,6 +92,7 @@ export class SharedService extends BaseSevice {
 
     return this.apiService.getCacheData<CompanyCurrentDTO>(api, null);
   }
+
 
   deleteKeyCacheConfigs() {
     this.apiService.removeCacheAPI(this._keyCacheConfigs);

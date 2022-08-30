@@ -112,6 +112,7 @@ export class TAuthService {
             this._userInitObs.next(undefined);
             this._roleObs.next([]);
             this.cacheService.clear().subscribe();
+            localStorage.clear();
         });
     }
 

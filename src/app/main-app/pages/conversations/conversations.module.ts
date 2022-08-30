@@ -44,7 +44,6 @@ import { ModalDetailBillComponent } from './components/modal-detail-bill/modal-d
 import { ModalConfirmShippingAddressComponent } from './components/modal-confirm-shipping-address/modal-confirm-shipping-address.component';
 import { CRMMatchingService } from '../../services/crm-matching.service';
 import { FacebookPostService } from '../../services/facebook-post.service';
-import { ConversationPostFacade } from '../../services/facades/conversation-post.facade';
 import { FacebookCommentService } from '../../services/facebook-comment.service';
 import { SharedService } from '../../services/shared.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
@@ -148,7 +147,6 @@ const SERVICES = [
   ConversationDataFacade,
   ConversationEventFacade,
   ConversationOrderFacade,
-  ConversationPostFacade,
   ActivityDataFacade,
   ConversationFacebookState,
   ConversationService,

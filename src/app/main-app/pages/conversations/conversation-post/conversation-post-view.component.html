@@ -305,7 +305,7 @@
         <!-- Danh sách bình luận -->
         <div class="flex w-full flex-auto overflow-hidden">
             <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
-                <div  class="flex w-full h-full overflow-hidden">
+                <div  class="flex w-full h-full overflow-hidden" *ngIf="data && !isLoading">
                     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
                         <!-- <post-comment-all
                             [postId]="data.ObjectId"
@@ -315,7 +315,7 @@
                             [commentOrders]="commentOrders">
                         </post-comment-all> -->
 
-                        <comment-filter-all  [data]="data" [team]="team" [commentOrders]="commentOrders">
+                        <comment-filter-all [data]="data" [team]="team" [commentOrders]="commentOrders">
                         </comment-filter-all>
                     </div>
 

@@ -14,7 +14,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
@@ -27,6 +26,7 @@ import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDt
 import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 
 @Component({
   selector: 'app-conversation-post',
@@ -81,7 +81,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   partners$!: Observable<any>;
 
   constructor(private facebookPostService: FacebookPostService,
-    private conversationPostFacade: ConversationPostFacade,
     private facebookGraphService: FacebookGraphService,
     private activityMatchingService: ActivityMatchingService,
     private liveCampaignService: LiveCampaignService,
@@ -93,6 +92,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private chatomniCommentFacade: ChatomniCommentFacade,
+    private chatomniObjectFacade: ChatomniObjectFacade,
     private chatomniObjectService: ChatomniObjectService,
     private destroy$: TDSDestroyService,
     private objectFacebookPostEvent: ObjectFacebookPostEvent) {
@@ -370,7 +370,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
 
         this.changeTab(0, true);
-        this.conversationPostFacade.onPostChanged$.emit(item);
+        this.chatomniObjectFacade.onChangeOrderListFromObjects$.emit(item);
 
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.ObjectId}`;
