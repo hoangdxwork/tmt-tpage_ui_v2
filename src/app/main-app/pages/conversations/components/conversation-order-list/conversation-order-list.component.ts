@@ -3,8 +3,7 @@ import { ConversationOrderDTO } from './../../../../dto/coversation-order/conver
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, takeUntil, map } from 'rxjs/operators';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
+import { ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -12,22 +11,27 @@ import { SortEnum } from 'src/app/lib';
 import { Message } from 'src/app/lib/consts/message.const';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
-import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
-import { ODataSaleOnline_OrderModel } from '@app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
+import { FacebookPostService } from '@app/services/facebook-post.service';
+import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 
 @Component({
   selector: 'conversation-order-list',
   templateUrl: './conversation-order-list.component.html',
   providers: [TDSDestroyService]
 })
+
 export class ConversationOrderListComponent implements OnInit {
+
+  isOpenCollapCheck: boolean = false;
+  indeterminate: boolean = false;
+  checked: boolean = false;
+  isCheckedAll: boolean = false;
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -58,57 +62,61 @@ export class ConversationOrderListComponent implements OnInit {
   isLoadingLine: boolean = false;
   lstOfData: Array<ConversationOrderDTO> = [];
   tabNavs: Array<TDSSafeAny> = [];
-
   lstLine: any[] = [];
-
   count: number = 0;
 
-  constructor(private conversationPostFacade: ConversationPostFacade,
+  constructor(
+    private chatomniObjectFacade: ChatomniObjectFacade,
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
     private orderPrintService: OrderPrintService,
     private conversationPostEvent: ConversationPostEvent,
     private modalService: TDSModalService,
+    private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
+    private cdr: ChangeDetectorRef,
     private excelExportService: ExcelExportService) {
   }
 
   ngOnInit(): void {
-    this.loadPost();
+    this.eventEmitter();
   }
 
-  loadPost() {
-    this.conversationPostFacade.onPostChanged$.pipe(takeUntil(this.destroy$))
-      .pipe(map((item: ChatomniObjectsItemDto) => {
+  eventEmitter() {
+    // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
+    this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.loadSummaryStatus();
+        this.loadData(this.pageSize, this.pageIndex);
+      }
+    })
 
+    // TODO: load danh sách đơn hàng khi chọn 1 hội thoại objects
+    this.chatomniObjectFacade.onChangeOrderListFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (item: ChatomniObjectsItemDto) => {
         this.currentPost = item;
 
         this.loadSummaryStatus();
-        this.loadData(this.pageSize,this.pageIndex);
-
-        return item;
-      }))
-      .subscribe();
+        this.loadData(this.pageSize, this.pageIndex);
+      }
+    });
   }
 
   loadData(pageSize: number, pageIndex: number) {
     let filters = this.odataSaleOnline_OrderService.buildFilterByPost(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe({
+    this.getViewData(params).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: TDSSafeAny) => {
-        this.count = res['@odata.count'] as number;
-
-        this.lstOfData = [...res.value];
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = [...res.value];
       },
       error:(error) => {
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     });
-
-    this.loadSummaryStatus();
   }
 
   getViewData(params: string) {
@@ -121,17 +129,16 @@ export class ConversationOrderListComponent implements OnInit {
 
   getLine(id: string) {
     this.isLoadingLine = true;
-
-    this.saleOnline_OrderService.getLines(id)
-      .pipe(finalize(() => this.isLoadingLine = false))
-      .subscribe({
-        next:(res) => {
+    this.saleOnline_OrderService.getLines(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
           this.lstLine = res ? [...res.value] : [];
-        },
-        error:(err) => {
+          this.isLoadingLine = false;
+      },
+      error:(err) => {
+          this.isLoadingLine = false;
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-        }
-      });
+      }
+    });
   }
 
   refreshData() {
@@ -161,39 +168,42 @@ export class ConversationOrderListComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.saleOnline_OrderService.getSummaryStatus(model)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: Array<TDSSafeAny>) => {
-        let total = 0;
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: Array<TDSSafeAny>) => {
+          let total = 0;
+          this.tabNavs.length = 0;
 
-        this.tabNavs.length = 0;
+          res.map((x: TDSSafeAny) => {
+              total += x.Total;
+              switch(x.StatusText) {
+                case "Nháp" :
+                  this.tabNavs.push({ Name: "Nháp", Index: 2, Total: x.Total });
+                  break;
+                case "Đã xác nhận" :
+                  this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Total: x.Total });
+                  break;
+                case "Đơn hàng" :
+                  this.tabNavs.push({ Name: "Đơn hàng", Index: 3, Total: x.Total });
+                  break;
+                case "Đã thanh toán" :
+                  this.tabNavs.push({ Name: "Đã thanh toán", Index: 4, Total: x.Total });
+                  break;
+                case "Hủy" :
+                  this.tabNavs.push({ Name: "Hủy", Index: 5, Total: x.Total });
+                  break;
+              }
+          });
 
-        res.map((x: TDSSafeAny) => {
-          total += x.Total;
-          switch(x.StatusText) {
-            case "Nháp" :
-              this.tabNavs.push({ Name: "Nháp", Index: 2, Total: x.Total });
-              break;
-            case "Đã xác nhận" :
-              this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Total: x.Total });
-              break;
-            case "Đơn hàng" :
-              this.tabNavs.push({ Name: "Đơn hàng", Index: 3, Total: x.Total });
-              break;
-            case "Đã thanh toán" :
-              this.tabNavs.push({ Name: "Đã thanh toán", Index: 4, Total: x.Total });
-              break;
-            case "Hủy" :
-              this.tabNavs.push({ Name: "Hủy", Index: 5, Total: x.Total });
-              break;
-          }
-        });
+          this.conversationPostEvent.getOrderTotal$.emit(total);
 
-        this.conversationPostEvent.getOrderTotal$.emit(total);
-
-        this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
-        this.tabNavs.sort((a, b) => a.Index - b.Index);
-      });
+          this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
+          this.tabNavs.sort((a, b) => a.Index - b.Index);
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+      }
+    });
   }
 
   onSelectChange(Index: TDSSafeAny) {
@@ -242,6 +252,35 @@ export class ConversationOrderListComponent implements OnInit {
           break;
       }
     }
+  }
+
+  setCheck(){
+    this.isOpenCollapCheck = !this.isOpenCollapCheck;
+  }
+
+  onAllChecked(value: TDSSafeAny): void {
+    this.lstOfData.forEach(x => this.updateCheckedSet(x.Id, value.checked));
+
+    this.refreshCheckedStatus();
+    this.isCheckedAll = !this.isCheckedAll;
+  }
+
+  refreshCheckedStatus(): void {
+    this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
+  }
+
+  updateCheckedSet(id: string, checked: boolean): void {
+    if (checked) {
+        this.setOfCheckedId.add(id);
+    } else {
+        this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: string, checked: TDSSafeAny): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
   }
 
   checkValueEmpty() {
@@ -305,27 +344,27 @@ export class ConversationOrderListComponent implements OnInit {
   deleteIds(ids: string[]) {
     this.isLoadingActive = true;
 
-    this.odataSaleOnline_OrderService.removeIds({ids: ids})
-      .pipe(finalize(() => this.isLoadingActive = false))
-      .subscribe({
+    this.odataSaleOnline_OrderService.removeIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
-          this.message.success(Message.DeleteSuccess);
+            this.message.success(Message.DeleteSuccess);
 
-          this.loadData(this.pageSize, this.pageIndex);
+            // TODO: đẩy dữ liệu sang conversation-post-view xóa code đơn hàng comments
+            this.facebookPostService.onRemoveOrderComment$.emit(ids);
+
+            this.loadData(this.pageSize, this.pageIndex);
+            this.isLoadingActive = false;
         },
         error:(error) => {
-          this.message.error(error?.error?.message || JSON.stringify(error));
+            this.isLoadingActive = false;
+            this.message.error(error?.error?.message || JSON.stringify(error));
         }
       });
   }
 
   onEdit(item: any, event: TDSSafeAny) {
-    event.preventDefault();
-    event.stopImmediatePropagation();
     if(item && item.Id) {
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-
               if(res && res.Id) {
                 delete res['@odata.context'];
 
@@ -354,5 +393,8 @@ export class ConversationOrderListComponent implements OnInit {
           }
       });
     }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
   }
 }

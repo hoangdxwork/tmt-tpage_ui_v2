@@ -71,8 +71,7 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     }
 
     return this.apiService.getData<FacebookPostDTO>(api, null)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((res: FacebookPostDTO) => {
+      .pipe(takeUntil(this.destroy$)).pipe(map((res: FacebookPostDTO) => {
         if(res && TDSHelperArray.isArray(res.Items)){
            res.Items.map((x: any) => {
             if (x.attachments && x.attachments.data) {

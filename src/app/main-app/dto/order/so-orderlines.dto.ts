@@ -103,6 +103,7 @@ export interface OrderLine {
     Note?: any;
     Product: Product;
     ProductUOM: ProductUOM;
+    Discount_Fixed?:number;
 }
 
 export interface Partner {
@@ -180,7 +181,6 @@ export interface Partner {
 }
 
 export interface SaleOnlineOrderGetDetailsDto {
-    '@odata.context'?: string;
     Id: number;
     facebookId: string;
     facebookName: string;

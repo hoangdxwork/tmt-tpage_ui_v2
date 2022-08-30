@@ -199,41 +199,8 @@ export class DrawerDetailBillComponent implements OnInit {
   }
 
   copyInvoice() {
-    let model = this.dataModel;
-
-    model.TrackingRef = "";
-    model.TrackingRefSort = "";
-    model.State = 'draft';
-    model.ShipStatus = 'none';
-    model.ShipPaymentStatus = '';
-    model.DateInvoice = new Date();
-    model.Comment = "";
-
-    //Truong hop nhieu cong ty copy tu cong ty khac
-    delete model["Id"];
-    delete model["Number"];
-    delete model["Warehouse"];
-    delete model["WarehouseId"];
-    delete model["PaymentJournal"];
-    delete model["PaymentJournalId"];
-    delete model["Account"];
-    delete model["AccountId"];
-    delete model["Company"];
-    delete model["CompanyId"];
-    delete model["Journal"];
-    delete model["JournalId"];
-    delete model["PaymentInfo"];
-    delete model["User"];
-    delete model["UserId"];
-    delete model["UserName"];
-
-    model.OrderLines.map((item) => {
-      delete item["Account"];
-      delete item["AccountId"];
-    });
-
-    let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
-    this.cacheApi.setItem(keyCache, JSON.stringify(model));
+    let key = this.fastSaleOrderService._keyCacheCopyInvoice;
+    localStorage.setItem(key, JSON.stringify(this.dataModel));
     this.onCopy();
   }
 

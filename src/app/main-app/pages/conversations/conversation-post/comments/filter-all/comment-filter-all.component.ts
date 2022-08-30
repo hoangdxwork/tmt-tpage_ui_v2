@@ -4,7 +4,7 @@ import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade
 import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
 import { CRMTeamType } from './../../../../../dto/team/chatomni-channel.dto';
 import { ChatomniStatus } from './../../../../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
+import { ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
@@ -21,7 +21,7 @@ import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-mess
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { TDSModalService } from 'tds-ui/modal';
@@ -139,25 +139,32 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       this.loadData();
       this.loadPartnersByTimestamp();
     }
+
+    if(changes['commentOrders'] && !changes['commentOrders'].firstChange) {
+      this.commentOrders = {...changes['commentOrders'].currentValue};
+    }
   }
 
   loadData() {
     this.isLoading = true;
-      this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
+    this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
 
-      if(this.dataSource$) {
-        this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+    if(this.dataSource$) {
+      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniDataDto) => {
             this.dataSource = {...res};
             this.sortChildComment(this.dataSource.Items);
 
             this.isLoading = false;
             this.cdRef.markForCheck();
-        }, error => {
+        },
+        error: (error: any) => {
             this.isLoading = false;
             this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
             this.cdRef.markForCheck();
-        })
-      }
+        }
+      })
+    }
   }
 
   isPrivateReply(item: ChatomniDataItemDto){
@@ -273,7 +280,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
                 item.Data.is_reply = false;
                 this.isReplyingComment = false;
-                this.message.success('Gửi tin thành công'); 
+                this.message.success('Gửi tin thành công');
 
                 this.cdRef.detectChanges();
               },
@@ -301,7 +308,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                 res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
                 res.name = this.team.Name;
                 let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res)
-                
+
                 this.message.success("Trả lời bình luận thành công.");
 
                 this.addReplyComment(item, model, data);
@@ -316,7 +323,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                 item.Data.is_reply = false;
                 this.isReplyingComment = false;
                 this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
-              
+
               }
             })
       }
@@ -353,7 +360,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     if(data){
       data.ParentId = model.parent_id;
       data.ObjectId = item.ObjectId
-      
+
     }
 
     this.childsComment = [...this.childsComment, ...[data]];
@@ -473,7 +480,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             model = [...model, ...[x]]
           }
       })
-      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime)) 
+      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime))
 
       this.childsComment = [...model];
   }
