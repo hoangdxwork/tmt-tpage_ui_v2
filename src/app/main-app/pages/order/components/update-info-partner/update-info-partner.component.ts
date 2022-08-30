@@ -168,6 +168,7 @@ export class UpdateInfoPartnerComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         _street: this.innerText,
+        isSelectAddress: true
       }
     });
 

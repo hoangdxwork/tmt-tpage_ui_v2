@@ -256,6 +256,8 @@ export class EditOrderV2Component implements OnInit {
     this._districts = x._districts || null;
     this._wards = x._wards || null;
     this._street = x._street;
+
+    this.innerText = this._street;
   }
 
   loadCarrier() {
@@ -751,11 +753,6 @@ export class EditOrderV2Component implements OnInit {
     else return '#e5e7eb';
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
     if(!this.saleModel.Carrier) {
         return this.message.error('Vui lòng chọn  đối tác giao hàng');
@@ -898,6 +895,7 @@ export class EditOrderV2Component implements OnInit {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         _street: this.innerText,
+        isSelectAddress: true
       }
     });
 

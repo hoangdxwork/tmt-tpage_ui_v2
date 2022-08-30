@@ -304,6 +304,7 @@ export class CreateBillDefaultComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         _street: this.innerText,
+        isSelectAddress: true
       }
     });
 

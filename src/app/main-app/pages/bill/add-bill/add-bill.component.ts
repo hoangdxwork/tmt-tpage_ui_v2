@@ -258,8 +258,11 @@ export class AddBillComponent implements OnInit {
   loadBill(id: number) {
     this.isLoading = true;
 
-    this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
         delete res['@odata.context'];
+          // TODO: cập nhật company id
+          res.CompanyId = this.companyCurrents.CompanyId;
 
         if(this.path == 'copy'){
           // Trường hợp sao chép
@@ -271,15 +274,14 @@ export class AddBillComponent implements OnInit {
           obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
           obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
 
-          // TODO: cập nhật company id
-          obs.CompanyId = this.companyCurrents.CompanyId;
-
           this.updateForm(obs);
           this.isLoading = false;
         }
-    }, error => {
+      }, 
+      error:(error) => {
         this.message.error(error?.error?.message || 'Load hóa đơn đã xảy ra lỗi!');
         this.isLoading = false;
+      }
     })
   }
 
@@ -1297,6 +1299,7 @@ export class AddBillComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         _street: this.innerText,
+        isSelectAddress: true
       }
     });
 

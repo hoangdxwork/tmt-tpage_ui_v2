@@ -539,6 +539,7 @@ export class TDSConversationItemComponent implements OnInit {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           _street: value,
+          isSelectAddress: true
         }
       });
 

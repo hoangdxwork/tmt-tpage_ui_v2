@@ -1,3 +1,5 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { Observable } from 'rxjs';
 import { Component, OnDestroy, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -19,10 +21,11 @@ import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.
 
 @Component({
   selector: 'app-detail-bill',
-  templateUrl: './detail-bill.component.html'
+  templateUrl: './detail-bill.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class DetailBillComponent implements OnInit, OnDestroy{
+export class DetailBillComponent implements OnInit{
 
   id: any;
   dataModel!: BillDetailDTO;
@@ -35,8 +38,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   indexStep: number = 1;
   popoverVisible: boolean = false;
   isProcessing: boolean = false;
-
-  private destroy$ = new Subject<void>();
 
   statusStringBill: string = 'Nháp';
   isCancelPayment: boolean = false;
@@ -57,7 +58,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     private printerService: PrinterService,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
-    private cdRef: ChangeDetectorRef) {
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
@@ -77,70 +78,78 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   loadBill() {
     this.isLoading = true;
     this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        delete res['@odata.context'];
-
-        if (res.DateCreated) {
-          res.DateCreated = new Date(res.DateCreated);
-        }
-        if (res.DateInvoice) {
-          res.DateInvoice = new Date(res.DateInvoice);
-        }
-        if (res.DateOrderRed) {
-          res.DateOrderRed = new Date(res.DateOrderRed);
-        }
-        if (res.ReceiverDate) {
-          res.ReceiverDate = new Date(res.ReceiverDate);
-        }
-
-        this.dataModel = res;
-
-        for (var item of this.dataModel.OrderLines) {
-          this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
-          this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
-        }
-
-        switch(res.State) {
-          case 'draft':
-              this.indexStep = 1;
+      .subscribe({
+        next:(res: any) => {
+          delete res['@odata.context'];
+  
+          if (res.DateCreated) {
+            res.DateCreated = new Date(res.DateCreated);
+          }
+          if (res.DateInvoice) {
+            res.DateInvoice = new Date(res.DateInvoice);
+          }
+          if (res.DateOrderRed) {
+            res.DateOrderRed = new Date(res.DateOrderRed);
+          }
+          if (res.ReceiverDate) {
+            res.ReceiverDate = new Date(res.ReceiverDate);
+          }
+  
+          this.dataModel = res;
+  
+          for (var item of this.dataModel.OrderLines) {
+            this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
+            this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
+          }
+  
+          switch(res.State) {
+            case 'draft':
+                this.indexStep = 1;
+                break;
+            case 'open':
+               this.indexStep = 2;
+               break;
+            case 'paid':
+                 this.indexStep = 3;
+                break;
+            case 'cancel':
+              this.indexStep = 4;
               break;
-          case 'open':
-             this.indexStep = 2;
-             break;
-          case 'paid':
-               this.indexStep = 3;
-              break;
-          case 'cancel':
-            this.indexStep = 4;
-            break;
+          }
+  
+          //TODO: nếu Team thiếu thông tin thì map dữ liệu
+          if(res.TeamId) {
+            this.loadTeamById(res.TeamId);
+          }
+  
+          this.isLoading = false;
+        }, 
+        error:(error) => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
         }
-
-        //TODO: nếu Team thiếu thông tin thì map dữ liệu
-        if(res.TeamId) {
-          this.loadTeamById(res.TeamId);
-        }
-
-        this.isLoading = false;
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
-    })
+      })
   }
 
   loadTeamById(id: any) {
-    this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
+    this.cRMTeamService.getTeamById(id).subscribe({
+      next:(team: any) => {
         if(team) {
           this.dataModel.Team.Name = team.Name;
           this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
         }
+      }
     })
   }
 
   loadPaymentInfoJson() {
-    this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
         this.payments = [...res.value];
-    }, error => {
-      this.message.error('Load thông tin thanh toán đã lỗi!');
+      }, 
+      error:(error) => {
+        this.message.error('Lỗi tải thông tin thanh toán');
+      }
     })
   }
 
@@ -163,7 +172,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       return
     }
 
-    let obs: TDSSafeAny;
+    let obs!: Observable<any>;
     switch (type) {
       case "bill80":
         obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=bill80`);
@@ -190,11 +199,14 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       default:
         break;
     }
-    if (TDSHelperObject.hasValue(obs)) {
+
+    if (obs) {
       this.isProcessing = true;
-      obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      obs.pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: TDSSafeAny) => {
           that.printerService.printHtml(res);
           that.isProcessing = false;
+        }
       })
     }
   }
@@ -214,15 +226,20 @@ export class DetailBillComponent implements OnInit, OnDestroy{
           let model = { id: parseInt(that.id) }
           this.isLoading = true;
 
-          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
               that.message.success('Xác nhận gửi vận đơn thành công!');
+              that.isProcessing = false;
+
               that.loadData();
-
-          }, error => {
-
-            let err = error.error.message.split('Error:')?.[1];
-            that.message.error(err ?? 'Gửi vận đơn thất bại');
-            this.isLoading = false;
+            }, 
+            error:(error) => {
+              that.isProcessing = false;
+              this.isLoading = false;
+              
+              let err = error.error.message.split('Error:')?.[1];
+              that.message.error(err ?? 'Gửi vận đơn thất bại');
+            }
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -232,7 +249,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   actionCancel() {
-    console.log(this.isProcessing)
     if (this.isProcessing) {
       return
     }
@@ -248,20 +264,23 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               ids: [parseInt(that.id)]
           }
 
-          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe(() => {
+          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$)).subscribe({
+            next:() => {
               that.message.success('Xác nhận hủy hóa đơn thành công!');
+              that.isProcessing = false;
+
               this.loadData();
-          }, error => {
-              that.message.error(error.error.message ?? 'Xác nhận hủy hóa đơn thất bại');
+            }, 
+            error:(error) => {
+                that.isProcessing = false;
+                that.message.error(error.error.message ?? 'Xác nhận hủy hóa đơn thất bại');
+            }
           })
       },
       onCancel: () => { that.isProcessing = false; },
       okText: "Xác nhận",
       cancelText: "Đóng",
     });
-  }
-
-  onClickButton(e: MouseEvent) {
   }
 
   paymentInfoJson() {
@@ -273,19 +292,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       componentParams: {
         orderId: this.dataModel.Id
       }
-    });
-  }
-
-  cancelBill() {
-    this.modalService.error({
-      title: 'Xác nhận hủy',
-      content: 'Bạn có muốn hủy hóa đơn, thông tin về đơn hàng này sẽ được xóa',
-      onOk: () => {
-        this.isStatusStep = 'error'
-      },
-      onCancel: () => { console.log('cancel') },
-      okText: "Hủy hóa đơn",
-      cancelText: "Đóng"
     });
   }
 
@@ -303,11 +309,17 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
           let model = { id: parseInt(that.id) };
 
-          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
               that.message.success('Tạo trả hàng thành công!');
+              that.isProcessing = false;
+              
               this.loadData();
-          }, error => {
-              that.message.error(error.error.message ?? 'Tạo trả hàng thất bại');
+            }, 
+            error:(error) => {
+                that.isProcessing = false;
+                that.message.error(error.error.message ?? 'Tạo trả hàng thất bại');
+            }
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -336,7 +348,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
               that.message.success('Xác nhận bán hàng thành công!');
 
-              let obs: TDSSafeAny;
+              let obs!: Observable<any>;
               switch (type) {
                 case "print":
                   obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${[parseInt(that.id)]}`);
@@ -353,8 +365,10 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               }
 
               if (obs) {
-                obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
+                obs.pipe(takeUntil(that.destroy$)).subscribe({
+                  next:(res: TDSSafeAny) => {
                     that.printerService.printHtml(res);
+                  }
                 })
               }
 
@@ -379,6 +393,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   loadInventoryIds(){
     let ids: any = [];
     let data = this.dataModel.OrderLines;
+    
     if(data) {
       data.forEach((x: any) => {
         if (!ids.includes(x.ProductId)) {
@@ -388,10 +403,13 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     }
 
     let warehouseId = this.dataModel.WarehouseId;
-    this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
-    }, error => {
-        this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
+    this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+          this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
+      }, 
+      error:(error) => {
+          this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
+      }
     })
   }
 
@@ -413,10 +431,5 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   onBack(){
     history.back();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
