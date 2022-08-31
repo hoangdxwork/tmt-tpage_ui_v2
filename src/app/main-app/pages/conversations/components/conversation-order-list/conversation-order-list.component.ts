@@ -408,4 +408,14 @@ export class ConversationOrderListComponent implements OnInit {
     event.preventDefault();
     event.stopImmediatePropagation();
   }
+
+  onClearFilter(){
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+
+    this.filterObj.searchText = '';
+
+    this.loadSummaryStatus();
+    this.loadData(this.pageSize, this.pageIndex);
+  }
 }

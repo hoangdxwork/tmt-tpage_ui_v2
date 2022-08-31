@@ -103,7 +103,7 @@
                     <div class="w-[304px]">
                         <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
-                                [ngModel]="currentLiveCampaign" [data]="lstOfLiveCampaign" disabledField="isActive"
+                                [(ngModel)]="currentLiveCampaign" [data]="lstOfLiveCampaign" disabledField="isActive"
                                 [allowClear]="true" [valuePrimitive]="false" [autoClose]="false" >
                                 <ng-template tds-option-tmp let-label='label' let-item="item" 
                                     let-value='value' let-selected="selected">
