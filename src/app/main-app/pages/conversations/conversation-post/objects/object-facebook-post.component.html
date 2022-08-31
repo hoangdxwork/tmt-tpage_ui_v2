@@ -103,9 +103,10 @@
                     <div class="w-[304px]">
                         <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
-                                [(ngModel)]="currentLiveCampaign" [data]="lstOfLiveCampaign" disabledField="isActive"
-                                [allowClear]="true" [valuePrimitive]="false" [autoClose]="false" >
-                                <ng-template tds-option-tmp let-label='label' let-item="item" 
+                                [ngModel]="currentLiveCampaign" [data]="lstOfLiveCampaign" disabledField="isActive"
+                                [allowClear]="true" [valuePrimitive]="false" [autoClose]="false">
+
+                                <ng-template tds-option-tmp let-label='label' let-item="item"
                                     let-value='value' let-selected="selected">
                                     <span class="flex flex-col gap-y-2 bg-neutral-3-50 w-full p-2 rounded" [ngClass]="{'text-primary-1':selected}">
                                         <span>Tên: <span class="font-semibold">{{item.Name}}</span></span>
@@ -203,9 +204,8 @@
 
                     <div class="w-full flex justify-between items-center">
                         <div *ngIf="postChild.live_campaign">
-                            <tds-tag size="sm"
-                                status="{{ currentPost?.ObjectId == postChild.fbid ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
-                                (click)="showModalLiveCampaign(postChild)">
+                            <tds-tag size="sm" (click)="showModalLiveCampaign(postChild)"
+                                status="{{ currentPost?.ObjectId == postChild.fbid ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}" >
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]"
                                     tds-tooltip [tooltipTitle]="postChild.live_campaign?.name">
                                     <span
@@ -216,8 +216,7 @@
                         </div>
 
                         <div *ngIf="!postChild.live_campaign">
-                            <tds-tag size="sm"
-                                status="{{ currentPost?.ObjectId == postChild.fbid ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
+                            <tds-tag size="sm"  status="{{ currentPost?.ObjectId == postChild.fbid ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                                     <span class="flex-auto truncate">Chọn chiến dịch</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>

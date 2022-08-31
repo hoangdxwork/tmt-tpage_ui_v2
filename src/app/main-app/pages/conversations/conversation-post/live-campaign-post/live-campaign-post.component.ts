@@ -7,33 +7,41 @@ import { AddLiveCampaignComponent } from './../../../../shared/add-live-campaign
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil, finalize } from 'rxjs';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { PrepareUpdateFacebookByLiveCampaign } from '@app/handler-v2/conversation-post/prepare-facebook-post.handler';
 import { ObjectFacebookPostEvent } from '@app/handler-v2/conversation-post/object-facebook-post.event';
+import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
+import { SortEnum } from '@core/enum';
 
 @Component({
   selector: 'live-campaign-post',
   templateUrl: './live-campaign-post.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
 export class LiveCampaignPostComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
-  @Input() lstOfData: Array<LiveCampaignModel> = [];
-  @Input() currentLiveCampaign!: LiveCampaignModel;
 
-  lstFilter!: Array<LiveCampaignModel>;
+  lstOfData: Array<LiveCampaignModel> = [];
+  currentLiveCampaign!: any;
+
   isLoading: boolean = false;
-  pageSize = 30;
+  pageSize = 20;
   pageIndex = 1;
+  sort: Array<SortDataRequestDTO>= [{
+    field: "DateCreated",
+    dir: SortEnum.desc,
+  }];
 
   constructor(private modalRef: TDSModalRef,
     private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef,
     private liveCampaignService: LiveCampaignService,
     private fbPostHandler: FaceBookPostItemHandler,
     private viewContainerRef: ViewContainerRef,
@@ -43,21 +51,34 @@ export class LiveCampaignPostComponent implements OnInit {
     private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
+    this.currentLiveCampaign = this.data?.LiveCampaign;
+    this.loadData();
+  }
+
+  loadData(text?: string) {
+    this.isLoading = true;
+    this.liveCampaignService.getAvailables(text).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            delete res['@odata.context'];
+            this.lstOfData = [...res.value];
+
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+        }
+    })
   }
 
   onSelectItem(item: LiveCampaignModel) {
       this.currentLiveCampaign = null as any;
-      this.currentLiveCampaign = item;
+      this.currentLiveCampaign = item as any;
   }
 
   onSearch(event: TDSSafeAny) {
-    let text = event.value;
-
-    if(TDSHelperString.hasValueString(text)){
-        this.lstFilter = this.lstOfData.filter(f=> f.Name?.toLowerCase().includes(text.toLowerCase()) || f.NameNoSign?.toLowerCase().includes(text.toLowerCase()));
-    } else {
-        this.lstFilter = this.lstOfData;
-    }
+      this.loadData(event.value);
   }
 
   showModelCreateLiveCampaign() {
@@ -65,14 +86,12 @@ export class LiveCampaignPostComponent implements OnInit {
       title: 'Tạo mới chiến dịch',
       content: AddLiveCampaignComponent,
       size: "xl",
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-      }
+      viewContainerRef: this.viewContainerRef
     });
 
     modal.componentInstance?.onSuccess.subscribe(res => {
       if(TDSHelperObject.hasValue(res)) {
-        this.lstOfData.push(res);
+          this.loadData();
       }
     })
   }

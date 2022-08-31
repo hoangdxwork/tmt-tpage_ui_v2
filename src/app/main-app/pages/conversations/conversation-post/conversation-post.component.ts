@@ -61,7 +61,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   postId: any;
   postChilds: TDSSafeAny[] = [];
   listBadge: any = {};
-  lstOfLiveCampaign: LiveCampaignModel[] = [];
 
   keyFilter: string = '';
   currentPost?: ChatomniObjectsItemDto;
@@ -75,6 +74,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   dataSource$?: Observable<ChatomniObjectsDto> ;
   lstObjects!: ChatomniObjectsItemDto[];
+  lstOfLiveCampaign: any[] = [];
 
   queryObj?: any = { type!: "", sort!: "", q!: "" };
   isRefreshing: boolean = false;
@@ -87,11 +87,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private message: TDSMessageService,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
-    private ngZone: NgZone,
     private cdRef: ChangeDetectorRef,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
-    private chatomniCommentFacade: ChatomniCommentFacade,
     private chatomniObjectFacade: ChatomniObjectFacade,
     private chatomniObjectService: ChatomniObjectService,
     private destroy$: TDSDestroyService,
@@ -100,8 +98,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   ngOnInit(): void {
-    //TODO: load danh sách chiến dịch
-    this.loadAvailableCampaign();
 
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -143,6 +139,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
     this.onChangeTabEvent();
     this.eventEmitter();
+    this.loadLiveCampaign();
   }
 
   eventEmitter() {
@@ -199,17 +196,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.codeOrder = res[0].code;
           this.isDisableTabOrder = false;
         }
-      }
-    })
-  }
-
-  loadAvailableCampaign(){
-    this.liveCampaignService.getAvailables().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.lstOfLiveCampaign = [...res.value];
-      },
-      error: (error: any) => {
-          this.message.error(error?.error?.message || 'Không thể tải dữ liệu chiến dịch');
       }
     })
   }
@@ -499,6 +485,19 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.isDisableTabPartner = isDisable;
     this.isDisableTabOrder = isDisable;
     this.codeOrder = null;
+  }
+
+  loadLiveCampaign(text?: string) {
+    this.liveCampaignService.getAvailables(text).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          this.lstOfLiveCampaign = [...res.value];
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+          this.cdRef.detectChanges();
+      }
+    })
   }
 
 }

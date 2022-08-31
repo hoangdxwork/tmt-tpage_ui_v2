@@ -27,7 +27,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  currentLiveCampaign!: LiveCampaignModel;
+  currentLiveCampaign!: any;
   indClickTag: string = '';
 
   constructor(private liveCampaignService: LiveCampaignService,
@@ -41,10 +41,9 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    if(this.item && this.item.LiveCampaignId) {
-      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.item.LiveCampaignId) as any;
+    if(this.item && this.item.LiveCampaign) {
+        this.currentLiveCampaign = this.item.LiveCampaign as any;
     }
-
     this.eventEmitter();
   }
 
@@ -60,14 +59,13 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     if(changes["item"] && !changes["item"].firstChange) {
         this.item = {...changes["item"].currentValue};
 
-        if(this.item && this.item.LiveCampaignId) {
-            this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.item.LiveCampaignId) as any;
+        if(this.item && this.item.LiveCampaign) {
+          this.currentLiveCampaign = this.item.LiveCampaign as any;
         }
     }
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
-    // this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == data.LiveCampaignId) as any;
 
     const modal = this.modal.create({
       title: 'Chiến dịch',
@@ -76,8 +74,6 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
       viewContainerRef: this.viewContainerRef,
       componentParams:{
           data: data,
-          currentLiveCampaign: this.currentLiveCampaign,
-          lstOfData: this.lstOfLiveCampaign
       }
     });
   }
@@ -89,6 +85,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   openTag(id: string) {
     this.indClickTag = id;
   }
+
 
   closeTag(): void {
     this.indClickTag = '';

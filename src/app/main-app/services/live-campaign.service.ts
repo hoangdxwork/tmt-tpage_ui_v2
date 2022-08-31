@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ODataLiveCampaignDTO } from "@app/dto/live-campaign/odata-live-campaign.dto";
 import { BehaviorSubject, Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { GetAllFacebookPostDTO } from "../dto/live-campaign/getall-facebook-post.dto";
 import { ODataLiveCampaignModelDTO } from "../dto/live-campaign/odata-live-campaign-model.dto";
 import { ODataModelDTO, ODataResponsesDTO } from "../dto/odata/odata.dto";
@@ -47,9 +47,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
   }
 
-  getAvailables(){
+  getAvailables(text?: string){
+    let url = "ODataService.GetAvailables?%24orderby=DateCreated+desc&%24top=30";
+    if(TDSHelperString.hasValueString(text)) {
+        url = `${url}&%24filter=((contains(Name%2C'${text}')+or+contains(Facebook_UserName%2C'${text}')))`;
+    }
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAvailables?$orderby=DateCreated%20desc&$top=${30}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/${url}`,
       method: CoreApiMethodType.get,
     }
 

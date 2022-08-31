@@ -83,7 +83,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     private resizeObserver: TDSResizeObserver,
     private cacheApi: THelperCacheService,
     private liveCampaignService: LiveCampaignService,
-    private cdref: ChangeDetectorRef) { 
+    private cdref: ChangeDetectorRef) {
   }
 
   mapDatePicker(){
@@ -91,7 +91,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
       this.filterObj.dateRange = {
         startDate: this.currentDateRanges.startDate,
         endDate: this.currentDateRanges.endDate
-      }  
+      }
     }
   }
 
