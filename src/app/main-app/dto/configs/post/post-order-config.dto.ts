@@ -23,6 +23,7 @@ export interface AutoOrderProductDTO {
     IsEnableOrderMultiple: boolean;
     AttributeValues: string[];
     DescriptionAttributeValues: string[];
+    Tags: string;
 }
 
 export interface TextContentToOrderDTO {

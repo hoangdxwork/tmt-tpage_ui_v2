@@ -28,7 +28,7 @@ import { CompareToday } from './compare-today.pipe';
 import { GetOrderStatusPipe } from './get-order-status.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
-import { CheckTagSelectedPipe } from './check-tag-selected.pipe';
+import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 
@@ -66,7 +66,8 @@ const cmp =[
   ConvertToCRMTagsListPipe,
   BBcodeConvertPipe,
   SortDataSourcePostPipe,
-  SortDataSourceMessagePipe
+  SortDataSourceMessagePipe,
+  CheckTagSelectedCommnetPipe
 ]
 
 @NgModule({

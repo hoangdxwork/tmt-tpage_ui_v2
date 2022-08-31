@@ -224,8 +224,8 @@
                   </div>
 
                   <div class="pt-4 flex flex-col gap-2 w-full" *ngIf="lstBill">
-                      <tds-collapse *ngFor="let item of lstBill[tab_Bill]?.Value; let index = index">
-                          <tds-collapse-panel [header]="headerBill" [active]="false" [disabled]=false>
+                      <tds-collapse *ngFor="let item of lstBill[tab_Bill]?.Value; let index = index" class="!rounded-xl">
+                          <tds-collapse-panel [header]="headerBill" [active]="false" [disabled]="false" class="!rounded-xl">
                               <ng-template #headerBill>
                                   <div class="grid grid-cols-3 gap-x-6 w-full" *ngIf="item">
 

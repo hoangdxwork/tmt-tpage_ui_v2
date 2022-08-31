@@ -1,3 +1,4 @@
+import { PartnerTimeStampItemTagsDto } from './../../dto/partner/partner-timestamp.dto';
 import { ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { Pipe, PipeTransform } from '@angular/core';
 
@@ -15,6 +16,24 @@ export class CheckTagSelectedPipe implements PipeTransform {
             return true
     }
     return false
+  }
+
+}
+
+@Pipe({
+  name: 'checkTagSelectedComment'
+})
+
+export class CheckTagSelectedCommnetPipe implements PipeTransform {
+
+  constructor(){}
+
+  transform(id: string, lstData: PartnerTimeStampItemTagsDto[]): any {
+    for( let item of lstData){
+        if(item.tpid == id)
+            return true;
+    }
+    return false;
   }
 
 }

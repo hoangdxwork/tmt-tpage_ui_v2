@@ -325,7 +325,7 @@ export class AddLiveCampaignComponent implements OnInit {
       })
     }
 
-    return result;
+    return [...result];
   }
 
   openTag(index: number) {
