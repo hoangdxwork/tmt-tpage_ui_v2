@@ -374,6 +374,7 @@ export class ConversationOrderListComponent implements OnInit {
 
   onEdit(item: any, event: TDSSafeAny) {
     if(item && item.Id) {
+      this.isLoading = true;
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
               if(res && res.Id) {
@@ -392,14 +393,18 @@ export class ConversationOrderListComponent implements OnInit {
                     }
                 })
 
-                modal.afterClose?.subscribe((obs: string) => {
+                modal.afterClose?.subscribe({
+                  next: (obs: string) => {
                     if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
                         this.loadData(this.pageSize, this.pageIndex);
                     }
+                  },
                 })
               }
+              this.isLoading = false;
           },
           error: (error: any) => {
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
       });
