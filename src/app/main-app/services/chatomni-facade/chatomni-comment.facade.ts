@@ -79,7 +79,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
   getPartnerTimeStamp(teamId: number) {
     let exist = this.partner![teamId] as any;
 
-    if(exist && exist.length > 0) {
+    if(exist && Object.keys(exist).length > 0) {
         this.partner$.next(exist);
     } else {
         this.loadPartnersByTimestamp(teamId);

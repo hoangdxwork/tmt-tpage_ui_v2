@@ -393,6 +393,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
               if(TDSHelperString.hasValueString(orderCode)){
                 this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
               }
+
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
 
               // Truyền sang coversation-post
@@ -439,9 +440,22 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
-    // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
-    this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
-    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
+    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
+    next: (res: ChatomniConversationInfoDto) => {
+      if(res) {
+          // Thông tin khách hàng
+          this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+
+          // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
+          this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+          this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+        }
+      },
+      error: (error: any) => {
+          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+      }
+    })
   }
 
   nextData(event: any) {
@@ -513,7 +527,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             this.currentConversation = { ...model };
 
             this.isOpenDrawer = true;
-
             this.cdRef.detectChanges();
         }
       },
@@ -554,10 +567,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     if (!TDSHelperArray.hasListValue(this.tags)) {
       this.crmTagService.dataActive$.subscribe({
         next: (res: any) => {
-        this.tags = res;
-        this.lstOfTag = this.tags;
-
-        this.searchTag();
+          this.tags = res;
+          this.lstOfTag = this.tags;
+          this.searchTag();
       }})
     }
   }
@@ -634,7 +646,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   removeTagOnView(tag: any) {
-  
+
   }
 
   ngOnDestroy(): void {
