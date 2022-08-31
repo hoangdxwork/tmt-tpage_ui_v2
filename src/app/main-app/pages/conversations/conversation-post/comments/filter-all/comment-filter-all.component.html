@@ -42,7 +42,7 @@
                             </div>
 
                             <!-- nội dung bình luận -->
-                            <div class="flex flex-row gap-x-3">
+                            <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
                                 <div #contentMessage [innerHTML]="item.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
                                 <!-- <button tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top" (click)="selectNote(i)"
                                     class="rounded-full h-5 w-5 border border-primary-1 text-primary-1 flex justify-center items-center">
