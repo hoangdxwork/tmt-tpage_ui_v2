@@ -167,6 +167,7 @@ export class PostOrderConfigComponent implements OnInit {
     return datas;
   }
 
+  
   checkInputMatch2(strs: string[]) {
     let datas = strs as any[];
     let pop!: string;
@@ -391,10 +392,11 @@ export class PostOrderConfigComponent implements OnInit {
     });
   }
 
+  //TODO: chỉ sử dụng khi thêm mẫu sản phẩm
   getContentString(productConfig: AutoOrderProductDTO) {
     let productName = productConfig.ProductName;
 
-    if(!productName){
+    if(!productName && productConfig.ProductNameGet){
       productName = productConfig.ProductNameGet.replace(`[${productConfig.ProductCode}]`,``) || '';
       productName = productConfig.ProductNameGet.trim();
     }
@@ -410,6 +412,10 @@ export class PostOrderConfigComponent implements OnInit {
 
   handleWord(text: string, code?: string): string[] {
     let result: string[] = [];
+    if(!TDSHelperString.hasValueString(text)){
+      return [];
+    }
+
     let word = StringHelperV2.removeSpecialCharacters(text);
     let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
     let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
@@ -456,7 +462,7 @@ export class PostOrderConfigComponent implements OnInit {
                 let product: AutoOrderProductDTO = {
                     ProductId: x.ProductId,
                     ProductCode: x.ProductCode,
-                    ProductName: x.ProductName,
+                    ProductName: x.ProductTemplateName || x.ProductName,
                     ProductNameGet: x.ProductNameGet,
                     Price: x.Price,
                     UOMId: x.UOMId,
