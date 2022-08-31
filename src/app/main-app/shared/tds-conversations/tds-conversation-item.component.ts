@@ -526,6 +526,7 @@ export class TDSConversationItemComponent implements OnInit {
 
   showModalSuggestAddress(index?: number){
     let value: string = '';
+
     if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText) {
       value = this.contentMessageChild._results[index].nativeElement.outerText;
     } else {
@@ -538,8 +539,7 @@ export class TDSConversationItemComponent implements OnInit {
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          _street: value,
-          isSelectAddress: true
+          _street: value
         }
       });
 

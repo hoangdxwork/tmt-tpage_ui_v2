@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrinterService } from './../../../../services/printer.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
@@ -5,14 +6,15 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSSafeAny, TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-create-bill-fast-error',
   templateUrl: './create-bill-fast-error.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
-export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
+export class CreateBillFastErrorComponent implements OnInit {
 
   @Input() lstOrder!: TDSSafeAny[];
   @Input() lstError!: TDSSafeAny[];
@@ -24,14 +26,13 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
   isPrint = false;
   isPrintShip = false;
 
-  private destroy$ = new Subject<void>();
-
   constructor(
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
     private fastSaleOrderService: FastSaleOrderService,
     private printerService: PrinterService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroy$: TDSDestroyService
   ) { }
 
   ngOnInit(): void {
@@ -131,7 +132,7 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
     });
 
     if (lstChecked.length == 0) {
-      this.message.error(Message.EmptyData);
+      this.message.error('Không có lỗi nào được chọn');
       return;
     }
 
@@ -147,34 +148,33 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
       model: lstInsertOrder,
     };
 
-    this.fastSaleOrderService.insertListOrderModel(model, true).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      if (res.Success) {
-        this.message.success(Message.Bill.InsertSuccess);
-      } else {
-        this.message.error(res.Error);
-      }
+    this.fastSaleOrderService.insertListOrderModel(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.isLoading = false;
 
-      this.isLoading = false;
-      
-      if (TDSHelperArray.hasListValue(res)) {
-        this.print(res);
-        this.isPrint = false;
-        this.isPrintShip = false;
-      }
+        if (res.Success) {
+          this.message.success(Message.Bill.InsertSuccess);
+        } else {
+          this.message.error(res.Error);
+        }
+        
+        if (TDSHelperArray.hasListValue(res)) {
+          this.print(res);
+          this.isPrint = false;
+          this.isPrintShip = false;
+        }
 
-      if (!TDSHelperArray.hasListValue(this.lstOrder)) {
-        this.modalRef.destroy(true);
+        if (!TDSHelperArray.hasListValue(this.lstOrder)) {
+          this.modalRef.destroy(true);
+        }
+
+        this.cdr.markForCheck();
+      }, 
+      error:(error) => {
+        this.message.error(error?.error?.message || Message.InsertFail);
+        this.isLoading = false;
+        this.cdr.markForCheck();
       }
-      this.cdr.markForCheck();
-    }, error => {
-      this.message.error(error?.error?.message || Message.InsertFail);
-      this.isLoading = false;
-      this.cdr.markForCheck();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

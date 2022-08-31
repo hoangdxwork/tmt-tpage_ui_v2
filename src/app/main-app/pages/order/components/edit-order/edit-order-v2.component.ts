@@ -89,9 +89,9 @@ export class EditOrderV2Component implements OnInit {
   visibleDiscountLines: boolean = false;
   visibleShipExtraMoney: boolean = false;
 
-  _cities!: SuggestCitiesDTO | null;
-  _districts!: SuggestDistrictsDTO | null;
-  _wards!: SuggestWardsDTO | null;
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
   _street!: string;
   innerText: string = '';
 
@@ -252,9 +252,9 @@ export class EditOrderV2Component implements OnInit {
   mappingAddress(data: QuickSaleOnlineOrderModel) {
     let x = {...this.csOrder_SuggestionHandler.mappingAddress(data)};
 
-    this._cities = x._cities || null;
-    this._districts = x._districts || null;
-    this._wards = x._wards || null;
+    this._cities = x._cities;
+    this._districts = x._districts;
+    this._wards = x._wards;
     this._street = x._street;
 
     this.innerText = this._street;
@@ -290,6 +290,23 @@ export class EditOrderV2Component implements OnInit {
 
   closeSearchProduct(){
     this.textSearchProduct = '';
+  }
+
+  onChangePhone(data: any){
+    this.quickOrderModel.Telephone = data;
+    this.quickOrderModel.PartnerPhone = data;
+  }
+
+  onChangeEmail(data: any){
+    this.quickOrderModel.Email = data;
+  }
+
+  onChangeUser(user:any){
+    this.quickOrderModel.User = user;
+  }
+
+  onChangeNote(note:any){
+    this.quickOrderModel.Note = note;
   }
 
   selectProduct(data: ProductDTOV2){
@@ -545,10 +562,6 @@ export class EditOrderV2Component implements OnInit {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
           return false;
       }
-
-      // if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
-      //   this.confirmShipService(this.saleModel.Carrier);
-      // }
     }
 
     this.isLoading = true;
@@ -894,6 +907,9 @@ export class EditOrderV2Component implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
+        _cities: this._cities,
+        _districts: this._districts,
+        _wards: this._wards,
         _street: this.innerText,
         isSelectAddress: true
       }
@@ -904,6 +920,7 @@ export class EditOrderV2Component implements OnInit {
         if(result){
           this.onLoadSuggestion(result);
           this.innerText = result.Address;
+          this.quickOrderModel.Address = result.Address;
         }
       }
     })

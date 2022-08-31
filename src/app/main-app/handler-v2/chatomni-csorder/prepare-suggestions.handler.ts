@@ -68,9 +68,9 @@ export class CsOrder_SuggestionHandler {
     }
 
     return {
-      _cities: this._cities || null,
-      _districts: this._districts || null,
-      _wards: this._wards || null,
+      _cities: this._cities,
+      _districts: this._districts,
+      _wards: this._wards,
       _street: this._street
     }
   }
