@@ -92,7 +92,7 @@ export class ConfigAddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
-    
+
     if (this.id) {
       this.loadData(this.id);
       this.loadStockChangeProductQty(this.id);
@@ -119,7 +119,7 @@ export class ConfigAddProductComponent implements OnInit {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
-        
+
         // TODO: lấy danh sách biến thể
         if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
           this.lstVariants = this.dataModel.ProductVariants;
@@ -155,7 +155,7 @@ export class ConfigAddProductComponent implements OnInit {
         ProductTmplId: Number(id)
       }
     };
-    
+
     this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.stockChangeProductList = res.value;
@@ -176,7 +176,7 @@ export class ConfigAddProductComponent implements OnInit {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
-        
+
         this.formatProperty(res);
       }, error => {
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -298,7 +298,7 @@ export class ConfigAddProductComponent implements OnInit {
     const modal = this.modalService.create({
       title: 'Cập nhật số lượng thực tế',
       content: UpdateInitInventoryComponent,
-      size: "lg",
+      size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         lstData: this.stockChangeProductList
@@ -314,7 +314,7 @@ export class ConfigAddProductComponent implements OnInit {
 
   showCreateAttributeModal() {
     let productName = this._form.controls.Name.value;
-    
+
     if (productName) {
       const modal = this.modalService.create({
         title: 'Quản lý thuộc tính',
@@ -331,7 +331,7 @@ export class ConfigAddProductComponent implements OnInit {
           this.lstAttributes = result;
           let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
-          
+
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
@@ -576,7 +576,7 @@ export class ConfigAddProductComponent implements OnInit {
 
   editProduct() {
     let model = this.prepareModel();
-    
+
     if (model.Name) {
       this.productTemplateService.updateProductTemplate(model)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))

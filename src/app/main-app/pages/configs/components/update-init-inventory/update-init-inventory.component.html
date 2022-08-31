@@ -1,39 +1,45 @@
 <tds-spin [spinning]="isLoading" [formGroup]="_form">
-    <div class="flex justify-end items-center gap-x-2 mb-4">
-        <tds-form-field>
-            <tds-select valueField="Id" textField="NameGet" placeholder='Chọn địa điểm' 
-                [(ngModel)]="locationAll"
-                [ngModelOptions]="{standalone: true}"
-                [allowClear]="true" 
-                [valuePrimitive]="false"
-                [data]="lstLocation">
-            </tds-select>
+    <div class="grid grid-cols-2 gap-20">
+      <div class="flex justify-between items-center">
+        <tds-label>Địa điểm</tds-label>
+        <tds-form-field class="w-[440px]">
+          <tds-select valueField="Id" textField="NameGet" placeholder='Chọn địa điểm'
+              [(ngModel)]="locationAll"
+              [ngModelOptions]="{standalone: true}"
+              [allowClear]="true"
+              [valuePrimitive]="false"
+              [data]="lstLocation">
+          </tds-select>
         </tds-form-field>
-
-        <tds-form-field>
-            <tds-input-number  
-                [(ngModel)]="initAll"
-                [ngModelOptions]="{standalone: true}"
-                [min]="0" 
-                [formatter]="numberWithCommas"
-                [parser]="parserComas"></tds-input-number>
-        </tds-form-field>
-
-        <button tds-button color="primary" size="md" (click)="updateForAll()">
-            <span class="flex items-center">
-                Áp dụng tất cả
-            </span>
+      </div>
+      <div class="flex items-center gap-x-2">
+        <tds-label class="mr-6 w-[60px]">Số lượng</tds-label>
+        <div class="flex-auto">
+          <tds-input-number class="w-full"
+          [(ngModel)]="initAll"
+          [ngModelOptions]="{standalone: true}"
+          [min]="0"
+          [formatter]="numberWithCommas"
+          [parser]="parserComas">
+      </tds-input-number>
+        </div>
+        <button tds-button class="ml-2 min-w-[120px] text-primary-1 bg-white hover:border-primary-1 focus:border-primary-1 focus:ring-2 focus:ring-primary-1/20" color="custom" size="md" (click)="updateForAll()">
+          <span class="flex items-center w-full truncate">
+              Áp dụng tất cả
+          </span>
         </button>
+      </div>
     </div>
 
-    <div class="w-full" *ngIf="lstData" formArrayName="datas">
-        <tds-table #rowSelectionTable [listData]="lstData" [frontPagination]="false" [showPagination]="false">
+    <div class="w-full max-h-[500px] h-[500px] border border-neutral-1-50 rounded-md mt-4" *ngIf="lstData" formArrayName="datas">
+        <div class="text-title-1 font-semibold px-4 py-2.5">Danh sách đơn hàng</div>
+        <tds-table #rowSelectionTable class="w-full h-full" [scroll]="{ y:'auto', x: 'auto' }" [listData]="lstData" [frontPagination]="false" [showPagination]="false">
             <thead>
                 <tr class="bg-neutral-3-50">
-                    <th class="text-body-2" width="6%">STT</th>
-                    <th class="text-body-2" width="24%">Sản phẩm</th>
-                    <th class="text-body-2" width="20%">Số lượng thực tế</th>
-                    <th class="text-body-2" width="40%">Địa điểm</th>
+                    <th class="text-body-2" width="7%">STT</th>
+                    <th class="text-body-2" width="31%">Sản phẩm</th>
+                    <th class="text-body-2" width="31%">Số lượng thực tế</th>
+                    <th class="text-body-2" width="31%">Địa điểm</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,8 +50,8 @@
                     </td>
                     <td class="text-body-2">
                         <tds-form-field class="w-full">
-                            <tds-input-number formControlName="NewQuantity" 
-                                [min]="0" 
+                            <tds-input-number formControlName="NewQuantity"
+                                [min]="0"
                                 [formatter]="numberWithCommas"
                                 [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         </tds-form-field>
@@ -53,9 +59,9 @@
                     <td class="text-body-2">
                         <tds-form-field class="w-full">
                             <tds-select valueField="Id" textField="NameGet" placeholder='Chọn địa điểm'
-                                formControlName="Location" 
-                                [valuePrimitive]="false" 
-                                [allowClear]="false" 
+                                formControlName="Location"
+                                [valuePrimitive]="false"
+                                [allowClear]="false"
                                 [data]="lstLocation"
                                 (selectChange)="updateLocationId($event, i)">
                             </tds-select>
@@ -68,6 +74,6 @@
 
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-        <button tds-button class=" w-[100px]" type="submit" color="primary" (click)="onSave()">Áp dụng</button>
+        <button tds-button class=" w-[88px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
     </div>
 </tds-spin>
