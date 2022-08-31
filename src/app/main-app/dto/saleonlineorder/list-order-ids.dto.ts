@@ -1,4 +1,4 @@
-export interface OrderLine {
+export interface OrderLineListOrderDTO {
   Id: number;
   OrderId: number;
   ProductId: number;
@@ -57,7 +57,7 @@ export interface Ward {
   districtCode?: any;
 }
 
-export interface Partner {
+export interface PartnerListOrderDTO {
   Id: number;
   Name: string;
   DisplayName: string;
@@ -158,7 +158,7 @@ export interface Extras {
   ServiceCustoms: any[];
 }
 
-export interface Carrier {
+export interface CarrierListOrderDTO {
   IsPrintCustom: boolean;
   Id: number;
   Name: string;
@@ -346,7 +346,7 @@ export interface GetListOrderIdsDTO {
   PaymentInfo: any[];
   Search?: any;
   Error?: any;
-  OrderLines: OrderLine[];
-  Partner: Partner;
-  Carrier: Carrier;
+  OrderLines: OrderLineListOrderDTO[];
+  Partner: PartnerListOrderDTO;
+  Carrier: CarrierListOrderDTO;
 }

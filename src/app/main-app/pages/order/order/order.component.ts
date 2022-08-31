@@ -317,7 +317,14 @@ export class OrderComponent implements OnInit, AfterViewInit {
                   lstData: [...res.value] as GetListOrderIdsDTO[]
                 }
             });
+
+            this.modal.afterAllClose.subscribe({
+              next:(x: any) =>{
+                this.loadData(this.pageSize,this.pageIndex);
+              }
+            });
           }
+          
           this.isLoading = false;
         },
         error: (error: any) => {

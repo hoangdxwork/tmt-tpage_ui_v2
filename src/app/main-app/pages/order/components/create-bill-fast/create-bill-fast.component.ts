@@ -1,26 +1,27 @@
+import { Observable } from 'rxjs';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { RegisterPayment } from './../../../../dto/fastsaleorder/register-payment';
 import { takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { Component, Input, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { CreateBillFastErrorComponent } from '../create-bill-fast-error/create-bill-fast-error.component';
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { Subject, finalize } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
-import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
+import { CarrierListOrderDTO, GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 
 @Component({
   selector: 'create-bill-fast',
-  templateUrl: './create-bill-fast.component.html'
+  templateUrl: './create-bill-fast.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class CreateBillFastComponent implements OnInit, OnDestroy {
+export class CreateBillFastComponent implements OnInit {
 
   @Input() ids: string[] = [];
   @Input() lstData!: GetListOrderIdsDTO[];
@@ -28,18 +29,18 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
 
   lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
-  lstCarriers: Array<DeliveryCarrierDTO> = [];
+  lstCarriers: Array<CarrierListOrderDTO> = [];
+  carrierForAll!: CarrierListOrderDTO;
   isLoading: boolean = false;
   isPrint: boolean = false;
   isPrintShip: boolean = false;
-
-  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
+    private destroy$: TDSDestroyService,
     private fastSaleOrderService: FastSaleOrderService,
     private carrierService: DeliveryCarrierService,
     private printerService: PrinterService) {
@@ -68,37 +69,41 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   };
 
   loadCarrier() {
-    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstCarriers = [...res.value];
-    },
-    err=>{
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
+    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.lstCarriers = [...res.value];
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      }
     });
   }
 
-  onChangeCarrier(event: TDSSafeAny, item: TDSSafeAny) {
-    item.CarrierId = event.Id;
-    item.CarrierName = event.Name;
-
-    if (event.Config_DefaultFee) {
-      item.DeliveryPrice = item.Config_DefaultFee;
-    }
-
-    if (event.Config_DefaultWeight) {
-      item.ShipWeight = item.Config_DefaultWeight;
+  onChangeCarrier(carrier: CarrierListOrderDTO, index: number) {console.log(carrier)
+    if(TDSHelperObject.hasValue(carrier)){
+      this.lstData[index].CarrierId = carrier.Id;
+      this.lstData[index].CarrierName = carrier.Name;
+      this.lstData[index].CarrierDeliveryType = carrier.DeliveryType;
+      this.lstData[index].DeliveryPrice = carrier.Config_DefaultFee || 0;
+      this.lstData[index].ShipWeight = carrier.Config_DefaultWeight || 100;
+    }else{
+      this.lstData[index].CarrierId = null as any;
+      this.lstData[index].CarrierName = null as any;
+      this.lstData[index].CarrierDeliveryType = null as any;
+      this.lstData[index].DeliveryPrice = 0;
+      this.lstData[index].ShipWeight = 100;
     }
   }
 
   createForm() {
     this._form = this.fb.group({
-      carrier: [null],
       amountTotal: [null],
       isPromotion: [false]
     });
   }
 
   checkEnabledPayment(data: GetListOrderIdsDTO){
-    return this.lstPayment.some((item)=> item.Id == data.Id);
+    return this.lstPayment.some((item) => item.Id == data.Id);
   }
 
   onCheckPayment(data: GetListOrderIdsDTO){
@@ -109,21 +114,24 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
         ids: [data.Id]//Id:0 -> bug
       }
 
-      this.fastSaleOrderService.getRegisterPayment(model)
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-        .subscribe(
-          (res)=>{
+      this.fastSaleOrderService.getRegisterPayment(model).pipe(takeUntil(this.destroy$)).subscribe({
+          next:(res) => {
             delete res['@odata.context'];
             this.lstPayment.push({
               Id: data.Id,
               Payment: res
-            })
-          }, err => {
-            this.message.error(err.error.message ?? 'Có lỗi xảy ra. Không thể thanh toán cho hóa đơn này.');
+            });
+
+            this.isLoading = false;
+          }, 
+          error:(err) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || 'Có lỗi xảy ra. Không thể thanh toán cho hóa đơn này');
           }
-      )
+        })
     } else {
-      this.lstPayment = this.lstPayment.filter((item)=> item.Id != data.Id);
+      this.isLoading = false;
+      this.lstPayment = this.lstPayment.filter((item) => item.Id != data.Id);
     }
   }
 
@@ -138,24 +146,23 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
       }
     });
 
-    modal.afterClose.subscribe(result => {
-      if(result){
-        this.modalRef.destroy(null);
+    modal.afterClose.subscribe({
+      next:result => {
+        if(result){
+          this.modalRef.destroy(true);
+        }
       }
     })
   }
 
   changeCarrierAll() {
-    let carrier = this._form.controls["carrier"].value;
-    if(carrier) {
-      this.lstData.forEach(item => {
-        item.Carrier = carrier;
-        item.CarrierId = carrier.Id;
-        item.CarrierName = carrier.Name;
-        item.DeliveryPrice = carrier.Config_DefaultFee || 0;
-        item.ShipWeight = carrier.Config_DefaultWeight || 100;
-      });
-    }
+    this.lstData.forEach(item => {
+      item.Carrier = this.carrierForAll;
+      item.CarrierId = this.carrierForAll.Id;
+      item.CarrierName = this.carrierForAll.Name;
+      item.DeliveryPrice = this.carrierForAll.Config_DefaultFee || 0;
+      item.ShipWeight = this.carrierForAll.Config_DefaultWeight || 100;
+    });
   }
 
   onRemoveLine(index: number) {
@@ -239,10 +246,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCancel() {
-    this.modalRef.destroy(null);
-  }
-
   changePrint(str: string, active:boolean) {
     switch(str){
       case 'isPrint': 
@@ -257,28 +260,33 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
 
   printSave(data: TDSSafeAny) {
     if (TDSHelperObject.hasValue(data) && data.Ids) {
-      let obs: TDSSafeAny;
+      let obs!: Observable<any>;
+
       if(this.isPrint == true) {
         obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
       }
-      else if(this.isPrintShip == true) {
+
+      if(this.isPrintShip == true) {
         obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, {
-          ids: data.Ids,
+          ids: data.Ids
         })
       }
-      else {
-        this.onCancel();
-      }
 
-      if (TDSHelperObject.hasValue(obs)) {
-        obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      if (obs) {
+        obs.pipe(takeUntil(this.destroy$)).subscribe({
+          next:(res: TDSSafeAny) => {
             this.printerService.printHtml(res);
-            this.onCancel();
-        }, (error: TDSSafeAny) => {
-          if(error?.error?.message) {
-            this.message.error(error?.error?.message);
+            this.modalRef.destroy(true);
+          }, 
+          error:(error: TDSSafeAny) => {
+            if(error?.error?.message) {
+              this.message.error(error?.error?.message);
+            }
+            this.modalRef.destroy(true);
           }
         });
+      }else{
+        this.modalRef.destroy(true);
       }
     }
   }
@@ -299,23 +307,27 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
       model: this.lstData
     };
     
-    this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false }))
-    .subscribe(res => {
-      if (!res.Error) {
-        this.message.success(Message.Bill.InsertSuccess);
-        this.printSave(res);
-        this.modalRef.destroy(null);
+    this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        if (!res.Error) {
+          this.isLoading = false;
+          this.message.success(Message.Bill.InsertSuccess);
+          this.printSave(res);
+          this.modalRef.destroy(true);
+        }
+        else {
+          this.isLoading = false;
+          this.onModalError(res.DataErrorFast);
+        }
+      },
+      error:(err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message || Message.InsertFail);
       }
-      else {
-        this.onModalError(res.DataErrorFast);
-      }
-    },err=>{
-      this.message.error(err?.error?.message || Message.InsertFail);
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  onCancel() {
+    this.modalRef.destroy(null);
   }
 }
