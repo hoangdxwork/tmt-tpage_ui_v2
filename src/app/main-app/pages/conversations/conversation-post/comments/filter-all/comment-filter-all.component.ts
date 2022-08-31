@@ -1,3 +1,5 @@
+import { CRMTagService } from './../../../../../services/crm-tag.service';
+import { CreateTagModalComponent } from './../../../../configs/components/create-tag-modal/create-tag-modal.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { ChatomniSendMessageModelDto } from './../../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade/chatomni-message.facade';
@@ -21,7 +23,7 @@ import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-mess
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { TDSModalService } from 'tds-ui/modal';
@@ -71,6 +73,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   isReplyingComment: boolean = false;
   isOpenDrawer: boolean = false;
 
+  lstOfTag: TDSSafeAny[] = [];
+  tags: TDSSafeAny[] = [];
+  keyFilterTag: string = '';
+  idxClickTag: number = -1;
+
   conversationItem!: ChatomniConversationItemDto;
   currentConversation!: ChatomniConversationItemDto;
 
@@ -92,13 +99,16 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private socketOnEventService: SocketOnEventService,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniSendMessageService: ChatomniSendMessageService,
-    private chatomniMessageFacade: ChatomniMessageFacade) {
+    private chatomniMessageFacade: ChatomniMessageFacade,
+    private omniMessageFacade: ChatomniMessageFacade,
+    private crmTagService: CRMTagService) {
   }
 
   ngOnInit() {
     if(this.data && this.team) {
         this.loadData();
         this.loadPartnersByTimestamp();
+        this.loadTags();
     }
 
     this.onEventSocket();
@@ -538,6 +548,93 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
     this.message.info("Không thể lấy thông tin");
     return null;
+  }
+
+  loadTags() {
+    if (!TDSHelperArray.hasListValue(this.tags)) {
+      this.crmTagService.dataActive$.subscribe({
+        next: (res: any) => {
+        this.tags = res;
+        this.lstOfTag = this.tags;
+
+        this.searchTag();
+      }})
+    }
+  }
+
+  callbackTag(ev: boolean, index: number) {
+    this.idxClickTag = index
+    if(!ev){
+      this.searchTag();
+    }
+  }
+
+  searchTag() {
+    let data = this.tags;
+    let key = this.keyFilterTag;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstOfTag = data
+  }
+
+  showModalAddTag() {
+    this.idxClickTag = -1;
+    let modal = this.modalService.create({
+      title: 'Thêm thẻ hội thoại',
+      content: CreateTagModalComponent,
+      viewContainerRef: this.viewContainerRef,
+    });
+    modal.afterClose.subscribe({
+      next: (result: TDSSafeAny)=>{
+      if(result){
+        this.lstOfTag = [...this.lstOfTag, result];
+        this.tags = [...this.tags, result];
+      }
+    }})
+  }
+
+  onSelectTag(item: any) {
+    let tags = [...this.partnerDict[item.UserId].t];
+
+    if (tags.findIndex(x=> x.tpid == item.Id) > 0) {
+      let modelTag = this.omniMessageFacade.mappingModelTag(item);
+      this.removeIndexDbTag(modelTag);
+    } else {
+      this.assignIndexDbTag(item);
+    }
+  }
+
+  removeIndexDbTag(item: any): void {
+    // this.activityMatchingService.removeTagFromConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe({
+    //   next: () => {
+    //     this.removeTagOnView(item);
+    //   },
+    //   error: err=>{
+    //     this.message.error(err.error? err.error.message : 'Xóa nhãn thất bại');
+    //   }
+    // });
+  }
+
+  assignIndexDbTag(item: any) {
+    // this.activityMatchingService.assignTagToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
+    //   .pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: ()=> {
+    //     this.assignTagOnView(item);
+    //     this.crmTagService.addTagLocalStorage(item.Id);
+    //   },
+    //   error: err => {
+    //     this.message.error(err.error? err.error.message : 'Gắn nhãn thất bại');
+    //   }
+    // });
+  }
+
+  removeTagOnView(tag: any) {
+  
   }
 
   ngOnDestroy(): void {

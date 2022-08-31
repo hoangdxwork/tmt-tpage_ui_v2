@@ -468,7 +468,8 @@ export class PostOrderConfigComponent implements OnInit {
                     IsEnableRegexAttributeValues: false,
                     IsEnableOrderMultiple: false,
                     AttributeValues: [],
-                    DescriptionAttributeValues: []
+                    DescriptionAttributeValues: [],
+                    Tags: x.Tags
                 } as any;
 
                 if(x.AttributeValues && x.AttributeValues.length > 0) {
@@ -487,13 +488,13 @@ export class PostOrderConfigComponent implements OnInit {
                     }
                 }
 
-                let content = this.getContentString(product);
+                let content = product.Tags;
                 let contentWithAttributes = this.getcontentWithAttributesString(product);
                 let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
 
                 this.dataModel.TextContentToOrders.push({
                   Index: idx++,
-                  Content: content.join(',') || null || null,
+                  Content: content || null,
                   ContentWithAttributes: contentWithAttributes || null,
                   IsActive: true,
                   Product: product || null

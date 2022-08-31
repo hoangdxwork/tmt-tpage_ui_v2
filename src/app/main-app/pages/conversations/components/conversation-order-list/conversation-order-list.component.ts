@@ -157,6 +157,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = event.value;
+
+    this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -233,6 +235,7 @@ export class ConversationOrderListComponent implements OnInit {
     } else {
       this.setOfCheckedId.delete(orderId);
     }
+    this.refreshCheckedStatus();
   }
 
   onActive(value: string) {
@@ -295,6 +298,10 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   printMulti() {
+    if(this.isLoadingActive){
+      return
+    }
+
     this.isLoadingActive = true;
     let ids = [...this.setOfCheckedId];
     let datas = this.lstOfData.filter(x => ids.includes(x.Id));
@@ -324,6 +331,10 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   deleteMulti() {
+    if(this.isLoadingActive){
+      return
+    }
+
     let ids = [...this.setOfCheckedId];
 
     const modal = this.modalService.error({
