@@ -213,23 +213,27 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
         // Khi gán dữ liệu , lấy field VariantFirstId
 
         if(this.typeComponent == 'lst-product-tmp') {
-            this.productIndexDBService.loadProductIndexDBV2().subscribe((x) => {
-                if (type == "select") {
-                    this.onCancel([product, x]);
-                } else {
-                    this.onCancel(null);
-                }
-            }, error => {
-                if (type == "select") {
-                    this.onCancel([product, null]);
-                } else {
-                    this.onCancel(null);
-                }
+            this.productIndexDBService.loadProductIndexDBV2().subscribe(
+              {
+                next: (x) => {
+                  if (type == "select") {
+                      this.onCancel([product, x]);
+                  } else {
+                      this.onCancel(null);
+                  }
+              },
+                error: (error) => {
+                  if (type == "select") {
+                      this.onCancel([product, null]);
+                  } else {
+                      this.onCancel(null);
+                  }
 
-                this.notification.warning(
-                  'Đã xảy ra lỗi',
-                  'Không thể cập nhật IndexDB ProductLastV2')
-            })
+                  this.notification.warning(
+                    'Đã xảy ra lỗi',
+                    'Không thể cập nhật IndexDB ProductLastV2')
+                }
+              });
         }
 
         else {

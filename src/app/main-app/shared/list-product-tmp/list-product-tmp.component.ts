@@ -197,7 +197,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
 
     this.cdRef.detectChanges();
 
-    return this.lstOfData = data;
+    return this.lstOfData = [...data];
   }
 
   selectType(item: any): void {
@@ -313,9 +313,14 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
     if (!this.inLiveCampaign) {
       this.onLoadProductToOrderLines.emit(data);
     } else {
-      data.Tags = productTmplItems?.Tags || null;
-      this.onLoadProductToLiveCampaign.emit(data);
-      // this.lstVariants = this.lstOfData.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
+      this.lstVariants = this.indexDbStorage.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
+
+      this.lstVariants.map((x: DataPouchDBDTO)=>{
+        x.Tags = productTmplItems?.Tags || null;
+        return x
+      })
+
+      this.onLoadProductToLiveCampaign.emit(this.lstVariants);
       this.indClick = index as number;
     }
   }

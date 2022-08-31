@@ -16,8 +16,8 @@
 </ng-container>
 
 <ng-template #conversation>
-    <div class="w-full flex cursor-pointer border-2 border-neutral-2-50 border-solid rounded-lg justify-between items-center">
-      <div class="flex w-full items-center justify-start pl-3.5 py-2.5" tds-dropdown [clickHide]="false" [(visible)]="visible" [tdsDropdownMenu]="dropdownTeam" [placement]="'bottomLeft'" trigger="click">
+    <div class="w-full flex gap-x-2 cursor-pointer border-2 border-neutral-2-50 border-solid rounded-lg justify-between items-center overflow-hidden">
+      <div class="flex flex-auto overflow-hidden items-center justify-start pl-3.5 py-2.5" tds-dropdown [clickHide]="false" [(visible)]="visible" [tdsDropdownMenu]="dropdownTeam" [placement]="'bottomLeft'" trigger="click">
         <tpage-avatar-facebook [fbid]="currentTeam?.Facebook_PageId || currentTeam?.Facebook_ASUserId || currentTeam?.ChannelId"
           [token]="currentTeam?.Facebook_PageToken || currentTeam?.Facebook_UserToken || currentTeam?.ChannelToken">
         </tpage-avatar-facebook>

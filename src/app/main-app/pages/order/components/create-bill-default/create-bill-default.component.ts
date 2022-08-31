@@ -200,7 +200,7 @@ export class CreateBillDefaultComponent implements OnInit {
     this.lstLine.splice(index, 1);
   }
 
-  onModalError(error: TDSSafeAny[], type: TDSSafeAny, carrierId: string) {
+  onModalError(error: TDSSafeAny[], type: TDSSafeAny, carrierId: number) {
     const modal = this.modal.create({
       title: 'Danh sách lỗi tạo đơn',
       content: CreateBillDefaultErrorComponent,
@@ -265,11 +265,11 @@ export class CreateBillDefaultComponent implements OnInit {
       .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
         if (!res.Error) {
           this.message.success(Message.Bill.InsertSuccess);
-          this.printSave(type, res, model?.CarrierId.toString());
+          this.printSave(type, res, Number(model?.CarrierId));
           this.modalRef.destroy(null);
         }
         else {
-          this.onModalError(res.DataErrorDefault, type, model?.CarrierId.toString());
+          this.onModalError(res.Errors, type, Number(model?.CarrierId));
         }
       },
         err => {
@@ -277,11 +277,11 @@ export class CreateBillDefaultComponent implements OnInit {
       });
   }
 
-  printSave(type: TDSSafeAny, data: TDSSafeAny, carrierId: string) {
+  printSave(type: TDSSafeAny, data: TDSSafeAny, carrierId: number) {
     if (TDSHelperObject.hasValue(data) && data.Ids) {
       data.Ids.forEach((id: TDSSafeAny) => {
         if (type == this.saveType.billPrint) {
-          this.printerService.printUrl(`/fastsaleorder/print?ids=${id}`).subscribe();;
+          this.printerService.printUrl(`/fastsaleorder/print?ids=[${id}]`).subscribe();;
         }
         else if (type == this.saveType.billPrintShip) {
           let params = "";
