@@ -527,11 +527,11 @@ export class TDSConversationItemComponent implements OnInit {
   showModalSuggestAddress(index?: number){
     let value: string = '';
     if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText) {
-      value = this.contentMessageChild._results[index].nativeElement.outerText;
+        value = this.contentMessageChild._results[index].nativeElement.outerText;
     } else {
-      value = this.getTextOfContentMessage();
+        value = this.getTextOfContentMessage();
     }
-   
+
     let modal = this.modalService.create({
         title: 'Thêm địa chỉ',
         content: ModalAddAddressV2Component,

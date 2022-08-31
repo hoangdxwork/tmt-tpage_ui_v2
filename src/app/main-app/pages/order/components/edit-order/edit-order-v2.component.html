@@ -282,7 +282,7 @@
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
                                 [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
                                 [data]="lstCarrier" [ngModel]="saleModel.Carrier"
-                                [ngModelOptions]="{standalone: true}" [allowClear]="false"
+                                [ngModelOptions]="{standalone: true}" [allowClear]="true"
                                 (ngModelChange)="onChangeCarrierV2($event)">
                             </tds-select>
                           </tds-form-field>
