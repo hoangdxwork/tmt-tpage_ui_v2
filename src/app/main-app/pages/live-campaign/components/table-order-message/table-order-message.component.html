@@ -30,9 +30,13 @@
         <td>{{order.TotalAmount || 0 | number}}</td>
         <td>
           <div class="flex gap-x-4 items-center">
-            <div class="flex items-center gap-x-1">
-              <span>{{order.MessageCount}}</span>
-              <span class="tdsi-success-line text-success-400" tds-tooltip [tooltipTitle]="getTooltipSuccess(order.MessageCount)"></span>
+            <div class="flex items-center gap-x-1" *ngIf="order.TotalSuccessMessage > 0">
+              <span>{{order.TotalSuccessMessage}}</span>
+              <span class="tdsi-success-line text-success-400" tds-tooltip tooltipTitle="{{order.TotalSuccessMessage}} tin nhắn thành công"></span>
+            </div>
+            <div class="flex items-center gap-x-1" *ngIf="order.TotalErrorMessage > 0">
+              <span>{{order.TotalErrorMessage}}</span>
+              <span class="tdsi-info-line text-error-400" tds-tooltip [tooltipTitle]="order.ErrorLastMessage"></span>
             </div>
           </div>
         </td>

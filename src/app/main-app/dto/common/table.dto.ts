@@ -42,6 +42,8 @@ export interface MessageHistorySaleOnlineDTO {
   ErrorLastMessage: string;
   DateCreatedLastMessage: Date;
   TotalAmount?: number;
+  TotalSuccessMessage: number;
+  TotalErrorMessage: number;
 }
 
 export interface MessageHistoryFSOrderDTO {

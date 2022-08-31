@@ -1,7 +1,7 @@
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
-import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { takeUntil } from 'rxjs/operators';
@@ -30,7 +30,6 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenueDto, Conversation_LastBillDto, GroupBy_ConversationBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
-import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -76,6 +75,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private cdRef: ChangeDetectorRef,
     private conversationDataFacade: ConversationDataFacade,
     private chatomniConversationService: ChatomniConversationService,
     private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
@@ -161,6 +161,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(conversationInfo && conversationInfo.Revenue) {
         this.revenue = {...conversationInfo.Revenue};
     }
+
+    this.cdRef.detectChanges();
   }
 
   loadPartnerFromTabOrder() {
@@ -205,7 +207,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           } else {
             this.message.info('Ghi chú đã được chọn');
           }
-            
+
         }
     })
   }
@@ -219,7 +221,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
-    let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(item, this.partner);
+    let partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(item, this.partner)};
     this.partner = partner;
   }
 
@@ -365,8 +367,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     });
 
-    modal.componentInstance?.changeReportPartner.subscribe(res => {
+    modal.componentInstance?.changeReportPartner.subscribe({
+      next: (res: any) => {
         this.partner.PhoneReport = res;
+     }
     });
   }
 
@@ -395,14 +399,17 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
         // Xử lý meger map để để gán lên trên
         if(TDSHelperString.hasValueString(phone)) {
-          this.crmMatchingService.checkPhoneReport(phone).pipe(takeUntil(this.destroy$)).subscribe((obs) => {
+          this.crmMatchingService.checkPhoneReport(phone).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (obs) => {
               this.partner.PhoneReport = obs.is_report;
-          }, error => {
+            },
+            error: (error: any) => {
               this.message.error(`${error?.error?.message}`);
+            }
           })
         }
 
-        let partnerUpdate = this.csPartner_PrepareModelHandler.updatePartnerModel(this.partner, x);
+        let partnerUpdate = {...this.csPartner_PrepareModelHandler.updatePartnerModel(this.partner, x)};
         if(partnerUpdate && this.conversationInfo) {
             this.partner = {...partnerUpdate};
             this.conversationInfo.Partner = {...partnerUpdate};
@@ -423,7 +430,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   prepareModel() {
-    let model = this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem);
+    let model = {...this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem)};
     return model;
   }
 
@@ -464,7 +471,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   mappingAddress(partner: ConversationPartnerDto) {
-    let data = this.csPartner_SuggestionHandler.mappingAddress(partner);
+    let data = {...this.csPartner_SuggestionHandler.mappingAddress(partner)};
 
     this._cities = data._cities;
     this._districts = data._districts;
@@ -490,7 +497,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   modal.afterClose.subscribe({
     next: (result: ResultCheckAddressDTO) => {
       if(result){
-        let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner);
+        let partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner)};
         this.partner = partner;
         this.mappingAddress(this.partner);
       }
@@ -511,6 +518,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this.lastBill as any) = null;
     (this.lstBill as any) = null;
     this.totalBill = 0;
+    (this._cities as any) = null;
+    (this._districts as any) = null;
+    (this._wards as any) = null;
+    (this._street as any) = null;
   }
 
 }

@@ -182,11 +182,11 @@ export class DetailBillPaymentComponent implements OnInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  onSearch(event: TDSSafeAny) {
-    let text =  event?.target.value;
-
+  onSearch(data: TDSSafeAny) {
+    this.tabIndex = 1;
     this.pageIndex = 1;
-    this.filterObj.searchText = text;
+    this.filterObj.searchText = data.value;
+
     this.loadData(this.pageSize, this.pageIndex);
   }
 

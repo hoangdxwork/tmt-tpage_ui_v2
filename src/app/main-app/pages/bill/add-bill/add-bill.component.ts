@@ -1,7 +1,6 @@
-import { SocketOnEventService } from './../../../services/socket-io/socket-onevent.service';
-import { THelperCacheService } from 'src/app/lib';
+import { SaleOnlineOrderGetDetailsDto } from './../../../dto/order/so-orderlines.dto';
+import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { OrderEvent } from './../../../handler-v2/order-handler/order.event';
 import { PrepareCopyItemHandler } from '@app/handler-v2/bill-handler/prepare-copy-item.handler';
 import { PreparePartnerHandler } from './../../../handler-v2/bill-handler/prepare-partner.handler';
 import { CalculateBillFeeHandler } from './../../../handler-v2/bill-handler/calculate-bill-fee.handler';
@@ -47,7 +46,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
-import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
+import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
 import { UpdateShipExtraHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipextra.handler';
 import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipservice-extras.handler';
@@ -59,6 +58,8 @@ import { CreateFormBillHandler } from 'src/app/main-app/handler-v2/bill-handler/
 import { PrinterService } from '@app/services/printer.service';
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
+import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.handler';
+import { PrepareDetailsOrderLineHandler } from '@app/handler-v2/order-handler/prepare-details-orderLine.handler';
 
 @Component({
   selector: 'app-add-bill',
@@ -71,10 +72,11 @@ export class AddBillComponent implements OnInit {
   _form!: FormGroup;
   id: any;
   path: any;
+  isOrder: any;
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
   dataModel!: FastSaleOrder_DefaultDTOV2;
-  roleConfigs!: SaleSettingsDTO;
+  saleConfig!: SaleSettingsDTO;
   companyCurrents!: CompanyCurrentDTO;
   lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
   lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
@@ -137,7 +139,6 @@ export class AddBillComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private socketEvent: SocketOnEventService,
     private partnerService: PartnerService,
     private message: TDSMessageService,
     private deliveryCarrierService: DeliveryCarrierService,
@@ -145,17 +146,20 @@ export class AddBillComponent implements OnInit {
     private commonService: CommonService,
     private fsOrderLineService: FastSaleOrderLineService,
     private fastSaleOrderService: FastSaleOrderService,
+    private saleOnline_OrderService: SaleOnline_OrderService,
     private modalService: TDSModalService,
     private crmTeamService: CRMTeamService,
     private cdRef: ChangeDetectorRef,
     private modal: TDSModalService,
     private addBillHandler: AddBillHandler,
+    private prepareDetailsOrdLineHandler: PrepareDetailsOrderLineHandler,
     private prepareSuggestionsBill: PrepareSuggestionsBillHandler,
     private updateOrderLinesHandler: UpdateOrderLinesHandler,
     private calculateBillFee: CalculateBillFeeHandler,
     private getServiceHandler: GetServiceHandler,
     private updateShipExtraHandler: UpdateShipExtraHandler,
     private preparePartnerHandler: PreparePartnerHandler,
+    private prepareCopyBill:PrepareCopyBill,
     private prepareCopyItemHandler: PrepareCopyItemHandler,
     private prepareModelFeeV2Handler: PrepareModelFeeV2Handler,
     private selectShipServiceV2Handler: SelectShipServiceV2Handler,
@@ -179,15 +183,33 @@ export class AddBillComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
-    this.path = this.route.snapshot?.routeConfig?.path || '';
+    this.path = this.route.snapshot.url[0]?.path;
+    this.isOrder = this.route.snapshot.queryParams['isorder'];
 
-    if (this.id) {
-        this.loadBill(this.id);
-    } else {
-        this.loadDefault();
+    switch (this.path) {
+        case 'copy':
+
+            const key = this.fastSaleOrderService._keyCacheCopyInvoice;
+            let obs = localStorage.getItem(key) as string;
+            if(TDSHelperString.hasValueString(obs)) {
+                let data = JSON.parse(obs);
+                this.loadCopyData(data);
+            } else {
+                this.router.navigateByUrl('bill/create');
+            }
+        break;
+
+        case 'edit':
+            this.loadBill(this.id);
+            this.removelocalStorage();
+        break;
+
+        default:
+            this.loadDefault();
+        break;
     }
 
-    this.loadConfig();
+    this.loadSaleConfig();
     this.lstCarriers = this.loadCarrier();
     this.lstPaymentJournals = this.loadPaymentJournals();
     this.lstPrices = this.loadListPrice();
@@ -199,24 +221,29 @@ export class AddBillComponent implements OnInit {
   }
 
   loadPartnerStatus() {
-    this.commonService.getPartnerStatus().subscribe(res => {
-        this.lstPartnerStatus = [...res];
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstPartnerStatus = [...res];
+      }
     });
   }
 
   selectStatus(item: any): void {
     let partnerId = this._form.controls['Partner'].value.Id;
     if (partnerId) {
-        let data = {
-            status: `${item.value}_${item.text}`
-        }
+      let data = {
+          status: `${item.value}_${item.text}`
+      }
 
-        this.partnerService.updateStatus(partnerId, data).subscribe(res => {
-            this.message.success('Cập nhật trạng thái khách hàng thành công');
-            this._form.controls['Partner'].value.StatusText = item.text;
-        }, error => {
-            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Cập nhật trạng thái khách hàng thất bại')
-        });
+      this.partnerService.updateStatus(partnerId, data).pipe(takeUntil(this.destroy$)).subscribe({
+        next: res => {
+          this.message.success('Cập nhật trạng thái khách hàng thành công');
+          this._form.controls['Partner'].value.StatusText = item.text;
+        },
+        error: (error: any) => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Cập nhật trạng thái khách hàng thất bại')
+        }
+      });
     }
   }
 
@@ -245,125 +272,131 @@ export class AddBillComponent implements OnInit {
 
   loadBill(id: number) {
     this.isLoading = true;
-
-    this.fastSaleOrderService.getById(id).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
+    this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
         delete res['@odata.context'];
-        const obs = res as FastSaleOrder_DefaultDTOV2;
+          // TODO: cập nhật company id
+          res.CompanyId = this.companyCurrents.CompanyId;
 
-        if(this.path.includes('copy')){
-
-          delete this.id;
-          obs.Id = 0;
-
-          obs.DateInvoice = new Date();
-          obs.ReceiverDate = new Date();
-          obs.DateOrderRed = new Date();
-
-          obs.State = 'draft';
-          obs.TrackingRef = null;
-          obs.Number = '';
-          obs.CompanyId = this.companyCurrents?.CompanyId;
-
+        if(this.path == 'copy'){
+          // Trường hợp sao chép
+          this.loadCopyData(res);
         } else {
+          let obs = res as FastSaleOrder_DefaultDTOV2;
+
           obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
           obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
           obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
+
+          this.updateForm(obs);
+          this.isLoading = false;
         }
-
-        //TODO: cập nhật danh sách dịch vụ
-        let services = this.getServiceHandler.getShipService(obs);
-
-        if(services != null){
-            this.shipServices.push(services);
-        }
-
-        this.shipExtraServices = this.getServiceHandler.getShipExtrasService(obs);
-
-        //TODO: cập nhật danh sách sản phẩm
-        this.updateOrderLines(obs);
-
-        this.dataModel = {...obs};
-         //TODO: nếu Team thiếu thông tin thì map dữ liệu
-         if (obs.TeamId) {
-          this.loadTeamById(obs.TeamId);
-        }
-
-        //TODO: cập nhật price of product theo bảng giá
-        if (obs.PriceListId) {
-          this.commonService.getPriceListItems(obs.PriceListId).subscribe((res: any) => {
-              this.priceListItems = res;
-          }, error => {
-              this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
-          })
-        }
-
-        //TODO: cập nhật địa chỉ
-        this.mappingDataAddress(obs);
-
-        this.loadConfigProvider(this.dataModel);
-
-        this._form.patchValue(this.dataModel);
-
-        this.calcTotal();
-
-    }, error => {
+      },
+      error:(error) => {
         this.message.error(error?.error?.message || 'Load hóa đơn đã xảy ra lỗi!');
+        this.isLoading = false;
+      }
     })
   }
 
   loadDefault() {
-    this.isLoading = true;
     let model = { Type: 'invoice', SaleOrderIds:[] };
+    this.isLoading = true;
 
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+    this.fastSaleOrderService.setDefaultV2({ model: model });
+    this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
       next:(data: any) => {
-        delete data['@odata.context'];
+          delete data['@odata.context'];
+          data.DateInvoice = new Date();
 
-        data.DateInvoice = new Date();
-        this.dataModel = data;
+          // TODO: trường hợp tạo hóa đơn F10
+          if(this.isOrder){
+              const key = this.saleOnline_OrderService._keyCreateBillOrder;
+              const item = localStorage.getItem(key) as string;
 
-        let partnerId = this.dataModel.PartnerId || this.dataModel.Partner?.Id;
-        if (partnerId) {
-          this.changePartner(partnerId);
-        }
-        this._form.patchValue(data);
+              if(TDSHelperString.hasValueString(item)) {
+                  let order = JSON.parse(item) as SaleOnlineOrderGetDetailsDto;
+                  data = {...this.prepareDetailsOrdLineHandler.prepareModel(data, order)} as FastSaleOrder_DefaultDTOV2;
+              }
 
-        // Trường hợp Tạo hóa đơn F10 bên Đơn hàng
-        this.socketEvent.getOrderBill().pipe(takeUntil(this.destroy$)).subscribe({
-          next:(res: FastSaleOrder_DefaultDTOV2) => {
-
-            data = {...data,...res};
-            console.log(data)
-            //TODO: cập nhật thông tin khách hàng
-            if (res.PartnerId && res.Partner?.Id) {
-                this.changePartner(res.PartnerId);
-            }
-
-            //TODO: cập nhật danh sách order lines
-            this.updateOrderLines(data);
-            this._form.patchValue(data);
-
-            this.calcTotal();
-            this.dataModel = data;
+          } else {
+              // TODO: xóa cache order F10
+              this.removelocalStorage();
           }
-        })
 
-        this.isLoading = false;
+          this.updateForm(data);
+          this.isLoading = false;
       },
       error:(err) => {
-          this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
           this.isLoading = false;
+          this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
       }
     });
   }
 
-  loadTeamById(id: any) {
-    this.crmTeamService.getTeamById(id).subscribe((team: any) => {
-        this.dataModel.Team!.Name = team?.Name;
-        this.dataModel.Team!.Facebook_PageName = team?.Facebook_PageName;
-    },  err=>{
-        this.message.error(err?.error?.message)
+  loadCopyData(data?: FastSaleOrder_DefaultDTOV2){
+    delete this.id;
+    let model = { Type: 'invoice', SaleOrderIds:[] };
+
+    this.fastSaleOrderService.apiDefaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: any) => {
+            delete res['@odata.context'];
+            let obs = {...this.prepareCopyBill.prepareModel(data, res)};
+
+            obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
+            obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
+            obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
+
+            this.updateForm(obs);
+            this.isLoading = false;
+        },
+        error:(err) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
+        }
     })
+  }
+
+  updateForm(data: FastSaleOrder_DefaultDTOV2){
+    // Cập nhật thông tin khách hàng
+    let partnerId = data.PartnerId || data.Partner?.Id;
+    if (partnerId) {
+        this.changePartner(partnerId);
+    }
+
+    //TODO: cập nhật danh sách dịch vụ
+    let services = this.getServiceHandler.getShipService(data);
+    if(services != null){
+        this.shipServices.push(services);
+    }
+
+    this.shipExtraServices = this.getServiceHandler.getShipExtrasService(data) || [];
+
+    //TODO: nếu Team thiếu thông tin thì map dữ liệu-> check lại hàm này
+
+    //TODO: cập nhật price of product theo bảng giá
+    if (data.PriceListId) {
+      this.commonService.getPriceListItems(data.PriceListId).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.priceListItems = res;
+        },
+        error: (error: any) => {
+            this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
+        }
+      })
+    }
+
+    //TODO: cập nhật địa chỉ
+    this.mappingDataAddress(data);
+
+    //TODO: cập nhật danh sách sản phẩm
+    this.updateOrderLines(data);
+    this.dataModel = {...data};
+
+    //Load thông tin ship aship
+    this.loadConfigProvider(this.dataModel);
+    this._form.patchValue(this.dataModel);
+    this.calcTotal();
   }
 
   mappingDataAddress(data:TDSSafeAny){
@@ -373,21 +406,27 @@ export class AddBillComponent implements OnInit {
     this._districts = result?._districts || this._districts;
     this._wards = result?._wards || this._wards;
     this._street = result?._street || this._street;
+    this.innerText = this._street;
   }
 
-  loadConfig() {
-    this.sharedService.getConfigs().subscribe((res: InitSaleDTO) => {
-        this.roleConfigs = res.SaleSetting;
-    }, error => {
-        this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
-    });
+  loadSaleConfig() {
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.saleConfig = {...res};
+      }
+    })
   }
 
   loadCurrentCompany() {
-    this.sharedService.getCurrentCompany().subscribe((res: CompanyCurrentDTO) => {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
-    }, error => {
+      },
+      error: (error: any) => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
     });
   }
 
@@ -429,23 +468,29 @@ export class AddBillComponent implements OnInit {
   changePartner(partnerId: any) {
     this.isLoading = true;
 
-    this.loadChangePartner(partnerId).pipe(finalize(() => this.isLoading = false)).subscribe(([data, partner]) => {
-        if (data && partner) {
-            this.preparePartnerHandler.prepareModel(this._form, data, partner);
-            this.mappingDataAddress(data);
+    this.loadChangePartner(partnerId).pipe(finalize(() => this.isLoading = false)).subscribe({
+        next: ([data, partner]) => {
+            if (data && partner) {
+                this.preparePartnerHandler.prepareModel(this._form, data, partner);
+                this.mappingDataAddress(data);
+            }
+        },
+        error: (error: any) => {
+            this.message.error(`${error?.error?.message}` || 'Thay đổi khách hàng đã xảy ra lỗi!');
         }
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thay đổi khách hàng đã xảy ra lỗi!');
-      })
+    })
   }
 
   onChangePriceList(event: any) {
     if (TDSHelperObject.hasValue(event)) {
-      this.commonService.getPriceListItems(event.Id).subscribe((res: any) => {
-          this.priceListItems = res;
-      }, error => {
-          this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
-      })
+        this.commonService.getPriceListItems(event.Id).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.priceListItems = res;
+            },
+            error: (error: any) => {
+                this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
+            }
+        })
     }
   }
 
@@ -538,6 +583,7 @@ export class AddBillComponent implements OnInit {
 
   changeDeliveryPrice(value: number) {
     this._form.controls['DeliveryPrice'].setValue(value);
+    this.dataModel.DeliveryPrice = value;
     this.coDAmount();
   }
 
@@ -551,43 +597,51 @@ export class AddBillComponent implements OnInit {
     this.coDAmount();
   }
 
-  changeShipWeight(event: any): any {
-    this._form.controls['ShipWeight'].setValue(event);
-    this.calcFee();
+  changeShipWeight(): any {
+    this._form.controls['ShipWeight'].setValue(this.dataModel.ShipWeight);
+    if(this._form.controls['Carrier'].value) {
+      this.calcFee();
+    }
   }
 
   openTrackingOrderGHN() {
     let key = this.dataModel.TrackingRef;
-    this.fastSaleOrderService.getTokenTrackingOrderGHN({ key: key }).subscribe((res: any) => {
-      if (res.Success && res.data) {
+    this.fastSaleOrderService.getTokenTrackingOrderGHN({ key: key }).subscribe({
+      next:(res: any) => {
+        if (res.Success && res.data) {
 
-            this.message.success('Thao tác thành công!');
+              this.message.success('Thao tác thành công!');
 
-            let urlTrackingOrder = res.data.UrlTrackingOrder;
-            window.open(urlTrackingOrder, '_blank');
+              let urlTrackingOrder = res.data.UrlTrackingOrder;
+              window.open(urlTrackingOrder, '_blank');
 
-        } else {
-            this.message.error(res.Message || 'Thao tác thất bại');
-        }
-    }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi!');
+          } else {
+              this.message.error(res.Message || 'Thao tác thất bại');
+          }
+      },
+      error:(error) => {
+          this.message.error(error?.error?.message || 'ĝã xảy ra lỗi!');
+      }
     });
   }
 
   public openTrackingOrderAhaMove() {
     let key = this.dataModel.TrackingRef;
-    this.fastSaleOrderService.getTrackingOrderAhaMove({ key: key }).subscribe((res: any) => {
-      if (res.Success && res.data) {
+    this.fastSaleOrderService.getTrackingOrderAhaMove({ key: key }).subscribe({
+      next:(res: any) => {
+        if (res.Success && res.data) {
 
-        this.message.success('Thao tác thành công!');
-        let urlTrackingOrder = res.data.UrlTrackingOrder;
-        window.open(urlTrackingOrder, '_blank');
+          this.message.success('Thao tác thành công!');
+          let urlTrackingOrder = res.data.UrlTrackingOrder;
+          window.open(urlTrackingOrder, '_blank');
 
-      } else {
-        this.message.error(res.Message || 'Thao tác thất bại');
+        } else {
+          this.message.error(res.Message || 'Thao tác thất bại');
+        }
+      },
+      error:(error) => {
+        this.message.error(error?.error?.message || 'ĝã xảy ra lỗi!');
       }
-    }, error => {
-      this.message.error(error?.error?.message || 'Đã xảy ra lỗi!');
     });
   }
 
@@ -689,11 +743,13 @@ export class AddBillComponent implements OnInit {
 
   openPopoverTax() {
     this.visiblePopoverTax = true;
-    this.accountTaxService.getTax().subscribe((res: any) => {
-      if (TDSHelperArray.hasListValue(res.value)) {
-        this.lstTax = res.value;
-        this.lstTax = this.lstTax.sort((a, b) => a.Amount - b.Amount);
-      }
+    this.accountTaxService.getTax().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            if (TDSHelperArray.hasListValue(res.value)) {
+              this.lstTax = res.value;
+              this.lstTax = this.lstTax.sort((a, b) => a.Amount - b.Amount);
+            }
+        }
     });
   }
 
@@ -803,7 +859,8 @@ export class AddBillComponent implements OnInit {
 
     this.isLoadingProduct = true;
     this.fsOrderLineService.onChangeProduct(data)
-      .pipe(finalize(() => { this.isLoadingProduct = false })).subscribe((res: FSOrderLines) => {
+      .pipe(finalize(() => { this.isLoadingProduct = false })).subscribe({
+        next:(res: FSOrderLines) => {
           delete res['@odata.context'];
 
           let item: OrderLineV2 = this.prepareCopyItemHandler.prepareOnChangeProductModel(res, this.dataModel, event);
@@ -819,8 +876,10 @@ export class AddBillComponent implements OnInit {
           this.calcTotal();
           this.cdRef.detectChanges();
 
-      }, error => {
-          this.message.error(`${error?.error?.message}` || 'Thêm sản phẩm thất bại')
+        },
+        error:(error) => {
+            this.message.error(`${error?.error?.message}` || 'Thêm sản phẩm thất bại')
+        }
       })
   }
 
@@ -886,11 +945,11 @@ export class AddBillComponent implements OnInit {
       case 'draft':
         return 'Nháp';
       case 'cancel':
-        return 'Huỷ bỏ';
+        return 'Huỷ bờ';
       case 'open':
         return 'Xác nhận';
       case 'paid':
-        return 'Đã thanh toán';
+        return 'ĝã thanh toán';
     }
   }
 
@@ -905,9 +964,11 @@ export class AddBillComponent implements OnInit {
         partnerId: data?.Id
       }
     });
-    modal.afterClose.subscribe((event: any) => {
-      if (event) {
-        this.changePartner(event);
+    modal.afterClose.subscribe({
+      next:(event: any) => {
+        if (event) {
+          this.changePartner(event);
+        }
       }
     })
   }
@@ -923,32 +984,53 @@ export class AddBillComponent implements OnInit {
         partnerId: null
       }
     });
-    modal.afterClose.subscribe((event: any) => {
-      if (event) {
-        this.changePartner(event);
+    modal.afterClose.subscribe({
+      next:(event: any) => {
+        if (event) {
+          this.changePartner(event);
+        }
       }
     })
   }
 
   prepareModelFeeV2() {
-    let companyId = this.roleConfigs.CompanyId;
-    let model = this.prepareModelFeeV2Handler.prepareModelFeeV2(this.shipExtraServices, this._form, companyId, this.insuranceInfo );
+    let companyId = this.companyCurrents.CompanyId;
+    let model = {...this.prepareModelFeeV2Handler.prepareModelFeeV2(this.shipExtraServices, this._form, companyId, this.insuranceInfo )};
     return model;
   }
 
   prepareModel(): any {
-    let x = this.addBillHandler.prepareModel(this.dataModel, this._form);
+    let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form)} as any;
+    model.CompanyId = this.companyCurrents?.CompanyId;
 
-    if(!TDSHelperString.hasValueString(x.FormAction)) {
-      x.FormAction = 'draft';
+    if(!TDSHelperString.hasValueString(model.FormAction)) {
+      model.FormAction = 'draft';
     }
-    return x;
+
+    if(this.path == 'copy') {
+      model.OrderLines?.map((item: any) => {
+          delete item.Account;
+          delete item.AccountId;
+      })
+    }
+
+    // TODO: trường hợp edit
+    if(this.path == 'edit') {
+      model.OrderLines?.map((item: any) => {
+          item.AccountId = model.AccountId;
+          if(model.Account) {
+              item.Account = model.Account;
+          }
+      })
+    }
+
+    return {...model};
   }
 
   confirmShipService(carrier: TDSSafeAny) {
     this.modal.info({
       title: 'Cảnh báo',
-      content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
+      content: 'ĝối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
       onOk: () => this.calcFee(),
       onCancel:() => {},
       okText: "OK",
@@ -977,12 +1059,12 @@ export class AddBillComponent implements OnInit {
 
     //TODO ràng buộc COD
     let COD = model.AmountTotal + model.DeliveryPrice - model.AmountDeposit;
-    let exist = this.roleConfigs?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
+    let exist = this.saleConfig?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
 
     if (exist) {
       this.modal.warning({
           title: 'Cảnh báo',
-          content: `COD hiện tại ${formatNumber(model.CashOnDelivery, 'en-US', '1.0-3')} không bằng tổng COD phần mềm tính ${formatNumber(COD, 'en-US', '1.0-3')} bạn có muốn gán lại COD của phần mềm [${formatNumber(COD, 'en-US', '1.0-3')}]`,
+          content: `COD hiện tại ${formatNumber(model.CashOnDelivery, 'en-US', '1.0-3')} không bằng tổng COD phần mờm tính ${formatNumber(COD, 'en-US', '1.0-3')} bạn có muốn gán lại COD của phần mờm [${formatNumber(COD, 'en-US', '1.0-3')}]`,
           onOk: () => { model.CashOnDelivery = COD; this.saveRequest(model, print) },
           onCancel: () => { this.saveRequest(model, print) },
           okText: "Đồng ý",
@@ -997,45 +1079,59 @@ export class AddBillComponent implements OnInit {
 
   saveRequest(model: any, print?: string) {
     if (this.id) {
-      this.isLoading = true;
-
-      this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          this.message.success('Cập nhật phiếu bán hàng thành công!');
-
-          if(print) {
-              this.printInvoices(print, this.id);
-          } else {
-              this.isLoading = false;
-              this.router.navigateByUrl(`bill/detail/${this.id}`);
-          }
-
-      }, error => {
-          this.isLoading = false;
-          this.message.error(`${error?.error?.message}` || 'Cập nhật phiếu bán hàng thất bại!');
-      })
-
-    } else {
         this.isLoading = true;
 
-        this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-            this.message.success('Tạo mới phiếu bán hàng thành công!');
+        this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: any) => {
+                this.message.success('Cập nhật phiếu bán hàng thành công!');
 
-            if(print) {
-                this.printInvoices(print, res.Id);
-            } else {
+                if(print) {
+                    this.printInvoices(print, this.id);
+                } else {
+                    this.isLoading = false;
+                    this.router.navigateByUrl(`bill/detail/${this.id}`);
+                }
+            },
+            error:(error) => {
                 this.isLoading = false;
-                this.router.navigateByUrl(`bill/detail/${res.Id}`);
+                this.message.error(`${error?.error?.message}` || 'Cập nhật phiếu bán hàng thất bại!');
             }
-        }, error => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Tạo mới phiếu bán hàng thất bại!');
+        })
+    } else {
+        this.isLoading = true;
+        this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: any) => {
+                this.message.success('Tạo mới phiếu bán hàng thành công!');
+
+                if(print) {
+                    this.printInvoices(print, res.Id);
+                } else {
+                    this.router.navigateByUrl(`bill/detail/${res.Id}`);
+                }
+
+                // TODO: xóa cache tạo hóa đơn nếu có lưu F10, sao chép
+                this.removelocalStorage();
+                this.isLoading = false;
+            },
+            error:(error) => {
+                this.isLoading = false;
+                this.message.error(`${error?.error?.message}` || 'Tạo mới phiếu bán hàng thất bại!');
+            }
         });
     }
   }
 
+  removelocalStorage() {
+    const key1 = this.saleOnline_OrderService._keyCreateBillOrder;
+    localStorage.removeItem(key1);
+
+    const key2 = this.fastSaleOrderService._keyCacheCopyInvoice;
+    localStorage.removeItem(key2);
+  }
+
   printInvoices(type: string, id: number) {
 
-    let obs: TDSSafeAny;
+    let obs!: Observable<any>;
     switch (type) {
         case "print":
             obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[id]}`);
@@ -1047,23 +1143,25 @@ export class AddBillComponent implements OnInit {
         default: break;
     }
 
-    obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      this.printerService.printHtml(res);
+    if(!obs) {
+      this.isLoading = false;
+    }else{
+      obs.pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: TDSSafeAny) => {
+          this.printerService.printHtml(res);
           this.isLoading = false;
 
           this.router.navigateByUrl(`bill/detail/${id}`);
+        },
+        error:(error: TDSSafeAny) => {
+          this.isLoading = false;
+          if(error?.error?.message) {
+            this.message.error(error?.error?.message);
+          }
 
-      }, (error: TDSSafeAny) => {
-        this.isLoading = false;
-        if(error?.error?.message) {
-          this.message.error(error?.error?.message);
+          this.router.navigateByUrl(`bill/detail/${id}`);
         }
-
-        this.router.navigateByUrl(`bill/detail/${id}`);
-    });
-
-    if(!obs) {
-      this.isLoading = false;
+      });
     }
   }
 
@@ -1085,10 +1183,12 @@ export class AddBillComponent implements OnInit {
       this._form.controls['CarrierId'].setValue(event?.Id);
 
       //TODO: Cập nhật giá trị ship mặc định
+
       let deliveryPrice = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
       if (this._form.controls['DeliveryPrice'].value != deliveryPrice) {
 
-          this._form.controls['DeliveryPrice'].setValue(deliveryPrice);
+          this._form.controls['DeliveryPrice'].setValue(Number(deliveryPrice));
+          this.dataModel.DeliveryPrice = deliveryPrice;
           this.coDAmount();
       }
 
@@ -1165,15 +1265,11 @@ export class AddBillComponent implements OnInit {
   }
 
   calcTotal() {
-    let cacl = this.calculateBillFee.fs_calcTotal(this._form, this.roleConfigs);
+    let cacl = this.calculateBillFee.fs_calcTotal(this._form, this.saleConfig);
 
     this.totalQtyLines = cacl.totalAmountLines;
     this.totalAmountLines = cacl.totalAmountLines;
   }
-
-  // onLoadSuggestion(item: ResultCheckAddressDTO) {
-  //   this.prepareSuggestionsBill.onLoadSuggestion(this._form, item);
-  // }
 
   loadCustomers() {
     return this.partnerService.getCustomers(this.page, this.limit, this.keyFilter)
@@ -1213,6 +1309,7 @@ export class AddBillComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         _street: this.innerText,
+        isSelectAddress: true
       }
     });
 

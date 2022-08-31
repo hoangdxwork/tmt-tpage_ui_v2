@@ -26,7 +26,7 @@ export class DefaultOrderComponent implements OnInit {
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private shareService: SharedService,
+    private sharedService: SharedService,
     private productService: ProductService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private message: TDSMessageService) { }
@@ -41,14 +41,20 @@ export class DefaultOrderComponent implements OnInit {
     if(exist && exist.ProductId){
         this.defaultProduct = exist;
     } else {
-      this.shareService.getConfigs().pipe(takeUntil(this.destroy$)).pipe(mergeMap(config => {
+        this.sharedService.setSaleConfig();
+        this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).pipe(mergeMap(config => {
 
           return new Observable((observable: any): any => {
               if(config.SaleSetting?.ProductId){
                   return this.productService.getById(config.SaleSetting.ProductId)
-                    .pipe(map(x => {
-                        observable.next(x);
-                        observable.complete();
+                    .pipe(map((x: any): any => {
+                        if(x) {
+                            observable.next(x);
+                            observable.complete();
+                        } else {
+                            observable.next();
+                            observable.complete();
+                        }
                     }))
               } else{
                   return of({});

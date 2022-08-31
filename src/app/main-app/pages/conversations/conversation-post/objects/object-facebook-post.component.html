@@ -65,18 +65,18 @@
             <span *ngIf="(item.Data | facebookType)?.message!.length > 50">...</span>
         </span>
 
-        <div class="flex justify-between items-center">
-            <span *ngIf="item.CreatedTime" class="text-neutral-1-400" >
-                {{item.CreatedTime | date:'dd/MM/yyyy'}}
+        <div class="flex gap-x-2 items-center">
+            <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" >
+                {{item.ChannelCreatedTime | date:'dd/MM/yyyy'}}
             </span>
-    
+
             <span *ngIf="item.ChannelUpdatedTime" class="text-neutral-1-400 tdsi-time-line" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc {{item.ChannelUpdatedTime | date:'dd/MM/yyyy HH:mm'}}">
             </span>
         </div>
 
         <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
             <div *ngIf="item.LiveCampaign">
-                <tds-tag size="sm" status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
+                <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500"
                     (click)="showModalLiveCampaign(item)">
                     <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
                         [tooltipTitle]="item.LiveCampaign.Name">

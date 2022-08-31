@@ -13,7 +13,7 @@ export class SelectShipServiceV2Handler {
 
   public selectShipServiceV2(data: CalculateFeeServiceResponseDto, shipExtraServices: ShipServiceExtra[], _form: FormGroup): any {
 
-      _form.controls['Ship_ServiceId'].setValue(data.ServiceId);debugger
+      _form.controls['Ship_ServiceId'].setValue(data.ServiceId);
       _form.controls['Ship_ServiceName'].setValue(data.ServiceName);
       _form.controls['CustomerDeliveryPrice'].setValue(data.TotalFee);
 
@@ -49,7 +49,7 @@ export class SelectShipServiceV2Handler {
             shipExtraServices.push(item);
       })
 
-      return shipExtraServices;
+      return [...shipExtraServices];
     }
   }
 

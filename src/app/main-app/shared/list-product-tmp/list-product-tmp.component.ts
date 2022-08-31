@@ -17,6 +17,7 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
+import { ProductService } from '@app/services/product.service';
 
 @Component({
   selector: 'list-product-tmp',
@@ -51,8 +52,8 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
     cacheDbStorage: []
   }
 
-  roleConfigs!: SaleSettingsDTO;
   inventories!: TDSSafeAny;
+  companyCurrents!: CompanyCurrentDTO;
   isLoading: boolean = false;
   indClick:number =  -1;
 
@@ -79,7 +80,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
       private modalService: TDSModalService,
       private sharedService: SharedService,
       private message: TDSMessageService,
-      private commonService: CommonService,
+      private productService: ProductService,
       public apiService: TCommonService,
       private cdRef : ChangeDetectorRef,
       private destroy$: TDSDestroyService,
@@ -87,7 +88,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
   }
 
   ngOnInit(): void {
-    this.loadConfig();
+    this.loadCurrentCompany();
     this.loadData();
   }
 
@@ -207,30 +208,35 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
 
   selectOption(item: any): void {
       this.currentOption = item;
-
       this.loadDataTable();
   }
 
-  loadConfig() {
-    this.sharedService.getConfigs().subscribe((res: InitSaleDTO) => {
-        this.roleConfigs = res.SaleSetting;
-    }, error => {
-        this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
-    });
+  loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res;
 
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
-        .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
-          mergeMap((warehouseId: any) => {
-            return this.commonService.getInventoryWarehouseId(warehouseId)
-          }))
-        .subscribe({
-          next:(obj: CompanyCurrentDTO) => {
-            this.inventories = obj;
-          },
-          error:(err) => {
-            this.message.error(err?.error?.message || Message.Inventory.CanNotLoadInfo);
-          }
-        });
+        if(this.companyCurrents?.DefaultWarehouseId) {
+          this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+        }
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
+    });
+  }
+
+  loadInventoryWarehouseId(warehouseId: number) {
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.inventories = res;
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+      }
+    });
   }
 
   showModalAddProduct() {
@@ -256,24 +262,24 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
 
             if(res[1]) {
               let cacheObject = res[1];
-  
+
               this.indexDbProductCount = cacheObject.cacheCount;
               this.indexDbVersion = cacheObject.cacheVersion;
               this.indexDbStorage = cacheObject.cacheDbStorage;
             }
-  
+
             // TODO: trường hợp thêm mới push sp vào orderLines
             if(productTmplItems?.Id) {
 
               let item = this.indexDbStorage.filter((x: DataPouchDBDTO) =>
               x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
-  
+
               if(!TDSHelperObject.hasValue(item)) {
                 this.message.error('Thêm mới sản phẩm danh sách xảy ra lỗi!');
                 return;
               }
 
-              this.addItem(item);
+              this.addItem(item, undefined, productTmplItems);
             }
           }
           //TODO: reload sản phẩm
@@ -302,12 +308,14 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
     this.loadData(true);
   }
 
-  addItem(data: DataPouchDBDTO, index?: number) {
+  addItem(data: DataPouchDBDTO, index?: number, productTmplItems?: any) {
     // TODO: trường hợp thêm sản phẩm vào đơn hàng
     if (!this.inLiveCampaign) {
       this.onLoadProductToOrderLines.emit(data);
     } else {
-      this.lstVariants = this.lstOfData.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
+      data.Tags = productTmplItems?.Tags || null;
+      this.onLoadProductToLiveCampaign.emit(data);
+      // this.lstVariants = this.lstOfData.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
       this.indClick = index as number;
     }
   }

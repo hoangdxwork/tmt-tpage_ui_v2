@@ -5,22 +5,28 @@
             <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="applyFilter($event)"/>
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
-        <button tds-button color="primary" tds-dropdown trigger="click"
+        <!-- <button tds-button color="primary" tds-dropdown trigger="click"
             [tdsDropdownMenu]="manipulation" [disabled]="isLoadingActive">
             <span class="flex items-center">
                 {{ !isLoadingActive ? 'Thao tác' : 'Loading...' }} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
             </span>
-        </button>
+        </button> -->
         <!-- dropdown thao tác -->
-        <tds-dropdown-menu #manipulation="tdsDropdownMenu">
+        <!-- <tds-dropdown-menu #manipulation="tdsDropdownMenu">
             <div class="w-full">
                 <div tds-dropdown-item *ngFor="let item of lstActive" (click)="onActive(item.value)">
                     <a> {{ item.text }} </a>
                 </div>
             </div>
-        </tds-dropdown-menu>
+        </tds-dropdown-menu> -->
+        <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
+          [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
+          <span class="flex items-center ">
+              <i class="tdsi-success-line text-xl leading-5"></i>
+          </span>
+        </button>
     </div>
-    <div *ngIf="tabNavs.length > 1" class="flex">
+    <div *ngIf="tabNavs.length > 1" [ngClass]="isOpenCollapCheck ? 'hidden' : 'flex'">
         <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
           <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
             <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
@@ -36,6 +42,30 @@
             </tds-filter-status-item>
           </ng-template>
         </tds-filter-status>
+    </div>
+    <div class="items-center justify-between" [ngClass]="isOpenCollapCheck ? 'flex' : 'hidden'">
+      <div class="flex gap-x-2">
+        <button tds-button color="primary">
+          <span class="flex items-center">
+              <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Xuất Excel
+          </span>
+        </button>
+
+        <button tds-button color="custom"
+          class="text-white  bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
+          <span class="flex items-center">
+            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In đơn hàng
+          </span>
+        </button>
+
+        <button tds-button color="error">
+          <span class="flex items-center">
+              <i class="tdsi-trash-fill text-lg leading-none mr-2"></i>Xóa
+          </span>
+        </button>
+      </div>
+
+      <tds-checkbox class="px-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
     </div>
     <div class="flex flex-col gap-y-4" *ngIf="lstOfData.length > 0; else noData">
         <tds-collapse accordion="true">
@@ -90,7 +120,8 @@
                               <i class="tdsi-edit-fill text-neutral-1-500"></i>
                           </span>
                       </button>
-                      <tds-checkbox (change)="onCheck(order.Id, $event)"></tds-checkbox>
+
+                      <tds-checkbox [ngClass]="isOpenCollapCheck ? 'flex' : 'hidden'" [checked]="setOfCheckedId.has(order.Id)" (click)="onCheck(order.Id, $event)"></tds-checkbox>
                   </div>
                 </ng-template>
                 <!-- Content  -->

@@ -1,7 +1,7 @@
 <button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
     size="md" class="relative" tds-tooltip tooltipTitle="Lọc dữ liệu"  [(visible)]="isVisible">
   <span class="flex items-center">
-      <i class="tdsi-filter-2-line text-lg leading-none"></i>
+      <i class="tdsi-filter-2-line text-lg text-neutral-1-500 leading-none"></i>
   </span>
   <span *ngIf="checkActive() && isActive" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[-11px] right-[-6px]" style="font-size: 22px"></span>
 </button>
@@ -22,7 +22,7 @@
       <div class="w-full flex flex-wrap items-center gap-x-2 gap-y-2">
           <div *ngFor="let item of listStatus">
             <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectState(item)">
-              {{item.Name}} ({{item.Total}})
+              {{item.Name}} {{isLiveCamp? null :'(' + item.Total + ')'}}
             </tds-tag>
           </div>
       </div>

@@ -16,11 +16,11 @@ const routes: Routes = [
     component: AddBillComponent
   },
   {
-    path: 'copy/:id',
+    path: 'edit/:id',
     component: AddBillComponent
   },
   {
-    path: 'edit/:id',
+    path: 'copy/:id',
     component: AddBillComponent
   },
   {

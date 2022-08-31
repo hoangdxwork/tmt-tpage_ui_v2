@@ -24,12 +24,12 @@
         <div class="pl-3 border-x border-transparent pr-1 font-regular text-neutral-1-900 text-body-2 truncate">
           {{currentTeam?.Name}}
         </div>
-        <div class="text-neutral-1-400 flex items-center">
+        <div class="text-neutral-1-400 flex items-center" tds-tooltip="Chọn page">
           <i class="text-base leading-4 tdsi-arrow-down-line"></i>
         </div>
       </div>
       <div class="flex items-center justify-end pr-3.5">
-        <button tds-button-flat-icon color="custom" rounded="!rounded-full"
+        <button tds-button-flat-icon color="custom" rounded="!rounded-full" tds-tooltip="Refresh"
           class="text-neutral-1-200 bg-transparent hover:text-info-500 hover:bg-info-100 focus:text-info-500 focus:bg-info-100 focus:ring-transparent"
           (click)="onRefresh()">
           <i [ngClass]="isRefreshing?'animate-spin':''" class="tdsi-reload-fill"></i>

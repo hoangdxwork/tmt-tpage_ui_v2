@@ -181,6 +181,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
     this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
     this.defaultGet["StandardPrice"] = formModel.StandardPrice;
+    this.defaultGet["Tags"] = formModel.Tags? formModel.Tags.toString(): null;
 
     if (formModel.UOM) {
       this.defaultGet["UOM"] = formModel.UOM;
@@ -335,7 +336,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
-              console.log(this.lstVariants )
+
               this.lstVariants.map(attr => {
                 if (attr.Id == 0) {
                   this.minIndex -= 1;

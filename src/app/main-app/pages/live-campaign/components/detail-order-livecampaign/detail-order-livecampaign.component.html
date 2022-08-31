@@ -20,14 +20,16 @@
         </button>
 
         <tds-form-field class="w-[320px]">
-            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keyup.enter)="onSearch($event)"/>
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" 
+              [(ngModel)]="filterObj.searchText"
+              [tdsInputDebounce]="750"
+              (inputKeyup)="onSearch($event)"/>
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
 
-        <button type="button" tds-button-icon color="secondary">
-          <i class="tdsi-filter-2-line text-neutral-1-500"></i>
-        </button>
-        <!-- <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options> -->
+        <order-filter-options (onLoadOption)="onLoadOption($event)" 
+        [filterObj]="filterObj" [lstDataTag]="lstDataTag" [isLiveCamp]="true">
+        </order-filter-options>
     </div>
 
     <div #WidthTable class="h-full text-body-2 text-neutral-1-900">

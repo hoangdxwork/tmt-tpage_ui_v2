@@ -4,13 +4,13 @@ import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade
 import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
 import { CRMTeamType } from './../../../../../dto/team/chatomni-channel.dto';
 import { ChatomniStatus } from './../../../../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
+import { ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -21,7 +21,7 @@ import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-mess
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { TDSModalService } from 'tds-ui/modal';
@@ -49,6 +49,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
+  @ViewChildren('contentMessage') contentMessage: any;
+  @ViewChildren('contentMessageChild') contentMessageChild: any;
 
   @Input() commentOrders!: any;
   @Input() data!: ChatomniObjectsItemDto;
@@ -137,25 +139,32 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       this.loadData();
       this.loadPartnersByTimestamp();
     }
+
+    if(changes['commentOrders'] && !changes['commentOrders'].firstChange) {
+      this.commentOrders = {...changes['commentOrders'].currentValue};
+    }
   }
 
   loadData() {
     this.isLoading = true;
-      this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
+    this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
 
-      if(this.dataSource$) {
-        this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+    if(this.dataSource$) {
+      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniDataDto) => {
             this.dataSource = {...res};
             this.sortChildComment(this.dataSource.Items);
 
             this.isLoading = false;
             this.cdRef.markForCheck();
-        }, error => {
+        },
+        error: (error: any) => {
             this.isLoading = false;
             this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
             this.cdRef.markForCheck();
-        })
-      }
+        }
+      })
+    }
   }
 
   isPrivateReply(item: ChatomniDataItemDto){
@@ -271,7 +280,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
                 item.Data.is_reply = false;
                 this.isReplyingComment = false;
-                this.message.success('Gửi tin thành công'); 
+                this.message.success('Gửi tin thành công');
 
                 this.cdRef.detectChanges();
               },
@@ -299,7 +308,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                 res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
                 res.name = this.team.Name;
                 let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res)
-                
+
                 this.message.success("Trả lời bình luận thành công.");
 
                 this.addReplyComment(item, model, data);
@@ -314,7 +323,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                 item.Data.is_reply = false;
                 this.isReplyingComment = false;
                 this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
-              
+
               }
             })
       }
@@ -351,7 +360,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     if(data){
       data.ParentId = model.parent_id;
       data.ObjectId = item.ObjectId
-      
+
     }
 
     this.childsComment = [...this.childsComment, ...[data]];
@@ -471,7 +480,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             model = [...model, ...[x]]
           }
       })
-      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime)) 
+      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime))
 
       this.childsComment = [...model];
   }
@@ -506,6 +515,29 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   closeDrawer(){
     this.isOpenDrawer = false;
+  }
+
+  selectNote(index: number, child?: string){
+    let data = { phone: null, address: null, note: null } as any;
+
+    let value = this.getTextOfContentMessage(index);
+    if (child && index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
+      data.note = this.contentMessageChild._results[index].nativeElement.outerText;
+    }
+    else {
+      data.note = value;
+    }
+
+    this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
+  }
+
+  getTextOfContentMessage(index: number) {//TODO: thêm xử lý với tin nhắn phản hồi
+    if (this.contentMessage && this.contentMessage._results[index] && this.contentMessage._results[index].nativeElement && this.contentMessage._results[index].nativeElement.outerText) {
+      return this.contentMessage._results[index].nativeElement.outerText;
+    }
+
+    this.message.info("Không thể lấy thông tin");
+    return null;
   }
 
   ngOnDestroy(): void {

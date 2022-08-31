@@ -3,11 +3,11 @@ import { Observable, Subject } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
-import { GeneralConfigsFacade } from "../facades/general-config.facade";
 import { takeUntil } from 'rxjs/operators';
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 import { InitSaleDTO } from "../../dto/setting/setting-sale-online.dto";
 import { TDSNotificationService } from "tds-ui/notification";
+import { SharedService } from "../shared.service";
 
 @Injectable({
   providedIn: 'root'
@@ -24,28 +24,33 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(private apiService: TCommonService,
-    private notificationService: TDSNotificationService,
-    private generalConfigsFacade: GeneralConfigsFacade) {
+    private sharedService: SharedService,
+    private notificationService: TDSNotificationService) {
     super(apiService);
       this.initialize();
   }
 
   initialize() {
     this.loadSaleConfig();
+    this.loadSaleOnineSettingConfig();
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.saleConfig = res;
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.saleConfig = {...res};
       }
-    });
+    })
+  }
 
-    this.generalConfigsFacade.getSaleOnineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.configModel = res;
+  loadSaleOnineSettingConfig() {
+    this.sharedService.setSaleOnlineSettingConfig();
+    this.sharedService.getSaleOnlineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.configModel = {...res};
       }
-    });
+    })
   }
 
   // printOrder(quickOrderModel: any, message?: any) {
@@ -261,7 +266,6 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
       }
     }
 
-
     let lsProduct: any = [];
     let product = "";
 
@@ -320,7 +324,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           }
       },
       error: (error) => {
-          this.notificationService.warning('Lỗi in đơn hàng', `${error.error.message}`,  { placement: 'bottomLeft'});
+        this.notificationService.warning('Lỗi in đơn hàng', 'Máy in chưa kết nối',  { placement: 'bottomLeft'});
       }
     });
   }

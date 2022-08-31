@@ -41,9 +41,6 @@ export class ConversationOrderFacade extends BaseSevice  {
   // TODO: chọn sản phẩm từ tds-conversation sang tab đơn hàng
   public onAddProductOrder$:EventEmitter<any> = new EventEmitter<any>();
 
-  // TODO: outPut thông tin khách hàng từ comment sang tab đơn hàng
-  public onLoadedCommentByUser$:EventEmitter<TDSSafeAny> = new EventEmitter<TDSSafeAny>();
-
   // TODO: outPut thông tin khách hàng từ comment sang tab Khách hàng
   public loadPartnerByPostComment$ = new EventEmitter<ChatomniConversationInfoDto>();
 
@@ -59,6 +56,8 @@ export class ConversationOrderFacade extends BaseSevice  {
   // TODO: output có thông tin đơn hàng khi bấn thông tin khách hàng để Disable tab đơn hàng
   public hasValueOrderCode$ = new EventEmitter<any>();
 
+  // TODO: load khách hàng + đơn hàng khi tạo hóa đơn thành công từ conversation-order
+  public loadGetInfoConversation$ = new EventEmitter<ChatomniConversationInfoDto>();
 
   constructor(private apiService: TCommonService,
       private partnerService: PartnerService,
