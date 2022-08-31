@@ -53,6 +53,12 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
           this.currentLiveCampaign = null as any;
       }
     })
+
+    this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+          this.currentLiveCampaign = res;
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -65,7 +71,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     }
   }
 
-  showModalLiveCampaign(data: ChatomniObjectsItemDto) {
+  showModalLiveCampaign(data?: ChatomniObjectsItemDto) {
 
     const modal = this.modal.create({
       title: 'Chiến dịch',
@@ -82,8 +88,9 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     this.selectPostItemEvent.emit(item);
   }
 
-  openTag(id: string) {
-    this.indClickTag = id;
+  openTag(item: any) {
+    this.indClickTag = item.Id;
+    this.showModalLiveCampaign(this.item);
   }
 
 
