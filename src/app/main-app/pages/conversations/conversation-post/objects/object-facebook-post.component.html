@@ -88,9 +88,9 @@
 
             <div *ngIf="!item.LiveCampaign">
                 <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
-                    (click)="openTag(item.Id)"
-                    [popoverVisible]="indClickTag == item.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                    [popoverAutoClose]="false" [popoverContent]="contentAddtag" [popoverBackdrop]="true"
+                    (click)="openTag(item)"
+                    [popoverVisible]="indClickTag == item.Id" popoverTrigger="click"
+                    [popoverAutoClose]="false" [popoverBackdrop]="true"
                     popoverPlacement="left" [popoverAutoClose]="false"
                     status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
                     <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
@@ -99,7 +99,7 @@
                     </span>
                 </tds-tag>
 
-                <ng-template #contentAddtag>
+                <!-- <ng-template #contentAddtag>
                     <div class="w-[304px]">
                         <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
@@ -116,9 +116,9 @@
                             </tds-select>
                         </tds-form-field>
                     </div>
-                  </ng-template>
+                  </ng-template> -->
 
-                  <ng-template #footerAddTag>
+                  <!-- <ng-template #footerAddTag>
                     <div class="flex justify-end pt-2">
                         <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
                             <span class="flex items-center">
@@ -132,7 +132,7 @@
                             </span>
                         </button>
                     </div>
-                </ng-template>
+                </ng-template> -->
             </div>
 
             <div *ngIf="item.LiveCampaign" class="flex">

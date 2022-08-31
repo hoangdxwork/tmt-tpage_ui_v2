@@ -7,7 +7,7 @@ import { AddLiveCampaignComponent } from './../../../../shared/add-live-campaign
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil, finalize } from 'rxjs';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -24,7 +24,7 @@ import { SortEnum } from '@core/enum';
   providers: [ TDSDestroyService ]
 })
 
-export class LiveCampaignPostComponent implements OnInit {
+export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   @Input() data!: ChatomniObjectsItemDto;
 
@@ -34,7 +34,7 @@ export class LiveCampaignPostComponent implements OnInit {
   isLoading: boolean = false;
   pageSize = 20;
   pageIndex = 1;
-  sort: Array<SortDataRequestDTO>= [{
+  sort: Array<SortDataRequestDTO> = [{
     field: "DateCreated",
     dir: SortEnum.desc,
   }];
@@ -51,8 +51,38 @@ export class LiveCampaignPostComponent implements OnInit {
     private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
-    this.currentLiveCampaign = this.data?.LiveCampaign;
+    if(this.data.LiveCampaign) {
+      this.currentLiveCampaign = this.data.LiveCampaign;
+    }
+
+    let id = this.data?.LiveCampaignId as string;
+    if(TDSHelperString.hasValueString(id)) {
+      this.loadById(id);
+    }
     this.loadData();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+      if(changes['data'] && !changes['data'].firstChange) {
+        if(this.data.LiveCampaign) {
+          this.currentLiveCampaign = { ...changes['data'].currentValue};
+        }
+
+        let id = this.currentLiveCampaign.Id as string;
+        if(TDSHelperString.hasValueString(id)) {
+          this.loadById(id);
+        }
+        this.loadData();
+      }
+  }
+
+  loadById(id: string): void {
+    this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          this.currentLiveCampaign = res;
+      }
+    })
   }
 
   loadData(text?: string) {
@@ -91,6 +121,8 @@ export class LiveCampaignPostComponent implements OnInit {
 
     modal.componentInstance?.onSuccess.subscribe(res => {
       if(TDSHelperObject.hasValue(res)) {
+          this.currentLiveCampaign = res;
+          this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
           this.loadData();
       }
     })
@@ -115,13 +147,8 @@ export class LiveCampaignPostComponent implements OnInit {
     modal.componentInstance?.onSuccess.subscribe(res => {
       if(TDSHelperObject.hasValue(res)) {
         this.currentLiveCampaign = res;
+        this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
         this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
-
-        this.lstOfData.map(data => {
-          if(data.Id == res.Id){
-            data = res;
-          }
-        })
       }
     })
   }
