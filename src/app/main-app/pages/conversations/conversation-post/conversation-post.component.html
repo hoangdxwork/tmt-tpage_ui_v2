@@ -70,8 +70,7 @@
                         <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex">
 
                             <div *ngIf="item && currentTeam!.Type == 'Facebook'">
-                                <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds"
-                                    [lstOfLiveCampaign]="lstOfLiveCampaign" (selectPostItemEvent)="selectPost($event)" >
+                                <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)"  [lstOfLiveCampaign]="lstOfLiveCampaign">
                                 </object-facebook-post>
                             </div>
 
@@ -90,7 +89,7 @@
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[50%] flex flex-col h-full overflow-hidden">
             <div *ngIf="currentPost && currentTeam" class="h-full w-full">
-                <conversation-post-view [data]="currentPost" [team]="currentTeam" [lstOfLiveCampaign]="lstOfLiveCampaign"></conversation-post-view>
+                <conversation-post-view [data]="currentPost" [team]="currentTeam"></conversation-post-view>
             </div>
             <div *ngIf="!currentPost" class="h-full w-full text-center">
                 <p class="text-body-2"> Hãy chọn một bài viết</p>

@@ -33,7 +33,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
-  @Input() lstOfLiveCampaign!: LiveCampaignModel[];
 
   currentLiveCampaign!: LiveCampaignModel;
   orderTotal = 0;
@@ -107,18 +106,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
     // TODO: Cập nhật chiến lịch live từ object-facebook-post
     this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          if(res && res.LiveCampaignId &&  res.Id == this.data?.Id) {
-              this.data.LiveCampaignId = res.LiveCampaignId;
-              this.data.LiveCampaign = { ...res.LiveCampaign };
-
-              this.data = {...this.data};
-
-              if(this.data && this.data.LiveCampaignId) {
-                this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.data.LiveCampaignId) as any;
-              }
-          }
-
-          this.cdRef.markForCheck();
       }
     });
 
@@ -149,10 +136,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   loadData() {
     let postId = this.data.ObjectId;
     this.getCommentOrders(postId);
-
-    if(this.data && this.data.LiveCampaignId) {
-      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f => f.Id == this.data.LiveCampaignId) as any;
-    }
   }
 
   getCommentOrders(posId: string) {
@@ -316,8 +299,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
       viewContainerRef: this.viewContainerRef,
       componentParams:{
         data: data,
-        currentLiveCampaign: this.currentLiveCampaign,
-        lstOfData: this.lstOfLiveCampaign
       }
     });
   }
