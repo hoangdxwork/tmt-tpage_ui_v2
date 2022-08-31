@@ -81,7 +81,7 @@ export class DetailBillComponent implements OnInit{
       .subscribe({
         next:(res: any) => {
           delete res['@odata.context'];
-  
+
           if (res.DateCreated) {
             res.DateCreated = new Date(res.DateCreated);
           }
@@ -94,14 +94,14 @@ export class DetailBillComponent implements OnInit{
           if (res.ReceiverDate) {
             res.ReceiverDate = new Date(res.ReceiverDate);
           }
-  
+
           this.dataModel = res;
-  
+
           for (var item of this.dataModel.OrderLines) {
             this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
             this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
           }
-  
+
           switch(res.State) {
             case 'draft':
                 this.indexStep = 1;
@@ -116,14 +116,14 @@ export class DetailBillComponent implements OnInit{
               this.indexStep = 4;
               break;
           }
-  
+
           //TODO: nếu Team thiếu thông tin thì map dữ liệu
           if(res.TeamId) {
             this.loadTeamById(res.TeamId);
           }
-  
+
           this.isLoading = false;
-        }, 
+        },
         error:(error) => {
             this.isLoading = false;
             this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
@@ -146,7 +146,7 @@ export class DetailBillComponent implements OnInit{
     this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
         this.payments = [...res.value];
-      }, 
+      },
       error:(error) => {
         this.message.error('Lỗi tải thông tin thanh toán');
       }
@@ -232,11 +232,11 @@ export class DetailBillComponent implements OnInit{
               that.isProcessing = false;
 
               that.loadData();
-            }, 
+            },
             error:(error) => {
               that.isProcessing = false;
               this.isLoading = false;
-              
+
               let err = error.error.message.split('Error:')?.[1];
               that.message.error(err ?? 'Gửi vận đơn thất bại');
             }
@@ -270,7 +270,7 @@ export class DetailBillComponent implements OnInit{
               that.isProcessing = false;
 
               this.loadData();
-            }, 
+            },
             error:(error) => {
                 that.isProcessing = false;
                 that.message.error(error.error.message ?? 'Xác nhận hủy hóa đơn thất bại');
@@ -313,9 +313,9 @@ export class DetailBillComponent implements OnInit{
             next:(res: TDSSafeAny) => {
               that.message.success('Tạo trả hàng thành công!');
               that.isProcessing = false;
-              
+
               this.loadData();
-            }, 
+            },
             error:(error) => {
                 that.isProcessing = false;
                 that.message.error(error.error.message ?? 'Tạo trả hàng thất bại');
@@ -354,7 +354,7 @@ export class DetailBillComponent implements OnInit{
                   obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${[parseInt(that.id)]}`);
                   break;
 
-                case "printship":
+                case "printShip":
                   if(this.dataModel.Carrier) {
                     obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${that.id}` + "&carrierid=" + `${that.dataModel.Carrier.Id}`);
                   } else {
@@ -393,7 +393,7 @@ export class DetailBillComponent implements OnInit{
   loadInventoryIds(){
     let ids: any = [];
     let data = this.dataModel.OrderLines;
-    
+
     if(data) {
       data.forEach((x: any) => {
         if (!ids.includes(x.ProductId)) {
@@ -406,7 +406,7 @@ export class DetailBillComponent implements OnInit{
     this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
           this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
-      }, 
+      },
       error:(error) => {
           this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
       }

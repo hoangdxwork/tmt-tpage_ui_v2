@@ -15,7 +15,7 @@
                     <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"
                         (click)="onSavePrint('print')">Xác nhận và in (F9)</button>
                     <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"
-                        (click)="onSavePrint('printship')">Xác nhận và in ship</button>
+                        (click)="onSavePrint('printShip')">Xác nhận và in ship</button>
                     <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"
                         (click)="onSavePrint('confirm')">Xác nhận và xem (F8)</button>
                     <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button"
@@ -133,8 +133,8 @@
                                     <span class="text-header-2 text-neutral-1-300 font-semibold"> {{dataModel.ShowState || '---'}}</span>
                                 </div>
                                 <div class="flex items-center" *ngIf="dataModel.CarrierName">
-                                    <span class="font-semibold ml-2" tds-tooltip tooltipTitle="Đối tác giao hàng: {{ dataModel.CarrierName }}"> 
-                                        {{ dataModel.CarrierName }} 
+                                    <span class="font-semibold ml-2" tds-tooltip tooltipTitle="Đối tác giao hàng: {{ dataModel.CarrierName }}">
+                                        {{ dataModel.CarrierName }}
                                     </span>
                                 </div>
                                 <div class="flex items-center">
