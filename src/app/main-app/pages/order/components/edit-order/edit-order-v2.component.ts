@@ -1,3 +1,4 @@
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -62,6 +63,7 @@ export class EditOrderV2Component implements OnInit {
 
   @Input() dataItem!: QuickSaleOnlineOrderModel;
 
+  _form!: FormGroup;
   dataSuggestion!: DataSuggestionDTO;
   userInit!: UserInitDTO;
   lstComment: CommentsOfOrderDTO[] = [];
@@ -121,6 +123,7 @@ export class EditOrderV2Component implements OnInit {
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
     private modalRef: TDSModalRef,
+    private fb: FormBuilder,
     private auth: TAuthService,
     private notification: TDSNotificationService,
     private message: TDSMessageService,
@@ -148,6 +151,7 @@ export class EditOrderV2Component implements OnInit {
     private destroy$: TDSDestroyService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private router: Router) {
+      this.createForm();
   }
 
   ngOnInit(): void {
@@ -166,7 +170,8 @@ export class EditOrderV2Component implements OnInit {
   loadData() {
     this.quickOrderModel = this.dataItem;
     this.mappingAddress(this.quickOrderModel);
-
+    this.updateForm();
+    
     let postId = this.quickOrderModel.Facebook_PostId;
     let teamId = this.quickOrderModel.CRMTeamId;
     let asId = this.quickOrderModel.Facebook_ASUserId;
@@ -244,6 +249,18 @@ export class EditOrderV2Component implements OnInit {
     });
   }
 
+  createForm(){
+    this._form = this.fb.group({
+      Telephone: [null, Validators.pattern(/^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g)],
+      Email: [null, Validators.email]
+    })
+  }
+
+  updateForm(){
+    this._form.controls["Telephone"].setValue(this.quickOrderModel.Telephone);
+    this._form.controls["Email"].setValue(this.quickOrderModel.Email);
+  }
+
   onLoadSuggestion(item: ResultCheckAddressDTO) {
     let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(item, this.quickOrderModel)};
     this.quickOrderModel = data;
@@ -292,13 +309,30 @@ export class EditOrderV2Component implements OnInit {
     this.textSearchProduct = '';
   }
 
+  onChangePartnerName(name: any){
+    this.quickOrderModel.Name = name;
+    this.quickOrderModel.PartnerName = name;
+    
+    if(this.quickOrderModel.Partner){
+      this.quickOrderModel.Partner.Name = name;
+    }
+  }
+
   onChangePhone(data: any){
-    this.quickOrderModel.Telephone = data;
-    this.quickOrderModel.PartnerPhone = data;
+    this.quickOrderModel.Telephone = data.value;
+    this.quickOrderModel.PartnerPhone = data.value;
+
+    if(this.quickOrderModel.Partner){
+      this.quickOrderModel.Partner.Phone = data.value;
+    }
   }
 
   onChangeEmail(data: any){
-    this.quickOrderModel.Email = data;
+    this.quickOrderModel.Email = data.value;
+    
+    if(this.quickOrderModel.Partner){
+      this.quickOrderModel.Partner.Email = data.value;
+    }
   }
 
   onChangeUser(user:any){
