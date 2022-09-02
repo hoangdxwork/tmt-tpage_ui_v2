@@ -1003,7 +1003,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeDeliveryPrice(event: any) {
-    debugger;
     if (typeof(event) == 'number') {
       this.saleModel.DeliveryPrice = event;
       this.coDAmount();
