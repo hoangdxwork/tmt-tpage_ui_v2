@@ -63,6 +63,7 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/co
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
+import { remove } from 'lodash';
 
 @Component({
   selector: 'conversation-order',
@@ -347,8 +348,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             }, this.saleModel);
 
             this.saleModel = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-            this.coDAmount();
+            
             this.calcTotal();
+            this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
           }
@@ -505,7 +507,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.coDAmount();
     }
 
-    this.saleModel.ShipWeight = event?.Config_DefaultFee || this.companyCurrents?.WeightDefault || 100;
+    this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this.saleModel.Ship_Extras = JSON.parse(event.ExtrasText);
@@ -886,8 +888,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'create_template');
             this.quickOrderModel.Details = [...this.quickOrderModel.Details, [x]];
 
-            this.coDAmount();
             this.calcTotal();
+            this.coDAmount();
         }
     })
   }
@@ -960,8 +962,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       this.quickOrderModel.Details[index].Quantity += 1;
     }
 
-    this.coDAmount();
     this.calcTotal();
+    this.coDAmount();
   }
 
   showModalTax() {
@@ -979,6 +981,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       if(res) {
           this.saleModel.Tax = res;
           this.saleModel.TaxId = res.Id;
+          //Trường hợp tax = 0 thì không gán tax lại 
+          if(res.Id === 0)
+          {
+            delete  this.saleModel.Tax;
+            delete  this.saleModel.TaxId;
+          }
           this.calcTotal();
       }
     });
@@ -995,28 +1003,29 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeDeliveryPrice(event: any) {
-    if(event) {
+    debugger;
+    if (typeof(event) == 'number') {
       this.saleModel.DeliveryPrice = event;
       this.coDAmount();
     }
   }
 
   changeDiscount(event: any) {
-    if (event) {
+    if (typeof(event) == 'number') {
       this.saleModel.Discount = event;
       this.calcTotal();
     }
   }
 
   changeDecreaseAmount(event: any) {
-    if (event) {
+    if (typeof(event) == 'number') {
       this.saleModel.DecreaseAmount = event;
       this.calcTotal();
     }
   }
 
   changeAmountDeposit(event: any) {
-    if(event) {
+    if (typeof(event) == 'number') {
       this.saleModel.AmountDeposit = event;
       this.coDAmount();
     }
@@ -1038,11 +1047,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onChangePrice(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
     this.visibleIndex = index;
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
-
+    debugger;
     if(exit) {
         this.quickOrderModel.Details[index].Price = event;
-        this.coDAmount();
         this.calcTotal();
+        this.coDAmount();
+      
     }
   }
 
@@ -1050,8 +1060,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
     if(exit) {
         this.quickOrderModel.Details.splice(index,1);
-        this.coDAmount();
         this.calcTotal();
+        this.coDAmount();
     }
   }
 
