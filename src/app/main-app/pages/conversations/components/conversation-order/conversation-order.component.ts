@@ -1046,7 +1046,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onChangePrice(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
     this.visibleIndex = index;
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
-    debugger;
     if(exit) {
         this.quickOrderModel.Details[index].Price = event;
         this.calcTotal();
