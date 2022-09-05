@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Partner } from './../../../../dto/order/order-bill-default.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { takeUntil, Subject } from 'rxjs';
@@ -12,18 +13,18 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 @Component({
   selector: 'app-update-info-partner',
   templateUrl: './update-info-partner.component.html',
+  providers: [TDSDestroyService]
 })
 export class UpdateInfoPartnerComponent implements OnInit {
 
-  _form!: FormGroup;
-  private destroy$ = new Subject<void>();
-
   @Input() partner!: Partner;
+
+  _form!: FormGroup;
+
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
-  innerText: string = '';
   chatomniEventEmiter: any;
 
   constructor(private fb: FormBuilder,
@@ -31,7 +32,8 @@ export class UpdateInfoPartnerComponent implements OnInit {
     private modal: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private partnerService : PartnerService,
-    private message: TDSMessageService) {
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService) {
       this.createForm();
   }
 
@@ -41,9 +43,9 @@ export class UpdateInfoPartnerComponent implements OnInit {
 
   createForm() {
     this._form = this.fb.group({
-      Name: [null, [Validators.required]],
-      Phone: [null],
-      Street: [null],
+      Name: [null, Validators.required],
+      Phone: [null, Validators.required],
+      Street: [null, Validators.required],
       City: [null],
       District: [null],
       Ward: [null],
@@ -54,6 +56,7 @@ export class UpdateInfoPartnerComponent implements OnInit {
     if(this.partner) {
       this._form.controls["Name"].setValue(this.partner.Name);
       this._form.controls["Phone"].setValue(this.partner.Phone);
+      this._form.controls['Street'].setValue(this.partner.Street);
       this.mappingAddress(this.partner);
     }
   }
@@ -120,39 +123,71 @@ export class UpdateInfoPartnerComponent implements OnInit {
     }
   }
 
+  checkValid(){
+    if(!this._form.controls['Name'].valid){
+      this.message.error('Vui lòng nhập tên');
+      return 0;
+    }
+
+    if(!this._form.controls['Phone'].valid){
+      this.message.error('Vui lòng nhập số điện thoại');
+      return 0;
+    }
+
+    if(!this._form.controls['Street'].valid){
+      this.message.error('Vui lòng nhập địa chỉ');
+      return 0;
+    }
+
+    return 1;
+  }
+
   save() {
-    if (this._form.valid) {
+    if (this.checkValid() == 1) {
       let result = {
         model: this.prepareModel()
       }
+      
       this.partnerService.updatePartnerSimple(result).pipe(takeUntil(this.destroy$))
-        .subscribe(res=>{
-          this.modalRef.destroy(res);
-        },err=>{
-          this.message.error(err.error? err.error.message: 'Sửa thất bại')
-      })
+        .subscribe({
+          next:(res) => {
+            this.modalRef.destroy(res);
+          },
+          error:(err) => {
+            this.message.error(err.error? err.error.message: 'Sửa thất bại');
+          }
+        })
     }
   }
 
   prepareModel() {
     let formValue = this._form.value;
 
-    this.partner.Name = formValue["Name"],
-    this.partner.Phone = formValue["Phone"],
-    this.partner.Street = formValue["Street"] ? formValue["Street"]: this.partner.Street,
+    this.partner.Name = formValue["Name"];
+    this.partner.Phone = formValue["Phone"];
+    this.partner.Street = formValue["Street"] ? formValue["Street"]: this.partner.Street;
+
     this.partner.City = formValue["City"]?.code? {
       code: formValue["City"].code,
       name: formValue["City"].name
-    }: this.partner.City,
+    }: this.partner.City;
+    this.partner.CityCode = formValue["City"]?.code;
+    this.partner.CityName = formValue["City"]?.name;
+
     this.partner.District = formValue["District"]?.code? {
       code: formValue["District"].code,
       name: formValue["District"].name
-    }: this.partner.District,
+    }: this.partner.District;
+    this.partner.DistrictCode = formValue["District"]?.code;
+    this.partner.DistrictName = formValue["District"]?.name;
+
     this.partner.Ward = formValue["Ward"]?.code? {
       code: formValue["Ward"].code,
       name: formValue["Ward"].name
-    }: this.partner.Ward
-
+    }: this.partner.Ward;
+    this.partner.WardCode = formValue["Ward"]?.code;
+    this.partner.WardName = formValue["Ward"]?.name;
+    
     return this.partner;
   }
 
@@ -167,7 +202,10 @@ export class UpdateInfoPartnerComponent implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: this.innerText,
+        _street: this._street,
+        _cities: this._cities,
+        _districts: this._districts,
+        _wards: this._wards,
         isSelectAddress: true
       }
     });
@@ -176,14 +214,9 @@ export class UpdateInfoPartnerComponent implements OnInit {
       next: (result: ResultCheckAddressDTO) => {
         if(result){
           this.onLoadSuggestion(result);
-          this.innerText = result.Address;
+          this.mappingAddress(this._form.value);
         }
       }
     })
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

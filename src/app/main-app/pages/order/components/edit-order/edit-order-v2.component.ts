@@ -864,7 +864,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   openPopoverShipExtraMoney(value: number) {
-    this.extraMoney = value;
+    this.extraMoney = Number(value);
     this.visibleShipExtraMoney = true;
   }
 
@@ -877,12 +877,17 @@ export class EditOrderV2Component implements OnInit {
   }
 
   changeAmountDeposit(value: number) {
-    this.saleModel.AmountDeposit = value;
+    this.saleModel.AmountDeposit = Number(value);
+    this.coDAmount();
+  }
+
+  changeCashOnDelivery(value: number) {
+    this.saleModel.CashOnDelivery = Number(value);
     this.coDAmount();
   }
 
   changeDeliveryPrice(value: number) {
-    this.saleModel.DeliveryPrice = value;
+    this.saleModel.DeliveryPrice = Number(value);
     this.coDAmount();
   }
 
@@ -893,7 +898,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   changeShip_InsuranceFee(value: number) {
-    this.saleModel.Ship_InsuranceFee = value;
+    this.saleModel.Ship_InsuranceFee = Number(value);
   }
 
   changeShipExtraMoney(event: any) {

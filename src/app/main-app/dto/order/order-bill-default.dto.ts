@@ -1,3 +1,5 @@
+import { DataErrorDefaultDTO } from "./default-error.dto";
+
 export interface Partner {
     Id: number;
     Name: string;
@@ -72,30 +74,7 @@ export interface Partner {
     Ward?: any;
 }
 
-export interface Line {
-    Id: string;
-    Ids: any[];
-    PartnerId: number;
-    FacebookId?: any;
-    FacebookName: string;
-    Comment: string;
-    ProductNote?: any;
-    TotalAmount: number;
-    ShipAmount: number;
-    DepositAmount: number;
-    ShipWeight: number;
-    IsPayment: boolean;
-    CarrierId: number;
-    CarrierName: string;
-    SaleOnlineIds: string[];
-    TimeLock?: any;
-    CompanyId?: any;
-    WarehouseId?: any;
-    Reference: string;
-    Partner: Partner;
-}
-
-export interface LineV2 {
+export interface DataErrorDefaultDTOV2 {
     Id: string;
     COD: any;
     CheckAddress: any;
@@ -224,6 +203,6 @@ export interface OrderBillDefaultDTO {
     Id: number;
     CarrierId: number;
     ApplyPromotion?: any;
-    Lines: Line[];
+    Lines: DataErrorDefaultDTO[];
     Carrier: Carrier;
 }
