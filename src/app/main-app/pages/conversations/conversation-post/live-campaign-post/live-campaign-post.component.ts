@@ -6,12 +6,12 @@ import { OverviewLiveCampaignComponent } from './../../../../shared/overview-liv
 import { AddLiveCampaignComponent } from './../../../../shared/add-live-campaign/add-live-campaign.component';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { takeUntil, finalize } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { PrepareUpdateFacebookByLiveCampaign } from '@app/handler-v2/conversation-post/prepare-facebook-post.handler';
 import { ObjectFacebookPostEvent } from '@app/handler-v2/conversation-post/object-facebook-post.event';
 import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
@@ -30,7 +30,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
   @Input() data!: ChatomniObjectsItemDto;
 
   lstOfData: Array<LiveCampaignModel> = [];
-  currentLiveCampaign!: any;
+  currentLiveCampaign: any;
 
   isLoading: boolean = false;
   pageSize = 20;
@@ -120,11 +120,16 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-          this.currentLiveCampaign = res;
-          this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
-          this.loadData();
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+            this.currentLiveCampaign = res;
+
+            // TODO: cập nhật object-facebook-post
+            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
+            this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
+            this.loadData();
+        }
       }
     })
   }
@@ -145,18 +150,22 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
       }
     });
 
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-          this.currentLiveCampaign = res;
-          this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
-          this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+            this.currentLiveCampaign = res;
+
+            // TODO: cập nhật object-facebook-post
+            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
+            this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
+        }
       }
     })
   }
 
   removeLiveCampaign(){
     let id = this.currentLiveCampaign?.Id;
-    if(Guid.isGuid(id)) {
+    if(id && Guid.isGuid(id)) {
 
       this.modal.success({
         title: 'Xóa chiến dịch live',
@@ -175,7 +184,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
                   this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
 
                   this.isLoading = false;
-                  this.message.success('Xóa chiến dịch thành công');
+                  this.message.success('Bỏ chọn chiến dịch thành công');
                   this.cdRef.detectChanges();
               },
               error: (error: any) => {
@@ -194,8 +203,8 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   showModelCopyLiveCampaign(id?: string) {
     if(!id) {
-      this.message.info(Message.SelectOneLine);
-      return;
+        this.message.info(Message.SelectOneLine);
+        return;
     }
 
     const modal = this.modal.create({
@@ -204,14 +213,14 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        id: id,
-        isCopy: true
+          id: id,
+          isCopy: true
       }
     });
 
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-        this.lstOfData.push(res);
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      if(res) {
+          this.loadData();
       }
     })
   }
@@ -237,10 +246,12 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
         });
 
         this.isLoading = false;
+        this.cdRef.detectChanges();
       },
       error: (error: any) => {
         this.isLoading = false;
         this.message.error(error?.error?.message || 'Không tải được dữ liệu thống kê');
+        this.cdRef.detectChanges();
       }
     })
   }
@@ -251,7 +262,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   onSave() {
     let id = this.currentLiveCampaign?.Id;
-    if(Guid.isGuid(id)) {
+    if(id && Guid.isGuid(id)) {
       let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
       this.isLoading = true;
 

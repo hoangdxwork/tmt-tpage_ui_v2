@@ -70,7 +70,7 @@
               <div class="flex gap-x-4 items-center">
                 <tds-label class="w-1/4">Số tiền cọc bắt buộc</tds-label>
                 <tds-form-field class="w-3/4">
-                  <tds-input-number [min]='0' [step]="1" formControlName="MaxAmountDepositRequired"
+                  <tds-input-number [min]='0' [step]="1000" formControlName="MaxAmountDepositRequired"
                   > </tds-input-number>
                 </tds-form-field>
               </div>
@@ -191,7 +191,7 @@
                 </thead>
                 <tbody formArrayName="Details">
                   <tr *ngFor="let detail of detailsForm.controls; let index = index"  [formGroupName]="index">
-                      
+
                     <td> {{ index + 1 }} </td>
 
                     <!-- Sản phẩm -->

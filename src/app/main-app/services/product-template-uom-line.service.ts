@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable({
   providedIn: 'root'
@@ -45,9 +45,9 @@ export class ProductTemplateUOMLineService extends BaseSevice {
   }
 
   getProductUOMLine(skip: number, top: number, keyword?: string): Observable<any> {
-    let filter = ""
-
-    if (keyword) {
+    let filter = "";
+    if (TDSHelperString.hasValueString(keyword)) {
+      keyword = TDSHelperString.stripSpecialChars(keyword!.toLocaleLowerCase().trim());
       filter = `&$filter=(contains(NameNoSign,'${keyword}')+or+contains(NameGet,'${keyword}')+or+contains(Barcode,'${keyword}'))`;
     }
 
