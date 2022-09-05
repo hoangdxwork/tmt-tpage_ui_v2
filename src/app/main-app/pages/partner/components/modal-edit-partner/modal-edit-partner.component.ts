@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnDestroy } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -17,10 +18,11 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 
 @Component({
   selector: 'app-modal-edit-partner',
-  templateUrl: './modal-edit-partner.component.html'
+  templateUrl: './modal-edit-partner.component.html',
+  providers: [ TDSDestroyService ]
 })
 
-export class ModalEditPartnerComponent implements OnInit, OnDestroy {
+export class ModalEditPartnerComponent implements OnInit {
 
   @Input() partnerId: any;
 
@@ -40,8 +42,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
-  innerText: string = '';
-  private destroy$ = new Subject<void>();
   chatomniEventEmiter: any;
 
   constructor(private fb: FormBuilder,
@@ -50,7 +50,8 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     private partnerService: PartnerService,
     private commonService: CommonService,
     private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private destroy$: TDSDestroyService) {
     this.createForm();
   }
 
@@ -118,32 +119,41 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     }
 
     this.partnerService.getDefault(model)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-        delete res['@odata.context'];
-
-        this.data = res;
-        this.updateForm(this.data);
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      })
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+        {
+          next: (res: any) => {
+            delete res['@odata.context'];
+    
+            this.data = res;
+            this.updateForm(this.data);
+          }, 
+          error: error => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+          }
+        }
+      )
   }
 
   loadPartner() {
     this.isLoading = true;
     this.partnerService.getById(this.partnerId)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-        delete res['@odata.context'];
-
-        if (res.BirthDay != null) {
-          res.BirthDay = new Date(res.BirthDay);
-        }
-
-        this.data = res;
-        this.updateForm(this.data);
-        this.mappingAddress(res);
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      })
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+        {
+          next: (res: any) => {
+            delete res['@odata.context'];
+    
+            if (res.BirthDay != null) {
+              res.BirthDay = new Date(res.BirthDay);
+            }
+    
+            this.data = res;
+            this.updateForm(this.data);
+            this.mappingAddress(res);
+          }, 
+          error: error => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+          }
+        })
   }
 
   mappingAddress(data: any) {
@@ -205,6 +215,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     } else {
       this._form.controls['Ward'].setValue(null)
     }
+    this._form.markAsDirty();
   }
 
   updateForm(data: any) {
@@ -217,33 +228,45 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   openCategory() {
-    this.partnerService.getPartnerCategory().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (TDSHelperString.hasValueString(res.value)) {
-        this.lstCategory = [...res.value];
-      }
-    }, error => {
-      this.message.error(`${error?.error?.message}`)
-    })
+    this.partnerService.getPartnerCategory().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          if (TDSHelperString.hasValueString(res.value)) {
+            this.lstCategory = [...res.value];
+          }
+        },
+        error: error => {
+          this.message.error(`${error?.error?.message}`)
+        }
+      })
   }
 
   openStatus() {
-    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe((res) => {
-      this.lstStatus = res.map((x: any) => x.text);
-    }, error => {
-      this.message.error(`${error?.error?.message}`)
-    })
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res) => {
+          this.lstStatus = res.map((x: any) => x.text);
+        },
+        error: error => {
+          this.message.error(`${error?.error?.message}`)
+        }
+      })
   }
 
   openlstPrice() {
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
-    this.commonService.getPriceListAvailable(date).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (TDSHelperString.hasValueString(res.value)) {
-        this.lstPrice = [...res.value];
-        this.price = this.lstPrice[0];
-      }
-    }, error => {
-      this.message.error(`${error?.error?.message}`)
-    })
+    this.commonService.getPriceListAvailable(date).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          if (TDSHelperString.hasValueString(res.value)) {
+            this.lstPrice = [...res.value];
+            this.price = this.lstPrice[0];
+          }
+        }, 
+        error: error => {
+          this.message.error(`${error?.error?.message}`)
+        }
+      })
   }
 
   checkAddressByPhone() {
@@ -252,11 +275,15 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       this.isLoading = true;
 
       this.commonService.checkAddressByPhone(phone)
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-          this.message.info('Chưa có dữ liệu');
-        }, error => {
-          this.message.error(`${error?.error?.message}`)
-        })
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+          {
+            next: (res: any) => {
+              this.message.info('Chưa có dữ liệu');
+            },
+            error: error => {
+              this.message.error(`${error?.error?.message}`)
+            }
+          })
     }
   }
 
@@ -265,7 +292,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   onSave(): any {
-    if(!this._form.dirty && this.partnerId) {
+    if(!this._form.dirty && this.partnerId && this._street == this._form.controls.Street.value) {
         return this.modal.destroy(null);
     }
 
@@ -281,21 +308,30 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
 
     if (this.partnerId) {
         this.isLoading = true;
-        this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-            this.message.success('Cập nhật khách hàng thành công!');
-            this.modal.destroy(this.partnerId);
-        }, error => {
-            this.message.error('Cập nhật khách hàng thất bại!');
-        })
-
+        this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+          {
+            next: (res: any) => {
+              this.message.success('Cập nhật khách hàng thành công!');
+              this.modal.destroy(this.partnerId);
+            }, 
+            error: error => {
+              this.message.error('Cập nhật khách hàng thất bại!');
+            }
+          }
+        )
     } else {
         this.isLoading = false;
-        this.partnerService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-          this.message.success('Thêm mới khách hàng thành công!');
-          this.modal.destroy(res.Id);
-        }, error => {
-          this.message.error('Thêm mới khách hàng thất bại!');
-        })
+        this.partnerService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+          {
+            next: (res: any) => {
+              this.message.success('Thêm mới khách hàng thành công!');
+              this.modal.destroy(res.Id);
+            }, 
+            error: error => {
+              this.message.error('Thêm mới khách hàng thất bại!');
+            }
+          }
+        )
     }
   }
 
@@ -334,11 +370,18 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   addAddresses(data: any) {
     const control = <FormArray>this._form.controls['Addresses'];
     control.push(this.initAddress(data));
+    control.markAsDirty();
   }
 
   removeAddresses(i: number) {
     const control = <FormArray>this._form.controls['Addresses'];
+
+    if(control.value[i] && control.value[i].Street == this._form.controls['Street'].value){
+      this.message.error('Không được xóa địa chỉ đang chọn');
+      return
+    }
     control.removeAt(i);
+    control.markAsDirty();
   }
 
   openItemAddresses(data: AddressesV2, index: number) {
@@ -392,6 +435,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
         };
 
         (this._form.controls.Addresses as FormArray).at(index).patchValue(item);
+        this._form.markAsDirty();
       }
     });
   }
@@ -443,11 +487,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       this._street = item.Street;
       this._form.controls['Street'].setValue(item.Street);
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._form.markAsDirty();
   }
 
   prepareModel() {
@@ -498,6 +538,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     this.data['City'] = formModel.City;
     this.data['District'] = formModel.District;
     this.data['Ward'] = formModel.Ward;
+    this.data['Street'] = formModel.Street;
 
     if (formModel.Customer != null) {
       this.data['Customer'] = formModel.Customer;
@@ -514,14 +555,10 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     if (formModel.Supplier != null) {
       this.data['Supplier'] = formModel.Supplier;
     }
-    if (TDSHelperArray.hasListValue(formModel.Addresses)) {
-      this.data['Addresses'] = formModel.Addresses;
-    }
+    this.data['Addresses'] = TDSHelperArray.hasListValue(formModel.Addresses)? formModel.Addresses : [];
+
     if (formModel.CompanyType != null) {
       this.data['CompanyType'] = formModel.CompanyType;
-    }
-    if (formModel.Street != null) {
-      this.data['Street'] = formModel.Street;
     }
 
     if (this.data['CompanyType'] === 'person') {
@@ -538,7 +575,10 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: this.innerText,
+        _cities: this._cities,
+        _districts: this._districts,
+        _wards: this._wards,
+        _street: this._form.controls.Street?.value,
         isSelectAddress: true
       }
     });
@@ -547,7 +587,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       next: (result: ResultCheckAddressDTO) => {
         if(result){
           this.onLoadSuggestion(result);
-          this.innerText = result.Address;
         }
       }
     })
