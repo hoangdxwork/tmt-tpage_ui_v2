@@ -386,7 +386,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           data: this.data,
-          currentLiveCampaign: this.currentLiveCampaign
         }
       });
     }

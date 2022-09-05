@@ -16,6 +16,7 @@ import { PrepareUpdateFacebookByLiveCampaign } from '@app/handler-v2/conversatio
 import { ObjectFacebookPostEvent } from '@app/handler-v2/conversation-post/object-facebook-post.event';
 import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { SortEnum } from '@core/enum';
+import { Guid } from 'guid-typescript';
 
 @Component({
   selector: 'live-campaign-post',
@@ -146,35 +147,39 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     modal.componentInstance?.onSuccess.subscribe(res => {
       if(TDSHelperObject.hasValue(res)) {
-        this.currentLiveCampaign = res;
-        this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
-        this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
+          this.currentLiveCampaign = res;
+          this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
+          this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
       }
     })
   }
 
   removeLiveCampaign(){
-    let id = this.currentLiveCampaign.Id;
-    let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'cancel')};
-    this.isLoading = true;
+    let id = this.currentLiveCampaign?.Id;
+    if(Guid.isGuid(id)) {
+      let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'cancel')};
+      this.isLoading = true;
 
-    this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.currentLiveCampaign = null as any;
-          this.data.LiveCampaignId = null as any;
-          this.data.LiveCampaign = null as any;
+      this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.currentLiveCampaign = null as any;
+            this.data.LiveCampaignId = null as any;
+            this.data.LiveCampaign = null as any;
 
-          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-          this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
+            // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+            this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
 
-          this.isLoading = false;
-          this.message.success('Xóa chiến dịch thành công')
-      },
-      error: (error: any) => {
-          this.isLoading = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-      }
-    });
+            this.isLoading = false;
+            this.message.success('Xóa chiến dịch thành công');
+            this.cdRef.detectChanges();
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
+        }
+      });
+    }
   }
 
   showModelCopyLiveCampaign(id?: string) {
@@ -203,13 +208,13 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   showModelOverViewLiveCampaign(id?: string, name?: string) {
     if(!id) {
-      this.message.info(Message.SelectOneLine);
-      return;
+        this.message.info(Message.SelectOneLine);
+        return;
     }
 
     this.isLoading = true;
-    this.liveCampaignService.getReport(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe(res => {
+    this.liveCampaignService.getReport(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         this.modal.create({
           title: `${name}`,
           content: OverviewLiveCampaignComponent,
@@ -220,10 +225,14 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
             lstOfData: res as ReportLiveCampaignDTO
           }
         });
+
+        this.isLoading = false;
       },
-      err => {
-        this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kê');
-      })
+      error: (error: any) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Không tải được dữ liệu thống kê');
+      }
+    })
   }
 
   onCannel() {
@@ -231,31 +240,33 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
   }
 
   onSave() {
-    let id = this.currentLiveCampaign.Id;
-    let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
-    this.isLoading = true;
+    let id = this.currentLiveCampaign?.Id;
+    if(Guid.isGuid(id)) {
+      let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
+      this.isLoading = true;
 
-    this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
 
-          this.data.LiveCampaignId = this.currentLiveCampaign.Id;
-          this.data.LiveCampaign = {
-              Id: this.currentLiveCampaign.Id,
-              Name:this.currentLiveCampaign.Name,
-              Note: this.currentLiveCampaign.Note
-          };
+            this.data.LiveCampaignId = this.currentLiveCampaign.Id;
+            this.data.LiveCampaign = {
+                Id: this.currentLiveCampaign.Id,
+                Name:this.currentLiveCampaign.Name,
+                Note: this.currentLiveCampaign.Note
+            };
 
-          // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-          this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
+            // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
 
-          this.isLoading = false;
-          this.message.success('Cập nhật chiến dịch thành công');
-          this.onCannel();
-      },
-      error: (error: any) => {
-          this.isLoading = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-      }
-    });
+            this.isLoading = false;
+            this.message.success('Cập nhật chiến dịch thành công');
+            this.onCannel();
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+        }
+      });
+    }
   }
 }

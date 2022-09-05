@@ -32,13 +32,12 @@
       </div>
 
       <!-- Dong bo san pham tu chien dich live -->
-      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 flex justify-between w-full h-full"
-        *ngIf="dataModel.IsEnableOrderAuto && dataModel.LiveCampaignId">
+      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 flex justify-between w-full h-full" *ngIf="dataModel.IsEnableOrderAuto && currentLiveCampaign && currentLiveCampaign.Id">
           <div class="flex items-center gap-x-4">
               <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Đồng bộ sản phẩm từ chiến dịch</div>
 
               <div class="flex gap-x-1 py-0.5 px-2 bg-base-orange-50 items-center rounded">
-                  <div class="text-caption-1 font-regular text-base-orange-500">{{ currentLiveCampaign?.Name }} - chiến dịch mới setting</div>
+                  <div class="text-caption-1 font-regular text-base-orange-500">{{ currentLiveCampaign.Name }} - chiến dịch mới setting</div>
                   <div class="flex items-center"><span class="tdsi-arrow-right-line text-base-orange-500 text-md flex items-center"></span></div>
               </div>
           </div>
