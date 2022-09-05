@@ -1,146 +1,156 @@
 <div class="rounded-xl pb-3 bg-white pt-2 flex h-full flex-col gap-y-2">
-        <div class="flex xl:gap-x-1.5 2xl:gap-x-2 justify-between px-3 relative">
-                <tds-form-field class="min-w-[100px] xl:hidden 2xl:flex">
-                        <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" [tdsInputDebounce]="750"
-                            (inputKeyup)="onInputKeyup($event)" />
-                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                </tds-form-field>
+    <div class="flex xl:gap-x-1.5 2xl:gap-x-2 justify-between px-3 relative">
+        <tds-form-field class="min-w-[100px] xl:hidden 2xl:flex">
+            <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" [tdsInputDebounce]="750"
+                (inputKeyup)="onInputKeyup($event)" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
 
-                <div class="inset-x-3 inset-t-0" [ngClass]="{'absolute 2xl:hidden': search == true, 'hidden' : search == false}">
-                        <tds-form-field>
-                                <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" [tdsInputDebounce]="750"
-                                    (inputKeyup)="onInputKeyup($event)" />
-                                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                        </tds-form-field>
-                </div>
+        <div class="inset-x-3 inset-t-0" [ngClass]="{'absolute 2xl:hidden': search == true, 'hidden' : search == false}">
+            <tds-form-field>
+                <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" [tdsInputDebounce]="750"
+                    (inputKeyup)="onInputKeyup($event)" />
+                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+            </tds-form-field>
+        </div>
 
-                <button tds-button-icon color="custom" (click)="onSearch()" [ngClass]="{'border-transparent bg-transparent text-transparent': search == true, 'flex' : search == false}"
-                        class="text-neutral-1-500 ring-0 ring-transparent border-neutral-2-200 2xl:hidden">
-                        <i class="tdsi-search-fill"></i>
+        <button tds-button-icon color="custom" (click)="onSearch()"
+            [ngClass]="{'border-transparent bg-transparent text-transparent': search == true, 'flex' : search == false}"
+            class="text-neutral-1-500 ring-0 ring-transparent border-neutral-2-200 2xl:hidden">
+            <i class="tdsi-search-fill"></i>
+        </button>
+
+        <div class="xl:gap-x-1.5 2xl:gap-x-2" [ngClass]="{'hidden': search == true, 'flex' : search == false}">
+            <tds-button-group>
+                <button tds-button type="button" color="secondary" tds-dropdown trigger="click"
+                    [tdsDropdownMenu]="menu1">
+                    <span class="flex items-center" *ngIf="currentOption">
+                        {{currentOption.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                    </span>
                 </button>
 
-                <div class="xl:gap-x-1.5 2xl:gap-x-2" [ngClass]="{'hidden': search == true, 'flex' : search == false}">
-                        <tds-button-group>
-                                <button tds-button type="button" color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu1">
-                                        <span class="flex items-center" *ngIf="currentOption">
-                                            {{currentOption.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                                        </span>
-                                </button>
+                <tds-dropdown-menu #menu1="tdsDropdownMenu">
+                    <div class="w-full">
+                        <div tds-dropdown-item *ngFor="let item of options" (click)="selectOption(item)">{{item.text}}
+                        </div>
+                    </div>
+                </tds-dropdown-menu>
+            </tds-button-group>
 
-                                <tds-dropdown-menu #menu1="tdsDropdownMenu">
-                                    <div class="w-full">
-                                        <div tds-dropdown-item *ngFor="let item of options" (click)="selectOption(item)">{{item.text}}</div>
-                                    </div>
-                                </tds-dropdown-menu>
-                        </tds-button-group>
-                        
-                        <tds-button-group>
-                                <button tds-button type="button" color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu2">
-                                        <span class="flex items-center" *ngIf="currentType">
-                                            {{currentType.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                                        </span>
-                                </button>
+            <tds-button-group>
+                <button tds-button type="button" color="secondary" tds-dropdown trigger="click"
+                    [tdsDropdownMenu]="menu2">
+                    <span class="flex items-center" *ngIf="currentType">
+                        {{currentType.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                    </span>
+                </button>
 
-                                <tds-dropdown-menu #menu2="tdsDropdownMenu">
-                                        <div class="w-full">
-                                                <div tds-dropdown-item *ngFor="let item of types" (click)="selectType(item)">{{item.text}}</div>
-                                        </div>
-                                </tds-dropdown-menu>
-                        </tds-button-group>
+                <tds-dropdown-menu #menu2="tdsDropdownMenu">
+                    <div class="w-full">
+                        <div tds-dropdown-item *ngFor="let item of types" (click)="selectType(item)">{{item.text}}</div>
+                    </div>
+                </tds-dropdown-menu>
+            </tds-button-group>
 
-                        <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm"
-                                (click)="showModalAddProduct()" type="button">
-                                <span class="flex items-center">
-                                        <i class="tdsi-plus-fill"></i>
-                                </span>
-                        </button>
+            <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm"
+                (click)="showModalAddProduct()" type="button">
+                <span class="flex items-center">
+                    <i class="tdsi-plus-fill"></i>
+                </span>
+            </button>
 
-                        <button tds-button-icon type="button" color="info" tds-tooltip tooltipTitle="Reload" type="button"
-                                (click)="reloadIndexDB()">
-                                <span class="flex items-center">
-                                        <i class="tdsi-reload-fill"></i>
-                                </span>
-                        </button>
-                </div>
+            <button tds-button-icon type="button" color="info" tds-tooltip tooltipTitle="Reload" type="button"
+                (click)="reloadIndexDB()">
+                <span class="flex items-center">
+                    <i class="tdsi-reload-fill"></i>
+                </span>
+            </button>
         </div>
-        <div class="w-full h-full">
-                <tds-table #basicTable [listData]="lstOfData" [scroll]="{y:'100%',x:'hidden'}" [showPagination]="false"
-                        [frontPagination]="false" [virtualItemSize]="20" [loading]="isLoading" [virtualForTrackBy]="trackByIndex">
-                        <thead>
-                                <tr>
-                                        <th width="20%">Ảnh</th>
-                                        <th width="40%">Tên sản phẩm</th>
-                                        <th width="20%">Đơn vị</th>
-                                        <th width="20%">Giá</th>
-                                </tr>
-                        </thead>
-                        <tbody>
-                                <ng-template tds-virtual-scroll let-data let-index="index">
-                                        <tr *ngIf="data && inLiveCampaign" (click)="addItem(data, index)" tds-popover 
-                                                popoverTrigger="click" [popoverVisible]="index == indClick" [popoverBackdrop]="true"
-                                                [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate" [popoverAutoClose]="true"
-                                                class="group hover:cursor-pointer">
-                                                <td>
-                                                        <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
-                                                        </tds-avatar>
-                                                </td>
-                                                <td>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-body-2 w-[130px] truncate" tds-tooltip tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
-                                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                                                                <span class="text-primary-1"
-                                                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
-                                                        </span>
-                                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
-                                                                <span class="text-primary-1"
-                                                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td class="text-body-2">{{ data.UOMName }}</td>
-                                                <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
-                                        </tr>
+    </div>
+    <div class="w-full h-full">
+        <tds-table #basicTable [listData]="lstOfData" [scroll]="{y:'100%',x:'hidden'}" [showPagination]="false"
+            [frontPagination]="false" [virtualItemSize]="20" [loading]="isLoading" [virtualForTrackBy]="trackByIndex">
+            <thead>
+                <tr>
+                    <th width="20%">Ảnh</th>
+                    <th width="40%">Tên sản phẩm</th>
+                    <th width="20%">Đơn vị</th>
+                    <th width="20%">Giá</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-template tds-virtual-scroll let-data let-index="index">
+                    <tr *ngIf="data && inLiveCampaign" (click)="addItem(data, index)" tds-popover popoverTrigger="click"
+                        [popoverVisible]="index == indClick" [popoverBackdrop]="true" [popoverFooter]="footerTemplate"
+                        [popoverContent]="contentTemplate" [popoverAutoClose]="true" class="group hover:cursor-pointer">
+                        <td>
+                            <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
+                            </tds-avatar>
+                        </td>
+                        <td>
+                            <div class="flex flex-col">
+                                <span class="text-body-2 w-[130px] truncate" tds-tooltip
+                                    tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
+                                <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                                    <span class="text-primary-1"
+                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable
+                                        || 0}}</span>
+                                </span>
+                                <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                    <span class="text-primary-1"
+                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable
+                                        || 0}}</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="text-body-2">{{ data.UOMName }}</td>
+                        <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                    </tr>
 
-                                        <tr *ngIf="data && !inLiveCampaign" (click)="addItem(data, index)" class="group hover:cursor-pointer">
-                                                <td>
-                                                        <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
-                                                        </tds-avatar>
-                                                </td>
-                                                <td>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-body-2 w-[130px] truncate" tds-tooltip tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
-                                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                                                                <span class="text-primary-1"
-                                                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
-                                                        </span>
-                                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
-                                                                <span class="text-primary-1"
-                                                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td class="text-body-2">{{ data.UOMName }}</td>
-                                                <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
-                                        </tr>
+                    <tr *ngIf="data && !inLiveCampaign" (click)="addItem(data, index)"
+                        class="group hover:cursor-pointer">
+                        <td>
+                            <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
+                            </tds-avatar>
+                        </td>
+                        <td>
+                            <div class="flex flex-col">
+                                <span class="text-body-2 w-[130px] truncate" tds-tooltip
+                                    tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
+                                <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                                    <span class="text-primary-1"
+                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable
+                                        || 0}}</span>
+                                </span>
+                                <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                    <span class="text-primary-1"
+                                        *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable
+                                        || 0}}</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="text-body-2">{{ data.UOMName }}</td>
+                        <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                    </tr>
 
-                                        <ng-template #contentTemplate>
-                                            <div class="text-body-2 font-semibold">
-                                                Bạn có muốn chọn tất cả {{lstVariants.length}} biến thể cùng với sản phẩm này.
-                                            </div>
-                                        </ng-template>
-                                        
-                                        <ng-template #footerTemplate>
-                                            <div class="flex items-center justify-end gap-x-2 pt-4">
-                                                <button tds-button size="sm" (click)="getAllVariants()">
-                                                    Chọn tất cả
-                                                </button>
-                                                <button tds-button color="secondary" size="sm" (click)="getCurrentVariant(data)">
-                                                    Chọn hiện tại
-                                                </button>
-                                            </div>
-                                        </ng-template>
-                                </ng-template>
-                        </tbody>
-                </tds-table>
-        </div>
+                    <ng-template #contentTemplate>
+                        <div class="text-body-2 font-semibold">
+                            Bạn có muốn chọn tất cả {{lstVariants.length}} biến thể cùng với sản phẩm này.
+                        </div>
+                    </ng-template>
+
+                    <ng-template #footerTemplate>
+                        <div class="flex items-center justify-end gap-x-2 pt-4">
+                            <button tds-button size="sm" (click)="getAllVariants()">
+                                Chọn tất cả
+                            </button>
+                            <button tds-button color="secondary" size="sm" (click)="getCurrentVariant(data)">
+                                Chọn hiện tại
+                            </button>
+                        </div>
+                    </ng-template>
+                </ng-template>
+            </tbody>
+        </tds-table>
+    </div>
 </div>
