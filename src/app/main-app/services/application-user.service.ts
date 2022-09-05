@@ -24,10 +24,6 @@ export class ApplicationUserService extends BaseSevice {
       super(apiService);
   }
 
-  initialize() {
-    this.setUserActive();
-  }
-
   getUserActive() {
     return  this._lstUserActive$.asObservable();
   }

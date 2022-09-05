@@ -17,12 +17,11 @@ export class CRMTagService extends BaseSevice {
 
   public dataSource$ = new BehaviorSubject<any>(null);
   public dataActive$ = new BehaviorSubject<any>([]);
-  private _keyCacheNearestTags = "nearestTags";
 
   constructor(private apiService: TCommonService,
     private cacheApi: THelperCacheService) {
     super(apiService);
-    this.initialize();
+      this.initialize();
   }
 
   initialize() {

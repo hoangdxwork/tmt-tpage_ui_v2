@@ -12,7 +12,7 @@ import { addDays } from 'date-fns';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { finalize } from 'rxjs/operators';
-import { AddLiveCampaignComponent } from '../add-live-campaign/add-live-campaign.component';
+import { AddLiveCampaignPostComponent } from '../add-live-campaign/add-livecampaign-post.component';
 import { OverviewLiveCampaignComponent } from '../overview-live-campaign/overview-live-campaign.component';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -146,7 +146,7 @@ export class ListLiveCampaignComponent implements OnInit {
   showModelCreateLiveCampaign() {
     const modal = this.modal.create({
       title: 'Tạo mới chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
     });
@@ -160,7 +160,7 @@ export class ListLiveCampaignComponent implements OnInit {
 
     const modal = this.modal.create({
       title: 'Chỉnh sửa chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
@@ -177,7 +177,7 @@ export class ListLiveCampaignComponent implements OnInit {
 
     const modal = this.modal.create({
       title: 'Sao chép chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{

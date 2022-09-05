@@ -52,9 +52,10 @@ export class ModalAddQuickReplyComponent implements OnInit {
       this.message.warning('Vui lòng nhập tên mẫu')
       return
     }
+
     let model = this.prepareModel();
-    this.quickReplyService.insert(model).pipe(takeUntil(this.destroy$))
-      .subscribe(res=>{
+    this.quickReplyService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         this.message.success('Thêm trả lời nhanh thành công');
         delete res['@odata.context'];
         delete res['@odata.type'];
@@ -66,11 +67,13 @@ export class ModalAddQuickReplyComponent implements OnInit {
         delete res['MailServerId'];
         delete res['EventDatas'];
 
-        this.quickReplyService.addDataActive(res);
+        this.quickReplyService.lstDataActive = [];
         this.modal.destroy(res);
-      }, err=>{
-        this.message.error(err.error? err.error.message: 'Thêm trả lời nhanh thất bại');
-      })
+      },
+      error: (error: any) => {
+        this.message.error(error.error.message || 'Thêm trả lời nhanh thất bại');
+      }
+    })
   }
 
   prepareModel(){

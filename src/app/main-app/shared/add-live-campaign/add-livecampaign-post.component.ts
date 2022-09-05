@@ -1,9 +1,8 @@
-import { TAuthService } from './../../../lib/services/auth.service';
-import { ODataProductDTOV2, ProductDTOV2 } from './../../dto/product/odata-product.dto';
-import { ProductTemplateUOMLineService } from './../../services/product-template-uom-line.service';
+import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
+import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
+import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { Component, OnInit, Output, EventEmitter, Input, ViewContainerRef } from '@angular/core';
@@ -28,13 +27,15 @@ import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { SharedService } from '@app/services/shared.service';
 import { Guid } from 'guid-typescript';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
+import { CRMTeamService } from '@app/services/crm-team.service';
 
 @Component({
-  selector: 'add-live-campaign',
-  templateUrl: './add-live-campaign.component.html',
+  selector: 'add-livecampaign-post',
+  templateUrl: './add-livecampaign-post.component.html',
   providers: [TDSDestroyService]
 })
-export class AddLiveCampaignComponent implements OnInit {
+export class AddLiveCampaignPostComponent implements OnInit {
 
   @Input() id?: string;
   @Input() isCopy?: boolean;
@@ -55,10 +56,10 @@ export class AddLiveCampaignComponent implements OnInit {
   _form!: FormGroup;
   companyCurrents!: CompanyCurrentDTO;
 
-  constructor(
+  constructor(private crmTeamService: CRMTeamService,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private liveCampaignService: LiveCampaignService,
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
@@ -88,9 +89,9 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   createForm() {
-    this._form = this.formBuilder.group({
+    this._form = this.fb.group({
       Id: [this.id],
-      Details: this.formBuilder.array([]),
+      Details: this.fb.array([]),
       Config: [null],
       Name: [null, Validators.required],
       Note: [null],
@@ -105,7 +106,9 @@ export class AddLiveCampaignComponent implements OnInit {
       IsEnableAuto: [false],
       EnableQuantityHandling: [true],
       IsAssignToUserNotAllowed: [true],
-      IsShift: [false]
+      IsShift: [false],
+      Facebook_UserId: [null],
+      Facebook_UserName: [null],
     });
   }
 
@@ -119,7 +122,8 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   loadQuickReply() {
-    this.lstQuickReplies$ = this.quickReplyService.dataActive$;
+    this.quickReplyService.setDataActive();
+    this.lstQuickReplies$ = this.quickReplyService.getDataActive();
   }
 
   loadProduct(textSearch: string) {
@@ -215,7 +219,7 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   initDetail(x?: LiveCampaignProductDTO) {
-    let detailFormGroup = this.formBuilder.group({
+    let item = this.fb.group({
         Index: [null],
         Quantity: [null],
         RemainQuantity: [null],
@@ -236,10 +240,10 @@ export class AddLiveCampaignComponent implements OnInit {
     });
 
     if(x) {
-      detailFormGroup.patchValue(x);
+      item.patchValue(x);
     }
 
-    return detailFormGroup;
+    return item;
   }
 
   removeDetail(index: number, detail: TDSSafeAny) {
@@ -376,11 +380,17 @@ export class AddLiveCampaignComponent implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModel(this._form);
-      this.isLoading = true;
 
+      let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+      if(TDSHelperObject.hasValue(team) && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
+          model.Facebook_UserId = team.ChannelId;
+          model.Facebook_UserName = team.Name;
+      }
+
+      this.isLoading = true;
       if(this.id) {
         model.Id = this.id;
-        this.liveCampaignService.update(model,true).pipe(takeUntil(this.destroy$)).subscribe({
+        this.liveCampaignService.update(model, true).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res:LiveCampaignModel) => {
               this.message.success('Cập nhật chiến dịch live thành công');
               this.onCannel(res);
@@ -391,7 +401,6 @@ export class AddLiveCampaignComponent implements OnInit {
               this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
           }
         });
-
       } else {
         this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res:LiveCampaignModel) => {
