@@ -361,8 +361,15 @@
                     </div>
                   </div>
                   <div class="col-span-1 gap-y-4">
-                    <div class="flex 2xl:gap-x-6 xl:gap-x-4 items-center">
+                    <div class="flex 2xl:gap-x-6 xl:gap-x-4 items-center mb-2">
                       <span class="col-span-1 w-1/4 font-semibold">Địa chỉ giao hàng</span>
+                      <tds-form-field class="w-3/4">
+                        <input tdsInput autocomplete="off" placeholder="Địa chỉ giao hàng" formControlName="ReceiverAddress" />
+                      </tds-form-field>
+                    </div>
+
+                    <div class="flex 2xl:gap-x-6 xl:gap-x-4 items-center">
+                      <span class="col-span-1 w-1/4 font-semibold">Thông tin nâng cao</span>
                       <div class="w-3/4 flex gap-x-2">
                         <tds-form-field class="w-full">
                           <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
@@ -393,8 +400,7 @@
                       </tds-form-field>
                     </div>
                     <div class="w-2/3" *ngIf="dataModel.State !== 'draft'">
-                      <span class="font-semibold">{{_form.controls['User'].value ? _form.controls['User'].value.Name : ''
-                        }}
+                      <span class="font-semibold">{{_form.controls['User'].value ? _form.controls['User'].value.Name : ''}}
                       </span>
                     </div>
                   </div>

@@ -75,7 +75,7 @@
         </div>
 
         <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
-            <div *ngIf="item.LiveCampaign">
+            <div *ngIf="item.LiveCampaign" class="item-object-live">
                 <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500"
                     (click)="showModalLiveCampaign(item)">
                     <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
@@ -86,7 +86,7 @@
                 </tds-tag>
             </div>
 
-            <div *ngIf="!item.LiveCampaign">
+            <div *ngIf="!item.LiveCampaign" class="item-object-live">
                 <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
                     (click)="openTag(item)"
                     [popoverVisible]="indClickTag == item.Id" popoverTrigger="click"

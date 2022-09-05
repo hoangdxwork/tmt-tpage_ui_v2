@@ -618,7 +618,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
-          this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
           // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
           this.loadConversationInfo();
@@ -677,7 +677,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.message.success('Cập nhật đơn hàng thành công');
 
               // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
-              this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+              this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
               // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
               this.loadConversationInfo();
@@ -773,7 +773,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.loadConversationInfo();
 
           // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng nếu là từ comment bài viết
-          this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
           this.shipServices = [];
           this.shipExtraServices = [];
