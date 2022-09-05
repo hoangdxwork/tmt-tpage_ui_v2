@@ -359,8 +359,24 @@
                           formControlName="ReceiverPhone" />
                       </tds-form-field>
                     </div>
+
+                    <div class="flex 2xl:gap-x-6 xl:gap-x-4 items-center">
+                      <span class="col-span-1 w-1/4 font-semibold">Ghi chú</span>
+                      <tds-form-field class="w-3/4">
+                        <input tdsInput autocomplete="off" placeholder="Ghi chú"
+                          formControlName="ReceiverNote" />
+                      </tds-form-field>
+                    </div>
                   </div>
                   <div class="col-span-1 gap-y-4">
+
+                    <div class="flex 2xl:gap-x-6 xl:gap-x-4 items-center mb-2">
+                      <span class="col-span-1 w-1/4 font-semibold">Ngày giao</span>
+                      <tds-form-field class="w-3/4">
+                        <tds-date-picker showTime formControlName="ReceiverDate"></tds-date-picker>
+                      </tds-form-field>
+                    </div>
+
                     <div class="flex 2xl:gap-x-6 xl:gap-x-4 items-center mb-2">
                       <span class="col-span-1 w-1/4 font-semibold">Địa chỉ giao hàng</span>
                       <tds-form-field class="w-3/4">

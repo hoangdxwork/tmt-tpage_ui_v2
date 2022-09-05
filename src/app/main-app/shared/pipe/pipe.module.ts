@@ -20,7 +20,6 @@ import { YiDateTimeV3Pipe } from './yi-datetimeV3.pipe';
 import { YiDateTimeFormatPipe } from './yi-datetimeV2.pipe';
 import { ScrollConversationPipe } from './scroll-conversation.pipe';
 import { OrderByPipe } from './order-by.pipe';
-import { LastActivityMessagePipe } from './last-activity-message.pipe';
 import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
 import { NumberCustomPipe } from './number-custom.pipe';
@@ -31,6 +30,7 @@ import { TagStatusColorPipe } from './tag-status-color.pipe';
 import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
+import { LatestMessageTypePipe } from './lastest-message-type.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -46,7 +46,6 @@ const cmp =[
   ReplacePartnerPipe,
   OrderByPipe,
   ButtonStatusColorPipe,
-  LastActivityMessagePipe,
   ShowAttributeValuePipe,
   ConvertListUrlPipe,
   SelectMultipleValuePipe,
@@ -67,7 +66,8 @@ const cmp =[
   BBcodeConvertPipe,
   SortDataSourcePostPipe,
   SortDataSourceMessagePipe,
-  CheckTagSelectedCommnetPipe
+  CheckTagSelectedCommnetPipe,
+  LatestMessageTypePipe
 ]
 
 @NgModule({
