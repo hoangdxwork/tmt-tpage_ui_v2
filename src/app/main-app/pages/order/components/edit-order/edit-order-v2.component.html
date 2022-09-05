@@ -18,7 +18,7 @@
                               [ngModel]="quickOrderModel?.Partner?.Name" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangePartnerName($event)"/>
                             <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                           </tds-form-field>
-                          
+
                           <div *ngIf="quickOrderModel?.Partner">
                             <tds-button-group>
                               <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
@@ -47,14 +47,14 @@
                           (change)="onChangePhone($event.target)"/>
                           <tds-error *ngIf="_form.controls['Telephone'].invalid">Số điện thoại không hợp lệ</tds-error>
                         </tds-form-field>
-                      
+
                         <tds-label class="flex items-center">Email</tds-label>
                         <tds-form-field class="col-span-3" [color]="_form.controls['Email'].invalid && _form.controls['Email'].touched ? 'error' : 'default'">
                           <input tdsInput placeholder="Nhập email" formControlName="Email" [required]="true"
                           (change)="onChangeEmail($event.target)"/>
                           <tds-error *ngIf="_form.controls['Email'].invalid">Email không hợp lệ</tds-error>
                         </tds-form-field>
-                      
+
                         <tds-label class="flex items-start pt-1.5">Địa chỉ</tds-label>
                         <div class="flex gap-x-2 col-span-3">
                           <tds-form-field class="w-full">
@@ -66,7 +66,7 @@
                               </span>
                           </button>
                         </div>
-                      
+
                         <tds-label class="flex items-center">Người bán</tds-label>
                         <tds-form-field *ngIf="lstUser" class="col-span-3">
                           <tds-select valueField="Id" textField="Name" placeholder='Chọn người bán' [valuePrimitive]="false"
@@ -74,7 +74,7 @@
                             [ngModelOptions]="{standalone: true}">
                           </tds-select>
                         </tds-form-field>
-                      
+
                         <tds-label class="flex items-center">Chiến dịch live</tds-label>
                         <div class="col-span-3 h-8 flex items-center">
                           {{ quickOrderModel?.LiveCampaignName || 'N/A' }}
@@ -280,7 +280,7 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="1" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery"
+                              <tds-input-number [min]="1" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" (ngModelChange)="changeCashOnDelivery($event)"
                                 [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>

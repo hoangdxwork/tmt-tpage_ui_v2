@@ -1221,12 +1221,10 @@ export class AddBillComponent implements OnInit {
       if (this._form.controls['DeliveryPrice'].value != deliveryPrice) {
 
           this._form.controls['DeliveryPrice'].setValue(Number(deliveryPrice));
-          // this.dataModel.DeliveryPrice = deliveryPrice;
           this.coDAmount();
       }
 
       this._form.controls['ShipWeight'].setValue(event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100);
-      // this.dataModel.ShipWeight = this._form.controls['ShipWeight'].value;
 
       if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this._form.controls['Ship_Extras'].setValue(JSON.parse(event.ExtrasText));
