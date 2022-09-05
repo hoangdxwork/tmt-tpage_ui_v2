@@ -6,7 +6,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil, finalize } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -63,7 +63,6 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/co
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { remove } from 'lodash';
 
 @Component({
   selector: 'conversation-order',

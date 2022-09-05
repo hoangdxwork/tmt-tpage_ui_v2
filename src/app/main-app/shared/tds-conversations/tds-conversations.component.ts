@@ -213,10 +213,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadUser() {
-    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.applicationUserService.setUserActive();
+    this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.users = res;
-          this.lstUser = res;
+          this.users = [...res];
+          this.lstUser = [...res];
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || 'Load user đã xảy ra lỗi');

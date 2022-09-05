@@ -80,7 +80,8 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadUser() {
-    this.lstUser$ = this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$));
+    this.applicationUserService.setUserActive();
+    this.lstUser$ = this.applicationUserService.getUserActive();
   }
 
   loadData(postId: string) {
@@ -95,7 +96,7 @@ export class PostOrderConfigComponent implements OnInit {
               this.dataModel.TextContentToOrders = [];
           }
 
-          if(Guid.isGuid(res.LiveCampaignId)) {
+          if(res.LiveCampaignId && Guid.isGuid(res.LiveCampaignId)) {
               this.loadLiveCampaignById(res.LiveCampaignId);
           }
 

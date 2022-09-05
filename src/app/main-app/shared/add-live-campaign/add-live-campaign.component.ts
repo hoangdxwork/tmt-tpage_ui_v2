@@ -5,11 +5,9 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 
-import { finalize, mergeMap } from 'rxjs/operators';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { Component, OnInit, Output, EventEmitter, Input, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
-import { id } from 'date-fns/locale';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -29,6 +27,7 @@ import { ModalProductTemplateComponent } from '../tpage-add-product/modal-produc
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { SharedService } from '@app/services/shared.service';
+import { Guid } from 'guid-typescript';
 
 @Component({
   selector: 'add-live-campaign',
@@ -40,15 +39,13 @@ export class AddLiveCampaignComponent implements OnInit {
   @Input() id?: string;
   @Input() isCopy?: boolean;
 
-  @Output() onSuccess = new EventEmitter<any>();
-
   lstConfig: any = [
     { text: "Nháp", value: "Draft" },
     { text: "Xác nhận", value: "Confirmed" },
     { text: "Xác nhận và gửi vận đơn", value: "ConfirmedAndSendLading" },
   ];
 
-  lstUser$!: Observable<ApplicationUserDTO[]>;
+  lstUser: ApplicationUserDTO[] = [];
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
   lstProductSearch: ProductDTOV2[] = [];
   lstInventory!: GetInventoryDTO;
@@ -69,12 +66,11 @@ export class AddLiveCampaignComponent implements OnInit {
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productService: ProductService,
     private sharedService: SharedService,
-    private auth: TAuthService,
     private message: TDSMessageService,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService) {
-    this.createForm();
+      this.createForm();
    }
 
   get detailsFormGroups() {
@@ -82,7 +78,10 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadData(this.id);
+    if(this.id && Guid.isGuid(this.id)) {
+      this.loadData(this.id);
+    }
+
     this.loadUser();
     this.loadQuickReply();
     this.loadCurrentCompany();
@@ -104,14 +103,19 @@ export class AddLiveCampaignComponent implements OnInit {
       MinAmountDeposit: [0],
       MaxAmountDepositRequired: [0],
       IsEnableAuto: [false],
-      EnableQuantityHandling: [false],
-      IsAssignToUserNotAllowed: [false],
+      EnableQuantityHandling: [true],
+      IsAssignToUserNotAllowed: [true],
       IsShift: [false]
     });
   }
 
   loadUser() {
-    this.lstUser$ = this.applicationUserService.dataActive$;
+    this.applicationUserService.setUserActive();
+    this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.lstUser = [...res];
+      }
+    })
   }
 
   loadQuickReply() {
@@ -162,13 +166,14 @@ export class AddLiveCampaignComponent implements OnInit {
   loadData(id?: string) {
     if(id) {
       this.isLoading = true;
-
-      this.liveCampaignService.getDetailById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-        .subscribe({
-          next:(res) => {
-            this.updateForm(res);
+      this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res) => {
+              delete res['@odata.context'];
+              this.updateForm(res);
+              this.isLoading = false;
           },
           error:(err) => {
+            this.isLoading = false;
             this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
           }
         });
@@ -176,10 +181,15 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   updateForm(data: any) {
-    if(!this.isCopy) delete data["Id"];
+    // TODO: trường hợp copy chiến dịch live
+    if(this.isCopy) {
+        delete this.id;
+        data.Details?.map((x: any) => {
+            delete x.Id;
+        })
+    };
 
     this._form.patchValue(data);
-
     this.initFormDetails(data.Details);
   }
 
@@ -197,17 +207,15 @@ export class AddLiveCampaignComponent implements OnInit {
   initFormDetails(details: any[]) {
 
     if(TDSHelperArray.hasListValue(details)) {
-      details.forEach(detail => {
-
-        const control = <FormArray>this._form.controls['Details'];
-        control.push(this.initDetail(detail));
+      details.forEach(x => {
+          const control = <FormArray>this._form.controls['Details'];
+          control.push(this.initDetail(x));
       });
     }
   }
 
-  initDetail(detail?: LiveCampaignProductDTO) {
+  initDetail(x?: LiveCampaignProductDTO) {
     let detailFormGroup = this.formBuilder.group({
-        Id: [null],
         Index: [null],
         Quantity: [null],
         RemainQuantity: [null],
@@ -227,35 +235,37 @@ export class AddLiveCampaignComponent implements OnInit {
         IsActive: true
     });
 
-    if(detail) {
-      detailFormGroup.patchValue(detail);
+    if(x) {
+      detailFormGroup.patchValue(x);
     }
 
     return detailFormGroup;
   }
 
   removeDetail(index: number, detail: TDSSafeAny) {
-    if(TDSHelperString.hasValueString(detail?.Id) && !this.isCopy) {
+    if(TDSHelperString.hasValueString(detail?.Id)) {
       this.isLoading = true;
+      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            delete res['@odata.context']
 
-      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe({
-        next:(res) => {
-          if(TDSHelperArray.hasListValue(res?.value)) {
-            this.message.error(Message.LiveCampaign.ErrorRemoveLine);
-          }else {
-            const control = this.detailsFormGroups;
-            control.removeAt(index);
-          }
+            if(TDSHelperArray.hasListValue(res?.value)) {
+                this.message.error(Message.LiveCampaign.ErrorRemoveLine);
+            } else {
+                const control = this.detailsFormGroups;
+                control.removeAt(index);
+            }
+
+            this.isLoading = false;
         },
         error:(err) => {
-          this.message.error(`${err?.error?.message || JSON.stringify(err)}`);
+            this.isLoading = false;
+            this.message.error(`${err?.error?.message || JSON.stringify(err)}`);
         }
       });
-    }
-    else {
-      const control = this.detailsFormGroups;
-      control.removeAt(index);
+    } else {
+        const control = this.detailsFormGroups;
+        control.removeAt(index);
     }
   }
 
@@ -322,7 +332,7 @@ export class AddLiveCampaignComponent implements OnInit {
   selectProduct(data: ProductDTOV2){
     const formArray = this.detailsFormGroups;
 
-    let exist = formArray.value.find((f:LiveCampaignProductDTO)=>f.ProductId == data.Id);
+    let exist = formArray.value.find((f:LiveCampaignProductDTO) => f.ProductId == data.Id && f.UOMId == data.UOMId);
     // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
     if(!exist){
       let product = {
@@ -352,7 +362,7 @@ export class AddLiveCampaignComponent implements OnInit {
       //TODO: cập nhật lại danh sách sản phẩm
       formArray.clear();
       this.initFormDetails(lstProduct);
-    }else{
+    } else {
       exist.Quantity += 1;
 
       // TODO: cập nhật lượng lên 1
@@ -368,34 +378,34 @@ export class AddLiveCampaignComponent implements OnInit {
       let model = this.prepareHandler.prepareModel(this._form);
       this.isLoading = true;
 
-      if(this.id){
+      if(this.id) {
         model.Id = this.id;
-
-        this.liveCampaignService.update(model,true).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-        .subscribe((res:LiveCampaignModel) => {
-
-          this.message.success(Message.UpdatedSuccess);
-          this.onSuccess.emit(res);
-
-          this.onCannel();
-        }, error => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        this.liveCampaignService.update(model,true).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res:LiveCampaignModel) => {
+              this.message.success('Cập nhật chiến dịch live thành công');
+              this.onCannel(res);
+              this.isLoading = false;
+          },
+          error: (error: any) => {
+              this.isLoading = false;
+              this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+          }
         });
 
-      }else{
+      } else {
+        this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res:LiveCampaignModel) => {
+              this.message.success('Thêm mới chiến dịch live thành công');
 
-        this.liveCampaignService.create(model).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-        .subscribe((res:LiveCampaignModel) => {
-
-          this.message.success(Message.InsertSuccess);
-          this.onSuccess.emit(res);
-
-          this.onCannel();
-        }, error => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+              this.onCannel(res);
+              this.isLoading = false;
+          },
+          error: (error: any) => {
+              this.isLoading = false;
+              this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+          }
         });
       }
-
     }
   }
 
@@ -433,7 +443,7 @@ export class AddLiveCampaignComponent implements OnInit {
     return Number.isInteger(value);
   }
 
-  onCannel() {
-    this.modalRef.destroy(null);
+  onCannel(data?: any) {
+    this.modalRef.destroy(data);
   }
 }

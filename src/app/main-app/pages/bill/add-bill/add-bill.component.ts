@@ -1310,7 +1310,8 @@ export class AddBillComponent implements OnInit {
   }
 
   loadUser() {
-    return this.applicationUserService.dataActive$;
+    this.applicationUserService.setUserActive();
+    return this.applicationUserService.getUserActive();
   }
 
   loadCarrier() {

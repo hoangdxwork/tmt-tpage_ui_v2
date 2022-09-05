@@ -135,7 +135,8 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   loadUser() {
-    this.lstUser$ = this.applicationUserService.dataActive$;
+    this.applicationUserService.setUserActive();
+    this.lstUser$ = this.applicationUserService.getUserActive();
   }
 
   loadQuickReply() {

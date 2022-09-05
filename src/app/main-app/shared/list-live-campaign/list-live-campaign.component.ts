@@ -55,14 +55,12 @@ export class ListLiveCampaignComponent implements OnInit {
     private liveCampaignService: LiveCampaignService,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private modal: TDSModalService
-  ) { }
+    private modal: TDSModalService) { }
 
   ngOnInit(): void {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-
   }
 
   getCurrentLiveCampaign(liveCampaignId: string | undefined) {
@@ -151,15 +149,7 @@ export class ListLiveCampaignComponent implements OnInit {
       content: AddLiveCampaignComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
-      componentParams:{
-      }
     });
-
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-        // Add live campaign vào dữ liệu
-      }
-    })
   }
 
   showModelEditLiveCampaign(id?: string) {
@@ -177,12 +167,6 @@ export class ListLiveCampaignComponent implements OnInit {
         id: id
       }
     });
-
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-        // Add live campaign vào dữ liệu
-      }
-    })
   }
 
   showModelCopyLiveCampaign(id?: string) {
@@ -201,12 +185,6 @@ export class ListLiveCampaignComponent implements OnInit {
         isCopy: true
       }
     });
-
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-        // Add live campaign vào dữ liệu
-      }
-    })
   }
 
   showModelOverViewLiveCampaign(id?: string, name?: string) {
