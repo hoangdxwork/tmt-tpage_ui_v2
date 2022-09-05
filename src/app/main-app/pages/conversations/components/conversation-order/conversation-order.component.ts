@@ -348,7 +348,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             }, this.saleModel);
 
             this.saleModel = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-            
+
             this.calcTotal();
             this.coDAmount();
 
@@ -981,7 +981,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       if(res) {
           this.saleModel.Tax = res;
           this.saleModel.TaxId = res.Id;
-          //Trường hợp tax = 0 thì không gán tax lại 
+          //Trường hợp tax = 0 thì không gán tax lại
           if(res.Id === 0)
           {
             delete  this.saleModel.Tax;
@@ -1003,29 +1003,35 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeDeliveryPrice(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.DeliveryPrice = event;
+    if (Number(event) >= 0) {
+      this.saleModel.DeliveryPrice = Number(event);
       this.coDAmount();
     }
   }
 
+  changeCashOnDelivery(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.CashOnDelivery = Number(event);
+    }
+  }
+
   changeDiscount(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.Discount = event;
+    if (Number(event) >= 0) {
+      this.saleModel.Discount = Number(event);
       this.calcTotal();
     }
   }
 
   changeDecreaseAmount(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.DecreaseAmount = event;
+    if (Number(event) >= 0) {
+      this.saleModel.DecreaseAmount = Number(event);
       this.calcTotal();
     }
   }
 
   changeAmountDeposit(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.AmountDeposit = event;
+    if (Number(event) >= 0) {
+      this.saleModel.AmountDeposit = Number(event);
       this.coDAmount();
     }
   }
@@ -1050,7 +1056,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.quickOrderModel.Details[index].Price = event;
         this.calcTotal();
         this.coDAmount();
-      
+
     }
   }
 

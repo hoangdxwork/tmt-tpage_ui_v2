@@ -878,19 +878,29 @@ export class EditOrderV2Component implements OnInit {
     this.shipExtraServices[i]!.IsSelected = event;
   }
 
-  changeAmountDeposit(value: number) {
-    this.saleModel.AmountDeposit = value;
-    this.coDAmount();
+  changeAmountDeposit(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.AmountDeposit = Number(event);
+      this.coDAmount();
+    }
   }
 
-  changeDeliveryPrice(value: number) {
-    this.saleModel.DeliveryPrice = value;
-    this.coDAmount();
+  changeDeliveryPrice(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.DeliveryPrice = Number(event);
+      this.coDAmount();
+    }
   }
 
   changeShipWeight() {
     if(this.saleModel.Carrier) {
       this.calcFee();
+    }
+  }
+
+  changeCashOnDelivery(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.CashOnDelivery = Number(event);
     }
   }
 
