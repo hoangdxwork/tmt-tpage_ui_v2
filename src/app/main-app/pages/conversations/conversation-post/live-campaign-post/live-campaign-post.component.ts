@@ -52,10 +52,6 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
     private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
-    if(this.data.LiveCampaign) {
-      this.currentLiveCampaign = this.data.LiveCampaign;
-    }
-
     let id = this.data?.LiveCampaignId as string;
     if(TDSHelperString.hasValueString(id)) {
       this.loadById(id);
@@ -65,10 +61,6 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   ngOnChanges(changes: SimpleChanges): void {
       if(changes['data'] && !changes['data'].firstChange) {
-        if(this.data.LiveCampaign) {
-          this.currentLiveCampaign = { ...changes['data'].currentValue};
-        }
-
         let id = this.currentLiveCampaign.Id as string;
         if(TDSHelperString.hasValueString(id)) {
           this.loadById(id);
@@ -82,6 +74,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
       next: (res: any) => {
           delete res['@odata.context'];
           this.currentLiveCampaign = res;
+          this.cdRef.detectChanges();
       }
     })
   }

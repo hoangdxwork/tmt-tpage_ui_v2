@@ -16,10 +16,10 @@ export class ChatomniObjectFacade extends BaseSevice  {
   dataSource: { [id: string] : ChatomniObjectsDto } = {}; //this.objectsDataSource[id]
 
   // Thay đổi bài objects load danh sách đơn hàng
-  public onChangeOrderListFromObjects$ = new EventEmitter<any>();
+  public onChangeListOrderFromObjects$ = new EventEmitter<any>();
 
   // Tạo đơn hàng từ commment, lại danh sách đơn hàng
-  public loadOrderListFromCreateOrderComment$ = new EventEmitter<any>();
+  public loadListOrderFromCreateOrderComment$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
