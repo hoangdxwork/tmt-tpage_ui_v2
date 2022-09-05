@@ -22,7 +22,6 @@ export class ApplicationUserService extends BaseSevice {
 
   constructor(private apiService: TCommonService) {
       super(apiService);
-      this.initialize();
   }
 
   initialize() {
