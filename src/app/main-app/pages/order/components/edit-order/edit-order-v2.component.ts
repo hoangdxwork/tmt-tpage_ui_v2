@@ -558,8 +558,8 @@ export class EditOrderV2Component implements OnInit {
 
   coDAmount() {
     if(this.saleModel) {
-        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
-        this.saleModel.CashOnDelivery = cashOnDelivery;
+        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel);
+        this.saleModel.CashOnDelivery = Number(cashOnDelivery);
     }
   }
 
