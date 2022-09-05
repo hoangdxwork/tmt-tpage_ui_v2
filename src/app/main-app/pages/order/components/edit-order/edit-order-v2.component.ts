@@ -171,7 +171,7 @@ export class EditOrderV2Component implements OnInit {
     this.quickOrderModel = this.dataItem;
     this.mappingAddress(this.quickOrderModel);
     this.updateForm();
-    
+
     let postId = this.quickOrderModel.Facebook_PostId;
     let teamId = this.quickOrderModel.CRMTeamId;
     let asId = this.quickOrderModel.Facebook_ASUserId;
@@ -202,8 +202,9 @@ export class EditOrderV2Component implements OnInit {
             }, this.saleModel);
 
             this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
-            this.coDAmount();
+
             this.calcTotal();
+            this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
           }
@@ -312,7 +313,7 @@ export class EditOrderV2Component implements OnInit {
   onChangePartnerName(name: any){
     this.quickOrderModel.Name = name;
     this.quickOrderModel.PartnerName = name;
-    
+
     if(this.quickOrderModel.Partner){
       this.quickOrderModel.Partner.Name = name;
     }
@@ -329,7 +330,7 @@ export class EditOrderV2Component implements OnInit {
 
   onChangeEmail(data: any){
     this.quickOrderModel.Email = data.value;
-    
+
     if(this.quickOrderModel.Partner){
       this.quickOrderModel.Partner.Email = data.value;
     }
@@ -400,6 +401,7 @@ export class EditOrderV2Component implements OnInit {
         } as Detail_QuickSaleOnlineOrder;
 
         this.quickOrderModel.Details.push(item);
+
         this.calcTotal();
         this.coDAmount();
       }
@@ -442,7 +444,7 @@ export class EditOrderV2Component implements OnInit {
         this.coDAmount();
     }
 
-    this.saleModel.ShipWeight = event?.Config_DefaultFee || this.companyCurrents?.WeightDefault || 100;
+    this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this.saleModel.Ship_Extras = JSON.parse(event.ExtrasText);

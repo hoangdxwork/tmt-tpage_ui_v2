@@ -395,6 +395,7 @@ export class AddBillComponent implements OnInit {
     //Load thông tin ship aship
     this.loadConfigProvider(this.dataModel);
     this._form.patchValue(this.dataModel);
+
     this.calcTotal();
   }
 
@@ -728,7 +729,12 @@ export class AddBillComponent implements OnInit {
 
   selectTax(tax: any) {
     // this._form.controls['Tax'].setValue(tax);
-    this._form.controls['TaxId'].setValue(tax?.Id);
+    if(tax && tax.Id > 0) {
+      this._form.controls['TaxId'].setValue(tax?.Id);
+    } else {
+      this._form.controls['TaxId'].setValue(null);
+      this._form.controls['Tax'].setValue(null);
+    }
 
     this.calcTotal();
   }
