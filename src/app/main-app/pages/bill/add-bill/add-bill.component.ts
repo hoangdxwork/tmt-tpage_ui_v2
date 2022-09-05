@@ -746,7 +746,7 @@ export class AddBillComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef
     });
-    modal.afterClose.subscribe(event => {
+    modal.afterClose.subscribe(event => {debugger
       if (event && event.Id) {
         this.changePartner(event.Id);
       }

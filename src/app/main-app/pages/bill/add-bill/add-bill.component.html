@@ -150,7 +150,7 @@
                       </div>
                       <div class="w-2/3">
                         <tds-form-field>
-                          <input tdsInput autocomplete="off" placeholder="Nhập tên người giao hàng"  formControlName="Deliver" />
+                          <input tdsInput autocomplete="off" placeholder="Nhập tên người giao hàng" formControlName="Deliver" />
                         </tds-form-field>
                       </div>
                   </div>
@@ -161,7 +161,7 @@
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State == 'draft'">
                         <tds-form-field>
-                          <tds-input-number [min]='0' [step]="1000" formControlName="PaymentAmount" [max]="_form.controls['AmountTotal'].value"> </tds-input-number>
+                          <tds-input-number [min]='0' [step]="1000" formControlName="PaymentAmount" [max]="_form.controls['AmountTotal'].value"></tds-input-number>
                         </tds-form-field>
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
@@ -702,9 +702,7 @@
                               <div class="col-span-2"><span>{{totalAmountLines | number: '1.0-3' }}đ</span></div>
                               <div><span>Giảm giá</span></div>
                               <div class="col-span-2">
-                                <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value)
-                                  ||
-                                  0 | number}} đ</span>
+                                <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value) || 0 | number}} đ</span>
                               </div>
                               <div><span>Thuế</span></div>
                               <div class="col-span-2">
@@ -928,8 +926,7 @@
                 <div class="w-[376px] grid grid-cols-3 gap-x-6 gap-y-2 text-body-2 to-neutral-1-900 font-semibold">
                   <div>
                     <span>Chiết khấu (%):
-                      <span *ngIf="_form.controls['Discount'].value > 0">{{(_form.controls["DiscountAmount"].value) |
-                        number}}đ</span>
+                      <span *ngIf="_form.controls['Discount'].value > 0">{{(_form.controls["DiscountAmount"].value) | number}}đ</span>
                     </span>
                   </div>
                   <div class="col-span-2">

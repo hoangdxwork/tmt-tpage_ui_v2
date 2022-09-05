@@ -533,7 +533,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
 
   showModalSuggestAddress(){
     let modal =  this.modalService.create({
-      title: 'Sửa địa chỉ',
+      title: 'Thêm địa chỉ',
       content: ModalAddAddressV2Component,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
