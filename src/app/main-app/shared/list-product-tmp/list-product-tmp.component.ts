@@ -254,8 +254,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
       }
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$))
-      .subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
           if(res) {
             let productTmplItems = res[0];

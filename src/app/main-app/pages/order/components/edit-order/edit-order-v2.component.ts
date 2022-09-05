@@ -779,17 +779,16 @@ export class EditOrderV2Component implements OnInit {
       }
 
       this.partnerService.updateStatus(this.quickOrderModel.PartnerId, data).pipe(takeUntil(this.destroy$)).subscribe({
-        next: res => {
-          this.message.success(Message.Partner.UpdateStatus);
-          this.quickOrderModel.Partner.StatusText = status.text;
-        },
-        error: (error: any) => {
-          this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
-        }
-      });
-    }
-    else {
-      this.message.error(Message.PartnerNotInfo);
+          next: (res: any) => {
+            this.message.success(Message.Partner.UpdateStatus);
+            this.quickOrderModel.Partner.StatusText = status.text;
+          },
+          error: (error: any) => {
+            this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
+          }
+      })
+    } else {
+        this.message.error(Message.PartnerNotInfo);
     }
   }
 

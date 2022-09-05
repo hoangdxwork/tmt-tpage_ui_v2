@@ -30,7 +30,7 @@
                         </span>
                     </button>
                 </div>
-                <div class="max-h-[calc(100vh-375px)]  w-full overflow-hidden overflow-y-auto tds-custom-scroll" yiAutoScroll lock-y-offset="10"
+                <div class="max-h-[calc(100vh-375px)] w-full overflow-hidden overflow-y-auto tds-custom-scroll" yiAutoScroll lock-y-offset="10"
                     scroll-end="true" is-lock="true" (on-change-bottom)="nextData()">
                     <div class="grid grid-cols-4 gap-5 h-full w-full py-4" *ngIf="(lstAll$ | async)?.Items; else lstAllNoData">
                         <ng-template ngFor let-data [ngForOf]="(lstAll || (lstAll$ | async))?.Items">
@@ -42,7 +42,7 @@
                                     <img [src]="data.Url" class="w-full h-full object-cover rounded-lg" (click)="selectAttachment(data)">
                                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
-                                            <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
+                                            <div class="text-body-2 text-white font-semibold font-sans w-full truncate"> {{ data.Name }} </div>
                                             <div class="flex gap-0.5">
                                                 <div class="flex items-center cursor-pointer" tds-tooltip tooltipTitle="Đổi tên" (click)="showModalRenameAttachment(data.id, data)">
                                                   <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>

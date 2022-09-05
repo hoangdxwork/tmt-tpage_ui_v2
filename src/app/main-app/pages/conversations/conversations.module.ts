@@ -23,7 +23,6 @@ import { THelperCacheService } from 'src/app/lib';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ConversationOrderComponent } from './components/conversation-order/conversation-order.component';
 import { ConversationPartnerComponent } from './components/conversation-partner/conversation-partner.component';
-import { CurrentConversationItemComponent } from './components/current-conversation-item/current-conversation-item.component';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { PartnerService } from '../../services/partner.service';
@@ -212,7 +211,6 @@ const SERVICES = [
 @NgModule({
   declarations: [
     ModalImageStoreComponent,
-    CurrentConversationItemComponent,
     ConversationOrderComponent,
     ConversationPartnerComponent,
     ModalListProductComponent,

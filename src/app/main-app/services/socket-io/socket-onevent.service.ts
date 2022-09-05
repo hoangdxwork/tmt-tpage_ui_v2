@@ -1,17 +1,15 @@
-import { FastSaleOrder_DefaultDTOV2 } from './../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 import { TDSModalService, TDSModalRef } from 'tds-ui/modal';
-import { TDSDestroyService } from 'tds-ui/core/services';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { SocketioOnOrderDto } from './../../dto/socket-io/chatomni-on-order.dto';
 import { DataComentTShop, DataMessageTshop } from './../../dto/socket-io/chatomni-on-message.dto';
-import { Injectable, ViewContainerRef } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Attachments, ChatomniMessageType } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
-import { map, Subject, tap, mergeMap, takeUntil } from "rxjs";
+import { map, Subject, tap, mergeMap } from "rxjs";
 import { CRMTeamService } from "../crm-team.service";
 import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
@@ -66,8 +64,6 @@ export class SocketOnEventService {
           if (!(team && team.Id)) {
             return;
           }
-
-          console.log(socketData)
 
           switch (socketData.EventName) {
             case ChatmoniSocketEventName.chatomniOnMessage:

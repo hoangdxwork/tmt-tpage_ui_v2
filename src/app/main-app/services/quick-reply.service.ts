@@ -1,9 +1,10 @@
 import { map } from 'rxjs/operators';
 import { CreateQuickReplyDTO, QuickReplyDTO } from './../dto/quick-reply.dto.ts/quick-reply.dto';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable} from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { BaseSevice } from './base.service';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Injectable()
 export class QuickReplyService extends BaseSevice {
@@ -12,33 +13,28 @@ export class QuickReplyService extends BaseSevice {
   table: string = "MailTemplate";
   baseRestApi: string = "";
 
-  public dataActive: any;
-  public dataActive$ = new BehaviorSubject<any>(null);
+  public lstDataActive: any = [];
+  private readonly _lstDataActive$ = new ReplaySubject<any>();
 
   constructor(private apiService: TCommonService) {
       super(apiService);
-      this.makeOnlyActive();
   }
 
-  makeOnlyActive() {
-    if(this.dataActive) {
-      this.dataActive$.next(this.dataActive);
+  getDataActive() {
+    return this._lstDataActive$.asObservable();
+  }
+
+  setDataActive() {
+    if(TDSHelperArray.hasListValue(this.lstDataActive)) {
+        this._lstDataActive$.next(this.lstDataActive);
     } else {
-      this.getOnlyActive().pipe(map(res => res)).subscribe((res: any) => {
-        this.dataActive = res;
-        this.dataActive$.next(this.dataActive?.value);
-      })
+        this.getOnlyActive().subscribe({
+          next: (res: any) => {
+            this.lstDataActive = [...res.value];
+            this._lstDataActive$.next(res.value);
+          }
+        });
     }
-  }
-  addDataActive(data: any) {
-    if(data && data.Id && data.Active){
-      if(!this.dataActive || !this.dataActive.value) {
-        this.dataActive["value"] = [];
-      }
-      this.dataActive.value.push(data);
-    }
-
-    this.dataActive$.next(this.dataActive);
   }
 
   get(): Observable<any> {
@@ -60,8 +56,9 @@ export class QuickReplyService extends BaseSevice {
   }
 
   getOnlyActive(): Observable<any> {
+    let filter ='$filter=(Active%20eq%20true)&$count=true';
     let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?$filter=Active eq true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?${filter}`,
       method: CoreApiMethodType.get
     }
 

@@ -12,7 +12,7 @@ import { addDays } from 'date-fns';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { finalize } from 'rxjs/operators';
-import { AddLiveCampaignComponent } from '../add-live-campaign/add-live-campaign.component';
+import { AddLiveCampaignPostComponent } from '../add-live-campaign/add-livecampaign-post.component';
 import { OverviewLiveCampaignComponent } from '../overview-live-campaign/overview-live-campaign.component';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -55,14 +55,12 @@ export class ListLiveCampaignComponent implements OnInit {
     private liveCampaignService: LiveCampaignService,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private modal: TDSModalService
-  ) { }
+    private modal: TDSModalService) { }
 
   ngOnInit(): void {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-
   }
 
   getCurrentLiveCampaign(liveCampaignId: string | undefined) {
@@ -148,18 +146,10 @@ export class ListLiveCampaignComponent implements OnInit {
   showModelCreateLiveCampaign() {
     const modal = this.modal.create({
       title: 'Tạo mới chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
-      componentParams:{
-      }
     });
-
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-        // Add live campaign vào dữ liệu
-      }
-    })
   }
 
   showModelEditLiveCampaign(id?: string) {
@@ -170,19 +160,13 @@ export class ListLiveCampaignComponent implements OnInit {
 
     const modal = this.modal.create({
       title: 'Chỉnh sửa chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
         id: id
       }
     });
-
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-        // Add live campaign vào dữ liệu
-      }
-    })
   }
 
   showModelCopyLiveCampaign(id?: string) {
@@ -193,7 +177,7 @@ export class ListLiveCampaignComponent implements OnInit {
 
     const modal = this.modal.create({
       title: 'Sao chép chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
@@ -201,12 +185,6 @@ export class ListLiveCampaignComponent implements OnInit {
         isCopy: true
       }
     });
-
-    modal.componentInstance?.onSuccess.subscribe(res => {
-      if(TDSHelperObject.hasValue(res)) {
-        // Add live campaign vào dữ liệu
-      }
-    })
   }
 
   showModelOverViewLiveCampaign(id?: string, name?: string) {

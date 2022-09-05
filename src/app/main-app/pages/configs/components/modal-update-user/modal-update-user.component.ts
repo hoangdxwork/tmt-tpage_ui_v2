@@ -8,25 +8,21 @@ import { ApplicationRoleDTO } from 'src/app/main-app/dto/account/application-rol
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { takeUntil, finalize } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadFile } from 'tds-ui/upload';
 import { UserRestHandler } from 'src/app/main-app/handler-v2/user-rest.handler';
-const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
+import { TDSDestroyService } from 'tds-ui/core/services';
+
 @Component({
   selector: 'app-modal-update-user',
-  templateUrl: './modal-update-user.component.html'
+  templateUrl: './modal-update-user.component.html',
+  providers: [ TDSDestroyService ]
 })
-export class ModalUpdateUserComponent implements OnInit, OnDestroy {
+
+export class ModalUpdateUserComponent implements OnInit {
 
   @Input() userId!: string;
 
@@ -39,7 +35,6 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   fileList: TDSSafeAny[] = [];
   previewImage: string | undefined = '';
   previewVisible = false;
-  private destroy$ = new Subject<void>();
 
   constructor(private cdRef : ChangeDetectorRef,
     private fb: FormBuilder,
@@ -51,6 +46,7 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
     private applicationRoleService: ApplicationRoleService,
     private sharedService: SharedService,
     private message: TDSMessageService,
+    private destroy$: TDSDestroyService,
     private auth: TAuthService) {
     this.createForm();
     this.loadUserLogged();
@@ -84,16 +80,19 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
 
   loadUser(userId: string) {
     this.isLoading = true;
-    this.applicationUserService.getById(userId)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.updateForm(res);
+    this.applicationUserService.getById(userId).pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: res => {
+            this.updateForm(res);
+        }
       });
   }
 
   loadUserRole() {
-    this.applicationRoleService.get().subscribe(res => {
-      this.lstUserRole = res.value;
+    this.applicationRoleService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        this.lstUserRole = [...res.value];
+      }
     });
   }
 
@@ -116,11 +115,12 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   onSave(){
     let model = this.prepareModel();
     this.isLoading = true;
-    this.applicationUserService.update(model)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.message.success(Message.UpdatedSuccess);
-        this.modal.destroy(true);
+    this.applicationUserService.update(model).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.message.success(Message.UpdatedSuccess);
+          this.modal.destroy(true);
+        }
       });
   }
 
@@ -194,8 +194,4 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
     this.modal.destroy(null);
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 }

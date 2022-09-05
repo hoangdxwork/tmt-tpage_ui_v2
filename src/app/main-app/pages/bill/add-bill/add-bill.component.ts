@@ -326,6 +326,13 @@ export class AddBillComponent implements OnInit {
           // TODO: trường hợp thêm mới load dữ liệu lần đầu số tiền trả = 0
           data.PaymentAmount = 0;
           this.updateForm(data);
+
+          // TODO: change partner gán thêm các field nếu là tạo hóa đơn F10
+          let partnerId = data.PartnerId || data.Partner?.Id;
+          if (partnerId && this.isOrder) {
+              this.changePartner(partnerId);
+          }
+
           this.isLoading = false;
       },
       error:(err) => {
@@ -359,12 +366,6 @@ export class AddBillComponent implements OnInit {
   }
 
   updateForm(data: FastSaleOrder_DefaultDTOV2){
-    // Cập nhật thông tin khách hàng
-    let partnerId = data.PartnerId || data.Partner?.Id;
-    if (partnerId) {
-        this.changePartner(partnerId);
-    }
-
     //TODO: cập nhật danh sách dịch vụ
     let services = this.getServiceHandler.getShipService(data);
     if(services != null){
@@ -385,12 +386,13 @@ export class AddBillComponent implements OnInit {
       })
     }
 
-    //TODO: cập nhật địa chỉ
-    this.mappingDataAddress(data);
+    this.dataModel = {...data};
 
     //TODO: cập nhật danh sách sản phẩm
     this.updateOrderLines(data);
-    this.dataModel = {...data};
+
+    //TODO: cập nhật địa chỉ
+    this.mappingDataAddress(data);
 
     //Load thông tin ship aship
     this.loadConfigProvider(this.dataModel);
@@ -746,7 +748,7 @@ export class AddBillComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef
     });
-    modal.afterClose.subscribe(event => {
+    modal.afterClose.subscribe(event => {debugger
       if (event && event.Id) {
         this.changePartner(event.Id);
       }
@@ -1317,7 +1319,8 @@ export class AddBillComponent implements OnInit {
   }
 
   loadUser() {
-    return this.applicationUserService.dataActive$;
+    this.applicationUserService.setUserActive();
+    return this.applicationUserService.getUserActive();
   }
 
   loadCarrier() {
@@ -1340,6 +1343,9 @@ export class AddBillComponent implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
+        _cities: this._cities,
+        _districts: this._districts,
+        _wards: this._wards,
         _street: this.innerText,
         isSelectAddress: true
       }
@@ -1347,7 +1353,22 @@ export class AddBillComponent implements OnInit {
 
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
-        if(result){
+        if(result) {
+          this._cities = {
+            code: result.CityCode,
+            name: result.CityName
+          }
+
+          this._districts = {
+            code: result.DistrictCode,
+            name: result.DistrictName
+          } as any;
+
+          this._wards = {
+            code: result.WardCode,
+            name: result.WardName
+          } as any;
+
           this.prepareSuggestionsBill.onLoadSuggestion(this._form, result);
           this.innerText = result.Address;
         }
