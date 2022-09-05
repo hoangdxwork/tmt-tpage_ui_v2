@@ -406,8 +406,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   coDAmount() {
     if(this.saleModel) {
-        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
-        this.saleModel.CashOnDelivery = cashOnDelivery;
+        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel);
+        this.saleModel.CashOnDelivery = Number(cashOnDelivery);
     }
   }
 
