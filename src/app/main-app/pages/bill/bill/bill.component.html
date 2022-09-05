@@ -66,23 +66,23 @@
               <th [tdsLeft]="true" [align]="'center'" width="33px" class="border-r"></th>
               <th [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" width="42px"
                 (checkedChange)="onAllChecked($event)" class="border-r"></th>
-              <th *ngIf="isHidden('Number')" [tdsLeft]="true" width="160px" class="border-r">Số HĐ</th>
-              <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-r">Thông tin</th>
-              <th *ngIf="isHidden('DateInvoice')" [align]="'center'" width="240px" class="border-r">Ngày bán</th>
               <th *ngIf="isHidden('PartnerDisplayName')" width="180px" class="border-r">Khách hàng</th>
+              <th *ngIf="isHidden('DateInvoice')" [align]="'center'" width="240px" class="border-r">Ngày bán</th>
+              <th *ngIf="isHidden('Number')" [tdsLeft]="true" width="160px" class="border-r">Số HĐ</th>
+              <th *ngIf="isHidden('CashOnDelivery')" [align]="'right'" width="240px" class="border-r">Tiền thu hộ</th>
+              <th *ngIf="isHidden('CarrierName')" width="160px" class="border-r">Đối tác GH</th>
+              <th *ngIf="isHidden('UserName')" width="280px" class="border-r">Nhân viên</th>
+              <th *ngIf="isHidden('TrackingRef')" width="160px" class="border-r">Mã vận đơn</th>
+              <th *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" width="140px" class="border-r">Phí ship GH</th>
+              <th *ngIf="isHidden('ShipPaymentStatus')" width="130px" class="border-r">Trạng thái GH</th>
+              <th *ngIf="isHidden('ShowShipStatus')" width="140px" class="border-r">Đối soát GH</th>
+              <th *ngIf="isHidden('CreateByName')" width="280px" class="border-r">Người lập</th>
+              <th *ngIf="isHidden('DateCreated')" [align]="'center'" width="120px" class="border-r">Ngày tạo đơn</th>
               <th *ngIf="isHidden('AmountTotal')" [align]="'right'" width="120px" class="border-r">Tổng tiền</th>
               <th *ngIf="isHidden('Residual')" [align]="'right'" width="120px" class="border-r">Còn nợ</th>
               <th *ngIf="isHidden('ShowState')" width="120px" class="border-r">Trạng thái</th>
-              <th *ngIf="isHidden('CarrierName')" width="160px" class="border-r">Đối tác GH</th>
-              <th *ngIf="isHidden('TrackingRef')" width="160px" class="border-r">Mã vận đơn</th>
-              <th *ngIf="isHidden('ShipPaymentStatus')" width="130px" class="border-r">Trạng thái GH</th>
-              <th *ngIf="isHidden('CashOnDelivery')" [align]="'right'" width="240px" class="border-r">Tiền thu hộ</th>
               <th *ngIf="isHidden('IsRefund')" [align]="'center'" width="240px" class="border-r">Đơn hàng trả</th>
-              <th *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" width="140px" class="border-r">Phí ship GH</th>
-              <th *ngIf="isHidden('UserName')" width="280px" class="border-r">Nhân viên</th>
-              <th *ngIf="isHidden('CreateByName')" width="280px" class="border-r">Người lập</th>
-              <th *ngIf="isHidden('DateCreated')" [align]="'center'" width="120px" class="border-r">Ngày tạo đơn</th>
-              <th *ngIf="isHidden('ShowShipStatus')" width="140px" class="border-r">Đối soát GH</th>
+              <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-r">Thông tin</th>
               <th [tdsRight]="true" [align]="'center'" width="140px">Thao tác</th>
             </tr>
           </thead>
@@ -96,6 +96,23 @@
                 </td>
                 <td [tdsLeft]="true" [checked]="setOfCheckedId.has(data.Id)" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' "
                   (checkedChange)="onItemChecked(data.Id, $event)" class="border-r">
+                </td>
+                <td *ngIf="isHidden('PartnerDisplayName')" class="relative border-r">
+                  <div class="w-full">
+                    <p>{{data.PartnerDisplayName}}</p>
+                    <p class="text-[#929DAA]">{{data.Phone}}</p>
+                    <div class="absolute bottom-0 right-[4px] text-primary-1">
+                      <span *ngIf="data.PrintDeliveryCount > 0" class="tdsi-print-fill text-[15px]"
+                        tds-tooltip tooltipTitle="Đã in phiếu giao hàng"></span>
+                      <span *ngIf="data.PrintShipCount > 0" class="tdsi-order-fill text-[16px]"
+                        tds-tooltip tooltipTitle="Đã in phiếu ship"></span>
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('DateInvoice')" [align]="'center'" class="border-r">
+                  <div class="w-full">
+                    <span>{{data.DateInvoice | yiDateTimeFormat}}</span>
+                  </div>
                 </td>
                 <td *ngIf="isHidden('Number')" [tdsLeft]="true" class="border-r" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
                   <div class="w-full flex font-semibold text-center pb-2">
@@ -150,48 +167,9 @@
                     </ng-template>
                   </div>
                 </td>
-                <td *ngIf="isHidden('CRMTeamName')" class="border-r">
-                  <div class="w-full flex">
-                    <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                    <span class="ml-1">{{data.CRMTeamName}}</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('DateInvoice')" [align]="'center'" class="border-r">
+                <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">
                   <div class="w-full">
-                    <span>{{data.DateInvoice | yiDateTimeFormat}}</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('PartnerDisplayName')" class="relative border-r">
-                  <div class="w-full">
-                    <p>{{data.PartnerDisplayName}}</p>
-                    <p class="text-[#929DAA]">{{data.Phone}}</p>
-                    <div class="absolute bottom-0 right-[4px] text-primary-1">
-                      <span *ngIf="data.PrintDeliveryCount > 0" class="tdsi-print-fill text-[15px]"
-                        tds-tooltip tooltipTitle="Đã in phiếu giao hàng"></span>
-                      <span *ngIf="data.PrintShipCount > 0" class="tdsi-order-fill text-[16px]"
-                        tds-tooltip tooltipTitle="Đã in phiếu ship"></span>
-                    </div>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('AmountTotal')" [align]="'right'" class="border-r">
-                  <div class="w-full">
-                    <span>{{data.AmountTotal || 0 | number :'1.0-3'}} đ</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('Residual')" [align]="'right'" class="border-r">
-                  <div class="w-full">
-                    <span>{{data.Residual || 0 | number :'1.0-3'}} đ</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('ShowState')" class="border-r text-center !px-0">
-                  <div class="w-full">
-                    <tds-tag *ngIf="data.State ==='draft'" status='secondary' type="outline">{{data.ShowState}}
-                    </tds-tag>
-                    <tds-tag *ngIf="data.State ==='paid'" status='primary' type="outline">{{data.ShowState}}</tds-tag>
-                    <tds-tag *ngIf="data.State ==='open'" status='info' type="outline">{{data.ShowState}}</tds-tag>
-                    <tds-tag *ngIf="data.State ==='cancel'" status='error' type="outline">{{data.ShowState}}</tds-tag>
-                    <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh
-                      toán</p>
+                    <span>{{data.CashOnDelivery || 0 | number: '1.0-3'}} đ</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('CarrierName')" class="border-r">
@@ -199,26 +177,14 @@
                     <span>{{data.CarrierName}}</span>
                   </div>
                 </td>
+                <td *ngIf="isHidden('UserName')" class="border-r">
+                  <div class="w-full">
+                    <span>{{data.UserName}}</span>
+                  </div>
+                </td>
                 <td *ngIf="isHidden('TrackingRef')" class="w-[160px] border-r">
                   <div class="w-full">
                     <div class="text-info-400 font-semibold  truncate">{{data.TrackingRef}}</div>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('ShipPaymentStatus')" class="border-r">
-                  <div class="w-full">
-                    <span class="text-info-400 font-semibold">{{data.ShipPaymentStatus}}</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">
-                  <div class="w-full">
-                    <span>{{data.CashOnDelivery || 0 | number: '1.0-3'}} đ</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('IsRefund')" [align]="'center'" class="border-r">
-                  <div class="w-full">
-                    <span
-                      [ngClass]="data.IsRefund ? 'tdsi-success-fill text-success-400' : 'tdsi-error-fill text-error-400'"
-                      class="text-xl leading-5"></span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" class="border-r">
@@ -226,19 +192,9 @@
                     <span>{{data.CustomerDeliveryPrice ||0 | number: '1.0-3'}} đ</span>
                   </div>
                 </td>
-                <td *ngIf="isHidden('UserName')" class="border-r">
+                <td *ngIf="isHidden('ShipPaymentStatus')" class="border-r">
                   <div class="w-full">
-                    <span>{{data.UserName}}</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('CreateByName')" class="border-r">
-                  <div class="w-full">
-                    <span>{{data.CreateByName}}</span>
-                  </div>
-                </td>
-                <td *ngIf="isHidden('DateCreated')" class="border-r">
-                  <div class="w-full">
-                    <span>{{data.DateCreated | yiDateTimeFormat}}</span>
+                    <span class="text-info-400 font-semibold">{{data.ShipPaymentStatus}}</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('ShowShipStatus')" class="border-r">
@@ -275,6 +231,50 @@
                         </button>
                       </div>
                     </ng-template>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('CreateByName')" class="border-r">
+                  <div class="w-full">
+                    <span>{{data.CreateByName}}</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('DateCreated')" class="border-r">
+                  <div class="w-full">
+                    <span>{{data.DateCreated | yiDateTimeFormat}}</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('AmountTotal')" [align]="'right'" class="border-r">
+                  <div class="w-full">
+                    <span>{{data.AmountTotal || 0 | number :'1.0-3'}} đ</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('Residual')" [align]="'right'" class="border-r">
+                  <div class="w-full">
+                    <span>{{data.Residual || 0 | number :'1.0-3'}} đ</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('ShowState')" class="border-r text-center !px-0">
+                  <div class="w-full">
+                    <tds-tag *ngIf="data.State ==='draft'" status='secondary' type="outline">{{data.ShowState}}
+                    </tds-tag>
+                    <tds-tag *ngIf="data.State ==='paid'" status='primary' type="outline">{{data.ShowState}}</tds-tag>
+                    <tds-tag *ngIf="data.State ==='open'" status='info' type="outline">{{data.ShowState}}</tds-tag>
+                    <tds-tag *ngIf="data.State ==='cancel'" status='error' type="outline">{{data.ShowState}}</tds-tag>
+                    <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh
+                      toán</p>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('IsRefund')" [align]="'center'" class="border-r">
+                  <div class="w-full">
+                    <span
+                      [ngClass]="data.IsRefund ? 'tdsi-success-fill text-success-400' : 'tdsi-error-fill text-error-400'"
+                      class="text-xl leading-5"></span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('CRMTeamName')" class="border-r">
+                  <div class="w-full flex">
+                    <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span class="ml-1">{{data.CRMTeamName}}</span>
                   </div>
                 </td>
                 <td [tdsRight]="true" [align]="'center'" class="border-r !px-2" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
