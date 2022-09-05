@@ -400,7 +400,7 @@ export class EditOrderV2Component implements OnInit {
             ImageUrl: result.ImageUrl,
         } as Detail_QuickSaleOnlineOrder;
 
-        this.quickOrderModel.Details.push(item);
+        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
 
         this.calcTotal();
         this.coDAmount();

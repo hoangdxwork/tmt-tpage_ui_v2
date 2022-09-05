@@ -886,7 +886,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             let data = result[0] as ProductTemplateV2DTO;
             let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'create_template');
-            this.quickOrderModel.Details = [...this.quickOrderModel.Details, [x]];
+            this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
 
             this.calcTotal();
             this.coDAmount();

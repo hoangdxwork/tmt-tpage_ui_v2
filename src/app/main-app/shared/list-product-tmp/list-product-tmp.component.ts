@@ -279,7 +279,8 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
                 return;
               }
 
-              this.addItem(item, undefined, productTmplItems);
+              this.filterLstVariants(item, productTmplItems);
+              this.getAllVariants();
             }
           }
           //TODO: reload sản phẩm
@@ -308,21 +309,26 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
     this.loadData(true);
   }
 
-  addItem(data: DataPouchDBDTO, index?: number, productTmplItems?: any) {
+  addItem(data: DataPouchDBDTO, index?: number) {
+    this.indClick = index as number;
+
     // TODO: trường hợp thêm sản phẩm vào đơn hàng
     if (!this.inLiveCampaign) {
       this.onLoadProductToOrderLines.emit(data);
     } else {
-      this.lstVariants = this.indexDbStorage.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
-
-      this.lstVariants.map((x: DataPouchDBDTO)=>{
-        x.Tags = productTmplItems?.Tags || null;
-        return x
-      })
-
-      this.onLoadProductToLiveCampaign.emit(this.lstVariants);
-      this.indClick = index as number;
+      this.filterLstVariants(data);
     }
+  }
+
+  filterLstVariants(data: DataPouchDBDTO, productTmplItems?: any){
+    let model = this.indexDbStorage.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
+
+    model.map((x: DataPouchDBDTO)=>{
+      x.Tags = productTmplItems?.Tags || null;
+      return x
+    })
+
+    this.lstVariants = [...model];
   }
 
   ngAfterViewInit(): void {
@@ -372,14 +378,18 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
   }
 
   getAllVariants(){
-    // TODO: trường hợp thêm list các biến thể của sản phẩm vào chiến dịch
-    this.onLoadProductToLiveCampaign.emit(this.lstVariants);
-
+    // TODO: trường hợp thêm list các biến thể của sản phẩm
+    if (!this.inLiveCampaign) {
+      this.onLoadProductToOrderLines.emit(this.lstVariants);
+    } else {
+      this.onLoadProductToLiveCampaign.emit(this.lstVariants);
+    }
+  
     this.indClick = -1;
   }
 
   getCurrentVariant(data: DataPouchDBDTO){
-    // TODO: trường hợp thêm sản phẩm vào chiến dịch
+    // TODO: trường hợp thêm sản phẩm
     this.onLoadProductToLiveCampaign.emit(data);
 
     this.indClick = -1;
