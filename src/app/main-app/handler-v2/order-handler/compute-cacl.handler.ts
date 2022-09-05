@@ -28,8 +28,8 @@ export class SO_ComputeCaclHandler {
     saleModel.AmountTotal = amountTotal;
 
     return {
-      AmountTax: saleModel.AmountTax,
-      AmountTotal: saleModel.AmountTotal
+      AmountTax: saleModel.AmountTax || 0,
+      AmountTotal: saleModel.AmountTotal || 0
     };
   }
 
