@@ -41,7 +41,6 @@ export class DrawerOrderMessageComponent implements OnInit {
       .subscribe(res => {
         this.lstData = res?.Datas;
         this.count = res?.Total || 0;
-        console.log(this.lstData);
       }, error => {
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });

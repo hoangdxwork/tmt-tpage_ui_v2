@@ -794,20 +794,27 @@ export class AddBillComponent implements OnInit {
     this.calcTotal();
   }
 
-  onLoadProductToOrderLines(event: DataPouchDBDTO): any {
+  onLoadProductToOrderLines(event: any): any {
 
     if (!this._form.controls['Partner'].value) {
       return this.message.error('Vui lòng chọn khách hàng!');
     }
-
-    let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
-    let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
-
-    if (exist) {
-        this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
+    
+    if(TDSHelperArray.isArray(event)){
+      event.forEach((data:DataPouchDBDTO) => {
+        this.pushProductToOrderlines(data);
+      })
     } else {
-        this.pushProductToOrderlines(event);
+      let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
+        let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
+    
+        if (exist) {
+            this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
+        } else {
+            this.pushProductToOrderlines(event);
+        }
     }
+    
   }
 
   // TODO: trường hợp thêm mới

@@ -1,3 +1,5 @@
+import { vi_VN } from 'tds-ui/i18n';
+import { formatNumber } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -47,6 +49,8 @@ export class AddLiveCampaignComponent implements OnInit {
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
+
+  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale, '1.0-3')}`;
 
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
