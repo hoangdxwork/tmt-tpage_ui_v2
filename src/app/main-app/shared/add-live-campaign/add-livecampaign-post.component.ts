@@ -156,15 +156,17 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
   loadCurrentCompany() {
     this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
-      this.companyCurrents = res;
-
-      if(this.companyCurrents.DefaultWarehouseId) {
-          this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+          this.companyCurrents = res;
+          if(this.companyCurrents.DefaultWarehouseId) {
+              this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+          }
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
       }
-  }, error => {
-      this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
-  });
+    });
   }
 
   loadData(id?: string) {
