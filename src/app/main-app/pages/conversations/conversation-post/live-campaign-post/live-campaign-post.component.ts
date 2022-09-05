@@ -3,7 +3,7 @@ import { FaceBookPostItemHandler } from './../../../../handler-v2/conversation-p
 import { ChatomniObjectsItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { LiveCampaignModel } from '../../../../dto/live-campaign/odata-live-campaign-model.dto';
 import { OverviewLiveCampaignComponent } from './../../../../shared/overview-live-campaign/overview-live-campaign.component';
-import { AddLiveCampaignComponent } from './../../../../shared/add-live-campaign/add-live-campaign.component';
+import { AddLiveCampaignPostComponent } from '../../../../shared/add-live-campaign/add-livecampaign-post.component';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
@@ -115,7 +115,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
   showModelCreateLiveCampaign() {
     const modal = this.modal.create({
       title: 'Tạo mới chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef
     });
@@ -142,7 +142,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Chỉnh sửa chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
@@ -209,7 +209,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Sao chép chiến dịch',
-      content: AddLiveCampaignComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
