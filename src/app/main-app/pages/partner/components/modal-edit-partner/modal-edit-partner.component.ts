@@ -12,7 +12,7 @@ import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
-import { Subject, takeUntil, finalize } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { vi_VN } from 'tds-ui/i18n';
 import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 
@@ -119,15 +119,18 @@ export class ModalEditPartnerComponent implements OnInit {
     }
 
     this.partnerService.getDefault(model)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+      .pipe(takeUntil(this.destroy$)).subscribe(
         {
           next: (res: any) => {
             delete res['@odata.context'];
     
             this.data = res;
             this.updateForm(this.data);
+
+            this.isLoading = false;
           }, 
           error: error => {
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
         }
@@ -137,7 +140,7 @@ export class ModalEditPartnerComponent implements OnInit {
   loadPartner() {
     this.isLoading = true;
     this.partnerService.getById(this.partnerId)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+      .pipe(takeUntil(this.destroy$)).subscribe(
         {
           next: (res: any) => {
             delete res['@odata.context'];
@@ -149,8 +152,11 @@ export class ModalEditPartnerComponent implements OnInit {
             this.data = res;
             this.updateForm(this.data);
             this.mappingAddress(res);
+
+            this.isLoading = false;
           }, 
           error: error => {
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
         })
@@ -275,12 +281,14 @@ export class ModalEditPartnerComponent implements OnInit {
       this.isLoading = true;
 
       this.commonService.checkAddressByPhone(phone)
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+        .pipe(takeUntil(this.destroy$)).subscribe(
           {
             next: (res: any) => {
               this.message.info('Chưa có dữ liệu');
+              this.isLoading = false;
             },
             error: error => {
+              this.isLoading = false;
               this.message.error(`${error?.error?.message}`)
             }
           })
@@ -308,27 +316,31 @@ export class ModalEditPartnerComponent implements OnInit {
 
     if (this.partnerId) {
         this.isLoading = true;
-        this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+        this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$)).subscribe(
           {
             next: (res: any) => {
               this.message.success('Cập nhật khách hàng thành công!');
               this.modal.destroy(this.partnerId);
+              this.isLoading = false;
             }, 
             error: error => {
               this.message.error('Cập nhật khách hàng thất bại!');
+              this.isLoading = false;
             }
           }
         )
     } else {
         this.isLoading = false;
-        this.partnerService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+        this.partnerService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(
           {
             next: (res: any) => {
               this.message.success('Thêm mới khách hàng thành công!');
               this.modal.destroy(res.Id);
+              this.isLoading = false;
             }, 
             error: error => {
               this.message.error('Thêm mới khách hàng thất bại!');
+              this.isLoading = false;
             }
           }
         )
