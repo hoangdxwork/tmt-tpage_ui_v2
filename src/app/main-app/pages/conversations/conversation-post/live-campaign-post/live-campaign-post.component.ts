@@ -157,28 +157,38 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
   removeLiveCampaign(){
     let id = this.currentLiveCampaign?.Id;
     if(Guid.isGuid(id)) {
-      let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'cancel')};
-      this.isLoading = true;
 
-      this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-            this.currentLiveCampaign = null as any;
-            this.data.LiveCampaignId = null as any;
-            this.data.LiveCampaign = null as any;
+      this.modal.success({
+        title: 'Xóa chiến dịch live',
+        content: `Bạn có chắc muốn xóa chiến dịch <span class="text-info-500 font-semibold">${this.currentLiveCampaign.Name}</span>`,
+        onOk: () => {
+            let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'cancel')};
+            this.isLoading = true;
 
-            // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-            this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
+            this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: any) => {
+                  this.currentLiveCampaign = null as any;
+                  this.data.LiveCampaignId = null as any;
+                  this.data.LiveCampaign = null as any;
 
-            this.isLoading = false;
-            this.message.success('Xóa chiến dịch thành công');
-            this.cdRef.detectChanges();
+                  // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+                  this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
+
+                  this.isLoading = false;
+                  this.message.success('Xóa chiến dịch thành công');
+                  this.cdRef.detectChanges();
+              },
+              error: (error: any) => {
+                  this.isLoading = false;
+                  this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+                  this.cdRef.detectChanges();
+              }
+            });
         },
-        error: (error: any) => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-            this.cdRef.detectChanges();
-        }
-      });
+        onCancel:()=>{console.log('cancel')},
+        okText: "Xác nhận",
+        cancelText: "Hủy bỏ"
+      })
     }
   }
 
