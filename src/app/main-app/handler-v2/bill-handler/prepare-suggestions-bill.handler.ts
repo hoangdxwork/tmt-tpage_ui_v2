@@ -1,4 +1,4 @@
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { FormGroup } from '@angular/forms';
 import { ResultCheckAddressDTO } from './../../dto/address/address.dto';
 import { Injectable } from "@angular/core";
@@ -8,10 +8,10 @@ import { Injectable } from "@angular/core";
 export class PrepareSuggestionsBillHandler {
 
   public mappingAddress(data: TDSSafeAny) {
-    let cities;
-    let districts;
-    let wards;
-    let street;
+    let cities: any = {};
+    let districts: any = {};
+    let wards: any = {};
+    let street: any = {};
 
     if (data && data.Ship_Receiver?.City?.code) {
       cities = {
@@ -52,12 +52,15 @@ export class PrepareSuggestionsBillHandler {
   }
 
   public onLoadSuggestion(_form: FormGroup, item: ResultCheckAddressDTO) {
-    _form.controls['ReceiverAddress'].setValue(item.Address);
+    if(!TDSHelperString.hasValueString(item.Address)) {
+      _form.controls['ReceiverAddress'].setValue(item.Address);
+    }
+
     _form.controls['Ship_Receiver'].patchValue({
-      Street: item.Address ? item.Address : null,
-      City: item.CityCode ? { code: item.CityCode, name: item.CityName } : null,
-      District: item.DistrictCode ? { code: item.DistrictCode, name: item.DistrictName } : null,
-      Ward: item.WardCode ? { code: item.WardCode, name: item.WardName } : null
+        Street: item.Address ? item.Address : null,
+        City: item.CityCode ? { code: item.CityCode, name: item.CityName } : null,
+        District: item.DistrictCode ? { code: item.DistrictCode, name: item.DistrictName } : null,
+        Ward: item.WardCode ? { code: item.WardCode, name: item.WardName } : null
     });
   }
 }

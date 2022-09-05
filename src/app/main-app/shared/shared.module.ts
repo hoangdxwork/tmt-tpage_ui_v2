@@ -30,7 +30,7 @@ import { ProductPriceListService } from '../services/product-price-list.service'
 import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.component';
 import { ListLiveCampaignComponent } from './list-live-campaign/list-live-campaign.component';
 import { ODataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
-import { AddLiveCampaignComponent } from './add-live-campaign/add-live-campaign.component';
+import { AddLiveCampaignPostComponent } from './add-live-campaign/add-livecampaign-post.component';
 import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
 import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
 import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-button.component';
@@ -78,7 +78,7 @@ const cmp =[
   TpageConfigProductComponent,
   UploadPicturesWallComponent,
   ListLiveCampaignComponent,
-  AddLiveCampaignComponent,
+  AddLiveCampaignPostComponent,
   QuickReplyButtonComponent,
   OverviewLiveCampaignComponent,
   BillFilterOptionsComponent,

@@ -53,19 +53,24 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ApplicationUserDTO[]) => {
-          this.lstUser = [...res];;
-          this.lstUser = this.lstUser.sort((a, b) => (a.Name.length) - (b.Name.length));
-          this.lstUserSearch = this.lstUser;
-      }
-    });
+    this.loadUserActive();
 
     this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tags: CRMTagDTO[]) => {
           this.lstOfTag = [...tags];
           this.lstOfTag = this.lstOfTag.sort((a, b) => (a.Name.length) - (b.Name.length));
           this.lstOfTagSearch = this.lstOfTag;
+      }
+    })
+  }
+
+  loadUserActive() {
+    this.applicationUserService.setUserActive();
+    this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ApplicationUserDTO[]) => {
+          this.lstUser = [...res];;
+          this.lstUser = this.lstUser.sort((a, b) => (a.Name.length) - (b.Name.length));
+          this.lstUserSearch = this.lstUser;
       }
     })
   }

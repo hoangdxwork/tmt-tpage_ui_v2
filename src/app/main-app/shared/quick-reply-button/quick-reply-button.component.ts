@@ -37,27 +37,31 @@ export class QuickReplyButtonComponent implements OnInit {
   }
 
   getData() {
-    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.partner = res;
+    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.partner = res;
+      }
     });
 
-    this.quickReplyService.dataActive$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { })).subscribe(res => {
+    this.quickReplyService.setDataActive();
+    this.quickReplyService.getDataActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         if (res) {
-
           let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
-          this.quickReplies = res.sort((a: TDSSafeAny, b: TDSSafeAny) => {
-            if (getArr != null) {
-              return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
-            }else
-            return
+          this.quickReplies = res?.sort((a: TDSSafeAny, b: TDSSafeAny) => {
+              if (getArr != null) {
+                return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
+              } else
+              return
           });
 
-          this.lstquickReplyDefault = this.quickReplies
+          this.lstquickReplyDefault = this.quickReplies;
         }
-
-      },err => {
-          this.message.error(err?.error? err?.error.message: 'Load trả lời nhanh thất bại');
-      });
+      },
+      error: (error: any) => {
+          this.message.error(error?.error.message || 'Load trả lời nhanh thất bại');
+      }
+    });
   }
 
   showModalAddQuickReply() {

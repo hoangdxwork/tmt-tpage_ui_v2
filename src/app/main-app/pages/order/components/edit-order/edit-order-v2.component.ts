@@ -171,7 +171,7 @@ export class EditOrderV2Component implements OnInit {
     this.quickOrderModel = this.dataItem;
     this.mappingAddress(this.quickOrderModel);
     this.updateForm();
-    
+
     let postId = this.quickOrderModel.Facebook_PostId;
     let teamId = this.quickOrderModel.CRMTeamId;
     let asId = this.quickOrderModel.Facebook_ASUserId;
@@ -202,8 +202,9 @@ export class EditOrderV2Component implements OnInit {
             }, this.saleModel);
 
             this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
-            this.coDAmount();
+
             this.calcTotal();
+            this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
           }
@@ -312,7 +313,7 @@ export class EditOrderV2Component implements OnInit {
   onChangePartnerName(name: any){
     this.quickOrderModel.Name = name;
     this.quickOrderModel.PartnerName = name;
-    
+
     if(this.quickOrderModel.Partner){
       this.quickOrderModel.Partner.Name = name;
     }
@@ -329,7 +330,7 @@ export class EditOrderV2Component implements OnInit {
 
   onChangeEmail(data: any){
     this.quickOrderModel.Email = data.value;
-    
+
     if(this.quickOrderModel.Partner){
       this.quickOrderModel.Partner.Email = data.value;
     }
@@ -399,7 +400,8 @@ export class EditOrderV2Component implements OnInit {
             ImageUrl: result.ImageUrl,
         } as Detail_QuickSaleOnlineOrder;
 
-        this.quickOrderModel.Details.push(item);
+        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
+
         this.calcTotal();
         this.coDAmount();
       }
@@ -442,7 +444,7 @@ export class EditOrderV2Component implements OnInit {
         this.coDAmount();
     }
 
-    this.saleModel.ShipWeight = event?.Config_DefaultFee || this.companyCurrents?.WeightDefault || 100;
+    this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this.saleModel.Ship_Extras = JSON.parse(event.ExtrasText);
@@ -556,8 +558,8 @@ export class EditOrderV2Component implements OnInit {
 
   coDAmount() {
     if(this.saleModel) {
-        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
-        this.saleModel.CashOnDelivery = cashOnDelivery;
+        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel);
+        this.saleModel.CashOnDelivery = Number(cashOnDelivery);
     }
   }
 
@@ -777,17 +779,16 @@ export class EditOrderV2Component implements OnInit {
       }
 
       this.partnerService.updateStatus(this.quickOrderModel.PartnerId, data).pipe(takeUntil(this.destroy$)).subscribe({
-        next: res => {
-          this.message.success(Message.Partner.UpdateStatus);
-          this.quickOrderModel.Partner.StatusText = status.text;
-        },
-        error: (error: any) => {
-          this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
-        }
-      });
-    }
-    else {
-      this.message.error(Message.PartnerNotInfo);
+          next: (res: any) => {
+            this.message.success(Message.Partner.UpdateStatus);
+            this.quickOrderModel.Partner.StatusText = status.text;
+          },
+          error: (error: any) => {
+            this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
+          }
+      })
+    } else {
+        this.message.error(Message.PartnerNotInfo);
     }
   }
 
@@ -876,24 +877,29 @@ export class EditOrderV2Component implements OnInit {
     this.shipExtraServices[i]!.IsSelected = event;
   }
 
-  changeAmountDeposit(value: number) {
-    this.saleModel.AmountDeposit = Number(value);
-    this.coDAmount();
+  changeAmountDeposit(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.AmountDeposit = Number(event);
+      this.coDAmount();
+    }
   }
 
-  changeCashOnDelivery(value: number) {
-    this.saleModel.CashOnDelivery = Number(value);
-    this.coDAmount();
-  }
-
-  changeDeliveryPrice(value: number) {
-    this.saleModel.DeliveryPrice = Number(value);
-    this.coDAmount();
+  changeDeliveryPrice(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.DeliveryPrice = Number(event);
+      this.coDAmount();
+    }
   }
 
   changeShipWeight() {
     if(this.saleModel.Carrier) {
       this.calcFee();
+    }
+  }
+
+  changeCashOnDelivery(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.CashOnDelivery = Number(event);
     }
   }
 

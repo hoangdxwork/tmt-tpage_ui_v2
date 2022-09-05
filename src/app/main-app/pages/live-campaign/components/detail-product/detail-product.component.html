@@ -59,11 +59,11 @@
                             </div>
                         </td>
 
-                        <td class="border-r">{{ product.InvoiceQtyCheckOut || 0 | number }}</td>
+                        <td class="border-r">{{ product.OrderQtyCancelCheckOut || 0 | number }}</td>
 
                         <td class="border-r">
                             <div class="flex space-x-2 items-center">
-                                <div>{{ product.InvoiceQtyCancelCheckOut || 0 | number }}</div>
+                                <div>{{ product.InvoiceQtyCheckOut || 0 | number }}</div>
                                 <div>
                                     <button tds-button-icon color="secondary" size="sm"
                                         class="cursor-default text-info-400 bg-transparent border-0 border-transparent focus:ring-0 focus:border-transparent focus:bg-info-100 hover:bg-info-100">
@@ -75,7 +75,7 @@
                             </div>
                         </td>
 
-                        <td class="border-r">{{ product.OrderQtyWaitCheckOut || 0 | number }}</td>
+                        <td class="border-r">{{ product.InvoiceQtyCancelCheckOut || 0 | number }}</td>
                     </tr>
 
                     <tr [expand]="expandSet.has(product.ProductId)" *ngIf="expandSet.has(product.ProductId)"

@@ -86,7 +86,7 @@ export class ConversationOrderListComponent implements OnInit {
 
   eventEmitter() {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
-    this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.loadSummaryStatus();
         this.loadData(this.pageSize, this.pageIndex);
@@ -94,7 +94,7 @@ export class ConversationOrderListComponent implements OnInit {
     })
 
     // TODO: load danh sách đơn hàng khi chọn 1 hội thoại objects
-    this.chatomniObjectFacade.onChangeOrderListFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.chatomniObjectFacade.onChangeListOrderFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (item: ChatomniObjectsItemDto) => {
         this.currentPost = item;
 

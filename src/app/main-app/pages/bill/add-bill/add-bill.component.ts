@@ -326,6 +326,13 @@ export class AddBillComponent implements OnInit {
           // TODO: trường hợp thêm mới load dữ liệu lần đầu số tiền trả = 0
           data.PaymentAmount = 0;
           this.updateForm(data);
+
+          // TODO: change partner gán thêm các field nếu là tạo hóa đơn F10
+          let partnerId = data.PartnerId || data.Partner?.Id;
+          if (partnerId && this.isOrder) {
+              this.changePartner(partnerId);
+          }
+
           this.isLoading = false;
       },
       error:(err) => {
@@ -359,12 +366,6 @@ export class AddBillComponent implements OnInit {
   }
 
   updateForm(data: FastSaleOrder_DefaultDTOV2){
-    // Cập nhật thông tin khách hàng
-    let partnerId = data.PartnerId || data.Partner?.Id;
-    if (partnerId) {
-        this.changePartner(partnerId);
-    }
-
     //TODO: cập nhật danh sách dịch vụ
     let services = this.getServiceHandler.getShipService(data);
     if(services != null){
@@ -385,16 +386,18 @@ export class AddBillComponent implements OnInit {
       })
     }
 
-    //TODO: cập nhật địa chỉ
-    this.mappingDataAddress(data);
+    this.dataModel = {...data};
 
     //TODO: cập nhật danh sách sản phẩm
     this.updateOrderLines(data);
-    this.dataModel = {...data};
+
+    //TODO: cập nhật địa chỉ
+    this.mappingDataAddress(data);
 
     //Load thông tin ship aship
     this.loadConfigProvider(this.dataModel);
     this._form.patchValue(this.dataModel);
+
     this.calcTotal();
   }
 
@@ -728,7 +731,12 @@ export class AddBillComponent implements OnInit {
 
   selectTax(tax: any) {
     // this._form.controls['Tax'].setValue(tax);
-    this._form.controls['TaxId'].setValue(tax?.Id);
+    if(tax && tax.Id > 0) {
+      this._form.controls['TaxId'].setValue(tax?.Id);
+    } else {
+      this._form.controls['TaxId'].setValue(null);
+      this._form.controls['Tax'].setValue(null);
+    }
 
     this.calcTotal();
   }
@@ -740,7 +748,7 @@ export class AddBillComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef
     });
-    modal.afterClose.subscribe(event => {
+    modal.afterClose.subscribe(event => {debugger
       if (event && event.Id) {
         this.changePartner(event.Id);
       }
@@ -786,20 +794,27 @@ export class AddBillComponent implements OnInit {
     this.calcTotal();
   }
 
-  onLoadProductToOrderLines(event: DataPouchDBDTO): any {
+  onLoadProductToOrderLines(event: any): any {
 
     if (!this._form.controls['Partner'].value) {
       return this.message.error('Vui lòng chọn khách hàng!');
     }
-
-    let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
-    let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
-
-    if (exist) {
-        this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
+    
+    if(TDSHelperArray.isArray(event)){
+      event.forEach((data:DataPouchDBDTO) => {
+        this.pushProductToOrderlines(data);
+      })
     } else {
-        this.pushProductToOrderlines(event);
+      let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
+        let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
+    
+        if (exist) {
+            this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
+        } else {
+            this.pushProductToOrderlines(event);
+        }
     }
+    
   }
 
   // TODO: trường hợp thêm mới
@@ -1215,12 +1230,10 @@ export class AddBillComponent implements OnInit {
       if (this._form.controls['DeliveryPrice'].value != deliveryPrice) {
 
           this._form.controls['DeliveryPrice'].setValue(Number(deliveryPrice));
-          // this.dataModel.DeliveryPrice = deliveryPrice;
           this.coDAmount();
       }
 
       this._form.controls['ShipWeight'].setValue(event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100);
-      // this.dataModel.ShipWeight = this._form.controls['ShipWeight'].value;
 
       if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this._form.controls['Ship_Extras'].setValue(JSON.parse(event.ExtrasText));
@@ -1306,7 +1319,8 @@ export class AddBillComponent implements OnInit {
   }
 
   loadUser() {
-    return this.applicationUserService.dataActive$;
+    this.applicationUserService.setUserActive();
+    return this.applicationUserService.getUserActive();
   }
 
   loadCarrier() {
@@ -1329,6 +1343,9 @@ export class AddBillComponent implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
+        _cities: this._cities,
+        _districts: this._districts,
+        _wards: this._wards,
         _street: this.innerText,
         isSelectAddress: true
       }
@@ -1336,7 +1353,22 @@ export class AddBillComponent implements OnInit {
 
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
-        if(result){
+        if(result) {
+          this._cities = {
+            code: result.CityCode,
+            name: result.CityName
+          }
+
+          this._districts = {
+            code: result.DistrictCode,
+            name: result.DistrictName
+          } as any;
+
+          this._wards = {
+            code: result.WardCode,
+            name: result.WardName
+          } as any;
+
           this.prepareSuggestionsBill.onLoadSuggestion(this._form, result);
           this.innerText = result.Address;
         }

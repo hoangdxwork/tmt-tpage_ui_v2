@@ -63,13 +63,7 @@
 
                 <div class="flex items-center gap-2" >
                     <span *ngIf="type == 'all' && item.CountUnread > 0">
-                        <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-                    </span>
-                    <span *ngIf="type == 'message' && item.CountUnread > 0">
-                        <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-                    </span>
-                    <span *ngIf="type == 'comment' && item.CountUnread > 0">
-                        <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                        <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread" title="Phản hồi chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
                     <span *ngIf="!isOpenCollapCheck" class="text-neutral-1-400 text-body-2 font-regular font-sans whitespace-nowrap">
                         {{(item.LatestMessage?.CreatedTime || item.UpdatedTime) | yiDateTimeFormat}}
@@ -79,11 +73,14 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <div [ngClass]="seenedMessage()?'text-neutral-1-900':'text-neutral-1-600'" class="text-body-2 font-regular font-sans " showMore [length]="100" [text]="(item.LatestMessage?.Message| formatIconLike | bbcodeConvert)"></div>
+            <div *ngIf="item | latestMessageType: type">
+                <div [ngClass]="seenedMessage() ? 'text-neutral-1-900' : 'text-neutral-1-600'" class="text-body-2 font-regular font-sans"
+                     showMore [length]="100" [text]="(item.LatestMessage?.Message| formatIconLike | bbcodeConvert)">
+                </div>
             </div>
         </div>
       </div>
+
       <!--keyTags thêm trong mục binh luận-->
       <div class="flex justify-end flex-col gap-2">
         <div class="flex gap-2 items-center">

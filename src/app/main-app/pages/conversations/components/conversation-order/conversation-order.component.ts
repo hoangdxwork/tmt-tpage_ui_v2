@@ -6,7 +6,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil, finalize } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -63,7 +63,6 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/co
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { remove } from 'lodash';
 
 @Component({
   selector: 'conversation-order',
@@ -348,7 +347,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             }, this.saleModel);
 
             this.saleModel = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-            
+
             this.calcTotal();
             this.coDAmount();
 
@@ -406,8 +405,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   coDAmount() {
     if(this.saleModel) {
-        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
-        this.saleModel.CashOnDelivery = cashOnDelivery;
+        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel);
+        this.saleModel.CashOnDelivery = Number(cashOnDelivery);
     }
   }
 
@@ -619,7 +618,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
-          this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
           // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
           this.loadConversationInfo();
@@ -678,7 +677,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.message.success('Cập nhật đơn hàng thành công');
 
               // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
-              this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+              this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
               // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
               this.loadConversationInfo();
@@ -774,7 +773,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.loadConversationInfo();
 
           // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng nếu là từ comment bài viết
-          this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.emit(true);
+          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
           this.shipServices = [];
           this.shipExtraServices = [];
@@ -886,7 +885,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             let data = result[0] as ProductTemplateV2DTO;
             let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'create_template');
-            this.quickOrderModel.Details = [...this.quickOrderModel.Details, [x]];
+            this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
 
             this.calcTotal();
             this.coDAmount();
@@ -981,7 +980,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       if(res) {
           this.saleModel.Tax = res;
           this.saleModel.TaxId = res.Id;
-          //Trường hợp tax = 0 thì không gán tax lại 
+          //Trường hợp tax = 0 thì không gán tax lại
           if(res.Id === 0)
           {
             delete  this.saleModel.Tax;
@@ -1003,29 +1002,35 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeDeliveryPrice(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.DeliveryPrice = event;
+    if (Number(event) >= 0) {
+      this.saleModel.DeliveryPrice = Number(event);
       this.coDAmount();
     }
   }
 
+  changeCashOnDelivery(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.CashOnDelivery = Number(event);
+    }
+  }
+
   changeDiscount(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.Discount = event;
+    if (Number(event) >= 0) {
+      this.saleModel.Discount = Number(event);
       this.calcTotal();
     }
   }
 
   changeDecreaseAmount(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.DecreaseAmount = event;
+    if (Number(event) >= 0) {
+      this.saleModel.DecreaseAmount = Number(event);
       this.calcTotal();
     }
   }
 
   changeAmountDeposit(event: any) {
-    if (typeof(event) == 'number') {
-      this.saleModel.AmountDeposit = event;
+    if (Number(event) >= 0) {
+      this.saleModel.AmountDeposit = Number(event);
       this.coDAmount();
     }
   }
@@ -1050,7 +1055,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.quickOrderModel.Details[index].Price = event;
         this.calcTotal();
         this.coDAmount();
-      
+
     }
   }
 

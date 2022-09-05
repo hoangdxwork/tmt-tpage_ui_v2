@@ -11,7 +11,7 @@ export class PrepareAddCampaignHandler {
 
         let formValue = form.value;
         let model = {} as LiveCampaignModel;
-    
+
         model.Config = formValue.Config?.value;
         model.Name = formValue.Name;
         model.Users = formValue.Users || [];
@@ -28,15 +28,17 @@ export class PrepareAddCampaignHandler {
         model.EnableQuantityHandling = formValue.EnableQuantityHandling;
         model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
         model.IsShift = formValue.IsShift;
-    
+        model.Facebook_UserId = formValue.FacebookUserId;
+        model.Facebook_UserName = formValue.Facebook_UserName;
+
         if (TDSHelperArray.hasListValue(formValue.Details)) {
           formValue.Details.forEach((detail: any, index: number) => {
             detail["Index"] = index;
           });
         }
-    
+
         model.Details = formValue.Details;
-        
+
         return {...model};
     }
 }
