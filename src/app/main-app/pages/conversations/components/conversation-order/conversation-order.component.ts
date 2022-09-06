@@ -257,7 +257,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     // TODO: load thông tin đơn hàng khi click mã đơn hàng từ danh sách comment bài viết
     this.conversationOrderFacade.loadOrderFromCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: any) => {debugger
         if(res && res.orderId && res.comment) {
 
             this.validateData();
@@ -277,10 +277,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                       this.mappingAddress(this.quickOrderModel);
                   }
                   this.isLoading = false;
+                  this.cdRef.detectChanges();
               },
               error: (error: any) => {
                   this.isLoading = false;
                   this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+                  this.cdRef.detectChanges();
               }
             })
         }
@@ -625,9 +627,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
           this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
+          this.cdRef.detectChanges();
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       }
     })
@@ -684,11 +688,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+              this.cdRef.detectChanges();
           }
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     })
   }
