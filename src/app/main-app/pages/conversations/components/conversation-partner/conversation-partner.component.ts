@@ -400,12 +400,13 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
         this.isEditPartner = false;
         this.isLoading = false
-
+        this.cdRef.detectChanges();
       },
       error: (error: any) => {
         this.isLoading = false
         this.isEditPartner = false;
         this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+        this.cdRef.detectChanges();
       }
     });
   }
@@ -431,13 +432,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
               viewContainerRef: this.viewContainerRef,
               componentParams: {
                 dataModel : res
-              }
-          });
-
-          modal.afterClose.subscribe((obs) => {
-              if(obs == 'onLoadPage') {
-                  // Xử lý lại chỗ này
-                  // this.loadPartnerBill(data.PartnerId);
               }
           });
         }
