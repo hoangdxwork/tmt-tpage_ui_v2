@@ -6,7 +6,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Message } from 'src/app/lib/consts/message.const';
-import { CreateBillFastErrorComponent } from '../create-bill-fast-error/create-bill-fast-error.component';
+import { CreateBillErrorComponent } from '../create-bill-error/create-bill-error.component';
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
@@ -14,6 +14,7 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { CarrierListOrderDTO, GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
+import { CreateBillDefaultErrorDTO } from '@app/dto/order/default-error.dto';
 
 @Component({
   selector: 'create-bill-fast',
@@ -135,22 +136,22 @@ export class CreateBillFastComponent implements OnInit {
     }
   }
 
-  onModalError(error: TDSSafeAny[]) {
+  onModalError(DataErrorFast: TDSSafeAny[], errors: TDSSafeAny[]) {
     const modal = this.modal.create({
-      content: CreateBillFastErrorComponent,
+      content: CreateBillErrorComponent,
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         lstOrder: this.lstData,
-        lstError: error
+        lstErrors: errors,
+        lstDataErrorDefault: DataErrorFast
       }
     });
 
     modal.afterClose.subscribe({
       next:result => {
-        if(result){
-          this.modalRef.destroy(true);
-        }
+        this.printSave(result);
+        this.modalRef.destroy(true);
       }
     })
   }
@@ -308,7 +309,7 @@ export class CreateBillFastComponent implements OnInit {
     };
     
     this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
+      next:(res: CreateBillDefaultErrorDTO) => {
         if (!res.Error) {
           this.isLoading = false;
           this.message.success(Message.Bill.InsertSuccess);
@@ -317,7 +318,7 @@ export class CreateBillFastComponent implements OnInit {
         }
         else {
           this.isLoading = false;
-          this.onModalError(res.DataErrorFast);
+          this.onModalError(res.DataErrorFast || [], res.Errors);
         }
       },
       error:(err) => {
