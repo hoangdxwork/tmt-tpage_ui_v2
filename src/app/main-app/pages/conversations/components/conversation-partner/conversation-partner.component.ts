@@ -301,6 +301,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         next: () => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
             this.partner.StatusText = event.text;
+            this.cdRef.detectChanges();
         },
         error: (error: any) => {
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác thất bại');
