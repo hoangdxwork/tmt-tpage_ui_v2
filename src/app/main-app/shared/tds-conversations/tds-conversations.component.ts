@@ -591,8 +591,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
           }
 
-          let itemLast = {...data}
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+          let itemLast = {...data};
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, res.type);
           //TODO: Đẩy qua conversation-all-v2
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
@@ -675,7 +675,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             itemLast.Message = x.Message ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
           }
 
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, x.MessageType);
           //TODO: Đẩy qua conversation-all-v2
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
         }

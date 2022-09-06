@@ -320,7 +320,7 @@ export class ModalSendMessageAllComponent implements OnInit {
               x["Status"] = ChatomniStatus.Done;
     
               let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.ChannelId, data);
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.ChannelId, data, x.MessageType);
     
               // TODO: Đẩy qua tds-conversation-v2
               this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
