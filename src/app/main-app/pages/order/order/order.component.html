@@ -128,7 +128,7 @@
 
                 <!-- STT -->
                 <td class="border-l" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                  <span> {{ data.SessionIndex }}</span>
+                  <span>{{ pageSize * (pageIndex - 1) + index + 1 }}</span>
                 </td>
 
                 <!-- Code -->
