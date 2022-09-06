@@ -460,7 +460,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   nextData(event: any) {
     if(this.isLoading) {
-      return;
+        return;
     }
 
     this.isLoading = true;
