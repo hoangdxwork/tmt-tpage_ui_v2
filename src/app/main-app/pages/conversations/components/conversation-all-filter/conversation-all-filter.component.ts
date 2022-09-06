@@ -92,8 +92,8 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   onChangeDate(value: Date[]): void {
     this.dateTimes = value;
     if(this.dateTimes) {
-        this.queryObj['start'] = (this.dateTimes[0]).toISOString();
-        this.queryObj['end'] = this.dateTimes[1].toISOString();
+        this.queryObj['start'] = (this.dateTimes[0])?.toISOString();
+        this.queryObj['end'] = this.dateTimes[1]?.toISOString();
     }
   }
 

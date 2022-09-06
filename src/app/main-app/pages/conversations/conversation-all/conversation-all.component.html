@@ -166,7 +166,8 @@
                   </ng-template>
 
                   <div *ngIf="currentTeam && type && conversationInfo">
-                      <conversation-partner [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type" (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
+                      <conversation-partner [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type"
+                        [syncConversationInfo]="syncConversationInfo" (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
                   </div>
 
                   <div *ngIf="!conversationItem">
@@ -190,7 +191,8 @@
                   </ng-template>
 
                   <div *ngIf="currentTeam && type && conversationInfo">
-                      <conversation-order [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type"></conversation-order>
+                      <conversation-order [conversationInfo]="conversationInfo" [team]="currentTeam"
+                        [type]="type"  [syncConversationInfo]="syncConversationInfo"></conversation-order>
                   </div>
 
                   <div *ngIf="!conversationItem">

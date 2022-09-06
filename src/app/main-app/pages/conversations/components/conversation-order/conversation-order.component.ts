@@ -3,7 +3,7 @@ import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socke
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
-import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { takeUntil } from 'rxjs';
@@ -63,16 +63,19 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/co
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 
 @Component({
   selector: 'conversation-order',
   templateUrl: './conversation-order.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
 export class ConversationOrderComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
+  @Input() syncConversationInfo!: ChatomniConversationInfoDto;
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
 
@@ -164,6 +167,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private viewContainerRef: ViewContainerRef,
     private facebookCommentService: FacebookCommentService,
     private destroy$: TDSDestroyService,
+    private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniConversationService: ChatomniConversationService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private omniEventEmiter: ChatomniEventEmiterService,
@@ -194,15 +198,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         let x = {...changes["conversationInfo"].currentValue};
         this.loadData(x);
     }
+
+    if(changes['syncConversationInfo'] && !changes['syncConversationInfo'].firstChange) {
+        let data = {...changes['syncConversationInfo'].currentValue} as ChatomniConversationInfoDto;
+        this.loadData(data);
+    }
   }
 
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
         if( res.Data?.Facebook_PageId && this.conversationInfo && this.conversationInfo?.Conversation?.UserId == res.Data.Facebook_ASUserId && res.EventName == ChatmoniSocketEventName.onUpdate ) {
-          this.conversationInfo.Order = {...res.Data?.Data};
-
-          this.loadData(this.conversationInfo);
+            this.conversationInfo.Order = {...res.Data?.Data};
+            this.loadData(this.conversationInfo);
         }
       }
     })
@@ -221,13 +229,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
       }
     });
-
-    // TODO: cập nhật đơn hàng từ conversation-partner
-    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (partner: ConversationPartnerDto) => {
-          this.quickOrderModel = {...this.csOrder_FromConversationHandler.updateOrderFromTabPartner(this.quickOrderModel, partner)}
-      }
-    })
 
     //TODO: tạo đơn hàng từ comment bài viết, sử dụng insertFromPost
     this.conversationOrderFacade.loadInsertFromPostFromComment$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -596,6 +597,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
 
+          this.isLoading = false;
+
           delete res['@odata.context'];
           this.quickOrderModel = {...res};
 
@@ -620,8 +623,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
           this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
-          // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
-          this.loadConversationInfo();
+          // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
+          this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -679,8 +682,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
               this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
-              // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
-              this.loadConversationInfo();
+              // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
           }
       },
       error: (error: any) => {
@@ -727,18 +730,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.createFastSaleOrder(fs_model, type);
 
           } else {
-
               if (model.Id || model.Code) {
                   this.message.success('Cập nhật đơn hàng thành công');
               } else {
                   this.message.success('Tạo đơn hàng thành công');
               }
 
-              // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
-              this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
-
-              // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
-              this.loadConversationInfo();
+              // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+              this.isLoading = false;
           }
       },
       error: (error: any) => {
@@ -770,11 +770,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.printOrder(type, res);
           }
 
-          this.loadConversationInfo();
-
-          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng nếu là từ comment bài viết
-          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
-
           this.shipServices = [];
           this.shipExtraServices = [];
           delete this.saleModel.Ship_ServiceId;
@@ -782,6 +777,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           this.quickOrderModel = {} as any;
           this.saleModel = {} as any;
+
+          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng nếu là từ comment bài viết
+          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
+
+          // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
+          this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+
+          this.isLoading = false;
           this.cdRef.detectChanges();
 
       },
@@ -797,28 +800,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.cdRef.detectChanges();
       }
     });
-  }
-
-  loadConversationInfo() {
-    // TODO: check lại conversation info để cập nhật khách hàng , đơn hàng
-    let csid = this.quickOrderModel.Facebook_ASUserId as string;
-    let teamId = this.team?.Id || this.quickOrderModel.CRMTeamId;
-    if(!csid) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
-    }
-
-    this.chatomniConversationService.getInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (info: ChatomniConversationInfoDto) => {
-        if(info && info.Conversation) {
-            this.conversationOrderFacade.loadGetInfoConversation$.emit(info);
-            this.isLoading = false;
-        }
-      },
-      error: (error: any) => {
-          this.isLoading = false;
-      }
-    })
   }
 
   prepareCsFastSaleOrder(model: any): any {

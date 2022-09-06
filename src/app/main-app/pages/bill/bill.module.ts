@@ -17,7 +17,6 @@ import { CRMMatchingService } from './../../services/crm-matching.service';
 import { TDSConversationsModule } from './../../shared/tds-conversations/tds-conversations.module';
 import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
 import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
-import { DraftMessageService } from './../../services/conversation/draft-message.service';
 import { ConversationDataFacade } from './../../services/facades/conversation-data.facade';
 import { ActivityDataFacade } from './../../services/facades/activity-data.facade';
 import { TDSMessageService } from 'tds-ui/message';
@@ -120,7 +119,6 @@ const SERVICES = [
   TDSMessageService,
   ActivityDataFacade,
   ConversationDataFacade,
-  DraftMessageService,
   ConversationEventFacade,
   ConversationOrderFacade,
   CRMMatchingService,

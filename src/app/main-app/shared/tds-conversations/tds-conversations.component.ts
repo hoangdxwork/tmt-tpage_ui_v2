@@ -11,7 +11,6 @@ import { CreateTagModalComponent } from '../../pages/configs/components/create-t
 import { ModalListBillComponent } from '../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from '../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from '../../pages/conversations/components/modal-image-store/modal-image-store.component';
-import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, Input, OnChanges, OnInit,
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding, Inject
@@ -20,20 +19,16 @@ import {
 import { Observable } from 'rxjs';
 import { StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
-import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { CRMMatchingService } from '../../services/crm-matching.service';
-import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
 import { SignalRConnectionService } from '../../services/signalR/signalR-connection.service';
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
-import { DraftMessageService } from '../../services/conversation/draft-message.service';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
-import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from '../helper/event-animations.helper';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -111,7 +106,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private activityMatchingService: ActivityMatchingService,
     private applicationUserService: ApplicationUserService,
     private sharedService: SharedService,
-    private draftMessageService: DraftMessageService,
     private crmMatchingService: CRMMatchingService,
     private crmTagService: CRMTagService,
     private sgRConnectionService: SignalRConnectionService,
@@ -451,34 +445,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-
       this.validateData();
       (this.data as any) = null;
 
       this.data = changes["data"].currentValue;
-      let object = {
-          psid: this.data.ConversationId,
-          messages: this.messageModel,
-          images: this.uploadedImages
-      }
-
-      this.draftMessageService.onUpdateDraftMessage$.emit(object);
-      let draftMessage = this.draftMessageService.getMessageByASIds(this.data.ConversationId);
-      this.messageModel = draftMessage?.message;
-
-      if ((draftMessage.images as any[]).length > 0) {
-          this.uploadedImages = draftMessage.images;
-          this.currentImage = draftMessage.images[draftMessage.images.length - 1];
-      } else {
-          delete this.currentImage;
-          this.uploadedImages = [];
-      }
-
-      // TODO: Refetch data
-      // if (!this.data.Name && this.data.ConversationId && this.data.ConversationId != "null") {
-      //     this.refetch(changes["data"].currentValue.ConversationId);
-      // }
-
       this.loadData(this.data);
     }
 
