@@ -324,7 +324,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               }
             });
           }
-          
+
           this.isLoading = false;
         },
         error: (error: any) => {
