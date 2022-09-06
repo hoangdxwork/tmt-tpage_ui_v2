@@ -12,7 +12,6 @@ import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.co
 import { SharedService } from '../../services/shared.service';
 import { map, takeUntil, mergeMap } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
-import { KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -74,9 +73,8 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
-    private notification: TDSNotificationService,
-    public zone: NgZone) {
-    this.createForm();
+    private notification: TDSNotificationService) {
+       this.createForm();
   }
 
   ngOnInit(): void {
@@ -213,8 +211,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
         // Khi gán dữ liệu , lấy field VariantFirstId
 
         if(this.typeComponent == 'lst-product-tmp') {
-            this.productIndexDBService.loadProductIndexDBV2().subscribe(
-              {
+            this.productIndexDBService.loadProductIndexDBV2().subscribe({
                 next: (x) => {
                   if (type == "select") {
                       this.onCancel([product, x]);
@@ -228,10 +225,6 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
                   } else {
                       this.onCancel(null);
                   }
-
-                  this.notification.warning(
-                    'Đã xảy ra lỗi',
-                    'Không thể cập nhật IndexDB ProductLastV2')
                 }
               });
         }

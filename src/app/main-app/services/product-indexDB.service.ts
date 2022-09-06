@@ -31,25 +31,23 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
 
   mergeMapCacheDBRequest(): Observable<TDSSafeAny> {
     let keyCache = this._keyCacheProductIndexDB;
-    return this.cacheApi.getItem(keyCache)
-      .pipe(map((x: any) => {
+    return this.cacheApi.getItem(keyCache).pipe(map((x: any) => {
 
           if (TDSHelperString.hasValueString(x)) {
               let cache = JSON.parse(x['value']) as TDSSafeAny;
               let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
-
               this.cacheObject = Object.assign(this.cacheObject, cacheDB);
           }
+
           return this.cacheObject;
       }),
-        mergeMap((x: KeyCacheIndexDBDTO) => {
-            return this.getLastVersionV2(x.cacheCount, x.cacheVersion)
-        }));
+      mergeMap((x: KeyCacheIndexDBDTO) => {
+          return this.getLastVersionV2(x.cacheCount, x.cacheVersion).pipe(map(a => a));
+      }));
   }
 
   loadProductIndexDBV2(reload?: boolean): Observable<any> {
-    return this.mergeMapCacheDBRequest()
-      .pipe(map((res: ProductPouchDBDTO) => {
+    return this.mergeMapCacheDBRequest().pipe(map((res: ProductPouchDBDTO) => {
 
         const data = this.cacheObject;
         if (res.IsDelete === true) {
@@ -58,19 +56,17 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
 
         let exist = (data.cacheCount == -1 && data.cacheVersion == 0);
         if (exist) {
-
-          // TODO: trường hợp load lần đầu
-          (data.cacheDbStorage as any) = [];
-          data.cacheDbStorage = [...res.Datas];
+            // TODO: trường hợp load lần đầu
+            (data.cacheDbStorage as any) = [];
+            data.cacheDbStorage = [...res.Datas];
 
         } else {
-
-          if (!reload) {//TODO: nếu reload = true thì không thêm sp
-            // TODO: trường hợp thêm mới hoặc update
-            res.Datas?.forEach((x: DataPouchDBDTO) => {
-              data.cacheDbStorage.push(x);
-            });
-          }
+            if (!reload) {//TODO: nếu reload = true thì không thêm sp
+              // TODO: trường hợp thêm mới hoặc update
+              res.Datas?.forEach((x: DataPouchDBDTO) => {
+                  data.cacheDbStorage.push(x);
+              });
+            }
         }
 
         //TODO: check số version
@@ -89,6 +85,7 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
 
         let keyCache = this._keyCacheProductIndexDB;
         this.cacheApi.setItem(keyCache, JSON.stringify(items));
+
         return items;
 
       }, shareReplay({ bufferSize: 1, refCount: true })))
