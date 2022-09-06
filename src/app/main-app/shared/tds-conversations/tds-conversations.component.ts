@@ -58,6 +58,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
   @HostBinding("@eventFadeState") eventAnimation = true;
+  @Input() partner?: any;
 
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ChatomniConversationItemDto;
@@ -71,8 +72,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   dataSource$!: Observable<ChatomniDataDto>;
   dataSource!: ChatomniDataDto;
-
-  partner: TDSSafeAny;
 
   isEnterSend: boolean = true;
   uploadedImages: string[] = [];
@@ -148,13 +147,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
       }
     })
-
-    // TODO: mapping dữ liệu partner từ order
-    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.partner = {...res};
-      }
-    });
   }
 
   onEventSocket() {
@@ -455,8 +447,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if(changes["state"] && !changes["state"].firstChange) {
         this.state = changes["state"].currentValue;
         if(this.state) {
-          this.data.State = this.state;
+            this.data.State = this.state;
         }
+    }
+
+    if(changes["partner"] && !changes["partner"].firstChange) {
+        this.partner = changes["partner"].currentValue;debugger
     }
   }
 

@@ -20,7 +20,6 @@ export class PartnerService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/partner";
 
   public _keyCacheGrid: string = 'partner-page:grid_partner:settings';
-  public onLoadOrderFromTabPartner$: EventEmitter<any> = new EventEmitter();
 
   public partnerStatus: any;
   public partnerStatus$ = new BehaviorSubject<any>(null);

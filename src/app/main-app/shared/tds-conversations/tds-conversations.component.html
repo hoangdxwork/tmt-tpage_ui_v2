@@ -328,7 +328,7 @@
                       <div class="tdsi-product-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
                   </div>
                   <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Tin nhắn nhanh">
-                      <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                      <quick-reply-button [partner]="partner" (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
                   </div>
                   <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Đơn hàng" (click)="showModalListBill(data)">
                       <div class="tdsi-file-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
