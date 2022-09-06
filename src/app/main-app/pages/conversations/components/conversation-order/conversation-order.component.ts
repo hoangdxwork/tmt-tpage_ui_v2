@@ -257,7 +257,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     // TODO: load thông tin đơn hàng khi click mã đơn hàng từ danh sách comment bài viết
     this.conversationOrderFacade.loadOrderFromCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {debugger
+      next: (res: any) => {
         if(res && res.orderId && res.comment) {
 
             this.validateData();
@@ -624,9 +624,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
           this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
-
-          // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
-          this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
@@ -685,9 +682,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
               this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
-
-              // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
-              this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
               this.cdRef.detectChanges();
           }
       },
@@ -743,7 +737,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               }
 
               // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
-              this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+              if(this.type != 'post') {
+                this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+              }
+
               this.isLoading = false;
           }
       },
@@ -788,11 +785,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
           // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
-          this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+          if(this.type != 'post') {
+            this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+          }
 
           this.isLoading = false;
           this.cdRef.detectChanges();
-
       },
       error: (error: any) => {
           this.isLoading = false;

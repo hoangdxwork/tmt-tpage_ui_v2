@@ -136,17 +136,17 @@ export class ChatomniConversationService extends BaseSevice {
   syncConversationInfo(teamId: number, csid: string): Observable<any> {
     return this.getInfo(teamId, csid).pipe(map((x: any) => {
         return x;
-    }),
-    mergeMap((x: any) => {
-      if(x.Partner && x.Partner.Phone)  {
-          return this.crmMatchingService.checkPhoneReport(x.Partner.Phone).pipe(map((p: any) => {
-              x.Partner.PhoneReport = p.is_report;
-              return x;
-          }))
-      } else {
-          return x;
-      }
-    }), shareReplay(1))
+    }),shareReplay(1))
+    // mergeMap((x: any) => {
+    //   if(x.Partner && x.Partner.Phone)  {
+    //       return this.crmMatchingService.checkPhoneReport(x.Partner.Phone).pipe(map((p: any) => {
+    //           x.Partner.PhoneReport = p.is_report;
+    //           return x;
+    //       }))
+    //   } else {
+    //       return x;
+    //   }
+    // }), )
   }
 
 }

@@ -1,48 +1,41 @@
-import { PartnerService } from './../../services/partner.service';
 import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { QuickReplyService } from './../../services/quick-reply.service';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
-import { Component, OnInit, ViewContainerRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'quick-reply-button',
   templateUrl: './quick-reply-button.component.html',
+  providers: [TDSDestroyService]
 })
-export class QuickReplyButtonComponent implements OnInit {
+
+export class QuickReplyButtonComponent implements OnInit, OnChanges {
+
+  @Input() partner?: any;
   @Output() onQuickReplySelected = new EventEmitter<any>();
 
   isVisibleReply: boolean = false;
   quickReplies: Array<QuickReplyDTO> = [];
   lstquickReplyDefault!: Array<QuickReplyDTO>
   objQuickReply: TDSSafeAny = {};
-  partner: TDSSafeAny;
   keyFilterMail: string = '';
 
-  destroy$ = new Subject();
-
-  constructor(
-    private message: TDSMessageService,
+  constructor(private message: TDSMessageService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private quickReplyService: QuickReplyService,
-    private partnerService: PartnerService) { }
+    private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
-    this.getData();
+    this.loadData();
   }
 
-  getData() {
-    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.partner = res;
-      }
-    });
-
+  loadData() {
     this.quickReplyService.setDataActive();
     this.quickReplyService.getDataActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
@@ -64,6 +57,12 @@ export class QuickReplyButtonComponent implements OnInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["partner"] && !changes["partner"].firstChange) {
+        this.partner = changes["partner"].currentValue;
+    }
+  }
+
   showModalAddQuickReply() {
     this.isVisibleReply = false;
     let modal = this.modalService.create({
@@ -74,9 +73,6 @@ export class QuickReplyButtonComponent implements OnInit {
       size: 'md',
       componentParams: {}
     });
-    modal.afterClose.subscribe(result=>{
-      console.log(result)
-    })
   }
 
   changeVisible(event: boolean){
@@ -119,10 +115,12 @@ export class QuickReplyButtonComponent implements OnInit {
     if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
+
     data = data.filter((x) =>
       (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1) ||
       (x.BodyPlain && TDSHelperString.stripSpecialChars(x.BodyPlain.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
-    this.quickReplies = data
+
+    this.quickReplies = data;
   }
 
 }

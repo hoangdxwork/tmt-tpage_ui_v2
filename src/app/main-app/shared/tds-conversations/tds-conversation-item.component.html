@@ -292,7 +292,8 @@
                         <div class="text-neutral-1-400 cursor-pointer p-2 rounded-md tdsi-product-line text-xl leading-none hover:bg-neutral-3-50" *ngIf="isPrivateReply"
                              (click)="onProductsbypageFb()" tds-tooltip tooltipTitle="Sản phẩm">
                         </div>
-                        <quick-reply-button class="p-2 rounded-md hover:bg-neutral-3-50" tds-tooltip tooltipTitle="Tin nhắn nhanh" (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                        <quick-reply-button class="p-2 rounded-md hover:bg-neutral-3-50" tds-tooltip tooltipTitle="Tin nhắn nhanh"
+                            (onQuickReplySelected)="onQuickReplySelected($event)" [partner]="partner"></quick-reply-button>
                       </div>
                       <tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">  Gửi về tin nhắn </tds-checkbox>
                   </div>

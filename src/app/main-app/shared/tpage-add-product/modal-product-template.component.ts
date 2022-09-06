@@ -235,6 +235,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
           } else {
               this.onCancel(null);
           }
+
           this.productIndexDBService.loadProductIndexDBV2().subscribe();
         }
       }, error => {
