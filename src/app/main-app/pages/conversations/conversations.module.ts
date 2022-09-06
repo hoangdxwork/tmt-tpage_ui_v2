@@ -18,7 +18,6 @@ import { ConversationDataFacade } from '../../services/facades/conversation-data
 import { ConversationFacebookState } from '../../services/facebook-state/conversation-facebook.state';
 import { ConversationService } from '../../services/conversation/conversation.service';
 import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
-import { DraftMessageService } from '../../services/conversation/draft-message.service';
 import { THelperCacheService } from 'src/app/lib';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ConversationOrderComponent } from './components/conversation-order/conversation-order.component';
@@ -149,7 +148,6 @@ const SERVICES = [
   ActivityDataFacade,
   ConversationFacebookState,
   ConversationService,
-  DraftMessageService,
   THelperCacheService,
   SaleOnline_OrderService,
   PartnerService,

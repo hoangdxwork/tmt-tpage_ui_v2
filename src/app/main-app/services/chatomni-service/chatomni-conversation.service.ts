@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core";
-import { map, Observable,  shareReplay } from "rxjs";
+import { map, Observable, shareReplay, mergeMap } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { ChatomniConversationFacade } from "../chatomni-facade/chatomni-conversation.facade";
 import { ChatomniConversationDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
+import { ChatomniConversationInfoDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
+import { CRMMatchingService } from "../crm-matching.service";
 
 @Injectable()
 
@@ -19,6 +21,7 @@ export class ChatomniConversationService extends BaseSevice {
   _keyCheckCsidRouter = 'check_Csid_Router';
 
   constructor(private apiService: TCommonService,
+    private crmMatchingService: CRMMatchingService,
       private csFacade: ChatomniConversationFacade) {
       super(apiService)
   }
@@ -128,6 +131,22 @@ export class ChatomniConversationService extends BaseSevice {
         method: CoreApiMethodType.get
     }
     return this.apiService.getData<any>(api, null);
+  }
+
+  syncConversationInfo(teamId: number, csid: string): Observable<any> {
+    return this.getInfo(teamId, csid).pipe(map((x: any) => {
+        return x;
+    }),
+    mergeMap((x: any) => {
+      if(x.Partner && x.Partner.Phone)  {
+          return this.crmMatchingService.checkPhoneReport(x.Partner.Phone).pipe(map((p: any) => {
+              x.Partner.PhoneReport = p.is_report;
+              return x;
+          }))
+      } else {
+          return x;
+      }
+    }), shareReplay(1))
   }
 
 }

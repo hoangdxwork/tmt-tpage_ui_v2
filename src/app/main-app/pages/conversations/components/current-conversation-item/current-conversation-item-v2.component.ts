@@ -2,7 +2,6 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, DoCheck } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { TDSMessageService } from 'tds-ui/message';
@@ -53,7 +52,6 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   countNgafterview = 0;
 
   constructor(private message: TDSMessageService,
-    private draftMessageService: DraftMessageService,
     private conversationEventFacade: ConversationEventFacade,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
@@ -68,11 +66,6 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   ngOnInit(): void {
     if(this.item) {
       this.eventData = this.conversationEventFacade.getEvent();
-      let draftMessage = this.draftMessageService.getMessageByASIds(this.item.ConversationId) as any;
-
-      if(draftMessage.messages || draftMessage.images.length > 0) {
-          this.isDraftMessage = true;
-      }
 
       if(TDSHelperArray.hasListValue(this.item?.Tags)) {
           this.displayTag = this.item?.Tags?.length || 0;

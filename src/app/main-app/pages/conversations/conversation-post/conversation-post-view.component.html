@@ -114,11 +114,11 @@
                         <div class="w-full flex flex-col gap-y-3">
                             <p class="text-title-1 font-semibold" *ngIf="(data.Data | facebookType).story"> {{(data.Data | facebookType).story}} </p>
                             <div showMore [text]="(data.Data | facebookType).message" [length]="400"></div>
-                            <p *ngIf="!(data.Data | facebookType).message && !(data.Data | facebookType).story" class="italic text-neutral-1-900 text-caption-1">(Chưa có nội dung tiêu đề)</p>
+
                             <p class="description" *ngIf="(data.Data | facebookType).description" showMore [text]="(data.Data | facebookType).description" [length]="400"></p>
                         </div>
 
-                        <!-- <div *ngIf="data.LiveCampaign">
+                        <div *ngIf="data.LiveCampaign">
                             <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data)">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
                                     <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
@@ -127,7 +127,7 @@
                             </tds-tag>
                         </div>
 
-                        <div *ngIf="!data.LiveCampaign">
+                        <!-- <div *ngIf="!data.LiveCampaign">
                             <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
                                 (click)="openTag(data.Id)"
                                 [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -176,11 +176,11 @@
                 </div>
 
                 <!-- TShop -->
-                <div class="post-body flex flex-row justify-between p-4">
+                <div class="post-body flex flex-row justify-between p-4" *ngIf="team.Type == 'TShop'">
                     <div class="flex flex-col justify-between gap-y-3">
                         <div class="w-full flex flex-col gap-y-3">
                             <p class="italic text-neutral-1-900 text-caption-1">
-                                {{(data.Data | tshopType).Content?.Text || '(Chưa có nội dung tiêu đề)'}}
+                                {{ (data.Data | tshopType).Content?.Text || '(Chưa có nội dung tiêu đề)' }}
                             </p>
                         </div>
                     </div>
