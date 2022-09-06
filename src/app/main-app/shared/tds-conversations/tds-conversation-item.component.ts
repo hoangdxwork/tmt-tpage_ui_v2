@@ -435,7 +435,7 @@ export class TDSConversationItemComponent implements OnInit {
 
           //TODO: Đẩy qua conversation-all-v2
           let itemLast = {...data}
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
           this.messageModel = null;
@@ -476,7 +476,7 @@ export class TDSConversationItemComponent implements OnInit {
             if(i == res.length - 1){
               let itemLast = {...data}
 
-              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
               //TODO: Đẩy qua conversation-all-v2
               this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
             }

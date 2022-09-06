@@ -87,13 +87,17 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
 
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters ?? null, this.sort);
 
-    this.odataQuickReplyService.get(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataQuickReplyDTO) => {
-      this.AutoChatList = res.value
-      this.count = res['@odata.count'] as number
-      this.isLoading = false;
-    }, error => {
-      this.message.error(error.error.message || 'Tải dữ liệu thất bại!');
-    });
+    this.odataQuickReplyService.get(params).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: ODataQuickReplyDTO) => {
+          this.AutoChatList = res.value
+          this.count = res['@odata.count'] as number
+          this.isLoading = false;
+        }, 
+        error: error => {
+          this.message.error(error.error.message || 'Tải dữ liệu thất bại!');
+        }
+      });
 
   }
 
@@ -110,21 +114,29 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   }
 
   selectOrderDefault(key: number) {
-    this.quickReplyService.updateDefaultForOrder(key).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.success("Thay đổi Templates đơn hàng thành công!");
-      this.loadData(this.pageSize, this.pageIndex);
-    },err=>{
-      this.message.error( err.error.message || 'Thay đổi Templates đơn hàng thất bại!!');
-    });
+    this.quickReplyService.updateDefaultForOrder(key).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.message.success("Thay đổi Templates đơn hàng thành công!");
+          this.loadData(this.pageSize, this.pageIndex);
+        },
+        error: err=>{
+          this.message.error( err.error.message || 'Thay đổi Templates đơn hàng thất bại!!');
+        }
+      });
   }
 
   selectBillDefault(key: number) {
-    this.quickReplyService.updateDefaultForBill(key).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.success("Thay đổi Templates hóa đơn thành công!");
-      this.loadData(this.pageSize, this.pageIndex);
-    },err=>{
-      this.message.error( err.error.message || 'Thay đổi Templates hóa đơn thất bại!!');
-    });
+    this.quickReplyService.updateDefaultForBill(key).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.message.success("Thay đổi Templates hóa đơn thành công!");
+          this.loadData(this.pageSize, this.pageIndex);
+        },
+        error: err=>{
+          this.message.error( err.error.message || 'Thay đổi Templates hóa đơn thất bại!!');
+        }
+      });
   }
 
 
@@ -160,11 +172,15 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   }
 
   onChangeStatus(key: number) {
-    this.quickReplyService.updateStatus(key).pipe(takeUntil(this.destroy$)).subscribe((res) => {
-        this.message.success('Thay đổi trạng thái thành công!');
-    },err=>{
-        this.message.error(`${err.error.message}` ? `${err.error.message}` : 'Thao tác thất bại');
-    });
+    this.quickReplyService.updateStatus(key).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res) => {
+          this.message.success('Thay đổi trạng thái thành công!');
+        },
+        error: err=>{
+          this.message.error(`${err.error.message}` ? `${err.error.message}` : 'Thao tác thất bại');
+        }
+      });
   }
 
   onEditRow(ev: TDSSafeAny, id: number) {
@@ -193,12 +209,15 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
       iconType: 'tdsi-trash-fill',
       content: 'Bạn có muốn xóa trả lời nhanh!',
       onOk: () => {
-        this.quickReplyService.delete(key).pipe(takeUntil(this.destroy$)).subscribe(res => {
-          this.message.success('Xóa trả lời nhanh thành công!!');
-          this.loadData(this.pageSize, this.pageIndex);
-        },
-          err => {
-            this.message.error( err.error.message || 'Xóa trả lời nhanh thất bại!!');
+        this.quickReplyService.delete(key).pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: res => {
+              this.message.success('Xóa trả lời nhanh thành công!!');
+              this.loadData(this.pageSize, this.pageIndex);
+            },
+            error: err => {
+                this.message.error( err.error.message || 'Xóa trả lời nhanh thất bại!!');
+              }
           })
       },
       onCancel: () => {

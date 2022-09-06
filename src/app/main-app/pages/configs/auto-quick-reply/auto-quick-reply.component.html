@@ -34,9 +34,9 @@
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
                         <th width="4%">STT</th>
                         <th width="22%">Tên mẫu</th>
-                        <th width="22%">Nội dung</th>
+                        <th width="24%">Nội dung</th>
                         <th width="13%">Phím tắt</th>
-                        <th width="12%">Trạng thái</th>
+                        <th width="10%">Trạng thái</th>
                         <th width="12%">Ngày tạo</th>
                         <th class="text-center" width="15%">Thao tác</th>
                     </tr>
@@ -44,10 +44,10 @@
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular group">
-                          <td>{{i + 1}}</td>
+                          <td>{{pageSize * (pageIndex - 1) + i + 1}}</td>
                             <td>
-                                <div class="flex flex-col gap-y-2">
-                                    {{ data.Subject }}
+                                <div class="flex flex-col gap-y-2 overflow-hidden">
+                                    <span class="truncate">{{ data.Subject }}</span>
                                     <div class="inline-block">
                                         <button *ngIf="data.IsDefaultForOrder" tds-tooltip tooltipTitle="Đơn hàng mặc định"
                                             tooltipPlacement="top" class="mr-1">
@@ -64,7 +64,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ data.BodyPlain }}</td>
+                            <td>
+                                <div showMore [length]="70" [text]="(data.BodyPlain | formatIconLike | bbcodeConvert)"></div>
+                            </td>
                             <td></td>
                             <td>
                                 <tds-switch [(ngModel)]="data.Active" (ngModelChange)="onChangeStatus(data.Id)"></tds-switch>

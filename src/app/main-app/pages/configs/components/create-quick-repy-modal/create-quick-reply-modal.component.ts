@@ -29,7 +29,6 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
   valueEdit!: QuickReplyDTO;
   templateType: string = 'generic';
   messageStructurePart: number = 1;
-  uploadUrl = 'https://tshop.tpos.dev/api/v1/app-products/upload-defaultimage';
   buttonTypeList: Array<TDSSafeAny> = [];
   mediaChannelList: Array<CRMTeamDTO> = [];
   dataMeidaRes: Array<CRMTeamDTO> = [];
