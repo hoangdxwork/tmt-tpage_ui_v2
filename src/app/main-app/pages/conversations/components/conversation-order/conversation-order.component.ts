@@ -117,7 +117,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return value
   };
@@ -1185,7 +1185,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeShip_InsuranceFee(value: number) {
-    this.saleModel.Ship_InsuranceFee = value;
+    if (Number(event) >= 0) {
+      this.saleModel.Ship_InsuranceFee = Number(event);
+    }
   }
 
   changeShipExtraMoney(event: any) {

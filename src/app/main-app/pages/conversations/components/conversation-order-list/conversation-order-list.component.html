@@ -135,11 +135,11 @@
                                     <td>
                                         <div class="flex flex-col" tds-tooltip tooltipTitle="{{ data.ProductNameGet }}">
                                             <span class="truncate">{{ data.ProductNameGet }}</span>
-                                            <span class="text-neutral-1-400">{{ data.Price | number:'1.0-3' | numberCustom }}</span>
+                                            <span class="text-neutral-1-400">{{ data.Price | number:'1.0-3'  }}</span>
                                         </div>
                                     </td>
-                                    <td>{{ data.Quantity | number:'1.0-3' | numberCustom }}</td>
-                                    <td>{{ data.Quantity * data.Price | number:'1.0-3' | numberCustom }}</td>
+                                    <td>{{ data.Quantity | number:'1.0-3'  }}</td>
+                                    <td>{{ data.Quantity * data.Price | number:'1.0-3'  }}</td>
                                     <td>
                                         <tds-tag [status]="data.IsOrderPriority ? 'primary' : 'secondary'">
                                             {{ data.IsOrderPriority ? 'Ưu tiên' : 'Dự bị' }}
