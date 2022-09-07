@@ -186,7 +186,7 @@
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State == 'draft'">
                         <tds-form-field>
-                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas" 
+                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
                             formControlName="PaymentAmount" [max]="_form.controls['AmountTotal'].value"></tds-input-number>
                         </tds-form-field>
                       </div>
@@ -307,7 +307,7 @@
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Tiền cọc</span>
                       <tds-form-field class="col-span-2 w-full">
-                          <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
                               placeholder="Nhập tiền cọc" formControlName="AmountDeposit" (ngModelChange)="changeAmountDeposit($event)">
                           </tds-input-number>
                       </tds-form-field>

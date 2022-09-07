@@ -326,7 +326,7 @@ export class AddBillComponent implements OnInit {
                   data = {...this.prepareDetailsOrdLineHandler.prepareModel(data, order)} as FastSaleOrder_DefaultDTOV2;
               }
 
-              
+
           } else {
               // TODO: xóa cache order F10
               this.removelocalStorage();
@@ -1071,7 +1071,7 @@ export class AddBillComponent implements OnInit {
     this.updateShipExtras();
     this.updateShipServiceExtras();
     this.updateShipmentDetailsAship();
-debugger
+
     let model = this.prepareModel();
 
     if(TDSHelperString.hasValueString(formAction)) {
