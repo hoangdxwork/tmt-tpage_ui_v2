@@ -85,31 +85,49 @@ export class EditProductVariantComponent implements OnInit {
   loadData() {
     this.isLoading = true;
 
-    this.productService.getById(this.id).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
-        delete res['@odata.context'];
-        this.dataModel = res;
-        this.cdRef.detectChanges();
-        this.updateForm(res);
-      }, error => {
-        this.message.error(error.error.message || 'Load dữ liệu thất bại');
-      })
+    this.productService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: (res: any) => {
+            delete res['@odata.context'];
+            this.dataModel = res;
+            this.cdRef.detectChanges();
+            this.updateForm(res);
+            this.isLoading = false;
+          }, 
+          error: error => {
+            this.message.error(error.error.message || 'Load dữ liệu thất bại');
+            this.isLoading = false;
+          }
+        })
+  }
+
+  loadDataIndexDBCache() {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
   }
 
   loadProductCategory() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstProductCategory = [...res.value];
-    }, error => {
-      this.message.error(error.error.message || 'load dữ liệu nhóm sản phẩm thất bại');
-    })
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstProductCategory = [...res.value];
+        }, 
+        error: error => {
+          this.message.error(error.error.message || 'load dữ liệu nhóm sản phẩm thất bại');
+        }
+      })
   }
 
   loadUOM() {
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstProductUOM = [...res.value];
-    }, error => {
-      this.message.error(error.error.message || 'Load dữ liệu thất bại');
-    })
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstProductUOM = [...res.value];
+        }, 
+        error: error => {
+          this.message.error(error.error.message || 'Load dữ liệu thất bại');
+        }
+      })
   }
 
   updateForm(data: TDSSafeAny) {
@@ -223,60 +241,17 @@ export class EditProductVariantComponent implements OnInit {
       return;
     }
 
-    this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.success('Cập nhật thành công!');
-      this.mappingCacheDB();
-      this.modal.destroy(true);
-    }, error => {
-      this.message.error(error?.error?.message || 'Thao tác thất bại');
-    });
-  }
-
-  mappingCacheDB() {
-    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
-    this.cacheApi.getItem(keyCache).pipe(takeUntil(this.destroy$)).subscribe((obs: TDSSafeAny) => {
-      if (TDSHelperString.hasValueString(obs)) {
-        let cache = JSON.parse(obs['value']) as TDSSafeAny;
-        let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
-        let indexDbVersion = cacheDB.cacheVersion;
-        let indexDbProductCount = cacheDB.cacheCount;
-        let indexDbStorage = cacheDB.cacheDbStorage;
-
-        this.loadProductIndexDB(indexDbProductCount, indexDbVersion, indexDbStorage);
-      }
-    });
-  }
-
-  loadProductIndexDB(indexDbProductCount: number, indexDbVersion: number, indexDbStorage: DataPouchDBDTO[]) {
-    this.productIndexDBService.getLastVersionV2(indexDbProductCount, indexDbVersion)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoading = false }))
-      .subscribe((res: ProductPouchDBDTO) => {
-
-        if (res.IsDelete === true) {
-          (indexDbStorage as any) = [];
-          indexDbStorage = res.Datas;
-        } else {
-          res.Datas.forEach((x: DataPouchDBDTO) => {
-            indexDbStorage = indexDbStorage.filter(a => !(a.ProductTmplId == x.Id && a.UOMId == x.UOMId));
-            indexDbStorage.push(x);
-          });
+    this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.message.success('Cập nhật thành công!');
+          this.loadDataIndexDBCache();
+          this.modal.destroy(true);
+        }, 
+        error: error => {
+          this.message.error(error?.error?.message || 'Thao tác thất bại');
         }
-
-        let versions = indexDbStorage.map((x: any) => x.Version);
-        let lastVersion = Math.max(...versions);
-        let count = indexDbStorage.length;
-
-        let objCached: KeyCacheIndexDBDTO = {
-          cacheCount: count,
-          cacheVersion: lastVersion,
-          cacheDbStorage: indexDbStorage
-        };
-
-        let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
-        this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
-      }, error => {
-        this.modal.destroy(true);
-      })
+      });
   }
+
 }

@@ -439,14 +439,6 @@ export class AddLiveCampaignPostComponent implements OnInit {
       }
     }
 
-    let compare = compareAsc(new Date(formValue.StartDate).getTime(), new Date(formValue.EndDate).getTime());
-
-    if(compare >= 0){
-      this.message.error('Vui lòng nhập thời gian Kết thúc lớn hơn thời gian Bắt đầu');
-
-      return 0;
-    }
-
     return 1;
   }
 
