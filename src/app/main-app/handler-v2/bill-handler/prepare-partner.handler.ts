@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 
 export class PreparePartnerHandler {
     
-    public prepareModel(form:FormGroup, data:ChangePartnerPriceListDTO, partner: PartnerDetailDTO) {debugger
+    public prepareModel(form:FormGroup, data:ChangePartnerPriceListDTO, partner: PartnerDetailDTO) {
         data.PartnerDisplayName = partner.Name;
         data.PartnerPhone = partner.Phone;
         data.PartnerNameNoSign = partner.NameNoSign;
