@@ -129,10 +129,10 @@
                         {{data.Quantity}}
                       </td>
                       <td>
-                        {{ (data.Price | number:'1.0-3' ) || 0 }}
+                        {{ data.Price | number:'1.0-3' }}
                       </td>
                       <td>
-                        {{ (data.Price*data.Quantity | number:'1.0-3' ) || 0 }}
+                        {{ data.Price*data.Quantity | number:'1.0-3' }}
                       </td>
                   </tr>
               </ng-template>
