@@ -333,7 +333,10 @@ export class AddBillComponent implements OnInit {
               this.changePartner(partnerId);
           }
 
+          // TODO: chỉ gọi calcTotal() trường hợp tạo hóa đơn F10
+          this.calcTotal();
           this.isLoading = false;
+
       },
       error:(err) => {
           this.isLoading = false;
@@ -403,7 +406,6 @@ export class AddBillComponent implements OnInit {
 
     this._form.patchValue(this.dataModel);
 
-    this.calcTotal();
   }
 
   mappingDataAddress(data:TDSSafeAny){
