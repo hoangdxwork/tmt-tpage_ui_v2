@@ -1,3 +1,4 @@
+import { Validators } from '@angular/forms';
 import { SaleOnlineOrderGetDetailsDto } from './../../../dto/order/so-orderlines.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -121,6 +122,7 @@ export class AddBillComponent implements OnInit {
   showShipService!: boolean;
   selectedIndex = 0;
   configsProviderDataSource: Array<AshipGetInfoConfigProviderDto> = [];
+  phoneRegex!:string;
   tipLoading: string = 'Loading...';
 
   numberWithCommas = (value: TDSSafeAny) => {
@@ -288,6 +290,12 @@ export class AddBillComponent implements OnInit {
             obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
 
             this.updateForm(obs);
+            // TODO: change partner gán thêm các field
+            let partnerId = obs.PartnerId || obs.Partner?.Id;
+            if (partnerId) {
+                this.changePartner(partnerId);
+            }
+
             this.isLoading = false;
         }
       },
@@ -318,6 +326,7 @@ export class AddBillComponent implements OnInit {
                   data = {...this.prepareDetailsOrdLineHandler.prepareModel(data, order)} as FastSaleOrder_DefaultDTOV2;
               }
 
+              
           } else {
               // TODO: xóa cache order F10
               this.removelocalStorage();
@@ -327,9 +336,9 @@ export class AddBillComponent implements OnInit {
           data.PaymentAmount = 0;
           this.updateForm(data);
 
-          // TODO: change partner gán thêm các field nếu là tạo hóa đơn F10
+          // TODO: change partner gán thêm các field
           let partnerId = data.PartnerId || data.Partner?.Id;
-          if (partnerId && this.isOrder) {
+          if (partnerId) {
               this.changePartner(partnerId);
           }
 
@@ -344,18 +353,23 @@ export class AddBillComponent implements OnInit {
 
   loadCopyData(data?: FastSaleOrder_DefaultDTOV2){
     delete this.id;
-    let model = { Type: 'invoice', SaleOrderIds:[] };
+    let model = { Type: 'invoice', SaleOrderIds: [] };
 
     this.fastSaleOrderService.apiDefaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
             delete res['@odata.context'];
-            let obs = {...this.prepareCopyBill.prepareModel(data, res)};
+            let obs = this.prepareCopyBill.prepareModel(data, res);
 
             obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
             obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
             obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
 
             this.updateForm(obs);
+            // TODO: change partner gán thêm các field
+            let partnerId = obs.PartnerId || obs.Partner?.Id;
+            if (partnerId) {
+              this.changePartner(partnerId);
+            }
             this.isLoading = false;
         },
         error:(err) => {
@@ -430,6 +444,11 @@ export class AddBillComponent implements OnInit {
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
+
+        if(res.Configs){
+          this.phoneRegex = JSON.parse(res.Configs)?.PhoneRegex;
+          this._form.controls["ReceiverPhone"].addValidators(Validators.pattern(this.phoneRegex || /^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g));
+        }
       },
       error: (error: any) => {
         this.message.error(error?.error?.message || 'Tải thông tin công ty mặc định đã xảy ra lỗi!');
@@ -890,10 +909,13 @@ export class AddBillComponent implements OnInit {
     this.onUpdateInsuranceFee();
   }
 
+  changeExtramoney(value: number){
+    this.extraMoney = Number(value);
+  }
+
   changeShipExtraMoney(event: any) {
     if(event) {
-      let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
-
+      let idx = this.shipExtraServices.findIndex((f: any) => f.Id === 'XMG');
       this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
       this.calcFee();
 
@@ -1047,7 +1069,7 @@ export class AddBillComponent implements OnInit {
     this.updateShipExtras();
     this.updateShipServiceExtras();
     this.updateShipmentDetailsAship();
-
+debugger
     let model = this.prepareModel();
 
     if(TDSHelperString.hasValueString(formAction)) {

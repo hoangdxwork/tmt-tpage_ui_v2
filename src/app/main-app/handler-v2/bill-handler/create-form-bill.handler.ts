@@ -51,7 +51,7 @@ export class CreateFormBillHandler {
       }),
       Address: [null],
       ReceiverName: [null],
-      ReceiverPhone: [null, Validators.pattern(/^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g)],
+      ReceiverPhone: [null],
       ReceiverDate: [null],
       ReceiverAddress: [null],
       ReceiverNote: [null],

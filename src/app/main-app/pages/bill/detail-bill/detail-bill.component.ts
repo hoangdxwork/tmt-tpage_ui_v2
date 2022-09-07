@@ -1,7 +1,7 @@
 import { AccountPaymentJsonService } from 'src/app/main-app/services/account-payment-json.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Observable } from 'rxjs';
-import { Component, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
@@ -471,5 +471,14 @@ export class DetailBillComponent implements OnInit{
 
   onBack(){
     history.back();
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEventCreate(event: KeyboardEvent) {
+    if (event.key === 'F9') {
+      this.onSavePrint('print');
+    } else if (event.key === 'F8') {
+      this.onSavePrint('confirm');
+    }
   }
 }
