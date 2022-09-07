@@ -10,9 +10,10 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, takeUntil } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { ViewConversation_FastSaleOrdersDTO } from './../../../../dto/fastsaleorder/view_fastsaleorder.dto';
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Conversation_LastBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { error } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'drawer-detail-bill',
@@ -38,7 +39,7 @@ export class DrawerDetailBillComponent implements OnInit {
   productPriceTotal: number = 0;
   indexStep: number = 1;
 
-  constructor(
+  constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
     private destroy$: TDSDestroyService,
     private message: TDSMessageService,
@@ -46,8 +47,7 @@ export class DrawerDetailBillComponent implements OnInit {
     private printerService: PrinterService,
     private modalService: TDSModalService,
     private cacheApi: THelperCacheService,
-    private router: Router,
-    ) { }
+    private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -68,71 +68,79 @@ export class DrawerDetailBillComponent implements OnInit {
 
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        delete res['@odata.context'];
+    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+          delete res['@odata.context'];
 
-        if (res.DateCreated) {
-          res.DateCreated = new Date(res.DateCreated);
-        }
-        if (res.DateInvoice) {
-          res.DateInvoice = new Date(res.DateInvoice);
-        }
-        if (res.DateOrderRed) {
-          res.DateOrderRed = new Date(res.DateOrderRed);
-        }
-        if (res.ReceiverDate) {
-          res.ReceiverDate = new Date(res.ReceiverDate);
-        }
+          if (res.DateCreated) {
+            res.DateCreated = new Date(res.DateCreated);
+          }
+          if (res.DateInvoice) {
+            res.DateInvoice = new Date(res.DateInvoice);
+          }
+          if (res.DateOrderRed) {
+            res.DateOrderRed = new Date(res.DateOrderRed);
+          }
+          if (res.ReceiverDate) {
+            res.ReceiverDate = new Date(res.ReceiverDate);
+          }
 
-        this.dataModel = res;
+          this.dataModel = res;
 
-        for (var item of this.dataModel.OrderLines) {
-          this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
-          this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
-        }
+          for (var item of this.dataModel.OrderLines) {
+            this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
+            this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
+          }
 
-        switch(res.State) {
-          case 'draft':
-              this.indexStep = 1;
+          switch(res.State) {
+            case 'draft':
+                this.indexStep = 1;
+                break;
+            case 'open':
+               this.indexStep = 2;
+               break;
+            case 'paid':
+                 this.indexStep = 3;
+                break;
+            case 'cancel':
+              this.indexStep = 4;
               break;
-          case 'open':
-             this.indexStep = 2;
-             break;
-          case 'paid':
-               this.indexStep = 3;
-              break;
-          case 'cancel':
-            this.indexStep = 4;
-            break;
-        }
+          }
 
-        //TODO: nếu Team thiếu thông tin thì map dữ liệu
-        if(res.TeamId) {
-          this.loadTeamById(res.TeamId);
-        }
+          //TODO: nếu Team thiếu thông tin thì map dữ liệu
+          if(res.TeamId) {
+            this.loadTeamById(res.TeamId);
+          }
 
+          this.isLoading = false;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
         this.isLoading = false;
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.cdRef.detectChanges();
+      }
     })
   }
 
   loadPaymentInfoJson() {
-    this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.payments = [...res.value];
-    }, error => {
-      this.message.error('Load thông tin thanh toán đã lỗi!');
+    this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        (res: any) => {
+          this.payments = [...res.value];
+        }
+      }
     })
   }
 
   loadTeamById(id: any) {
-    this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
-        if(team) {
-          this.dataModel.Team.Name = team.Name;
-          this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
-        }
+    this.cRMTeamService.getTeamById(id).subscribe({
+      next: (team: any) => {
+          if(team) {
+            this.dataModel.Team.Name = team.Name;
+            this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
+          }
+      }
     })
   }
 

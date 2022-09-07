@@ -452,7 +452,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     if(changes["partner"] && !changes["partner"].firstChange) {
-        this.partner = changes["partner"].currentValue;debugger
+        this.partner = changes["partner"].currentValue;
     }
   }
 
