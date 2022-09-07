@@ -483,11 +483,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   })
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   validateData() {
     this.isEditPartner = false;
     this.conversationInfo = null;
