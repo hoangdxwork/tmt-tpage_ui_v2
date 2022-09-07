@@ -79,6 +79,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       IsOwner: data.IsOwner,
       Data: { ...data.Data } as unknown as ChatomniFacebookDataDto,
       CreatedTime: data.CreatedTime,
+      ChannelCreatedTime: data.ChannelCreatedTime,
       Message: data.Message,
       Status: data.Status as number,
       CreatedBy: data.CreatedBy,
@@ -121,13 +122,14 @@ export class ChatomniMessageFacade extends BaseSevice  {
     return  {...model};
   }
 
-  mappinglLastMessageEmiter(ConversationId: string, data: ChatomniDataItemDto){
+  mappinglLastMessageEmiter(ConversationId: string, data: ChatomniDataItemDto, type: number){
     let model = {
       ConversationId: ConversationId,
       LatestMessage: {
         Message: data.Message,
-        CreatedTime: data.CreatedTime
-      }
+        CreatedTime: data.CreatedTime,
+        MessageType: type
+      },
     } as ChatomniLastMessageEventEmitterDto
 
     return  {...model};

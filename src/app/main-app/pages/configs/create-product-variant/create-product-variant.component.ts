@@ -1,3 +1,4 @@
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { IRAttachmentDTO } from './../../../dto/attachment/attachment.dto';
 import { ProductTemplateService } from './../../../services/product-template.service';
 import { ConfigAttributeLine } from './../../../dto/configs/product/config-product-default.dto';
@@ -56,7 +57,8 @@ export class CreateProductVariantComponent implements OnInit {
     private prepareCreateVariant: PrepareCreateVariantHandler,
     private productTemplateService: ProductTemplateService,
     private productUOMService: ProductUOMService,
-    private productCategoryService: ProductCategoryService) {
+    private productCategoryService: ProductCategoryService,
+    private productIndexDBService: ProductIndexDBService) {
     this.createForm();
   }
 
@@ -140,48 +142,70 @@ export class CreateProductVariantComponent implements OnInit {
     });
   }
 
+  loadDataIndexDBCache() {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
+  }
+
   loadDefault() {
-    this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      delete res['@odata.context'];
-      this.modelDefault = res;
-      this.formatProperty(res);
-    });
+    this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          delete res['@odata.context'];
+          this.modelDefault = res;
+          this.formatProperty(res);
+        }
+      });
   }
 
   loadProductCategory(){
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstProductCateg = res.value;
-    }, err => {
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
-    });
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstProductCateg = res.value;
+        }, 
+        error: err => {
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        }
+      });
   }
 
   loadAttributeValues() {
     this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.lstAttributeLine = res.value;
-        this.lstShowAttribute = this.lstAttributeLine;
-      },
-      err => {
-        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      {
+        next: (res: TDSSafeAny) => {
+          this.lstAttributeLine = res.value;
+          this.lstShowAttribute = this.lstAttributeLine;
+        },
+        error: err => {
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        }
       }
     )
   }
 
   loadUOM() {
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstUOM = res.value;
-    }, err => {
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
-    });
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstUOM = res.value;
+        },
+        error: err => {
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        }
+      });
   }
 
   loadUOMPO() {
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstUOMPO = res.value;
-    }, err => {
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
-    });
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstUOMPO = res.value;
+        }, 
+        error: err => {
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        }
+      });
   }
 
   formatProperty(data: ProductDTO) {
@@ -246,14 +270,18 @@ export class CreateProductVariantComponent implements OnInit {
     let data = {
       model: { PageId: facebook_PageId, ProductIds: [ids] }
     }
-    this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.notification.success(
-        'Thêm thành công',
-        'Đã thêm sản phẩm ' + name + ' vào page.'
-      );
-    }, error => {
-      this.message.error(error?.error?.message || "Thêm mới sản phẩm vào page thất bại");
-    });
+    this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.notification.success(
+            'Thêm thành công',
+            'Đã thêm sản phẩm ' + name + ' vào page.'
+          );
+        },
+        error: error => {
+          this.message.error(error?.error?.message || "Thêm mới sản phẩm vào page thất bại");
+        }
+      });
   }
 
   prepareModel() {
@@ -274,16 +302,21 @@ export class CreateProductVariantComponent implements OnInit {
       return
     }
 
-    this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (this.addToFBPage) {
-        this.addProductToPageFB(res.Id, model.Name);
-      }
-
-      this.message.success(Message.InsertSuccess);
-      this.router.navigateByUrl('/configs/product-variant');
-    }, error => {
-      this.message.error(error?.error?.message || Message.InsertFail);
-    });
+    this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          if (this.addToFBPage) {
+            this.addProductToPageFB(res.Id, model.Name);
+          }
+    
+          this.loadDataIndexDBCache();
+          this.message.success(Message.InsertSuccess);
+          this.router.navigateByUrl('/configs/product-variant');
+        }, 
+        error: error => {
+          this.message.error(error?.error?.message || Message.InsertFail);
+        }
+      });
   }
 
   onBack() {

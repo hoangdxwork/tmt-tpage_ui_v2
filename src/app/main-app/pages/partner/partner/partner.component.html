@@ -207,7 +207,7 @@
                                     <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right min-w-[200px] max-w-[400px] truncate">{{ data.Zalo }}</td>
                                     <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right min-w-[120px] max-w-[240px]">
                                       <div class="w-full truncate">
-                                        {{ data.Credit || 0 | numberCustom:',' }}
+                                        {{ data.Credit || 0 | number }}
                                       </div>
                                     </td>
                                     <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200 min-w-[120px] max-w-[240px]">

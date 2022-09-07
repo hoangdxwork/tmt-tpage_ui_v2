@@ -48,13 +48,13 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   eventEmitter() {
     this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniObjectsItemDto) => {
+      next: (res: any) => {
           this.currentLiveCampaign = null as any;
       }
     })
 
     this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniObjectsItemDto) => {
+      next: (res: any) => {
           this.currentLiveCampaign = res;
       }
     })
@@ -78,7 +78,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-          data: data,
+          data: data
       }
     });
   }

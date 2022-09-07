@@ -43,8 +43,8 @@ export class ProductTemplateService extends BaseSevice {
 
   insert(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?$expand=UOM`,
-      method: CoreApiMethodType.post,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertV2`,
+        method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);

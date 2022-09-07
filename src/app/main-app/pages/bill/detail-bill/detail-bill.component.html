@@ -223,10 +223,10 @@
                                 <span>Kênh</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold" *ngIf="dataModel.Team?.Facebook_UserName && dataModel.Team?.Facebook_PageName">
-                                    {{dataModel.Team?.Facebook_UserName}} - {{dataModel.Team?.Facebook_PageName}}
+                                <span class="font-semibold" *ngIf="dataModel.Team?.Name">
+                                    {{dataModel.Team?.Name}}
                                 </span>
-                                <span class="font-semibold" *ngIf="!(dataModel.Team?.Facebook_UserName && dataModel.Team?.Facebook_PageName)">---</span>
+                                <span class="font-semibold" *ngIf="!dataModel.Team?.Name">---</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -307,8 +307,8 @@
                             <div class="flex mb-5" *ngFor="let payment of payments; let i = index">
                                 <span class="w-1/2 flex items-center  justify-end" >
                                     <span class="tdsi-information-fill mr-2 text-info-500 text-xl leading-5" type="button"
-                                        tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán"
-                                        [(popoverVisible)]="popoverVisible" [popoverContent]="infoPricePay">
+                                        tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán" [popoverBackdrop]="true"
+                                        [popoverVisible]="indx == i" [popoverContent]="infoPricePay" (click)="showPaymentInfo(i)">
                                     </span>
                                     Trả lúc {{payment.Date | date: "dd-MM-yyyy"}}</span>
                                 <span class="w-1/2 font-semibold"> {{payment.Amount || 0 | number : '1.0-3'}} {{payment.Currency}}</span>
@@ -427,7 +427,7 @@
                                 <span>Đối tác giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.Carrier?.Name}}</span>
+                                <span class="font-semibold">{{ dataModel.Carrier?.Name }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -435,7 +435,7 @@
                                 <span>Giao hàng thu tiền</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | number :'1.0-3'}} đ</span>
+                                <span class="font-semibold">{{ (dataModel.CashOnDelivery || 0) | number}} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -451,7 +451,7 @@
                                 <span>Phí giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | number :'1.0-3'}} đ</span>
+                                <span class="font-semibold">{{ (dataModel.DeliveryPrice || 0) | number}} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -459,7 +459,7 @@
                                 <span>Khối lượng ship (g)</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ShipWeight}}</span>
+                                <span class="font-semibold">{{ (dataModel.ShipWeight || 0) | number }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -467,7 +467,7 @@
                                 <span>Tiền cọc</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.AmountDeposit || 0 | number :'1.0-3'}} đ</span>
+                                <span class="font-semibold">{{ (dataModel.AmountDeposit || 0) | number}} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -475,7 +475,7 @@
                                 <span>Mã vận đơn</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold text-info-500">{{dataModel.TrackingRef}}</span>
+                                <span class="font-semibold text-info-500">{{ dataModel.TrackingRef }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -483,7 +483,7 @@
                                 <span>Trạng thái vận đơn</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ShipPaymentStatus}}</span>
+                                <span class="font-semibold">{{ dataModel.ShipPaymentStatus }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 ">
@@ -491,14 +491,13 @@
                                 <span>Ghi chú giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span >{{dataModel.DeliveryNote}}</span>
+                                <span >{{ dataModel.DeliveryNote }}</span>
                             </div>
                         </div>
                         <!-- Thông tin nâng cao -->
-                        <div class="w-full">
+                        <!-- <div class="w-full">
                             <tds-collapse accordion="true">
-                                <tds-collapse-panel header="Thông tin nâng cao" [active]="false" [disabled]=false
-                                    [expandedIcon]="'tdsi-arrow-up-line'">
+                                <tds-collapse-panel header="Thông tin nâng cao" [active]="false" [expandedIcon]="'tdsi-arrow-up-line'">
                                     <div class=" flex flex-col gap-y-4">
                                         <div class="flex gap-x-6 items-center">
                                             <div class="w-1/3">
@@ -527,7 +526,7 @@
                                     </div>
                                 </tds-collapse-panel>
                             </tds-collapse>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="rounded-xl bg-white p-4 flex flex-col">

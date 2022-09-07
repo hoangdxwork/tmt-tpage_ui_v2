@@ -123,12 +123,12 @@ export class ModalEditPartnerComponent implements OnInit {
         {
           next: (res: any) => {
             delete res['@odata.context'];
-    
+
             this.data = res;
             this.updateForm(this.data);
 
             this.isLoading = false;
-          }, 
+          },
           error: error => {
             this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
@@ -144,17 +144,17 @@ export class ModalEditPartnerComponent implements OnInit {
         {
           next: (res: any) => {
             delete res['@odata.context'];
-    
+
             if (res.BirthDay != null) {
               res.BirthDay = new Date(res.BirthDay);
             }
-    
+
             this.data = res;
             this.updateForm(this.data);
             this.mappingAddress(res);
 
             this.isLoading = false;
-          }, 
+          },
           error: error => {
             this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
@@ -268,7 +268,7 @@ export class ModalEditPartnerComponent implements OnInit {
             this.lstPrice = [...res.value];
             this.price = this.lstPrice[0];
           }
-        }, 
+        },
         error: error => {
           this.message.error(`${error?.error?.message}`)
         }
@@ -309,10 +309,6 @@ export class ModalEditPartnerComponent implements OnInit {
         this.message.error('Vui lòng nhập tên khách hàng');
         return
     }
-    if (!TDSHelperString.hasValueString(model.Phone)) {
-        this.message.error('Vui lòng nhập số điện thoại');
-        return
-    }
 
     if (this.partnerId) {
         this.isLoading = true;
@@ -322,7 +318,7 @@ export class ModalEditPartnerComponent implements OnInit {
               this.message.success('Cập nhật khách hàng thành công!');
               this.modal.destroy(this.partnerId);
               this.isLoading = false;
-            }, 
+            },
             error: error => {
               this.message.error('Cập nhật khách hàng thất bại!');
               this.isLoading = false;
@@ -337,7 +333,7 @@ export class ModalEditPartnerComponent implements OnInit {
               this.message.success('Thêm mới khách hàng thành công!');
               this.modal.destroy(res.Id);
               this.isLoading = false;
-            }, 
+            },
             error: error => {
               this.message.error('Thêm mới khách hàng thất bại!');
               this.isLoading = false;

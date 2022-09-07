@@ -11,7 +11,7 @@ export class PrepareSuggestionsBillHandler {
     let cities: any = {};
     let districts: any = {};
     let wards: any = {};
-    let street: any = {};
+    let street: any = '';
 
     if (data && data.Ship_Receiver?.City?.code) {
       cities = {
@@ -37,6 +37,7 @@ export class PrepareSuggestionsBillHandler {
         name: data.Ship_Receiver.Ward.name
       }
     }
+    
     if (data && data.Ship_Receiver?.Street) {
       street = data.Ship_Receiver.Street;
     }

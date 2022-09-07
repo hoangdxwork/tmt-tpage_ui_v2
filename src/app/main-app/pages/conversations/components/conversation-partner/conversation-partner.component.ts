@@ -301,6 +301,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         next: () => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
             this.partner.StatusText = event.text;
+            this.cdRef.detectChanges();
         },
         error: (error: any) => {
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác thất bại');
@@ -372,7 +373,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     modal.componentInstance?.changeReportPartner.subscribe({
       next: (res: any) => {
         this.partner.PhoneReport = res;
-     }
+      }
     });
   }
 
@@ -392,21 +393,23 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: teamId }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
-        delete res['@odata.context'];
-        this.message.success('Cập nhật khách hàng thành công');
+          delete res['@odata.context'];
+          this.message.success('Cập nhật khách hàng thành công');
 
-        // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
-        this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+          // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
+          if(this.type != 'post') {
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
+          }
 
-        this.isEditPartner = false;
-        this.isLoading = false
-        this.cdRef.detectChanges();
+          this.isEditPartner = false;
+          this.isLoading = false
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
-        this.isLoading = false
-        this.isEditPartner = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-        this.cdRef.detectChanges();
+          this.isLoading = false
+          this.isEditPartner = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -478,11 +481,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     }
   })
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   validateData() {

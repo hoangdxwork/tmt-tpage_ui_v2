@@ -1,6 +1,6 @@
 <div *tdsModalTitle>
   <div class="flex flex-row items-center gap-x-2">
-    <tds-checkbox [checked]="checkedAll" [indeterminate]="indeterminate" (change)="changeAll($event.checked)" *ngIf="lstErrorSelected.length > 0"></tds-checkbox>
+    <tds-checkbox [checked]="checkedAll" [indeterminate]="indeterminate" (change)="changeAll($event.checked)" *ngIf="isOpenCheckBox" [disabled]="isLoading"></tds-checkbox>
     <tds-label class="text-error-500">Danh sách lỗi</tds-label>
   </div>
 </div>
@@ -8,7 +8,7 @@
 <tds-spin [spinning]="isLoading">
   <div class="flex flex-col w-full">
     <div class="flex flex-col gap-y-2 max-h-[500px] overflow-y-auto tds-custom-scroll pr-2">
-      <div *ngFor="let err of lstErrors" class="text-body-2 bg-neutral-3-50">
+      <div *ngFor="let err of lstErrors" class="text-body-2 bg-neutral-3-50" is>
         <div [innerHTML]="err"></div>
       </div>
 
@@ -22,14 +22,14 @@
         </tds-checkbox>
       </div>
     </div>
-    <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t" *ngIf="lstErrorSelected.length > 0">
-      <tds-checkbox [(ngModel)]="isPrint" (ngModelChange)="changePrint('isPrint',$event)">In phiếu</tds-checkbox>
-      <tds-checkbox [(ngModel)]="isPrintShip" (ngModelChange)="changePrint('isPrintShip',$event)">In phiếu ship</tds-checkbox>
+    <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t" *ngIf="isOpenCheckBox">
+      <tds-checkbox [(ngModel)]="isPrint" (ngModelChange)="changePrint('isPrint', $event)">In phiếu</tds-checkbox>
+      <tds-checkbox [(ngModel)]="isPrintShip" (ngModelChange)="changePrint('isPrintShip', $event)">In phiếu ship</tds-checkbox>
     </div>
 
     <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()" *ngIf="lstErrorSelected.length > 0">Lưu</button>
+      <button tds-button type="submit" color="primary" (click)="onSave()" *ngIf="isOpenCheckBox">Tạo cưỡng bức</button>
     </div>
   </div>
 </tds-spin>

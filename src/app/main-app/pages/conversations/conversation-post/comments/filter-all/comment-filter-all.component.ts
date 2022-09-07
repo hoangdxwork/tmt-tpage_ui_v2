@@ -38,6 +38,7 @@ import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto'
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 
 @Component({
   selector: 'comment-filter-all',
@@ -92,6 +93,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private chatomniConversationService: ChatomniConversationService,
     private chatomniCommentService: ChatomniCommentService,
     private chatomniCommentFacade: ChatomniCommentFacade,
+    private saleOnline_OrderService: SaleOnline_OrderService,
     public crmService: CRMTeamService,
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
@@ -369,14 +371,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO, data: ChatomniDataItemDto) {
     if(data){
       data.ParentId = model.parent_id;
-      data.ObjectId = item.ObjectId
-
+      data.ObjectId = item.ObjectId;
     }
 
     this.childsComment = [...this.childsComment, ...[data]];
   }
 
-  loadPartnerTab(item: ChatomniDataItemDto, orderCode: string) {
+  loadPartnerTab(item: ChatomniDataItemDto, order?: any[]) {
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
@@ -389,24 +390,23 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
           if(res) {
               // Thông tin khách hàng
               this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
-              // Thông tin đơn hàng
-              if(TDSHelperString.hasValueString(orderCode)){
-                this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
-              }
 
+              // Thông tin đơn hàng
+              this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
 
-              // Truyền sang coversation-post
-              this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
+              // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
+              if(order && TDSHelperString.hasValueString(order[0]?.code)){
+                  // Truyền sang coversation-post
+                  this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order[0].id, comment: item} );
+                  this.conversationOrderFacade.hasValueOrderCode$.emit(order[0]?.code);
+              }
           }
-        },
-        error: (error: any) => {
-            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
         }
     })
   }
 
-  loadOrderByCode(orderId: any, item: ChatomniDataItemDto){
+  loadOrderByCode(order: any, item: ChatomniDataItemDto){
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
@@ -416,18 +416,19 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
-        if(res) {
-            // Thông tin khách hàng
-            this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+          if(res) {
+              // Thông tin khách hàng
+              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
 
-            this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
-            this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-        }
+              this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order.id, comment: item} );
+              this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+
+              // Truyền sang coversation-post
+              this.conversationOrderFacade.hasValueOrderCode$.emit(order.code);
+          }
       },
       error: (error: any) => {
-          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-
-          this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
+          this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order.id, comment: item} );
           this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
       }
     })

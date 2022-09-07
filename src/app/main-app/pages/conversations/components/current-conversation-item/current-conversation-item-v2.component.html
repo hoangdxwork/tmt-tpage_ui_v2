@@ -46,7 +46,7 @@
 
         </div>
         <div class="flex-auto overflow-hidden flex flex-col gap-1">
-            <div class="flex flex-auto justify-between items-center gap-x-1.5 overflow-hidden">
+            <div class="flex flex-auto justify-between items-start gap-x-1.5 overflow-hidden">
                 <div class="flex flex-auto items-center overflow-hidden">
                     <div [ngClass]="seenedMessage() ? 'font-semibold' : ''" class="text-body-1 text-neutral-1-900 {{item.State ? 'w-4/5': 'flex-auto'}} truncate" [tooltipTitle]="item.Name"
                         [tooltipPlacement]="['topLeft', 'leftTop']" tds-tooltip>{{item.Name}}
