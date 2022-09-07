@@ -23,13 +23,13 @@
       </div>
     </div>
     <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t" *ngIf="isOpenCheckBox">
-      <tds-checkbox [(ngModel)]="isPrint" (ngModelChange)="changePrint('isPrint',$event)">In phiếu</tds-checkbox>
-      <tds-checkbox [(ngModel)]="isPrintShip" (ngModelChange)="changePrint('isPrintShip',$event)">In phiếu ship</tds-checkbox>
+      <tds-checkbox [(ngModel)]="isPrint" (ngModelChange)="changePrint('isPrint', $event)">In phiếu</tds-checkbox>
+      <tds-checkbox [(ngModel)]="isPrintShip" (ngModelChange)="changePrint('isPrintShip', $event)">In phiếu ship</tds-checkbox>
     </div>
 
     <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()" *ngIf="isOpenCheckBox">Lưu</button>
+      <button tds-button type="submit" color="primary" (click)="onSave()" *ngIf="isOpenCheckBox">Tạo cưỡng bức</button>
     </div>
   </div>
 </tds-spin>
