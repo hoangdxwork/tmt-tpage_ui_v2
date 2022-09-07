@@ -24,6 +24,7 @@ import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/ch
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { de } from 'date-fns/locale';
 
 @Component({
   selector: 'app-conversation-post',
@@ -149,14 +150,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             let index = this.lstObjects.findIndex(x => x.Id == res.Id);
             if(index >- 1) {
                 this.lstObjects[index].LiveCampaignId = res.LiveCampaignId;
-                this.lstObjects[index].LiveCampaign = {...res.LiveCampaign};
+                this.lstObjects[index].LiveCampaign = {...res.LiveCampaign} as any;
 
                 this.lstObjects[index] = {...this.lstObjects[index]};
             }
 
             if(this.currentPost && res.Id == this.currentPost?.Id) {
                 this.currentPost.LiveCampaignId = res.LiveCampaignId;
-                this.currentPost.LiveCampaign = { ...res.LiveCampaign };
+                this.currentPost.LiveCampaign = { ...res.LiveCampaign }  as any;
             }
         }
       }
@@ -168,15 +169,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           if(res && !res.LiveCampaignId) {
               let index = this.lstObjects.findIndex(x => x.Id == res.Id);
               if(index >- 1) {
-                  this.lstObjects[index].LiveCampaignId = null as any;
-                  this.lstObjects[index].LiveCampaign = null as any;
+                  delete this.lstObjects[index].LiveCampaignId;
+                  delete this.lstObjects[index].LiveCampaign;
 
                   this.lstObjects[index] = {...this.lstObjects[index]};
               }
 
               if(this.currentPost && res.Id == this.currentPost?.Id) {
-                  this.currentPost.LiveCampaignId = null as any;
-                  this.currentPost.LiveCampaign = null as any;
+                  delete this.currentPost.LiveCampaignId;
+                  delete this.currentPost.LiveCampaign;
 
                   this.currentPost = { ...this.currentPost};
               }

@@ -732,6 +732,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.createFastSaleOrder(fs_model, type);
 
           } else {
+              this.isLoading = false;
+
               if (model.Id || model.Code) {
                   this.message.success('Cập nhật đơn hàng thành công');
               } else {
@@ -739,16 +741,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               }
 
               // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
-              if(this.type != 'post') {
-                this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
-              }
-
-              this.isLoading = false;
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
           }
+
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -790,7 +791,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           // TODO: trường hợp bài viết và all xử lí khác nhau
           if(this.type == 'post' && this.comment) {
               // TODO: nếu là bài viết sau khi thanh toán, sẽ load lại đơn hàng kế tiếp theo postid
-              this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
+              // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
+
+              delete this.quickOrderModel.Id;
+              delete this.quickOrderModel.Code;
+              this.quickOrderModel.Details = [];
           } else {
               this.quickOrderModel = {} as any;
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(true);
@@ -964,6 +969,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         viewContainerRef: this.viewContainerRef,
         size: 'xl'
     });
+
   }
 
   selectProduct(item: DataPouchDBDTO) {
@@ -997,8 +1003,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.saleModel.Tax = res;
           this.saleModel.TaxId = res.Id;
           //Trường hợp tax = 0 thì không gán tax lại
-          if(res.Id === 0)
-          {
+          if(res.Id === 0) {
             delete  this.saleModel.Tax;
             delete  this.saleModel.TaxId;
           }
@@ -1103,10 +1108,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: ODataProductDTOV2) => {
         this.lstProductSearch = [...res.value];
         this.isLoadingProduct = false;
+        this.cdRef.detectChanges();
       },
       error: (err: any) => {
          this.isLoadingProduct = false;
          this.message.error(err.error? err.error.message: Message.CanNotLoadData);
+         this.cdRef.detectChanges();
       }
     });
   }
@@ -1116,9 +1123,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.lstInventory = res;
+        this.cdRef.detectChanges();
       },
       error: (err: any) => {
-        this.message.error(err.error? err.error.message: Message)
+        this.message.error(err.error? err.error.message: Message);
+        this.cdRef.detectChanges();
       }
     });
   }

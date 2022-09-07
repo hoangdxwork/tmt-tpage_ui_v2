@@ -280,7 +280,7 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="1" [step]="1000" [ngModel]="(saleModel.CashOnDelivery | numberCustom:'.') || 0" (change)="changeCashOnDelivery($event.target)"
+                              <tds-input-number [min]="0" [step]="1000" [ngModel]="(saleModel.CashOnDelivery | number:'1.0-3') || 0" (change)="changeCashOnDelivery($event.target)"
                                 [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
@@ -307,9 +307,8 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="100" [ngModel]="(saleModel.ShipWeight | numberCustom:'.') || 0" 
-                                (change)="changeShipWeight($event.target)"
-                                [ngModelOptions]="{standalone: true}">
+                              <tds-input-number [min]="0" [step]="100" [ngModel]="(saleModel.ShipWeight | numberCustom:'.') || 0"
+                                (change)="changeShipWeight($event.target)"[ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </div>
@@ -321,7 +320,7 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1000" [ngModel]="(saleModel.AmountDeposit | numberCustom:'.') || 0" 
+                              <tds-input-number [min]="0" [step]="1000" [ngModel]="(saleModel.AmountDeposit | numberCustom:'.') || 0"
                                 (change)="changeAmountDeposit($event.target)"
                                 [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
@@ -492,7 +491,7 @@
                                                             <ng-template #popoverContentShip_ExtraMoney>
                                                                 <div class="flex gap-x-2">
                                                                     <tds-form-field>
-                                                                        <tds-input-number [min]='0' [step]="1000" [ngModel]="extraMoney | number" 
+                                                                        <tds-input-number [min]='0' [step]="1000" [ngModel]="extraMoney | number"
                                                                           (ngModelChange)="onChangeExtraMoney($event)"
                                                                           [ngModelOptions]="{standalone: true}">
                                                                         </tds-input-number>

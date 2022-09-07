@@ -19,7 +19,7 @@ export interface ChatomniObjectsItemDto {
   Description: string;
   Thumbnail?: Thumbnail;
   LiveCampaignId?: string;
-  LiveCampaign: ChatomniLiveCampaignDto;
+  LiveCampaign?: ChatomniLiveCampaignDto;
 }
 
 export interface ChatomniObjectsDto {
