@@ -29,6 +29,7 @@ export class CreateBillErrorComponent implements OnInit {
   isLoading = false;
   isPrint = false;
   isPrintShip = false;
+  isOpenCheckBox = true;
 
   constructor(
     private modalRef: TDSModalRef,
@@ -44,7 +45,7 @@ export class CreateBillErrorComponent implements OnInit {
       this.lstErrorSelected.push({ isSelected: false, error: err });
     });
 
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   changeAll(checked: TDSSafeAny) {
@@ -131,7 +132,7 @@ export class CreateBillErrorComponent implements OnInit {
 
       this.lstErrorSelected.forEach((item, i) => {
         if (item.isSelected) {
-          //TODO: lấy danh sách đơn hàng cần thêm
+          //TODO: lấy danh sách cần cần force
           this.billDefaultModel.Lines.push(this.lstErrorSelected[i].error);
           lstChecked.push(i);
         }
@@ -157,23 +158,27 @@ export class CreateBillErrorComponent implements OnInit {
           }else{
             // TODO: lấy danh sách thông báo lỗi
             if(res.Errors){
-              this.lstErrors = res.Errors.map((item: string)=>{
-                return item?.replace('text-info font-bold','text-info-500 font-semibold');
+              res.Errors.map((item: string)=>{
+                this.lstErrors.push(item?.replace('text-info font-bold','text-info-500 font-semibold'));
               });
             }
           }
 
-          if(this.lstErrorSelected.length == 0 && this.lstErrors.length == 0){
-            this.onCancel();
+          if(this.lstErrorSelected.length == 0){
+            this.isOpenCheckBox = false;
+
+            if(this.lstErrors.length == 0){
+              this.onCancel();
+            }
           }
 
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }, 
         error:(err) => {
           this.isLoading = false;
           
           this.onCancel();
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       });
     }else{
@@ -182,7 +187,7 @@ export class CreateBillErrorComponent implements OnInit {
 
       this.lstErrorSelected.forEach((item, i) => {
         if (item.isSelected) {
-          //TODO: lấy danh sách đơn hàng cần thêm
+          //TODO: lấy danh sách đơn hàng insert
           lstInsertOrder.push(this.lstOrder[i]);
           lstChecked.push(i);
         }
@@ -209,10 +214,19 @@ export class CreateBillErrorComponent implements OnInit {
         next:(res) => {
           this.isLoading = false;
 
-          if (res.Success) {
+          if(!res.Error){
             this.message.success(Message.Bill.InsertSuccess);
-          } else {
-            this.message.error(res.Error);
+          }else{
+            // TODO: lấy danh sách thông báo lỗi
+            if(res.Errors){
+              res.Errors.map((item: string)=>{
+                this.lstErrors.push(item?.replace('text-info font-bold','text-info-500 font-semibold'));
+              });
+            }
+          }
+
+          if(this.lstErrorSelected.length == 0){
+            this.isOpenCheckBox = false;
           }
           
           if (TDSHelperArray.hasListValue(res)) {
@@ -225,12 +239,12 @@ export class CreateBillErrorComponent implements OnInit {
             this.modalRef.destroy(true);
           }
 
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }, 
         error:(error) => {
           this.message.error(error?.error?.message || Message.InsertFail);
           this.isLoading = false;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       });
     }

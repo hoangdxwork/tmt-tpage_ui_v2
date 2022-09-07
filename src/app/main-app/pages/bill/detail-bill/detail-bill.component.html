@@ -223,10 +223,10 @@
                                 <span>Kênh</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold" *ngIf="dataModel.Team?.Facebook_UserName && dataModel.Team?.Facebook_PageName">
-                                    {{dataModel.Team?.Facebook_UserName}} - {{dataModel.Team?.Facebook_PageName}}
+                                <span class="font-semibold" *ngIf="dataModel.Team?.Name">
+                                    {{dataModel.Team?.Name}}
                                 </span>
-                                <span class="font-semibold" *ngIf="!(dataModel.Team?.Facebook_UserName && dataModel.Team?.Facebook_PageName)">---</span>
+                                <span class="font-semibold" *ngIf="!dataModel.Team?.Name">---</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -307,8 +307,8 @@
                             <div class="flex mb-5" *ngFor="let payment of payments; let i = index">
                                 <span class="w-1/2 flex items-center  justify-end" >
                                     <span class="tdsi-information-fill mr-2 text-info-500 text-xl leading-5" type="button"
-                                        tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán"
-                                        [(popoverVisible)]="popoverVisible" [popoverContent]="infoPricePay">
+                                        tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán" [popoverBackdrop]="true"
+                                        [popoverVisible]="indx == i" [popoverContent]="infoPricePay" (click)="showPaymentInfo(i)">
                                     </span>
                                     Trả lúc {{payment.Date | date: "dd-MM-yyyy"}}</span>
                                 <span class="w-1/2 font-semibold"> {{payment.Amount || 0 | number : '1.0-3'}} {{payment.Currency}}</span>
