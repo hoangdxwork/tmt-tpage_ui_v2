@@ -239,12 +239,12 @@
 
                 <!-- Tổng tiền -->
                 <td *ngIf="isHidden('TotalAmount')" class="border-l text-right">
-                  <span>{{data.TotalAmount || 0 | number:'1.0-3' | numberCustom }} đ</span>
+                  <span>{{data.TotalAmount || 0 | number:'1.0-3'  }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
                 <td *ngIf="isHidden('TotalQuantity')" class="border-l">
-                  <span>{{data.TotalQuantity || 0 | number:'1.0-3' | numberCustom }}</span>
+                  <span>{{data.TotalQuantity || 0 | number:'1.0-3'  }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
@@ -348,7 +348,7 @@
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Tổng tiền</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | number:'1.0-3' | numberCustom }}</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | number:'1.0-3'  }}</span>
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Ngày tạo</span>

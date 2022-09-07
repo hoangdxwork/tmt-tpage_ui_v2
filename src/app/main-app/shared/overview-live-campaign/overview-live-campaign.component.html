@@ -15,11 +15,11 @@
               <span class="text-header-1 font-semibold text-right">{{ lstOfData.OrderSummary.ProductQuantity }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.OrderSummary.TotalAmount | number:'1.0-3' | numberCustom }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.OrderSummary.TotalAmount | number:'1.0-3'  }}</span>
             </div>
           </div>
         </div>
-        
+
         <div class="flex bg-white p-6 rounded-xl gap-x-6 gap-y-4" *ngIf="lstOfData.BillSummary">
           <tds-avatar tdsSrc="../../../assets/imagesv2/live-campaign/money.svg" [size]="60" [shape]="'square'" [isAvatar]="false"></tds-avatar>
 
@@ -33,11 +33,11 @@
               <span class="text-header-1 font-semibold text-right">{{ lstOfData.BillSummary.ProductQuantity }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.BillSummary.TotalAmount | number:'1.0-3' | numberCustom }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.BillSummary.TotalAmount | number:'1.0-3'  }}</span>
             </div>
           </div>
         </div>
-        
+
         <div class="flex bg-white p-6 rounded-xl gap-x-6 gap-y-4" *ngIf="lstOfData.PaySummary">
           <tds-avatar tdsSrc="../../../assets/imagesv2/live-campaign/turnover.svg" [size]="60" [shape]="'square'" [isAvatar]="false"></tds-avatar>
 
@@ -51,7 +51,7 @@
               <span class="text-header-1 font-semibold text-right">{{ lstOfData.PaySummary.ProductQuantity }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.PaySummary.TotalAmount | number:'1.0-3' | numberCustom }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.PaySummary.TotalAmount | number:'1.0-3'  }}</span>
             </div>
           </div>
         </div>

@@ -56,7 +56,7 @@
                 <span class="grid-span-1">Doanh số đầu kỳ</span>
               </div>
               <div class="col-span-2 w-full">
-                <tds-label> {{revenue ? (revenue.RevenueBegan || 0 | number:'1.0-3' | numberCustom ) : 0}} </tds-label>
+                <tds-label> {{revenue ? (revenue.RevenueBegan || 0 | number:'1.0-3'  ) : 0}} </tds-label>
               </div>
             </div>
             <div class="grid grid-cols-3 gap-x-4 mt-4">
@@ -64,7 +64,7 @@
                 <span class="grid-span-1">Doanh số</span>
               </div>
               <div class="col-span-2 w-full">
-                <tds-label> {{revenue ? (revenue.Revenue || 0 | number:'1.0-3' | numberCustom) : 0}} </tds-label>
+                <tds-label> {{revenue ? (revenue.Revenue || 0 | number:'1.0-3' ) : 0}} </tds-label>
               </div>
             </div>
             <div class="grid grid-cols-3 gap-x-4 mt-4">
@@ -72,7 +72,7 @@
                 <span class="grid-span-1">Nợ hiện tại</span>
               </div>
               <div class="col-span-2 w-full">
-                <tds-label> {{data.Credit || 0  | number:'1.0-3' | numberCustom}} </tds-label>
+                <tds-label> {{data.Credit || 0  | number:'1.0-3' }} </tds-label>
               </div>
             </div>
             <div class="grid grid-cols-3 gap-x-4 mt-4">
@@ -80,7 +80,7 @@
                 <span class="grid-span-1">Tổng doanh số</span>
               </div>
               <div class="col-span-2 w-full">
-                <tds-label> {{revenue ? (revenue.RevenueTotal || 0 | number:'1.0-3' | numberCustom) : 0}} </tds-label>
+                <tds-label> {{revenue ? (revenue.RevenueTotal || 0 | number:'1.0-3' ) : 0}} </tds-label>
               </div>
             </div>
           </div>
@@ -130,7 +130,7 @@
               <!-- Tổng tiền -->
               <td class="text-left">
                 <div class="w-full">
-                  <span>{{data.AmountTotal || 0 | number:'1.0-3' | numberCustom }}</span>
+                  <span>{{data.AmountTotal || 0 | number:'1.0-3'  }}</span>
                 </div>
               </td>
               <!-- Còn nợ -->
@@ -180,7 +180,7 @@
               <!-- Còn nợ -->
               <td class="text-left">
                 <div class="w-full">
-                  <span>{{data.AmountResidual | number:'1.0-3' | numberCustom }}</span>
+                  <span>{{data.AmountResidual | number:'1.0-3'  }}</span>
                 </div>
               </td>
             </tr>
