@@ -69,6 +69,8 @@ export class EditOrderV2Component implements OnInit {
   lstComment: CommentsOfOrderDTO[] = [];
   isEnableCreateOrder: boolean = false;
   isLoading: boolean = false;
+  phoneRegex!:any;
+  emailRegex!:any;
 
   quickOrderModel!: QuickSaleOnlineOrderModel;
   saleModel!: FastSaleOrder_DefaultDTOV2;
@@ -99,15 +101,15 @@ export class EditOrderV2Component implements OnInit {
 
   selectedIndex: number = 0;
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return value
-  }
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null) {
-      return TDSHelperString.replaceAll(value,',','');
+  };
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
     }
     return value
   };
@@ -151,7 +153,6 @@ export class EditOrderV2Component implements OnInit {
     private destroy$: TDSDestroyService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private router: Router) {
-      this.createForm();
   }
 
   ngOnInit(): void {
@@ -170,7 +171,6 @@ export class EditOrderV2Component implements OnInit {
   loadData() {
     this.quickOrderModel = this.dataItem;
     this.mappingAddress(this.quickOrderModel);
-    this.updateForm();
 
     let postId = this.quickOrderModel.Facebook_PostId;
     let teamId = this.quickOrderModel.CRMTeamId;
@@ -243,23 +243,15 @@ export class EditOrderV2Component implements OnInit {
         if(this.companyCurrents?.DefaultWarehouseId) {
           this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
         }
+
+        if(this.companyCurrents.Configs){
+          this.phoneRegex = JSON.parse(this.companyCurrents.Configs)?.PhoneRegex;
+        }
       },
       error: (error: any) => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
       }
     });
-  }
-
-  createForm(){
-    this._form = this.fb.group({
-      Telephone: [null, Validators.pattern(/^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g)],
-      Email: [null, Validators.email]
-    })
-  }
-
-  updateForm(){
-    this._form.controls["Telephone"].setValue(this.quickOrderModel.Telephone);
-    this._form.controls["Email"].setValue(this.quickOrderModel.Email);
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
@@ -319,20 +311,36 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
+  checkPhoneValidate(){
+    if(this.phoneRegex){
+      return new RegExp(this.phoneRegex).test(this.quickOrderModel.Telephone);
+    }else{
+      return /^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g.test(this.quickOrderModel.Telephone);
+    }
+  }
+
+  checkEmailValidate(){
+    if(this.emailRegex){
+      return new RegExp(this.emailRegex).test(this.quickOrderModel.Email);
+    }else{
+      return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(this.quickOrderModel.Email);
+    }
+  }
+
   onChangePhone(data: any){
-    this.quickOrderModel.Telephone = data.value;
-    this.quickOrderModel.PartnerPhone = data.value;
+    this.quickOrderModel.Telephone = data;
+    this.quickOrderModel.PartnerPhone = data;
 
     if(this.quickOrderModel.Partner){
-      this.quickOrderModel.Partner.Phone = data.value;
+      this.quickOrderModel.Partner.Phone = data;
     }
   }
 
   onChangeEmail(data: any){
-    this.quickOrderModel.Email = data.value;
+    this.quickOrderModel.Email = data;
 
     if(this.quickOrderModel.Partner){
-      this.quickOrderModel.Partner.Email = data.value;
+      this.quickOrderModel.Partner.Email = data;
     }
   }
 
@@ -565,6 +573,16 @@ export class EditOrderV2Component implements OnInit {
 
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
+
+    if (!this.checkPhoneValidate() || !model.Telephone) {
+      this.message.error(model.Telephone ? 'Vui lòng nhập số điện thoại hợp lệ' : 'Vui lòng nhập số điện thoại');
+      return;
+    }
+
+    if (!this.checkEmailValidate() && model.Email) {
+      this.message.error('Vui lòng nhập địa chỉ email hợp lệ');
+      return;
+    }
 
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
@@ -863,7 +881,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   openPopoverShipExtraMoney(value: number) {
-    this.extraMoney = Number(value);
+    this.extraMoney = Number(value) || 0;
     this.visibleShipExtraMoney = true;
   }
 
@@ -880,7 +898,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   changeAmountDeposit(event: any) {
-    let value = this.converseToNumber(event.value);
+    let value = Number(event) || 0;
 
     if (value >= 0) {
       this.saleModel.AmountDeposit = value;
@@ -889,7 +907,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   changeDeliveryPrice(event: any) {
-    let value = this.converseToNumber(event.value);
+    let value = Number(event) || 0;
 
     if (value >= 0) {
       this.saleModel.DeliveryPrice = value;
@@ -897,28 +915,22 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
-  changeShipWeight(event: any) {
-    let value = this.converseToNumber(event.value);
-
-    if(value >= 0){
-      this.saleModel.ShipWeight = value;
-    }
-
+  changeShipWeight() {
     if(this.saleModel.Carrier) {
       this.calcFee();
     }
   }
 
   changeCashOnDelivery(event: any) {
-    let value = this.converseToNumber(event.value);
+    let value = Number(event) || 0;
 
     if(value >= 0){
       this.saleModel.CashOnDelivery = value;
     }
   }
 
-  changeShip_InsuranceFee(event: any) {
-    let value = this.converseToNumber(event.value);
+  changeShip_InsuranceFee(event: any) {console.log(event)
+    let value = Number(event) || 0;
 
     if(value >= 0){
       this.saleModel.Ship_InsuranceFee = value;
@@ -931,14 +943,6 @@ export class EditOrderV2Component implements OnInit {
     this.calcFee();
 
     this.visibleShipExtraMoney = false;
-  }
-
-  // TODO: chuyển đổi chuỗi số có dấu . động thành number
-  converseToNumber(value: any){
-    if(value){
-      return Number(value.toString().replaceAll('.',''));
-    }
-    return 0;
   }
 
   // TODO: cập nhật giá xem hàng

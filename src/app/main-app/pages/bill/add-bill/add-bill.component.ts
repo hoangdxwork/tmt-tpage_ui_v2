@@ -137,6 +137,7 @@ export class AddBillComponent implements OnInit {
     }
     return value
   };
+  
   chatomniEventEmiter: any;
 
   constructor(private fb: FormBuilder,

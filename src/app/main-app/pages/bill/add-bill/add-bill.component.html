@@ -192,7 +192,7 @@
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
                         <span>
-                          {{ _form.controls['PaymentAmount'].value ?  (_form.controls['PaymentAmount'].value | numberCustom:'.') : 0 }} đ
+                          {{ _form.controls['PaymentAmount'].value ?  (_form.controls['PaymentAmount'].value | number:'1.0-3' | numberCustom) : 0 }} đ
                         </span>
                       </div>
                   </div>
@@ -221,7 +221,7 @@
                       <span class="font-semibold">Doanh số</span>
                     </div>
                     <div class="w-2/3">
-                      <div >{{ (_form.controls['Revenue'].value || 0) | numberCustom:'.' }} đ</div>
+                      <div >{{ (_form.controls['Revenue'].value || 0) | number:'1.0-3' | numberCustom }} đ</div>
                     </div>
                   </div>
 
@@ -511,7 +511,7 @@
                       <span class="font-semibold">Nợ cũ</span>
                     </div>
                     <div class="w-2/3">
-                      <span>{{ (_form.controls['PreviousBalance'].value | numberCustom:'.') || 0 }} đ</span>
+                      <span>{{ (_form.controls['PreviousBalance'].value | number:'1.0-3' | numberCustom) || 0 }} đ</span>
                     </div>
                   </div>
                 </div>
