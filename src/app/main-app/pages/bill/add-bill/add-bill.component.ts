@@ -804,7 +804,7 @@ export class AddBillComponent implements OnInit {
     if (!this._form.controls['Partner'].value) {
       return this.message.error('Vui lòng chọn khách hàng!');
     }
-    
+
     if(TDSHelperArray.isArray(event)){
       event.forEach((data:DataPouchDBDTO) => {
         this.pushProductToOrderlines(data);
@@ -812,14 +812,14 @@ export class AddBillComponent implements OnInit {
     } else {
       let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
         let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
-    
+
         if (exist) {
             this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
         } else {
             this.pushProductToOrderlines(event);
         }
     }
-    
+
   }
 
   // TODO: trường hợp thêm mới
@@ -992,7 +992,7 @@ export class AddBillComponent implements OnInit {
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form)} as any;
 
     // TODO: gán lại công ty hiện tại
-    if(!Number(model.CompanyId) && Number(model.CompanyId) > 0) {
+    if(!Number(model.CompanyId) || Number(model.CompanyId) == 0) {
       model.CompanyId = this.companyCurrents?.CompanyId;
 
       model.CompanyId = this.companyCurrents?.CompanyId;
@@ -1007,7 +1007,7 @@ export class AddBillComponent implements OnInit {
     if(!TDSHelperString.hasValueString(model.FormAction)) {
       model.FormAction = 'draft';
     }
-    
+
     switch(this.path) {
       case 'copy':
         model.OrderLines?.map((x: any) => {
@@ -1085,7 +1085,7 @@ export class AddBillComponent implements OnInit {
     if (this.isLoading) {
       return
     }
-    
+
     if (this.id) {
         this.isLoading = true;
         this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe({
@@ -1382,7 +1382,7 @@ export class AddBillComponent implements OnInit {
   }
 
   @HostListener('document:keyup', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) { 
+  handleKeyboardEvent(event: KeyboardEvent) {
     if(event.key === 'F9'){
       this.onSave('SaveAndPrint', 'print');
     }
