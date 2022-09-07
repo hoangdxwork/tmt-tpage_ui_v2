@@ -360,10 +360,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
