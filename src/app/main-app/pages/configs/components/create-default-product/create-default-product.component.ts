@@ -24,6 +24,9 @@ export class CreateDefaultProductComponent implements OnInit {
   defaultProduct?: ProductDTOV2;
   companyCurrents!: CompanyCurrentDTO;
   isLoading = false;
+  pageSize = 20;
+  pageIndex = 1;
+  count: number = 1;
 
   constructor(private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private auth: TAuthService,
@@ -93,6 +96,11 @@ export class CreateDefaultProductComponent implements OnInit {
     this.modal.destroy(null);
   }
 
+  onClearAll(event: MouseEvent) {
+    // event.stopPropagation();
+    // this.refreshData();
+  }
+
   onSave(){
     if(!this.defaultProduct){
       this.message.error('Vui lòng chọn sản phẩm');
@@ -101,4 +109,11 @@ export class CreateDefaultProductComponent implements OnInit {
 
     this.modal.destroy(this.defaultProduct);
   }
+
+  // refreshData() {
+  //   this.pageIndex = 1;
+  //   this.filterObj.searchText = '';
+  //   this.filterText.nativeElement.value = '';
+  //   this.loadData(this.pageSize, this.pageIndex);
+  // }
 }

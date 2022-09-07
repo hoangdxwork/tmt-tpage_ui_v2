@@ -38,6 +38,7 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
+import { TruncateString } from 'tds-report';
 
 @Component({
   selector: 'app-order',
@@ -142,6 +143,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.loadGridConfig();
     this.loadStatusTypeExt();
     this.loadSummaryStatus();
+    // console.log(TruncateString('vghfhfghfhfh',5,'middle'))
   }
 
   ngAfterViewInit(): void {

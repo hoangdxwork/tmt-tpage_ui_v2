@@ -280,7 +280,7 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="1" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" (ngModelChange)="changeCashOnDelivery($event)"
+                              <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" (ngModelChange)="changeCashOnDelivery($event)"
                                 [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>

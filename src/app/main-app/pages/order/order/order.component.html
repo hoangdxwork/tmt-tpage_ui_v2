@@ -99,16 +99,16 @@
               <th [align]="'center'" width="33px" [tdsLeft]="true"></th>
               <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" class="border-l" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
-              <th width="64px" [tdsLeft]="true" class="border-l">STT</th>
-              <th *ngIf="isHidden('Code')" width="200px" [tdsLeft]="true" class="border-l">Mã</th>
-              <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-l">Kênh kết nối</th>
-              <th *ngIf="isHidden('Name')" width="240px" class="border-l">Khách hàng</th>
-              <th *ngIf="isHidden('Address')" width="380px" class="border-l">Địa chỉ</th>
-              <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-l text-right">Tổng tiền</th>
-              <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-l">Tổng SL</th>
-              <th *ngIf="isHidden('DateCreated')" width="155px" class="border-l">Ngày tạo đơn</th>
+              <th [tdsLeft]="true" class="border-l">STT</th>
+              <th *ngIf="isHidden('Code')" [tdsLeft]="true" class="border-l">Mã</th>
+              <th *ngIf="isHidden('CRMTeamName')" class="border-l">Kênh kết nối</th>
+              <th *ngIf="isHidden('Name')" class="border-l">Khách hàng</th>
+              <th *ngIf="isHidden('Address')" class="border-l">Địa chỉ</th>
+              <th *ngIf="isHidden('TotalAmount')" class="border-l text-right">Tổng tiền</th>
+              <th *ngIf="isHidden('TotalQuantity')" class="border-l">Tổng SL</th>
+              <th *ngIf="isHidden('DateCreated')" class="border-l">Ngày tạo đơn</th>
               <th *ngIf="isHidden('StatusText')" width="160px" class="border-l">Trạng thái</th>
-              <th *ngIf="isHidden('UserName')" width="126px" class="border-l">Nhân viên</th>
+              <th *ngIf="isHidden('UserName')" class="border-l">Nhân viên</th>
               <th width="130px" [tdsRight]="true" class="border-l">Thao tác</th>
             </tr>
           </thead>
@@ -118,23 +118,23 @@
 
                 <!-- Detail -->
                 <td [expand]="expandSet.has(data.Id)" class="text-center"
-                  (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
+                  (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true">
                 </td>
 
                 <!-- Checked -->
                 <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
-                  class="text-center border-l" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
+                  class="text-center border-l" [tdsLeft]="true">
                 </td>
 
                 <!-- STT -->
-                <td class="border-l" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                  <span>{{ pageSize * (pageIndex - 1) + index + 1 }}</span>
+                <td class="border-l truncate min-w-[64px] max-w-[130px]" [tdsLeft]="true">
+                  <span>{{ index | numericalOrder : pageSize: pageIndex }}</span>
                 </td>
 
                 <!-- Code -->
-                <td *ngIf="isHidden('Code')" class="border-l" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                  <div class="w-full flex ">
-                    <span [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
+                <td *ngIf="isHidden('Code')" class="border-l min-w-[200px] max-w-[400px]" [tdsLeft]="true">
+                  <div class="w-full flex">
+                    <span class="w-full truncate" [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
                   </div>
                   <!-- Nhãn -->
                   <div class="flex items-center gap-x-1 w-full">
@@ -206,17 +206,17 @@
                 </td>
 
                 <!-- Kênh kết nối -->
-                <td *ngIf="isHidden('CRMTeamName')" class="border-l">
+                <td *ngIf="isHidden('CRMTeamName')" class="border-l min-w-[200px] max-w-[400px]">
                   <div class="w-full flex">
                     <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                    <span class="ml-1">{{data.CRMTeamName}}</span>
+                    <span class="ml-1 truncate">{{data.CRMTeamName}}</span>
                   </div>
                 </td>
 
                 <!-- Tên -->
-                <td *ngIf="isHidden('Name')" class="border-l">
+                <td *ngIf="isHidden('Name')" class="border-l min-w-[260px] max-w-[500px]">
                   <div class="w-full">
-                    <p>{{data.PartnerName}}</p>
+                    <p class="truncate">{{data.PartnerName}}</p>
 
                     <div class="flex items-center gap-1">
                       <p class="text-[#929DAA]">{{data.Telephone}}</p>
@@ -233,22 +233,22 @@
                 </td>
 
                 <!-- Địa chỉ -->
-                <td *ngIf="isHidden('Address')" class="border-l">
+                <td *ngIf="isHidden('Address')" class="border-l min-w-[380px] max-w-[500px]">
                   <span>{{data.Address}}</span>
                 </td>
 
                 <!-- Tổng tiền -->
-                <td *ngIf="isHidden('TotalAmount')" class="border-l text-right">
-                  <span>{{data.TotalAmount || 0 | numberCustom :'.' }} đ</span>
+                <td *ngIf="isHidden('TotalAmount')" class="border-l text-right min-w-[140px] max-w-[280px]">
+                  <span>{{ data.TotalAmount || '0' | numberCustom :'.' }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
-                <td *ngIf="isHidden('TotalQuantity')" class="border-l">
-                  <span>{{data.TotalQuantity || 0 | numberCustom:'.' }}</span>
+                <td *ngIf="isHidden('TotalQuantity')" class="border-l min-w-[140px] max-w-[280px] truncate">
+                  <span>{{ data.TotalQuantity || '0' | numberCustom:'.' }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
-                <td *ngIf="isHidden('DateCreated')" class="border-l">
+                <td *ngIf="isHidden('DateCreated')" class="border-l min-w-[155px] max-w-[300px] truncate">
                   <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm:ss"}}</span>
                 </td>
 
@@ -275,14 +275,14 @@
                 </td>
 
                 <!-- Nhân viên -->
-                <td *ngIf="isHidden('UserName')" class="border-l">
+                <td *ngIf="isHidden('UserName')" class="border-l min-w-[126px] max-w-[250px] truncate">
                   <span>{{data.UserName}}</span>
                 </td>
 
                 <!-- Thao tác -->
                 <td [tdsRight]="true" class="border-l" >
                   <div class="flex justify-between">
-                    <button tds-button-icon color="secondary"  tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
+                    <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                       </span>
