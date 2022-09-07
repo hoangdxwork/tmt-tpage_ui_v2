@@ -8,6 +8,11 @@ import { Injectable } from "@angular/core";
 export class PreparePartnerHandler {
     
     public prepareModel(form:FormGroup, data:ChangePartnerPriceListDTO, partner: PartnerDetailDTO) {
+        data.PartnerDisplayName = partner.Name;
+        data.PartnerPhone = partner.Phone;
+        data.PartnerNameNoSign = partner.NameNoSign;
+        data.PartnerFacebookId = partner.FacebookId;
+        data.PartnerFacebook = partner.Facebook;
 
         data.ReceiverName = partner.Name;
         data.ReceiverPhone = partner.Phone;
@@ -28,7 +33,7 @@ export class PreparePartnerHandler {
         }
         if (data.Account) {
             form.controls['Account'].setValue(data.Account);
-            form.controls['AccountId'].setValue(data.AccountId);
+            form.controls['AccountId'].setValue(data.Account.Id);
         }
 
         form.controls['PriceList'].setValue(data.PriceList);

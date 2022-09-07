@@ -88,23 +88,24 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
-    { value: 'Number', name: 'Số HĐ', isChecked: true },
     { value: 'PartnerDisplayName', name: 'Khách hàng', isChecked: true },
-    { value: 'CRMTeamName', name: 'Thông tin', isChecked: true },
-    { value: 'DateCreated', name: 'Ngày tạo đơn', isChecked: true },
+    { value: 'DateInvoice', name: 'Ngày bán', isChecked: false },
+    { value: 'Number', name: 'Số HĐ', isChecked: true },
+    { value: 'CashOnDelivery', name: 'Tiền thu hộ', isChecked: false },
     { value: 'CarrierName', name: 'Đối tác giao hàng', isChecked: true },
+    { value: 'UserName', name: 'Nhân viên', isChecked: false },
     { value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true },
+    { value: 'CustomerDeliveryPrice', name: 'Phí ship đối tác', isChecked: false },
+    { value: 'DeliveryPrice', name: 'Phí giao hàng', isChecked: false },
+    { value: 'ShipPaymentStatus', name: 'Trạng thái GH', isChecked: false },
+    { value: 'ShowShipStatus', name: 'Đối soát GH', isChecked: true },
+    { value: 'CreateByName', name: 'Người lập', isChecked: false },
+    { value: 'DateCreated', name: 'Ngày tạo đơn', isChecked: true },
     { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
     { value: 'Residual', name: 'Còn nợ', isChecked: true },
+    { value: 'CRMTeamName', name: 'Thông tin', isChecked: true },
     { value: 'ShowState', name: 'Trạng thái', isChecked: true },
-    { value: 'ShowShipStatus', name: 'Đối soát GH', isChecked: true },
-    { value: 'ShipPaymentStatus', name: 'Trạng thái GH', isChecked: false },
-    { value: 'DateInvoice', name: 'Ngày bán', isChecked: false },
-    { value: 'CashOnDelivery', name: 'Tiền thu hộ', isChecked: false },
     { value: 'IsRefund', name: 'Đơn hàng trả', isChecked: false },
-    { value: 'CustomerDeliveryPrice', name: 'Phí ship giao hàng', isChecked: false },
-    { value: 'UserName', name: 'Nhân viên', isChecked: false },
-    { value: 'CreateByName', name: 'Người lập', isChecked: false },
   ];
 
   public modelTags: Array<TDSSafeAny> = [];

@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from "@angular/core";
+import { EventEmitter, Injectable, OnDestroy } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get, maxBy as _maxBy } from 'lodash';
@@ -7,7 +7,6 @@ import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversat
 import { CRMTeamService } from "../crm-team.service";
 import { Subject, takeUntil } from "rxjs";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
-import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { ChatomniDataItemDto, ChatomniFacebookDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 
 @Injectable()
@@ -19,6 +18,9 @@ export class ChatomniConversationFacade extends BaseSevice  {
   baseRestApi: string = "rest/v2.0/chatomni";
 
   dataSource: { [id: string] : ChatomniConversationDto } = {}; //this.chatomniDataSource[id]
+
+  // TODO: sự kiên đồng bộ dữ liệu
+  public onSyncConversationInfo$ = new EventEmitter<boolean>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

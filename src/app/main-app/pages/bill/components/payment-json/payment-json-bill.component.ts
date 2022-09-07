@@ -1,45 +1,58 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrinterService } from '../../../../services/printer.service';
 import { AccountRegisterPayment } from '../../../../dto/fastsaleorder/account-register-payment';
-import { Subject, takeUntil, finalize } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { DefaultGetFastSaleOrderDTO } from 'src/app/main-app/dto/bill/action-create-post.dto';
 import { AccountPaymentJsonService } from 'src/app/main-app/services/account-payment-json.service';
 import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
-import th from 'date-fns/esm/locale/th/index.js';
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'payment-json-bill',
-  templateUrl: './payment-json-bill.component.html'
+  templateUrl: './payment-json-bill.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 
-export class PaymentJsonBillComponent implements OnInit, OnDestroy {
+export class PaymentJsonBillComponent implements OnInit {
+  @Input() data!: DefaultGetFastSaleOrderDTO;
 
-  @Input() orderId!: number;
   _form!: FormGroup;
-  data!: DefaultGetFastSaleOrderDTO;
-
   lstAcJournal: AccountRegisterPayment[] = [];
-  private destroy$ = new Subject<void>();
   isLoading: boolean = false;
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    return value
+  };
+
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null) {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
 
   constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
     private accountPaymentJsonService: AccountPaymentJsonService,
     private accRegisterPayment: AccountRegisterPaymentService,
     private message: TDSMessageService,
-    private printerService: PrinterService) {
+    private printerService: PrinterService,
+    private destroy$: TDSDestroyService,
+    private cdr: ChangeDetectorRef) {
       this.createForm();
   }
 
   ngOnInit(): void {
-    if(this.orderId) {
-      this.loadData();
-      this.loadAccountPayment();
-    }
+    this.loadData();
+    this.loadAccountPayment();
   }
 
   createForm() {
@@ -53,21 +66,8 @@ export class PaymentJsonBillComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
-    this.isLoading = true;
-    this.accountPaymentJsonService.defaultGetFastSaleOrder({ orderId: this.orderId })
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-        if(res) {
-          delete res['@odata.context'];
-          if(res.PaymentDate) {
-            res.PaymentDate = new Date(res.PaymentDate);
-          }
-
-          this.data = res;
-          this.updateForm(this.data);
-        }
-    }, error => {
-        this.message.error(`${error?.error?.message}`);
-    })
+    this.updateForm(this.data);
+    this.cdr.detectChanges();
   }
 
   updateForm(data: DefaultGetFastSaleOrderDTO) {
@@ -78,30 +78,37 @@ export class PaymentJsonBillComponent implements OnInit, OnDestroy {
   }
 
   loadAccountPayment() {
-    this.accRegisterPayment.getWithCompanyPayment().pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-          this.lstAcJournal = [...res.value];
-      },(error) => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`: 'Không tải được dữ liệu PT thanh toán')
-      })
+    this.accRegisterPayment.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.lstAcJournal = [...res.value];
+      },
+      error:(error) => {
+          this.message.error(error?.error?.message || 'Không tải được dữ liệu PT thanh toán');
+      }
+    })
   }
 
   onChangeJournal(event: any) {
     this.isLoading = true;
-    this.accountPaymentJsonService.onChangeJournal(event.Id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((res: any) => {
-          if(res) {
-            this.data.Currency = res.Currency;
-            this.data.CurrencyId = res.CurrencyId;
-            this.data.WriteoffAccountId = res.WriteoffAccountId;
-            this.data.PaymentMethodId = res.PaymentMethodId;
+    this.accountPaymentJsonService.onChangeJournal(event.Id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        if(res) {
+          this.data.Currency = res.Currency;
+          this.data.CurrencyId = res.CurrencyId;
+          this.data.WriteoffAccountId = res.WriteoffAccountId;
+          this.data.PaymentMethodId = res.PaymentMethodId;
 
-            this._form.controls['Journal'].setValue(event);
-            this.data.JournalId = event.Id;
-          }
-      }, error => {
-        this.message.error(`${error?.error?.message}`);
-      })
+          this._form.controls['Journal'].setValue(event);
+          this.data.JournalId = event.Id;
+        }
+
+        this.isLoading = false;
+      }, 
+      error:(error) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   cancel() {
@@ -110,6 +117,7 @@ export class PaymentJsonBillComponent implements OnInit, OnDestroy {
 
   onSave(type: string) {
     let model = this.prepareModel();
+
     if(!model.PaymentDate) {
       this.message.error('Vui lòng chọn ngày thanh toán');
     }
@@ -119,22 +127,30 @@ export class PaymentJsonBillComponent implements OnInit, OnDestroy {
     if(!model.JournalId && this._form.controls['Journal'].value) {
       this.message.error('Vui lòng chọn PT thanh toán');
     }
+    
+    this.isLoading = true;
+    this.accountPaymentJsonService.actionCreatePost({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(obs: any) => {
+          
+          if(obs && obs.value) {
+            this.message.success('Xác nhận thanh toán thành công');
+            if(type == 'print') {
+                let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
+                printer.pipe(takeUntil(this.destroy$)).subscribe((content: TDSSafeAny) => {
+                    this.printerService.printHtml(content);
+                })
+            }
 
-    this.isLoading = false;
-    this.accountPaymentJsonService.actionCreatePost({model: model}).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((obs: any) => {
-
-        if(obs && obs.value) {
-          this.message.success('Xác nhận thanh toán thành công');
-          if(type == 'print') {
-              let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
-              printer.pipe(takeUntil(this.destroy$)).subscribe((a: TDSSafeAny) => {
-                  this.printerService.printHtml(a);
-              })
+            this.cdr.detectChanges();
+            this.modal.destroy(true);
           }
+
+          this.isLoading = false;
+        }, 
+        error:(error) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
-      }, error => {
-        this.message.error(`${error?.error?.message}`);
       })
   }
 
@@ -160,10 +176,4 @@ export class PaymentJsonBillComponent implements OnInit, OnDestroy {
 
     return model;
   }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
 }

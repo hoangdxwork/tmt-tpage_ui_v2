@@ -114,7 +114,7 @@
                         <div class="w-full flex flex-col gap-y-3">
                             <p class="text-title-1 font-semibold" *ngIf="(data.Data | facebookType).story"> {{(data.Data | facebookType).story}} </p>
                             <div showMore [text]="(data.Data | facebookType).message" [length]="400"></div>
-                            <p *ngIf="!(data.Data | facebookType).message && !(data.Data | facebookType).story" class="italic text-neutral-1-900 text-caption-1">(Chưa có nội dung tiêu đề)</p>
+
                             <p class="description" *ngIf="(data.Data | facebookType).description" showMore [text]="(data.Data | facebookType).description" [length]="400"></p>
                         </div>
 
@@ -129,9 +129,9 @@
 
                         <div *ngIf="!data.LiveCampaign">
                             <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
-                                (click)="openTag(data.Id)"
-                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                                [popoverAutoClose]="false" [popoverContent]="contentAddtag" [popoverBackdrop]="true"
+                                (click)="openTag(data)"
+                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
+                                [popoverAutoClose]="false" [popoverBackdrop]="true"
                                 popoverPlacement="right"
                                 status="bg-neutral-3-100 text-neutral-1-600">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
@@ -139,8 +139,9 @@
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                 </span>
                             </tds-tag>
+                        </div>
 
-                            <ng-template #contentAddtag>
+                             <!--<ng-template #contentAddtag>
                                 <div class="w-[304px]">
                                     <tds-form-field>
                                         <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
@@ -166,7 +167,7 @@
                                   </button>
                                 </div>
                             </ng-template>
-                        </div>
+                        </div> -->
 
                     </div>
                     <div class="post-picture w-1/4 flex justify-end" *ngIf="(data.Data | facebookType).picture">
@@ -176,11 +177,11 @@
                 </div>
 
                 <!-- TShop -->
-                <div class="post-body flex flex-row justify-between p-4">
+                <div class="post-body flex flex-row justify-between p-4" *ngIf="team.Type == 'TShop'">
                     <div class="flex flex-col justify-between gap-y-3">
                         <div class="w-full flex flex-col gap-y-3">
                             <p class="italic text-neutral-1-900 text-caption-1">
-                                {{(data.Data | tshopType).Content?.Text || '(Chưa có nội dung tiêu đề)'}}
+                                {{ (data.Data | tshopType).Content?.Text || '(Chưa có nội dung tiêu đề)' }}
                             </p>
                         </div>
                     </div>

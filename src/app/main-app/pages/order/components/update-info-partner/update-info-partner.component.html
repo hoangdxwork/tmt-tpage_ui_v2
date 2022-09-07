@@ -5,9 +5,9 @@
         <tds-label>Tên</tds-label>
       </div>
       <div class="w-2/3">
-        <tds-form-field>
-          <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true' formControlName="Name" />
-          <tds-error>Vui lòng nhập tên khách hàng</tds-error>
+        <tds-form-field [color]="!_form.controls['Name'].valid && _form.controls['Name'].touched ? 'error' : 'default'">
+          <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true' formControlName="Name"/>
+          <tds-error *ngIf="!_form.controls['Name'].valid && _form.controls['Name'].touched">Vui lòng nhập tên khách hàng</tds-error>
         </tds-form-field>
       </div>
     </div>
@@ -16,8 +16,9 @@
         <tds-label>Số điện thoại</tds-label>
       </div>
       <div class="w-2/3">
-        <tds-form-field>
-          <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại khách hàng" formControlName="Phone" />
+        <tds-form-field [color]="!_form.controls['Phone'].valid && _form.controls['Phone'].touched ? 'error' : 'default'">
+          <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại khách hàng" formControlName="Phone"/>
+          <tds-error *ngIf="!_form.controls['Phone'].valid && _form.controls['Phone'].touched">Vui lòng nhập số điện thoại</tds-error>
         </tds-form-field>
       </div>
     </div>
@@ -26,10 +27,11 @@
         <tds-label>Địa chỉ</tds-label>
       </div>
       <div class="w-2/3 flex gap-x-2">
-        <tds-form-field class="w-full">
-          <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+        <tds-form-field class="w-full" [color]="!_form.controls['Street'].valid && _form.controls['Street'].touched ? 'error' : 'default'">
+          <input tdsInput placeholder="Tìm kiếm địa chỉ ..." formControlName="Street"/>
+          <tds-error *ngIf="!_form.controls['Street'].valid && _form.controls['Street'].touched">Vui lòng nhập địa chỉ</tds-error>
         </tds-form-field>
-        <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="innerText ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress()">
+        <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="_form.controls['Street'].valid ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress()">
             <span class="flex items-center">
               <i class="tdsi-location-fill"></i>
             </span>

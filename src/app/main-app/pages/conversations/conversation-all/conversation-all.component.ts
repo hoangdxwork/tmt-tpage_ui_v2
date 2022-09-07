@@ -57,6 +57,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   conversationInfo!: ChatomniConversationInfoDto;
   conversationItem!: ChatomniConversationItemDto;
 
+  syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
+
   isFastSend: boolean = false;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
@@ -238,18 +240,21 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: string)=>{
         if(res === ChangeTabConversationEnum.order) {
-          this.selectedIndex = 2;
+            this.selectedIndex = 2;
         }
       }
     })
 
-    //TODO: cập nhật lại khách hàng và đơn hàng nháp cuối cùng sau khi tạo hóa đơn conversation-order
-    this.conversationOrderFacade.loadGetInfoConversation$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (info: ChatomniConversationInfoDto) => {
-        if(info) {
-            this.conversationInfo = {...info};
-            this.cdRef.detectChanges();
-        }
+    // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
+    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          let teamId = this.currentTeam?.Id as any;
+          this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (data: any) => {
+                  this.syncConversationInfo = {...data};
+                  this.cdRef.markForCheck();
+              }
+          })
       }
     })
   }

@@ -25,7 +25,7 @@
               <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn nhân viên chốt đơn' [valuePrimitive]="false" mode="multiple" formControlName="Users"
-                    disabledField="isActive" [data]="(lstUser$ | async) || []" [allowClear]="true">
+                    disabledField="isActive" [data]="lstUser" [allowClear]="true">
                 </tds-select>
             </tds-form-field>
 
@@ -59,27 +59,27 @@
 
             <tds-label>Ngày bắt đầu</tds-label>
               <tds-form-field class="col-span-2 w-full">
-                  <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime [ngModel]="_form.value.StartDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate" 
+                  <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime [ngModel]="_form.value.StartDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate"
                   (ngModelChange)="onChangeDate($event,0)">
                   </tds-date-picker>
             </tds-form-field>
 
             <tds-label>Ngày kết thúc</tds-label>
               <tds-form-field class="col-span-2 w-full">
-                  <tds-date-picker placeholder="Chọn ngày kết thúc" showTime [ngModel]="_form.value.EndDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate" 
+                  <tds-date-picker placeholder="Chọn ngày kết thúc" showTime [ngModel]="_form.value.EndDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate"
                   (ngModelChange)="onChangeDate($event,1)">
                   </tds-date-picker>
             </tds-form-field>
 
             <tds-label>Số tiền cọc bắt buộc</tds-label>
               <tds-form-field class="col-span-2 w-full">
-                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
+                  <tds-input-number [min]="0"  [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
                   ></tds-input-number>
             </tds-form-field>
 
             <tds-label>Số tiền tối thiểu đặt cọc</tds-label>
               <tds-form-field class="col-span-2 w-full">
-                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit"
+                  <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit"
                   ></tds-input-number>
             </tds-form-field>
 
@@ -134,7 +134,7 @@
                       <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
                           class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
 
-                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom:'.' }}đ </span>
+                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | number:'1.0-3'  }}đ </span>
 
                           <div *ngIf="lstInventory && lstInventory[item.Id]">
                               <span class="text-neutral-1-400">Tồn kho: </span>

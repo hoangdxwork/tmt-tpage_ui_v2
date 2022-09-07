@@ -102,13 +102,13 @@
                                 </div>
                             </ng-template>
                         </div>
-                        <div class="text-neutral-1-400 text-caption-2">Chờ chốt: {{ (data.QueueQuantity | numberCustom:'.') || 0 }}</div>
-                        <div class="text-neutral-1-400 text-caption-2">Đã chốt: {{ (data.UsedQuantity | numberCustom:'.') || 0 }}</div>
+                        <div class="text-neutral-1-400 text-caption-2">Chờ chốt: {{ (data.QueueQuantity | number:'1.0-3' ) || 0 }}</div>
+                        <div class="text-neutral-1-400 text-caption-2">Đã chốt: {{ (data.UsedQuantity | number:'1.0-3' ) || 0 }}</div>
                         <div class="text-caption-2 font-semibold" [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
-                            Còn lại: {{ (data.RemainRealQuantity | numberCustom:'.') || 0 }}
+                            Còn lại: {{ (data.RemainRealQuantity | number:'1.0-3' ) || 0 }}
                         </div>
                     </td>
-                    <td>{{ data.Price | numberCustom:'.' }}</td>
+                    <td>{{ data.Price | number:'1.0-3'  }}</td>
                 </tr>
             </ng-template>
         </tbody>

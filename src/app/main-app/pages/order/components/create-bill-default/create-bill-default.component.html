@@ -5,7 +5,7 @@
       <div class="w-full flex flex-col">
         <tds-form-field>
           <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="true"
-            [valuePrimitive]="false" [(ngModel)]="carrier" [data]="lstCarriers">
+            [valuePrimitive]="false" [(ngModel)]="carrier" [data]="lstCarriers" [ngModelOptions]="{standalone: true}">
           </tds-select>
           <span class="flex items-center text-info-500 text-xs pt-1 absolute">
             <i class="tdsi-warning-2-fill mr-1.5"></i>Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
@@ -41,16 +41,16 @@
                     {{ data.Partner.Name }}
                   </div>
                   <div class="flex items-baseline gap-x-2">
-                    <div class="text-neutral-1-600">Mã ĐH:</div>
-                    <div class="font-semibold text-info-500">{{ data.Reference }}</div>
+                    <div class="text-neutral-1-600">ĐH:</div>
+                    <div class="font-semibold text-info-500 flex flex-auto">{{ data.Reference }}</div>
                   </div>
                   <div class="flex items-baseline gap-x-2">
                     <span class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></span>
-                    <span>{{data.Partner.Phone}}</span>
+                    <span>{{ data.Partner.Phone }}</span>
                   </div>
                   <div class="flex items-baseline gap-x-2">
                     <span class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></span>
-                    <span>{{data.Partner.Street}}</span>
+                    <span>{{ data.Partner.Street }}</span>
                   </div>
                 </div>
               </td>
@@ -82,7 +82,7 @@
               <!-- Khối lượng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1" [(ngModel)]="data.ShipWeight"
+                  <tds-input-number [min]="0" [step]="1" [(ngModel)]="data.ShipWeight" [formatter]="numberWithCommas" [parser]="parserComas"
                     [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
@@ -138,14 +138,14 @@
   <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <div class="flex justify-between gap-x-2">
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.billPrint)">
+      <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave('print')">
         Lưu và in
       </button>
-      <button tds-button class="w-[170px]" type="submit" color="info" (click)="onSave(saveType.billPrintShip)">
+      <button tds-button class="w-[170px]" type="submit" color="info" (click)="onSave('printShip')">
         Lưu và in phiếu ship
       </button>
       <button tds-button class="w-[100px]" type="submit" color="primary"
-        (click)="onSave(saveType.billSave)">Lưu</button>
+        (click)="onSave()">Lưu</button>
     </div>
   </div>
 </tds-spin>

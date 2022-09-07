@@ -1,3 +1,4 @@
+import { Guid } from 'guid-typescript';
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -20,7 +21,6 @@ import { AutoOrderConfigDTO, AutoOrderProductDTO, TextContentToOrderDTO } from '
 import * as XLSX from 'xlsx';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ProductService } from '@app/services/product.service';
-import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { LiveCampainGetWithDetailAttributesDto, LiveCampainGetWithDetailsDto } from '@app/dto/live-campaign/livecampain-detail-attributes.dto';
 
 @Component({
@@ -33,7 +33,7 @@ import { LiveCampainGetWithDetailAttributesDto, LiveCampainGetWithDetailsDto } f
 export class PostOrderConfigComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
-  @Input() currentLiveCampaign?:LiveCampaignModel;
+  currentLiveCampaign?: LiveCampaignModel;
 
   dataModel!: AutoOrderConfigDTO;
   isLoading: boolean = false;
@@ -80,26 +80,32 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadUser() {
-    this.lstUser$ = this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$));
+    this.applicationUserService.setUserActive();
+    this.lstUser$ = this.applicationUserService.getUserActive();
   }
 
   loadData(postId: string) {
     this.isLoading = true;
     this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
-        this.dataModel = res;
-        if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
-          this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
-        } else {
-          this.dataModel.TextContentToOrders = [];
-        }
+          this.dataModel = res;
 
-        this.isLoading = false;
-        this.cdRef.detectChanges();
+          if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
+              this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
+          } else {
+              this.dataModel.TextContentToOrders = [];
+          }
+
+          if(res.LiveCampaignId && Guid.isGuid(res.LiveCampaignId)) {
+              this.loadLiveCampaignById(res.LiveCampaignId);
+          }
+
+          this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error: (err: any) => {
-        this.isLoading = false;
-        this.message.error('Đã xảy ra lỗi');
+          this.isLoading = false;
+          this.message.error('Đã xảy ra lỗi');
       }
     });
   }
@@ -166,6 +172,7 @@ export class PostOrderConfigComponent implements OnInit {
 
     return datas;
   }
+
 
   checkInputMatch2(strs: string[]) {
     let datas = strs as any[];
@@ -391,10 +398,11 @@ export class PostOrderConfigComponent implements OnInit {
     });
   }
 
+  //TODO: chỉ sử dụng khi thêm mẫu sản phẩm
   getContentString(productConfig: AutoOrderProductDTO) {
     let productName = productConfig.ProductName;
 
-    if(!productName){
+    if(!productName && productConfig.ProductNameGet){
       productName = productConfig.ProductNameGet.replace(`[${productConfig.ProductCode}]`,``) || '';
       productName = productConfig.ProductNameGet.trim();
     }
@@ -410,6 +418,10 @@ export class PostOrderConfigComponent implements OnInit {
 
   handleWord(text: string, code?: string): string[] {
     let result: string[] = [];
+    if(!TDSHelperString.hasValueString(text)){
+      return [];
+    }
+
     let word = StringHelperV2.removeSpecialCharacters(text);
     let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
     let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
@@ -429,6 +441,16 @@ export class PostOrderConfigComponent implements OnInit {
     }
 
     return [...result];
+  }
+
+  loadLiveCampaignById(id: string) {
+      this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            delete res['@odata.context'];
+            this.currentLiveCampaign = {...res};
+            this.cdRef.detectChanges();
+        }
+      })
   }
 
   loadConfigLiveCampaign(id: string) {
@@ -456,7 +478,7 @@ export class PostOrderConfigComponent implements OnInit {
                 let product: AutoOrderProductDTO = {
                     ProductId: x.ProductId,
                     ProductCode: x.ProductCode,
-                    ProductName: x.ProductName,
+                    ProductName: x.ProductTemplateName || x.ProductName,
                     ProductNameGet: x.ProductNameGet,
                     Price: x.Price,
                     UOMId: x.UOMId,
@@ -468,7 +490,8 @@ export class PostOrderConfigComponent implements OnInit {
                     IsEnableRegexAttributeValues: false,
                     IsEnableOrderMultiple: false,
                     AttributeValues: [],
-                    DescriptionAttributeValues: []
+                    DescriptionAttributeValues: [],
+                    Tags: x.Tags
                 } as any;
 
                 if(x.AttributeValues && x.AttributeValues.length > 0) {
@@ -487,13 +510,13 @@ export class PostOrderConfigComponent implements OnInit {
                     }
                 }
 
-                let content = this.getContentString(product);
+                let content = product.Tags;
                 let contentWithAttributes = this.getcontentWithAttributesString(product);
                 let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
 
                 this.dataModel.TextContentToOrders.push({
                   Index: idx++,
-                  Content: content.join(',') || null || null,
+                  Content: content || null,
                   ContentWithAttributes: contentWithAttributes || null,
                   IsActive: true,
                   Product: product || null

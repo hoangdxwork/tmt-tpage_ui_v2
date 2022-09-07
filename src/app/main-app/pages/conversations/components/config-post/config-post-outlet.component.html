@@ -1,7 +1,7 @@
 <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex" class="border border-neutral-2-200 rounded-md text-body-2 text-neutral-1-900">
         <tds-tab title="Chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
                 <div class="p-4" *ngIf="selectedIndex == 0">
-                        <post-order-config [data]="data" [currentLiveCampaign]="currentLiveCampaign"></post-order-config>
+                        <post-order-config [data]="data"></post-order-config>
                 </div>
         </tds-tab>
 

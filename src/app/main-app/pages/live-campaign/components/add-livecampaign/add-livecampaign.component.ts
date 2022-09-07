@@ -1,3 +1,5 @@
+import { vi_VN } from 'tds-ui/i18n';
+import { formatNumber } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -15,9 +17,11 @@ import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-rep
 import { Observable, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { LiveCampaignProductDTO, LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
+import { CRMTeamService } from '@app/services/crm-team.service';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
 
 @Component({
   selector: 'add-livecampaign',
@@ -46,8 +50,11 @@ export class AddLiveCampaignComponent implements OnInit {
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
 
+  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale, '1.0-3')}`;
+
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
+    private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
@@ -76,6 +83,8 @@ export class AddLiveCampaignComponent implements OnInit {
       EnableQuantityHandling: [true],
       IsAssignToUserNotAllowed: [true],
       IsShift: [false],
+      Facebook_UserId: [null],
+      Facebook_UserName: [null],
       Details: this.fb.array([]),
     })
   }
@@ -99,7 +108,6 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   loadLiveCampaign(liveCampaignId: string, isCopy: boolean) {
-
     if(liveCampaignId) {
       this.isLoading = true;
 
@@ -112,13 +120,11 @@ export class AddLiveCampaignComponent implements OnInit {
                   if(res.StartDate) {
                       res.StartDate = new Date(res.StartDate)
                   }
-
                   if(res.EndDate) {
                       res.EndDate = new Date(res.EndDate)
                   }
 
                   this.dataModel = res;
-
                   //TODO: trường hợp copy sẽ xóa Id
                   if(isCopy == true) {
                       delete this.dataModel.Id;
@@ -135,23 +141,21 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   loadUser() {
-    this.lstUser$ = this.applicationUserService.dataActive$;
+    this.applicationUserService.setUserActive();
+    this.lstUser$ = this.applicationUserService.getUserActive();
   }
 
   loadQuickReply() {
-    this.quickReplyService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
-
+    this.quickReplyService.setDataActive();
+    this.quickReplyService.getDataActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         if (res) {
           let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
-
-          this.lstQuickReplies = res.sort((a: TDSSafeAny, b: TDSSafeAny) => {
-
-            if (getArr != null) {
-              return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
-            } else {
-              return
-            }
+          this.lstQuickReplies = res?.sort((a: TDSSafeAny, b: TDSSafeAny) => {
+              if (getArr != null) {
+                return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
+              } else
+                return
           });
         }
       },
@@ -325,7 +329,7 @@ export class AddLiveCampaignComponent implements OnInit {
       })
     }
 
-    return result;
+    return [...result];
   }
 
   openTag(index: number) {
@@ -453,6 +457,9 @@ export class AddLiveCampaignComponent implements OnInit {
     model.IsShift = formValue.IsShift;
     model.ImageUrl = formValue.ImageUrl;
 
+    model.Facebook_UserId = formValue.FacebookUserId;
+    model.Facebook_UserName = formValue.Facebook_UserName;
+
     if (TDSHelperArray.hasListValue(formValue.Details)) {
 
       formValue.Details.forEach((detail: any, index: number) => {
@@ -460,6 +467,12 @@ export class AddLiveCampaignComponent implements OnInit {
         detail["Index"] = index;
         detail.Tags = detail?.Tags.toString();
       });
+    }
+
+    let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+    if(TDSHelperObject.hasValue(team) && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
+        model.Facebook_UserId = team.ChannelId;
+        model.Facebook_UserName = team.Name;
     }
 
     model.Details = formValue.Details;

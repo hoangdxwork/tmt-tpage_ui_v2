@@ -3,7 +3,6 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
-import { InitSaleDTO } from '../dto/setting/setting-sale-online.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
 
@@ -52,7 +51,7 @@ export class SharedService extends BaseSevice {
   }
 
   loadUserLogged() {
-   this.setUserLogged();
+     this.setUserLogged();
   }
 
   getUserLogged() {
@@ -60,7 +59,7 @@ export class SharedService extends BaseSevice {
   }
 
   setUserLogged() {
-    if(this.userLogged) {
+    if(TDSHelperObject.hasValue(this.userLogged)) {
         this._userLoggedSubject$.next(this.userLogged);
     } else {
         this.auth.getUserInit().subscribe({
@@ -77,7 +76,7 @@ export class SharedService extends BaseSevice {
   }
 
   setSaleConfig() {
-    if(this.getsaleconfig) {
+    if(TDSHelperObject.hasValue(this.getsaleconfig)) {
         this._getsaleconfigSubject$.next(this.getsaleconfig);
     } else {
         this.apiSaleConfig().subscribe({
@@ -103,7 +102,7 @@ export class SharedService extends BaseSevice {
   }
 
   setSaleOnlineSettingConfig() {
-    if(this.saleOnlineSettings) {
+    if(TDSHelperObject.hasValue(this.saleOnlineSettings)) {
         this._saleOnlineSettingsSubject$.next(this.saleOnlineSettings);
     } else {
         this.apiSaleOnlineSettingConfig().subscribe({

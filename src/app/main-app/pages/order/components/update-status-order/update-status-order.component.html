@@ -14,9 +14,9 @@
   </div>
 
   <div class="w-full" *ngIf="listData" formArrayName="data">
-    <tds-table #rowSelectionTable 
-        [listData]="listData" 
-        [frontPagination]="false" 
+    <tds-table #rowSelectionTable
+        [listData]="listData"
+        [frontPagination]="false"
         [showPagination]="false"
         [scroll]="{y: '450px'}">
         <thead>
@@ -38,7 +38,7 @@
                   {{ item.value.Code }}
                 </td>
                 <td class="text-body-2">
-                  {{ item.value.TotalAmount || 0 | numberCustom : '.'}}
+                  {{ item.value.TotalAmount || 0 | number:'1.0-3'  }}
                 </td>
                 <td>
                   <tds-form-field class="w-full">

@@ -474,7 +474,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   editPartner(data: any) {
     const modal = this.modalService.create({
-      title: 'Sửa Khách hàng',
+      title: 'Sửa khách hàng',
       content: ModalEditPartnerComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,

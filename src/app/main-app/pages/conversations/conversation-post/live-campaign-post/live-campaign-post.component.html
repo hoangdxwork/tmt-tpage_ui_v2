@@ -45,11 +45,15 @@
 
       <div class="pr-2 h-[calc(100vh-500px)] overflow-auto tds-custom-scroll">
           <div class="flex flex-col gap-y-2">
-              <div *ngFor="let item of lstFilter || lstOfData" class="border border-solid rounded-xl p-4 w-full h-full flex gap-x-2 cursor-pointer
+              <div *ngFor="let item of lstOfData" class="border border-solid rounded-xl p-4 w-full h-full flex gap-x-2 cursor-pointer
                 hover:border-primary-1 hover:bg-primary-3" (click)="onSelectItem(item)"
                 [ngClass]="item.Id == currentLiveCampaign?.Id  ? 'border-primary-1 bg-primary-3' : 'border-neutral-3-300'">
 
-                <div class="w-3/5 text-sm">{{ item.Name }} </div>
+                <div class="w-3/5 text-sm">
+                  <p class="font-semibold">{{ item.Name }}</p>
+                  <p *ngIf="item.Facebook_UserName" class="mt-2" style="font-style: italic">Page: {{item.Facebook_UserName}}</p>
+                </div>
+
                 <div class="w-1/5 text-sm text-neutral-1-400"> {{ item.DateCreated | date : "dd/MM/yyyy HH:mm" }}</div>
 
                 <div class="w-1/5 flex gap-x-6 justify-end items-center text-xl">
@@ -64,7 +68,7 @@
 
   <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCannel()">Đóng</button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+      <button *ngIf="currentLiveCampaign" tds-button class="w-[100px]" type="button" color="primary" (click)="onSave()">Lưu</button>
   </div>
 </tds-spin>
 

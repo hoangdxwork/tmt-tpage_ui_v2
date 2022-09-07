@@ -41,7 +41,7 @@ export class CalculateBillFeeHandler {
     return {...result};
   }
 
-  public updateTotalSummary(_form:FormGroup, datas: OrderLineV2[], totalAmountLines:number, roleConfigs: SaleSettingsDTO) {
+  public updateTotalSummary(_form:FormGroup, datas: OrderLineV2[], totalAmountLines:number, roleConfigs: any) {
 
     let total = 0;
     let weightTotal = 0;
@@ -74,7 +74,7 @@ export class CalculateBillFeeHandler {
     let amountDepositSale = _form.controls['SaleOrder'].value ? _form.controls['SaleOrder'].value.AmountDeposit : 0;
     let paymentAmount = amountDepositSale ? (_form.controls['AmountTotal'].value - amountDepositSale) : _form.controls['AmountTotal'].value;
 
-    if (!roleConfigs || !roleConfigs.GroupAmountPaid) {
+    if (!roleConfigs?.SaleSetting?.GroupAmountPaid) {
       _form.controls['PaymentAmount'].setValue(paymentAmount);
     }
 
@@ -108,6 +108,8 @@ export class CalculateBillFeeHandler {
     let formModel = _form.value;
     let coDAmount = (formModel.AmountTotal + formModel.DeliveryPrice) - formModel.AmountDeposit;
 
-    _form.controls['CashOnDelivery'].setValue(coDAmount);
+    if(coDAmount >= 0){
+      _form.controls['CashOnDelivery'].setValue(coDAmount);
+    }
   }
 }

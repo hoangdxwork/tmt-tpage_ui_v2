@@ -1,3 +1,4 @@
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -62,11 +63,14 @@ export class EditOrderV2Component implements OnInit {
 
   @Input() dataItem!: QuickSaleOnlineOrderModel;
 
+  _form!: FormGroup;
   dataSuggestion!: DataSuggestionDTO;
   userInit!: UserInitDTO;
   lstComment: CommentsOfOrderDTO[] = [];
   isEnableCreateOrder: boolean = false;
   isLoading: boolean = false;
+  phoneRegex!:any;
+  emailRegex!:any;
 
   quickOrderModel!: QuickSaleOnlineOrderModel;
   saleModel!: FastSaleOrder_DefaultDTOV2;
@@ -89,23 +93,23 @@ export class EditOrderV2Component implements OnInit {
   visibleDiscountLines: boolean = false;
   visibleShipExtraMoney: boolean = false;
 
-  _cities!: SuggestCitiesDTO | null;
-  _districts!: SuggestDistrictsDTO | null;
-  _wards!: SuggestWardsDTO | null;
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
   _street!: string;
   innerText: string = '';
 
   selectedIndex: number = 0;
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return value
-  }
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null) {
-      return TDSHelperString.replaceAll(value,',','');
+  };
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
     }
     return value
   };
@@ -121,6 +125,7 @@ export class EditOrderV2Component implements OnInit {
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
     private modalRef: TDSModalRef,
+    private fb: FormBuilder,
     private auth: TAuthService,
     private notification: TDSNotificationService,
     private message: TDSMessageService,
@@ -197,8 +202,9 @@ export class EditOrderV2Component implements OnInit {
             }, this.saleModel);
 
             this.saleModel = this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel);
-            this.coDAmount();
+
             this.calcTotal();
+            this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
           }
@@ -237,6 +243,10 @@ export class EditOrderV2Component implements OnInit {
         if(this.companyCurrents?.DefaultWarehouseId) {
           this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
         }
+
+        if(this.companyCurrents.Configs){
+          this.phoneRegex = JSON.parse(this.companyCurrents.Configs)?.PhoneRegex;
+        }
       },
       error: (error: any) => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
@@ -252,9 +262,9 @@ export class EditOrderV2Component implements OnInit {
   mappingAddress(data: QuickSaleOnlineOrderModel) {
     let x = {...this.csOrder_SuggestionHandler.mappingAddress(data)};
 
-    this._cities = x._cities || null;
-    this._districts = x._districts || null;
-    this._wards = x._wards || null;
+    this._cities = x._cities;
+    this._districts = x._districts;
+    this._wards = x._wards;
     this._street = x._street;
 
     this.innerText = this._street;
@@ -290,6 +300,56 @@ export class EditOrderV2Component implements OnInit {
 
   closeSearchProduct(){
     this.textSearchProduct = '';
+  }
+
+  onChangePartnerName(name: any){
+    this.quickOrderModel.Name = name;
+    this.quickOrderModel.PartnerName = name;
+
+    if(this.quickOrderModel.Partner){
+      this.quickOrderModel.Partner.Name = name;
+    }
+  }
+
+  checkPhoneValidate(){
+    if(this.phoneRegex){
+      return new RegExp(this.phoneRegex).test(this.quickOrderModel.Telephone);
+    }else{
+      return /^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g.test(this.quickOrderModel.Telephone);
+    }
+  }
+
+  checkEmailValidate(){
+    if(this.emailRegex){
+      return new RegExp(this.emailRegex).test(this.quickOrderModel.Email);
+    }else{
+      return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(this.quickOrderModel.Email);
+    }
+  }
+
+  onChangePhone(data: any){
+    this.quickOrderModel.Telephone = data;
+    this.quickOrderModel.PartnerPhone = data;
+
+    if(this.quickOrderModel.Partner){
+      this.quickOrderModel.Partner.Phone = data;
+    }
+  }
+
+  onChangeEmail(data: any){
+    this.quickOrderModel.Email = data;
+
+    if(this.quickOrderModel.Partner){
+      this.quickOrderModel.Partner.Email = data;
+    }
+  }
+
+  onChangeUser(user:any){
+    this.quickOrderModel.User = user;
+  }
+
+  onChangeNote(note:any){
+    this.quickOrderModel.Note = note;
   }
 
   selectProduct(data: ProductDTOV2){
@@ -348,7 +408,8 @@ export class EditOrderV2Component implements OnInit {
             ImageUrl: result.ImageUrl,
         } as Detail_QuickSaleOnlineOrder;
 
-        this.quickOrderModel.Details.push(item);
+        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
+
         this.calcTotal();
         this.coDAmount();
       }
@@ -391,7 +452,7 @@ export class EditOrderV2Component implements OnInit {
         this.coDAmount();
     }
 
-    this.saleModel.ShipWeight = event?.Config_DefaultFee || this.companyCurrents?.WeightDefault || 100;
+    this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this.saleModel.Ship_Extras = JSON.parse(event.ExtrasText);
@@ -439,11 +500,9 @@ export class EditOrderV2Component implements OnInit {
   }
 
   addComment(comment:string){
-    if(this.quickOrderModel.Note?.includes(comment)){
-        this.quickOrderModel.Note = this.quickOrderModel.Note.replace(comment,'');
-    } else{
+    if(!this.quickOrderModel.Note?.includes(comment)){
       if(this.quickOrderModel.Note){
-          this.quickOrderModel.Note = this.quickOrderModel.Note.concat(comment);
+          this.quickOrderModel.Note = this.quickOrderModel.Note.concat('\n' + comment);
       }else{
           this.quickOrderModel.Note = comment;
       }
@@ -505,8 +564,8 @@ export class EditOrderV2Component implements OnInit {
 
   coDAmount() {
     if(this.saleModel) {
-        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
-        this.saleModel.CashOnDelivery = cashOnDelivery;
+        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel);
+        this.saleModel.CashOnDelivery = Number(cashOnDelivery);
     }
   }
 
@@ -514,6 +573,16 @@ export class EditOrderV2Component implements OnInit {
 
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
+
+    if (!this.checkPhoneValidate() || !model.Telephone) {
+      this.message.error(model.Telephone ? 'Vui lòng nhập số điện thoại hợp lệ' : 'Vui lòng nhập số điện thoại');
+      return;
+    }
+
+    if (!this.checkEmailValidate() && model.Email) {
+      this.message.error('Vui lòng nhập địa chỉ email hợp lệ');
+      return;
+    }
 
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
@@ -545,10 +614,6 @@ export class EditOrderV2Component implements OnInit {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
           return false;
       }
-
-      // if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
-      //   this.confirmShipService(this.saleModel.Carrier);
-      // }
     }
 
     this.isLoading = true;
@@ -730,17 +795,16 @@ export class EditOrderV2Component implements OnInit {
       }
 
       this.partnerService.updateStatus(this.quickOrderModel.PartnerId, data).pipe(takeUntil(this.destroy$)).subscribe({
-        next: res => {
-          this.message.success(Message.Partner.UpdateStatus);
-          this.quickOrderModel.Partner.StatusText = status.text;
-        },
-        error: (error: any) => {
-          this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
-        }
-      });
-    }
-    else {
-      this.message.error(Message.PartnerNotInfo);
+          next: (res: any) => {
+            this.message.success(Message.Partner.UpdateStatus);
+            this.quickOrderModel.Partner.StatusText = status.text;
+          },
+          error: (error: any) => {
+            this.message.error(error.error.message || 'Cập nhật trạng thái thất bại');
+          }
+      })
+    } else {
+        this.message.error(Message.PartnerNotInfo);
     }
   }
 
@@ -817,7 +881,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   openPopoverShipExtraMoney(value: number) {
-    this.extraMoney = value;
+    this.extraMoney = Number(value) || 0;
     this.visibleShipExtraMoney = true;
   }
 
@@ -829,14 +893,22 @@ export class EditOrderV2Component implements OnInit {
     this.shipExtraServices[i]!.IsSelected = event;
   }
 
-  changeAmountDeposit(value: number) {
-    this.saleModel.AmountDeposit = value;
-    this.coDAmount();
+  onChangeExtraMoney(event: number){
+    this.extraMoney = event;
   }
 
-  changeDeliveryPrice(value: number) {
-    this.saleModel.DeliveryPrice = value;
-    this.coDAmount();
+  changeAmountDeposit(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.AmountDeposit = Number(event);
+      this.coDAmount();
+    }
+  }
+
+  changeDeliveryPrice(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.DeliveryPrice = Number(event);
+      this.coDAmount();
+    }
   }
 
   changeShipWeight() {
@@ -845,11 +917,19 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
-  changeShip_InsuranceFee(value: number) {
-    this.saleModel.Ship_InsuranceFee = value;
+  changeCashOnDelivery(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.CashOnDelivery = Number(event);
+    }
   }
 
-  changeShipExtraMoney(event: any) {
+  changeShip_InsuranceFee(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.Ship_InsuranceFee = Number(event);
+    }
+  }
+
+  changeShipExtraMoney() {
     let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
     this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
     this.calcFee();
@@ -894,6 +974,9 @@ export class EditOrderV2Component implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
+        _cities: this._cities,
+        _districts: this._districts,
+        _wards: this._wards,
         _street: this.innerText,
         isSelectAddress: true
       }
@@ -904,6 +987,7 @@ export class EditOrderV2Component implements OnInit {
         if(result){
           this.onLoadSuggestion(result);
           this.innerText = result.Address;
+          this.quickOrderModel.Address = result.Address;
         }
       }
     })

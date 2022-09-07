@@ -8,7 +8,6 @@ import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
 import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
 import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
-import { DraftMessageService } from './../../services/conversation/draft-message.service';
 import { ConversationDataFacade } from './../../services/facades/conversation-data.facade';
 import { ActivityDataFacade } from './../../services/facades/activity-data.facade';
 import { TDSMessageService } from 'tds-ui/message';
@@ -35,10 +34,8 @@ import { TagService } from '../../services/tag.service';
 import { DuplicateUserComponent } from './components/duplicate-user/duplicate-user.component';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { CreateBillFastComponent } from './components/create-bill-fast/create-bill-fast.component';
-import { CreateBillFastErrorComponent } from './components/create-bill-fast-error/create-bill-fast-error.component';
+import { CreateBillErrorComponent } from './components/create-bill-error/create-bill-error.component';
 import { CreateBillDefaultComponent } from './components/create-bill-default/create-bill-default.component';
-import { CreateBillDefaultErrorComponent } from './components/create-bill-default-error/create-bill-default-error.component';
-
 import { InfoPartnerComponent } from './components/info-partner/info-partner.component';
 import { PartnerService } from '../../services/partner.service';
 import { UpdateInfoPartnerComponent } from './components/update-info-partner/update-info-partner.component';
@@ -103,7 +100,6 @@ const SERVICES = [
   TDSMessageService,
   ActivityDataFacade,
   ConversationDataFacade,
-  DraftMessageService,
   ConversationEventFacade,
   ConversationOrderFacade,
   AttachmentDataFacade,
@@ -136,9 +132,8 @@ const SERVICES = [
     UpdateStatusOrderComponent,
     DuplicateUserComponent,
     CreateBillFastComponent,
-    CreateBillFastErrorComponent,
+    CreateBillErrorComponent,
     CreateBillDefaultComponent,
-    CreateBillDefaultErrorComponent,
     ExpandOrderDetailComponent,
     InfoPartnerComponent,
     UpdateInfoPartnerComponent,

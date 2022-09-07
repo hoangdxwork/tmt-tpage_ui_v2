@@ -20,7 +20,6 @@ import { YiDateTimeV3Pipe } from './yi-datetimeV3.pipe';
 import { YiDateTimeFormatPipe } from './yi-datetimeV2.pipe';
 import { ScrollConversationPipe } from './scroll-conversation.pipe';
 import { OrderByPipe } from './order-by.pipe';
-import { LastActivityMessagePipe } from './last-activity-message.pipe';
 import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
 import { NumberCustomPipe } from './number-custom.pipe';
@@ -28,9 +27,11 @@ import { CompareToday } from './compare-today.pipe';
 import { GetOrderStatusPipe } from './get-order-status.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
-import { CheckTagSelectedPipe } from './check-tag-selected.pipe';
+import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
+import { LatestMessageTypePipe } from './lastest-message-type.pipe';
+import { jsonPayloadPipe } from './json-payload.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -46,7 +47,6 @@ const cmp =[
   ReplacePartnerPipe,
   OrderByPipe,
   ButtonStatusColorPipe,
-  LastActivityMessagePipe,
   ShowAttributeValuePipe,
   ConvertListUrlPipe,
   SelectMultipleValuePipe,
@@ -66,7 +66,10 @@ const cmp =[
   ConvertToCRMTagsListPipe,
   BBcodeConvertPipe,
   SortDataSourcePostPipe,
-  SortDataSourceMessagePipe
+  SortDataSourceMessagePipe,
+  CheckTagSelectedCommnetPipe,
+  LatestMessageTypePipe,
+  jsonPayloadPipe
 ]
 
 @NgModule({

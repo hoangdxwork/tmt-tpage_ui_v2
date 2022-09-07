@@ -118,21 +118,21 @@
 
                 <!-- Detail -->
                 <td [expand]="expandSet.has(data.Id)" class="text-center"
-                  (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                  (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
                 </td>
 
                 <!-- Checked -->
                 <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
-                  class="text-center border-l" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                  class="text-center border-l" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
                 </td>
 
                 <!-- STT -->
-                <td class="border-l" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
-                  <span> {{ data.SessionIndex }}</span>
+                <td class="border-l" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
+                  <span>{{ pageSize * (pageIndex - 1) + index + 1 }}</span>
                 </td>
 
                 <!-- Code -->
-                <td *ngIf="isHidden('Code')" class="border-l" [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                <td *ngIf="isHidden('Code')" class="border-l" [tdsLeft]="true" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
                   <div class="w-full flex ">
                     <span [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
                   </div>
@@ -239,12 +239,12 @@
 
                 <!-- Tổng tiền -->
                 <td *ngIf="isHidden('TotalAmount')" class="border-l text-right">
-                  <span>{{data.TotalAmount || 0 | numberCustom :'.' }} đ</span>
+                  <span>{{data.TotalAmount || 0 | number:'1.0-3'  }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
                 <td *ngIf="isHidden('TotalQuantity')" class="border-l">
-                  <span>{{data.TotalQuantity || 0 | numberCustom:'.' }}</span>
+                  <span>{{data.TotalQuantity || 0 | number:'1.0-3'  }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
@@ -348,7 +348,7 @@
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Tổng tiền</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | numberCustom:'.' }}</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | number:'1.0-3'  }}</span>
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Ngày tạo</span>

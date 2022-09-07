@@ -30,7 +30,8 @@ export class FacebookCartComponent implements OnInit, OnDestroy {
       IsCheckout: [false],
       IsUpdateQuantity: [false],
       IsBuyMore: [false],
-      IsCancelCheckout: [false]
+      IsCancelCheckout: [false],
+      IsUpdate: [false],
     })
   }
 
@@ -76,10 +77,13 @@ export class FacebookCartComponent implements OnInit, OnDestroy {
     let model = this.prepareModel();
     this.isLoading = true;
 
-    this.generalConfigService.update(name, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res) => {
+    this.generalConfigService.update(name, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe({
+      next: (res) => {
         this.message.success('Thao tác thành công');
-    }, error => {
+      },
+      error: (error: any) => {
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+      }
     })
   }
 
@@ -91,6 +95,7 @@ export class FacebookCartComponent implements OnInit, OnDestroy {
         IsUpdateQuantity: formModel.IsUpdateQuantity as boolean,
         IsBuyMore: formModel.IsBuyMore as boolean,
         IsCancelCheckout: formModel.IsCancelCheckout as boolean,
+        IsUpdate: formModel.IsUpdate as boolean,
     } as ConfigFacebookCartDTO
 
     return model;

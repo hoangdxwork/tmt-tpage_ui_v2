@@ -11,7 +11,6 @@ import { CreateTagModalComponent } from '../../pages/configs/components/create-t
 import { ModalListBillComponent } from '../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from '../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from '../../pages/conversations/components/modal-image-store/modal-image-store.component';
-import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, Input, OnChanges, OnInit,
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding, Inject
@@ -20,20 +19,16 @@ import {
 import { Observable } from 'rxjs';
 import { StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
-import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { CRMMatchingService } from '../../services/crm-matching.service';
-import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
 import { SignalRConnectionService } from '../../services/signalR/signalR-connection.service';
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
-import { DraftMessageService } from '../../services/conversation/draft-message.service';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
-import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from '../helper/event-animations.helper';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -63,6 +58,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
   @HostBinding("@eventFadeState") eventAnimation = true;
+  @Input() partner?: any;
 
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ChatomniConversationItemDto;
@@ -76,8 +72,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   dataSource$!: Observable<ChatomniDataDto>;
   dataSource!: ChatomniDataDto;
-
-  partner: TDSSafeAny;
 
   isEnterSend: boolean = true;
   uploadedImages: string[] = [];
@@ -111,7 +105,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private activityMatchingService: ActivityMatchingService,
     private applicationUserService: ApplicationUserService,
     private sharedService: SharedService,
-    private draftMessageService: DraftMessageService,
     private crmMatchingService: CRMMatchingService,
     private crmTagService: CRMTagService,
     private sgRConnectionService: SignalRConnectionService,
@@ -154,13 +147,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
       }
     })
-
-    // TODO: mapping dữ liệu partner từ order
-    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.partner = {...res};
-      }
-    });
   }
 
   onEventSocket() {
@@ -213,10 +199,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadUser() {
-    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.applicationUserService.setUserActive();
+    this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.users = res;
-          this.lstUser = res;
+          this.users = [...res];
+          this.lstUser = [...res];
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || 'Load user đã xảy ra lỗi');
@@ -450,42 +437,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-
       this.validateData();
       (this.data as any) = null;
 
       this.data = changes["data"].currentValue;
-      let object = {
-          psid: this.data.ConversationId,
-          messages: this.messageModel,
-          images: this.uploadedImages
-      }
-
-      this.draftMessageService.onUpdateDraftMessage$.emit(object);
-      let draftMessage = this.draftMessageService.getMessageByASIds(this.data.ConversationId);
-      this.messageModel = draftMessage?.message;
-
-      if ((draftMessage.images as any[]).length > 0) {
-          this.uploadedImages = draftMessage.images;
-          this.currentImage = draftMessage.images[draftMessage.images.length - 1];
-      } else {
-          delete this.currentImage;
-          this.uploadedImages = [];
-      }
-
-      // TODO: Refetch data
-      // if (!this.data.Name && this.data.ConversationId && this.data.ConversationId != "null") {
-      //     this.refetch(changes["data"].currentValue.ConversationId);
-      // }
-
       this.loadData(this.data);
     }
 
     if(changes["state"] && !changes["state"].firstChange) {
         this.state = changes["state"].currentValue;
         if(this.state) {
-          this.data.State = this.state;
+            this.data.State = this.state;
         }
+    }
+
+    if(changes["partner"] && !changes["partner"].firstChange) {
+        this.partner = changes["partner"].currentValue;
     }
   }
 
@@ -620,8 +587,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
           }
 
-          let itemLast = {...data}
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+          let itemLast = {...data};
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, res.type);
           //TODO: Đẩy qua conversation-all-v2
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
@@ -704,7 +671,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             itemLast.Message = x.Message ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
           }
 
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, x.MessageType);
           //TODO: Đẩy qua conversation-all-v2
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
         }

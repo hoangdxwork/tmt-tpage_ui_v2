@@ -155,7 +155,7 @@
                 </div>
             </form>
         </tds-tab>
-        <tds-tab title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200">
+        <tds-tab title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200" [disabled]="!inLiveCampaign">
             <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
                 <div class="w-full">
                     <div class="w-full h-[350px]">
@@ -219,13 +219,15 @@
                         <img src="../../assets/imagesv2/live-campaign/noData.svg" alt="">
                         <span class="text-neutral-1-400 text-body-2">Chưa có biến thể nào</span>
                     </div>
-                    <button tds-button type="button" color="primary" (click)="showCreateAttributeModal()">
-                        <span class="flex items-center ">
-                            <i class="tdsi-plus-fill mr-2"></i>Thêm biến thể
-                        </span>
-                    </button>
                 </div>
             </ng-template>
+            <div class="flex justify-center pt-2">
+                <button tds-button type="button" color="primary" (click)="showCreateAttributeModal()">
+                    <span class="flex items-center ">
+                        <i class="tdsi-plus-fill mr-2"></i>Thêm biến thể
+                    </span>
+                </button>
+            </div>
         </tds-tab>
     </tds-tabset>
 </tds-spin>

@@ -87,7 +87,7 @@ export class DetailBillComponent implements OnInit {
 
   setFilter() {
     this.filterObj.liveCampaignId = this.liveCampaignId;
-    this.filterObj.isWaitPayment = true;
+    this.filterObj.isWaitPayment = false;
   }
 
   loadTags(){

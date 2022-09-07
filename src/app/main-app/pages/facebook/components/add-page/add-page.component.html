@@ -11,8 +11,7 @@
         <tds-form-field >
             <tds-label>Page</tds-label>
             <input tdsInput class="bg-neutral-3-50"
-            [required]='true' formControlName="pageName"
-            />
+            [required]='true' formControlName="pageName"/>
         </tds-form-field>
 
         <tds-form-field >
@@ -27,7 +26,7 @@
       <button tds-button color="secondary" (click)="onCancel(null)" class="mr-4">
           Hủy bỏ
       </button>
-      <button tds-button color="primary" (click)="onSubmit()" [disabled]="!addPageForm?.valid || isLoading" >
+      <button tds-button color="primary" (click)="onSubmit()" [disabled]="!addPageForm?.valid || isLoading">
           Hoàn tất
       </button>
   </div>

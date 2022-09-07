@@ -1,8 +1,8 @@
-import { AccountDTO, AccountJournalDTO, AccountTaxDTO } from '../account/account.dto';
+import { ConfigProductVariant } from './../configs/product/config-product-default.dto';
+import { AccountTaxDTO } from '../account/account.dto';
 import { IRAttachmentDTO } from '../attachment/attachment.dto';
 import { POS_CategoryDTO } from '../category/category.dto';
 import { PartnerCategoryDTO, PartnerDTO, PartnerExtDTO } from '../partner/partner.dto';
-import { ProcurementRuleDTO } from '../rule/rule.dto';
 import { ProductCategoryDTO } from './product-category.dto';
 import { StockLocationRouteDTO } from './warehouse.dto';
 
@@ -268,7 +268,7 @@ export interface ProductTemplateDTO {
   SupplierTaxes: Array<AccountTaxDTO>;
   Product_Teams: Array<Product_TeamsDTO>;
   Images: Array<IRAttachmentDTO>;
-  ProductVariants: Array<ProductDTO>;
+  ProductVariants: Array<any>;
 
   Version: number;
   VariantFirstId?: number;

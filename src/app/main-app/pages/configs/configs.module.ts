@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../../shared/directives/directives.module';
 import { StockChangeProductQtyService } from './../../services/stock-change-product-qty.service';
 import { EditProductVariantComponent } from './edit-product-variant/edit-product-variant.component';
 import { TDSNotificationModule } from 'tds-ui/notification';
@@ -233,6 +234,7 @@ const SERVICES = [
     TDSCollapseModule,
     TDSEmptyModule,
     TDSAlertModule,
+    DirectivesModule,
     QuillModule.forRoot(quillOptions),
   ],
   providers:[

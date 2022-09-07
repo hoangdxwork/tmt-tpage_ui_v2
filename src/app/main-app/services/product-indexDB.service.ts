@@ -1,5 +1,6 @@
+import { number } from 'echarts';
 import { Injectable, OnDestroy } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, ReplaySubject } from "rxjs";
 import { map, mergeMap, shareReplay } from "rxjs/operators";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
@@ -18,80 +19,99 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
 
   _keyCacheProductIndexDB: string = "_product_UOMLine_V2";
   cacheObject: KeyCacheIndexDBDTO = {
-    cacheCount: -1,
-    cacheVersion: 0,
+    cacheCount: 0,
+    cacheVersion: -1,
     cacheDbStorage: []
   }
   private destroy$ = new Subject<void>();
+  private readonly _cacheObject$ = new Subject<KeyCacheIndexDBDTO>()
 
   constructor(private apiService: TCommonService,
     private cacheApi: THelperCacheService) {
     super(apiService);
   }
 
-  mergeMapCacheDBRequest(): Observable<TDSSafeAny> {
-    let keyCache = this._keyCacheProductIndexDB;
-    return this.cacheApi.getItem(keyCache)
-      .pipe(map((x: any) => {
-
-          if (TDSHelperString.hasValueString(x)) {
-              let cache = JSON.parse(x['value']) as TDSSafeAny;
-              let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
-
-              this.cacheObject = Object.assign(this.cacheObject, cacheDB);
-          }
-          return this.cacheObject;
-      }),
-        mergeMap((x: KeyCacheIndexDBDTO) => {
-            return this.getLastVersionV2(x.cacheCount, x.cacheVersion)
-        }));
+  removeCacheDBRequest(){
+    this.cacheApi.removeItem(this._keyCacheProductIndexDB);
   }
 
-  loadProductIndexDBV2(reload?: boolean): Observable<any> {
-    return this.mergeMapCacheDBRequest()
-      .pipe(map((res: ProductPouchDBDTO) => {
+  getCacheDBRequest(): Observable<any> {
+    return this._cacheObject$.asObservable();
+  }
 
-        const data = this.cacheObject;
-        if (res.IsDelete === true) {
-          (data.cacheDbStorage as any) = [];
-        }
+  setCacheDBRequest() {
+    let keyCache = this._keyCacheProductIndexDB;
+    this.cacheApi.getItem(keyCache).pipe(map((x: any) => {
+        if (TDSHelperString.hasValueString(x)) {
 
-        let exist = (data.cacheCount == -1 && data.cacheVersion == 0);
-        if (exist) {
-
-          // TODO: trường hợp load lần đầu
-          (data.cacheDbStorage as any) = [];
-          data.cacheDbStorage = [...res.Datas];
-
+          let cache = JSON.parse(x['value']) as TDSSafeAny;
+          let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
+          this.cacheObject = Object.assign(this.cacheObject, cacheDB);
+            
         } else {
 
-          if (!reload) {//TODO: nếu reload = true thì không thêm sp
-            // TODO: trường hợp thêm mới hoặc update
-            res.Datas?.forEach((x: DataPouchDBDTO) => {
-              data.cacheDbStorage.push(x);
-            });
+          this.cacheObject = {
+            cacheCount: 0,
+            cacheVersion: -1,
+            cacheDbStorage: []
           }
+
         }
+          return this.cacheObject;
+      }),
+      mergeMap((x: KeyCacheIndexDBDTO) => {
+          return this.getLastVersionV2(x.cacheCount, x.cacheVersion).pipe(map(a => a));
+      }))
+      .subscribe({
+        next :(res: ProductPouchDBDTO) => {
+          const data = this.cacheObject;
 
-        //TODO: check số version
-        let versions = data.cacheDbStorage.map((x: DataPouchDBDTO) => x.Version);
-        let lastVersion = Math.max(...versions);
+          if (res.IsDelete === true) {
+            (data.cacheDbStorage as any) = [];
+          }
 
-        //TODO: check số lượng
-        let countDB = data.cacheDbStorage.length;
+          let exist = (data.cacheCount == 0 && data.cacheVersion == -1);
+          if (exist) {
+            // TODO: trường hợp load lần đầu
+            (data.cacheDbStorage as any) = [];
+            data.cacheDbStorage = [...res.Datas];
+          } else {
+            res.Datas.map((x: DataPouchDBDTO) => {        
+              let index = data.cacheDbStorage.findIndex(y=> y.Id == x.Id && y.UOMId == x.UOMId)
+              
+              if(index > -1){
+                data.cacheDbStorage[index] = {...x};
+              } else {
+                data.cacheDbStorage = [...[x], ...data.cacheDbStorage];
+              }
+            })
+          }
 
-        //TODO: lưu cache cho ds sản phẩm
-        const items: KeyCacheIndexDBDTO = {
+          data.cacheDbStorage = [...data.cacheDbStorage];
+
+          data.cacheDbStorage = data.cacheDbStorage.sort((a: any,b: any) => b.Version - a.Version);
+
+          //TODO: check số version
+          let versions = data.cacheDbStorage.map((x: DataPouchDBDTO) => x.Version);
+          let lastVersion = Number(Math.max(...versions)) ;
+
+          //TODO: check số lượng
+          let countDB = Number(data.cacheDbStorage.length);
+
+          //TODO: lưu cache cho ds sản phẩm
+          const items: KeyCacheIndexDBDTO = {
             cacheCount: countDB,
             cacheVersion: lastVersion,
             cacheDbStorage: data.cacheDbStorage
-        };
+          };
 
-        let keyCache = this._keyCacheProductIndexDB;
-        this.cacheApi.setItem(keyCache, JSON.stringify(items));
-        return items;
+          let keyCache = this._keyCacheProductIndexDB;
+          this.cacheApi.setItem(keyCache, JSON.stringify(items));
 
-      }, shareReplay({ bufferSize: 1, refCount: true })))
+          this._cacheObject$.next(items);
+        }    
+      }
+    )
   }
 
   getLastVersionV2(countIndex: number, version: number): Observable<any> {

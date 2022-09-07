@@ -1,4 +1,4 @@
-import { Optional, Pipe, PipeTransform } from "@angular/core";
+import { Pipe, PipeTransform } from "@angular/core";
 import { TDSHelperString } from "tds-ui/shared/utility";
 
 @Pipe({
@@ -10,6 +10,13 @@ export class BBcodeConvertPipe implements PipeTransform {
   constructor(){}
 
   transform(code: string) : any {
+
+    // if(typeof code === 'string') {
+    //   if (/^[\[|\{](\s|.*|\w)*[\]|\}]$/.test(code)) {
+    //       code = JSON.parse(code);debugger
+    //   }
+    // }
+
     const r = (f: (code: string) => string) => {
         code = this.run(f, code) as any;
     }

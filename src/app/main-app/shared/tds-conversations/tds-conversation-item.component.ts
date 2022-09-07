@@ -350,6 +350,7 @@ export class TDSConversationItemComponent implements OnInit {
   onQuickReplySelected(event: any) {
     if(event) {
       let text = event.BodyPlain || event.BodyHtml || event.text;
+
       text = ReplaceHelper.quickReply(text, this.partner);
       this.messageModel = text;
     }
@@ -435,7 +436,7 @@ export class TDSConversationItemComponent implements OnInit {
 
           //TODO: Đẩy qua conversation-all-v2
           let itemLast = {...data}
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
           this.messageModel = null;
@@ -476,7 +477,7 @@ export class TDSConversationItemComponent implements OnInit {
             if(i == res.length - 1){
               let itemLast = {...data}
 
-              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast);
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
               //TODO: Đẩy qua conversation-all-v2
               this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
             }
@@ -526,20 +527,20 @@ export class TDSConversationItemComponent implements OnInit {
 
   showModalSuggestAddress(index?: number){
     let value: string = '';
+
     if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText) {
-      value = this.contentMessageChild._results[index].nativeElement.outerText;
+        value = this.contentMessageChild._results[index].nativeElement.outerText;
     } else {
-      value = this.getTextOfContentMessage();
+        value = this.getTextOfContentMessage();
     }
-   
+
     let modal = this.modalService.create({
         title: 'Thêm địa chỉ',
         content: ModalAddAddressV2Component,
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          _street: value,
-          isSelectAddress: true
+          _street: value
         }
       });
 
@@ -568,6 +569,15 @@ export class TDSConversationItemComponent implements OnInit {
         document.execCommand('copy');
         document.body.removeChild(selBox);
         this.tdsMessage.info('Đã copy số điện thoại');
+      }
+    }
+  }
+
+  @HostListener('click', ['$event']) onClickCodeBill(e: TDSSafeAny) {
+    let className = JSON.stringify(e.target.className);
+    if(className.includes('code-bill')){
+      if (e.target.className.indexOf('code-bill') >= 0) {
+        
       }
     }
   }

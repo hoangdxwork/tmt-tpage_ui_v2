@@ -1,5 +1,4 @@
 import { PrepareUpdateFacebookByLiveCampaign } from './../../../../handler-v2/conversation-post/prepare-facebook-post.handler';
-import { FaceBookPostItemHandler } from './../../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignPostComponent } from './../live-campaign-post/live-campaign-post.component';
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
@@ -27,7 +26,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  currentLiveCampaign!: LiveCampaignModel;
+  currentLiveCampaign!: any;
   indClickTag: string = '';
 
   constructor(private liveCampaignService: LiveCampaignService,
@@ -41,17 +40,22 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    if(this.item && this.item.LiveCampaignId) {
-      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.item.LiveCampaignId) as any;
+    if(this.item && this.item.LiveCampaign) {
+        this.currentLiveCampaign = this.item.LiveCampaign as any;
     }
-
     this.eventEmitter();
   }
 
   eventEmitter() {
     this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniObjectsItemDto) => {
+      next: (res: any) => {
           this.currentLiveCampaign = null as any;
+      }
+    })
+
+    this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.currentLiveCampaign = res;
       }
     })
   }
@@ -60,14 +64,13 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     if(changes["item"] && !changes["item"].firstChange) {
         this.item = {...changes["item"].currentValue};
 
-        if(this.item && this.item.LiveCampaignId) {
-            this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.item.LiveCampaignId) as any;
+        if(this.item && this.item.LiveCampaign) {
+          this.currentLiveCampaign = this.item.LiveCampaign as any;
         }
     }
   }
 
-  showModalLiveCampaign(data: ChatomniObjectsItemDto) {
-    // this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == data.LiveCampaignId) as any;
+  showModalLiveCampaign(data?: ChatomniObjectsItemDto) {
 
     const modal = this.modal.create({
       title: 'Chiến dịch',
@@ -75,9 +78,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-          data: data,
-          currentLiveCampaign: this.currentLiveCampaign,
-          lstOfData: this.lstOfLiveCampaign
+          data: data
       }
     });
   }
@@ -86,9 +87,11 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
     this.selectPostItemEvent.emit(item);
   }
 
-  openTag(id: string) {
-    this.indClickTag = id;
+  openTag(item: any) {
+    this.indClickTag = item.Id;
+    this.showModalLiveCampaign(this.item);
   }
+
 
   closeTag(): void {
     this.indClickTag = '';

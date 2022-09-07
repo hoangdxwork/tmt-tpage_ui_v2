@@ -20,7 +20,6 @@ import { SaleOnline_OrderService } from '@app/services/sale-online-order.service
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
-import { PrepareUpdateFacebookByLiveCampaign } from '@app/handler-v2/conversation-post/prepare-facebook-post.handler';
 
 @Component({
   selector: 'conversation-post-view',
@@ -33,9 +32,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
-  @Input() lstOfLiveCampaign!: LiveCampaignModel[];
 
-  currentLiveCampaign!: LiveCampaignModel;
   orderTotal = 0;
   indClickFilter = 0;
   isShowFilterUser = false;
@@ -83,8 +80,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private cdRef: ChangeDetectorRef,
-    private prepareUpdateFacebookByLiveCampaign: PrepareUpdateFacebookByLiveCampaign,
-    private liveCampaignService: LiveCampaignService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private facebookCommentService: FacebookCommentService,
     private conversationPostEvent: ConversationPostEvent,
@@ -105,34 +100,25 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
 
   eventEmitter() {
     // TODO: Cập nhật chiến lịch live từ object-facebook-post
-    this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          if(res && res.LiveCampaignId &&  res.Id == this.data?.Id) {
-              this.data.LiveCampaignId = res.LiveCampaignId;
-              this.data.LiveCampaign = { ...res.LiveCampaign };
-
-              this.data = {...this.data};
-
-              if(this.data && this.data.LiveCampaignId) {
-                this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == this.data.LiveCampaignId) as any;
-              }
-          }
-
-          this.cdRef.markForCheck();
-      }
-    });
-
     this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          if(res && res.LiveCampaignId &&  res.Id == this.data?.Id) {
-              this.data.LiveCampaignId = null as any;
-              this.data.LiveCampaign = null as any;
+          delete this.data.LiveCampaignId;
+          delete this.data.LiveCampaign;
 
-              this.data = {...this.data};
-              this.currentLiveCampaign = null as any;
+          this.data = {...this.data};
+          this.cdRef.detectChanges();
+      }
+    })
+
+    this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res) {
+            this.data.LiveCampaignId = res.LiveCampaignId;
+            this.data.LiveCampaign =  res.LiveCampaign;
+
+            this.data = {...this.data};
+            this.cdRef.detectChanges();
           }
-
-          this.cdRef.markForCheck();
       }
     })
   }
@@ -140,8 +126,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   loadOrderTotal(){
     this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
-        this.orderTotal = res;
-        this.cdRef.detectChanges();
+          this.orderTotal = res;
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -149,10 +135,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   loadData() {
     let postId = this.data.ObjectId;
     this.getCommentOrders(postId);
-
-    if(this.data && this.data.LiveCampaignId) {
-      this.currentLiveCampaign = this.lstOfLiveCampaign.find(f => f.Id == this.data.LiveCampaignId) as any;
-    }
   }
 
   getCommentOrders(posId: string) {
@@ -286,7 +268,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        postId: this.data.ObjectId
+          postId: this.data.ObjectId
       }
     });
   }
@@ -296,7 +278,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
     this.currentFilter = this.filterOptions[0];
 
     this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
-      next :(res: any) => {
+      next: (res: any) => {
           this.facebookCommentService.setSort(this.currentSort.value);
           this.loadData();
       },
@@ -307,61 +289,24 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
-    // this.currentLiveCampaign = this.lstOfLiveCampaign.find(f=>f.Id == data.LiveCampaignId) as any;
-
     const modal = this.modalService.create({
       title: 'Chiến dịch',
       content: LiveCampaignPostComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        data: data,
-        currentLiveCampaign: this.currentLiveCampaign,
-        lstOfData: this.lstOfLiveCampaign
+      componentParams: {
+          data: data
       }
     });
   }
 
-  openTag(id: string) {
-    this.indClickTag = id;
+  openTag(item: ChatomniObjectsItemDto) {
+    this.indClickTag = item.Id;
+    this.showModalLiveCampaign(item);
   }
 
   closeTag(): void {
     this.indClickTag = '';
-  }
-
-  updateFacebookByLiveCampaign() {
-    if(this.currentLiveCampaign) {
-
-      let id = this.currentLiveCampaign.Id;
-      let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
-
-      this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-            if(res && res.value) {
-
-                // TODO: gán lại cho item object hiện tại
-                this.data.LiveCampaignId = this.currentLiveCampaign.Id;
-                this.data.LiveCampaign = {
-                    Id: this.currentLiveCampaign.Id,
-                    Name:this.currentLiveCampaign.Name,
-                    Note: this.currentLiveCampaign.Note
-                }
-
-                // TODO: đẩy qua conversation-post-v2, object-facebook-post
-                this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
-                this.indClickTag = '';
-                this.message.success('Cập nhật chiến dịch thành công');
-            }
-
-            this.cdRef.markForCheck();
-        },
-        error: (err: any) => {
-            this.indClickTag = '';
-            this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
-        }
-      })
-  }
   }
 
   translateType(type: string, status: string) {
@@ -383,17 +328,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
       return type;
   }
 
-  //tính năng đang chưa được dùng
-  refetch() {
-    this.facebookPostService.refetch(this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        if (res.id === this.data.ObjectId) {
-          // this.data.Data.count_comments = res.count_comments;
-        }
-      }, error => {
-        this.message.error('Refetch bài viết đã xảy ra lỗi');
-      });
-  }
-
   openConfigPost() {
     if (this.team!.Type == 'Facebook') {
       let date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm', 'en-US');
@@ -405,7 +339,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           data: this.data,
-          currentLiveCampaign: this.currentLiveCampaign
         }
       });
     }

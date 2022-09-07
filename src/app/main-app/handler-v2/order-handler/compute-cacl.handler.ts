@@ -8,9 +8,13 @@ import { InitSaleDTO } from "src/app/main-app/dto/setting/setting-sale-online.dt
 export class SO_ComputeCaclHandler {
 
   // TODO: Dùng cho đơn hàng
-  public so_coDAmount(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel): any {
-    let coDAmount = quickOrderModel.TotalAmount + saleModel.DeliveryPrice - saleModel.AmountDeposit;
-    saleModel.CashOnDelivery = coDAmount;
+  public so_coDAmount(saleModel: FastSaleOrder_DefaultDTOV2): any {
+
+    let coDAmount = saleModel.AmountTotal + saleModel.DeliveryPrice - saleModel.AmountDeposit;
+    
+    if(coDAmount >= 0){
+      saleModel.CashOnDelivery = Number(coDAmount);
+    }
 
     return saleModel.CashOnDelivery;
   }
@@ -28,8 +32,8 @@ export class SO_ComputeCaclHandler {
     saleModel.AmountTotal = amountTotal;
 
     return {
-      AmountTax: saleModel.AmountTax,
-      AmountTotal: saleModel.AmountTotal
+      AmountTax: saleModel.AmountTax || 0,
+      AmountTotal: saleModel.AmountTotal || 0
     };
   }
 

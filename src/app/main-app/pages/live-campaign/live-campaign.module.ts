@@ -5,7 +5,6 @@ import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-
 import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
-import { DraftMessageService } from './../../services/conversation/draft-message.service';
 import { ConversationDataFacade } from './../../services/facades/conversation-data.facade';
 import { ActivityDataFacade } from './../../services/facades/activity-data.facade';
 import { CRMMatchingService } from './../../services/crm-matching.service';
@@ -147,7 +146,6 @@ const SERVICES = [
   TDSMessageService,
   ActivityDataFacade,
   ConversationDataFacade,
-  DraftMessageService,
   ConversationEventFacade,
   ConversationOrderFacade,
   ChatomniMessageService,

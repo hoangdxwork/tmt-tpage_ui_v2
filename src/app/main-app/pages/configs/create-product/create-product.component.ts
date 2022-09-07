@@ -1,3 +1,4 @@
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { UpdateInitInventoryComponent } from './../components/update-init-inventory/update-init-inventory.component';
 import { StockChangeProductQtyDTO } from './../../../dto/product/stock-change-product-qty.dto';
 import { StockChangeProductQtyService } from './../../../services/stock-change-product-qty.service';
@@ -82,7 +83,8 @@ export class ConfigAddProductComponent implements OnInit {
     private productCategoryService: ProductCategoryService,
     private productTemplateService: ProductTemplateService,
     private stockChangeProductQtyService: StockChangeProductQtyService,
-    private productTemplateUOMLine: ProductTemplateUOMLineService) {
+    private productTemplateUOMLine: ProductTemplateUOMLineService,
+    private productIndexDBService: ProductIndexDBService) {
     this.createForm();
   }
 
@@ -92,7 +94,7 @@ export class ConfigAddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
-    
+
     if (this.id) {
       this.loadData(this.id);
       this.loadStockChangeProductQty(this.id);
@@ -119,7 +121,7 @@ export class ConfigAddProductComponent implements OnInit {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
-        
+
         // TODO: lấy danh sách biến thể
         if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
           this.lstVariants = this.dataModel.ProductVariants;
@@ -131,21 +133,28 @@ export class ConfigAddProductComponent implements OnInit {
       })
   }
 
+  loadDataIndexDBCache() {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
+  }
+
   loadComboProducts(id: TDSSafeAny){
     // TODO: lấy danh sách combo
-    this.productTemplateService.getComboProducts(id).pipe(takeUntil(this.destroy$))
-      .subscribe((res) => {
+    this.productTemplateService.getComboProducts(id).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res) => {
 
-        this.lstProductCombo = res.value.map((item) => {
-          return {
-            Product: item.Product,
-            ProductId: item.ProductId,
-            Quantity: item.Quantity
-          }
-        });
-      },
-      err => {
-        this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+          this.lstProductCombo = res.value.map((item) => {
+            return {
+              Product: item.Product,
+              ProductId: item.ProductId,
+              Quantity: item.Quantity
+            }
+          });
+        },
+        error: err => {
+          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+        }
       })
   }
 
@@ -155,31 +164,36 @@ export class ConfigAddProductComponent implements OnInit {
         ProductTmplId: Number(id)
       }
     };
-    
-    this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.stockChangeProductList = res.value;
-        // TODO: số lượng tồn thực tế
-        this.stockChangeProductList.forEach(item => {
-          this.initInventory += item.NewQuantity;
-        });
-      },
-      err => {
-        this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+
+    this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: res => {
+          this.stockChangeProductList = res.value;
+          // TODO: số lượng tồn thực tế
+          this.stockChangeProductList.forEach(item => {
+            this.initInventory += item.NewQuantity;
+          });
+        },
+        error: err => {
+          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+        }
       })
   }
 
   loadDefault() {
     this.isLoading = true;
 
-    this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe((res: TDSSafeAny) => {
-        delete res['@odata.context'];
-        this.dataModel = { ...res };
-        
-        this.formatProperty(res);
-      }, error => {
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+    this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: TDSSafeAny) => {
+          delete res['@odata.context'];
+          this.dataModel = { ...res };
+  
+          this.formatProperty(res);
+        }, 
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
       })
   }
 
@@ -214,43 +228,52 @@ export class ConfigAddProductComponent implements OnInit {
 
   loadProductCategory() {
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.categoryList = [...res.value];
-      }, error => {
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      {
+        next: (res: TDSSafeAny) => {
+          this.categoryList = [...res.value];
+        }, 
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
       }
     );
   }
 
   loadProductUOM() {
     this.productTemplateService.getProductUOM().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.UOMPOList = [...res.value];
-      },
-      error => {
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      {
+        next: (res: TDSSafeAny) => {
+          this.UOMPOList = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
       }
     );
   }
 
   loadUOMs() {
     this.productTemplateUOMLine.getOUMs().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.UOMList = [...res.value];
-      },
-      error => {
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      {
+        next: (res: TDSSafeAny) => {
+          this.UOMList = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
       }
     );
   }
 
   loadPOSCategory() {
     this.productTemplateService.getPOSCategory().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.POSCategoryList = [...res.value];
-      },
-      error => {
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      {
+        next: (res: TDSSafeAny) => {
+          this.POSCategoryList = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
       }
     );
   }
@@ -264,32 +287,38 @@ export class ConfigAddProductComponent implements OnInit {
 
   loadOriginCountry() {
     this.productTemplateService.getOriginCountry().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.originCountryList = [...res.value];
-      },
-      err => {
-        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      {
+        next: (res: TDSSafeAny) => {
+          this.originCountryList = [...res.value];
+        },
+        error: err => {
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        }
       }
     )
   }
 
   loadUOMAddType() {
     this.productTemplateService.getUOMAddType().subscribe(
-      (res: TDSSafeAny) => {
-        this.producerList = res.value.filter((x: { Type: string; }) => x.Type === 'producer');
-        this.importerList = res.value.filter((x: { Type: string; }) => x.Type === 'importer');
-        this.distributorList = res.value.filter((x: { Type: string; }) => x.Type === 'distributor');
+      {
+        next: (res: TDSSafeAny) => {
+          this.producerList = res.value.filter((x: { Type: string; }) => x.Type === 'producer');
+          this.importerList = res.value.filter((x: { Type: string; }) => x.Type === 'importer');
+          this.distributorList = res.value.filter((x: { Type: string; }) => x.Type === 'distributor');
+        }
       }
     );
   }
 
   loadProductAttributeLine(id: TDSSafeAny) {
     this.productTemplateService.getProductAttributeLine(id).pipe(takeUntil(this.destroy$)).subscribe(
-      (res) => {
-        this.lstAttributes = [...res.value];
-      },
-      error => {
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      {
+        next: (res) => {
+          this.lstAttributes = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
       }
     )
   }
@@ -298,7 +327,7 @@ export class ConfigAddProductComponent implements OnInit {
     const modal = this.modalService.create({
       title: 'Cập nhật số lượng thực tế',
       content: UpdateInitInventoryComponent,
-      size: "lg",
+      size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         lstData: this.stockChangeProductList
@@ -314,7 +343,7 @@ export class ConfigAddProductComponent implements OnInit {
 
   showCreateAttributeModal() {
     let productName = this._form.controls.Name.value;
-    
+
     if (productName) {
       const modal = this.modalService.create({
         title: 'Quản lý thuộc tính',
@@ -331,19 +360,21 @@ export class ConfigAddProductComponent implements OnInit {
           this.lstAttributes = result;
           let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
-          
+
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
-            (res) => {
-              this.lstVariants = [...res.value];
-              this.lstVariants.map(attr => {
-                if (attr.Id == 0) {
-                  this.minIndex -= 1;
-                  attr.Id = this.minIndex;
-                }
-              });
-            },
-            (err) => {
-              this.message.error(err?.error?.message || Message.CanNotLoadData);
+            {
+              next: (res) => {
+                this.lstVariants = [...res.value];
+                this.lstVariants.map(attr => {
+                  if (attr.Id == 0) {
+                    this.minIndex -= 1;
+                    attr.Id = this.minIndex;
+                  }
+                });
+              },
+              error: (err) => {
+                this.message.error(err?.error?.message || Message.CanNotLoadData);
+              }
             }
           )
         }
@@ -561,14 +592,19 @@ export class ConfigAddProductComponent implements OnInit {
     console.log(model)
     if (model.Name) {
       this.productTemplateService.insertProductTemplate(model)
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-        .subscribe(
-          (res: TDSSafeAny) => {
-            this.message.success(Message.InsertSuccess);
-            this.router.navigateByUrl('/configs/products');
-          },
-          err => {
-            this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
+        .pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: TDSSafeAny) => {
+              this.message.success(Message.InsertSuccess);
+              this.loadDataIndexDBCache();
+              this.isLoading = false;  
+
+              this.router.navigateByUrl('/configs/products');
+            },
+            error: err => {
+              this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
+              this.isLoading = false;
+            }
           }
         );
     }
@@ -576,17 +612,22 @@ export class ConfigAddProductComponent implements OnInit {
 
   editProduct() {
     let model = this.prepareModel();
-    
+
     if (model.Name) {
       this.productTemplateService.updateProductTemplate(model)
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-        .subscribe(
-          (res: TDSSafeAny) => {
-            this.message.success(Message.UpdatedSuccess);
-            this.router.navigateByUrl('/configs/products');
-          },
-          err => {
-            this.message.error(err?.error?.message || Message.UpdatedFail);
+        .pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: TDSSafeAny) => {
+              this.message.success(Message.UpdatedSuccess);
+              this.loadDataIndexDBCache();
+              this.isLoading = false;
+  
+              this.router.navigateByUrl('/configs/products');
+            },
+            error: err => {
+              this.message.error(err?.error?.message || Message.UpdatedFail);
+              this.isLoading = false;
+            }
           }
         );
     }
@@ -624,13 +665,17 @@ export class ConfigAddProductComponent implements OnInit {
       if (this.dataModel) {
         this.addProduct();
       } else {
-        this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-          delete res['@odata.context'];
-          this.dataModel = { ...res };
-          this.addProduct();
-        }, err => {
-          this.message.error(err?.error?.message || Message.CanNotLoadData);
-        });
+        this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: TDSSafeAny) => {
+              delete res['@odata.context'];
+              this.dataModel = { ...res };
+              this.addProduct();
+            }, 
+            error: err => {
+              this.message.error(err?.error?.message || Message.CanNotLoadData);
+            }
+          });
       }
     }
   }

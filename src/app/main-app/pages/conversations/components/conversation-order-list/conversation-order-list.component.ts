@@ -86,7 +86,7 @@ export class ConversationOrderListComponent implements OnInit {
 
   eventEmitter() {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
-    this.chatomniObjectFacade.loadOrderListFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.loadSummaryStatus();
         this.loadData(this.pageSize, this.pageIndex);
@@ -94,7 +94,7 @@ export class ConversationOrderListComponent implements OnInit {
     })
 
     // TODO: load danh sách đơn hàng khi chọn 1 hội thoại objects
-    this.chatomniObjectFacade.onChangeOrderListFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.chatomniObjectFacade.onChangeListOrderFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (item: ChatomniObjectsItemDto) => {
         this.currentPost = item;
 
@@ -157,6 +157,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = event.value;
+
+    this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -233,6 +235,7 @@ export class ConversationOrderListComponent implements OnInit {
     } else {
       this.setOfCheckedId.delete(orderId);
     }
+    this.refreshCheckedStatus();
   }
 
   onActive(value: string) {
@@ -295,6 +298,10 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   printMulti() {
+    if(this.isLoadingActive){
+      return
+    }
+
     this.isLoadingActive = true;
     let ids = [...this.setOfCheckedId];
     let datas = this.lstOfData.filter(x => ids.includes(x.Id));
@@ -324,6 +331,10 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   deleteMulti() {
+    if(this.isLoadingActive){
+      return
+    }
+
     let ids = [...this.setOfCheckedId];
 
     const modal = this.modalService.error({
@@ -363,6 +374,7 @@ export class ConversationOrderListComponent implements OnInit {
 
   onEdit(item: any, event: TDSSafeAny) {
     if(item && item.Id) {
+      this.isLoading = true;
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
               if(res && res.Id) {
@@ -381,14 +393,18 @@ export class ConversationOrderListComponent implements OnInit {
                     }
                 })
 
-                modal.afterClose?.subscribe((obs: string) => {
+                modal.afterClose?.subscribe({
+                  next: (obs: string) => {
                     if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
                         this.loadData(this.pageSize, this.pageIndex);
                     }
+                  },
                 })
               }
+              this.isLoading = false;
           },
           error: (error: any) => {
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
       });
@@ -396,5 +412,15 @@ export class ConversationOrderListComponent implements OnInit {
 
     event.preventDefault();
     event.stopImmediatePropagation();
+  }
+
+  onClearFilter(){
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+
+    this.filterObj.searchText = '';
+
+    this.loadSummaryStatus();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 }
