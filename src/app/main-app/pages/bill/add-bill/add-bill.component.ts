@@ -8,7 +8,7 @@ import { UpdateOrderLinesHandler } from './../../../handler-v2/bill-handler/upda
 import { GetServiceHandler } from './../../../handler-v2/bill-handler/get-services.handler';
 import { PrepareSuggestionsBillHandler } from './../../../handler-v2/bill-handler/prepare-suggestions-bill.handler';
 import { formatNumber } from '@angular/common';
-import { Component, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { SharedService } from 'src/app/main-app/services/shared.service';
@@ -292,7 +292,7 @@ export class AddBillComponent implements OnInit {
         }
       },
       error:(error) => {
-        this.message.error(error?.error?.message || 'Load hóa đơn đã xảy ra lỗi!');
+        this.message.error(error?.error?.message || 'Tải thông tin hóa đơn đã xảy ra lỗi!');
         this.isLoading = false;
       }
     })
@@ -337,7 +337,7 @@ export class AddBillComponent implements OnInit {
       },
       error:(err) => {
           this.isLoading = false;
-          this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
+          this.message.error(err?.error?.message || 'Tải thông tin mặc định đã xảy ra lỗi!');
       }
     });
   }
@@ -360,7 +360,7 @@ export class AddBillComponent implements OnInit {
         },
         error:(err) => {
             this.isLoading = false;
-            this.message.error(err?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
+            this.message.error(err?.error?.message || 'Tải thông tin mặc định đã xảy ra lỗi!');
         }
     })
   }
@@ -381,7 +381,7 @@ export class AddBillComponent implements OnInit {
             this.priceListItems = res;
         },
         error: (error: any) => {
-            this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
+            this.message.error(error?.error?.message || 'Tải thông tin bảng giá đã xảy ra lỗi!');
         }
       })
     }
@@ -396,6 +396,11 @@ export class AddBillComponent implements OnInit {
 
     //Load thông tin ship aship
     this.loadConfigProvider(this.dataModel);
+
+    if(!this.dataModel.AmountDeposit){
+      this.dataModel.AmountDeposit = 0;
+    }
+
     this._form.patchValue(this.dataModel);
 
     this.calcTotal();
@@ -427,7 +432,7 @@ export class AddBillComponent implements OnInit {
         this.companyCurrents = res;
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+        this.message.error(error?.error?.message || 'Tải thông tin công ty mặc định đã xảy ra lỗi!');
       }
     });
   }
@@ -489,7 +494,7 @@ export class AddBillComponent implements OnInit {
                 this.priceListItems = res;
             },
             error: (error: any) => {
-                this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
+                this.message.error(error?.error?.message || 'Tải thông tin bảng giá đã xảy ra lỗi!');
             }
         })
     }
@@ -525,12 +530,12 @@ export class AddBillComponent implements OnInit {
 
   calcFee() {
     if (!this._form.controls['Carrier'].value ) {
-        this.message.error('Vui lòng chọn  đối tác giao hàng');
+        this.message.error('Vui lòng chọn đối tác giao hàng');
         return
     }
 
     if (!this._form.controls['ShipWeight'].value ) {
-        this.message.error('Vui lòng chọn nhập khối lượng');
+        this.message.error('Vui lòng nhập khối lượng');
         return
     }
 
@@ -596,7 +601,7 @@ export class AddBillComponent implements OnInit {
           }
       },
       error:(error) => {
-          this.message.error(error?.error?.message || 'ĝã xảy ra lỗi!');
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi!');
       }
     });
   }
@@ -616,7 +621,7 @@ export class AddBillComponent implements OnInit {
         }
       },
       error:(error) => {
-        this.message.error(error?.error?.message || 'ĝã xảy ra lỗi!');
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi!');
       }
     });
   }
@@ -929,11 +934,11 @@ export class AddBillComponent implements OnInit {
       case 'draft':
         return 'Nháp';
       case 'cancel':
-        return 'Huỷ bờ';
+        return 'Huỷ bỏ';
       case 'open':
         return 'Xác nhận';
       case 'paid':
-        return 'ĝã thanh toán';
+        return 'Đã thanh toán';
     }
   }
 
@@ -1002,7 +1007,7 @@ export class AddBillComponent implements OnInit {
     if(!TDSHelperString.hasValueString(model.FormAction)) {
       model.FormAction = 'draft';
     }
-
+    
     switch(this.path) {
       case 'copy':
         model.OrderLines?.map((x: any) => {
@@ -1029,7 +1034,7 @@ export class AddBillComponent implements OnInit {
   confirmShipService(carrier: TDSSafeAny) {
     this.modal.info({
       title: 'Cảnh báo',
-      content: 'ĝối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
+      content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
       onOk: () => this.calcFee(),
       onCancel:() => {},
       okText: "OK",
@@ -1063,7 +1068,7 @@ export class AddBillComponent implements OnInit {
     if (exist) {
       this.modal.warning({
           title: 'Cảnh báo',
-          content: `COD hiện tại ${formatNumber(model.CashOnDelivery, 'en-US', '1.0-3')} không bằng tổng COD phần mờm tính ${formatNumber(COD, 'en-US', '1.0-3')} bạn có muốn gán lại COD của phần mờm [${formatNumber(COD, 'en-US', '1.0-3')}]`,
+          content: `COD hiện tại ${formatNumber(model.CashOnDelivery, 'en-US', '1.0-3')} không bằng tổng COD phần mềm tính ${formatNumber(COD, 'en-US', '1.0-3')} bạn có muốn gán lại COD của phần mềm [${formatNumber(COD, 'en-US', '1.0-3')}]`,
           onOk: () => { model.CashOnDelivery = COD; this.saveRequest(model, print) },
           onCancel: () => { this.saveRequest(model, print) },
           okText: "Đồng ý",
@@ -1080,7 +1085,7 @@ export class AddBillComponent implements OnInit {
     if (this.isLoading) {
       return
     }
-
+    
     if (this.id) {
         this.isLoading = true;
         this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe({
@@ -1374,5 +1379,16 @@ export class AddBillComponent implements OnInit {
         }
       }
     })
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) { 
+    if(event.key === 'F9'){
+      this.onSave('SaveAndPrint', 'print');
+    }
+
+    if(event.key === 'F8'){
+      this.onSave('SaveAndOpen');
+    }
   }
 }

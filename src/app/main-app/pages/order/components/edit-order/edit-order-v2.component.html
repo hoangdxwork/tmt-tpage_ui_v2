@@ -109,9 +109,9 @@
                                 [ngClass]="quickOrderModel?.Note?.includes(comment.message) ? 'bg-neutral-3-50':''"
                                 class="p-3 border-b border-neutral-2-200 flex justify-between w-full cursor-pointer hover:bg-neutral-3-50"
                                 (click)="addComment(comment.message)">
-                                <span>
-                                  {{comment.message}}<span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy hh:mm:ss" }}</span>
-                                </span>
+                                <div>
+                                  <span [innerHTML]="comment.message"></span><span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy hh:mm:ss" }}</span>
+                                </div>
                                 <span *ngIf="quickOrderModel?.Note?.includes(comment.message)" class="tdsi-success-fill text-primary-1"></span>
                               </div>
                             </div>
@@ -280,8 +280,8 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="1" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" (ngModelChange)="changeCashOnDelivery($event)"
-                                [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
+                              <tds-input-number [min]="1" [step]="1000" [ngModel]="(saleModel.CashOnDelivery | numberCustom:'.') || 0" (change)="changeCashOnDelivery($event.target)"
+                                [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </div>
@@ -293,7 +293,7 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.DeliveryPrice" (ngModelChange)="changeDeliveryPrice($event)"
+                              <tds-input-number [min]="0" [step]="1000" [ngModel]="(saleModel.DeliveryPrice | numberCustom:'.') || 0" (change)="changeDeliveryPrice($event.target)"
                                 [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
@@ -307,8 +307,9 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="100" [(ngModel)]="saleModel.ShipWeight" (tdsBlur)="changeShipWeight()"
-                                [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
+                              <tds-input-number [min]="0" [step]="100" [ngModel]="(saleModel.ShipWeight | numberCustom:'.') || 0" 
+                                (change)="changeShipWeight($event.target)"
+                                [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </div>
@@ -320,8 +321,9 @@
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.AmountDeposit" (ngModelChange)="changeAmountDeposit($event)"
-                                [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
+                              <tds-input-number [min]="0" [step]="1000" [ngModel]="(saleModel.AmountDeposit | numberCustom:'.') || 0" 
+                                (change)="changeAmountDeposit($event.target)"
+                                [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </div>
@@ -376,9 +378,9 @@
 
                                       <div class="flex flex-row items-center gap-x-2 w-3/4">
                                         <tds-form-field class="flex flex-auto">
-                                            <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
-                                                placeholder="Nhập phí" (ngModelChange)="changeShip_InsuranceFee($event)"
-                                                [ngModel]="saleModel.Ship_InsuranceFee" [ngModelOptions]="{standalone: true}">
+                                            <tds-input-number [min]='0' [step]="1000"
+                                                placeholder="Nhập phí" (change)="changeShip_InsuranceFee($event.target)"
+                                                [ngModel]="(saleModel.Ship_InsuranceFee | numberCustom:'.') || 0" [ngModelOptions]="{standalone: true}">
                                             </tds-input-number>
                                         </tds-form-field>
 
@@ -490,7 +492,9 @@
                                                             <ng-template #popoverContentShip_ExtraMoney>
                                                                 <div class="flex gap-x-2">
                                                                     <tds-form-field>
-                                                                        <tds-input-number [min]='0' [step]="100" [ngModel]="extraMoney" [ngModelOptions]="{standalone: true}">
+                                                                        <tds-input-number [min]='0' [step]="1000" [ngModel]="extraMoney | number" 
+                                                                          (ngModelChange)="onChangeExtraMoney($event)"
+                                                                          [ngModelOptions]="{standalone: true}">
                                                                         </tds-input-number>
                                                                     </tds-form-field>
                                                                 </div>
@@ -498,7 +502,7 @@
 
                                                             <ng-template #popoverFooterShip_ExtraMoney>
                                                                 <div class="flex justify-end gap-x-2 mt-2">
-                                                                    <button tds-button-icon color="primary" type="button" (click)="changeShipExtraMoney($event)">
+                                                                    <button tds-button-icon color="primary" type="button" (click)="changeShipExtraMoney()">
                                                                         <span class="flex items-center">
                                                                           <i class="tdsi-checkbox-check-fill"></i>
                                                                         </span>

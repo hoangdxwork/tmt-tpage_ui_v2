@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
+import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +51,7 @@ export class CreateFormBillHandler {
       }),
       Address: [null],
       ReceiverName: [null],
-      ReceiverPhone: [null],
+      ReceiverPhone: [null, Validators.pattern(/^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g)],
       ReceiverDate: [null],
       ReceiverAddress: [null],
       ReceiverNote: [null],
