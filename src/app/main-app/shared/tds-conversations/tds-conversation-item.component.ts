@@ -572,4 +572,13 @@ export class TDSConversationItemComponent implements OnInit {
       }
     }
   }
+
+  @HostListener('click', ['$event']) onClickCodeBill(e: TDSSafeAny) {
+    let className = JSON.stringify(e.target.className);
+    if(className.includes('code-bill')){
+      if (e.target.className.indexOf('code-bill') >= 0) {
+        
+      }
+    }
+  }
 }
