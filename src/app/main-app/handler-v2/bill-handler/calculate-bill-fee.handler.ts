@@ -108,6 +108,8 @@ export class CalculateBillFeeHandler {
     let formModel = _form.value;
     let coDAmount = (formModel.AmountTotal + formModel.DeliveryPrice) - formModel.AmountDeposit;
 
-    _form.controls['CashOnDelivery'].setValue(coDAmount);
+    if(coDAmount >= 0){
+      _form.controls['CashOnDelivery'].setValue(coDAmount);
+    }
   }
 }

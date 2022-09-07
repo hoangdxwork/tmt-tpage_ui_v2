@@ -350,6 +350,7 @@ export class TDSConversationItemComponent implements OnInit {
   onQuickReplySelected(event: any) {
     if(event) {
       let text = event.BodyPlain || event.BodyHtml || event.text;
+
       text = ReplaceHelper.quickReply(text, this.partner);
       this.messageModel = text;
     }

@@ -492,11 +492,9 @@ export class EditOrderV2Component implements OnInit {
   }
 
   addComment(comment:string){
-    if(this.quickOrderModel.Note?.includes(comment)){
-        this.quickOrderModel.Note = this.quickOrderModel.Note.replace(comment,'');
-    } else{
+    if(!this.quickOrderModel.Note?.includes(comment)){
       if(this.quickOrderModel.Note){
-          this.quickOrderModel.Note = this.quickOrderModel.Note.concat(comment);
+          this.quickOrderModel.Note = this.quickOrderModel.Note.concat('\n' + comment);
       }else{
           this.quickOrderModel.Note = comment;
       }
@@ -877,42 +875,70 @@ export class EditOrderV2Component implements OnInit {
     this.shipExtraServices[i]!.IsSelected = event;
   }
 
+  onChangeExtraMoney(event: number){
+    this.extraMoney = event;
+  }
+
   changeAmountDeposit(event: any) {
-    if (Number(event) >= 0) {
-      this.saleModel.AmountDeposit = Number(event);
+    let value = this.converseToNumber(event.value);
+
+    if (value >= 0) {
+      this.saleModel.AmountDeposit = value;
       this.coDAmount();
     }
   }
 
   changeDeliveryPrice(event: any) {
-    if (Number(event) >= 0) {
-      this.saleModel.DeliveryPrice = Number(event);
+    let value = this.converseToNumber(event.value);
+
+    if (value >= 0) {
+      this.saleModel.DeliveryPrice = value;
       this.coDAmount();
     }
   }
 
-  changeShipWeight() {
+  changeShipWeight(event: any) {
+    let value = this.converseToNumber(event.value);
+
+    if(value >= 0){
+      this.saleModel.ShipWeight = value;
+    }
+
     if(this.saleModel.Carrier) {
       this.calcFee();
     }
   }
 
   changeCashOnDelivery(event: any) {
-    if (Number(event) >= 0) {
-      this.saleModel.CashOnDelivery = Number(event);
+    let value = this.converseToNumber(event.value);
+
+    if(value >= 0){
+      this.saleModel.CashOnDelivery = value;
     }
   }
 
-  changeShip_InsuranceFee(value: number) {
-    this.saleModel.Ship_InsuranceFee = Number(value);
+  changeShip_InsuranceFee(event: any) {
+    let value = this.converseToNumber(event.value);
+
+    if(value >= 0){
+      this.saleModel.Ship_InsuranceFee = value;
+    }
   }
 
-  changeShipExtraMoney(event: any) {
+  changeShipExtraMoney() {
     let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
     this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
     this.calcFee();
 
     this.visibleShipExtraMoney = false;
+  }
+
+  // TODO: chuyển đổi chuỗi số có dấu . động thành number
+  converseToNumber(value: any){
+    if(value){
+      return Number(value.toString().replaceAll('.',''));
+    }
+    return 0;
   }
 
   // TODO: cập nhật giá xem hàng

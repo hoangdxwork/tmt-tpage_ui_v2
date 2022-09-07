@@ -486,14 +486,14 @@
                         </div>
 
                         <div class="col-span-3 w-full flex flex-col">
-                                <div class="flex flex-row items-center gap-x-2 w-full">
-                                  <tds-form-field class="flex flex-auto">
-                                    <tds-label class="pr-3">Giao hàng thu tiền</tds-label>
-                                    <tds-input-number [min]="1" [step]="1000" [ngModel]="saleModel.CashOnDelivery" (ngModelChange)="changeCashOnDelivery($event)"
-                                        [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
-                                    </tds-input-number>
-                                  </tds-form-field>
-                                </div>
+                            <div class="flex flex-row items-center gap-x-2 w-full">
+                              <tds-form-field class="flex flex-auto">
+                                <tds-label class="pr-3">Giao hàng thu tiền</tds-label>
+                                <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.CashOnDelivery" (ngModelChange)="changeCashOnDelivery($event)"
+                                    [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
+                                </tds-input-number>
+                              </tds-form-field>
+                            </div>
                         </div>
 
                         <!-- ship extras service -->
@@ -556,8 +556,8 @@
           <!-- Button Footer conversation all, message, inbox-->
           <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type != 'post'">
               <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSave()">Lưu nháp</button>
-              <button tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen')">Xác nhận</button>
-              <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print')">Xác nhận và in</button>
+              <!-- <button tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen')">Xác nhận</button> -->
+              <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print')">Lưu và in</button>
 
               <div class="gap-x-2 xl:flex 2xl:hidden">
                 <button *ngIf="isEnableCreateOrder" tds-button-icon color="primary" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')" tds-tooltip="In hóa đơn">

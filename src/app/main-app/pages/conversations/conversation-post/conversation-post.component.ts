@@ -1,15 +1,11 @@
-import { LiveCampaign } from './../../../dto/facebook-post/facebook-post.dto';
-import { ChatomniLiveCampaignDto } from './../../../dto/conversation-all/chatomni/chatomni-objects.dto';
-import { FaceBookPostItemHandler } from './../../../handler-v2/conversation-post/facebook-post-item.handler';
+
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
-import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, fromEvent, Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { fromEvent, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -25,8 +21,10 @@ import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-o
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
-import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { de } from 'date-fns/locale';
 
 @Component({
   selector: 'app-conversation-post',
@@ -88,10 +86,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     private cdRef: ChangeDetectorRef,
+    private chatomniConversationFacade: ChatomniConversationFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private chatomniObjectFacade: ChatomniObjectFacade,
     private chatomniObjectService: ChatomniObjectService,
+    private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
     private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
@@ -150,18 +150,16 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             let index = this.lstObjects.findIndex(x => x.Id == res.Id);
             if(index >- 1) {
                 this.lstObjects[index].LiveCampaignId = res.LiveCampaignId;
-                this.lstObjects[index].LiveCampaign = {...res.LiveCampaign};
+                this.lstObjects[index].LiveCampaign = {...res.LiveCampaign} as any;
 
                 this.lstObjects[index] = {...this.lstObjects[index]};
             }
 
             if(this.currentPost && res.Id == this.currentPost?.Id) {
                 this.currentPost.LiveCampaignId = res.LiveCampaignId;
-                this.currentPost.LiveCampaign = { ...res.LiveCampaign };
+                this.currentPost.LiveCampaign = { ...res.LiveCampaign }  as any;
             }
         }
-
-        this.cdRef.markForCheck();
       }
     })
 
@@ -171,30 +169,28 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           if(res && !res.LiveCampaignId) {
               let index = this.lstObjects.findIndex(x => x.Id == res.Id);
               if(index >- 1) {
-                  this.lstObjects[index].LiveCampaignId = null as any;
-                  this.lstObjects[index].LiveCampaign = null as any;
+                  delete this.lstObjects[index].LiveCampaignId;
+                  delete this.lstObjects[index].LiveCampaign;
 
                   this.lstObjects[index] = {...this.lstObjects[index]};
               }
 
               if(this.currentPost && res.Id == this.currentPost?.Id) {
-                  this.currentPost.LiveCampaignId = null as any;
-                  this.currentPost.LiveCampaign = null as any;
+                  delete this.currentPost.LiveCampaignId;
+                  delete this.currentPost.LiveCampaign;
 
                   this.currentPost = { ...this.currentPost};
               }
           }
-
-          this.cdRef.markForCheck();
       }
     })
 
     //TODO: Check có orderCode thì mở disable tab đơn hàng
     this.conversationOrderFacade.hasValueOrderCode$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        if(TDSHelperArray.hasListValue(res)){
-          this.codeOrder = res[0].code;
-          this.isDisableTabOrder = false;
+      next: (code: any) => {
+        if(TDSHelperString.hasValueString(code)){
+            this.codeOrder = code;
+            this.isDisableTabOrder = false;
         }
       }
     })

@@ -127,11 +127,11 @@
                             </tds-tag>
                         </div>
 
-                        <!-- <div *ngIf="!data.LiveCampaign">
+                        <div *ngIf="!data.LiveCampaign">
                             <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
-                                (click)="openTag(data.Id)"
-                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                                [popoverAutoClose]="false" [popoverContent]="contentAddtag" [popoverBackdrop]="true"
+                                (click)="openTag(data)"
+                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
+                                [popoverAutoClose]="false" [popoverBackdrop]="true"
                                 popoverPlacement="right"
                                 status="bg-neutral-3-100 text-neutral-1-600">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
@@ -139,8 +139,9 @@
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                 </span>
                             </tds-tag>
+                        </div>
 
-                            <ng-template #contentAddtag>
+                             <!--<ng-template #contentAddtag>
                                 <div class="w-[304px]">
                                     <tds-form-field>
                                         <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'

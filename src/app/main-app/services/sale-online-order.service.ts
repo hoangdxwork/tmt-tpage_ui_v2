@@ -35,6 +35,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  getOrderByPostId(postId: string, userId: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getorderbypostid?postId=${postId}&userId=${userId}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
   getDetails(data:TDSSafeAny){
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetDetails?$expand=orderLines($expand=Product,ProductUOM),partner,warehouse`,
