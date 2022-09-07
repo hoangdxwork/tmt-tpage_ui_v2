@@ -99,7 +99,7 @@ export class CreateBillErrorComponent implements OnInit {
   }
 
   printOrder() {
-    let data = this.lstDataErrorDefault as any;debugger
+    let data = this.lstDataErrorDefault as any;
     let obs: TDSSafeAny;
 
     if (this.isPrint == true) {
