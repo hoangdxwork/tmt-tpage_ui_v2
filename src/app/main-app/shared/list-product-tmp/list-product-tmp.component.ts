@@ -25,7 +25,7 @@ import { ProductService } from '@app/services/product.service';
   providers: [TDSDestroyService]
 })
 
-export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChanges {
+export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
   @ViewChild('innerText') innerText!: ElementRef;
@@ -40,8 +40,6 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
   lstOfData!: DataPouchDBDTO[];
   lstVariants: DataPouchDBDTO[] = [];
 
-  indexDbVersion: number = 0;
-  indexDbProductCount: number = -1;
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
   search: boolean = false;
@@ -92,26 +90,27 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
     this.loadData();
   }
 
-  loadData(reload?:boolean): void {
+
+  loadData() {
     this.isLoading = true;
+    this.indexDbStorage = [];
 
-    this.validateData();
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next:(res: KeyCacheIndexDBDTO) => {
+        if(TDSHelperObject.hasValue(res)) {
+            this.indexDbStorage = res.cacheDbStorage;
 
-    this.productIndexDBService.loadProductIndexDBV2(reload).pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
-      .subscribe({
-        next:(res: KeyCacheIndexDBDTO) => {
-          if(TDSHelperObject.hasValue(res)) {
-              this.indexDbProductCount = res.cacheCount;
-              this.indexDbVersion = res.cacheVersion;
-              this.indexDbStorage = res.cacheDbStorage;
-
-              this.loadDataTable();
-            }
-          },
-          error:(err) => {
-            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+            this.loadDataTable();
+            this.isLoading = false;
           }
-      })
+        },
+        error:(err) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+        }
+    })
   }
 
   loadDataTable() {
@@ -247,10 +246,10 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
       bodyStyle: {
         padding : '0px'
       },
-      centered: true,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         typeComponent: 'lst-product-tmp',
+        inLiveCampaign: this.inLiveCampaign
       }
     });
 
@@ -262,28 +261,18 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
             if(res[1]) {
               let cacheObject = res[1];
 
-              this.indexDbProductCount = cacheObject.cacheCount;
-              this.indexDbVersion = cacheObject.cacheVersion;
-              this.indexDbStorage = cacheObject.cacheDbStorage;
+              this.indexDbStorage = [...cacheObject.cacheDbStorage];
             }
 
             // TODO: trường hợp thêm mới push sp vào orderLines
             if(productTmplItems?.Id) {
 
-              let item = this.indexDbStorage.filter((x: DataPouchDBDTO) =>
-              x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
+              let items = this.indexDbStorage.filter((x: DataPouchDBDTO) => x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
 
-              if(!TDSHelperObject.hasValue(item)) {
-                this.message.error('Thêm mới sản phẩm danh sách xảy ra lỗi!');
-                return;
-              }
-
-              this.filterLstVariants(item, productTmplItems);
+              this.filterLstVariants(items, productTmplItems);
               this.getAllVariants();
             }
           }
-          //TODO: reload sản phẩm
-          this.reloadIndexDB();
         }
       })
   }
@@ -298,14 +287,11 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
 
     this.keyFilter = '';
 
-    this.indexDbProductCount = -1;
-    this.indexDbVersion = 0;
     this.indexDbStorage = [];
 
-    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
-    this.cacheApi.removeItem(keyCache);
-
-    this.loadData(true);
+    // this.loadData(true);
+    this.productIndexDBService.removeCacheDBRequest();
+    this.loadData();
   }
 
   addItem(data: DataPouchDBDTO, index?: number) {
@@ -330,28 +316,10 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnChange
     this.lstVariants = [...model];
   }
 
-  ngAfterViewInit(): void {
-    this.tableComponent?.cdkVirtualScrollViewport?.scrolledIndexChange.pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next:(data: number) => {}
-      });
-
-    this.cdRef.detectChanges();
-  }
-
-  ngAfterViewChecked() {
-    this.cdRef.detectChanges();
-  }
-
   trackByIndex(_: number, data: DataPouchDBDTO): number {
     return data.Id;
   }
 
-  validateData(){
-    this.indexDbStorage = [];
-    this.indexDbVersion = 0;
-    this.indexDbProductCount = -1;
-  }
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["priceListItems"] && !changes["priceListItems"].firstChange) {

@@ -1,3 +1,4 @@
+import { KeyCacheIndexDBDTO } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { Subject, finalize } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
@@ -32,6 +33,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
   @Input() typeComponent!: any;
+  @Input() inLiveCampaign: boolean = false;
 
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
@@ -41,6 +43,8 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
   lstAttributes: Array<ConfigAttributeLine> = [];
   lstVariants: Array<ConfigProductVariant> = [];
   productTypeList: Array<TDSSafeAny> = [];
+
+  cacheObject!: KeyCacheIndexDBDTO; 
 
   minIndex = 0;
   numberWithCommas = (value: TDSSafeAny) => {
@@ -192,6 +196,8 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     }
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
 
+    this.defaultGet["ProductVariants"] = [...this.lstVariants];
+
     return this.defaultGet;
   }
 
@@ -200,47 +206,46 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((res: any) => {
+      .subscribe(
+        {
+          next: (res: any) => {
 
-        delete res['@odata.context'];
-
-        let product = res as ProductTemplateV2DTO;
-        this.message.success('Thêm mới sản phẩm thành công');
-
-        // TODO: Trường hợp ở component Phiếu bán hàng
-        // Khi gán dữ liệu , lấy field VariantFirstId
-
-        if(this.typeComponent == 'lst-product-tmp') {
-            this.productIndexDBService.loadProductIndexDBV2().subscribe({
-                next: (x) => {
-                  if (type == "select") {
-                      this.onCancel([product, x]);
-                  } else {
-                      this.onCancel(null);
-                  }
-              },
-                error: (error) => {
-                  if (type == "select") {
-                      this.onCancel([product, null]);
-                  } else {
-                      this.onCancel(null);
-                  }
-                }
-              });
+            delete res['@odata.context'];
+    
+            let product = res as ProductTemplateV2DTO;
+            this.message.success('Thêm mới sản phẩm thành công');
+    
+            // TODO: Trường hợp ở component Phiếu bán hàng
+            // Khi gán dữ liệu , lấy field VariantFirstId
+    
+            this.loadProduct(type, product);
+          }, 
+          error: error => {
+            this.message.error(`${error?.error?.message}`);
         }
+        });
+  }
 
-        else {
+  loadProduct(type: string | undefined, product: ProductTemplateV2DTO) {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next : (x: KeyCacheIndexDBDTO) => {
           if (type == "select") {
-              this.onCancel([product, null]);
+            this.onCancel([product, x]);
           } else {
-              this.onCancel(null);
+            this.onCancel(null);
           }
-
-          this.productIndexDBService.loadProductIndexDBV2().subscribe();
+        },
+        error: (error) => {
+          if (type == "select") {
+            this.onCancel([product, null]);
+          } else {
+            this.onCancel(null);
+          }
         }
-      }, error => {
-        this.message.error(`${error?.error?.message}`);
-    });
+      }
+    )
   }
 
   onCancel(result: TDSSafeAny) {
@@ -334,13 +339,6 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
-
-              this.lstVariants.map(attr => {
-                if (attr.Id == 0) {
-                  this.minIndex -= 1;
-                  attr.Id = this.minIndex;
-                }
-              });
             },
             (err) => {
               this.message.error(err?.error?.message || Message.CanNotLoadData);

@@ -910,6 +910,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             this.calcTotal();
             this.coDAmount();
+
+            this.cdRef.detectChanges();
         }
     })
   }
