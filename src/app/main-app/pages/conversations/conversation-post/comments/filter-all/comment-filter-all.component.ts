@@ -38,6 +38,7 @@ import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto'
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 
 @Component({
   selector: 'comment-filter-all',
@@ -92,6 +93,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private chatomniConversationService: ChatomniConversationService,
     private chatomniCommentService: ChatomniCommentService,
     private chatomniCommentFacade: ChatomniCommentFacade,
+    private saleOnline_OrderService: SaleOnline_OrderService,
     public crmService: CRMTeamService,
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
