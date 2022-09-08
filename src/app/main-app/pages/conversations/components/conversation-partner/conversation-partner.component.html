@@ -138,7 +138,7 @@
 
           <!-- Phiếu bán hàng -->
           <div class="pt-1" *ngIf="!isEditPartner && lastBill && lastBill.Id">
-            <tds-collapse [expandIconPosition]="'right'" class="bg-white">
+            <tds-collapse [expandIconPosition]="'right'" class="bg-white" style="border: 0; border-radius: 0">
               <tds-collapse-panel [header]="headerSalesDetails" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
 
                 <ng-template #headerSalesDetails>
@@ -191,8 +191,8 @@
             </tds-collapse>
           </div>
 
-          <div class="pt-1" *ngIf="!isEditPartner && totalBill > 0">
-            <tds-collapse [expandIconPosition]="'right'" class="bg-white" [bordered]="false">
+          <div class="pt-1" *ngIf="!isEditPartner && totalBill > 0" >
+            <tds-collapse [expandIconPosition]="'right'" class="bg-white" [bordered]="false"  style="border: 0; border-radius: 0">
 
               <tds-collapse-panel [header]="headerListSales" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
                 <ng-template #headerListSales>
