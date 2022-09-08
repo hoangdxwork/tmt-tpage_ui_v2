@@ -32,12 +32,12 @@
                             <td>{{ data.ApiKey }}</td>
                             <td>{{ data.Name }}</td>
                             <td>
-                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(data.Id)">
+                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" tds-tooltip="Chỉnh sửa" (click)="showEditModal(data.Id)">
                                     <span class="flex items-center">
                                       <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(data.Id)">
+                                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa" (click)="showRemoveModal(data.Id)">
                                     <span class="flex items-center">
                                       <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
                                     </span>

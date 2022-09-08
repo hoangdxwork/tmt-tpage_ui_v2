@@ -18,7 +18,7 @@
                             <span>Thành tiền:</span>
                         </div>
                         <div class="w-1/2">
-                            <span>{{product.PriceTotal | number: '1.0-3'}} đ</span>
+                            <span>{{product.PriceTotal | numberCustom }} đ</span>
                         </div>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                     <span>Phí giao hàng:</span>
                 </div>
                 <div class="w-1/2">
-                    <span>{{data.DeliveryPrice | number: '1.0-3'}} đ</span>
+                    <span>{{data.DeliveryPrice | numberCustom }} đ</span>
                 </div>
             </div>
             <div class="flex">
@@ -38,7 +38,7 @@
                     <span>Tiền khách phải trả</span>
                 </div>
                 <div class="w-1/2">
-                    <span>{{data.AmountTotal | number: '1.0-3'}} đ</span>
+                    <span>{{data.AmountTotal | numberCustom }} đ</span>
                 </div>
             </div>
             <div class="flex text-title-1 font-semibold">
@@ -46,7 +46,7 @@
                     <span>Tổng tiền:</span>
                 </div>
                 <div class="w-1/2">
-                    <span>{{data.CashOnDelivery | number: '1.0-3'}} đ</span>
+                    <span>{{data.CashOnDelivery | numberCustom }} đ</span>
                 </div>
             </div>
         </div>
@@ -67,7 +67,7 @@
                 <div class="flex gap-x-2">
                     <span class="flex flex-none">
                         <i class="tdsi-call-fill mr-1 text-neutral-1-500 text-xl leading-none"></i>
-                        <span class="font-semibold">Số điện thoại:</span> 
+                        <span class="font-semibold">Số điện thoại:</span>
                     </span>
                     <span>{{data.Ship_Receiver? data.Ship_Receiver.Phone : '...'}}</span>
                 </div>
@@ -99,7 +99,7 @@
             <div class="flex-auto">
                 <span class="flex items-center gap-x-1">
                     <i class="tdsi-user-fill text-neutral-1-500 text-xl leading-none"></i>
-                    <span class="font-semibold">Xác nhận thanh toán:</span> 
+                    <span class="font-semibold">Xác nhận thanh toán:</span>
                     <span *ngIf="!data.PaymentMethod" class="text-error-500">Chưa chọn</span>
                     <span *ngIf="data.PaymentMethod" class="text-info-500">{{data.PaymentMethod}}</span>
                     <span>{{data.CashOnDelivery | number:'1.0-3'}} đ</span>

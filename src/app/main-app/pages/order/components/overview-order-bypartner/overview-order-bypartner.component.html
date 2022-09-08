@@ -81,14 +81,14 @@
                 <!-- Tổng tiền -->
                 <td>
                   <div class="w-full" [align]="'right'">
-                    <span>{{ data.AmountTotal || 0 | number :'1.0-3' }} đ</span>
+                    <span>{{ data.AmountTotal || 0 | numberCustom  }} đ</span>
                   </div>
                 </td>
 
                 <!-- Còn nợ -->
                 <td>
                   <div class="w-full" [align]="'right'">
-                    <span>{{ data.Residual || 0 | number :'1.0-3' }} đ</span>
+                    <span>{{ data.Residual || 0 | numberCustom  }} đ</span>
                   </div>
                 </td>
 

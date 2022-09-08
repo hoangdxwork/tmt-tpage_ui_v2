@@ -9,7 +9,10 @@ export class NumberCustomPipe implements PipeTransform {
   constructor(){}
 
   transform(value: any) {
-    return value;
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value
   }
 
 }

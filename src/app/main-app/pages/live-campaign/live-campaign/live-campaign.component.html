@@ -30,15 +30,15 @@
                 <div class="w-full flex flex-col gap-y-2">
                     <div class="flex justify-between items-center">
                         <div class="text-neutral-1-500">Tổng số lượng sản phẩm</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumQtyInCart | number: '1.0-3'}}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumQtyInCart | numberCustom }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="text-neutral-1-500">Số lượng đã chốt</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumQtyCheckOut | number: '1.0-3'}}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumQtyCheckOut | numberCustom }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="text-neutral-1-500">Số lượng bị hủy</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-error-400">{{dataReports?.SumCancelCheckout | number: '1.0-3'}}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-error-400">{{dataReports?.SumCancelCheckout | numberCustom }}</div>
                     </div>
                 </div>
             </div>
@@ -47,15 +47,15 @@
                 <div class="w-full flex flex-col space-y-2">
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tổng đơn chờ chốt</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumOrderWaitCheckOut | number: '1.0-3' }}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumOrderWaitCheckOut | numberCustom  }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tổng đơn đã chốt</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumOrderCheckOut | number: '1.0-3' }}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumOrderCheckOut | numberCustom  }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tổng đơn bị hủy</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-error-400">{{dataReports?.SumOrderCancelCheckOut | number: '1.0-3' }}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-error-400">{{dataReports?.SumOrderCancelCheckOut | numberCustom  }}</div>
                     </div>
                 </div>
             </div>
@@ -64,15 +64,15 @@
                 <div class="w-full flex flex-col space-y-2">
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tiền chờ chốt</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumAmountWaitCheckOut | number: '1.0-3' }}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumAmountWaitCheckOut | numberCustom  }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tiền chờ thanh toán</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumAmountWaitingPayment | number: '1.0-3' }}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-neutral-1-900">{{dataReports?.SumAmountWaitingPayment | numberCustom  }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tiền đã thanh toán</div>
-                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-error-400">{{dataReports?.SumAmountPaid | number: '1.0-3'}}</div>
+                        <div class="2xl:text-header-1 xl:text-body-1 font-semibold text-error-400">{{dataReports?.SumAmountPaid | numberCustom }}</div>
                     </div>
                 </div>
             </div>

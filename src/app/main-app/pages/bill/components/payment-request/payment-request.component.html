@@ -14,7 +14,7 @@
               <tr *ngFor="let item of dataPayment">
                   <td class="text-body-2">{{ item.PartnerDisplayName }}</td>
                   <td class="text-body-2">{{ item.Number }}</td>
-                  <td class="text-body-2">{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
+                  <td class="text-body-2">{{ item.AmountTotal || 0 | numberCustom }}</td>
                   <td class="text-body-2">{{ item.DateCreated | date:"dd-MM-yyyy HH:mm"}}</td>
                   <td>
                     <tds-form-field>

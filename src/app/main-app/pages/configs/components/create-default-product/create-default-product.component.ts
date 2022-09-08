@@ -38,7 +38,7 @@ export class CreateDefaultProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProduct();
-    this.loadCurrentCompany();
+    // this.loadCurrentCompany();
   }
 
   loadProduct(textSearch?: string) {
@@ -50,6 +50,8 @@ export class CreateDefaultProductComponent implements OnInit {
       .subscribe({
         next:(res: ODataProductDTOV2) => {
           this.lstProduct = [...res.value];
+          console.log(this.lstProduct);
+
         },
         error:(err) => {
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
@@ -57,33 +59,36 @@ export class CreateDefaultProductComponent implements OnInit {
       });
   }
 
-  loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: CompanyCurrentDTO) => {
-        this.companyCurrents = res;
+  // loadCurrentCompany() {
+  //   this.sharedService.setCurrentCompany();
+  //   this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: CompanyCurrentDTO) => {
+  //       this.companyCurrents = res;
 
-        if(this.companyCurrents.DefaultWarehouseId) {
-            this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
-        }
-      },
-      error: (error: any) => {
-        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
-      }
-    });
-  }
+  //       if(this.companyCurrents.DefaultWarehouseId) {
+  //           this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+  //       }
+  //     },
+  //     error: (error: any) => {
+  //       this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+  //     }
+  //   });
+  // }
 
-  loadInventoryWarehouseId(warehouseId: number) {
-    this.productService.setInventoryWarehouseId(warehouseId);
-    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.lstInventory = res;
-      }
-    });
-  }
+  // loadInventoryWarehouseId(warehouseId: number) {
+  //   this.productService.setInventoryWarehouseId(warehouseId);
+  //   this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: any) => {
+  //         this.lstInventory = res;
+  //     }
+  //   });
+  // }
+
+
 
   onChangeProduct(data: ProductDTOV2){
     this.defaultProduct = data;
+
   }
 
   onSearch(event:any){

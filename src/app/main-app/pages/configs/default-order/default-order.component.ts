@@ -7,11 +7,11 @@ import { SharedService } from './../../../services/shared.service';
 import { ProductTemplateUOMLineService } from './../../../services/product-template-uom-line.service';
 import { TDSHelperObject } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
-import { CreateDefaultProductComponent } from './../components/create-default-product/create-default-product.component';
 import { TDSMessageService } from 'tds-ui/message';
 import { ProductDTOV2 } from './../../../dto/product/odata-product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ModalListProductComponent } from '@app/pages/conversations/components/modal-list-product/modal-list-product.component';
 
 @Component({
   selector: 'app-default-order',
@@ -79,9 +79,15 @@ export class DefaultOrderComponent implements OnInit {
   createDefaultProduct(){
     const modal = this.modalService.create({
       title: 'Chọn sản phẩm',
-      content: CreateDefaultProductComponent,
+      content: ModalListProductComponent,
       size: "lg",
-      viewContainerRef: this.viewContainerRef
+      bodyStyle: {
+        padding: '0px'
+      },
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        defaultOrder: true
+      }
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductDTOV2) => {
