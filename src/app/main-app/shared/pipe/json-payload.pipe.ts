@@ -24,7 +24,7 @@ export class jsonPayloadPipe implements PipeTransform {
         }
 
         if(model.attachment && model.attachment.payload){
-          let message = `${model.attachment.payload.recipient_name} đã tạo đơn hàng <span class="font-semibold code-bill" id="${order_url}">${model.attachment.payload.order_number}</span>`
+          let message = `${model.attachment.payload.recipient_name} đã tạo đơn hàng <span class="font-semibold code-bill" id="${order_url}" payload>${model.attachment.payload.order_number}</span>`
 
           return message
         }
