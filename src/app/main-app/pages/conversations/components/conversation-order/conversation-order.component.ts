@@ -1302,7 +1302,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           _cities : this._cities,
           _districts: this._districts,
           _wards: this._wards,
-          _street: this._street,
+          _street: this.quickOrderModel.Address,
           isSelectAddress: true
         }
       });
