@@ -221,7 +221,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       // },
       {
         name: "Cấu hình",
-        icon: "tdsi-gear-line",
+        icon: "tdsi-gear-1-fill",
         link: `/configs`,
       }
     ];

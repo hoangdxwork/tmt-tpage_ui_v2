@@ -25,10 +25,6 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSTagModule } from 'tds-ui/tag';
 
-// const SERVICES = [
-//   // ProductDataFacade,
-// ]
-
 @NgModule({
   declarations: [
     LayoutComponent
