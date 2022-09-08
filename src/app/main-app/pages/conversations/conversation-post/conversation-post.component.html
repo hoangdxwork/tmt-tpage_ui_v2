@@ -123,7 +123,7 @@
                         </div>
                     </ng-template>
                     <div *ngIf="currentTeam">
-                        <conversation-partner [team]="currentTeam" [type]="type"> </conversation-partner>
+                        <conversation-partner [team]="currentTeam" [type]="type" [syncConversationInfo]="syncConversationInfo"> </conversation-partner>
                     </div>
                 </tds-tab>
 
@@ -136,8 +136,7 @@
                         </div>
                     </ng-template>
                     <div *ngIf="currentTeam">
-                        <!-- <post-order [team]="currentTeam"></post-order> -->
-                        <conversation-order [type]="type"></conversation-order>
+                        <conversation-order [type]="type" [syncConversationInfo]="syncConversationInfo"></conversation-order>
                     </div>
                 </tds-tab>
             </tds-tabset>

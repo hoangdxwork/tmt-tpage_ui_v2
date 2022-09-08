@@ -22,9 +22,7 @@ export class YiDateTimeFormatPipe extends DatePipe implements PipeTransform {
     let toYear = date.getFullYear();
 
     if (currentYear == toYear) {
-        if (currentMonth == toMonth) {
           return super.transform(value, DateFormat.ddMMHHmm_FORMAT);
-        }
     } else {
         return super.transform(value, DateFormat.ddMMyyyy_FORMAT);
     }

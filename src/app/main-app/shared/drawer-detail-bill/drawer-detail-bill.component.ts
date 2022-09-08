@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { finalize, takeUntil } from 'rxjs';
+import { finalize, Observable, takeUntil } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -151,8 +151,8 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
     this.cRMTeamService.getTeamById(id).subscribe({
       next: (team: any) => {
           if(team) {
-            this.dataModel.Team.Name = team.Name;
-            this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
+            this.dataModel.Team!.Name = team.Name;
+            this.dataModel.Team!.Facebook_PageName = team.Facebook_PageName;
           }
       }
     })
@@ -270,40 +270,45 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
       return
     }
 
-    let obs: TDSSafeAny;
+    let obs!: Observable<any>;
     switch (type) {
       case "bill80":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=bill80`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=bill80`);
         break;
       case "bill58":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=bill58`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=bill58`);
         break;
       case "A5":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=A5`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=A5`);
         break;
       case "A4":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=A4`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=A4`);
         break;
       case "delivery":
-        obs = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${this.dataModel.Id}`);
+        obs = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${[Number(this.dataModel.Id)]}`);
         break;
       case "ship":
-        let carrierId = "";
-        if (this.dataModel.CarrierId) {
-          carrierId = `&CarrierId=${this.dataModel.CarrierId}`;
+        let url = `/fastsaleorder/PrintShipThuan?ids=${[Number(this.dataModel.Id)]}`;
+        if (Number(this.dataModel.CarrierId) > 0) {
+          url = `${url}&carrierid=${this.dataModel.CarrierId}`;
         }
-        obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.dataModel.Id}${carrierId}`);
+
+        obs = this.printerService.printUrl(url);
         break;
       default:
         break;
     }
-    if (TDSHelperObject.hasValue(obs)) {
-      this.isProcessing = true;
-      obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+
+    this.isProcessing = true;
+    obs?.pipe(takeUntil(that.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
           that.printerService.printHtml(res);
           that.isProcessing = false;
-      })
-    }
+      },
+      error: (error: any) => {
+          that.isProcessing = false;
+      }
+    })
   }
 
   getShowState(type: string): any {
