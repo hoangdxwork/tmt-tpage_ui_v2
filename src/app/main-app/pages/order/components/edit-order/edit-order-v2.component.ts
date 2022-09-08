@@ -625,6 +625,8 @@ export class EditOrderV2Component implements OnInit {
 
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
+              fs_model.SaleOnlineIds = [res.Id];
+              fs_model.PartnerId = res.PartnerId;
               this.createFastSaleOrder(fs_model, type);
           } else {
             this.isLoading = false;

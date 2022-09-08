@@ -1,5 +1,6 @@
-import { Pipe, PipeTransform } from "@angular/core";
-import { TDSHelperString, TDSHelperObject } from "tds-ui/shared/utility";
+import { TDSConversationItemComponent } from './../tds-conversations/tds-conversation-item.component';
+import { Pipe, PipeTransform, ViewChild } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Pipe({
   name: 'jsonPayload'
@@ -7,17 +8,21 @@ import { TDSHelperString, TDSHelperObject } from "tds-ui/shared/utility";
 
 export class jsonPayloadPipe implements PipeTransform {
 
-  constructor(){}
+  constructor(private sanitizer: DomSanitizer){
+  }
 
   transform(json: any) : any {
-    if(TDSHelperString.hasValueString(json) && json.includes(`{"attachment":`)) {
-      let model = JSON.parse(json);
-      console.log(model)
-      if(model.attachment && model.attachment.payload){
-        let message = `${model.attachment.payload.recipient_name} đã tạo đơn hàng <span class="font-semibold code-bill">${model.attachment.payload.order_number}</span>`
-        return message
+    if(typeof json === 'string') {
+      if (/^[\[|\{](\s|.*|\w)*[\]|\}]$/.test(json)) {
+        let model = JSON.parse(json);
+          
+        if(model.attachment && model.attachment.payload){
+          let message = `${model.attachment.payload.recipient_name} đã tạo đơn hàng <span class="font-semibold code-bill" (click)="child()">${model.attachment.payload.order_number}</span>`
+          
+          return message
+        }
       }
-    };
+    }
    
     return json;
   }
