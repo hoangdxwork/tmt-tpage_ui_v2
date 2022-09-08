@@ -18,9 +18,7 @@
           <tds-input-number class="w-full"
           [(ngModel)]="initAll"
           [ngModelOptions]="{standalone: true}"
-          [min]="0"
-          [formatter]="numberWithCommas"
-          [parser]="parserComas">
+          [min]="0">
       </tds-input-number>
         </div>
         <button tds-button class="ml-2 min-w-[120px] text-primary-1 bg-white hover:border-primary-1 focus:border-primary-1 focus:ring-2 focus:ring-primary-1/20" color="custom" size="md" (click)="updateForAll()">
@@ -51,9 +49,7 @@
                     <td class="text-body-2">
                         <tds-form-field class="w-full">
                             <tds-input-number formControlName="NewQuantity"
-                                [min]="0"
-                                [formatter]="numberWithCommas"
-                                [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         </tds-form-field>
                     </td>
                     <td class="text-body-2">

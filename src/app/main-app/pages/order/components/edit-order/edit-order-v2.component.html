@@ -215,7 +215,7 @@
                     <td>
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="1000" (ngModelChange)="onChangePrice($event, index)"
-                          [ngModel]="data.Price | number" [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
+                          [ngModel]="data.Price | number" [ngModelOptions]="{standalone: true}" >
                         </tds-input-number>
                       </tds-form-field>
                     </td>
@@ -279,7 +279,7 @@
                     </div>
                     <div class="col-span-2">
                         <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.CashOnDelivery"
-                          (ngModelChange)="changeCashOnDelivery($event)" [formatter]="numberWithCommas" [parser]="parserComas"
+                          (ngModelChange)="changeCashOnDelivery($event)"
                           [ngModelOptions]="{standalone: true}">
                         </tds-input-number>
                     </div>
@@ -293,7 +293,7 @@
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.DeliveryPrice"
                           (ngModelChange)="changeDeliveryPrice($event)" [ngModelOptions]="{standalone: true}"
-                          [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
+                          [ngModelOptions]="{standalone: true}">
                         </tds-input-number>
                       </tds-form-field>
                     </div>
@@ -307,7 +307,7 @@
                     <div class="col-span-2">
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="100" [(ngModel)]="saleModel.ShipWeight"
-                          (tdsBlur)="changeShipWeight()"[ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
+                          (tdsBlur)="changeShipWeight()"[ngModelOptions]="{standalone: true}">
                         </tds-input-number>
                       </tds-form-field>
                     </div>
@@ -320,7 +320,7 @@
                     <div class="col-span-2">
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.AmountDeposit"
-                          (ngModelChange)="changeAmountDeposit($event)" [formatter]="numberWithCommas" [parser]="parserComas"
+                          (ngModelChange)="changeAmountDeposit($event)"
                           [ngModelOptions]="{standalone: true}">
                         </tds-input-number>
                       </tds-form-field>
