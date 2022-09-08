@@ -9,7 +9,7 @@ import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni
 import { ChatomniDataItemDto, ChatomniMessageType, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { Facebook } from './../../../lib/dto/facebook.dto';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
+import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
 import { finalize, Subject, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
@@ -37,7 +37,7 @@ import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
   providers: [ TDSDestroyService ]
 })
 
-export class TDSConversationItemComponent implements OnInit {
+export class TDSConversationItemComponent implements OnInit  {
 
   @Input() dataItem!: ChatomniDataItemDto;
   @Input() csid!: string;
@@ -577,8 +577,9 @@ export class TDSConversationItemComponent implements OnInit {
     let className = JSON.stringify(e.target.className);
     if(className.includes('code-bill')){
       if (e.target.className.indexOf('code-bill') >= 0) {
-        
+
       }
     }
   }
+
 }
