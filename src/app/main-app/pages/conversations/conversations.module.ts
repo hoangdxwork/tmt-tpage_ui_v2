@@ -134,7 +134,6 @@ import { ObjectFacebookPostComponent } from './conversation-post/objects/object-
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
-import { DrawerDetailBillComponent } from './components/drawer-detail-bill/drawer-detail-bill.component';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ModalAddAddressV2Component } from './components/modal-add-address-v2/modal-add-address-v2.component';
@@ -246,7 +245,6 @@ const SERVICES = [
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
     CommentFilterAllComponent,
-    DrawerDetailBillComponent,
     LiveCampaignPostComponent,
     ModalAddAddressV2Component,
 
