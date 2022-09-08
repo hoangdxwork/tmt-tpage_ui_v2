@@ -20,7 +20,7 @@
                                     <span class="text-primary-1 font-semibold xl:truncate">FB: {{quickOrderModel.Facebook_UserName}}</span>
                                 </div>
 
-                                <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()">
+                                <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()" tds-tooltip [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'">
                                     <span class="flex items-center">
                                         <i [ngClass]="isEditPartner? 'tdsi-close-fill': 'tdsi-edit-fill'" class="text-xl leading-none text-neutral-1-400"></i>
                                     </span>
