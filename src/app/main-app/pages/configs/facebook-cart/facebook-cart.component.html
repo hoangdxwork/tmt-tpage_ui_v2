@@ -1,5 +1,5 @@
 <div class="w-full h-full px-4 overflow-auto tds-custom-scroll">
-  <div class="w-full" *ngIf="dataModel">
+  <div class="w-full max-w-[1280px]" *ngIf="dataModel">
     <!-- CẤU HÌNH TƯƠNG TÁC TỰ ĐỘNG -->
     <tds-spin [spinning]="isLoading">
       <form [formGroup]="_form">
@@ -14,7 +14,7 @@
               <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình thông tin khách hàng</span>
               <div class="flex flex-row items-center pt-4">
                   <tds-switch size="md" formControlName="IsUpdatePartnerInfo"></tds-switch>
-                  <span class="text-neutral-1-900 text-body-2 pl-2">Phản hồi tự động khi chốt đơn?</span>
+                  <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật thông tin khách hàng</span>
               </div>
           </div>
 

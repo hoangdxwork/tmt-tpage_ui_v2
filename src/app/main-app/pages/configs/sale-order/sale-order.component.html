@@ -81,7 +81,7 @@
                 </div>
 
                 <div *ngIf="_form.controls['IsEnableShipping'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4  w-full">
-                    <tds-form-field class="pb-4">
+                    <tds-form-field class="pb-4 w-[370px]">
                         <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Chọn trạng thái gửi</tds-label>
                         <tds-select valueField="Code" textField="Name" placeholder='Chọn trạng thái gửi'
                             formControlName="ShippingStatues" mode="multiple" [data]="lstShippingStatus" [allowClear]="true" >
@@ -96,7 +96,7 @@
             </div>
 
             <div class="flex flex-row items-center justify-end">
-                <button tds-button color="secondary" class="mr-2.5">
+                <button tds-button color="secondary" class="mr-2.5 min-w-[100px]">
                     <span class="text-neutral-1-900 text-body-2 font-semibold">Hủy</span>
                 </button>
 

@@ -31,6 +31,7 @@ import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe } from './check-tag-s
 import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 import { LatestMessageTypePipe } from './lastest-message-type.pipe';
+import { NumericalOrder } from './numerical-order.pipe';
 import { jsonPayloadPipe } from './json-payload.pipe';
 
 const cmp =[
@@ -69,6 +70,7 @@ const cmp =[
   SortDataSourceMessagePipe,
   CheckTagSelectedCommnetPipe,
   LatestMessageTypePipe,
+  NumericalOrder,
   jsonPayloadPipe
 ]
 

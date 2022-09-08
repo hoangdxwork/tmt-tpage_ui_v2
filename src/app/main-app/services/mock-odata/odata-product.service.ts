@@ -44,7 +44,7 @@ export class OdataProductService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24format=json&${params}&%24count=true`,
       method: CoreApiMethodType.get,
     }
-  
+
     return this.apiService.getData<ODataProductDTOV2>(api, null);
   }
 
@@ -54,7 +54,7 @@ export class OdataProductService extends BaseSevice {
         filters: []
     }
 
-    dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true });
+    // dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true });
     dataFilter.logic = "and";
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {

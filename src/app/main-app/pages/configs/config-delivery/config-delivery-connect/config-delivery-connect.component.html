@@ -11,9 +11,14 @@
           <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">Kết nối đối tác
             {{this.providerType}}</span>
         </div>
-        <button tds-button color="primary" type="button" class="w-[100px]" (click)="onSubmit()">
-            <span class="text-body-2 font-semibold">Lưu</span>
-        </button>
+        <div class="flex gap-x-2">
+          <button tds-button color="secondary" type="button" class="w-[100px]" [routerLink]="['/configs/delivery']">
+            <span class="text-body-2 font-semibold">Hủy</span>
+          </button>
+          <button tds-button color="primary" type="button" class="w-[100px]" (click)="onSubmit()">
+              <span class="text-body-2 font-semibold">Lưu</span>
+          </button>
+        </div>
       </div>
       <div class="flex flex-col p-4">
         <div class="flex flex-row items-center justify-start w-2/3 pb-6">

@@ -46,8 +46,8 @@ export class SMSServiceModalComponent implements OnInit {
         this.serviceForm = this.formBuilder.group({
             currentValue: new FormControl('', [Validators.required]),
             apiKey: new FormControl('', [Validators.required]),
-            secretKey: new FormControl('', [Validators.required]),
-            category: new FormControl('', [Validators.required]),
+            secretKey: new FormControl(''),
+            category: new FormControl(''),
         });
     }
 
@@ -88,7 +88,6 @@ export class SMSServiceModalComponent implements OnInit {
 
     }
 
-
     valueChange(ev: TDSSafeAny) {
         this.resetForm();
         let temp = this.items.find(x => x.provider == ev);
@@ -96,7 +95,6 @@ export class SMSServiceModalComponent implements OnInit {
             this.categorySMS = temp.categories
             this.serviceForm.controls.category.setValue('');
         }
-
     }
 
     cancel() {
@@ -121,9 +119,7 @@ export class SMSServiceModalComponent implements OnInit {
                 customProperties.type.Price = categ.Price;
             }
         }
-        if (model.apiKey) {
-            this.modelDefault.ApiKey = model.apiKey;
-        }
+        this.modelDefault.ApiKey = model.apiKey? model.apiKey: null;
         if (model.secretKey) {
             customProperties.secretkey = model.secretKey
         }
@@ -177,6 +173,5 @@ export class SMSServiceModalComponent implements OnInit {
                 this.isLoading = false;
             })
         }
-
     }
 }
