@@ -27,9 +27,14 @@
       </thead>
       <tbody>
         <tr *ngFor="let data of rowSelectionTable.data">
-          <td>{{ data.Id }}</td>
-          <td>{{ data.Id }}</td>
-          <td>{{ data.Id }}</td>
+          <td>
+            <div class="flex flex-row items-center gap-x-4">
+              <tds-avatar [tdsSrc]="data?.ImageUrl || ''" [isAvatar]="false" [shape]="'square'" [size]="52" class="rounded-lg"></tds-avatar>
+              <span>{{ data.NameGet || '' }}</span>
+            </div>
+          </td>
+          <td>{{ data.UOMName }}</td>
+          <td>{{ data.Price }}</td>
           <td>
             <button tds-button color="secondary">
               <span class="flex items-center text-primary-1">
@@ -42,6 +47,7 @@
       </tbody>
     </tds-table>
   </div>
+
 </div>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>

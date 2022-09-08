@@ -20,7 +20,7 @@
                                     <span class="text-primary-1 font-semibold xl:truncate">FB: {{quickOrderModel.Facebook_UserName}}</span>
                                 </div>
 
-                                <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()">
+                                <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()" tds-tooltip [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'">
                                     <span class="flex items-center">
                                         <i [ngClass]="isEditPartner? 'tdsi-close-fill': 'tdsi-edit-fill'" class="text-xl leading-none text-neutral-1-400"></i>
                                     </span>
@@ -188,7 +188,7 @@
                                                 <div class="text-neutral-1-400 flex items-center gap-x-2">
                                                     <span class="text-[13px] flex">
                                                         <span *ngIf="item.UOMName" class="text-[13px] flex"> {{ item.UOMName }} -&nbsp;</span>
-                                                        {{ item.Price | number: '1.0-3' }}đ
+                                                        {{ item.Price | numberCustom  }}đ
                                                     </span>
 
                                                     <span class="tdsi-edit-line flex text-base cursor-pointer" tds-popover [popoverVisible]="visibleIndex == index"
@@ -312,7 +312,7 @@
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DiscountAmount || 0 | number: '1.0-3' }}đ </span>
+                                                <span> -{{ saleModel.DiscountAmount || 0 | numberCustom  }}đ </span>
                                             </div>
                                         </div>
 
@@ -325,7 +325,7 @@
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DecreaseAmount || 0 | number: '1.0-3' }}đ </span>
+                                                <span> -{{ saleModel.DecreaseAmount || 0 | numberCustom  }}đ </span>
                                             </div>
                                         </div>
                                     </div>

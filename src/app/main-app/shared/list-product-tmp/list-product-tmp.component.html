@@ -104,7 +104,7 @@
                             </div>
                         </td>
                         <td class="text-body-2">{{ data.UOMName }}</td>
-                        <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                        <td class="text-body-2">{{ data.Price | numberCustom }} đ</td>
                     </tr>
 
                     <tr *ngIf="data && !inLiveCampaign" (click)="addItem(data, index)"
@@ -130,7 +130,7 @@
                             </div>
                         </td>
                         <td class="text-body-2">{{ data.UOMName }}</td>
-                        <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                        <td class="text-body-2">{{ data.Price | numberCustom }} đ</td>
                     </tr>
 
                     <ng-template #contentTemplate>

@@ -43,6 +43,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() syncConversationInfo!: ChatomniConversationInfoDto;
+  @Input() isLoading!: boolean;
 
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
@@ -67,7 +68,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   isEditPartner: boolean = false;
   partner!: ConversationPartnerDto;
   conversationItem!: ChatomniConversationItemDto; // dữ liệu nhận từ conversation-all
-  isLoading: boolean = false;
   visibleDrawerBillDetail: boolean = false;
 
   constructor(private message: TDSMessageService,
@@ -139,6 +139,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         let data = {...changes['syncConversationInfo'].currentValue} as ChatomniConversationInfoDto;
         this.onSyncConversationInfo(data);
         this.cdRef.detectChanges();
+    }
+
+    if(changes['isLoading'] && !changes['isLoading'].firstChange) {
+        this.isLoading = changes['isLoading'].currentValue;
     }
   }
 
