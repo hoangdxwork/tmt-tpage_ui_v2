@@ -75,7 +75,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   checkCsidRouter: string = '';
   selectedIndex: number = 0;
 
-
   private notificationRef!: TDSNotificationRef;
   totalConversations: number = 0;
 
@@ -328,12 +327,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       // TODO: gán thông tin cho conversation-partner, conversation-order
       if(this.currentTeam?.Id && item.ConversationId) {
+          this.isLoading = true;
           this.chatomniConversationService.getInfo(this.currentTeam!.Id, item.ConversationId).pipe(takeUntil(this.destroy$)).subscribe({
               next: (info: ChatomniConversationInfoDto) => {
                   this.conversationInfo = {...info};
+                  this.isLoading = false;
+                  this.cdRef.markForCheck();
               },
               error: (error: any) => {
                   this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+                  this.isLoading = false;
+                  this.cdRef.markForCheck();
               }
           })
       }
@@ -345,15 +349,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   changeCurrentConversationItem(item: ChatomniConversationItemDto) {
-    if(this.isOpenCollapCheck){
-        this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
-        this.refreshCheckedStatus();
+    if(item.ConversationId != this.conversationItem.ConversationId) {
+        if(this.isOpenCollapCheck){
+            this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
+            this.refreshCheckedStatus();
 
-        return;
+            return;
+        }
+
+        (this.conversationItem as any) = null;
+        this.setCurrentConversationItem(item);
     }
-
-    (this.conversationItem as any) = null;
-    this.setCurrentConversationItem(item);
   }
 
   trackByIndex(_: number, data: any): number {

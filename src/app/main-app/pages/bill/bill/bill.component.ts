@@ -436,15 +436,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.filterObj.searchText = text;
         let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
         return this.getViewData(params);
       })
     ).subscribe({
       next: (res: any) => {
           this.count = res['@odata.count'] as number;
-          this.lstOfData = res.value;
-          this.cdRef.detectChanges();
+          this.lstOfData = [...res.value];
       },
       error: (error: any) => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');

@@ -107,7 +107,7 @@
     </div>
 
     <!-- main -->
-    <tds-spin class="flex-auto h-full w-full flex overflow-hidden" [color]="'secondary'" tip="Loading..." [spinning]="isLoading" >
+    <div class="flex-auto h-full w-full flex overflow-hidden" >
 
         <div class="h-full w-full overflow-y-auto tds-custom-scroll flex flex-col relative delay-100"
             #scrollToIndex  (onScrollToTop)="nextData()" id="dataSourceScroll" yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40">
@@ -152,7 +152,7 @@
                 </div>
             </div>
         </div>
-    </tds-spin>
+    </div>
 
     <!-- Thông báo Chatbot -->
     <div *ngIf="data && data.State == 2" class="absolute top-[88px] left-[8px] right-[8px]" >
@@ -341,4 +341,7 @@
           </div>
         </tds-spin>
     </div>
+
+    <!-- drawer khi click vào mã đơn hàng -->
+    <drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order" (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
 </section>

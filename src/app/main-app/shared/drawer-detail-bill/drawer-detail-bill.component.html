@@ -1,8 +1,8 @@
-<span class="text-info-500 font-semibold  font-sans cursor-pointer" [ngClass]="isBillNearest?'text-header-1':'text-body-2'" (click)="onDrawerDetailBill($event)">
+<span *ngIf="!isMessage" class="text-info-500 font-semibold  font-sans cursor-pointer" [ngClass]="isBillNearest?'text-header-1':'text-body-2'" (click)="onDrawerDetailBill($event)">
     #{{bill.Number || 'N/A'}}
 </span>
 
-<tds-drawer [bodyStyle]="{'overflow':'hidden'}" [visible]="visibleDrawerBillDetail" [placement]="'right'" size="xl"
+<tds-drawer *ngIf="bill" [bodyStyle]="{'overflow':'hidden'}" [visible]="visibleDrawerBillDetail" [placement]="'right'" size="xl"
     [bodyStyle]="{'overflow':'hidden','display': 'flex','flex-direction': 'column','padding': 0}" [title]="titleTpl"
     (onClose)="onClose()" [footer]="footerTpl">
     <ng-template #titleTpl>
@@ -52,7 +52,7 @@
                                         <span>Tiền thu hộ</span>
                                     </div>
                                     <div class="w-1/2">
-                                        <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | number :'1.0-3'}} đ</span>
+                                        <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
                                     </div>
                                 </div>
                                 <div class="flex gap-x-6 items-center">
@@ -60,7 +60,7 @@
                                         <span>Số tiền trả</span>
                                     </div>
                                     <div class="w-1/2">
-                                        <span class="font-semibold">{{dataModel.PaymentAmount || 0 | number :'1.0-3'}} đ</span>
+                                        <span class="font-semibold">{{dataModel.PaymentAmount || 0 | numberCustom }} đ</span>
                                     </div>
                                 </div>
                                 <div class="flex gap-x-6 items-center">
@@ -68,7 +68,7 @@
                                         <span>Phí giao hàng</span>
                                     </div>
                                     <div class="w-1/2 flex gap-x-6">
-                                        <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | number :'1.0-3'}} đ</span>
+                                        <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
                                         <div class="rounded-full bg-info-200 px-2 " *ngIf="dataModel.ShipWeight">
                                             <span class="text-info-500 font-semibold flex items-center">
                                                 <svg class="mr-1" width="17" height="16" viewBox="0 0 17 16" fill="none"
@@ -147,7 +147,7 @@
                                             <span>Giao hàng thu tiền</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | number :'1.0-3'}} đ</span>
+                                            <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -163,7 +163,7 @@
                                             <span>Phí giao hàng</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | number :'1.0-3'}} đ</span>
+                                            <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -179,7 +179,7 @@
                                             <span>Tiền cọc</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.AmountDeposit || 0 | number :'1.0-3'}} đ</span>
+                                            <span class="font-semibold">{{dataModel.AmountDeposit || 0 | numberCustom }} đ</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -275,7 +275,7 @@
                                             <span>Địa chỉ giao hàng</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.Ship_Receiver?.Street}}|| '---'}}</span>
+                                            <span class="font-semibold">{{dataModel.Ship_Receiver?.Street || '---'}}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -379,9 +379,9 @@
                                         </td>
                                         <td>{{ data.ProductUOMName }}</td>
                                         <td>{{ data.ProductUOMQty }}</td>
-                                        <td>{{ data.PriceUnit | number: '1.0-3' }} đ</td>
+                                        <td>{{ data.PriceUnit | numberCustom  }} đ</td>
                                         <td>{{ data.Discount}} %</td>
-                                        <td>{{ data.PriceTotal | number: '1.0-3' }} đ</td>
+                                        <td>{{ data.PriceTotal | numberCustom  }} đ</td>
                                     </tr>
                                 </ng-template>
                             </tbody>
@@ -392,27 +392,27 @@
                         <div class="w-1/2 text-right flex flex-col">
                             <div class="flex mb-5">
                                 <span class="w-1/2"> Tổng số lượng</span>
-                                <span class="w-1/2 font-semibold">{{productUOMQtyTotal || 0 | number: '1.0-3'}} </span>
+                                <span class="w-1/2 font-semibold">{{productUOMQtyTotal || 0 | numberCustom }} </span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel && (dataModel.Discount > 0 || dataModel.DecreaseAmount > 0 || dataModel.AmountTax > 0)">
                                 <span class="w-1/2"> Tổng trước thuế</span>
-                                <span class="w-1/2 font-semibold"> {{productPriceTotal || 0 | number: '1.0-3'}} đ</span>
+                                <span class="w-1/2 font-semibold"> {{productPriceTotal || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.DiscountAmount > 0">
                                 <span class="w-1/2"> Chiết khấu ({{dataModel.Discount || 0}}%)</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.DiscountAmount || 0 | number: '1.0-3'}} đ</span>
+                                <span class="w-1/2 font-semibold"> {{dataModel.DiscountAmount || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.DecreaseAmount > 0">
                                 <span class="w-1/2"> Giảm giá</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.DecreaseAmount || 0 | number: '1.0-3'}} đ</span>
+                                <span class="w-1/2 font-semibold"> {{dataModel.DecreaseAmount || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.AmountTax > 0">
                                 <span class="w-1/2"> Thuế ({{dataModel.Tax?.Amount}}%)</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.AmountTax || 0 | number: '1.0-3'}} đ</span>
+                                <span class="w-1/2 font-semibold"> {{dataModel.AmountTax || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5 border-b border-neutral-2-100">
                                 <span class="w-1/2 font-semibold">Tổng tiền</span>
-                                <span class="w-1/2 text-header-1 font-semibold">{{dataModel.AmountTotal || 0 | number: '1.0-3'}} đ</span>
+                                <span class="w-1/2 text-header-1 font-semibold">{{dataModel.AmountTotal || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngFor="let payment of payments; let i = index">
                                 <span class="w-1/2 flex items-center  justify-end" >
@@ -421,7 +421,7 @@
                                         [(popoverVisible)]="popoverVisible" [popoverContent]="infoPricePay">
                                     </span>
                                     Trả lúc {{payment.Date | date: "dd-MM-yyyy"}}</span>
-                                <span class="w-1/2 font-semibold"> {{payment.Amount || 0 | number : '1.0-3'}} {{payment.Currency}}</span>
+                                <span class="w-1/2 font-semibold"> {{payment.Amount || 0 | numberCustom }} {{payment.Currency}}</span>
 
                                 <ng-template #infoPricePay>
                                     <div class="w-w-full text-left flex flex-col">
@@ -443,14 +443,14 @@
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2">Số tiền</span>
-                                            <span class="w-2/3 text-body-2">{{payment.Amount || 0 | number : '1.0-3'}} đ</span>
+                                            <span class="w-2/3 text-body-2">{{payment.Amount || 0 | numberCustom }} đ</span>
                                         </div>
                                     </div>
                                 </ng-template>
                             </div>
                             <div class="flex" >
                                 <span class="w-1/2">Còn nợ</span>
-                                <span class="w-1/2 text-header-1 text-error-400 font-semibold">{{dataModel.Residual || 0 | number: '1.0-3'}} đ</span>
+                                <span class="w-1/2 text-header-1 text-error-400 font-semibold">{{dataModel.Residual || 0 | numberCustom }} đ</span>
                             </div>
                         </div>
 
@@ -508,7 +508,7 @@
                         <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In giao hàng
                     </span>
                 </button>
-                <button tds-button color="secondary" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
+                <button tds-button color="secondary" *ngIf="dataModel.Type === 'invoice'" (click)="print('ship')">
                     <span class="flex items-center">
                         <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
                     </span>

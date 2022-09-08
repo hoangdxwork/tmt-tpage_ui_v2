@@ -155,7 +155,7 @@
                 </div>
             </form>
         </tds-tab>
-        <tds-tab title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200" [disabled]="!inLiveCampaign">
+        <tds-tab *ngIf="inLiveCampaign" title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200">
             <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
                 <div class="w-full">
                     <div class="w-full h-[350px]">
@@ -186,8 +186,7 @@
                               </td>
                               <td>
                                 <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
-                                  [min]="0" [step]="100" [formatter]="numberWithCommas" [parser]="parserComas"
-                                  class="text-neutral-1-900 text-body-2 font-regular">
+                                  [min]="0" [step]="100"   class="text-neutral-1-900 text-body-2 font-regular">
                                 </tds-input-number>
                               </td>
                               <td>

@@ -186,8 +186,7 @@
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State == 'draft'">
                         <tds-form-field>
-                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
-                            formControlName="PaymentAmount" [max]="_form.controls['AmountTotal'].value"></tds-input-number>
+                          <tds-input-number [min]='0' [step]="1000" formControlName="PaymentAmount" [max]="_form.controls['AmountTotal'].value"></tds-input-number>
                         </tds-form-field>
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
@@ -294,26 +293,26 @@
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Phí giao hàng</span>
                       <tds-form-field class="col-span-2 w-full">
-                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                          <tds-input-number [min]='0' [step]="1000"
                             placeholder="Nhập phí" formControlName="DeliveryPrice" (ngModelChange)="changeDeliveryPrice($event)">
                           </tds-input-number>
                       </tds-form-field>
 
                       <!-- <tds-label class="col-span-2 w-full" *ngIf="dataModel.State == ('open' || 'cancel')">
-                        {{_form.controls['DeliveryPrice'].value ? _form.controls['DeliveryPrice'].value : 0 | number : '1.0-3'}}
+                        {{_form.controls['DeliveryPrice'].value ? _form.controls['DeliveryPrice'].value : 0 | numberCustom }}
                       </tds-label> -->
                   </div>
 
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Tiền cọc</span>
                       <tds-form-field class="col-span-2 w-full">
-                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                          <tds-input-number [min]='0' [step]="1000"
                               placeholder="Nhập tiền cọc" formControlName="AmountDeposit" (ngModelChange)="changeAmountDeposit($event)">
                           </tds-input-number>
                       </tds-form-field>
 
                       <!-- <tds-label class="col-span-2 w-full" *ngIf="dataModel.State == ('open' || 'cancel')">
-                        {{_form.controls['AmountDeposit'].value ? _form.controls['AmountDeposit'].value : 0 | number : '1.0-3'}}
+                        {{_form.controls['AmountDeposit'].value ? _form.controls['AmountDeposit'].value : 0 | numberCustom }}
                       </tds-label> -->
                   </div>
 
@@ -321,7 +320,7 @@
                     <span class="col-span-1 w-full font-semibold">Giao hàng thu tiền</span>
                     <div class="col-span-2 w-full">
                       <tds-form-field>
-                        <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                        <tds-input-number [min]='0' [step]="1"
                           placeholder="Nhập tiền" formControlName="CashOnDelivery">
                         </tds-input-number>
                       </tds-form-field>
@@ -329,7 +328,7 @@
 
                     <!-- <div class="col-span-2 w-full" *ngIf="dataModel.State == 'cancel'">
                       <span class="font-semibold">
-                        {{_form.controls['CashOnDelivery'].value ? _form.controls['CashOnDelivery'].value : 0 | number : '1.0-3'}}
+                        {{_form.controls['CashOnDelivery'].value ? _form.controls['CashOnDelivery'].value : 0 | numberCustom }}
                       </span>
                     </div> -->
                   </div>
@@ -337,13 +336,13 @@
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Khối lượng ship (g)</span>
                       <tds-form-field class="col-span-2 w-full">
-                        <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                        <tds-input-number [min]='0' [step]="1"
                             formControlName="ShipWeight" placeholder="Nhập khối lượng" (tdsBlur)="changeShipWeight()">
                         </tds-input-number>
                       </tds-form-field>
 
                       <!-- <tds-label class="col-span-2 w-full" *ngIf="dataModel.State == ('open' || 'cancel')">
-                        {{_form.controls['ShipWeight'].value ? _form.controls['ShipWeight'].value : 0 | number : '1.0-3'}}
+                        {{_form.controls['ShipWeight'].value ? _form.controls['ShipWeight'].value : 0 | numberCustom }}
                       </tds-label> -->
                   </div>
 
@@ -554,7 +553,7 @@
                       <tds-label class="w-1/4">Giá trị hàng hóa</tds-label>
                       <div class="flex flex-row items-center gap-x-2 w-3/4">
                           <tds-form-field class="flex flex-auto">
-                            <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                            <tds-input-number [min]='0' [step]="1000"
                               placeholder="Nhập phí" formControlName="Ship_InsuranceFee" (ngModelChange)="changeShip_InsuranceFee($event)">
                             </tds-input-number>
                           </tds-form-field>
@@ -622,7 +621,7 @@
                                 <ng-template #popoverContentShip_ExtraMoney>
                                   <div class="flex gap-x-2">
                                     <tds-form-field>
-                                      <tds-input-number [min]='0' [step]="100" [ngModel]="extraMoney" [formatter]="numberWithCommas" [parser]="parserComas"
+                                      <tds-input-number [min]='0' [step]="100" [ngModel]="extraMoney"
                                         (ngModelChange)="changeExtramoney($event)"
                                         [ngModelOptions]="{standalone: true}">
                                       </tds-input-number>
@@ -705,24 +704,24 @@
                           </div>
                         </td>
                         <!-- Số lượng -->
-                        <td> {{ data.ProductUOMQty || 0 | number: '1.0-3'}}</td>
+                        <td> {{ data.ProductUOMQty || 0 | numberCustom }}</td>
                         <!-- Đơn giá -->
-                        <td> {{ data.PriceUnit || 0 | number: '1.0-3'}}</td>
+                        <td> {{ data.PriceUnit || 0 | numberCustom }}</td>
                         <!-- Giá gần đây -->
-                        <td class="text-center">{{ data.PriceRecent || 0 | number: '1.0-3'}}</td>
+                        <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td>
                         <!-- Giảm giá -->
                         <td class="text-center">
                           <span color="secondary">
                             <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
-                              {{data.Discount || 0 | number: '1.0-3' }} %
+                              {{data.Discount || 0 | numberCustom  }} %
                             </span>
                             <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'fixed'">
-                              {{data.Discount_Fixed || 0 | number: '1.0-3' }} đ
+                              {{data.Discount_Fixed || 0 | numberCustom  }} đ
                             </span>
                           </span>
                         </td>
                         <td>{{data.Weight >= 0 ? (data.Weight * 1000) : 0}}</td>
-                        <td>{{data.PriceTotal || 0 | number: '1.0-3' }}</td>
+                        <td>{{data.PriceTotal || 0 | numberCustom  }}</td>
                       </tr>
                     </ng-template>
                     <tr class="hover:bg-white border-b-0">
@@ -731,10 +730,10 @@
                           <div class="w-1/3 flex justify-end">
                             <div class="w-full grid grid-cols-3 gap-2 text-right font-semibold">
                               <div><span class="font-regular">Tổng số lượng</span></div>
-                              <div class="col-span-2"><span>{{totalQtyLines | number: '1.0-3'}}</span></div>
+                              <div class="col-span-2"><span>{{totalQtyLines | numberCustom }}</span></div>
 
                               <div><span class="font-regular">Tổng tạm tính</span></div>
-                              <div class="col-span-2"><span>{{totalAmountLines | number: '1.0-3' }}đ</span></div>
+                              <div class="col-span-2"><span>{{totalAmountLines | numberCustom  }}đ</span></div>
                               <div><span>Giảm giá</span></div>
                               <div class="col-span-2">
                                 <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value) || 0 | number}} đ</span>
@@ -745,7 +744,7 @@
                                 <span>{{_form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0}}%</span>
                               </div>
                               <div><span>Tổng tiền</span></div>
-                              <div class="col-span-2"><span>{{_form.controls["AmountTotal"].value | number: '1.0-3'
+                              <div class="col-span-2"><span>{{_form.controls["AmountTotal"].value | numberCustom
                                   }}đ</span></div>
                             </div>
                           </div>
@@ -834,28 +833,28 @@
                     </td>
                     <!-- Số lượng -->
                     <td>
-                      <tds-input-number [ngModel]="data.ProductUOMQty" [min]="1" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                      <tds-input-number [ngModel]="data.ProductUOMQty" [min]="1" [step]="1"
                         (ngModelChange)="onChangeQuantity($event, data)" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </td>
                     <!-- Đơn giá -->
                     <td>
-                      <tds-input-number [ngModel]="data.PriceUnit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                      <tds-input-number [ngModel]="data.PriceUnit" [min]="0" [step]="1000"
                         (ngModelChange)="onChangePriceUnit($event, data)" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </td>
                     <!-- Giá gần đây -->
-                    <!-- <td class="text-center">{{ data.PriceRecent || 0 | number: '1.0-3'}}</td> -->
+                    <!-- <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td> -->
                     <!-- Giảm giá -->
                     <td class="text-center">
                       <span color="secondary" tds-popover popoverTrigger="click" [popoverContent]="popoverDiscountLines"
                         [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
 
                         <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
-                          {{data.Discount || 0 | number: '1.0-3' }} %
+                          {{data.Discount || 0 | numberCustom  }} %
                         </span>
                         <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'fixed'">
-                          {{data.Discount_Fixed || 0 | number: '1.0-3' }} đ
+                          {{data.Discount_Fixed || 0 | numberCustom  }} đ
                         </span>
                       </span>
                       <!-- popover giảm giá mỗi dòng -->
@@ -866,8 +865,7 @@
                             (ngModelChange)="changeProductDiscountType($event, data, 'Discount', i)"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
-                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
-                            *ngIf="data.Type === 'fixed'"
+                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" *ngIf="data.Type === 'fixed'"
                             (ngModelChange)="changeProductDiscountType($event, data, 'Discount_Fixed', i)"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
@@ -912,10 +910,10 @@
                         <div class="xl:w-1/2 2xl:w-1/3 flex justify-end">
                           <div class="w-full grid grid-cols-3 gap-2 text-right font-semibold">
                             <div><span class="font-regular">Tổng số lượng</span></div>
-                            <div class="col-span-2"><span>{{totalQtyLines | number: '1.0-3'}}</span></div>
+                            <div class="col-span-2"><span>{{totalQtyLines | numberCustom }}</span></div>
 
                             <div><span class="font-regular">Tổng tạm tính</span></div>
-                            <div class="col-span-2"><span>{{totalAmountLines | number: '1.0-3' }} đ</span></div>
+                            <div class="col-span-2"><span>{{totalAmountLines | numberCustom  }} đ</span></div>
 
                             <button tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                               (click)="openPopoverDiscount()" [(popoverVisible)]="visiblePopoverDiscount"

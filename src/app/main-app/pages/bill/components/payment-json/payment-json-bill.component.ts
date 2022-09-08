@@ -115,7 +115,7 @@ export class PaymentJsonBillComponent implements OnInit {
     this.modal.destroy(null);
   }
 
-  onSave(type: string) {
+  onSave(type?: string) {
     let model = this.prepareModel();
 
     if(!model.PaymentDate) {
@@ -134,7 +134,7 @@ export class PaymentJsonBillComponent implements OnInit {
           
           if(obs && obs.value) {
             this.message.success('Xác nhận thanh toán thành công');
-            if(type == 'print') {
+            if(type && type == 'print') {
                 let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
                 printer.pipe(takeUntil(this.destroy$)).subscribe((content: TDSSafeAny) => {
                     this.printerService.printHtml(content);

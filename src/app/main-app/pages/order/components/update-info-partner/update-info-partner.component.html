@@ -18,7 +18,9 @@
       <div class="w-2/3">
         <tds-form-field [color]="!_form.controls['Phone'].valid && _form.controls['Phone'].touched ? 'error' : 'default'">
           <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại khách hàng" formControlName="Phone"/>
-          <tds-error *ngIf="!_form.controls['Phone'].valid && _form.controls['Phone'].touched">Vui lòng nhập số điện thoại</tds-error>
+          <tds-error *ngIf="!_form.controls['Phone'].valid && _form.controls['Phone'].touched">
+            {{ _form.controls['Phone'].value ? 'Số điện thoại không hợp lệ' : 'Vui lòng nhập số điện thoại' }}
+          </tds-error>
         </tds-form-field>
       </div>
     </div>
@@ -42,10 +44,6 @@
 </form>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-  <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">
-      Hủy
-  </button>
-  <button tds-button type="submit" class="min-w-[100px]"
-      color="primary" (click)="save()">Lưu
-  </button>
+  <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">Hủy</button>
+  <button tds-button type="submit" class="min-w-[100px]"color="primary" (click)="save()">Lưu</button>
 </div>

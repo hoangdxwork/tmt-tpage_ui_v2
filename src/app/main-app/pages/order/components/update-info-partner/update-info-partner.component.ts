@@ -18,6 +18,7 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 export class UpdateInfoPartnerComponent implements OnInit {
 
   @Input() partner!: Partner;
+  @Input() phoneRegex!:string;
 
   _form!: FormGroup;
 
@@ -57,6 +58,10 @@ export class UpdateInfoPartnerComponent implements OnInit {
       this._form.controls["Name"].setValue(this.partner.Name);
       this._form.controls["Phone"].setValue(this.partner.Phone);
       this._form.controls['Street'].setValue(this.partner.Street);
+      
+      if(this.phoneRegex){
+        this._form.controls["Phone"].addValidators(Validators.pattern(this.phoneRegex));
+      }
       this.mappingAddress(this.partner);
     }
   }

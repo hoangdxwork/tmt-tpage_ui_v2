@@ -40,8 +40,8 @@
                         </div>
                     </td>
                     <td>{{ item.CarrierName }}</td>
-                    <td class="text-right">{{ item.CashOnDelivery || 0 | number : '1.0-3'}} đ</td>
-                    <td class="text-right">{{ item.TotalAmount || 0 | number : '1.0-3'}} đ</td>
+                    <td class="text-right">{{ item.CashOnDelivery || 0 | numberCustom }} đ</td>
+                    <td class="text-right">{{ item.TotalAmount || 0 | numberCustom }} đ</td>
                     <td class="text-center">
                         <button tds-button-icon color="secondary" (click)="remoteItem(item)">
                             <i class="tdsi-trash-fill text-error-400"></i>

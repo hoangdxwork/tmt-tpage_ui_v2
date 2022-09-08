@@ -66,7 +66,6 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   ngOnInit(): void {
     if(this.item) {
       this.eventData = this.conversationEventFacade.getEvent();
-      console.log(this.eventData)
       if(TDSHelperArray.hasListValue(this.item?.Tags)) {
           this.displayTag = this.item?.Tags?.length || 0;
       }
