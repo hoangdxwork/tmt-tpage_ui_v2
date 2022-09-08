@@ -59,7 +59,6 @@ export class OdataTPosLoggingService extends BaseSevice {
         dataFilter.filters.push( {
             filters: [
               { field: "Content", operator: OperatorEnum.contains, value: value },
-              { field: "User?.Name", operator: OperatorEnum.contains, value: value }
             ],
             logic: 'or'
         })

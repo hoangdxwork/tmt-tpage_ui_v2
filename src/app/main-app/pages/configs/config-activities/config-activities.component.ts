@@ -6,8 +6,9 @@ import { startOfWeek } from 'date-fns/esm';
 import { OdataTPosLoggingService } from 'src/app/main-app/services/mock-odata/odata-tpos-logging.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TDSTableSortFn, TDSTableSortOrder } from 'tds-ui/table';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSI18nService, vi_VN } from 'tds-ui/i18n';
+import { TDSMessageService } from 'tds-ui/message';
 
 interface ConfigDateFilter {
   type:string,
@@ -52,6 +53,7 @@ export class ConfigActivitiesComponent implements OnInit {
 
   constructor(
     private i18n: TDSI18nService,
+    private message: TDSMessageService,
     private odataTPosLoggingService: OdataTPosLoggingService
   ) {
     this.i18n.setLocale(vi_VN);
@@ -64,7 +66,7 @@ export class ConfigActivitiesComponent implements OnInit {
     this.initSortColumn();
   }
 
-  loadData(pageSize: number, pageIndex: number) {
+  loadData(pageSize: number, pageIndex: number) {debugger
     this.isLoading = true;
     let filters = this.odataTPosLoggingService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
@@ -73,6 +75,9 @@ export class ConfigActivitiesComponent implements OnInit {
         this.count = res['@odata.count'] as number;
         this.lstData = res.value;
         this.isLoading = false;
+    }, err => {
+      this.message.error("Lỗi rồi nhie !!!")
+      this.isLoading = false;
     });
   }
 

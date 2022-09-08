@@ -137,7 +137,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
         obs.pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-          that.printerService.printHtml(res);
+            that.printerService.printHtml(res);
         })
       }
     }

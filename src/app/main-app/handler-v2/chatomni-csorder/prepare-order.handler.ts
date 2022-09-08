@@ -55,7 +55,7 @@ export class CsOrder_PrepareModelHandler {
     x.UserId = model.UserId || model.User?.Id;
 
     x.Details = [];
-    model.Details.map(obj => {
+    model.Details?.map(obj => {
       let item = {
           Note: obj.Note,
           Price: obj.Price,

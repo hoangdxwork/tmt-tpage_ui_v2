@@ -137,7 +137,7 @@ export class AddBillComponent implements OnInit {
     }
     return value
   };
-  
+
   chatomniEventEmiter: any;
 
   constructor(private fb: FormBuilder,
@@ -775,7 +775,7 @@ export class AddBillComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef
     });
-    modal.afterClose.subscribe(event => {debugger
+    modal.afterClose.subscribe(event => {
       if (event && event.Id) {
         this.changePartner(event.Id);
       }
@@ -1165,10 +1165,16 @@ export class AddBillComponent implements OnInit {
     let model = { ids: [Number(id)] };
     this.fastSaleOrderService.actionInvoiceOpen(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        if(res && res.Success) {
+        if(res) {
             this.loadPrintHtml(data, id, type);
             this.loadInventoryIds(data);
         }
+
+        if(res && TDSHelperString.hasValueString(res.Error)) {
+            this.message.warning(res.Error);
+        }
+
+        this.isLoading = false;
       },
       error: (error: any) => {
         this.isLoading = false;
@@ -1187,11 +1193,11 @@ export class AddBillComponent implements OnInit {
       break;
 
       case "printShip":
-          if(data.Carrier) {
-            obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${Number(id)}` + "&carrierid=" + `${data.Carrier.Id}`);
-          } else {
-            obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${[Number(id)]}`);
-          }
+        let url = `/fastsaleorder/PrintShipThuan?ids=${[Number(id)]}`;
+        if (Number(data.CarrierId) > 0) {
+            url = `${url}&carrierid=${data.CarrierId}`;
+        }
+        obs = this.printerService.printUrl(url);
       break;
 
       default:

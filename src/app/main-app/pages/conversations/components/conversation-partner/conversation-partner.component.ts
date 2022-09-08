@@ -123,7 +123,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner);
           this.partner = partner;
           this.mappingAddress(this.partner);
-          this.cdRef.markForCheck();
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -138,7 +138,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(changes['syncConversationInfo'] && !changes['syncConversationInfo'].firstChange) {
         let data = {...changes['syncConversationInfo'].currentValue} as ChatomniConversationInfoDto;
         this.onSyncConversationInfo(data);
-        this.cdRef.markForCheck();
+        this.cdRef.detectChanges();
     }
   }
 
@@ -188,6 +188,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
               this.partner.Street = res.address;
           }
       }
+      this.cdRef.detectChanges();
     })
   }
 
@@ -211,6 +212,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           }
 
         }
+
+        this.cdRef.detectChanges();
     })
   }
 
@@ -249,10 +252,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           }
 
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error: (error :any) => {
           this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
           }
       })
   }
@@ -280,9 +285,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
               this.noteData.items.splice(index, 1);
           }
           this.message.success('Xóa ghi chú thành công');
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -305,6 +312,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         },
         error: (error: any) => {
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác thất bại');
+            this.cdRef.detectChanges();
         }
       });
     }
@@ -479,6 +487,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         this.partner = partner;
         this.mappingAddress(this.partner);
       }
+      this.cdRef.detectChanges();
     }
   })
   }

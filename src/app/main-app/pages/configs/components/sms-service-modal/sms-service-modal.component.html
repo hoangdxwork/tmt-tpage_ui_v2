@@ -4,7 +4,7 @@
         <tds-form-field class="mb-4">
             <tds-label>Đối tác</tds-label>
             <tds-select valueField="provider" textField="name" placeholder='Chọn' disabledField="isActive"
-                formControlName="currentValue" [required]='true' [data]="items" [allowClear]="true" (selectChange)="valueChange($event)">
+                formControlName="currentValue" [required]='true' [data]="items" (selectChange)="valueChange($event)">
             </tds-select>
             <tds-error>Vui lòng chọn tên đối tác</tds-error>
         </tds-form-field>
@@ -17,16 +17,16 @@
 
         <tds-form-field class="mb-4">
             <tds-label>Secret Key</tds-label>
-            <input tdsInput formControlName="secretKey" placeholder="######" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
-            <tds-error>Vui lòng nhập secret key</tds-error>
+            <input tdsInput formControlName="secretKey" placeholder="######" class="text-neutral-1-900 text-body-2 font-regular"/>
+            <!-- <tds-error>Vui lòng nhập secret key</tds-error> -->
         </tds-form-field>
 
         <tds-form-field>
             <tds-label>Loại dịch vụ</tds-label>
             <tds-select valueField="key" textField="datasource" placeholder='Chọn' disabledField="isActive"
-                formControlName="category" [required]='true' [data]="categorySMS" [allowClear]="true">
+                formControlName="category" [data]="categorySMS">
             </tds-select>
-            <tds-error>Vui lòng chọn loại dịch vụ</tds-error>
+            <!-- <tds-error>Vui lòng chọn loại dịch vụ</tds-error> -->
         </tds-form-field>
     </div>
 </form>

@@ -229,6 +229,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
               `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
           }
+
+          this.cdRef.detectChanges();
+          this.cdRef.markForCheck();
       }
     });
 
@@ -313,6 +316,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
     this.mappingAddress(this.quickOrderModel);
+    this.cdRef.detectChanges();
   }
 
   onSelectOrderFromMessage() {
@@ -328,6 +332,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + res.note : res.note);
             this.quickOrderModel.Note = text;
         }
+
+        this.cdRef.detectChanges();
     })
   }
 
@@ -678,6 +684,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
+              fs_model.PartnerId = res.PartnerId;
               this.createFastSaleOrder(fs_model, type);
 
           } else {
@@ -686,8 +693,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
               this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
-              this.cdRef.detectChanges();
           }
+
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -731,6 +739,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
+              fs_model.PartnerId = res.PartnerId;
               this.createFastSaleOrder(fs_model, type);
 
           } else {
@@ -838,11 +847,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   printOrder(type?: string, res?: CreateFastSaleOrderDTO) {
     let obs: TDSSafeAny;
     if(type == 'print') {
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${res?.Data.Id}`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(res?.Data.Id)]}`);
     }
 
     if(type == 'printShip') {
-        obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
+        let url = `/fastsaleorder/PrintShipThuan?ids=${[Number(res?.Data.Id)]}`;
+        if (Number(this.saleModel.CarrierId) > 0) {
+          url = `${url}&carrierid=${this.saleModel.CarrierId}`;
+        }
+        obs = this.printerService.printUrl(url);
     }
 
     if (obs) {
@@ -903,7 +916,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
     })
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe(result => {debugger
         if(TDSHelperObject.hasValue(result)) {
 
             let data = result[0] as ProductTemplateV2DTO;
@@ -912,9 +925,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             this.calcTotal();
             this.coDAmount();
-
-            this.cdRef.detectChanges();
         }
+        this.cdRef.detectChanges();
     })
   }
 
@@ -1013,6 +1025,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
           this.calcTotal();
       }
+      this.cdRef.detectChanges();
     });
   }
 
@@ -1298,6 +1311,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.quickOrderModel = {...data};
             this.mappingAddress(this.quickOrderModel);
         }
+        this.cdRef.detectChanges();
       }
     })
   }
