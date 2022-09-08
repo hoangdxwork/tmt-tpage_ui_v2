@@ -63,8 +63,8 @@
               <!-- Đối tác -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác' 
-                    tds-tooltip [tooltipVisible]="data.Carrier ? true : false" tooltipTitle="{{ data.Carrier?.Name }}" 
+                  <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác'
+                    tds-tooltip [tooltipVisible]="data.Carrier ? true : false" tooltipTitle="{{ data.Carrier?.Name }}"
                     [valuePrimitive]="false" [allowClear]="true" [(ngModel)]="data.Carrier" [ngModelOptions]="{standalone: true}"
                     [data]="lstCarriers" (ngModelChange)="onChangeCarrier($event, index)">
                   </tds-select>
@@ -73,7 +73,7 @@
               <!-- Tiền hàng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number tds-tooltip tooltipTitle="{{ data.AmountTotal | number:'1.0-3' | numberCustom }}" [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
+                  <tds-input-number tds-tooltip tooltipTitle="{{ data.AmountTotal | number:'1.0-3'  }}" [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
                     [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
@@ -81,7 +81,7 @@
               <!-- Phí ship -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number tds-tooltip tooltipTitle="{{ data.DeliveryPrice | number:'1.0-3' | numberCustom }}" [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
+                  <tds-input-number tds-tooltip tooltipTitle="{{ data.DeliveryPrice | number:'1.0-3'  }}" [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
                     [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
@@ -89,7 +89,7 @@
               <!-- Khối lượng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number tds-tooltip tooltipTitle="{{ data.ShipWeight | number:'1.0-3' | numberCustom }}" [min]="0" [step]="1" [(ngModel)]="data.ShipWeight" 
+                  <tds-input-number tds-tooltip tooltipTitle="{{ data.ShipWeight | number:'1.0-3'  }}" [min]="0" [step]="1" [(ngModel)]="data.ShipWeight"
                     [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>

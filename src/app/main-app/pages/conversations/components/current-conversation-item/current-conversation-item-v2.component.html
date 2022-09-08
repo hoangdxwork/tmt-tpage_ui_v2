@@ -75,7 +75,7 @@
             </div>
             <div *ngIf="item | latestMessageType: type">
                 <div [ngClass]="seenedMessage() ? 'text-neutral-1-900' : 'text-neutral-1-600'" class="text-body-2 font-regular font-sans"
-                     showMore [length]="100" [text]="(item.LatestMessage?.Message| formatIconLike | bbcodeConvert)">
+                     showMore [length]="100" [text]="(item.LatestMessage?.Message | jsonPayload | formatIconLike | bbcodeConvert)">
                 </div>
             </div>
         </div>

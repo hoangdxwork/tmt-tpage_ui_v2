@@ -898,19 +898,15 @@ export class EditOrderV2Component implements OnInit {
   }
 
   changeAmountDeposit(event: any) {
-    let value = Number(event) || 0;
-
-    if (value >= 0) {
-      this.saleModel.AmountDeposit = value;
+    if (Number(event) >= 0) {
+      this.saleModel.AmountDeposit = Number(event);
       this.coDAmount();
     }
   }
 
   changeDeliveryPrice(event: any) {
-    let value = Number(event) || 0;
-
-    if (value >= 0) {
-      this.saleModel.DeliveryPrice = value;
+    if (Number(event) >= 0) {
+      this.saleModel.DeliveryPrice = Number(event);
       this.coDAmount();
     }
   }
@@ -922,18 +918,14 @@ export class EditOrderV2Component implements OnInit {
   }
 
   changeCashOnDelivery(event: any) {
-    let value = Number(event) || 0;
-
-    if(value >= 0){
-      this.saleModel.CashOnDelivery = value;
+    if (Number(event) >= 0) {
+      this.saleModel.CashOnDelivery = Number(event);
     }
   }
 
-  changeShip_InsuranceFee(event: any) {console.log(event)
-    let value = Number(event) || 0;
-
-    if(value >= 0){
-      this.saleModel.Ship_InsuranceFee = value;
+  changeShip_InsuranceFee(event: any) {
+    if (Number(event) >= 0) {
+      this.saleModel.Ship_InsuranceFee = Number(event);
     }
   }
 

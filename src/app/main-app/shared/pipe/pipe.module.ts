@@ -32,6 +32,7 @@ import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 import { LatestMessageTypePipe } from './lastest-message-type.pipe';
 import { NumericalOrder } from './numerical-order.pipe';
+import { jsonPayloadPipe } from './json-payload.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -70,6 +71,7 @@ const cmp =[
   CheckTagSelectedCommnetPipe,
   LatestMessageTypePipe,
   NumericalOrder,
+  jsonPayloadPipe
 ]
 
 @NgModule({
