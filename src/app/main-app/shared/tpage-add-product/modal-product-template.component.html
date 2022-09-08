@@ -155,7 +155,7 @@
                 </div>
             </form>
         </tds-tab>
-        <tds-tab title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200" [disabled]="!inLiveCampaign">
+        <tds-tab *ngIf="inLiveCampaign" title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200">
             <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
                 <div class="w-full">
                     <div class="w-full h-[350px]">

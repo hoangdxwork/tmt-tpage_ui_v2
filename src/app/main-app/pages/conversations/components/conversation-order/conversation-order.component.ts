@@ -1008,7 +1008,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         title: 'Chọn sản phẩm',
         content: ModalListProductComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'xl'
+        size: 'xl',
+        bodyStyle: {
+          padding: '0px'
+        },
     });
 
   }

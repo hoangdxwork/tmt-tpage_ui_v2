@@ -341,4 +341,7 @@
           </div>
         </tds-spin>
     </div>
+    
+    <!-- drawer khi click vào mã đơn hàng -->
+    <drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order" (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
 </section>

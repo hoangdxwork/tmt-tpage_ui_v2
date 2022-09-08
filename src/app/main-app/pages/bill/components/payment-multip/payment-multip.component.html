@@ -25,7 +25,7 @@
               <tr *ngFor="let item of lstCustomer">
                   <td class="text-body-2">{{ item.Partner?.DisplayName }}</td>
                   <td class="text-body-2">{{ item.Partner?.Phone }}</td>
-                  <td class="text-body-2 text-right">{{ item.Amount || 0 | number : '1.0-3'}} đ</td>
+                  <td class="text-body-2 text-right">{{ item.Amount || 0 | numberCustom }} đ</td>
               </tr>
           </tbody>
       </tds-table>

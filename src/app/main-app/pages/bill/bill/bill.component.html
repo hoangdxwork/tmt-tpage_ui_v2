@@ -168,7 +168,7 @@
                 </td>
                 <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r min-w-[240px] max-w-[400px]">
                   <div class="w-full truncate">
-                    <span>{{data.CashOnDelivery || 0 | number: '1.0-3'}} đ</span>
+                    <span>{{data.CashOnDelivery || 0 | numberCustom }} đ</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('CarrierName')" class="border-r min-w-[160px] max-w-[320px]">
@@ -188,12 +188,12 @@
                 </td>
                 <td *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" class="border-r min-w-[140px] max-w-[280px]">
                   <div class="w-full truncate">
-                    <span>{{data.CustomerDeliveryPrice || 0 | number: '1.0-3'}} đ</span>
+                    <span>{{data.CustomerDeliveryPrice || 0 | numberCustom }} đ</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('DeliveryPrice')" [align]="'right'" class="border-r min-w-[140px] max-w-[280px]">
                   <div class="w-full truncate">
-                    <span>{{data.DeliveryPrice || 0 | number: '1.0-3'}} đ</span>
+                    <span>{{data.DeliveryPrice || 0 | numberCustom }} đ</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('ShipPaymentStatus')" class="border-r min-w-[130px] max-w-[260px]">
@@ -249,12 +249,12 @@
                 </td>
                 <td *ngIf="isHidden('AmountTotal')" [align]="'right'" class="border-r min-w-[120px] max-w-[240px]">
                   <div class="w-full truncate">
-                    <span>{{data.AmountTotal || 0 | number :'1.0-3'}} đ</span>
+                    <span>{{data.AmountTotal || 0 | numberCustom }} đ</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('Residual')" [align]="'right'" class="border-r min-w-[120px] max-w-[240px]">
                   <div class="w-full truncate">
-                    <span>{{data.Residual || 0 | number :'1.0-3'}} đ</span>
+                    <span>{{data.Residual || 0 | numberCustom }} đ</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('CRMTeamName')" class="border-r min-w-[160px] max-w-[360px]">

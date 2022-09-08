@@ -97,6 +97,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   pageId!: string;
   isAlertChatbot: boolean = true;
 
+  visibleDrawerBillDetail: boolean = false;
+  order: TDSSafeAny;
+
   constructor(private modalService: TDSModalService,
     private chatomniMessageService: ChatomniMessageService,
     private omniMessageFacade: ChatomniMessageFacade,
@@ -328,7 +331,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
       viewContainerRef: this.viewContainerRef,
-      size: 'xl'
+      size: 'xl',
+      bodyStyle: {
+        padding: '0px'
+      },
     });
   }
 
@@ -1067,6 +1073,24 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   // }
 
   ngAfterViewInit() {
+  }
+
+  @HostListener('click', ['$event']) onClickCodeBill(e: TDSSafeAny) {
+    let className = JSON.stringify(e.target.className);
+    if(className.includes('payload')){
+      if (e.target.className.indexOf('payload') >= 0) {
+        this.visibleDrawerBillDetail = true;
+        let model = {
+          Id: e.target.id,
+          Number: e.target.innerText
+        }
+        this.order = {...model};
+      }
+    }
+  }
+
+  onVisibleDrawer(event: boolean){
+    this.visibleDrawerBillDetail = event;
   }
 
   ngOnDestroy(): void {
