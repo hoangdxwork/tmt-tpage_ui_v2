@@ -18,7 +18,7 @@ export class UpdateShipmentDetailAshipHandler {
     _ashipForm.controls['InsuranceInfo'].setValue(insuranceInfo);
 
     // TODO: update new value
-    configsProviderDataSource.forEach((config: any) => {
+    configsProviderDataSource?.forEach((config: any) => {
 
       _configForm.push(fb.group({
 
@@ -32,7 +32,7 @@ export class UpdateShipmentDetailAshipHandler {
         ConfigValue: config.ConfigValue,
 
         ConfigsValue: config.ConfigsValue ?
-          fb.array(config.ConfigsValue.map((item: any) => {
+          fb.array(config.ConfigsValue?.map((item: any) => {
             return fb.group({
               Id: item.Id,
               Name: item.Name
@@ -50,7 +50,7 @@ export class UpdateShipmentDetailAshipHandler {
       ConfigsProvider: []
     }
 
-    configsProviderDataSource.map(x => {
+    configsProviderDataSource?.map(x => {
 
       let item = {
         ConfigName: x.ConfigName,
@@ -71,7 +71,7 @@ export class UpdateShipmentDetailAshipHandler {
           }) : []
       }
 
-        saleModel.ShipmentDetailsAship?.ConfigsProvider.push(item);
+        saleModel.ShipmentDetailsAship?.ConfigsProvider?.push(item);
     })
 
     return {...saleModel};

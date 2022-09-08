@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
+import { TDSHelperArray } from "tds-ui/shared/utility";
 
 @Injectable({
   providedIn: 'root'
@@ -9,18 +10,22 @@ import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from "src/app/main-app/d
 export class UpdateShipServiceExtrasHandler {
 
     public updateShipServiceExtras(shipExtraServices: ShipServiceExtra[], _form: FormGroup, fb: FormBuilder) {
-      if (shipExtraServices) {
-        shipExtraServices.map(x => {
-          if(x.IsSelected) {
-            this.addShip_ServiceExtras(x, _form, fb);
-          }
+      if (TDSHelperArray.isArray(shipExtraServices)) {
+        shipExtraServices?.map(x => {
+            if(x.IsSelected) {
+              this.addShip_ServiceExtras(x, _form, fb);
+            }
         })
       }
     }
 
     public so_updateShipServiceExtras(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2) {
-      if (shipExtraServices) {
-        shipExtraServices.map(x => {
+      if(!TDSHelperArray.hasListValue(saleModel.Ship_ServiceExtras)) {
+          saleModel.Ship_ServiceExtras = [] as any[];
+      }
+
+      if (TDSHelperArray.hasListValue(shipExtraServices)) {
+        shipExtraServices?.map(x => {
             if(x && x.IsSelected) {
                 let item = this.so_initShip_ServiceExtras(x);
                 saleModel.Ship_ServiceExtras.push(item);

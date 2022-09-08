@@ -12,7 +12,7 @@ export class UpdateShipExtraHandler {
     let model = _form.value as FastSaleOrder_DefaultDTOV2;
     if (shipExtraServices && model.Ship_Extras) {
 
-      shipExtraServices.forEach((x: ShipServiceExtra) => {
+      shipExtraServices?.forEach((x: ShipServiceExtra) => {
         if (x.Id === 'XMG') {
             model.Ship_Extras!.CollectMoneyGoods = x.ExtraMoney;
             model.Ship_Extras!.IsCollectMoneyGoods = true;
@@ -28,7 +28,7 @@ export class UpdateShipExtraHandler {
 
     if (shipExtraServices && saleModel.Ship_Extras) {
 
-      shipExtraServices.forEach((x: ShipServiceExtra) => {
+      shipExtraServices?.forEach((x: ShipServiceExtra) => {
         if (x.Id === 'XMG') {
             saleModel.Ship_Extras!.CollectMoneyGoods = x.ExtraMoney;
             saleModel.Ship_Extras!.IsCollectMoneyGoods = true;
