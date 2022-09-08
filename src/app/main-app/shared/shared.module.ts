@@ -1,3 +1,6 @@
+import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
+import { TDSDrawerModule } from 'tds-ui/drawer';
+import { DrawerDetailBillComponent } from './drawer-detail-bill/drawer-detail-bill.component';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { ShowAttachmentComponent } from './show-attachment/show-attachment.component';
 import { NotificationEventSocketComponent } from './notification-event-socket/notification-event-socket.component';
@@ -87,6 +90,7 @@ const cmp =[
   SuggestAddressV2Component,
   NotificationEventSocketComponent,
   ShowAttachmentComponent,
+  DrawerDetailBillComponent
 ]
 
 const SERVICES = [
@@ -138,6 +142,8 @@ const SERVICES = [
     TDSSwitchModule,
     TDSEmptyModule,
     TDSAlertModule,
+    TDSDrawerModule,
+    TDSButtonSpitModule
   ],
   exports:[
    ...cmp

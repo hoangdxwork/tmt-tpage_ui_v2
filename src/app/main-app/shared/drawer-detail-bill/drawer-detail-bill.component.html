@@ -1,8 +1,8 @@
-<span class="text-info-500 font-semibold  font-sans cursor-pointer" [ngClass]="isBillNearest?'text-header-1':'text-body-2'" (click)="onDrawerDetailBill($event)">
+<span *ngIf="!isMessage" class="text-info-500 font-semibold  font-sans cursor-pointer" [ngClass]="isBillNearest?'text-header-1':'text-body-2'" (click)="onDrawerDetailBill($event)">
     #{{bill.Number || 'N/A'}}
 </span>
 
-<tds-drawer [bodyStyle]="{'overflow':'hidden'}" [visible]="visibleDrawerBillDetail" [placement]="'right'" size="xl"
+<tds-drawer *ngIf="bill" [bodyStyle]="{'overflow':'hidden'}" [visible]="visibleDrawerBillDetail" [placement]="'right'" size="xl"
     [bodyStyle]="{'overflow':'hidden','display': 'flex','flex-direction': 'column','padding': 0}" [title]="titleTpl"
     (onClose)="onClose()" [footer]="footerTpl">
     <ng-template #titleTpl>
