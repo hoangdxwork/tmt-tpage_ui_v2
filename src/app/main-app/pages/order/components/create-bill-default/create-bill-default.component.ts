@@ -1,3 +1,4 @@
+import { TDSConfigService } from 'tds-ui/core/config';
 import { CreateBillErrorComponent } from '../create-bill-error/create-bill-error.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TemplateRef, ViewChild, ElementRef } from '@angular/core';
@@ -27,14 +28,13 @@ import { SharedService } from '@app/services/shared.service';
 })
 export class CreateBillDefaultComponent implements OnInit {
 
-  // @ViewChild('errors') temp!:ElementRef;
-
   @Input() ids: TDSSafeAny[] = [];
 
   lstCarriers: Array<Carrier> = [];
-  lstData: Array<OrderBillDefaultDTO> = [];
+  lstData!: OrderBillDefaultDTO;
   lstLine: Array<DataErrorDefaultDTOV2> = [];
   innerText: string = '';
+  phoneRegex!:string;
 
   isApplyPromotion: boolean = false;
   carrier!: Carrier;
@@ -53,12 +53,14 @@ export class CreateBillDefaultComponent implements OnInit {
     private fastSaleOrderService: FastSaleOrderService,
     private printerService: PrinterService,
     private destroy$: TDSDestroyService,
-    private sharedService: SharedService) { }
+    private sharedService: SharedService,
+    private configService: TDSConfigService) { }
 
   ngOnInit(): void {
     this.loadCarrier();
     this.loadData();
     this.loadCurrentCompany();
+    this.configService.set('notification', { maxStack: 100 });
   }
 
   loadCurrentCompany() {
@@ -66,6 +68,9 @@ export class CreateBillDefaultComponent implements OnInit {
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
+        if(this.companyCurrents?.Configs){
+          this.phoneRegex = JSON.parse(this.companyCurrents.Configs)?.PhoneRegex;
+        }
       },
       error: (error: any) => {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
@@ -79,9 +84,9 @@ export class CreateBillDefaultComponent implements OnInit {
     this.saleOnline_OrderService.getDefaultOrderIds({ ids: this.ids }).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           delete res['@odata.context'];
-          this.lstData = res;
+          this.lstData = {...res};
 
-          this.lstLine = res.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
+          this.lstLine = this.lstData.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
           this.isLoading = false;
         },
         error:(err) => {
@@ -104,11 +109,11 @@ export class CreateBillDefaultComponent implements OnInit {
 
   numberWithCommas = (value: TDSSafeAny) => {
     if (value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return value
   };
-
+  
   parserComas = (value: TDSSafeAny) => {
     if (value != null) {
       return TDSHelperString.replaceAll(value, ',', '');
@@ -197,7 +202,8 @@ export class CreateBillDefaultComponent implements OnInit {
       centered: true,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        partner: item.Partner
+        partner: item.Partner,
+        phoneRegex: this.phoneRegex
       }
     });
 
@@ -232,9 +238,16 @@ export class CreateBillDefaultComponent implements OnInit {
       componentParams: {
         billDefaultModel: this.prepareModel(),
         lstDataErrorDefault: lstDataErrorDefault,
-        lstErrors: lstErrors
+        lstErrors: lstErrors,
+        type: type
       }
     });
+
+    modal.afterClose.subscribe({
+      next:(res) => {
+        this.modalRef.destroy(null);
+      }
+    })
   }
 
   prepareModel() {
@@ -249,11 +262,65 @@ export class CreateBillDefaultComponent implements OnInit {
       Id: 0,
       ApplyPromotion: this.isApplyPromotion,
       Carrier: this.carrier,
-      CarrierId: this.carrier.Id,
+      CarrierId: this.carrier?.Id,
       Lines: lines
     };
 
     return result;
+  }
+
+  checkPartnerInfo(partner: Partner, i: number){
+    let error = ``;
+
+    if(partner){
+      if(!partner.Name) {
+        error += `<li class="text-error-400">Tên</li>`;
+      }
+
+      if(!partner.Phone){
+        error += `<li class="text-error-400">Số điện thoại</li>`;
+      }
+
+      if(!partner.Street){
+        error += `<li class="text-error-400">Địa chỉ</li>`;
+      }
+
+      if(error != ``){
+        let message = `Khách hàng <b class="text-info-500 font-semibold">${partner.Name}</b> thiếu thông tin:<br><ul>` + error + `</ul>`
+
+        this.notification.error('Lỗi', message, { duration: 10000, pauseOnHover: true });
+        return false;
+      }
+    }else{
+      let message = `Dòng thứ <b class="text-info-500 font-semibold">${ i + 1 }</b> thiếu thông tin khách hàng`;
+
+      this.notification.error('Lỗi', message, { duration: 10000, pauseOnHover: true });
+      return false;
+    }
+
+    return true;
+  }
+
+  checkCarrier(model: OrderBillDefaultDTO){
+    if (!model.CarrierId) {
+      this.message.error(Message.Bill.ErrorEmptyCarrier);
+      return false;
+    }
+    
+    let hasError = false;
+    model.Lines.forEach((x, i) => {
+      
+      if(!x.CarrierId){
+        this.notification.error(`Lỗi`, `Dòng thứ <b class="text-info-500 font-semibold">${i + 1}</b> chưa chọn đối tác giao hàng`, { duration: 10000, pauseOnHover: true });
+        hasError = true;
+      }
+    });
+
+    if(hasError){
+      return false;
+    }
+
+    return true;
   }
 
   onSave(type?: string) {
@@ -261,23 +328,26 @@ export class CreateBillDefaultComponent implements OnInit {
       return;
     }
 
-    if (!this.carrier) {
-      this.message.error(Message.Bill.ErrorEmptyCarrier);
+    let model = this.prepareModel();
+    
+    if (!this.checkCarrier(model)) {
       return;
     }
-
-    if (!this.lstLine || this.lstLine.length === 0) {
+    
+    if (!model.Lines || model.Lines.length == 0) {
       this.message.error(Message.EmptyData);
       return;
     }
 
-    let orderInfo = this.lstLine.find(x => !x?.Partner?.Phone || !x?.Partner?.Street || !x?.Partner?.Name);
-    if (orderInfo) {
-      this.message.error(Message.Bill.ErrorEmptyPartner);
+    let hasErrorMessage = false;
+    model.Lines.forEach((x, i) =>{
+      hasErrorMessage = !this.checkPartnerInfo(x.Partner, i);
+    });
+
+    if(hasErrorMessage){
       return;
     }
 
-    let model = this.prepareModel();
     this.isLoading = true;
 
     this.fastSaleOrderService.insertOrderProductDefault({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
@@ -285,7 +355,6 @@ export class CreateBillDefaultComponent implements OnInit {
 
           if (!res.Error) {
             this.message.success(Message.Bill.InsertSuccess);
-
             if(type) {
               this.printOrder(res, Number(model?.CarrierId), type);
             }

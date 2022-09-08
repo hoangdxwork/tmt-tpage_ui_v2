@@ -55,16 +55,16 @@ export class CreateBillFastComponent implements OnInit {
     }
   }
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null){
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
-    return value;
-  }
+    return value
+  };
 
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null){
-      return TDSHelperString.replaceAll(value,',','');
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
     }
     return value
   };
@@ -80,7 +80,7 @@ export class CreateBillFastComponent implements OnInit {
     });
   }
 
-  onChangeCarrier(carrier: CarrierListOrderDTO, index: number) {console.log(carrier)
+  onChangeCarrier(carrier: CarrierListOrderDTO, index: number) {
     if(TDSHelperObject.hasValue(carrier)){
       this.lstData[index].CarrierId = carrier.Id;
       this.lstData[index].CarrierName = carrier.Name;
@@ -136,7 +136,17 @@ export class CreateBillFastComponent implements OnInit {
     }
   }
 
-  onModalError(DataErrorFast: TDSSafeAny[], errors: TDSSafeAny[]) {
+  onModalError(DataErrorFast: TDSSafeAny[], errors: TDSSafeAny[], is_approve: boolean) {
+    let type!:string;
+
+    if(this.isPrint){
+      type = 'print';
+    }
+
+    if(this.isPrintShip){
+      type = 'printShip';
+    }
+
     const modal = this.modal.create({
       content: CreateBillErrorComponent,
       size: 'xl',
@@ -144,14 +154,15 @@ export class CreateBillFastComponent implements OnInit {
       componentParams: {
         lstOrder: this.lstData,
         lstErrors: errors,
-        lstDataErrorDefault: DataErrorFast
+        lstDataErrorDefault: DataErrorFast,
+        type: type,
+        isApprove: is_approve
       }
     });
 
     modal.afterClose.subscribe({
-      next:result => {
-        this.printSave(result);
-        this.modalRef.destroy(true);
+      next:(result) => {
+        this.onCancel();
       }
     })
   }
@@ -314,11 +325,11 @@ export class CreateBillFastComponent implements OnInit {
           this.isLoading = false;
           this.message.success(Message.Bill.InsertSuccess);
           this.printSave(res);
-          this.modalRef.destroy(true);
+          this.onCancel();
         }
         else {
           this.isLoading = false;
-          this.onModalError(res.DataErrorFast || [], res.Errors);
+          this.onModalError(res.DataErrorFast || [], res.Errors, model.is_approve);
         }
       },
       error:(err) => {
