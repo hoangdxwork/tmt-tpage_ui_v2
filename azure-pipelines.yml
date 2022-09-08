@@ -17,7 +17,6 @@ stages:
   displayName: Install NPM Dependencies
   jobs:
   - job: install
-    container: trion-ng-cli
     displayName: NPM-Install
     steps:
     - task: PowerShell@2
