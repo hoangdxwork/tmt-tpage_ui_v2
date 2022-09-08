@@ -62,7 +62,7 @@ export class CsPartner_PrepareModelHandler {
 
   public prepareModel(partner: ConversationPartnerDto, item: ChatomniConversationItemDto) {
     let  model = {
-        Id: item.PartnerId || partner?.Id,
+        Id: item.PartnerId || partner?.Id || 0,
         StatusText: partner?.StatusText,
         Name: partner?.Name,
         Phone: partner?.Phone,
