@@ -78,7 +78,7 @@ export class DetailBillComponent implements OnInit{
     this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
           delete res['@odata.context'];
-          
+
           if (res.DateCreated) {
             res.DateCreated = new Date(res.DateCreated);
           }
@@ -100,7 +100,7 @@ export class DetailBillComponent implements OnInit{
           }
 
           if(this.payments.length > 0){
-            
+
           }
 
           switch(res.State) {
@@ -183,26 +183,26 @@ export class DetailBillComponent implements OnInit{
     let obs!: Observable<any>;
     switch (type) {
       case "bill80":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=bill80`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=bill80`);
         break;
       case "bill58":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=bill58`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=bill58`);
         break;
       case "A5":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=A5`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=A5`);
         break;
       case "A4":
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataModel.Id}&Template=A4`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(this.dataModel.Id)]}&Template=A4`);
         break;
       case "delivery":
-        obs = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${this.dataModel.Id}`);
+        obs = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${[Number(this.dataModel.Id)]}`);
         break;
       case "ship":
-        let carrierId = "";
-        if (this.dataModel.CarrierId) {
-          carrierId = `&CarrierId=${this.dataModel.CarrierId}`;
+        let url = `/fastsaleorder/PrintShipThuan?ids=${[Number(this.dataModel.Id)]}`;
+        if (Number(this.dataModel.CarrierId) > 0) {
+          url = `${url}&carrierid=${this.dataModel.CarrierId}`;
         }
-        obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.dataModel.Id}${carrierId}`);
+        obs = this.printerService.printUrl(url);
         break;
       default:
         break;
@@ -212,8 +212,11 @@ export class DetailBillComponent implements OnInit{
       this.isProcessing = true;
       obs.pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: TDSSafeAny) => {
-          that.printerService.printHtml(res);
-          that.isProcessing = false;
+            that.printerService.printHtml(res);
+            that.isProcessing = false;
+        },
+        error:(err: any) => {
+          this.isProcessing = false;
         }
       })
     }
@@ -310,7 +313,7 @@ export class DetailBillComponent implements OnInit{
               data: res
             }
           });
-      
+
           modal.afterClose.subscribe({
             next:(res) => {
               if(res){
@@ -319,7 +322,7 @@ export class DetailBillComponent implements OnInit{
             }
           })
         }
-      }, 
+      },
       error:(error) => {
         this.message.error(error?.error?.message || 'Thanh toán bị lỗi');
       }
@@ -379,7 +382,6 @@ export class DetailBillComponent implements OnInit{
 
             if(res) {
                 if(res.Error) that.message.error(res.Error);
-
                 if(res.Success) that.message.success('Xác nhận bán hàng thành công!');
 
                 let obs!: Observable<any>;
@@ -388,25 +390,25 @@ export class DetailBillComponent implements OnInit{
                   case "print":
                     obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${[parseInt(that.id)]}`);
                     break;
-  
+
                   case "printShip":
-                    if(this.dataModel.Carrier) {
-                      obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${that.id}` + "&carrierid=" + `${that.dataModel.Carrier.Id}`);
-                    } else {
-                      obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${that.id}`);
+                    let url = `/fastsaleorder/PrintShipThuan?ids=${[Number(that.id)]}`;
+                    if (Number(this.dataModel.CarrierId) > 0) {
+                      url = `${url}&carrierid=${this.dataModel.CarrierId}`;
                     }
+                    obs = this.printerService.printUrl(url);
                     break;
                   default: break;
                 }
-  
+
                 if (obs) {
                   obs.pipe(takeUntil(that.destroy$)).subscribe({
-                    next:(res: TDSSafeAny) => {
-                      that.printerService.printHtml(res);
-                    }
+                      next:(res: TDSSafeAny) => {
+                          that.printerService.printHtml(res);
+                      },
                   })
                 }
-  
+
                 this.loadData();
                 this.loadInventoryIds();
             }
@@ -417,7 +419,6 @@ export class DetailBillComponent implements OnInit{
           error:(error) => {
               this.isProcessing = false;
               this.isLoading = false;
-
               that.message.error(error?.error?.message || 'Xác nhận bán hàng thất bại');
           }
         })
