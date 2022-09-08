@@ -838,11 +838,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   printOrder(type?: string, res?: CreateFastSaleOrderDTO) {
     let obs: TDSSafeAny;
     if(type == 'print') {
-        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${res?.Data.Id}`);
+        obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[Number(res?.Data.Id)]}`);
     }
 
     if(type == 'printShip') {
-        obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res?.Data.Id}`);
+        let url = `/fastsaleorder/PrintShipThuan?ids=${[Number(res?.Data.Id)]}`;
+        if (Number(this.saleModel.CarrierId) > 0) {
+          url = `${url}&carrierid=${this.saleModel.CarrierId}`;
+        }
+        obs = this.printerService.printUrl(url);
     }
 
     if (obs) {

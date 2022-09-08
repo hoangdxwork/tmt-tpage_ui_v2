@@ -28,7 +28,7 @@
         <div *ngIf="setOfCheckedId.size == 0" class="flex flex-row items-center justify-start">
           <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                <tds-filter-status-item [name]='item.Name|getStatusName:filterStatus' [count]='item.Total' [value]="item.Index">
+                <tds-filter-status-item [name]='item.Name | getStatusName:filterStatus' [count]='item.Total' [value]="item.Index">
                 </tds-filter-status-item>
             </ng-template>
           </tds-filter-status>
