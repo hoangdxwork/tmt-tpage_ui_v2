@@ -307,7 +307,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   showModalCreateBillFast(ids: string[]) {
     this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
+        next: (res: any) => {console.log(res)
           if (res) {
             this.modal.create({
                 title: 'Tạo hóa đơn nhanh',
@@ -346,7 +346,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          ids: ids,
+          ids: ids
         }
       });
     }

@@ -5,7 +5,7 @@
     </div>
     <div class="w-2/5 flex flex-col">
       <tds-form-field>
-        <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="true"
+        <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="false"
           [valuePrimitive]="false" [(ngModel)]="carrierForAll" [ngModelOptions]="{standalone: true}" [data]="lstCarriers" (selectChange)="changeCarrierAll()">
         </tds-select>
         <span class="flex items-center text-info-500 text-xs pt-1 absolute">
@@ -142,7 +142,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <ng-template ngFor let-orderLines [ngForOf]="orderLinesTable.data" let-i="index">
+                          <ng-template ngFor let-orderLines [ngForOf]="data.OrderLines" let-i="index">
                             <tr>
                               <td> {{ i + 1 }} </td>
                               <!-- Sản phẩm -->
@@ -154,7 +154,7 @@
                               <!-- Số lượng -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="1" [step]="1"
+                                  <tds-input-number [min]="1" [step]="1" tds-tooltip tooltipTitle="{{ orderLines.ProductUOMQty | number:'1.0-3' }}"
                                     (ngModelChange)="changeQuantityProduct($event, index, i)"
                                     [(ngModel)]="orderLines.ProductUOMQty" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
@@ -163,7 +163,7 @@
                               <!-- Số tiền -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000"
+                                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceUnit | number:'1.0-3' }}"
                                     (ngModelChange)="changePriceProduct($event, index, i)" [formatter]="numberWithCommas"
                                     [parser]="parserComas" [(ngModel)]="orderLines.PriceUnit"
                                     [ngModelOptions]="{standalone: true}">
@@ -173,7 +173,7 @@
                               <!-- Tổng tiền -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000"
+                                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceSubTotal | number:'1.0-3' }}"
                                     (ngModelChange)="changePriceProduct($event, index, i)" [formatter]="numberWithCommas"
                                     [parser]="parserComas" [(ngModel)]="orderLines.PriceSubTotal"
                                     [ngModelOptions]="{standalone: true}">
@@ -214,9 +214,9 @@
   <div class="w-full flex justify-between p-4 items-center" *tdsModalFooter>
     <div class="flex justify-between gap-x-2">
       <tds-checkbox [(ngModel)]="isPrint" [ngModelOptions]="{standalone: true}"
-        (ngModelChange)="changePrint('isPrint',$event)">In phiếu</tds-checkbox>
+        (ngModelChange)="changePrint('isPrint', $event)">In phiếu</tds-checkbox>
       <tds-checkbox [(ngModel)]="isPrintShip" [ngModelOptions]="{standalone: true}"
-        (ngModelChange)="changePrint('isPrintShip',$event)">In phiếu ship</tds-checkbox>
+        (ngModelChange)="changePrint('isPrintShip', $event)">In phiếu ship</tds-checkbox>
     </div>
     <div class="flex justify-between gap-x-2">
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>

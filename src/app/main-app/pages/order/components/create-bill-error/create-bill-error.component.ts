@@ -2,13 +2,13 @@ import { CreateBillDefaultErrorDTO } from './../../../../dto/order/default-error
 import { OrderBillDefaultDTO } from './../../../../dto/order/order-bill-default.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrinterService } from '../../../../services/printer.service';
-import { takeUntil } from 'rxjs';
+import { takeUntil, Observable } from 'rxjs';
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSSafeAny, TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSNotificationService } from 'tds-ui/notification';
 
 @Component({
@@ -23,6 +23,8 @@ export class CreateBillErrorComponent implements OnInit {
   @Input() lstOrder!: TDSSafeAny[];
   @Input() lstDataErrorDefault!: TDSSafeAny[];
   @Input() lstErrors: TDSSafeAny[] = [];
+  @Input() type!: string;
+  @Input() isApprove!: boolean;
 
   lstErrorSelected: TDSSafeAny[] = [];
   checkedAll = false;
@@ -45,6 +47,23 @@ export class CreateBillErrorComponent implements OnInit {
     this.lstDataErrorDefault.forEach((err) => {
       this.lstErrorSelected.push({ isSelected: false, error: err });
     });
+
+    this.lstErrors.map(item => {
+      item?.replace('text-info font-bold','text-info-500 font-semibold');
+    });
+
+    if(TDSHelperString.hasValueString(this.type)){
+      switch(this.type){
+        case 'print': 
+          this.isPrint = true;
+          this.isPrintShip = false;
+          break;
+        case 'printShip': 
+          this.isPrintShip = true;
+          this.isPrint = false;
+          break;
+      }
+    }
 
     this.cdr.detectChanges();
   }
@@ -98,28 +117,43 @@ export class CreateBillErrorComponent implements OnInit {
     }
   }
 
-  printOrder() {
-    let data = this.lstDataErrorDefault as any;
-    let obs: TDSSafeAny;
+  printOrder(ids: TDSSafeAny[]) {
+    let obs!: Observable<any>;
 
     if (this.isPrint == true) {
-      obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${data.Ids}`);
+      obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${ids}`);
     }
 
     if (this.isPrintShip == true) {
-      obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${data.Ids}`);
+      obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${ids}`);
     }
 
     if (obs) {
-      obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      obs.pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-          this.onCancel();
-
-      }, (error: TDSSafeAny) => {
-          if(error?.error?.message) {
-              this.notification.error( 'Lỗi in phiếu', error?.error?.message);
+          // TODO: nếu không còn lỗi thì đóng modal
+          if(this.lstErrors.length == 0 && this.lstErrorSelected.length == 0 && this.billDefaultModel){
+            this.onCancel();
           }
-          this.onCancel();
+
+          if(!TDSHelperArray.hasListValue(this.lstOrder) && !this.billDefaultModel){
+            this.onCancel();
+          }
+        }, 
+        error:(error: TDSSafeAny) => {
+          if(error) {
+            this.notification.error( 'Lỗi in phiếu', error);
+          }
+          // TODO: nếu không còn lỗi thì đóng modal
+          if(this.lstErrors.length == 0 && this.lstErrorSelected.length == 0 && this.billDefaultModel){
+            this.onCancel();
+          }
+
+          if(!TDSHelperArray.hasListValue(this.lstOrder) && !this.billDefaultModel){
+            this.onCancel();
+          }
+        }
       });
     }
   }
@@ -129,6 +163,10 @@ export class CreateBillErrorComponent implements OnInit {
   }
 
   onSave() {
+    if(this.isLoading){
+      return;
+    }
+
     if(this.billDefaultModel){
       let lstChecked: number[] = [];
       this.billDefaultModel.Lines = [];
@@ -151,7 +189,7 @@ export class CreateBillErrorComponent implements OnInit {
       //TODO: lọc lại danh sách lỗi
       this.lstErrorSelected = this.lstErrorSelected.filter((f, i) => !lstChecked.includes(i));
       this.checkAllStatus();
-
+      
       this.fastSaleOrderService.insertOrderProductDefaultWithForce({model: this.billDefaultModel}).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: CreateBillDefaultErrorDTO) => {
           this.isLoading = false;
@@ -167,24 +205,23 @@ export class CreateBillErrorComponent implements OnInit {
             }
           }
 
-          if(this.lstErrorSelected.length == 0){
-            this.isOpenCheckBox = false;
-
-            if(this.lstErrors.length == 0){
-              this.onCancel();
-            }
+          if(this.isPrintShip || this.isPrint) {
+            this.printOrder(res.Ids);
           }
 
-          if(this.isPrintShip || this.isPrint) {
-            this.printOrder();
+          if(this.lstErrorSelected.length == 0){
+            this.isOpenCheckBox = false;
+            //TODO: nếu không in và không còn lỗi thì đóng modal
+            if(this.lstErrors.length == 0 && !this.isPrintShip && !this.isPrint){
+              this.onCancel();
+            }
           }
 
           this.cdr.detectChanges();
         },
         error:(err) => {
           this.isLoading = false;
-
-          this.onCancel();
+          this.message.error(err?.error?.message || Message.InsertFail);
           this.cdr.detectChanges();
         }
       });
@@ -214,13 +251,12 @@ export class CreateBillErrorComponent implements OnInit {
       this.checkAllStatus();
 
       let model = {
-        is_approve: false,
+        is_approve: this.isApprove,
         model: lstInsertOrder,
       };
 
       this.fastSaleOrderService.insertListOrderModel(model, true).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
-          debugger
 
           this.isLoading = false;
           if(!res.Error){
@@ -228,8 +264,8 @@ export class CreateBillErrorComponent implements OnInit {
           }else{
             // TODO: lấy danh sách thông báo lỗi
             if(res.Errors){
-              res.Errors.map((item: string)=>{
-                this.lstErrors.push(item?.replace('text-info font-bold','text-info-500 font-semibold'));
+              res.Errors.forEach((item: string, i:number)=>{
+                this.notification.error( 'Lỗi in phiếu', item);
               });
             }
           }
@@ -238,19 +274,19 @@ export class CreateBillErrorComponent implements OnInit {
             this.isOpenCheckBox = false;
           }
 
-          // if (this.isPrint || this.isPrintShip) {
-          //     this.printOrder();
-          // }
+          if (this.isPrint || this.isPrintShip) {
+            this.printOrder(res.Ids);
+          }
 
-          if (!TDSHelperArray.hasListValue(this.lstOrder)) {
-            this.modalRef.destroy(true);
+          if (!TDSHelperArray.hasListValue(this.lstOrder) && !this.isPrint && !this.isPrintShip) {
+            this.onCancel();
           }
 
           this.cdr.detectChanges();
         },
         error:(error) => {
-          this.message.error(error?.error?.message || Message.InsertFail);
           this.isLoading = false;
+          this.message.error(error?.error?.message || Message.InsertFail);
           this.cdr.detectChanges();
         }
       });
