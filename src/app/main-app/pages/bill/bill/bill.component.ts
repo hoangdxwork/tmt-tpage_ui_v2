@@ -443,8 +443,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe({
       next: (res: any) => {
           this.count = res['@odata.count'] as number;
-          this.lstOfData = res.value;
-          this.cdRef.detectChanges();
+          this.lstOfData = [...res.value];
       },
       error: (error: any) => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');

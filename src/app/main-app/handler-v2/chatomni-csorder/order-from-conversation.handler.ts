@@ -151,31 +151,42 @@ export class CsOrder_FromConversationHandler {
       return {...order}
     }
 
-    updateOrderFromTabPartner(quickOrderModel: QuickSaleOnlineOrderModel, partner: ConversationPartnerDto) {
+    onSyncConversationInfoToOrder(quickOrderModel: QuickSaleOnlineOrderModel, conversationInfo: ChatomniConversationInfoDto, type: string) {
 
-      if(partner.Name) {
-          quickOrderModel.PartnerName = partner.Name;
-      }
+      if(conversationInfo && TDSHelperObject.hasValue(conversationInfo.Order) && type !== 'post') {
 
-      if(partner.Phone) {
-          quickOrderModel.Telephone = partner.Phone;
-      }
+          conversationInfo.Order.Details = [];
+          conversationInfo.Order.Details = [...quickOrderModel.Details];// gán lại danh sách sản phẩm đã nhập hiện tại ,ko lấy server
+          quickOrderModel = Object.assign(quickOrderModel, conversationInfo.Order) as any;
 
-      if(partner.Email) {
-          quickOrderModel.Email = partner.Email;
-      }
+      } else {
+          let partner = conversationInfo.Partner;
 
-      if(partner.Street) {
-          quickOrderModel.Address = partner.Street;
-      }
+          if(partner.Name && !quickOrderModel.PartnerName) {
+              quickOrderModel.PartnerName = partner.Name;
+          }
 
-      if(partner && (partner.CityCode || partner.City?.code)) {
-          quickOrderModel.CityCode = (partner.CityCode || partner.City?.code) as any;
-          quickOrderModel.CityName = (partner.CityName || partner.City?.name) as any;
-          quickOrderModel.DistrictCode = (partner.DistrictCode || partner.District?.code) as any;
-          quickOrderModel.DistrictName = (partner.DistrictName || partner.District?.name) as any;
-          quickOrderModel.WardCode = (partner.WardCode || partner.Ward?.code) as any;
-          quickOrderModel.WardName = (partner.WardName || partner.Ward?.code) as any;
+          if(partner.Phone && !quickOrderModel.Telephone) {
+              quickOrderModel.Telephone = partner.Phone;
+          }
+
+          if(partner.Email && !quickOrderModel.Email) {
+              quickOrderModel.Email = partner.Email;
+          }
+
+          if(partner.Street && !quickOrderModel.CityCode) {
+              quickOrderModel.Address = partner.Street;
+          }
+
+          if(partner && (partner.CityCode || partner.City?.code)) {
+              quickOrderModel.CityCode = (partner.CityCode || partner.City?.code) as any;
+              quickOrderModel.CityName = (partner.CityName || partner.City?.name) as any;
+              quickOrderModel.DistrictCode = (partner.DistrictCode || partner.District?.code) as any;
+              quickOrderModel.DistrictName = (partner.DistrictName || partner.District?.name) as any;
+              quickOrderModel.WardCode = (partner.WardCode || partner.Ward?.code) as any;
+              quickOrderModel.WardName = (partner.WardName || partner.Ward?.code) as any;
+          }
+
       }
 
       return {...quickOrderModel};

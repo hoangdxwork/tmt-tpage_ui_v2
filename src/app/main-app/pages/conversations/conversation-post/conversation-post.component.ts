@@ -25,6 +25,7 @@ import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-obj
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { de } from 'date-fns/locale';
+import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 
 @Component({
   selector: 'app-conversation-post',
@@ -52,6 +53,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     { id: 'ChannelUpdatedTime desc', name: 'Ngày update mới nhất' },
     { id: 'ChannelUpdatedTime asc', name: 'Ngày update cũ nhất' }
   ];
+
+  syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
 
   currentType: any = { id: 'all', name: 'Tất cả bài viết' };
   currentSort: any = {};
@@ -192,6 +195,19 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             this.codeOrder = code;
             this.isDisableTabOrder = false;
         }
+      }
+    })
+
+    // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
+    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (csid: string) => {
+          let teamId = this.currentTeam?.Id as any;
+          this.chatomniConversationService.syncConversationInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (data: any) => {
+                  this.syncConversationInfo = {...data};
+                  this.cdRef.markForCheck();
+              }
+          })
       }
     })
   }

@@ -508,7 +508,7 @@
                         <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In giao hàng
                     </span>
                 </button>
-                <button tds-button color="secondary" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
+                <button tds-button color="secondary" *ngIf="dataModel.Type === 'invoice'" (click)="print('ship')">
                     <span class="flex items-center">
                         <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
                     </span>

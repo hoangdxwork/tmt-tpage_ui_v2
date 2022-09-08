@@ -745,7 +745,7 @@ export class AddBillComponent implements OnInit {
     this.accountTaxService.getTax().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             if (TDSHelperArray.hasListValue(res.value)) {
-              this.lstTax = res.value;
+              this.lstTax = [...res.value];
               this.lstTax = this.lstTax.sort((a, b) => a.Amount - b.Amount);
             }
         }
@@ -757,15 +757,16 @@ export class AddBillComponent implements OnInit {
   }
 
   selectTax(tax: any) {
-    // this._form.controls['Tax'].setValue(tax);
     if(tax && tax.Id > 0) {
       this._form.controls['TaxId'].setValue(tax?.Id);
+      this._form.controls['Tax'].setValue(tax);
     } else {
       this._form.controls['TaxId'].setValue(null);
       this._form.controls['Tax'].setValue(null);
     }
 
     this.calcTotal();
+    this.coDAmount();
   }
 
   showModalSearchPartner() {

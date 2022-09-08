@@ -20,7 +20,7 @@ export class ChatomniConversationFacade extends BaseSevice  {
   dataSource: { [id: string] : ChatomniConversationDto } = {}; //this.chatomniDataSource[id]
 
   // TODO: sự kiên đồng bộ dữ liệu
-  public onSyncConversationInfo$ = new EventEmitter<boolean>();
+  public onSyncConversationInfo$ = new EventEmitter<any | null>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

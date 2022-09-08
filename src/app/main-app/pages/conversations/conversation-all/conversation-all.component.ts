@@ -332,10 +332,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               next: (info: ChatomniConversationInfoDto) => {
                   this.conversationInfo = {...info};
                   this.isLoading = false;
+                  this.cdRef.markForCheck();
               },
               error: (error: any) => {
                   this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
                   this.isLoading = false;
+                  this.cdRef.markForCheck();
               }
           })
       }
