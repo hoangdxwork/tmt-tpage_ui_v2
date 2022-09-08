@@ -355,6 +355,9 @@ export class PostOrderConfigComponent implements OnInit {
       content: ModalListProductComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
+      bodyStyle: {
+        padding: '0px'
+      },
       componentParams:{
         isPostConfig: true
       }

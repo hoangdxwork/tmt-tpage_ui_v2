@@ -1,5 +1,5 @@
 
-<div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
+<div class="rounded-xl bg-white p-4 flex h-full flex-col gap-y-4 text-body-2 text-neutral-1-900">
   <div class="flex gap-x-2">
       <tds-form-field class="w-full">
           <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off"  [tdsInputDebounce]="750" [(ngModel)]="textSearchProduct"
@@ -21,10 +21,10 @@
           (queryParams)="onQueryParamsChange($event)">
           <thead>
               <tr>
-                  <th width="400px">Sản phẩm</th>
-                  <th>Đơn vị</th>
-                  <th>Giá</th>
-                  <th>Thao tác</th>
+                  <th width="40%">Sản phẩm</th>
+                  <th width="20%">Đơn vị</th>
+                  <th width="20%">Giá</th>
+                  <th width="20%">Thao tác</th>
               </tr>
           </thead>
           <tbody>
@@ -36,18 +36,18 @@
                         </tds-avatar>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-body-2">{{ data.NameGet }}</span>
-                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                        <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
+                        <span class="text-body-2" [ngClass]=" {'font-semibold' : defaultOrder == true} ">{{ data.NameGet }}</span>
+                        <span class="text-neutral-1-400 font-regular text-body-2" *ngIf="!this.defaultOrder"> Tồn kho:
+                          <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
                         </span>
-                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
-                        <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
+                        <span class="text-neutral-1-400 font-regular text-body-2" *ngIf="!this.defaultOrder"> Tồn dự báo:
+                          <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
                         </span>
                     </div>
                 </div>
                 </td>
                 <td class="text-body-2">{{ data.UOMName }}</td>
-                <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                <td class="text-body-2">{{ data.Price | numberCustom }} đ</td>
                 <td>
                 <div>
                     <button type="button" title="Thêm sản phẩm vào đơn hàng" tds-button-outline color="secondary" type="submit" size="sm" (click)="addItem(data)">
@@ -63,6 +63,6 @@
   </div>
 </div>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button color="secondary" (click)="onCancel()">Đóng</button>
+    <button tds-button color="secondary" class="min-w-[100px]" (click)="onCancel()">Đóng</button>
 </div>
 

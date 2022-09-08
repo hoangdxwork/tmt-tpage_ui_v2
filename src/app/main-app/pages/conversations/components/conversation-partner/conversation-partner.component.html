@@ -81,16 +81,16 @@
                       <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
                           class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 2xl:px-4 px-2">
                           <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer whitespace-nowrap">
-                              Tổng doanh số: <span class="pl-2 text-primary-1">{{revenue.RevenueTotal || 0 | number: '1.0-3'}} đ</span>
+                              Tổng doanh số: <span class="pl-2 text-primary-1">{{revenue.RevenueTotal || 0 | numberCustom }} đ</span>
                               <i class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
                           </span>
                       </button>
 
                       <tds-dropdown-menu #menuRevenue="tdsDropdownMenu">
                           <div class="w-full">
-                              <div tds-dropdown-item>Doanh số đầu kỳ: {{revenue.RevenueBegan || 0 | number: '1.0-3'}} đ</div>
-                              <div tds-dropdown-item>Doanh số: {{revenue.Revenue || 0 | number: '1.0-3'}} đ</div>
-                              <div tds-dropdown-item>Tổng doanh số: {{revenue.RevenueTotal || 0 | number: '1.0-3'}} đ</div>
+                              <div tds-dropdown-item>Doanh số đầu kỳ: {{revenue.RevenueBegan || 0 | numberCustom }} đ</div>
+                              <div tds-dropdown-item>Doanh số: {{revenue.Revenue || 0 | numberCustom }} đ</div>
+                              <div tds-dropdown-item>Tổng doanh số: {{revenue.RevenueTotal || 0 | numberCustom }} đ</div>
                           </div>
                       </tds-dropdown-menu>
                   </tds-button-group>
@@ -235,7 +235,7 @@
                                       </div>
 
                                       <div class="w-[125px]">
-                                          <span class="text-neutral-1-900 text-body-2 font-semibold text-center">{{item.AmountTotal | number}} đ</span>
+                                          <span class="text-neutral-1-900 text-body-2 font-semibold text-center">{{item.AmountTotal | numberCustom }} đ</span>
                                       </div>
 
                                       <div class="w-[125px] text-center">

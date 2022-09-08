@@ -123,7 +123,7 @@
             <div class="font-semibold">Người giao hàng</div>
             <div class="col-span-2">{{ dataItem.Deliver || 'N/A' }}</div>
             <div class="font-semibold">Tổng tiền</div>
-            <div class="col-span-2">{{ dataItem.AmountTotal || 0 | number :'1.0-3' }} đ</div>
+            <div class="col-span-2">{{ dataItem.AmountTotal || 0 | numberCustom  }} đ</div>
             <div class="font-semibold">Tổng khối lượng</div>
             <div class="col-span-2">{{ dataItem.WeightTotal }}</div>
             <div class="font-semibold">Trạng thái</div>
@@ -137,9 +137,9 @@
             <div class="font-semibold">Kho hàng</div>
             <div class="col-span-2">{{ dataItem.WarehouseName || 'N/A' }}</div>
             <div class="font-semibold">Tiền thu hộ</div>
-            <div class="col-span-2">{{ dataItem.CashOnDelivery || 0 | number: '1.0-3' }} đ</div>
+            <div class="col-span-2">{{ dataItem.CashOnDelivery || 0 | numberCustom  }} đ</div>
             <div class="font-semibold">Phí giao hàng</div>
-            <div class="col-span-2">{{ dataItem.DeliveryPrice || 0 | number: '1.0-3' }} đ</div>
+            <div class="col-span-2">{{ dataItem.DeliveryPrice || 0 | numberCustom  }} đ</div>
             <div class="font-semibold">Trạng thái ship</div>
             <div class="col-span-2">{{ dataItem.ShowShipStatus }}</div>
           </div>

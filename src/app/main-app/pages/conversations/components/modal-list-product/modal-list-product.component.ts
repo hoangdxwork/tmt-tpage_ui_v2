@@ -26,6 +26,7 @@ import { ProductService } from '@app/services/product.service';
 
 export class ModalListProductComponent implements OnInit {
   @Input() isPostConfig!: boolean;
+  @Input() defaultOrder!: boolean;
 
   isLoading: boolean = false;
   keyFilter: string = '';
@@ -64,7 +65,9 @@ export class ModalListProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadCurrentCompany();
+    if(!this.defaultOrder) {
+      this.loadCurrentCompany();
+    }
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -133,7 +136,7 @@ export class ModalListProductComponent implements OnInit {
   }
 
   addItem(item: any) {
-    if(this.isPostConfig){
+    if(this.isPostConfig || this.defaultOrder){
       this.modal.destroy(item);
     } else {
       this.conversationOrderFacade.onAddProductOrder$.emit(item);
