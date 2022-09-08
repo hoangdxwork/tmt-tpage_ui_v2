@@ -1,0 +1,18 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\main-app",
+    "\\src\\app\\main-app\\pages",
+    "\\src\\app\\main-app\\pages\\conversations",
+    "\\src\\app\\main-app\\pages\\conversations\\conversation-post",
+    "\\src\\app\\main-app\\pages\\conversations\\conversation-post\\objects",
+    "\\src\\app\\main-app\\pages\\order",
+    "\\src\\app\\main-app\\pages\\order\\components",
+    "\\src\\app\\main-app\\pages\\order\\components\\create-bill-error",
+    "\\src\\app\\main-app\\pages\\order\\components\\edit-order"
+  ],
+  "SelectedNode": "\\src\\app\\main-app\\pages\\order\\components\\create-bill-error\\create-bill-error.component.ts",
+  "PreviewInSolutionExplorer": false
+}

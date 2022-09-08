@@ -436,7 +436,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.filterObj.searchText = text;
         let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
         return this.getViewData(params);
       })
