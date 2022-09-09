@@ -23,10 +23,10 @@ export class jsonPayloadPipe implements PipeTransform {
           if(check !== -1) {
             order_url = order_url.substring(check).replace('/', '');
           }
-  
+
           if(payload.attachment && payload.attachment.payload){
             let message = `${payload.attachment.payload.recipient_name} đã tạo đơn hàng <span class="font-semibold cursor-pointer payload" id="${order_url}">#${payload.attachment.payload.order_number}</span>`
-  
+
             return message
           }
         }
@@ -49,7 +49,6 @@ export class jsonPayloadPipe implements PipeTransform {
         }
     }
     catch (e) {
-        console.log(e);
     }
 
     return false;
