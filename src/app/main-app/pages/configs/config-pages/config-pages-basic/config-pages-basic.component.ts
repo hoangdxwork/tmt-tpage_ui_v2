@@ -6,7 +6,10 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-pages-basic',
-  templateUrl: './config-pages-basic.component.html'
+  templateUrl: './config-pages-basic.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 export class ConfigPagesBasicComponent implements OnInit {
 

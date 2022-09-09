@@ -16,7 +16,10 @@ import { ModalListProductComponent } from '@app/pages/conversations/components/m
 @Component({
   selector: 'app-default-order',
   templateUrl: './default-order.component.html',
-  providers: [TDSDestroyService]
+  providers: [TDSDestroyService],
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 
 export class DefaultOrderComponent implements OnInit {
