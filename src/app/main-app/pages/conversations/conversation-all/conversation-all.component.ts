@@ -414,7 +414,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             res.Items.forEach((x) => {
                 let idx = this.lstConversation.find(a => a.ConversationId == x.ConversationId);
                 if(idx) {
-                    res.Items = res.Items.filter(x => !x.ConversationId)
+                    res.Items = res.Items.filter(y => x.ConversationId != y.ConversationId)
                 }
             });
 
