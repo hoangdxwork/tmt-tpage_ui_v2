@@ -27,7 +27,10 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
-  providers: [TDSDestroyService]
+  providers: [TDSDestroyService],
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 
 export class ConfigProductComponent implements OnInit, AfterViewInit {

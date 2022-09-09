@@ -1,6 +1,15 @@
 <div class="w-full h-full">
   <tds-tabset (selectedIndexChange)="onChangeTab($event)">
-    <tds-tab title="Thông tin" clsContent="p-4 border-t">
+    <tds-tab [title]="titleItem1" clsContent="p-4 border-t">
+      <ng-template #titleItem1 let-active="active">
+        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[94px]"
+          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+          <span>Thông tin</span>
+          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+            class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+          </div>
+        </div>
+      </ng-template>
       <div class="flex 2xl:gap-x-8 xl:gap-x-4">
         <div>
           <tds-avatar [tdsSrc]="productTemplate.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg">
@@ -157,7 +166,16 @@
         </div>
       </div>
     </tds-tab>
-    <tds-tab title="Hình ảnh" clsContent="p-4 border-t">
+    <tds-tab [title]="titleItem2" clsContent="p-4 border-t">
+      <ng-template #titleItem2 let-active="active">
+        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[90px]"
+          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+          <span>Hình ảnh</span>
+          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+            class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+          </div>
+        </div>
+      </ng-template>
       <div class="flex flex-wrap items-center gap-x-4">
         <div *ngFor="let image of productTemplate.Images">
           <tds-avatar [shape]="'square'" [size]="108" class="rounded-10" [isAvatar]="false" [tdsSrc]="image.Url">
@@ -165,7 +183,16 @@
         </div>
       </div>
     </tds-tab>
-    <tds-tab title="Thẻ kho" clsContent="pb-2.5 border-t">
+    <tds-tab [title]="titleItem3" clsContent="pb-2.5 border-t">
+      <ng-template #titleItem3 let-active="active">
+        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[84px]"
+          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+          <span>Thẻ kho</span>
+          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+            class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+          </div>
+        </div>
+      </ng-template>
       <tds-table [listData]="lstStockMove" [loading]="isLoading_stockMove" [frontPagination]="false"
         [scroll]="{ x: 'auto' }" [showSizeChanger]="true" [(pageSize)]="pageSize_stockMove"
         [(pageIndex)]="pageIndex_stockMove" [total]="count_stockMove" (queryParams)="onQueryParamsStockMove($event)"
@@ -198,7 +225,16 @@
         </tbody>
       </tds-table>
     </tds-tab>
-    <tds-tab title="Tồn kho" clsContent="pb-2.5 border-t">
+    <tds-tab [title]="titleItem4" clsContent="pb-2.5 border-t">
+      <ng-template #titleItem4 let-active="active">
+        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[84px]"
+          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+          <span>Tồn kho</span>
+          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+            class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+          </div>
+        </div>
+      </ng-template>
       <tds-table [listData]="lstProductInventory" [loading]="isLoading_inventory" [frontPagination]="false"
         [showSizeChanger]="true" [(pageSize)]="pageSize_inventory" [(pageIndex)]="pageIndex_inventory"
         [total]="count_inventory" (queryParams)="onQueryParamsInventory($event)"
@@ -219,7 +255,16 @@
         </tbody>
       </tds-table>
     </tds-tab>
-    <tds-tab title="Mô tả" clsContent="p-4 border-t">
+    <tds-tab [title]="titleItem5" clsContent="p-4 border-t">
+      <ng-template #titleItem5 let-active="active">
+        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[70px]"
+          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+          <span>Mô tả</span>
+          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+            class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+          </div>
+        </div>
+      </ng-template>
       <span class="text-body-2">Nội dung đang cập nhật</span>
     </tds-tab>
   </tds-tabset>
