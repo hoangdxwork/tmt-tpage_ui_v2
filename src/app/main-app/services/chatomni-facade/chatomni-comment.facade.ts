@@ -92,10 +92,16 @@ export class ChatomniCommentFacade extends BaseSevice  {
       if(res) {
         this.partner[teamId] = {...(this.partner[teamId] || {}), ...(res.Data || {})};
 
-        if( res.Last && res.Last!= timestamp) {
-            this.loadPartnersByTimestamp(teamId, res.Last);
+        // TODO: trường hợp có last thì dừng call api
+        if(Number(res.Last)) {
+            this.partner$.next(this.partner[teamId]);
+
+        } else if(Number(res.Next) != timestamp) {
+
+            this.loadPartnersByTimestamp(teamId, res.Next);
+
         } else {
-            this.partner$.next(this.partner[teamId])
+            this.partner$.next(this.partner[teamId]);
         }
       }
     }, shareReplay({ bufferSize: 1, refCount: true}));

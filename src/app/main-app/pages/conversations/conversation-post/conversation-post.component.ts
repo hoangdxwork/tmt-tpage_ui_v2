@@ -88,7 +88,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private message: TDSMessageService,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
-    private cdRef: ChangeDetectorRef,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
@@ -205,7 +204,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.chatomniConversationService.syncConversationInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
               next: (data: any) => {
                   this.syncConversationInfo = {...data};
-                  this.cdRef.markForCheck();
               }
           })
       }
@@ -504,10 +502,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: any) => {
           delete res['@odata.context'];
           this.lstOfLiveCampaign = [...res.value];
-          this.cdRef.detectChanges();
       },
       error: (error: any) => {
-          this.cdRef.detectChanges();
+          this.message.error(`${error?.error?.message}`);
       }
     })
   }
