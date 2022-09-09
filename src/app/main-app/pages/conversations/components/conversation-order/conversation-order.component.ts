@@ -93,7 +93,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   saleConfig!: InitSaleDTO;
 
-  visibleIndex: number = -1;
+  visibleIndex: boolean = false;
   keyFilterUser: string = '';
   isOpenCarrier = false;
 
@@ -121,7 +121,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -425,7 +425,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
     this.isEnableCreateOrder = event.checked;
-    this.visibleIndex = -1;
+    this.visibleIndex = false;
 
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
@@ -1121,12 +1121,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   openPopover(price:number, index:number){
-    this.visibleIndex = index;
+    this.visibleIndex = false;
     this.priceValue = Number(price);
   }
 
-  onChangePrice(event:number){
-    this.priceValue = Number(event);
+  onChangePrice(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
+    if(Number(event) >= 0) {
+      let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+      if(exit) {
+          this.quickOrderModel.Details[index].Price = event;
+          this.calcTotal();
+          this.coDAmount();
+      }
+    }
   }
 
   approvePrice(item: Detail_QuickSaleOnlineOrder, index: number) {
@@ -1141,7 +1148,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   closePriceDetail() {
-    this.visibleIndex = -1;
+    this.visibleIndex = false;
   }
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
