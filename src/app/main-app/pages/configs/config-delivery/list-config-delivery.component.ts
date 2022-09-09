@@ -11,7 +11,10 @@ import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrie
 
 @Component({
   selector: 'list-config-delivery',
-  templateUrl: './list-config-delivery.component.html'
+  templateUrl: './list-config-delivery.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 
 export class ListConfigDeliveryComponent implements OnInit {

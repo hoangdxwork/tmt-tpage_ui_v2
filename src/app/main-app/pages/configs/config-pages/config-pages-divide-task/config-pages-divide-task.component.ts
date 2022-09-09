@@ -12,7 +12,10 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-pages-divide-task',
-  templateUrl: './config-pages-divide-task.component.html'
+  templateUrl: './config-pages-divide-task.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

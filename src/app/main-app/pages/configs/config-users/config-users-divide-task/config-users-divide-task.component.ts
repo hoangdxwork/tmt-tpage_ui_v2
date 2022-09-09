@@ -5,7 +5,10 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-users-divide-task',
-  templateUrl: './config-users-divide-task.component.html'
+  templateUrl: './config-users-divide-task.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 export class ConfigUsersDivideTaskComponent implements OnInit {
 

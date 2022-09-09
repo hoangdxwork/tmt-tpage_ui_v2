@@ -9,7 +9,10 @@ import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'sale-order',
-  templateUrl: './sale-order.component.html'
+  templateUrl: './sale-order.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 
 export class SaleOrderComponent implements OnInit, OnDestroy {
@@ -19,10 +22,6 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   lstShippingStatus: ShippingStatuesDTO[] = [];
   private destroy$ = new Subject<void>();
-
-  init = {
-    document_base_url: "https://test.tpos.dev"
-  }
 
   tagHelpers = [
     { id: "Bài live", value: "{order.live_title}" },
