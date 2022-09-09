@@ -154,8 +154,21 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onEventSocket() {
     // TODO: mapping tin nhắn từ socket-io
+    // TODO: chek lại phân biệt message  & comment
     this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataItemDto) => {
+
+        switch (this.type) {
+
+            case 'message':
+            break;
+
+            case 'comment':
+            break;
+
+            default: break;
+        }
+
         if(res && res.UserId == this.data.ConversationId){
             this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
 
