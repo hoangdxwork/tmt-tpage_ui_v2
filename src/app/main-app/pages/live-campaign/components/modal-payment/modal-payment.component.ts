@@ -1,3 +1,4 @@
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { finalize } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
@@ -24,6 +25,22 @@ export class ModalPaymentComponent implements OnInit {
   data!: AccountRegisterPaymentDTO;
   isLoading: boolean = false;
   lstAccountJournal: AccountJournalDTO[] = [];
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   constructor(
     private message: TDSMessageService,

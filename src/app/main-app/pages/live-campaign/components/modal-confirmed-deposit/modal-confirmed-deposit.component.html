@@ -31,7 +31,7 @@
       <div class="w-full mt-3 flex items-end" *ngIf="!data.IsDeposited">
         <tds-form-field class="w-full">
           <tds-label>Xác nhận tiền cọc:</tds-label>
-          <tds-input-number [ngModel]="currentDeposit" [min]="1" [max]="999999" [step]="1000">
+          <tds-input-number [ngModel]="currentDeposit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas">
           </tds-input-number>
         </tds-form-field>
 

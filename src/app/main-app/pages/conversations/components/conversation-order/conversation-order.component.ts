@@ -114,17 +114,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   visibleShipExtraMoney: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null) {
+    if(value != null)
+    {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    return value
-  };
-
+    return value;
+  } ;
+  
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null) {
-      return TDSHelperString.replaceAll(value,',','');
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
     }
-    return value
+    return value;
   };
 
   _cities!: SuggestCitiesDTO;

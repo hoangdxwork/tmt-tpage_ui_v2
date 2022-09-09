@@ -8,7 +8,7 @@
         </tds-form-field>
         <tds-form-field class="w-1/2">
             <tds-label>Số tiền cần thanh toán</tds-label>
-            <tds-input-number tdsInput placeholder="Nhập số tiền phải thanh toán" formControlName="CashOnDelivery"></tds-input-number>
+            <tds-input-number tdsInput placeholder="Nhập số tiền phải thanh toán" formControlName="CashOnDelivery" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
         </tds-form-field>
     </div>
     <div class="w-full flex justify-end">

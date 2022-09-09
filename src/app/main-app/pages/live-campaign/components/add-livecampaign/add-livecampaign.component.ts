@@ -50,8 +50,21 @@ export class AddLiveCampaignComponent implements OnInit {
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
 
-  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale, '1.0-3')}`;
-
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
     private crmTeamService: CRMTeamService,

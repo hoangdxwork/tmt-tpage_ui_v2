@@ -7,7 +7,7 @@ import { AutoReplyConfigDTO } from "src/app/main-app/dto/configs/page-config.dto
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalRef } from "tds-ui/modal";
-import { TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSSafeAny, TDSHelperString } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'auto-reply-config',
@@ -25,6 +25,22 @@ export class AutoReplyConfigComponent implements OnInit {
 
   lstCommentAutoReply: string[] = [];
   lstCommentNotAutoReply: string[] = [];
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   constructor(private modalRef: TDSModalRef,
     private message: TDSMessageService,

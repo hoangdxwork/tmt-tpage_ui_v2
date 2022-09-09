@@ -5,7 +5,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { ProductCategoryService } from '../../services/product-category.service';
 
@@ -26,6 +26,22 @@ export class TpageAddCategoryComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
 
   private destroy$ = new Subject<void>();
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   constructor(private modal: TDSModalRef,
     private message: TDSMessageService,
