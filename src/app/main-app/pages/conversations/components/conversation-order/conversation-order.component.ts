@@ -110,6 +110,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   configsProviderDataSource: Array<AshipGetInfoConfigProviderDto> = [];
   insuranceInfo!: CalculateFeeInsuranceInfoResponseDto | null;
   extraMoney: number = 0;
+  priceValue: number = 0;
   companyCurrents!: CompanyCurrentDTO;
   visibleShipExtraMoney: boolean = false;
 
@@ -424,6 +425,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
     this.isEnableCreateOrder = event.checked;
+    this.visibleIndex = -1;
 
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
@@ -1063,10 +1065,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
-  closePriceDetail() {
-    this.visibleIndex = -1;
-  }
-
   changeShipWeight() {
     if(this.saleModel.Carrier) {
       this.calcFee();
@@ -1122,15 +1120,28 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.visibleShipExtraMoney = false;
   }
 
-  onChangePrice(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
+  openPopover(price:number, index:number){
     this.visibleIndex = index;
+    this.priceValue = Number(price);
+  }
+
+  onChangePrice(event:number){
+    this.priceValue = Number(event);
+  }
+
+  approvePrice(item: Detail_QuickSaleOnlineOrder, index: number) {
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
     if(exit) {
-        this.quickOrderModel.Details[index].Price = event;
+        this.quickOrderModel.Details[index].Price = this.priceValue;
         this.calcTotal();
         this.coDAmount();
-
     }
+
+    this.closePriceDetail();
+  }
+
+  closePriceDetail() {
+    this.visibleIndex = -1;
   }
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {

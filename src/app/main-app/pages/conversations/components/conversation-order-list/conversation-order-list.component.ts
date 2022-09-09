@@ -142,6 +142,7 @@ export class ConversationOrderListComponent implements OnInit {
 
   refreshData() {
     this.pageIndex = 1;
+    this.tabIndex = 1;
     this.filterObj = {
       tags: [],
       status: '',
@@ -149,6 +150,7 @@ export class ConversationOrderListComponent implements OnInit {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   changePageSize(pageSize:number){
