@@ -13,13 +13,13 @@ export class YiDateTimeV3Pipe extends DatePipe implements PipeTransform {
         const input = new Date(value);
 
         if(isToday(input)) {
-            return "Hôm nay, " + formatDate(input,'dd-MM-yyyy hh:mm',vi_VN.locale);
+            return "Hôm nay, " + formatDate(input,'dd-MM-yyyy HH:mm',vi_VN.locale);
         }
 
         if(isYesterday(input)) {
-            return "Hôm qua, " + formatDate(input,'dd-MM-yyyy hh:mm',vi_VN.locale);
+            return "Hôm qua, " + formatDate(input,'dd-MM-yyyy HH:mm',vi_VN.locale);
         }
 
-        return formatDate(input,'EEEE, dd-MM-yyyy hh:mm',vi_VN.locale);
+        return formatDate(input,'EEEE, dd-MM-yyyy HH:mm',vi_VN.locale);
     }
 }

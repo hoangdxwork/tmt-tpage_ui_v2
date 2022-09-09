@@ -410,9 +410,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
 
-            if(TDSHelperArray.hasListValue(res?.Items)) {
-                this.lstConversation = [...res.Items];
-            }
+          if(TDSHelperArray.hasListValue(res?.Items)) {
+            res.Items.forEach((x) => {
+                let idx = this.lstConversation.find(a => a.ConversationId == x.ConversationId);
+                if(idx) {
+                    res.Items = res.Items.filter(x => !x.ConversationId)
+                }
+            });
+
+        }
+
+        this.lstConversation = [...this.lstConversation, ...(res.Items || [])];
 
             this.isProcessing = false;
             this.yiAutoScroll.scrollToElement('scrollConversation', 750);
