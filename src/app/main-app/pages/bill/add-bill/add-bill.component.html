@@ -186,8 +186,7 @@
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State == 'draft'">
                         <tds-form-field>
-                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
-                            formControlName="PaymentAmount" [max]="_form.controls['AmountTotal'].value"></tds-input-number>
+                          <tds-input-number [min]='0' [step]="1000" formControlName="PaymentAmount" [max]="_form.controls['AmountTotal'].value"></tds-input-number>
                         </tds-form-field>
                       </div>
                       <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
@@ -294,7 +293,7 @@
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Phí giao hàng</span>
                       <tds-form-field class="col-span-2 w-full">
-                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                          <tds-input-number [min]='0' [step]="1000"
                             placeholder="Nhập phí" formControlName="DeliveryPrice" (ngModelChange)="changeDeliveryPrice($event)">
                           </tds-input-number>
                       </tds-form-field>
@@ -307,7 +306,7 @@
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Tiền cọc</span>
                       <tds-form-field class="col-span-2 w-full">
-                          <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                          <tds-input-number [min]='0' [step]="1000"
                               placeholder="Nhập tiền cọc" formControlName="AmountDeposit" (ngModelChange)="changeAmountDeposit($event)">
                           </tds-input-number>
                       </tds-form-field>
@@ -321,7 +320,7 @@
                     <span class="col-span-1 w-full font-semibold">Giao hàng thu tiền</span>
                     <div class="col-span-2 w-full">
                       <tds-form-field>
-                        <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                        <tds-input-number [min]='0' [step]="1"
                           placeholder="Nhập tiền" formControlName="CashOnDelivery">
                         </tds-input-number>
                       </tds-form-field>
@@ -337,7 +336,7 @@
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Khối lượng ship (g)</span>
                       <tds-form-field class="col-span-2 w-full">
-                        <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                        <tds-input-number [min]='0' [step]="1"
                             formControlName="ShipWeight" placeholder="Nhập khối lượng" (tdsBlur)="changeShipWeight()">
                         </tds-input-number>
                       </tds-form-field>
@@ -554,7 +553,7 @@
                       <tds-label class="w-1/4">Giá trị hàng hóa</tds-label>
                       <div class="flex flex-row items-center gap-x-2 w-3/4">
                           <tds-form-field class="flex flex-auto">
-                            <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                            <tds-input-number [min]='0' [step]="1000"
                               placeholder="Nhập phí" formControlName="Ship_InsuranceFee" (ngModelChange)="changeShip_InsuranceFee($event)">
                             </tds-input-number>
                           </tds-form-field>
@@ -622,7 +621,7 @@
                                 <ng-template #popoverContentShip_ExtraMoney>
                                   <div class="flex gap-x-2">
                                     <tds-form-field>
-                                      <tds-input-number [min]='0' [step]="100" [ngModel]="extraMoney" [formatter]="numberWithCommas" [parser]="parserComas"
+                                      <tds-input-number [min]='0' [step]="100" [ngModel]="extraMoney"
                                         (ngModelChange)="changeExtramoney($event)"
                                         [ngModelOptions]="{standalone: true}">
                                       </tds-input-number>
@@ -834,13 +833,13 @@
                     </td>
                     <!-- Số lượng -->
                     <td>
-                      <tds-input-number [ngModel]="data.ProductUOMQty" [min]="1" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                      <tds-input-number [ngModel]="data.ProductUOMQty" [min]="1" [step]="1"
                         (ngModelChange)="onChangeQuantity($event, data)" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </td>
                     <!-- Đơn giá -->
                     <td>
-                      <tds-input-number [ngModel]="data.PriceUnit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                      <tds-input-number [ngModel]="data.PriceUnit" [min]="0" [step]="1000"
                         (ngModelChange)="onChangePriceUnit($event, data)" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </td>
@@ -866,8 +865,7 @@
                             (ngModelChange)="changeProductDiscountType($event, data, 'Discount', i)"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
-                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
-                            *ngIf="data.Type === 'fixed'"
+                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" *ngIf="data.Type === 'fixed'"
                             (ngModelChange)="changeProductDiscountType($event, data, 'Discount_Fixed', i)"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>

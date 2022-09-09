@@ -74,7 +74,7 @@
               <td class="align-top">
                 <tds-form-field>
                   <tds-input-number tds-tooltip tooltipTitle="{{ data.AmountTotal | number:'1.0-3'  }}" [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
-                    [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
+                    [ngModelOptions]="{standalone: true}" >
                   </tds-input-number>
                 </tds-form-field>
               </td>
@@ -82,7 +82,7 @@
               <td class="align-top">
                 <tds-form-field>
                   <tds-input-number tds-tooltip tooltipTitle="{{ data.DeliveryPrice | number:'1.0-3'  }}" [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
-                    [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
+                    [ngModelOptions]="{standalone: true}" >
                   </tds-input-number>
                 </tds-form-field>
               </td>
@@ -90,7 +90,7 @@
               <td class="align-top">
                 <tds-form-field>
                   <tds-input-number tds-tooltip tooltipTitle="{{ data.ShipWeight | number:'1.0-3'  }}" [min]="0" [step]="1" [(ngModel)]="data.ShipWeight"
-                    [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
+                     [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
               </td>
@@ -164,8 +164,7 @@
                               <td>
                                 <tds-form-field>
                                   <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceUnit | number:'1.0-3' }}"
-                                    (ngModelChange)="changePriceProduct($event, index, i)" [formatter]="numberWithCommas"
-                                    [parser]="parserComas" [(ngModel)]="orderLines.PriceUnit"
+                                    (ngModelChange)="changePriceProduct($event, index, i)"  [(ngModel)]="orderLines.PriceUnit"
                                     [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                                 </tds-form-field>
@@ -174,8 +173,7 @@
                               <td>
                                 <tds-form-field>
                                   <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceSubTotal | number:'1.0-3' }}"
-                                    (ngModelChange)="changePriceProduct($event, index, i)" [formatter]="numberWithCommas"
-                                    [parser]="parserComas" [(ngModel)]="orderLines.PriceSubTotal"
+                                    (ngModelChange)="changePriceProduct($event, index, i)" [(ngModel)]="orderLines.PriceSubTotal"
                                     [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                                 </tds-form-field>
