@@ -1,171 +1,187 @@
 <tds-spin [spinning]="isLoading" class="h-full w-full">
-  <div class="w-full h-full flex overflow-hidden flex-col gap-y-4 overflow-y-auto tds-custom-scroll bg-white p-4">
-    <div class="flex gap-x-2">
+    <div class="w-full h-full flex overflow-hidden flex-col gap-y-4 overflow-y-auto tds-custom-scroll bg-white p-4">
+        <!-- Tìm kiếm -->
+        <div class="flex gap-x-2">
+            <tds-form-field class="w-full">
+                <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [(ngModel)]="filterObj.searchText" [tdsInputDebounce]="750" (inputKeyup)="applyFilter($event)"/>
+                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                <span tdsSuffix class="cursor-pointer rounded-lg" title="Chọn sản phẩm" (click)="onClearFilter()" *ngIf="filterObj.searchText">
+                    <i class="text-neutral-1-500 tdsi-close-fill"></i>
+                </span>
+            </tds-form-field>
 
-        <tds-form-field class="w-full">
-            <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [(ngModel)]="filterObj.searchText" [tdsInputDebounce]="750" (inputKeyup)="applyFilter($event)"/>
-            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-            <span tdsSuffix class="cursor-pointer rounded-lg" title="Chọn sản phẩm" (click)="onClearFilter()" *ngIf="filterObj.searchText">
-                <i class="text-neutral-1-500 tdsi-close-fill"></i>
+            <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
+            [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
+            <span class="flex items-center ">
+                <i class="tdsi-success-line text-xl leading-5"></i>
             </span>
-        </tds-form-field>
+            </button>
+        </div>
+        <!-- filter status -->
+        <div *ngIf="tabNavs.length > 1" [ngClass]="isOpenCollapCheck ? 'hidden' : 'flex'">
+            <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
+            <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+                <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
+                <ng-template tds-filter-status-template let-active='active'
+                        let-count='count' let-name='name' let-value>
+                        <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
+                            [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">
+                            <div class="text-body-2 px-2 font-semibold truncate" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 group-hover:text-primary-1':!active}">
+                                {{name}}&nbsp; {{count}}
+                            </div>
+                        </div>
+                    </ng-template>
+                </tds-filter-status-item>
+            </ng-template>
+            </tds-filter-status>
+        </div>
+        <!-- action button -->
+        <div class="items-center justify-between" [ngClass]="isOpenCollapCheck ? 'flex' : 'hidden'">
+        <div class="flex gap-x-2">
+            <button tds-button color="primary" (click)="onActive('excel')">
+            <span class="flex items-center">
+                <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i> {{ !isLoadingActive ? 'Xuất Excel' : 'Loading...' }}
+            </span>
+            </button>
 
-        <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
-          [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
-          <span class="flex items-center ">
-              <i class="tdsi-success-line text-xl leading-5"></i>
-          </span>
-        </button>
+            <button tds-button color="custom" (click)="onActive('print')"
+            class="text-white  bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
+            <span class="flex items-center">
+                <i class="tdsi-print-fill text-lg leading-none mr-2"></i> {{ !isLoadingActive ? 'In đơn hàng' : 'Loading...' }}
+            </span>
+            </button>
 
-    </div>
-    <div *ngIf="tabNavs.length > 1" [ngClass]="isOpenCollapCheck ? 'hidden' : 'flex'">
-        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
-          <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-            <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-              <ng-template tds-filter-status-template let-active='active'
-                    let-count='count' let-name='name' let-value>
-                    <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
-                        [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">
-                        <div class="text-body-2 px-2 font-semibold truncate" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 group-hover:text-primary-1':!active}">
-                            {{name}}&nbsp; {{count}}
+            <button tds-button color="error" (click)="onActive('delete')">
+            <span class="flex items-center">
+                <i class="tdsi-trash-fill text-lg leading-none mr-2"></i> Xóa
+            </span>
+            </button>
+        </div>
+
+        <tds-checkbox class="px-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
+        </div>
+        <!-- danh sách đơn hàng -->
+        <div class="flex flex-col gap-y-4 w-full h-full" *ngIf="lstOfData.length > 0; else noData">
+            <tds-collapse accordion="true" *ngFor="let order of lstOfData" class="!rounded-xl">
+                <tds-collapse-panel [header]="headerOrder" [active]="false" (activeChange)="onActiveChange(order, $event)" class="!rounded-xl"
+                    [extra]="extraTpl1">
+                    <!-- Header  -->
+                    <ng-template #headerOrder>
+                    <div class="grid grid-cols-3 gap-x-2.5 items-center z-10 flex-auto pr-3">
+                        <div class="flex flex-col">
+                            <div>
+                                <span class="text-info-500 font-semibold">#{{ order.Code || 'N/A' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-neutral-1-400 text-caption-2"> {{ order.DateCreated | date:"HH:mm, dd/MM/yyyy " }} </span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-between">
+                            <div>
+                                <span class="">{{ order.Facebook_UserName }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <button *ngIf="order.Telephone"
+                                    class="bg-green-400 rounded h-4 w-4 flex items-center justify-center mr-1">
+                                    <span class="flex items-center text-white">
+                                        <i class="tdsi-call-fill text-[10px] leading-[10px]"></i>
+                                    </span>
+                                </button>
+                                <button *ngIf="order.Address"
+                                    class="bg-orange-500 rounded h-4 w-4 flex items-center justify-center mr-2">
+                                    <span class="flex items-center text-white">
+                                        <i class="tdsi-pin-fill text-[10px] leading-[10px]"></i>
+                                    </span>
+                                </button>
+                                <div>
+                                    <span class="text-error-400 text-caption-2" *ngIf="!order.PrintCount || order.PrintCount == 0">
+                                        Chưa in
+                                    </span>
+
+                                    <span class="text-success-500 text-caption-2" *ngIf="order.PrintCount && order.PrintCount > 0">
+                                        Đã in: {{order.PrintCount}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <tds-badge status="secondary" text="{{ order.StatusText }}"></tds-badge>
                         </div>
                     </div>
-                </ng-template>
-            </tds-filter-status-item>
-          </ng-template>
-        </tds-filter-status>
-    </div>
-    <div class="items-center justify-between" [ngClass]="isOpenCollapCheck ? 'flex' : 'hidden'">
-      <div class="flex gap-x-2">
-        <button tds-button color="primary" (click)="onActive('excel')">
-          <span class="flex items-center">
-            <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i> {{ !isLoadingActive ? 'Xuất Excel' : 'Loading...' }}
-          </span>
-        </button>
+                    </ng-template>
+                    <ng-template #extraTpl1>
+                    <div class="flex gap-x-6 items-center">
+                        <button tds-flat-button-icon (click)="onEdit(order, $event)">
+                            <span class="flex items-center">
+                                <i class="tdsi-edit-fill text-neutral-1-500"></i>
+                            </span>
+                        </button>
 
-        <button tds-button color="custom" (click)="onActive('print')"
-          class="text-white  bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
-          <span class="flex items-center">
-            <i class="tdsi-print-fill text-lg leading-none mr-2"></i> {{ !isLoadingActive ? 'In đơn hàng' : 'Loading...' }}
-          </span>
-        </button>
-
-        <button tds-button color="error" (click)="onActive('delete')">
-          <span class="flex items-center">
-              <i class="tdsi-trash-fill text-lg leading-none mr-2"></i> Xóa
-          </span>
-        </button>
-      </div>
-
-      <tds-checkbox class="px-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
-    </div>
-    <div class="flex flex-col gap-y-4 w-full" *ngIf="lstOfData.length > 0; else noData">
-        <tds-collapse accordion="true" *ngFor="let order of lstOfData" class="!rounded-xl">
-            <tds-collapse-panel [header]="headerOrder" [active]="false" (activeChange)="onActiveChange(order, $event)" class="!rounded-xl"
-                [extra]="extraTpl1">
-                <!-- Header  -->
-                <ng-template #headerOrder>
-                  <div class="grid grid-cols-3 gap-x-2.5 items-center z-10 flex-auto pr-3">
-                      <div class="flex flex-col">
-                          <div>
-                              <span class="text-info-500 font-semibold">#{{ order.Code || 'N/A' }}</span>
-                          </div>
-                          <div>
-                              <span class="text-neutral-1-400 text-caption-2"> {{ order.DateCreated | date:"HH:mm, dd/MM/yyyy " }} </span>
-                          </div>
-                      </div>
-                      <div class="flex flex-col justify-between">
-                          <div>
-                              <span class="">{{ order.Facebook_UserName }}</span>
-                          </div>
-                          <div class="flex items-center">
-                              <button *ngIf="order.Telephone"
-                                  class="bg-green-400 rounded h-4 w-4 flex items-center justify-center mr-1">
-                                  <span class="flex items-center text-white">
-                                      <i class="tdsi-call-fill text-[10px] leading-[10px]"></i>
-                                  </span>
-                              </button>
-                              <button *ngIf="order.Address"
-                                  class="bg-orange-500 rounded h-4 w-4 flex items-center justify-center mr-2">
-                                  <span class="flex items-center text-white">
-                                      <i class="tdsi-pin-fill text-[10px] leading-[10px]"></i>
-                                  </span>
-                              </button>
-                              <div>
-                                  <span class="text-error-400 text-caption-2" *ngIf="!order.PrintCount || order.PrintCount == 0">
-                                    Chưa in
-                                  </span>
-
-                                  <span class="text-success-500 text-caption-2" *ngIf="order.PrintCount && order.PrintCount > 0">
-                                    Đã in: {{order.PrintCount}}
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="flex justify-end">
-                        <tds-badge status="secondary" text="{{ order.StatusText }}"></tds-badge>
-                      </div>
-                  </div>
-                </ng-template>
-                <ng-template #extraTpl1>
-                  <div class="flex gap-x-6 items-center">
-                      <button tds-flat-button-icon (click)="onEdit(order, $event)">
-                          <span class="flex items-center">
-                              <i class="tdsi-edit-fill text-neutral-1-500"></i>
-                          </span>
-                      </button>
-
-                      <tds-checkbox [ngClass]="isOpenCollapCheck ? 'flex' : 'hidden'" [checked]="setOfCheckedId.has(order.Id)" (click)="onCheck(order.Id, $event)"></tds-checkbox>
-                  </div>
-                </ng-template>
-                <!-- Content  -->
-                <div class="flex flex-auto">
-                    <tds-table #tableInCollapse [listData]="lstLine" [loading]="isLoadingLine" [showPagination]="false" [tableLayout]="'fixed'">
-                        <thead>
-                            <tr>
-                                <th width="40%">Sản phẩm</th>
-                                <th width="20%">Số lượng</th>
-                                <th width="20%">Thành tiền</th>
-                                <th width="20%">Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <ng-template ngFor let-data [ngForOf]="tableInCollapse.data">
-                                <tr class="text-caption-2">
-                                    <td>
-                                        <div class="flex flex-col" tds-tooltip tooltipTitle="{{ data.ProductNameGet }}">
-                                            <span class="truncate">{{ data.ProductNameGet }}</span>
-                                            <span class="text-neutral-1-400">{{ data.Price | number:'1.0-3'  }}</span>
-                                        </div>
-                                    </td>
-                                    <td>{{ data.Quantity | number:'1.0-3'  }}</td>
-                                    <td>{{ data.Quantity * data.Price | number:'1.0-3'  }}</td>
-                                    <td>
-                                        <tds-tag [status]="data.IsOrderPriority ? 'primary' : 'secondary'">
-                                            {{ data.IsOrderPriority ? 'Ưu tiên' : 'Dự bị' }}
-                                        </tds-tag>
-                                    </td>
+                        <tds-checkbox [ngClass]="isOpenCollapCheck ? 'flex' : 'hidden'" [checked]="setOfCheckedId.has(order.Id)" (click)="onCheck(order.Id, $event)"></tds-checkbox>
+                    </div>
+                    </ng-template>
+                    <!-- Content  -->
+                    <div class="flex flex-auto">
+                        <tds-table #tableInCollapse [listData]="lstLine" [loading]="isLoadingLine" [showPagination]="false" [tableLayout]="'fixed'">
+                            <thead>
+                                <tr>
+                                    <th width="40%">Sản phẩm</th>
+                                    <th width="20%">Số lượng</th>
+                                    <th width="20%">Thành tiền</th>
+                                    <th width="20%">Trạng thái</th>
                                 </tr>
-                            </ng-template>
-                        </tbody>
-                    </tds-table>
-                </div>
-            </tds-collapse-panel>
-        </tds-collapse>
-    </div>
-    <ng-template #noData>
-        <div class="pt-1 flex-auto">
-            <div class="flex flex-col gap-4 p-4 items-center bg-white">
-                <img src="../../../assets/imagesv2/shop-empty.svg" alt="" class="mt-24 w-[110px] h-[82px]">
-                <span class="text-neutral-1-400 font-normal">Chưa có đơn hàng nào</span>
+                            </thead>
+                            <tbody>
+                                <ng-template ngFor let-data [ngForOf]="tableInCollapse.data">
+                                    <tr class="text-caption-2">
+                                        <td>
+                                            <div class="flex flex-col" tds-tooltip tooltipTitle="{{ data.ProductNameGet }}">
+                                                <span class="truncate">{{ data.ProductNameGet }}</span>
+                                                <span class="text-neutral-1-400">{{ data.Price | number:'1.0-3'  }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ data.Quantity | number:'1.0-3'  }}</td>
+                                        <td>{{ data.Quantity * data.Price | number:'1.0-3'  }}</td>
+                                        <td>
+                                            <tds-tag [status]="data.IsOrderPriority ? 'primary' : 'secondary'">
+                                                {{ data.IsOrderPriority ? 'Ưu tiên' : 'Dự bị' }}
+                                            </tds-tag>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </tbody>
+                        </tds-table>
+                    </div>
+                </tds-collapse-panel>
+            </tds-collapse>
 
-                <!-- <button type="button" tds-button color="primary" class="mt-3.5">
-                    <span class="flex items-center">
-                        <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Tạo đơn hàng
-                    </span>
-                </button> -->
+            <!-- phân trang -->
+            <div class="flex flex-auto items-end">
+                <tds-pagination class="w-full" [pageSize]="pageSize" [pageIndex]="pageIndex" [total]="count" 
+                    [pageSizeOptions]="[5, 10, 15, 20]"
+                    [showTotal]="rangeTemplate" showSizeChanger [showRefresh]="true" 
+                    (clickRefresh)="refreshData()">
+                </tds-pagination>
+                
+                <ng-template #rangeTemplate let-range="range" let-total>
+                    {{ range[0] }}-{{ range[1] }} of {{ total }}
+                </ng-template>
             </div>
         </div>
-    </ng-template>
-  </div>
+
+        <ng-template #noData>
+            <div class="pt-1 flex-auto">
+                <div class="flex flex-col gap-4 p-4 items-center bg-white">
+                    <img src="../../../assets/imagesv2/shop-empty.svg" alt="" class="mt-24 w-[110px] h-[82px]">
+                    <span class="text-neutral-1-400 font-normal">Chưa có đơn hàng nào</span>
+
+                    <!-- <button type="button" tds-button color="primary" class="mt-3.5">
+                        <span class="flex items-center">
+                            <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Tạo đơn hàng
+                        </span>
+                    </button> -->
+                </div>
+            </div>
+        </ng-template>
+    </div>
 </tds-spin>

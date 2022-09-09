@@ -6,7 +6,7 @@ import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy, AfterViewChecked, AfterViewInit, AfterContentChecked } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
@@ -38,7 +38,6 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
-import { TruncateString } from 'tds-report';
 
 @Component({
   selector: 'app-order',
@@ -143,7 +142,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.loadGridConfig();
     this.loadStatusTypeExt();
     this.loadSummaryStatus();
-    // console.log(TruncateString('vghfhfghfhfh',5,'middle'))
   }
 
   ngAfterViewInit(): void {

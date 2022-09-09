@@ -48,6 +48,22 @@ export class CreateProductVariantComponent implements OnInit {
 
   private destroy$ = new Subject<void>();
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   constructor(private fb: FormBuilder,
     private router: Router,
     private message: TDSMessageService,

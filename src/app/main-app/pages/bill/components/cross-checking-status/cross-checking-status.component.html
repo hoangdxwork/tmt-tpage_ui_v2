@@ -86,7 +86,7 @@
                                 </ng-template>
                             </td>
                             <td>
-                                <tds-input-number
+                                <tds-input-number [formatter]="numberWithCommas" [parser]="parserComas"
                                     [ngModelOptions]="{standalone: true}"
                                     [(ngModel)]="data.CoDAmount"
                                     [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>

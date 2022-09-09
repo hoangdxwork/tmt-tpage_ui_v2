@@ -7,7 +7,7 @@ import { finalize } from 'rxjs';
 import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'config-delivery-update',
@@ -20,6 +20,22 @@ export class ConfigDeliveryUpdateComponent implements OnInit {
   isLoading: boolean = false;
   data: Array<AshipGetInfoConfigProviderDto> = [];
   id!: number;
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
