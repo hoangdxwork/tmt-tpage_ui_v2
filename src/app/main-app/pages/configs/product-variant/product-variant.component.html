@@ -75,12 +75,12 @@
                             [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
                         </th>
                         <th width="68px" [tdsLeft]="true">Ảnh</th>
-                        <th width="400px" [tdsLeft]="true">Tên</th>
-                        <th>Đơn vị</th>
-                        <th>Mã vạch</th>
-                        <th>Giá bán</th>
-                        <th>Hiệu lực</th>
-                        <th [tdsRight]="true">Thao tác</th>
+                        <th width="268px" [tdsLeft]="true">Tên</th>
+                        <th width="168px">Đơn vị</th>
+                        <th width="168px">Mã vạch</th>
+                        <th width="168px">Giá bán</th>
+                        <th width="168px">Hiệu lực</th>
+                        <th width="168px" [tdsRight]="true">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,13 +105,13 @@
                                 </span>
                             </td>
                             <td [tdsRight]="true">
-                                <button tds-button-icon color="secondary" size="sm" class=" mr-2"
+                                <button tds-button-icon color="secondary" size="sm" class="mr-2" tds-tooltip="Chỉnh sửa"
                                     (click)="showEditModal(data.Id)">
                                     <span class="flex items-center">
                                         <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm"
+                                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa"
                                     (click)="showRemoveModal(data.Id)">
                                     <span class="flex items-center">
                                         <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
