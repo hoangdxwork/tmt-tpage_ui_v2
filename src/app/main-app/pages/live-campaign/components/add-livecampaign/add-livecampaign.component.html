@@ -70,7 +70,7 @@
               <div class="flex gap-x-4 items-center">
                 <tds-label class="w-1/4">Số tiền cọc bắt buộc</tds-label>
                 <tds-form-field class="w-3/4">
-                  <tds-input-number [min]='0' [step]="1000" formControlName="MaxAmountDepositRequired" [formatter]="formatterVND"> 
+                  <tds-input-number [min]='0' [step]="1000" formControlName="MaxAmountDepositRequired" [formatter]="numberWithCommas" [parser]="parserComas"> 
                   </tds-input-number>
                 </tds-form-field>
               </div>
@@ -98,8 +98,8 @@
               <div class="flex gap-x-4 items-center">
                 <tds-label class="w-1/4">Số tiền tối thiểu đặt cọc</tds-label>
                 <tds-form-field class="w-3/4">
-                    <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit" [formatter]="formatterVND"
-                    ></tds-input-number>
+                    <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit" 
+                      [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 </tds-form-field>
               </div>
 
@@ -116,7 +116,7 @@
               <div class="grid grid-cols-4 gap-x-4 items-center">
                 <tds-label>Thời gian tổng hợp (phút)</tds-label>
                 <tds-form-field class="col-span-3">
-                    <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" ></tds-input-number>
+                    <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 </tds-form-field>
               </div>
 
@@ -256,7 +256,7 @@
                     <!-- Số lượng -->
                     <td>
                       <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1" formControlName="Quantity">
+                        <tds-input-number [min]="0" [step]="1" formControlName="Quantity" [formatter]="numberWithCommas" [parser]="parserComas">
                         </tds-input-number>
                       </tds-form-field>
                     </td>
@@ -264,7 +264,7 @@
                     <!-- Giới hạn trên đơn -->
                     <td>
                       <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity">
+                        <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" [formatter]="numberWithCommas" [parser]="parserComas">
                         </tds-input-number>
                       </tds-form-field>
                     </td>
@@ -272,7 +272,7 @@
                     <!-- Giá bán -->
                     <td>
                       <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1000" formControlName="Price">
+                        <tds-input-number [min]="0" [step]="1000" formControlName="Price" [formatter]="numberWithCommas" [parser]="parserComas">
                         </tds-input-number>
                       </tds-form-field>
                     </td>

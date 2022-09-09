@@ -77,7 +77,7 @@
                             <ng-template #contentQuantity>
                                 <div class="w-[304px]">
                                     <tds-form-field>
-                                        <tds-input-number [min]='0' [step]="1" [ngModel]="currentQuantity"
+                                        <tds-input-number [min]='0' [step]="1" [(ngModel)]="currentQuantity" [formatter]="numberWithCommas" [parser]="parserComas"
                                             (ngModelChange)="changeQuantity($event)"
                                             [ngModelOptions]="{standalone: true}">
                                         </tds-input-number>

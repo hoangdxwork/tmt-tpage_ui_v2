@@ -53,7 +53,7 @@ export class ConversationOrderListComponent implements OnInit {
   isLoadingActive: boolean = false;
   setOfCheckedId = new Set<string>();
 
-  pageSize = 20;
+  pageSize = 10;
   pageIndex = 1;
   tabIndex: number = 1;
 
@@ -148,6 +148,16 @@ export class ConversationOrderListComponent implements OnInit {
       searchText: ''
     }
 
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  changePageSize(pageSize:number){
+    this.pageSize = pageSize;
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  changePageIndex(pageIndex:number){
+    this.pageIndex = pageIndex;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
