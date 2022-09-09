@@ -204,7 +204,7 @@
                                                                 <tds-form-field class="w-2/3">
                                                                     <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"
                                                                         [formatter]="numberWithCommas" [parser]="parserComas" (ngModelChange)="onChangePrice($event, item, index)"
-                                                                        [ngModel]="priceValue" [ngModelOptions]="{standalone: true}">
+                                                                        [ngModel]="item.Price" [ngModelOptions]="{standalone: true}">
                                                                     </tds-input-number>
                                                                 </tds-form-field>
                                                             </div>
