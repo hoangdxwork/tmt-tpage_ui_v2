@@ -829,7 +829,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
-
+              this.isLoading = false;
           } else {
 
               this.quickOrderModel = {} as any;

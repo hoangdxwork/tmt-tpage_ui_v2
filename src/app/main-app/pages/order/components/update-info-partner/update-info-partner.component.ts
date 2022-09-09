@@ -207,7 +207,7 @@ export class UpdateInfoPartnerComponent implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        _street: this._street,
+        _street: this._form.controls['Street']?.value || '',
         _cities: this._cities,
         _districts: this._districts,
         _wards: this._wards,
