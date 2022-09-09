@@ -22,10 +22,10 @@
             </tds-form-field>
           </div>
 
-          <div class="font-semibold">Sô tiền</div>
+          <div class="font-semibold">Số tiền</div>
           <div class="col-span-2">
             <tds-form-field>
-              <tds-input-number [min]="1" [max]="999999999" [step]="1000" [required]='true' placeholder="Nhập số tiền" formControlName="Amount">
+              <tds-input-number [min]="0" [step]="1000" [required]='true' placeholder="Nhập số tiền" formControlName="Amount" [formatter]="numberWithCommas" [parser]="parserComas">
               </tds-input-number>
             </tds-form-field>
           </div>

@@ -70,6 +70,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   enumActivityStatus = ActivityStatus;
   messageModel!: string;
   isLoading: boolean = false;
+  isLoadingOrder: boolean = false;
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
   isOpenDrawer: boolean = false;
@@ -441,20 +442,25 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
+    this.isLoadingOrder = true;
+
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
-    next: (res: ChatomniConversationInfoDto) => {
-      if(res) {
-          // Thông tin khách hàng
-          this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+      next: (res: ChatomniConversationInfoDto) => {
+        this.isLoadingOrder = false;
 
-          // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
-          this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
-          this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+        if(res) {
+            // Thông tin khách hàng
+            this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+
+            // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
+            this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+            this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
         }
       },
       error: (error: any) => {
-          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+        this.isLoadingOrder = false;
+        this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     })
   }

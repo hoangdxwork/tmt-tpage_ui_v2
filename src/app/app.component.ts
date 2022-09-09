@@ -1,3 +1,4 @@
+import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -29,6 +30,7 @@ export class AppComponent {
     public router: Router,
     private route: ActivatedRoute,
     private notification: TDSNotificationService,
+    private tdsConfigService: TDSConfigService,
     private socketOnEventService: SocketOnEventService,
     private loader: PageLoadingService,
     private destroy$: TDSDestroyService) {
@@ -54,6 +56,10 @@ export class AppComponent {
         }
       }
     })
+
+    this.tdsConfigService.set('notification', {
+      maxStack:3
+      });
   }
 
   init(): Observable<boolean> {

@@ -25,7 +25,8 @@
             <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
                 <div class="text-body-2 font-semibold text-neutral-1-900 font-sans mr-4">Giới hạn số đơn được tạo</div>
                 <div class="flex w-[152px]">
-                      <tds-input-number [(ngModel)]="dataModel.MaxCreateOrder" [min]="0" [max]="1000000" [step]="1" placeholder="0"></tds-input-number>
+                      <tds-input-number [(ngModel)]="dataModel.MaxCreateOrder" 
+                      [formatter]="numberWithCommas" [parser]="parserComas" [min]="0" [max]="1000000" [step]="1" placeholder="0"></tds-input-number>
                 </div>
             </div>
           </div>
@@ -78,7 +79,9 @@
             <div class="flex items-center" *ngIf="dataModel.IsEnableOrderAuto">
                 <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) : </div>
                 <div class="flex w-40">
-                    <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="dataModel.MinLengthToOrder"></tds-input-number>
+                    <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" 
+                      [formatter]="numberWithCommas" [parser]="parserComas"
+                      [(ngModel)]="dataModel.MinLengthToOrder"></tds-input-number>
                 </div>
             </div>
 
@@ -120,13 +123,13 @@
 
                   <tds-form-field>
                       <tds-label>Từ số</tds-label>
-                      <tds-input-number [(ngModel)]="fromMoreTemplate" [min]="1" [max]="100" [step]="1" placeholder="0">
+                      <tds-input-number [(ngModel)]="fromMoreTemplate" [min]="1" [max]="100" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
                       </tds-input-number>
                   </tds-form-field>
 
                   <tds-form-field>
                       <tds-label>Đến số</tds-label>
-                      <tds-input-number [(ngModel)]="toMoreTemplate" [min]="1" [max]="100" [step]="1" placeholder="0">
+                      <tds-input-number [(ngModel)]="toMoreTemplate" [min]="1" [max]="100" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
                       </tds-input-number>
                   </tds-form-field>
               </div>
@@ -178,7 +181,7 @@
                       <div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
                       <div class="w-3/4">
                         <tds-form-field class="w-full">
-                          <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="item.Product.Quantity">
+                          <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="item.Product.Quantity" [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
                       </div>

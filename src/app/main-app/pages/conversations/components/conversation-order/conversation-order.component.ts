@@ -93,7 +93,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   saleConfig!: InitSaleDTO;
 
-  visibleIndex: number = -1;
+  visibleIndex: boolean = false;
   keyFilterUser: string = '';
   isOpenCarrier = false;
 
@@ -110,21 +110,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   configsProviderDataSource: Array<AshipGetInfoConfigProviderDto> = [];
   insuranceInfo!: CalculateFeeInsuranceInfoResponseDto | null;
   extraMoney: number = 0;
+  priceValue: number = 0;
   companyCurrents!: CompanyCurrentDTO;
   visibleShipExtraMoney: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null) {
+    if(value != null)
+    {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    return value
-  };
+    return value;
+  } ;
 
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null) {
-      return TDSHelperString.replaceAll(value,',','');
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
     }
-    return value
+    return value;
   };
 
   _cities!: SuggestCitiesDTO;
@@ -422,6 +425,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
     this.isEnableCreateOrder = event.checked;
+    this.visibleIndex = false;
 
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
@@ -829,7 +833,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
-
+              this.isLoading = false;
           } else {
 
               this.quickOrderModel = {} as any;
@@ -1061,10 +1065,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
-  closePriceDetail() {
-    this.visibleIndex = -1;
-  }
-
   changeShipWeight() {
     if(this.saleModel.Carrier) {
       this.calcFee();
@@ -1120,15 +1120,35 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.visibleShipExtraMoney = false;
   }
 
+  openPopover(price:number, index:number){
+    this.visibleIndex = false;
+    this.priceValue = Number(price);
+  }
+
   onChangePrice(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
-    this.visibleIndex = index;
+    if(Number(event) >= 0) {
+      let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+      if(exit) {
+          this.quickOrderModel.Details[index].Price = event;
+          this.calcTotal();
+          this.coDAmount();
+      }
+    }
+  }
+
+  approvePrice(item: Detail_QuickSaleOnlineOrder, index: number) {
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
     if(exit) {
-        this.quickOrderModel.Details[index].Price = event;
+        this.quickOrderModel.Details[index].Price = this.priceValue;
         this.calcTotal();
         this.coDAmount();
-
     }
+
+    this.closePriceDetail();
+  }
+
+  closePriceDetail() {
+    this.visibleIndex = false;
   }
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {

@@ -48,6 +48,22 @@ export class PostOrderConfigComponent implements OnInit {
   lstTags$!: Observable<CRMTagDTO[]>;
   lstUser$!: Observable<ConfigUserDTO[]>;
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   constructor(private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService,

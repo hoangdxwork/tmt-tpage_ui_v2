@@ -53,7 +53,7 @@ export class ConversationOrderListComponent implements OnInit {
   isLoadingActive: boolean = false;
   setOfCheckedId = new Set<string>();
 
-  pageSize = 20;
+  pageSize = 10;
   pageIndex = 1;
   tabIndex: number = 1;
 
@@ -121,7 +121,6 @@ export class ConversationOrderListComponent implements OnInit {
 
   getViewData(params: string) {
     this.isLoading = true;
-
     return this.odataSaleOnline_OrderService
       .getViewByPost(this.currentPost.ObjectId, params, this.filterObj)
       .pipe(finalize(() => this.isLoading = false ));
@@ -143,12 +142,24 @@ export class ConversationOrderListComponent implements OnInit {
 
   refreshData() {
     this.pageIndex = 1;
+    this.tabIndex = 1;
     this.filterObj = {
       tags: [],
       status: '',
       searchText: ''
     }
 
+    this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
+  }
+
+  changePageSize(pageSize:number){
+    this.pageSize = pageSize;
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  changePageIndex(pageIndex:number){
+    this.pageIndex = pageIndex;
     this.loadData(this.pageSize, this.pageIndex);
   }
 

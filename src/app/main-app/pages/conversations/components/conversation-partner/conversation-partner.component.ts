@@ -64,7 +64,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   lstBill: GroupBy_ConversationBillDto[] = [];
   totalBill: number = 0;
 
-  tab_Bill: number = 0;
+  tab_Bill?: any = null;
   isEditPartner: boolean = false;
   partner!: ConversationPartnerDto;
   conversationItem!: ChatomniConversationItemDto; // dữ liệu nhận từ conversation-all
@@ -297,8 +297,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     })
   }
 
-  onChangeTabBill(event: any) {
+  onChangeTabBill(event: any) {debugger
+    if(this.tab_Bill == event) {
+      this.tab_Bill = null;
+    } else {
       this.tab_Bill = event;
+    }
   }
 
   selectStatus(event: PartnerStatusDTO) {

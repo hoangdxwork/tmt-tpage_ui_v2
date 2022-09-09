@@ -174,7 +174,7 @@
                     <div class="max-h-[270px] overflow-y-auto tds-panel-scroll w-full px-3">
                         <tds-table #basicTable class="w-full h-full" [listData]="quickOrderModel.Details" [noResult]="emptyData" [frontPagination]="false">
                             <tbody>
-                                <tr class="bg-white editable-row py-3" *ngFor="let item of quickOrderModel.Details; let index=index">
+                                <tr class="bg-white editable-row py-3" *ngFor="let item of quickOrderModel.Details; let index =index">
                                     <!-- Sản phẩm -->
                                     <td width="60%">
                                         <div class="flex gap-3.5">
@@ -191,8 +191,9 @@
                                                         {{ item.Price | numberCustom  }}đ
                                                     </span>
 
-                                                    <span class="tdsi-edit-line flex text-base cursor-pointer" tds-popover [popoverVisible]="visibleIndex == index"
-                                                        popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true" [popoverBackdrop]="true">
+                                                    <span class="tdsi-edit-line flex text-base cursor-pointer" tds-popover
+                                                        popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true" [popoverBackdrop]="true"
+                                                        (popoverVisibleChange)="openPopover(item.Price, index)">
                                                     </span>
 
                                                     <ng-template #tmpEditPrice>
@@ -201,8 +202,9 @@
                                                                 <tds-label class="w-1/3">Đơn giá</tds-label>
 
                                                                 <tds-form-field class="w-2/3">
-                                                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"  (ngModelChange)="onChangePrice($event, item, index)"
-                                                                        [(ngModel)]="item.Price" [ngModelOptions]="{standalone: true}">
+                                                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"
+                                                                        [formatter]="numberWithCommas" [parser]="parserComas" (ngModelChange)="onChangePrice($event, item, index)"
+                                                                        [ngModel]="item.Price" [ngModelOptions]="{standalone: true}">
                                                                     </tds-input-number>
                                                                 </tds-form-field>
                                                             </div>
@@ -221,10 +223,10 @@
                                                                 </tds-form-field>
                                                             </div> -->
 
-                                                            <div class="flex gap-x-2 mt-4 justify-end">
+                                                            <!-- <div class="flex gap-x-2 mt-4 justify-end">
                                                                 <button class="min-w-[89px]" type="button" tds-button color="secondary" size="sm" (click)="closePriceDetail()">Hủy bỏ</button>
-                                                                <button class="min-w-[89px]" type="button" tds-button color="primary" size="sm">Áp dụng</button>
-                                                            </div>
+                                                                <button class="min-w-[89px]" type="button" tds-button color="primary" size="sm" (click)="approvePrice(item, index)">Áp dụng</button>
+                                                            </div> -->
                                                         </div>
                                                     </ng-template>
                                                 </div>
@@ -304,13 +306,14 @@
                                             <tds-label class="w-[35%] font-normal text-sm">Chiếc khấu (%) </tds-label>
 
                                             <tds-form-field class="w-[35%]">
-                                                <tds-input-number autocomplete="off" placeholder="0" [min]="0" [max]="100" [step]="1"  (ngModelChange)="changeDiscount($event)" [(ngModel)]="saleModel.Discount" [ngModelOptions]="{standalone: true}">
+                                                <tds-input-number autocomplete="off"  [min]="0" [max]="100" [step]="1"
+                                                    (ngModelChange)="changeDiscount($event)" [(ngModel)]="saleModel.Discount" [ngModelOptions]="{standalone: true}">
                                                 </tds-input-number>
                                                 <span tdsSuffix><span class="font-semibold font-sans text-primary-1">%</span></span>
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DiscountAmount || 0 | numberCustom  }}đ </span>
+                                                <span> -{{ saleModel.DiscountAmount | number:'1.0-3'  }}đ </span>
                                             </div>
                                         </div>
 
@@ -323,7 +326,7 @@
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DecreaseAmount || 0 | numberCustom  }}đ </span>
+                                                <span> -{{ saleModel.DecreaseAmount }}đ </span>
                                             </div>
                                         </div>
                                     </div>
@@ -331,8 +334,8 @@
                             </div>
                             <label>Tiền cọc</label>
                             <tds-form-field class="col-span-2">
-                                <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
-                                    (ngModelChange)="changeAmountDeposit($event)" [ngModel]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}">
+                                <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    (ngModelChange)="changeAmountDeposit($event)" [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                             </tds-form-field>
                             <label>Thuế</label>
@@ -344,8 +347,8 @@
                             </div>
                             <label>Thanh toán</label>
                             <tds-form-field class="col-span-2">
-                                <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [required]='true'
-                                    [ngModel]="saleModel.PaymentAmount" [ngModelOptions]="{standalone: true}" [max]="saleModel.AmountTotal">
+                                <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [required]='true' [formatter]="numberWithCommas" [parser]="parserComas"
+                                    [(ngModel)]="saleModel.PaymentAmount" [ngModelOptions]="{standalone: true}" [max]="saleModel.AmountTotal">
                                 </tds-input-number>
                             </tds-form-field>
                         </div>
@@ -415,8 +418,9 @@
 
                             <div class="flex flex-row items-center gap-x-2 w-3/4">
                               <tds-form-field class="flex flex-auto">
-                                  <tds-input-number [min]='0' [step]="1000" placeholder="Nhập phí" (ngModelChange)="changeShip_InsuranceFee($event)"
-                                      [ngModel]="saleModel.Ship_InsuranceFee" [ngModelOptions]="{standalone: true}">
+                                  <tds-input-number [min]='0' [step]="1000" placeholder="Nhập phí" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    (ngModelChange)="changeShip_InsuranceFee($event)"
+                                    [ngModel]="saleModel.Ship_InsuranceFee" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                               </tds-form-field>
 
@@ -464,7 +468,8 @@
                             <div class="flex flex-row items-center gap-x-2 w-full">
                               <tds-form-field class="flex flex-auto">
                                 <tds-label class="pr-3">Khối lượng ship(g)</tds-label>
-                                <tds-input-number [min]="0" [step]="100" [(ngModel)]="saleModel.ShipWeight" (tdsBlur)="changeShipWeight()" [ngModelOptions]="{standalone: true}">
+                                <tds-input-number [min]="0" [step]="100" [(ngModel)]="saleModel.ShipWeight" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    (tdsBlur)="changeShipWeight()" [ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                               </tds-form-field>
                             </div>
@@ -474,7 +479,8 @@
                             <div class="flex flex-row items-center gap-x-2 w-full">
                               <tds-form-field class="flex flex-auto">
                                 <tds-label class="pr-3">Phí giao hàng</tds-label>
-                                <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.DeliveryPrice" (ngModelChange)="changeDeliveryPrice($event)"[ngModelOptions]="{standalone: true}">
+                                <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.DeliveryPrice" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    (ngModelChange)="changeDeliveryPrice($event)"[ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                               </tds-form-field>
                             </div>
@@ -484,7 +490,8 @@
                             <div class="flex flex-row items-center gap-x-2 w-full">
                               <tds-form-field class="flex flex-auto">
                                 <tds-label class="pr-3">Giao hàng thu tiền</tds-label>
-                                <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.CashOnDelivery" (ngModelChange)="changeCashOnDelivery($event)" [ngModelOptions]="{standalone: true}">
+                                <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    (ngModelChange)="changeCashOnDelivery($event)" [ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                               </tds-form-field>
                             </div>
@@ -512,7 +519,8 @@
                                                 <ng-template #popoverContentShip_ExtraMoney>
                                                     <div class="flex gap-x-2">
                                                         <tds-form-field>
-                                                            <tds-input-number [min]='0' [step]="100" [ngModel]="extraMoney" [ngModelOptions]="{standalone: true}">
+                                                            <tds-input-number [min]='0' [step]="100" [(ngModel)]="extraMoney"
+                                                                [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                                                             </tds-input-number>
                                                         </tds-form-field>
                                                     </div>

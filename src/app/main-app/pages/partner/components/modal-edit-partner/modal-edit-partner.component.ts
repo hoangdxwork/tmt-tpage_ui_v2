@@ -11,7 +11,7 @@ import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/
 import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs';
 import { vi_VN } from 'tds-ui/i18n';
 import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
@@ -36,7 +36,22 @@ export class ModalEditPartnerComponent implements OnInit {
   fileList: TDSUploadFile[] = [];
 
   formatterPercent = (value: number) => `${formatNumber(value,vi_VN.locale,'1.2-2')}`;
-  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale)}`;
+  
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;

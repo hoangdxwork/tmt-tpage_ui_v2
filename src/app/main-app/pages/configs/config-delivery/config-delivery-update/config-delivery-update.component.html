@@ -88,9 +88,7 @@
                   <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
                     <tds-label>Khối lượng mặc định (g)</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                      <tds-input-number formControlName="Config_DefaultWeight" [min]="0"
-                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
-                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                      <tds-input-number formControlName="Config_DefaultWeight" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                         class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                       <tds-error>
                         Vui lòng nhập khối lượng
@@ -99,9 +97,7 @@
 
                     <tds-label>Chiều dài (cm)</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                      <tds-input-number formControlName="GHN_PackageLength" [min]="0"
-                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
-                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                      <tds-input-number formControlName="GHN_PackageLength" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                         class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                       <tds-error>
                         Vui lòng nhập chiều dài
@@ -110,9 +106,7 @@
 
                     <tds-label>Chiều rộng (cm)</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                      <tds-input-number formControlName="GHN_PackageWidth" [min]="0"
-                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
-                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                      <tds-input-number formControlName="GHN_PackageWidth" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                         class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                       <tds-error>
                         Vui lòng nhập chiều rộng
@@ -121,9 +115,7 @@
 
                     <tds-label>Chiều cao (cm)</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                      <tds-input-number formControlName="GHN_PackageHeight" [min]="0"
-                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
-                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                      <tds-input-number formControlName="GHN_PackageHeight" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                         class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                       <tds-error>
                         Vui lòng nhập chiều cao

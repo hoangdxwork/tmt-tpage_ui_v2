@@ -56,6 +56,22 @@ export class AddLiveCampaignPostComponent implements OnInit {
   _form!: FormGroup;
   companyCurrents!: CompanyCurrentDTO;
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   constructor(private crmTeamService: CRMTeamService,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,

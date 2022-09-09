@@ -15,7 +15,7 @@
       <div class="flex items-center gap-x-2">
         <tds-label class="mr-6 w-[60px]">Số lượng</tds-label>
         <div class="flex-auto">
-          <tds-input-number class="w-full"
+          <tds-input-number class="w-full" [formatter]="numberWithCommas" [parser]="parserComas"
           [(ngModel)]="initAll"
           [ngModelOptions]="{standalone: true}"
           [min]="0">
@@ -48,7 +48,7 @@
                     </td>
                     <td class="text-body-2">
                         <tds-form-field class="w-full">
-                            <tds-input-number formControlName="NewQuantity"
+                            <tds-input-number formControlName="NewQuantity" [formatter]="numberWithCommas" [parser]="parserComas"
                                 [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         </tds-form-field>
                     </td>

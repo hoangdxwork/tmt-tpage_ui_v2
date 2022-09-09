@@ -43,6 +43,22 @@ export class CreateBillDefaultComponent implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   constructor(private notification: TDSNotificationService,
     private message: TDSMessageService,
     private modal: TDSModalService,
@@ -106,20 +122,6 @@ export class CreateBillDefaultComponent implements OnInit {
       }
     });
   }
-
-  numberWithCommas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-    return value
-  };
-  
-  parserComas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return TDSHelperString.replaceAll(value, ',', '');
-    }
-    return value
-  };
 
   mappingAddress(data: Partner) {
     if (data && data.City) {

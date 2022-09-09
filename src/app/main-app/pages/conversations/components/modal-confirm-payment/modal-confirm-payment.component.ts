@@ -1,3 +1,4 @@
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { FastSaleOrder_DefaultDTOV2 } from './../../../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -12,8 +13,25 @@ import { TDSModalRef } from 'tds-ui/modal';
 })
 export class ModalConfirmPaymentComponent implements OnInit {
   @Input() data!: FastSaleOrder_DefaultDTOV2;
+
   paymentMethodOptions!: paymentMethodDTO[];
   _form!: FormGroup;
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   constructor(
     private modal: TDSModalRef,

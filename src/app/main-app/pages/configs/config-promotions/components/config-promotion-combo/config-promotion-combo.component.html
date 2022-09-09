@@ -28,7 +28,7 @@
                     </span>
                   </div>
                   <tds-form-field class="w-full col-span-2">
-                      <tds-input-number formControlName="MaximumUseNumber" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                      <tds-input-number formControlName="MaximumUseNumber" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                       <tds-error>
                           Vui lòng nhập giá trị
                       </tds-error>

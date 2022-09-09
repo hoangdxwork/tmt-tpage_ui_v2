@@ -30,6 +30,22 @@ export class ConfigPromotionGroupComponent implements OnInit {
   discountProductTable:Array<TDSSafeAny> = [];
   couponTable:Array<TDSSafeAny> = [];
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   lstDiscountType: any = [
     { text: 'Phần trăm', value: 'percentage' },
     { text: 'Tiền cố định', value: 'fixed_amount' }

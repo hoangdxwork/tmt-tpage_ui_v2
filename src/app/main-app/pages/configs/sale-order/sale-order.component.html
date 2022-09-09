@@ -65,7 +65,7 @@
                         <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Sử dụng mẫu nhà cung cấp</span>
                     </div>
 
-                    <div *ngIf="_form.controls['IsUsingProviderTemplate'].value == true" class="flex flex-col  w-full">
+                    <div class="flex flex-col  w-full">
                         <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
                         <quill-editor formControlName="BillTemplate" [modules]="quillTagHelpers" class="input-quill-editor"></quill-editor>
                     </div>

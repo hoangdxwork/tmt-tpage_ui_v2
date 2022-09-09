@@ -60,7 +60,7 @@
 
                             <!-- thao tác -->
                             <div class="flex items-center pt-3">
-                                <button *ngIf="!isShowModal" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)"> Tạo đơn hàng  </button>
+                                <button *ngIf="!isShowModal" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
 
                                 <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                     tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
@@ -263,13 +263,13 @@
                                         <div class="flex gap-x-2">
                                             <label class="font-semibold" *ngIf="data.Data && data.Data?.from">{{ data.Data.from.name }} </label>
 
-                                            <div *ngIf="commentOrders && data?.Data?.from" class="flex flex-row items-center">
+                                            <!-- <div *ngIf="commentOrders && data?.Data?.from" class="flex flex-row items-center">
                                                 <div *ngFor="let order of commentOrders[data.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                                     <div class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order.id, item)">
                                                         <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
 
                                         <span class="text-neutral-1-400 text-right text-caption-1">{{data.CreatedTime | date:'dd/MM/yyyy HH:mm aa'}}</span>

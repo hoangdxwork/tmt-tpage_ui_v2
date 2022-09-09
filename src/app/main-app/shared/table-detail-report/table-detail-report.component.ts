@@ -1,3 +1,4 @@
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
 import { Message } from '../../../lib/consts/message.const';
 import { finalize, takeUntil } from 'rxjs';
@@ -22,6 +23,22 @@ export class TableDetailReportComponent implements OnInit {
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
+
+    numberWithCommas =(value:TDSSafeAny) =>{
+        if(value != null)
+        {
+          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+        return value;
+      } ;
+      
+      parserComas = (value: TDSSafeAny) =>{
+        if(value != null)
+        {
+          return TDSHelperString.replaceAll(value,'.','');
+        }
+        return value;
+      };
 
     constructor(private message: TDSMessageService,
         private modalService: TDSModalService,

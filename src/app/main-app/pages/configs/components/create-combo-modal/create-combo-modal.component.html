@@ -14,7 +14,7 @@
 
             <tds-label>Số lượng (theo đơn vị mặc định)</tds-label>
             <tds-form-field class="col-span-4 w-full">
-                <tds-input-number formControlName="Quantity" [min]="1" [step]="1" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="Quantity" [min]="1" [step]="1" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
             </tds-form-field>
         </div>
     </form>

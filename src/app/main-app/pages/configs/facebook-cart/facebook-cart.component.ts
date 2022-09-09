@@ -8,7 +8,10 @@ import { ConfigFacebookCartDTO } from 'src/app/main-app/dto/configs/facebook-car
 
 @Component({
   selector: 'facebook-cart',
-  templateUrl: './facebook-cart.component.html'
+  templateUrl: './facebook-cart.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 
 export class FacebookCartComponent implements OnInit, OnDestroy {

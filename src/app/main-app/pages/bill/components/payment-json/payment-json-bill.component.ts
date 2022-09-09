@@ -26,17 +26,19 @@ export class PaymentJsonBillComponent implements OnInit {
   isLoading: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    return value
-  };
+    return value;
+  } ;
 
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null) {
-      return TDSHelperString.replaceAll(value,',','');
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
     }
-    return value
+    return value;
   };
 
   constructor(private modal: TDSModalRef,

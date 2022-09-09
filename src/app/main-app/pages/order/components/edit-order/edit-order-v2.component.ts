@@ -101,17 +101,20 @@ export class EditOrderV2Component implements OnInit {
 
   selectedIndex: number = 0;
 
-  numberWithCommas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    return value
-  };
-  parserComas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return TDSHelperString.replaceAll(value, ',', '');
+    return value;
+  } ;
+
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
     }
-    return value
+    return value;
   };
 
   lstCarrier!: DeliveryCarrierDTOV2[];
@@ -625,8 +628,6 @@ export class EditOrderV2Component implements OnInit {
 
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
-              fs_model.SaleOnlineIds = [res.Id];
-              fs_model.PartnerId = res.PartnerId;
               this.createFastSaleOrder(fs_model, type);
           } else {
             this.isLoading = false;
@@ -674,11 +675,10 @@ export class EditOrderV2Component implements OnInit {
 
             if(type && res) {
                 this.printOrder(type, res);
-            } else {
-                this.modalRef.destroy(null);
             }
 
             this.isLoading = false;
+            this.modalRef.destroy('onLoadPage');
         },
         error: (error: any) => {
             this.isLoading = false;

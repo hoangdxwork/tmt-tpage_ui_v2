@@ -1,3 +1,4 @@
+import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from './../../../services/socket-io/socket-onevent.service';
 import { SocketService } from '@app/services/socket-io/socket.service';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
@@ -146,36 +147,61 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-          if( res.Data?.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
-                // TODO: mapping dữ liệu danh sách conversation
-              let index = this.lstConversation.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
 
-              if(index >- 1) {
+        switch(res.EventName){
 
-                this.lstConversation[index].LatestMessage = {
-                    CreatedTime: res.Data.Message?.CreatedTime,
-                    Message: res.Data.Message?.Message,
-                    MessageType: res.Data.Message?.MessageType,
-                } as any;
+          case ChatmoniSocketEventName.chatomniOnMessage:
+              if( res.Data?.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
 
-                // TODO: gán lại mess nếu gửi hình
-                if(res.Data.Message?.Data?.attachments?.data){
-                    this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data?.length} hình ảnh` as string;
-                }
+                  // TODO: mapping dữ liệu danh sách conversation
+                  let index = this.lstConversation?.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
+                  if(index >- 1) {
 
-                this.lstConversation[index].Message = res.Data.Message?.Message;
-                this.lstConversation[index] = {...this.lstConversation[index]};
+                      this.lstConversation[index].LatestMessage = {
+                          CreatedTime: res.Data.Message?.CreatedTime,
+                          Message: res.Data.Message?.Message,
+                          MessageType: res.Data.Message?.MessageType,
+                      } as any;
+
+                      // TODO: gán lại mess nếu gửi hình
+                      if(res.Data.Message?.Data?.attachments?.data){
+                          this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data?.length} hình ảnh` as string;
+                      }
+
+                      this.lstConversation[index].Message = res.Data.Message?.Message;
+                      this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+                      this.lstConversation[index] = {...this.lstConversation[index]};
+
+                      // TODO: Check vị trí ConversationId và add vào đàu tiên
+                      let model = {...this.lstConversation[index]};
+                      if(index > 0){
+                          this.lstConversation = this.lstConversation.filter(x => x.ConversationId != res.Data.Conversation?.UserId);
+                          this.lstConversation = [...[model], ...(this.lstConversation || [])]
+                      }
+                  } else {
+                      // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
+                      // viết hàm prepareModel add item to lstConversation;
+                  }
+
+                  // TODO: mapping dữ liệu khung chat hiện tại
+                  let exist = this.conversationItem.ConversationId == res.Data.Conversation?.UserId;
+                  if(exist) {
+                      let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
+                      this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
+                  }
+
+                  this.cdRef.detectChanges();
               }
+            break;
 
-              // TODO: mapping dữ liệu khung chat hiện tại
-              let exist = this.conversationItem.ConversationId == res.Data.Conversation?.UserId;
-              if(exist) {
-                  let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
-                  this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
-              }
+            case ChatmoniSocketEventName.chatomniOnUpdate:
+              break;
 
-              this.cdRef.detectChanges();
-          }
+            case ChatmoniSocketEventName.onUpdate:
+              break;
+
+            default: break;
+        }
       }
     })
   }
@@ -189,6 +215,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(index >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
+
+                this.cdRef.detectChanges();
             }
         }
       }
@@ -202,6 +230,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(index >- 1) {
                 this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
                 this.lstConversation[index] = {...this.lstConversation[index]};
+
+                this.cdRef.detectChanges();
             }
         }
       }
@@ -240,6 +270,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: string)=>{
         if(res === ChangeTabConversationEnum.order) {
             this.selectedIndex = 2;
+
+            this.cdRef.detectChanges();
         }
       }
     })
@@ -378,9 +410,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
 
-            if(TDSHelperArray.hasListValue(res?.Items)) {
-                this.lstConversation = [...res.Items];
-            }
+          if(TDSHelperArray.hasListValue(res?.Items)) {
+            res.Items.forEach((x) => {
+                let idx = this.lstConversation.find(a => a.ConversationId == x.ConversationId);
+                if(idx) {
+                    res.Items = res.Items.filter(y => x.ConversationId != y.ConversationId)
+                }
+            });
+
+        }
+
+        this.lstConversation = [...this.lstConversation, ...(res.Items || [])];
 
             this.isProcessing = false;
             this.yiAutoScroll.scrollToElement('scrollConversation', 750);

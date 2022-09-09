@@ -154,14 +154,39 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onEventSocket() {
     // TODO: mapping tin nhắn từ socket-io
+    // TODO: chek lại phân biệt message  & comment
     this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataItemDto) => {
         if(res && res.UserId == this.data.ConversationId){
-            this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
+          switch (this.type) {
 
-            this.yiAutoScroll.forceScrollDown();
-            this.cdRef.markForCheck();
+            case 'message':
+              if((res.Type == ChatomniMessageType.FacebookMessage || res.Type == ChatomniMessageType.TShopMessage)){
+                this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
+    
+                this.yiAutoScroll.forceScrollDown();
+                this.cdRef.markForCheck();
+              }
+            break;
+
+            case 'comment':
+              if((res.Type == ChatomniMessageType.FacebookComment || res.Type == ChatomniMessageType.TShopComment)){
+                this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
+    
+                this.yiAutoScroll.forceScrollDown();
+                this.cdRef.markForCheck();
+              }
+            break;
+
+            default:
+              this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
+  
+              this.yiAutoScroll.forceScrollDown();
+              this.cdRef.markForCheck();
+            break;
+          }
         }
+
       }
     })
   }
@@ -467,11 +492,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       if (!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe({
           next: (res: any) => {
-          this.tags = res;
-          this.lstOfTag = this.tags;
+            this.tags = [...res];
+            this.lstOfTag = [...this.tags];
 
-          this.sortTagsByParent();
-          this.searchTag();
+            this.sortTagsByParent();
+            this.searchTag();
         }})
       } else {
         this.sortTagsByParent();
@@ -482,6 +507,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   sortTagsByParent() {
     let tags = this.tags || [];
     let local = this.crmTagService.getTagLocalStorage() as any;
+
     if (TDSHelperArray.hasListValue(tags) && local) {
       tags.sort((a: any, b: any) => {
         if (!local[a.Id]) {
@@ -1079,12 +1105,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let className = JSON.stringify(e.target.className);
     if(className.includes('payload')){
       if (e.target.className.indexOf('payload') >= 0) {
-        this.visibleDrawerBillDetail = true;
-        let model = {
-          Id: e.target.id,
-          Number: e.target.innerText
+        if(e.target.id && !e.target.innerText.includes('undefined')){
+          this.visibleDrawerBillDetail = true;
+          let model = {
+            Id: e.target.id,
+            Number: e.target.innerText
+          }
+          this.order = {...model};
+        } else {
+          this.message.error('Không tìm thấy thông tin đơn hàng');
         }
-        this.order = {...model};
       }
     }
   }
