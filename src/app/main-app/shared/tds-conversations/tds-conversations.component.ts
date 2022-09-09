@@ -467,11 +467,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       if (!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe({
           next: (res: any) => {
-          this.tags = res;
-          this.lstOfTag = this.tags;
+            this.tags = [...res];
+            this.lstOfTag = [...this.tags];
 
-          this.sortTagsByParent();
-          this.searchTag();
+            this.sortTagsByParent();
+            this.searchTag();
         }})
       } else {
         this.sortTagsByParent();
@@ -482,6 +482,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   sortTagsByParent() {
     let tags = this.tags || [];
     let local = this.crmTagService.getTagLocalStorage() as any;
+
     if (TDSHelperArray.hasListValue(tags) && local) {
       tags.sort((a: any, b: any) => {
         if (!local[a.Id]) {
