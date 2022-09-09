@@ -31,9 +31,9 @@ export class SortDataSourceMessagePipe implements PipeTransform {
 
   transform(data: ChatomniDataItemDto[]): any {
     let model: ChatomniDataItemDto[] = [];
-    data = data.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
+    data = data?.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.ChannelCreatedTime) - Date.parse(b.ChannelCreatedTime));
 
-    model = data.map((x: ChatomniDataItemDto, i: number)=>{
+    model = data?.map((x: ChatomniDataItemDto, i: number)=>{
       //TODO: Kiểm tra hiện tại
       if(x.Type == ChatomniMessageType.FacebookComment || x.Type == ChatomniMessageType.TShopComment ){
         x.IsShowAvatar = false;
