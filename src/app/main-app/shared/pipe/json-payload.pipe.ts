@@ -15,17 +15,20 @@ export class jsonPayloadPipe implements PipeTransform {
   transform(json: any) : any {
     if(this.tryParseJSONObject(json)) {
       let payload = this.tryParseJSONObject(json) as MessagePayloadDto;
-      if(payload && payload.attachment){
+      if(payload && payload.attachment && payload.attachment.payload && payload.attachment.payload){
         let order_url = payload.attachment?.payload?.order_url;
-        let check = order_url.lastIndexOf('/');
-        if(check !== -1) {
-          order_url = order_url.substring(check).replace('/', '');
-        }
 
-        if(payload.attachment && payload.attachment.payload){
-          let message = `${payload.attachment.payload.recipient_name} đã tạo đơn hàng <span class="font-semibold cursor-pointer payload" id="${order_url}">#${payload.attachment.payload.order_number}</span>`
-
-          return message
+        if(order_url){
+          let check = order_url.lastIndexOf('/');
+          if(check !== -1) {
+            order_url = order_url.substring(check).replace('/', '');
+          }
+  
+          if(payload.attachment && payload.attachment.payload){
+            let message = `${payload.attachment.payload.recipient_name} đã tạo đơn hàng <span class="font-semibold cursor-pointer payload" id="${order_url}">#${payload.attachment.payload.order_number}</span>`
+  
+            return message
+          }
         }
       }
     }

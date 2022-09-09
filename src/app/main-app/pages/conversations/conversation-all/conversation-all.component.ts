@@ -164,7 +164,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 }
 
                 this.lstConversation[index].Message = res.Data.Message?.Message;
-                this.lstConversation[index] = {...this.lstConversation[index]};
+                this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+                let model = {...this.lstConversation[index]};
+                
+                if(index > 0){
+                  this.lstConversation = this.lstConversation.filter(x=>x.ConversationId != res.Data.Conversation?.UserId);
+                  this.lstConversation = [...[model], ...(this.lstConversation || [])]
+                }
               }
 
               // TODO: mapping dữ liệu khung chat hiện tại
@@ -189,6 +195,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(index >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
+
+                this.cdRef.detectChanges();
             }
         }
       }
@@ -200,8 +208,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         if(res) {
             let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId);
             if(index >- 1) {
-                this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
+                this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;             
                 this.lstConversation[index] = {...this.lstConversation[index]};
+
+                this.cdRef.detectChanges();
             }
         }
       }
@@ -240,6 +250,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: string)=>{
         if(res === ChangeTabConversationEnum.order) {
             this.selectedIndex = 2;
+
+            this.cdRef.detectChanges();
         }
       }
     })

@@ -1080,12 +1080,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let className = JSON.stringify(e.target.className);
     if(className.includes('payload')){
       if (e.target.className.indexOf('payload') >= 0) {
-        this.visibleDrawerBillDetail = true;
-        let model = {
-          Id: e.target.id,
-          Number: e.target.innerText
+        if(e.target.id && !e.target.innerText.includes('undefined')){
+          this.visibleDrawerBillDetail = true;
+          let model = {
+            Id: e.target.id,
+            Number: e.target.innerText
+          }
+          this.order = {...model};
+        } else {
+          this.message.error('Không tìm thấy thông tin đơn hàng');
         }
-        this.order = {...model};
       }
     }
   }
