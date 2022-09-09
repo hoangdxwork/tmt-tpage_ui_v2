@@ -11,7 +11,7 @@ export class SO_ComputeCaclHandler {
   public so_coDAmount(saleModel: FastSaleOrder_DefaultDTOV2): any {
 
     let coDAmount = saleModel.AmountTotal + saleModel.DeliveryPrice - saleModel.AmountDeposit;
-    
+
     if(coDAmount >= 0){
       saleModel.CashOnDelivery = Number(coDAmount);
     }
