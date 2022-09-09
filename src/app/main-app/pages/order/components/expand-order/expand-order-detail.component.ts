@@ -30,7 +30,7 @@ export class ExpandOrderDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if(this.dataOrder) {
-      this.loadDetail();
+      this.loadDetail(this.dataOrder.Id);
     }
   }
 
@@ -47,20 +47,23 @@ export class ExpandOrderDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadDetail() {
+  loadDetail(id: TDSSafeAny) {
     this.isLoading = true;
 
-    this.saleOnline_OrderService.getLines(this.dataOrder.Id)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
+    this.saleOnline_OrderService.getLines(id).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: TDSSafeAny) => {
           this.lstDetail = res.value;
-    }, error => {
-      this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
-    });
+          this.isLoading = false;
+        }, 
+        error:(error) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || Message.CanNotLoadData);
+        }
+      });
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }

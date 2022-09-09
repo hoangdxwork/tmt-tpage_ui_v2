@@ -101,17 +101,20 @@ export class EditOrderV2Component implements OnInit {
 
   selectedIndex: number = 0;
 
-  numberWithCommas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    return value
-  };
-  parserComas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return TDSHelperString.replaceAll(value, ',', '');
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
     }
-    return value
+    return value;
   };
 
   lstCarrier!: DeliveryCarrierDTOV2[];

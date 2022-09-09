@@ -33,8 +33,21 @@ export class CrossCheckingStatusComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
   hasTrackingRefError:string = '';
 
-  public numberWithCommas = (value: number) => `${formatNumber(value || 0, vi_VN.locale)}`;
-  public parserComas = (value: string) => value.replace(',', '');
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   private destroy$ = new Subject<void>();
 

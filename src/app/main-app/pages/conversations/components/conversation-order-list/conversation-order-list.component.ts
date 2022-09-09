@@ -121,7 +121,6 @@ export class ConversationOrderListComponent implements OnInit {
 
   getViewData(params: string) {
     this.isLoading = true;
-
     return this.odataSaleOnline_OrderService
       .getViewByPost(this.currentPost.ObjectId, params, this.filterObj)
       .pipe(finalize(() => this.isLoading = false ));

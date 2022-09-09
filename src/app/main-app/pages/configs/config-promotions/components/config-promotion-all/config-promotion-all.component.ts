@@ -34,6 +34,22 @@ export class ConfigPromotionAllComponent implements OnInit {
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   constructor(
     private formBuilder:FormBuilder,
     private companyService: CompanyService,

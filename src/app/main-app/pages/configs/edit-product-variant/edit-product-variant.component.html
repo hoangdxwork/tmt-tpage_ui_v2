@@ -42,7 +42,7 @@
 
                     <tds-form-field>
                         <tds-label>Giá biến thể:</tds-label>
-                        <tds-input-number formControlName="PriceVariant" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular">
+                        <tds-input-number formControlName="PriceVariant" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
                         </tds-input-number>
                         <tds-error>
                             Vui lòng nhập giá biến thể

@@ -1,5 +1,5 @@
 import { ComboProductDTO } from './../../../../dto/product/product-combo.dto';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { THelperDataRequest } from './../../../../../lib/services/helper-data.service';
 import { FilterObjDTO } from './../../../../services/mock-odata/odata-product.service';
 import { OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
@@ -28,6 +28,22 @@ export class CreateComboModalComponent implements OnInit {
   lstProductCombo: Array<ProductDTOV2> = [];
   filterObj: FilterObjDTO = {
     searchText: ''
+  };
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
   };
 
   constructor(private modal: TDSModalRef,

@@ -33,17 +33,21 @@ export class EditProductVariantComponent implements OnInit {
   imageList: Array<TDSSafeAny> = [];
   imageModel: Array<TDSSafeAny> = [];
   isLoading: boolean = false;
-  numberWithCommas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    return value
-  };
-  parserComas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return TDSHelperString.replaceAll(value, ',', '');
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
     }
-    return value
+    return value;
   };
 
   private destroy$ = new Subject<void>();

@@ -100,7 +100,7 @@
                 <tds-form-field class="w-full">
                   <tds-input-number
                     [ngModel]="_form.value.InitInventory || initInventory"
-                    [ngModelOptions]="{standalone: true}"
+                    [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas"
                     [min]="0"
                     [disabled]="id ? true : false"
                     (ngModelChange)="changeInitInventory($event)"
@@ -119,7 +119,7 @@
             <div class="grid grid-cols-3 xl:gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center">
               <tds-label>Giá sản phẩm:</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="ListPrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="ListPrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập giá sản phẩm
                 </tds-error>
@@ -127,7 +127,7 @@
 
               <tds-label>Chiết khấu bán (%):</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="DiscountSale" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="DiscountSale" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập tỉ lệ chiết khấu
                 </tds-error>
@@ -135,7 +135,7 @@
 
               <tds-label>Giá mua mặc định:</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="PurchasePrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="PurchasePrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập giá mua mặc định
                 </tds-error>
@@ -143,7 +143,7 @@
 
               <tds-label>Chiết khấu mua (%):</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="DiscountPurchase" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="DiscountPurchase" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập tỉ lệ chiết khấu
                 </tds-error>
@@ -151,7 +151,7 @@
 
               <tds-label>Giá vốn:</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="StandardPrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="StandardPrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập giá vốn
                 </tds-error>
@@ -203,7 +203,7 @@
 
               <tds-label>Khối lượng</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="Weight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="Weight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập khối lượng
                 </tds-error>
@@ -211,7 +211,7 @@
 
               <tds-label>Thể tích (m3)</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="Volume" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="Volume" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập thể tích
                 </tds-error>

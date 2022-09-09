@@ -139,6 +139,7 @@ import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorde
 import { ModalAddAddressV2Component } from './components/modal-add-address-v2/modal-add-address-v2.component';
 import { OrderModule } from '../order/order.module';
 import { ConversationAllComponent } from './conversation-all/conversation-all.component';
+import { TDSPaginationModule } from 'tds-ui/pagination';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -291,7 +292,8 @@ const SERVICES = [
     DirectivesModule,
     ScrollingModule,
     TDSButtonSpitModule,
-    OrderModule
+    OrderModule,
+    TDSPaginationModule
   ],
   providers: [ ...SERVICES]
 })

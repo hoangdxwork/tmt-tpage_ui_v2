@@ -2,7 +2,7 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { finalize } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -33,6 +33,22 @@ export class ConfigDeliveryConnectComponent implements OnInit {
   ngOnInit(): void {
     this.loadConfigProvider();
   }
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
 
   createForm() {
     this._form = this.fb.group({

@@ -30,7 +30,7 @@
                 </span>
             </div>
             <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="MaximumUseNumber" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                <tds-input-number formControlName="MaximumUseNumber" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"
                 (ngModelChange)="getData()"></tds-input-number>
                 <tds-error>
                     Vui lòng nhập giá trị
@@ -46,7 +46,7 @@
               </span>
             </div>
             <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="RuleMinQuantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="RuleMinQuantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                     Vui lòng nhập số lượng
                 </tds-error>
@@ -73,7 +73,7 @@
               </span>
             </div>
             <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="RuleMinimumAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                <tds-input-number formControlName="RuleMinimumAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                     Vui lòng nhập số tiền tối thiểu
                 </tds-error>
@@ -180,7 +180,7 @@
                       </tds-form-field>
                   </div>
                   <tds-form-field class="w-1/2" *ngIf="isShow('DiscountPercentage')">
-                      <tds-input-number formControlName="DiscountPercentage" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                      <tds-input-number formControlName="DiscountPercentage" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                       <tds-error>
                           Vui lòng nhập giá trị chiết khấu
                       </tds-error>
@@ -195,7 +195,7 @@
                   Tiền cố định
               </span>
               <tds-form-field class="col-span-2">
-                  <tds-input-number formControlName="DiscountFixedAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                  <tds-input-number formControlName="DiscountFixedAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                   <tds-error>
                       Vui lòng nhập tiền cố định
                   </tds-error>
@@ -239,7 +239,7 @@
                 <div class="col-span-2 flex gap-x-4 items-center">
                   <div class="flex items-center 2xl:w-3/5 xl:w-1/2">
                     <tds-form-field class="w-full">
-                      <tds-input-number formControlName="DiscountMaxAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                      <tds-input-number formControlName="DiscountMaxAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                       <tds-error>
                           Vui lòng nhập giá trị chiết khấu tối đa
                       </tds-error>
@@ -257,7 +257,7 @@
                 </span>
                 <div class="flex flex-row items-center col-span-2">
                     <tds-form-field class="w-full">
-                        <tds-input-number formControlName="RewardProductQuantity" [min]="0" [step]="1" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                        <tds-input-number formControlName="RewardProductQuantity" [min]="0" [step]="1" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                         <tds-error>
                             Vui lòng nhập số lượng tặng
                         </tds-error>

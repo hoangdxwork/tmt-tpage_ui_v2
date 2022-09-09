@@ -36,6 +36,22 @@ export class CreateBillFastComponent implements OnInit {
   isPrint: boolean = false;
   isPrintShip: boolean = false;
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+  
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   constructor(private fb: FormBuilder,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
@@ -54,20 +70,6 @@ export class CreateBillFastComponent implements OnInit {
       this.updateAmountTotal(this.lstData);
     }
   }
-
-  numberWithCommas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-    return value
-  };
-
-  parserComas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return TDSHelperString.replaceAll(value, ',', '');
-    }
-    return value
-  };
 
   loadCarrier() {
     this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe({
