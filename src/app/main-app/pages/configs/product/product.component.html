@@ -13,7 +13,8 @@
             </button>
         </div>
         <div class="flex flex-col border-t border-neutral-2-100 w-full h-full">
-            <div class="flex flex-row w-full items-center justify-end px-4 py-2.5">
+            <div class="flex flex-row w-full items-center justify-between px-4 py-2.5">
+                <div class="flex justify-start text-title-1 font-semibold">Danh sách sản phẩm</div>
                 <div class="flex flex-row items-center justify-end w-2/5">
                     <tds-button-group class="mr-2">
                         <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'">
@@ -76,7 +77,7 @@
                     <thead>
                         <tr class="text-neutral-1-900 text-body-2 font-semibold">
                             <th [width]="'32px'" [align]="'center'" [tdsLeft]="true"></th>
-                            <th [width]="'44px'" [align]="'center'" [tdsLeft]="true" class="hover:bg-neutral-3-100"
+                            <th [width]="'42px'" [align]="'center'" [tdsLeft]="true" class="hover:bg-neutral-3-100"
                                 [checked]="checked" [indeterminate]="indeterminate"
                                 (checkedChange)="onAllChecked($event)">
                             </th>
@@ -89,7 +90,7 @@
                             <th *ngIf="!isHiddenColumn('Tags')" [width]="'192px'">Nhãn</th>
                             <th *ngIf="!isHiddenColumn('DateCreated')" [width]="'192px'">Ngày tạo</th>
                             <th *ngIf="!isHiddenColumn('Active')" [width]="'192px'">Hiệu lực</th>
-                            <th [width]="'192px'" [align]="'center'" [tdsRight]="true">Thao tác</th>
+                            <th [width]="'192px'" [tdsRight]="true">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,8 +112,7 @@
                                 <td *ngIf="!isHiddenColumn('Name')" [width]="'258px'">{{ data.Name }}</td>
                                 <td *ngIf="!isHiddenColumn('ListPrice')" [width]="'192px'">{{ data.ListPrice | number }}
                                 </td>
-                                <td *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'192px'">{{ data.QtyAvailable |
-                                    number }}</td>
+                                <td *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'192px'">{{ data.QtyAvailable | number }}</td>
                                 <td *ngIf="!isHiddenColumn('UOMName')" [width]="'192px'">{{ data.UOMName }}</td>
                                 <td *ngIf="!isHiddenColumn('Tags')" [width]="'192px'">
                                     <div class="flex flex-wrap items-center w-fit">
@@ -125,7 +125,7 @@
                                             popoverTrigger="click" [popoverFooter]="footerAddTag"
                                             [popoverAutoClose]="false" [popoverContent]="contentAddtag"
                                             [popoverBackdrop]="true" popoverPlacement="left" color="custom" size="sm"
-                                            class="bg-transparent border-0 focus:ring-transparent">
+                                            class="bg-transparent border-0 focus:ring-3 focus:ring-primary-1/20">
                                             <div class="w-5 h-5 relative">
                                                 <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
                                                 <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0"
@@ -171,7 +171,7 @@
                                         <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                                     </span>
                                 </td>
-                                <td [width]="'192px'" [align]="'center'" [tdsRight]="true">
+                                <td [width]="'192px'" [tdsRight]="true">
                                     <button tds-button-icon color="secondary" size="sm" class="mr-2"
                                         (click)="editProduct(data)">
                                         <span class="flex items-center">
