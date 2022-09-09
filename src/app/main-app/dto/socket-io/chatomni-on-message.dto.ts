@@ -13,39 +13,6 @@ export interface ConversationSocketioDto {
   UpdatedTime: Date;
 }
 
-// export interface Parent {
-//   id: string;
-// }
-
-// export interface Object {
-//   id: string;
-// }
-
-// export interface From {
-//   id: string;
-//   name: string;
-//   uid?: any;
-// }
-
-// export interface DataSocketioDto {
-//   id: string;
-//   parent: Parent;
-//   is_hidden: boolean;
-//   can_hide: boolean;
-//   can_remove: boolean;
-//   can_like: boolean;
-//   can_reply_privately: boolean;
-//   comment_count: number;
-//   message: string;
-//   user_likes: boolean;
-//   created_time: Date;
-//   object: Object;
-//   from: From;
-//   comments?: any;
-//   attachment?: any;
-//   message_tags: any[];
-// }
-
 export interface MessageSocketioDto {
   Id: string;
   ChannelType: number;
@@ -60,6 +27,7 @@ export interface MessageSocketioDto {
   CreatedTime: Date;
   ChannelCreatedTime: Date;
   LatestMessage?: ChatomniConversationMessageDto;
+  IsOwner: boolean;
 }
 
 export interface SocketioOnMessageDto {
@@ -68,7 +36,7 @@ export interface SocketioOnMessageDto {
   EventName: string;
 }
 
-export interface DataMessageTshop{  
+export interface DataMessageTshop{
   Id: string,
   Content: string,
   ConversationId: string,
@@ -86,9 +54,9 @@ export interface DataMessageTshop{
 }
 
 export interface UserThop{
-  Id: string, 
-  Name: string, 
-  Avatar: string, 
+  Id: string,
+  Name: string,
+  Avatar: string,
   UserName: string
 }
 
