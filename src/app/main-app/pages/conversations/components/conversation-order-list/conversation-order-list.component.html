@@ -19,7 +19,7 @@
         </div>
         <!-- filter status -->
         <div *ngIf="tabNavs.length > 1" [ngClass]="isOpenCollapCheck ? 'hidden' : 'flex'" class="px-4">
-            <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
+            <tds-filter-status [(ngModel)]='tabIndex' (selectChange)="onSelectChange($event)">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
                 <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
                 <ng-template tds-filter-status-template let-active='active'
