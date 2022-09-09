@@ -138,7 +138,9 @@
                                   </tds-error>
                                 </tds-form-field>
 
-                                <tds-label>Kiểm soát hóa đơn mua hàng:</tds-label>
+                                <div class="h-full items-start">
+                                  <tds-label class="">Kiểm soát hóa đơn mua hàng:</tds-label>
+                                </div>
                                 <tds-radio-group class="grid grid-cols-1 w-full col-span-2" formControlName="PurchaseMethod">
                                   <label tds-radio value="purchase" class="mb-2">Trên số lượng đặt hàng</label>
                                   <label tds-radio value="receive">Trên số lượng nhận hàng</label>
@@ -195,7 +197,7 @@
 
                         <tds-tab title="Hóa đơn">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                              <div class="grid grid-cols-3 gap-y-4 gap-x-6">
                                 <tds-label>Chính sách hóa đơn:</tds-label>
                                 <tds-radio-group class="grid grid-cols-1 w-full col-span-2" formControlName="InvoicePolicy">
                                   <label tds-radio value="order" class="mb-2">Trên số lượng đặt hàng</label>
