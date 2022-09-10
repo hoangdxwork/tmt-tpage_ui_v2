@@ -167,8 +167,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       } as any;
 
                       // TODO: gán lại mess nếu gửi hình
-                      if(res.Data.Message?.Data?.attachments?.data){
-                          this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data?.length} hình ảnh` as string;
+                      if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data){
+                          this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
                       }
 
                       this.lstConversation[index].Message = res.Data.Message?.Message;
@@ -189,14 +189,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       let itemNewMess = this.chatomniConversationFacade.prepareCreateMessageOnEventSocket(res)
                       this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
                   }
-
-                  // TODO: mapping dữ liệu khung chat hiện tại
-                  let exist = this.conversationItem.ConversationId == res.Data.Conversation?.UserId;
-                  if(exist) {
-                      let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
-                      this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
-                  }
-
                   this.cdRef.detectChanges();
               }
             break;
@@ -416,18 +408,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
-
-          if(TDSHelperArray.hasListValue(res?.Items)) {
-            res.Items.forEach((x) => {
-                let idx = this.lstConversation.find(a => a.ConversationId == x.ConversationId);
-                if(idx) {
-                    res.Items = res.Items.filter(y => x.ConversationId != y.ConversationId)
-                }
-            });
-
-        }
-
-        this.lstConversation = [...this.lstConversation, ...(res.Items || [])];
+            this.lstConversation = [...(res.Items || [])];
 
             this.isProcessing = false;
             this.yiAutoScroll.scrollToElement('scrollConversation', 750);

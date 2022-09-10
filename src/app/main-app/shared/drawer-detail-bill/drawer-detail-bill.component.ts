@@ -75,7 +75,15 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
     this.loadData();
   }
 
+  validateData(){
+    this.dataModel = {} as TDSSafeAny;
+    this.productUOMQtyTotal = 0;
+    this.productPriceTotal = 0;
+    this.indexStep = 1;
+  }
+
   loadData(): void {
+    this.validateData();
     this.loadBill();
     this.loadPaymentInfoJson();
   }
