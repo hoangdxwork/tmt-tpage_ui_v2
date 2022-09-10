@@ -55,7 +55,7 @@ export class PostOrderConfigComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -214,9 +214,9 @@ export class PostOrderConfigComponent implements OnInit {
 
   selectContent(event: string[], item: TextContentToOrderDTO) {
     let strs = [...this.checkInputMatch(event)];
-    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
+    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
 
-    if(idx >= 0) {
+    if(Number(idx) >= 0) {
       this.dataModel.TextContentToOrders[idx].Content = strs.join(',')  || null;
       this.dataModel.TextContentToOrders[idx] = {...this.dataModel.TextContentToOrders[idx]};
     }
@@ -227,9 +227,9 @@ export class PostOrderConfigComponent implements OnInit {
   // TODO: cập nhật danh sách thuộc tính sản phẩm
   selectContentWithAttributes(event: string[], item: TextContentToOrderDTO) {
     let strs = [...this.checkInputMatch(event)];
-    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
+    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
 
-    if(idx >= 0) {
+    if(Number(idx) >= 0) {
       this.dataModel.TextContentToOrders[idx].ContentWithAttributes = strs.join(',') || null;
       this.dataModel.TextContentToOrders[idx] = {...this.dataModel.TextContentToOrders[idx]};
     }
@@ -238,8 +238,8 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   enableRegexAttributeValues(event: boolean, item: TextContentToOrderDTO){
-    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
-    if(idx) {
+    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
+    if(Number(idx) >=0 ) {
       this.dataModel.TextContentToOrders[idx].Product!.IsEnableRegexAttributeValues = event;
       this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
     }
@@ -249,15 +249,15 @@ export class PostOrderConfigComponent implements OnInit {
 
   enableRegexQty(event: boolean, item: TextContentToOrderDTO){
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
-    if(idx) {
+    if(Number(idx) >=0) {
       this.dataModel.TextContentToOrders[idx].Product!.IsEnableRegexQty = event;
       this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
     }
   }
 
   enableOrderMultiple(event: boolean, item: TextContentToOrderDTO){
-    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
-    if(idx) {
+    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
+    if(Number(idx) >= 0) {
       this.dataModel.TextContentToOrders[idx].Product!.IsEnableOrderMultiple = event;
       this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
     }
@@ -668,9 +668,9 @@ export class PostOrderConfigComponent implements OnInit {
 
   isCheckValue(model: AutoOrderConfigDTO): number {
     if(TDSHelperArray.hasListValue(model.TextContentToOrders)) {
-      let findIndex = model.TextContentToOrders.findIndex(x => !TDSHelperString.hasValueString(x?.Content));
+      let findIndex = model.TextContentToOrders.findIndex(x => !TDSHelperString.hasValueString(x?.Content)) as number;
 
-      if(findIndex >= 0) {
+      if(Number(findIndex) >= 0) {
         this.message.error('Vui lòng nhập đầy đủ nội dung mẫu');
         return 0;
       }

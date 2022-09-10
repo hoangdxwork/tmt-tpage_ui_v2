@@ -218,7 +218,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: SocketEventSubjectDto) => {       
+      next: (res: SocketEventSubjectDto) => {
         if( res.Data?.Facebook_PageId && this.conversationInfo && this.conversationInfo?.Conversation?.UserId == res.Data.Facebook_ASUserId && res.EventName == ChatmoniSocketEventName.onUpdate ) {
             this.conversationInfo.Order = {...res.Data?.Data};
             this.loadData(this.conversationInfo);
@@ -233,9 +233,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.selectProduct(res);
-          let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId);
+          let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
 
-          if(index > -1){
+          if(Number(index) > -1){
               this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
               `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
           }
@@ -884,6 +884,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = model.FormAction;
 
+debugger
+
     return {...fs_model};
   }
 
@@ -1035,8 +1037,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   selectProduct(item: DataPouchDBDTO) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId);
-    if(index < 0) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId) as number;
+    if(Number(index) < 0) {
       let data = {...item} as ProductDTOV2;
 
       let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
@@ -1209,8 +1211,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   pushItemProduct(data: ProductDTOV2) {
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId);
-    if (index < 0){
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId) as number;
+    if (Number(index) < 0){
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
 
         this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
@@ -1377,9 +1379,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
-  changeNote(event:any){
-    console.log(event)
-  }
 
   validateData(){
     this.isEditPartner = false;

@@ -157,8 +157,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               if(res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
 
                   // TODO: mapping dữ liệu danh sách conversation
-                  let index = this.lstConversation?.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
-                  if(index >- 1) {
+                  let index = this.lstConversation?.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId) as number;
+                  if(Number(index) >- 1) {
 
                       this.lstConversation[index].LatestMessage = {
                           CreatedTime: res.Data.Message?.CreatedTime,
@@ -218,8 +218,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId);
-            if(index >- 1) {
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId) as number;
+            if(Number(index) >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
 
@@ -233,8 +233,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniLastMessageEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId);
-            if(index >- 1) {
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId) as number;
+            if(Number(index) >- 1) {
                 this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
                 this.lstConversation[index] = {...this.lstConversation[index]};
 
@@ -248,8 +248,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.countUnreadEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == id);
-            if(index >- 1) {
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == id) as number;
+            if(Number(index) >- 1) {
               this.lstConversation[index].CountUnread = 0;
               this.lstConversation[index] = {...this.lstConversation[index]};
               this.cdRef.detectChanges();
@@ -262,8 +262,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.chatbotStateEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == id);
-            if(index >- 1) {
+            let index = this.lstConversation.findIndex(x=> x.ConversationId == id) as number;
+            if(Number(index) >- 1) {
                 this.lstConversation[index].State = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.cdRef.detectChanges();

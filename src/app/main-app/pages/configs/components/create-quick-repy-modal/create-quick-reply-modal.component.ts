@@ -319,7 +319,7 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
   }
 
   getMessageFormIndex(name: string) {
-    return this.MessageFormList.findIndex(f => f.value === name)
+    return this.MessageFormList.findIndex(f => f.value === name);
   }
 
   isValidButton(list: FormGroup[]) {
