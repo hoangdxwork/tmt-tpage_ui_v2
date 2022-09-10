@@ -20,7 +20,7 @@
           </div>
       </div>
       <div class="w-full h-full pb-4">
-          <tds-table #tableUser [listData]="lstUsers" [loading]="isLoading" showPagination showSizeChanger [scroll]="{y:'auto'} ">
+          <tds-table #tableUser [listData]="lstUsers" [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" showPagination showSizeChanger [scroll]="{y:'auto'} ">
               <thead>
                   <tr>
                       <th>STT</th>
@@ -32,9 +32,9 @@
                   </tr>
               </thead>
               <tbody>
-                  <ng-template ngFor let-i='index' let-data [ngForOf]="tableUser.data" let-odd='odd'>
+                  <ng-template ngFor let-i='index' let-data [ngForOf]="tableUser.data" let-odd='odd' let-index="index">
                       <tr>
-                          <td> {{ i + 1 }}</td>
+                          <td> {{ index | numericalOrder: pageSize : pageIndex }}</td>
                           <td>{{ data.Name }}</td>
                           <td>
                             <div *ngFor="let userRole of data?.Roles">

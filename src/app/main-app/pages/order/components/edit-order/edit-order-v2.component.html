@@ -280,7 +280,7 @@
                       <tds-label>Giao hàng thu tiền</tds-label>
                     </div>
                     <div class="col-span-2">
-                        <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" 
+                        <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery"
                           [formatter]="numberWithCommas"
                           [parser]="parserComas"
                           (ngModelChange)="changeCashOnDelivery($event)" [ngModelOptions]="{standalone: true}">

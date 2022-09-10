@@ -22,6 +22,7 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
 
   isLoading: boolean = false;
   _form!: FormGroup;
+  phoneRegex!:string;
 
   fileList: TDSSafeAny[] = [];
   listSelectedRole: ApplicationRoleDTO[] = [];
@@ -44,12 +45,17 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
   }
 
   createForm(){
+    // this.phoneRegex = "/(?:\b|[^0-9])((0|84|\+84)(\s?)([2-9]|1[0-9])((\d)(\s+|\.)?){8})(?:\b|[^0-9]))/g";
     this._form = this.formBuilder.group({
       Avatar: [""],
       Name: ["", [Validators.required]],
       UserName: ["", [Validators.required], this.userRestHandler.validateExitUsername("null").bind(this)],
       Email: ["", [Validators.required, Validators.email], this.userRestHandler.validateExitEmail("null").bind(this)],
-      PhoneNumber: [null, [Validators.required]],
+      PhoneNumber: [null, Validators.compose([
+        Validators.pattern(this.checkPhoneValidate()),
+        Validators.required,
+        Validators.minLength(10),
+      ])],
       Active: [true],
       Password: ["", [Validators.required, Validators.minLength(6)]],
       ConfirmPassword: ["", [Validators.required]],
@@ -125,6 +131,29 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
     }, error => {
       this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
     });
+  }
+
+  checkPhoneValidate(){
+    if(this.phoneRegex){
+      return new RegExp(this.phoneRegex);
+    }else{
+      return /^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g;
+    }
+  }
+
+  getErrorMessage() {
+    if(!this._form.controls['PhoneNumber'].valid){
+      if(!this._form.controls['PhoneNumber'].value){
+        return 'Vui lòng nhập số điện thoại!'
+      }else{
+        if (this._form.controls['PhoneNumber'].errors?.minlength) {
+          return "Tối thiểu 10 số, không được nhập kí tự!"
+        }else{
+          return 'Số điện thoại không hợp lệ!';
+        }
+      }
+    }
+    return ''
   }
 
   cancel() {
