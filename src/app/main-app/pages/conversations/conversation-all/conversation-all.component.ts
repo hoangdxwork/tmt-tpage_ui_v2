@@ -122,6 +122,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           if(team.Id != this.currentTeam?.Id) {
               this.lstConversation = [];
               delete this.conversationItem;
+              localStorage.removeItem(this.chatomniConversationService._keyCheckCsidRouter);
 
               this.fetchLiveConversations(team);
               this.setCurrentTeam(team);
