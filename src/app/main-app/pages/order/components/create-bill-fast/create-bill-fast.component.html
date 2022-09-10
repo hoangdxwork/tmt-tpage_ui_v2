@@ -59,6 +59,7 @@
                     <span class="text-neutral-1-600 italic text-xs">{{data?.Carrier?.GHN_NoteCode ? data.Carrier.GHN_NoteCode : '(Chưa có ghi chú)'}}</span>
                   </div>
                 </div>
+                <div *ngIf="lstCheckRowErrors[index]" class="text-error-500 italic text-caption-1">{{ lstCheckRowErrors[index] }}</div>
               </td>
               <!-- Đối tác -->
               <td class="align-top">
