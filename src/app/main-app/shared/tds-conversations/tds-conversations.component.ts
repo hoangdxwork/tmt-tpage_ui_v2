@@ -162,7 +162,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     // TODO: chek lại phân biệt message  & comment
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        
+
         switch(res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
@@ -171,45 +171,42 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
               // TODO: mapping dữ liệu khung chat hiện tại
               let exist = this.data.ConversationId == res.Data.Conversation?.UserId;
               let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == res.Data.Message?.Id);
-      
+
               if(exist && index < 0) {
                   let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.data)};
-                  
+
                   switch (this.type) {
-      
+
                     case 'message':
-                      
+
                       if((item.Type == ChatomniMessageType.FacebookMessage || item.Type == ChatomniMessageType.TShopMessage)){
                         this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
-            
+
                         this.yiAutoScroll.forceScrollDown();
-                        this.cdRef.markForCheck();
                         this.cdRef.detectChanges();
                       }
                     break;
-        
+
                     case 'comment':
                       if((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)){
                         this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
-            
+
                         this.yiAutoScroll.forceScrollDown();
-                        this.cdRef.markForCheck();
                         this.cdRef.detectChanges();
                       }
                     break;
-        
+
                     default:
                       this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
-          
+
                       this.yiAutoScroll.forceScrollDown();
-                      this.cdRef.markForCheck();
                       this.cdRef.detectChanges();
                     break;
                   }
                 }
               }
           break;
-          
+
           case ChatmoniSocketEventName.chatomniOnUpdate:
           break;
 
