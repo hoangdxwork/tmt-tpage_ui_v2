@@ -732,8 +732,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
               this.isUpdated = false;
-              let csid = res.Facebook_ASUserId;
-              this.chatomniConversationFacade.onSyncConversationInfo$.emit(csid);
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(res.Facebook_ASUserId);
           }
 
           this.cdRef.detectChanges();
