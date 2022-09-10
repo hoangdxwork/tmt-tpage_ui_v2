@@ -185,10 +185,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                           this.lstConversation = [...[model], ...(this.lstConversation || [])]
                       }
                   } else {
-                      // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
-                      let itemNewMess = this.chatomniConversationFacade.prepareCreateMessageOnEventSocket(res)
-                      this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
+                      // // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
+                      // let itemNewMess = this.chatomniConversationFacade.prepareCreateMessageOnEventSocket(res)
+                      // this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
                   }
+
                   this.cdRef.detectChanges();
               }
             break;
