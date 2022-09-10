@@ -68,8 +68,8 @@
                     </div>
 
                     <div class="w-full pt-4 flex items-stretch bg-white">
-                        <div contenteditable="true" class="2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400 cursor-pointer truncate focus:outline-none"
-                            [innerHTML]="(quickOrderModel.Note | formatIconLike | bbcodeConvert) || 'Ghi chú'"></div>
+                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar 2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400"
+                            [(ngModel)]="quickOrderModel.Note" [ngModelOptions]="{standalone: true}"></textarea>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [autoClose]="true" [backdrop]="true" [tdsDropdownMenu]="menuUser"
                             class="2xl:w-1/4 xl:w-2/5 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">

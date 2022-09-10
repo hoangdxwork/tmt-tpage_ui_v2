@@ -156,7 +156,7 @@ export class CsOrder_FromConversationHandler {
       if(conversationInfo && TDSHelperObject.hasValue(conversationInfo.Order) && type !== 'post') {
 
           conversationInfo.Order.Details = [];
-          conversationInfo.Order.Details = [...quickOrderModel.Details];// gán lại danh sách sản phẩm đã nhập hiện tại ,ko lấy server
+          conversationInfo.Order.Details = [...(quickOrderModel.Details) || []];// gán lại danh sách sản phẩm đã nhập hiện tại ,ko lấy server
           quickOrderModel = Object.assign(quickOrderModel, conversationInfo.Order) as any;
 
       } else {

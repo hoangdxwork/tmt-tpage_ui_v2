@@ -922,7 +922,7 @@ export class AddBillComponent implements OnInit {
 
   changeShipExtraMoney(event: any) {
     if(event) {
-      let idx = this.shipExtraServices.findIndex((f: any) => f.Id === 'XMG');
+      let idx = this.shipExtraServices.findIndex((f: any) => f.Id === 'XMG') as number;
       this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
       this.calcFee();
 

@@ -52,7 +52,7 @@ export class SendDeliveryComponent implements OnInit, OnDestroy {
   }
 
   remoteItem(item: OrderSendShipDTO) {
-    let index = this.lstOrders.findIndex(f=>f.Id == item.Id);
+    let index = this.lstOrders.findIndex(f=>f.Id == item.Id) as number;
     this.lstOrders.splice(index,1);
     this.lstOrders = [...this.lstOrders];
   }

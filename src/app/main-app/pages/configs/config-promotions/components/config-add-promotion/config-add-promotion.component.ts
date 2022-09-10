@@ -157,8 +157,8 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
     }
 
     if(data.Details && data.Details.length > 0) {
-      let ruleCombo = data.Details.findIndex(x => !x.RuleCombo || x.RuleCombo.length < 1);
-      if(ruleCombo < 0) {
+      let ruleCombo = data.Details.findIndex(x => !x.RuleCombo || x.RuleCombo.length < 1) as number;
+      if(Number(ruleCombo) < 0) {
         this.message.error(Message.Config.Promotion.ProductBuyEmpty);
         return 0;
       }

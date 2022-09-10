@@ -101,7 +101,7 @@ export class AutoLabelConfigComponent implements OnInit {
   onSave() {
     let model = this.prepareModel();
     let postId = this.data?.ObjectId;
-    
+
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
 
@@ -112,7 +112,7 @@ export class AutoLabelConfigComponent implements OnInit {
             this.isLoading = false;
 
             this.cdRef.detectChanges();
-          }, 
+          },
           error:(err) => {
             this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
             this.isLoading = false;
@@ -145,7 +145,7 @@ export class AutoLabelConfigComponent implements OnInit {
         return 0;
       }
 
-      let checkTagOnPattern = model.TagOnPattern.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag));
+      let checkTagOnPattern = model.TagOnPattern.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag)) as number;
 
       if(checkTagOnPattern > -1) {
         this.message.error(Message.ConversationPost.TagOnPatternEmpty);
