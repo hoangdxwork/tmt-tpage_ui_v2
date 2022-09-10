@@ -1,3 +1,5 @@
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { EventEmitter, Injectable, OnDestroy } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
@@ -7,7 +9,7 @@ import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversat
 import { CRMTeamService } from "../crm-team.service";
 import { Subject, takeUntil } from "rxjs";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
-import { ChatomniDataItemDto, ChatomniFacebookDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
+import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniMessageType } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 
 @Injectable()
 
@@ -38,7 +40,7 @@ export class ChatomniConversationFacade extends BaseSevice  {
   preapreMessageOnEventSocket(socket: SocketioOnMessageDto, conversationItem: ChatomniConversationItemDto) {
     let item: ChatomniDataItemDto = {
         Data: {...socket.Message?.Data} as ChatomniFacebookDataDto, // gán tạm thời
-        Id: null,
+        Id: socket.Message?.Id,
         ObjectId: socket.Message?.ObjectId,
         ParentId: socket.Message?.ParentId,
         Message: socket.Message?.Message,
@@ -56,5 +58,37 @@ export class ChatomniConversationFacade extends BaseSevice  {
     } as any;
 
     return {...item};
+  }
+
+  prepareCreateMessageOnEventSocket(socket: SocketEventSubjectDto){
+    let item: ChatomniConversationItemDto = {
+      ConversationId: socket.Data.Conversation?.UserId,
+      CountUnread: 1,
+      HasAddress: false,
+      HasPhone: false,
+      Id: socket.Data.Conversation?.Id,
+      LatestMessage: {
+        CreatedTime: socket.Data.Message?.CreatedTime,
+        Message: socket.Data.Message?.Message,
+        MessageType: socket.Data.Message?.MessageType,
+      } as TDSSafeAny,
+      Name:  socket.Data.Conversation?.Name || this.checkUser(socket.Data.Message?.MessageType),
+      UpdatedTime: socket.Data.Conversation?.UpdatedTime || socket.Data.Message?.ChannelCreatedTime,
+      UserId: socket.Data.Conversation?.UserId
+    } as TDSSafeAny
+
+    return {...item}
+  }
+
+  checkUser(MessageType: number){
+    if(MessageType == ChatomniMessageType.FacebookComment || MessageType == ChatomniMessageType.FacebookMessage){
+      return 'Người dùng Facebook'
+    }
+
+    if(MessageType == ChatomniMessageType.TShopComment || MessageType == ChatomniMessageType.TShopMessage){
+      return 'Người dùng TShop'
+    }
+
+    return 'Người dùng'
   }
 }

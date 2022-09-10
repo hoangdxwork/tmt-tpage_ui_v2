@@ -9,7 +9,7 @@ import { ModalSendMessageAllComponent } from '../components/modal-send-message-a
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable, Subscription } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -39,7 +39,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -54,10 +54,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   dataSource$?: Observable<ChatomniConversationDto> ;
   lstConversation: ChatomniConversationItemDto[] = [];
 
-  subscribeSocket!: Subscription;
   csid!: string;
   conversationInfo!: ChatomniConversationInfoDto;
-  conversationItem!: ChatomniConversationItemDto;
+  conversationItem!: ChatomniConversationItemDto | any;
 
   syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
 
@@ -121,6 +120,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           // TODO: change Team
           if(team.Id != this.currentTeam?.Id) {
+              this.lstConversation = [];
+              delete this.conversationItem;
+
               this.fetchLiveConversations(team);
               this.setCurrentTeam(team);
           }
@@ -146,13 +148,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onEventSocket(){
-    this.subscribeSocket = this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
 
         switch(res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-              if( res.Data?.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
+              if(res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
 
                   // TODO: mapping dữ liệu danh sách conversation
                   let index = this.lstConversation?.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
@@ -170,7 +172,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       }
 
                       this.lstConversation[index].Message = res.Data.Message?.Message;
-                      this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+
+                      if(!res.Data.Message?.IsOwner){
+                        this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+                      }
                       this.lstConversation[index] = {...this.lstConversation[index]};
 
                       // TODO: Check vị trí ConversationId và add vào đàu tiên
@@ -181,7 +186,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       }
                   } else {
                       // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
-                      // viết hàm prepareModel add item to lstConversation;
+                      let itemNewMess = this.chatomniConversationFacade.prepareCreateMessageOnEventSocket(res)
+                      this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
                   }
 
                   // TODO: mapping dữ liệu khung chat hiện tại
@@ -406,7 +412,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
 
       this.isProcessing = true;
-      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryObj);
+      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
 
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
@@ -710,11 +716,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   validateData() {
     this.lstConversation = [];
     (this.conversationInfo as any) = null;
+    delete this.conversationItem;
     delete this.dataSource$;
   }
-
-  ngOnDestroy(): void {
-      this.subscribeSocket.unsubscribe();
-  }
-
 }

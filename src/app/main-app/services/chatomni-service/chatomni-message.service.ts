@@ -61,7 +61,7 @@ export class ChatomniMessageService extends BaseSevice  {
       }), shareReplay({ bufferSize: 1, refCount: true }));
   }
 
-  nextDataSource(id: string): Observable<ChatomniDataDto> {
+  nextDataSource(id: string, dataSourceItem: ChatomniDataItemDto[]): Observable<ChatomniDataDto> {
 
     let exist = this.omniFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
@@ -74,7 +74,7 @@ export class ChatomniMessageService extends BaseSevice  {
     else {
       let url = this.urlNext  as string;
       return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
-
+     
           if(res.Extras) {
             exist.Extras = {
                 Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
@@ -82,7 +82,12 @@ export class ChatomniMessageService extends BaseSevice  {
             }
           }
 
-          exist.Items = [ ...exist.Items, ...res.Items ];
+          if(dataSourceItem && dataSourceItem.length > 0){
+            exist.Items = [ ...dataSourceItem, ...res.Items ];
+          } else {
+            exist.Items = [ ...exist.Items, ...res.Items ];
+          }
+
           exist.Paging = { ...res.Paging };
 
           // TODO nếu trùng urlNext thì xóa không cho load
