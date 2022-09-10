@@ -33,6 +33,7 @@ export class CreateBillDefaultComponent implements OnInit {
   lstCarriers: Array<Carrier> = [];
   lstData!: OrderBillDefaultDTO;
   lstLine: Array<DataErrorDefaultDTOV2> = [];
+  lstCheckRowErrors: Array<string> = [];
   innerText: string = '';
   phoneRegex!:string;
 
@@ -103,6 +104,11 @@ export class CreateBillDefaultComponent implements OnInit {
           this.lstData = {...res};
 
           this.lstLine = this.lstData.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
+
+          this.lstLine.forEach((x, i) =>{
+            this.checkPartnerInfo(x.Partner, i);
+          });
+
           this.isLoading = false;
         },
         error:(err) => {
@@ -276,31 +282,32 @@ export class CreateBillDefaultComponent implements OnInit {
 
     if(partner){
       if(!partner.Name) {
-        error += `<li class="text-error-400">Tên</li>`;
+        error = `*Chưa có Tên`;
       }
 
       if(!partner.Phone){
-        error += `<li class="text-error-400">Số điện thoại</li>`;
+        if(error != ``){
+          error += `, Số điện thoại`
+        }else{
+          error = `*Chưa có Số điện thoại`;
+        }
       }
 
       if(!partner.Street){
-        error += `<li class="text-error-400">Địa chỉ</li>`;
+        if(error != ``){
+          error += `, Địa chỉ`;
+        }else{
+          error = `*Chưa có Địa chỉ`;
+        }
       }
 
       if(error != ``){
-        let message = `Khách hàng <b class="text-info-500 font-semibold">${partner.Name}</b> thiếu thông tin:<br><ul>` + error + `</ul>`
-
-        this.notification.error('Lỗi', message, { duration: 10000, pauseOnHover: true });
-        return false;
+        this.lstCheckRowErrors[i] = error;
       }
     }else{
-      let message = `Dòng thứ <b class="text-info-500 font-semibold">${ i + 1 }</b> thiếu thông tin khách hàng`;
-
-      this.notification.error('Lỗi', message, { duration: 10000, pauseOnHover: true });
-      return false;
+      let message = `*Không có thông tin khách hàng`;
+      this.lstCheckRowErrors[i] = message;
     }
-
-    return true;
   }
 
   checkCarrier(model: OrderBillDefaultDTO){
@@ -311,7 +318,6 @@ export class CreateBillDefaultComponent implements OnInit {
     
     let hasError = false;
     model.Lines.forEach((x, i) => {
-      
       if(!x.CarrierId){
         this.notification.error(`Lỗi`, `Dòng thứ <b class="text-info-500 font-semibold">${i + 1}</b> chưa chọn đối tác giao hàng`, { duration: 10000, pauseOnHover: true });
         hasError = true;
@@ -338,15 +344,6 @@ export class CreateBillDefaultComponent implements OnInit {
     
     if (!model.Lines || model.Lines.length == 0) {
       this.message.error(Message.EmptyData);
-      return;
-    }
-
-    let hasErrorMessage = false;
-    model.Lines.forEach((x, i) =>{
-      hasErrorMessage = !this.checkPartnerInfo(x.Partner, i);
-    });
-
-    if(hasErrorMessage){
       return;
     }
 
