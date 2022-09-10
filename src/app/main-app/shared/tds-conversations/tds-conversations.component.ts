@@ -715,7 +715,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   messageResponseV2(res: any, model: ChatomniSendMessageModelDto) {
     if (TDSHelperArray.hasListValue(res)) {
-      res.map((x: ResponseAddMessCommentDtoV2, i: number) => {
+      res?.map((x: ResponseAddMessCommentDtoV2, i: number) => {
         x["Status"] = ChatomniStatus.Done;
 
         if (TDSHelperArray.hasListValue(model.Attachment) && !x.Message) {
@@ -927,11 +927,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onSendSucceed(data: any) {
-    let dataToBroadcast = {
-      user: this.sharedService.userLogged,
-      conversation: this.data
-    };
-    this.sgRConnectionService.sendMessage('onSentConversation', dataToBroadcast);
+    // let dataToBroadcast = {
+    //   user: this.sharedService.userLogged,
+    //   conversation: this.data
+    // };
+    // this.sgRConnectionService.sendMessage('onSentConversation', dataToBroadcast);
   }
 
   openPost(item: any, type: any) {
