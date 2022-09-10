@@ -63,6 +63,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
   currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
+  isLoadingEdit: boolean = false;
+  isOpenChat: boolean = false;
   orderMessage: TDSSafeAny;
 
   public filterObj: FilterObjSOOrderModel = {
@@ -547,8 +549,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onEdit(item: ODataSaleOnline_OrderModel) {
     if(item && item.Id) {
+      this.isLoadingEdit = true;
+
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
+              this.isLoadingEdit = false;
 
               if(res && res.Id) {
                 delete res['@odata.context'];
@@ -574,6 +579,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               }
           },
           error: (error: any) => {
+            this.isLoadingEdit = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
       });
@@ -719,6 +725,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isOpenChat = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -735,6 +742,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
           if (pageIds.length == 0) {
               return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
+
+          this.isOpenChat = false;
 
           this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
             next: (teams: any): any => {
@@ -766,7 +775,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
           });
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
+        this.isOpenChat = false;
+        this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
       }
     })
   }

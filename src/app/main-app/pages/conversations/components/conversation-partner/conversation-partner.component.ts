@@ -297,7 +297,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     })
   }
 
-  onChangeTabBill(event: any) {debugger
+  onChangeTabBill(event: any) {
     if(this.tab_Bill == event) {
       this.tab_Bill = null;
     } else {

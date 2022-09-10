@@ -49,7 +49,7 @@
                                 <input tdsInput autocomplete="off" placeholder="Email" [(ngModel)]="quickOrderModel.Email" [ngModelOptions]="{standalone: true}"/>
                             </tds-form-field>
                         </div>
-
+                        <!-- địa chỉ -->
                         <div class="flex gap-2 items-center">
                             <div class="tdsi-pin-fill p-1 bg-neutral-3-50 text-neutral-1-400 text-xl leading-none rounded-[10px]"></div>
                             <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans">{{ quickOrderModel.Address || 'Chưa có địa chỉ' }}</span>
@@ -66,8 +66,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="w-full pt-4 flex items-center bg-white">
-                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar 2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400">{{quickOrderModel.Note | formatIconLike | bbcodeConvert }}</textarea>
+
+                    <div class="w-full pt-4 flex items-stretch bg-white">
+                        <div tdsInput placeholder="Ghi chú" class="2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400 cursor-pointer truncate"
+                            tds-popover popoverTrigger="click" [popoverContent]="popoverPartnerInfoNote"
+                            [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left"
+                            [innerHTML]="(quickOrderModel.Note | formatIconLike | bbcodeConvert) || 'Ghi chú'">
+                    </div>
+
+                        <ng-template #popoverPartnerInfoNote>
+                            <div class="mb-2">
+                                <tds-form-field>
+                                    <textarea tdsInput autocomplete="off" placeholder="Ghi chú" [(ngModel)]="quickOrderModel.Note" rows="3"
+                                    [ngModelOptions]="{standalone: true}" class="resize-none no-scrollbar w-[500px]"></textarea>
+                                </tds-form-field>
+                            </div>
+                        </ng-template>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [backdrop]="true" [tdsDropdownMenu]="menuUser"
                             class="2xl:w-1/4 xl:w-2/5 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">
@@ -191,9 +205,9 @@
                                                         {{ item.Price | numberCustom  }}đ
                                                     </span>
 
-                                                    <span class="tdsi-edit-line flex text-base cursor-pointer" tds-popover
+                                                    <span class="tdsi-edit-line flex text-base cursor-pointer" tds-popover [popoverVisible]="visibleIndex == index"
                                                         popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true" [popoverBackdrop]="true"
-                                                        (popoverVisibleChange)="openPopover(item.Price, index)">
+                                                        (popoverVisibleChange)="openPopover($event, item.Price, index)">
                                                     </span>
 
                                                     <ng-template #tmpEditPrice>
@@ -203,8 +217,8 @@
 
                                                                 <tds-form-field class="w-2/3">
                                                                     <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"
-                                                                        [formatter]="numberWithCommas" [parser]="parserComas" (ngModelChange)="onChangePrice($event, item, index)"
-                                                                        [ngModel]="item.Price" [ngModelOptions]="{standalone: true}">
+                                                                        [formatter]="numberWithCommas" [parser]="parserComas"
+                                                                        [(ngModel)]="priceValue" [ngModelOptions]="{standalone: true}">
                                                                     </tds-input-number>
                                                                 </tds-form-field>
                                                             </div>
@@ -223,10 +237,10 @@
                                                                 </tds-form-field>
                                                             </div> -->
 
-                                                            <!-- <div class="flex gap-x-2 mt-4 justify-end">
+                                                            <div class="flex gap-x-2 mt-4 justify-end">
                                                                 <button class="min-w-[89px]" type="button" tds-button color="secondary" size="sm" (click)="closePriceDetail()">Hủy bỏ</button>
                                                                 <button class="min-w-[89px]" type="button" tds-button color="primary" size="sm" (click)="approvePrice(item, index)">Áp dụng</button>
-                                                            </div> -->
+                                                            </div>
                                                         </div>
                                                     </ng-template>
                                                 </div>
