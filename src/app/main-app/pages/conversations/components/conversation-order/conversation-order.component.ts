@@ -1204,11 +1204,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   pushItemProduct(data: ProductDTOV2) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId);
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId);
     if (index < 0){
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
 
-        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
+        this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
     } else{
         this.quickOrderModel.Details[index].Quantity += 1;
     }
@@ -1258,12 +1258,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeShipExtraMoney(event: any) {
-    if(event) {
-      let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
-      this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
-      this.calcFee();
+    if(event && TDSHelperArray.hasListValue(this.shipExtraServices)) {
+        let idx = this.shipExtraServices?.findIndex((f: any) => f.ServiceId === 'XMG');
+        this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
+        this.calcFee();
 
-      this.visibleShipExtraMoney = false;
+        this.visibleShipExtraMoney = false;
     }
   }
 
