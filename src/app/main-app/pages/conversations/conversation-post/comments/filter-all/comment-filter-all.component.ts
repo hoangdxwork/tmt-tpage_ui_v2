@@ -1,3 +1,4 @@
+import { ChatmoniSocketEventName } from './../../../../../services/socket-io/soketio-event';
 import { CRMTagService } from './../../../../../services/crm-tag.service';
 import { CreateTagModalComponent } from './../../../../configs/components/create-tag-modal/create-tag-modal.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
@@ -133,14 +134,27 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
-          let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
+        switch(res.EventName){
 
-          this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])]
-          this.sortChildComment(this.dataSource.Items);
+          case ChatmoniSocketEventName.chatomniOnMessage:
+            if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
+              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
+
+              this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])]
+              this.sortChildComment(this.dataSource.Items);
+            }
+
+            this.cdRef.detectChanges();
+          break;
+          
+          case ChatmoniSocketEventName.chatomniOnUpdate:
+          break;
+
+          case ChatmoniSocketEventName.onUpdate:
+          break;
+
+        default: break;
         }
-
-        this.cdRef.detectChanges();
       }
     })
   }

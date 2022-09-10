@@ -1,3 +1,4 @@
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { Injectable } from "@angular/core";
 import { map, Observable, shareReplay, mergeMap } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
@@ -82,7 +83,7 @@ export class ChatomniConversationService extends BaseSevice {
 
   }
 
-  nextDataSource(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
+  nextDataSource(teamId: number, type: string, lstConversation: ChatomniConversationItemDto[], queryObj?: any, ): Observable<ChatomniConversationDto> {
 
     let exist = this.csFacade.getData(teamId);
 
@@ -107,7 +108,11 @@ export class ChatomniConversationService extends BaseSevice {
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging.UrlNext;
 
-            exist.Items = [...exist.Items, ...res.Items];
+            if(lstConversation && lstConversation.length> 0){
+              exist.Items = [...lstConversation, ...res.Items];
+            } else {
+              exist.Items = [...exist.Items, ...res.Items];
+            }
             exist.Paging = { ...res.Paging };
 
         } else {

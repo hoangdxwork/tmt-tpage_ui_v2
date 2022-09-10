@@ -162,19 +162,19 @@ export class CsOrder_FromConversationHandler {
       } else {
           let partner = conversationInfo.Partner;
 
-          if(partner.Name && !quickOrderModel.PartnerName) {
+          if(partner && partner.Name && !quickOrderModel.PartnerName) {
               quickOrderModel.PartnerName = partner.Name;
           }
 
-          if(partner.Phone && !quickOrderModel.Telephone) {
+          if(partner && partner.Phone && !quickOrderModel.Telephone) {
               quickOrderModel.Telephone = partner.Phone;
           }
 
-          if(partner.Email && !quickOrderModel.Email) {
+          if(partner && partner.Email && !quickOrderModel.Email) {
               quickOrderModel.Email = partner.Email;
           }
 
-          if(partner.Street && !quickOrderModel.CityCode) {
+          if(partner && partner.Street && !quickOrderModel.CityCode) {
               quickOrderModel.Address = partner.Street;
           }
 
