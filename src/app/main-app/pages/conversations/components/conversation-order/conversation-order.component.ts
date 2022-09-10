@@ -64,6 +64,7 @@ import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorde
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
 @Component({
   selector: 'conversation-order',
@@ -151,6 +152,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private deliveryCarrierService: DeliveryCarrierService,
     private auth: TAuthService,
     private partnerService: PartnerService,
+    private postEvent: ConversationPostEvent,
     private cdRef: ChangeDetectorRef,
     private productService: ProductService,
     private saleOnline_OrderService: SaleOnline_OrderService,
@@ -287,10 +289,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                       this.quickOrderModel = {...obs};
                       this.mappingAddress(this.quickOrderModel);
                   }
+
+                  // TODO: gán sự kiện loading cho tab conversation-post
+                  this.postEvent.spinLoadingTab$.emit(false);
+
                   this.isLoading = false;
                   this.cdRef.detectChanges();
               },
               error: (error: any) => {
+                  // TODO: gán sự kiện loading cho tab conversation-post
+                  this.postEvent.spinLoadingTab$.emit(false);
+
                   this.isLoading = false;
                   this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
                   this.cdRef.detectChanges();
@@ -626,6 +635,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         next:(res: any) => {
           delete res['@odata.context'];
 
+          // TODO: gán sự kiện loading cho tab conversation-post
+          this.postEvent.spinLoadingTab$.emit(false);
+
           this.isLoading = false;
           this.quickOrderModel = {...res};
 
@@ -652,15 +664,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
           this.isUpdated = false;
-          let csid = comment.UserId;
-          this.chatomniConversationFacade.onSyncConversationInfo$.emit(csid);
+          this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
 
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.cdRef.detectChanges();
+
+          // TODO: gán sự kiện loading cho tab conversation-post
+          this.postEvent.spinLoadingTab$.emit(false);
+
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     })
   }

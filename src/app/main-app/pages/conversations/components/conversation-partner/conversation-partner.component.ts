@@ -31,6 +31,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenueDto, Conversation_LastBillDto, GroupBy_ConversationBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
 @Component({
     selector: 'conversation-partner',
@@ -80,6 +81,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private cdRef: ChangeDetectorRef,
+    private postEvent: ConversationPostEvent,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private conversationDataFacade: ConversationDataFacade,
     private chatomniConversationService: ChatomniConversationService,
@@ -113,6 +115,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       next: (res: ChatomniConversationInfoDto) => {
           if(TDSHelperObject.hasValue(res)) {
               this.loadData(res);
+
+              // TODO: gán sự kiện loading cho tab conversation-post
+              this.postEvent.spinLoadingTab$.emit(false);
           }
       }
     })
