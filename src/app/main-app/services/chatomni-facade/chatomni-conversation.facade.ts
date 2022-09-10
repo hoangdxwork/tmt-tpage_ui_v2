@@ -52,7 +52,7 @@ export class ChatomniConversationFacade extends BaseSevice  {
         CreatedTime: socket.Message?.CreatedTime,
         ChannelCreatedTime: socket.Message?.ChannelCreatedTime,
         ChannelUpdatedTime: null,
-        IsOwner: false
+        IsOwner: socket.Message?.IsOwner,
     } as any;
 
     return {...item};

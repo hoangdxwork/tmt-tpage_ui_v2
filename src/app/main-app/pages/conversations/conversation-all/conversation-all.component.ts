@@ -7,9 +7,9 @@ import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/ch
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable } from 'rxjs';
+import { fromEvent, Observable, Subscription } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -39,7 +39,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -54,6 +54,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   dataSource$?: Observable<ChatomniConversationDto> ;
   lstConversation: ChatomniConversationItemDto[] = [];
 
+  subscribeSocket!: Subscription;
   csid!: string;
   conversationInfo!: ChatomniConversationInfoDto;
   conversationItem!: ChatomniConversationItemDto;
@@ -145,7 +146,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onEventSocket(){
-    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+    this.subscribeSocket = this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
 
         switch(res.EventName){
@@ -710,6 +711,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.lstConversation = [];
     (this.conversationInfo as any) = null;
     delete this.dataSource$;
+  }
+
+  ngOnDestroy(): void {
+      this.subscribeSocket.unsubscribe();
   }
 
 }
