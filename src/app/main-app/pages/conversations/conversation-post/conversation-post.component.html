@@ -97,8 +97,8 @@
         </div>
 
         <!-- Danh sách khách hàng, đơn hàng -->
-        <div class="w-[30%] h-full flex flex-col">
-            <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'"  [(selectedIndex)]="selectedIndex" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+        <tds-spin class="w-[30%] h-full flex flex-col" [spinning]="isLoadingTab">
+            <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="selectedIndex" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 
                 <!-- tab Danh sách -->
                 <tds-tab [title]="titleList" clsContent="-mt-px h-full flex flex-col">
@@ -140,6 +140,6 @@
                     </div>
                 </tds-tab>
             </tds-tabset>
-        </div>
+        </tds-spin>
     </div>
 </tds-spin>

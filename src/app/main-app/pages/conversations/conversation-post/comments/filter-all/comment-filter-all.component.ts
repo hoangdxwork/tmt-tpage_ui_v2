@@ -39,6 +39,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
+import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
 @Component({
   selector: 'comment-filter-all',
@@ -96,6 +97,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private chatomniCommentFacade: ChatomniCommentFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
     public crmService: CRMTeamService,
+    private postEvent: ConversationPostEvent,
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -123,7 +125,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     this.chatomniCommentFacade.partnerDict().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.partnerDict = res;
-          this.cdRef.detectChanges();
+          this.cdRef.markForCheck();
       }
     })
   }
@@ -385,6 +387,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
+    // TODO: gán sự kiện loading cho tab
+    this.postEvent.spinLoadingTab$.emit(true);
+
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationInfoDto) => {
@@ -414,6 +419,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
+    // TODO: gán sự kiện loading cho tab
+    this.postEvent.spinLoadingTab$.emit(true);
+
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
@@ -429,6 +437,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
           }
       },
       error: (error: any) => {
+          // TODO: gán sự kiện loading cho tab
+          this.postEvent.spinLoadingTab$.emit(false);
+
           this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order.id, comment: item} );
           this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
       }
@@ -443,6 +454,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.currentId = item.Id;
+    // TODO: gán sự kiện loading cho tab
+    this.postEvent.spinLoadingTab$.emit(true);
 
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
@@ -462,6 +475,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       },
       error: (error: any) => {
         this.currentId = '';
+        // TODO: gán sự kiện loading cho tab
+        this.postEvent.spinLoadingTab$.emit(false);
         this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
         this.cdRef.detectChanges();
       }
