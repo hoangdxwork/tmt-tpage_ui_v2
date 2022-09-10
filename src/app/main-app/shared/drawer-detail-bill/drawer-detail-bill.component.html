@@ -1,5 +1,5 @@
 <span *ngIf="!isMessage" class="text-info-500 font-semibold  font-sans cursor-pointer" [ngClass]="isBillNearest?'text-header-1':'text-body-2'" (click)="onDrawerDetailBill($event)">
-    #{{bill.Number || 'N/A'}}
+    #{{ bill.Number || 'N/A' }}
 </span>
 
 <tds-drawer *ngIf="bill" [bodyStyle]="{'overflow':'hidden'}" [visible]="visibleDrawerBillDetail" [placement]="'right'" size="xl"
@@ -7,7 +7,7 @@
     (onClose)="onClose()" [footer]="footerTpl">
     <ng-template #titleTpl>
         <span class="text-header-1 text-neutral-1-900 font-semibold">Phiếu bán hàng
-            <span class="text-white text-body-2 bg-primary-1 rounded px-2">{{bill.Number}}</span>
+            <span class="text-white text-body-2 bg-primary-1 rounded px-2">{{ bill.Number }}</span>
         </span>
     </ng-template>
     <ng-container *tdsDrawerContent>
@@ -25,17 +25,17 @@
                                     <div class="flex flex-auto flex-col gap-y-2">
                                         <div class="flex items-center">
                                             <span class="text-neutral-1-600 mr-2">Trạng thái ĐH</span>
-                                            <span class="text-header-2 text-neutral-1-300 font-semibold"> {{dataModel.ShowState || '---'}}</span>
+                                            <span class="text-header-2 text-neutral-1-300 font-semibold"> {{ dataModel.ShowState || '---' }}</span>
                                         </div>
                                         <div class="flex items-center">
                                             <span class="text-neutral-1-600 mr-2">Vận chuyển</span>
-                                            <span class="font-semibold"> {{dataModel.CarrierName || '---'}} </span>
+                                            <span class="font-semibold"> {{ dataModel.CarrierName || '---' }} </span>
                                         </div>
                                         <div class="flex items-center">
                                             <div class="rounded-full bg-neutral-3-100 px-2">
-                                                <span class="text-neutral-1-700 font-semibold">{{dataModel.ShowShipStatus || '---'}}</span>
+                                                <span class="text-neutral-1-700 font-semibold">{{ dataModel.ShowShipStatus || '---' }}</span>
                                             </div>
-                                            <span class="text-info-500 font-semibold ml-2">{{dataModel.TrackingRef || '---'}}</span>
+                                            <span class="text-info-500 font-semibold ml-2">{{ dataModel.TrackingRef || '---' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -44,7 +44,7 @@
                                         <span>Bảng giá</span>
                                     </div>
                                     <div class="w-1/2">
-                                        <span class="font-semibold">{{dataModel.PriceList?.Name || '---'}}</span>
+                                        <span class="font-semibold">{{ dataModel.PriceList?.Name || '---' }}</span>
                                     </div>
                                 </div>
                                 <div class="flex gap-x-6 items-center">
@@ -52,7 +52,7 @@
                                         <span>Tiền thu hộ</span>
                                     </div>
                                     <div class="w-1/2">
-                                        <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
+                                        <span class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
                                     </div>
                                 </div>
                                 <div class="flex gap-x-6 items-center">
@@ -60,7 +60,7 @@
                                         <span>Số tiền trả</span>
                                     </div>
                                     <div class="w-1/2">
-                                        <span class="font-semibold">{{dataModel.PaymentAmount || 0 | numberCustom }} đ</span>
+                                        <span class="font-semibold">{{ dataModel.PaymentAmount || 0 | numberCustom }} đ</span>
                                     </div>
                                 </div>
                                 <div class="flex gap-x-6 items-center">
@@ -68,7 +68,7 @@
                                         <span>Phí giao hàng</span>
                                     </div>
                                     <div class="w-1/2 flex gap-x-6">
-                                        <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
+                                        <span class="font-semibold">{{ dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
                                         <div class="rounded-full bg-info-200 px-2 " *ngIf="dataModel.ShipWeight">
                                             <span class="text-info-500 font-semibold flex items-center">
                                                 <svg class="mr-1" width="17" height="16" viewBox="0 0 17 16" fill="none"
@@ -117,7 +117,7 @@
                                         <span>Người giao hàng</span>
                                     </div>
                                     <div class="w-1/2">
-                                        <span class="font-semibold">{{dataModel.Deliver || '---'}}</span>
+                                        <span class="font-semibold">{{ dataModel.Deliver || '---' }}</span>
                                     </div>
                                 </div>
 
@@ -126,7 +126,7 @@
                                         <span>Tham chiếu</span>
                                     </div>
                                     <div class="w-1/2">
-                                        <span class="font-semibold">{{dataModel.Reference || '---'}}</span>
+                                        <span class="font-semibold">{{ dataModel.Reference || '---' }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -139,7 +139,7 @@
                                             <span>Đối tác giao hàng</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.Carrier?.Name || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.Carrier?.Name || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -147,7 +147,7 @@
                                             <span>Giao hàng thu tiền</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
+                                            <span class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -155,7 +155,7 @@
                                             <span>Đối soát GH</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.ShowShipStatus|| '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.ShowShipStatus|| '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -163,7 +163,7 @@
                                             <span>Phí giao hàng</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
+                                            <span class="font-semibold">{{ dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -171,7 +171,7 @@
                                             <span>Khối lượng ship (g)</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.ShipWeight|| '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.ShipWeight|| '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -179,7 +179,7 @@
                                             <span>Tiền cọc</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.AmountDeposit || 0 | numberCustom }} đ</span>
+                                            <span class="font-semibold">{{ dataModel.AmountDeposit || 0 | numberCustom }} đ</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -187,7 +187,7 @@
                                             <span>Mã vận đơn</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold text-info-500">{{dataModel.TrackingRef || '---'}}</span>
+                                            <span class="font-semibold text-info-500">{{ dataModel.TrackingRef || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -195,7 +195,7 @@
                                             <span>Trạng thái vận đơn</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.ShipPaymentStatus || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.ShipPaymentStatus || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 ">
@@ -203,7 +203,7 @@
                                             <span>Ghi chú giao hàng</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span >{{dataModel.DeliveryNote || '---'}}</span>
+                                            <span >{{ dataModel.DeliveryNote || '---' }}</span>
                                         </div>
                                     </div>
                                     <!-- Thông tin nâng cao -->
@@ -217,7 +217,7 @@
                                                             <span>Người nhận</span>
                                                         </div>
                                                         <div class="w-2/3">
-                                                            <span class="font-semibold">{{dataModel.Ship_Receiver?.Name || '---'}}</span>
+                                                            <span class="font-semibold">{{ dataModel.Ship_Receiver?.Name || '---' }}</span>
                                                         </div>
                                                     </div>
                                                     <div class="flex gap-x-6 items-center">
@@ -225,7 +225,7 @@
                                                             <span>Điện thoại</span>
                                                         </div>
                                                         <div class="w-2/3">
-                                                            <span class="font-semibold">{{dataModel.Ship_Receiver?.Phone || '---'}}</span>
+                                                            <span class="font-semibold">{{ dataModel.Ship_Receiver?.Phone || '---' }}</span>
                                                         </div>
                                                     </div>
                                                     <div class="flex gap-x-6 items-center">
@@ -233,7 +233,7 @@
                                                             <span>Địa chỉ</span>
                                                         </div>
                                                         <div class="w-2/3">
-                                                            <span class="font-semibold">{{dataModel.Ship_Receiver?.Street || '---'}}</span>
+                                                            <span class="font-semibold">{{ dataModel.Ship_Receiver?.Street || '---' }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -251,7 +251,7 @@
                                             <span>Tên người nhận</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.ReceiverName || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.ReceiverName || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -259,7 +259,7 @@
                                             <span>Điện thoại</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.ReceiverPhone || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.ReceiverPhone || '---' }}</span>
                                         </div>
                                     </div>
                                     <!-- <div class="flex gap-x-6 items-center">
@@ -275,7 +275,7 @@
                                             <span>Địa chỉ giao hàng</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.Ship_Receiver?.Street || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.Ship_Receiver?.Street || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -283,7 +283,7 @@
                                             <span>Ghi chú</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold">{{dataModel.ReceiverNote || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.ReceiverNote || '---' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -297,7 +297,7 @@
                                             <span>Người bán</span>
                                         </div>
                                         <div class="w-1/2">
-                                            <span class="font-semibold">{{dataModel.User?.Name || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.User?.Name || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -305,7 +305,7 @@
                                             <span>Seri</span>
                                         </div>
                                         <div class="w-1/2">
-                                            <span class="font-semibold">{{dataModel.Seri || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.Seri || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -313,7 +313,7 @@
                                             <span>Ngày hóa đơn</span>
                                         </div>
                                         <div class="w-1/2">
-                                            <span class="font-semibold">{{(dataModel.DateInvoice | date:"dd-MM-yyyy HH:mm") || '---'}}</span>
+                                            <span class="font-semibold">{{ (dataModel.DateInvoice | date:"dd-MM-yyyy HH:mm") || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -321,7 +321,7 @@
                                             <span>Trạng thái</span>
                                         </div>
                                         <div class="w-1/2">
-                                            <span class="font-semibold">{{getShowState(dataModel.State) || '---'}}</span>
+                                            <span class="font-semibold">{{ getShowState(dataModel.State) || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -329,7 +329,7 @@
                                             <span>Ngày hóa đơn đỏ</span>
                                         </div>
                                         <div class="w-1/2">
-                                            <span class="font-semibold">{{(dataModel.DateOrderRed | date:"dd-MM-yyyy HH:mm")|| '---'}}</span>
+                                            <span class="font-semibold">{{ (dataModel.DateOrderRed | date:"dd-MM-yyyy HH:mm") || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -337,7 +337,7 @@
                                             <span>Ghi chú đơn hàng</span>
                                         </div>
                                         <div class="w-1/2">
-                                            <span class="font-semibold">{{dataModel.Comment || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.Comment || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">
@@ -345,7 +345,7 @@
                                             <span>Số hóa đơn đỏ</span>
                                         </div>
                                         <div class="w-1/2">
-                                            <span class="font-semibold">{{dataModel.NumberOrder || '---'}}</span>
+                                            <span class="font-semibold">{{ dataModel.NumberOrder || '---' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -372,13 +372,13 @@
                             <tbody>
                                 <ng-template ngFor let-data let-i="index" [ngForOf]="tableProduct.data">
                                     <tr>
-                                        <td>{{ i +1 }}</td>
+                                        <td>{{ i + 1 }}</td>
                                         <td>
                                             {{ data.Product.NameGet }}
-                                            <p class="text-[13px] italic text-[#0184FF]" *ngIf="data.User && data.User.Name">Nhân viên: {{data.User.Name}}</p>
+                                            <p class="text-[13px] italic text-[#0184FF]" *ngIf="data.User && data.User.Name">Nhân viên: {{ data.User.Name || '---'}}</p>
                                         </td>
                                         <td>{{ data.ProductUOMName }}</td>
-                                        <td>{{ data.ProductUOMQty }}</td>
+                                        <td>{{ data.ProductUOMQty | numberCustom }}</td>
                                         <td>{{ data.PriceUnit | numberCustom  }} đ</td>
                                         <td>{{ data.Discount}} %</td>
                                         <td>{{ data.PriceTotal | numberCustom  }} đ</td>
@@ -392,27 +392,27 @@
                         <div class="w-1/2 text-right flex flex-col">
                             <div class="flex mb-5">
                                 <span class="w-1/2"> Tổng số lượng</span>
-                                <span class="w-1/2 font-semibold">{{productUOMQtyTotal || 0 | numberCustom }} </span>
+                                <span class="w-1/2 font-semibold">{{ productUOMQtyTotal || 0 | numberCustom }} </span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel && (dataModel.Discount > 0 || dataModel.DecreaseAmount > 0 || dataModel.AmountTax > 0)">
                                 <span class="w-1/2"> Tổng trước thuế</span>
-                                <span class="w-1/2 font-semibold"> {{productPriceTotal || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2 font-semibold"> {{ productPriceTotal || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.DiscountAmount > 0">
-                                <span class="w-1/2"> Chiết khấu ({{dataModel.Discount || 0}}%)</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.DiscountAmount || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2"> Chiết khấu ({{ dataModel.Discount || 0 }} %)</span>
+                                <span class="w-1/2 font-semibold"> {{ dataModel.DiscountAmount || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.DecreaseAmount > 0">
                                 <span class="w-1/2"> Giảm giá</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.DecreaseAmount || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2 font-semibold"> {{ dataModel.DecreaseAmount || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.AmountTax > 0">
-                                <span class="w-1/2"> Thuế ({{dataModel.Tax?.Amount}}%)</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.AmountTax || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2"> Thuế ({{ dataModel.Tax?.Amount | numberCustom }}%)</span>
+                                <span class="w-1/2 font-semibold"> {{ dataModel.AmountTax || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5 border-b border-neutral-2-100">
                                 <span class="w-1/2 font-semibold">Tổng tiền</span>
-                                <span class="w-1/2 text-header-1 font-semibold">{{dataModel.AmountTotal || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2 text-header-1 font-semibold">{{ dataModel.AmountTotal || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngFor="let payment of payments; let i = index">
                                 <span class="w-1/2 flex items-center  justify-end" >
@@ -421,25 +421,25 @@
                                         [(popoverVisible)]="popoverVisible" [popoverContent]="infoPricePay">
                                     </span>
                                     Trả lúc {{payment.Date | date: "dd-MM-yyyy"}}</span>
-                                <span class="w-1/2 font-semibold"> {{payment.Amount || 0 | numberCustom }} {{payment.Currency}}</span>
+                                <span class="w-1/2 font-semibold"> {{ payment.Amount || 0 | numberCustom }} {{ payment.Currency }}</span>
 
                                 <ng-template #infoPricePay>
                                     <div class="w-w-full text-left flex flex-col">
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2"> Tên</span>
-                                            <span class="w-2/3 text-body-2"> {{payment.Name}}</span>
+                                            <span class="w-2/3 text-body-2"> {{ payment.Name || '---' }}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2"> Ngày</span>
-                                            <span class="w-2/3 text-body-2"> {{payment.Date | date:"dd-MM-yyyy"}}</span>
+                                            <span class="w-2/3 text-body-2"> {{ (payment.Date | date:"dd-MM-yyyy") || '---'}}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2"> Phương thức</span>
-                                            <span class="w-2/3 text-body-2"> {{payment.JournalName}}</span>
+                                            <span class="w-2/3 text-body-2"> {{ payment.JournalName || '---'}}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2">Tham chiếu</span>
-                                            <span class="w-2/3 text-body-2 text-[#0184FF]">{{payment.Ref}}</span>
+                                            <span class="w-2/3 text-body-2 text-[#0184FF]">{{ payment.Ref || '---'}}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2">Số tiền</span>

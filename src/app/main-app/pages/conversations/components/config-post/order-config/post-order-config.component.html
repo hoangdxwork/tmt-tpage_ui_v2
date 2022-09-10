@@ -155,7 +155,7 @@
                       </ng-template>
 
                       <div class="text-info-500 text-body-2 font-semibold " *ngIf="item.Product as product; else notProduct">
-                        {{ product.ProductName || product.ProductNameGet }}  /  {{ (product.Price || 0) | number }}
+                        {{ product.ProductName || product.ProductNameGet }}  /  {{ (product.Price || 0) | numberCustom }}
                       </div>
 
                       <ng-template #notProduct>

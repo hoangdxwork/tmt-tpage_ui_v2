@@ -20,17 +20,17 @@
                         <img src="../../../assets/imagesv2/dashboard/conversation-icon.svg">
                     </div>
                     <div class="flex flex-col xl:col-span-2">
-                        <span class="text-heading-3 font-semibold text-secondary-1 truncate">{{(dataSummaryPost?.TotalConversation || 0)|number:'1.0-3'}}</span>
+                        <span class="text-heading-3 font-semibold text-secondary-1 truncate">{{(dataSummaryPost?.TotalConversation || 0)|numberCustom}}</span>
                         <span class="text-title-1 text-neutral-1-400 font-semibold truncate">Hội thoại</span>
                     </div>
                 </div>
                 <div class="pl-6 flex gap-x-6 items-center">
                     <div class="flex flex-col">
-                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalComment || 0)|number:'1.0-3'}}</span>
+                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalComment || 0)|numberCustom}}</span>
                         <span class="text-neutral-1-400">Bình luận</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalMessage || 0)|number:'1.0-3'}}</span>
+                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalMessage || 0)|numberCustom}}</span>
                         <span class="text-neutral-1-400">Tin nhắn</span>
                     </div>
                 </div>
@@ -41,17 +41,17 @@
                         <img src="../../../assets/imagesv2/dashboard/posts-icon.svg">
                     </div>
                     <div class="flex flex-col xl:col-span-2">
-                        <span class="text-heading-3 font-semibold text-primary-1 truncate">{{(dataSummaryPost?.TotalPost || 0)|number:'1.0-3'}}</span>
+                        <span class="text-heading-3 font-semibold text-primary-1 truncate">{{(dataSummaryPost?.TotalPost || 0)|numberCustom}}</span>
                         <span class="text-title-1 text-neutral-1-400 font-semibold truncate">Bài viết</span>
                     </div>
                 </div>
                 <div class="pl-6 flex gap-x-6 items-center">
                     <div class="flex flex-col">
-                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalLike || 0)|number:'1.0-3'}}</span>
+                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalLike || 0)|numberCustom}}</span>
                         <span class="text-neutral-1-400">Lượt thích</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalShare || 0)|number:'1.0-3'}}</span>
+                        <span class="font-semibold text-neutral-1-800">{{(dataSummaryPost?.TotalShare || 0)|numberCustom}}</span>
                         <span class="text-neutral-1-400">Lượt chia sẻ</span>
                     </div>
                 </div>

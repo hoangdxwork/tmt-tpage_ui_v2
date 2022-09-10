@@ -135,7 +135,7 @@
                       <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
                           class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
 
-                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | number:'1.0-3'  }}đ </span>
+                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom  }}đ </span>
 
                           <div *ngIf="lstInventory && lstInventory[item.Id]">
                               <span class="text-neutral-1-400">Tồn kho: </span>

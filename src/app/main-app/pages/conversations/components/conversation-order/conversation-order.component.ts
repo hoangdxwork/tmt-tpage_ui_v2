@@ -1363,6 +1363,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
+  changeNote(event:any){
+    console.log(event)
+  }
+
   validateData(){
     this.isEditPartner = false;
     this.isEnableCreateOrder = false;

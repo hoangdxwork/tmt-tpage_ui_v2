@@ -8,7 +8,7 @@
                 <span class="text-success-400 text-title-1 font-semibold pl-3">{{pageData[0].name}}</span>
             </div>
             <div class="flex flex-row items-end">
-                <span class="text-neutral-1-800 text-heading-2 font-semibold">{{pageData[0].value|number}}</span>
+                <span class="text-neutral-1-800 text-heading-2 font-semibold">{{pageData[0].value|numberCustom}}</span>
                 <span class="text-neutral-1-800 text-header-2 font-semibold pl-2 pb-1">VND</span>
             </div>
         </div>
@@ -148,20 +148,20 @@
             <ng-template ngFor let-data [ngForOf]="basicTable.data" >
                 <tr>
                     <td>{{ data.reportDate }}</td>
-                    <td>{{ data.orders|number }}</td>
-                    <td>{{ data.newCustomers|number }}</td>
-                    <td>{{ data.oldCustomers|number }}</td>
-                    <td>{{ data.completeOrders|number }}</td>
-                    <td>{{ data.revenue|number }}</td>
+                    <td>{{ data.orders|numberCustom }}</td>
+                    <td>{{ data.newCustomers|numberCustom }}</td>
+                    <td>{{ data.oldCustomers|numberCustom }}</td>
+                    <td>{{ data.completeOrders|numberCustom }}</td>
+                    <td>{{ data.revenue|numberCustom }}</td>
                     <td>
                         <span class="text-primary-1">{{ (data.completeOrders/data.newCustomers)|percent}}</span>
                         <br>
-                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.newCustomers|number}}</span>
+                        <span class="text-neutral-1-400">{{data.completeOrders|numberCustom}}/{{data.newCustomers|numberCustom}}</span>
                     </td>
                     <td>
                         <span class="text-primary-1">{{ (data.completeOrders/data.oldCustomers)|percent}}</span>
                         <br>
-                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.oldCustomers|number}}</span>
+                        <span class="text-neutral-1-400">{{data.completeOrders|numberCustom}}/{{data.oldCustomers|numberCustom}}</span>
                     </td>
                 </tr>
             </ng-template>

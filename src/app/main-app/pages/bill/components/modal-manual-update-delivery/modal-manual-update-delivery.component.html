@@ -44,11 +44,11 @@
                             <td>
                                 <span [ngClass]="data.Number ? 'text-info-500':'text-error-500'">{{ data.Number || 'N/A' }}</span>
                             </td>
-                            <td class="text-right">{{ (data.AmountTotal || 0)|number }}đ</td>
+                            <td class="text-right">{{ (data.AmountTotal || 0)|numberCustom }}đ</td>
                             <td>
                                 <span class="text-info-500">{{ data.TrackingRef }}</span>
                             </td>
-                            <td class="text-right">{{ (data.CashOnDelivery || 0)|number }}đ</td>
+                            <td class="text-right">{{ (data.CashOnDelivery || 0)|numberCustom }}đ</td>
                             <td>
                                 <tds-select valueField="value" textField="text" [(ngModel)]="data.ShipPaymentStatus"
                                     [ngModelOptions]="{ standalone: true }" placeholder='Trạng thái' [valuePrimitive]="false"
