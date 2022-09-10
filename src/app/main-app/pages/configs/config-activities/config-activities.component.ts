@@ -76,7 +76,7 @@ export class ConfigActivitiesComponent implements OnInit {
         this.lstData = res.value;
         this.isLoading = false;
     }, err => {
-      this.message.error("Lỗi rồi nhie !!!")
+      this.message.error(err.error?.message || "Tải dữ liệu đã xảy ra lỗi!")
       this.isLoading = false;
     });
   }

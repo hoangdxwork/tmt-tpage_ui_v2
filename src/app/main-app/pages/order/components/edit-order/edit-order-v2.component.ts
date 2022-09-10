@@ -108,7 +108,7 @@ export class EditOrderV2Component implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {

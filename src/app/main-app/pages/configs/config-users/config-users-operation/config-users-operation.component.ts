@@ -38,6 +38,8 @@ export class ConfigUsersOperationComponent implements OnInit {
   lstTeam!: CRMTeamDTO[];
 
   isLoading: boolean = false;
+  pageSize = 10;
+  pageIndex = 1;
   userManagerPage: TDSSafeAny = null;
 
   // userManagerPage$!: Observable<TDSSafeAny>;
