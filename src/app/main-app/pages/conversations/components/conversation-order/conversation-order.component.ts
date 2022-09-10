@@ -1120,9 +1120,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.visibleShipExtraMoney = false;
   }
 
-  openPopover(price:number, index:number){
-    this.visibleIndex = index;
-    this.priceValue = Number(price);
+  openPopover(event:boolean, price:number, index:number){
+    if(event){
+      this.visibleIndex = index;
+      this.priceValue = Number(price);
+    }
   }
 
   onChangePrice(event:number){
@@ -1130,14 +1132,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   approvePrice(item: Detail_QuickSaleOnlineOrder, index: number) {
+    this.visibleIndex = -1;
+
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
     if(exit) {
         this.quickOrderModel.Details[index].Price = this.priceValue;
         this.calcTotal();
         this.coDAmount();
     }
-
-    this.closePriceDetail();
   }
 
   closePriceDetail() {
@@ -1377,5 +1379,4 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     (this._wards as any) = null;
     (this._street as any) = null;
   }
-
 }

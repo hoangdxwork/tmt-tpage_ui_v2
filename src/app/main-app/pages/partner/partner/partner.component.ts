@@ -305,7 +305,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filterObj.searchText = data.value;
     let filters = this.odataPartnerService.buildFilter(this.filterObj);
 
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
     this.getViewData(params).subscribe({
       next: (res: any) => {

@@ -27,6 +27,7 @@ export class SO_PrepareFastSaleOrderHandler {
       saleModel.Phone = quickOrderModel.Telephone || quickOrderModel.PartnerPhone;
       saleModel.Address = quickOrderModel.Address || quickOrderModel.Partner?.Street;
       saleModel.Name = quickOrderModel.Name;
+      saleModel.ReceiverNote = quickOrderModel.Note;
 
       // khi ko phải là khách hàng
       saleModel.PartnerId = quickOrderModel.PartnerId ||  quickOrderModel.Partner?.Id;
