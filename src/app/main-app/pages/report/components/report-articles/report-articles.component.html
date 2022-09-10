@@ -147,11 +147,11 @@
                 <tr>
                     <td>{{ data.reportDate }}</td>
                     <td>{{ data.title }}</td>
-                    <td>{{ data.likes|number }}</td>
-                    <td>{{ data.views|number }}</td>
-                    <td>{{ data.shares|number }}</td>
-                    <td>{{ data.comments|number }}</td>
-                    <td>{{ data.completeOrders|number }}</td>
+                    <td>{{ data.likes|numberCustom }}</td>
+                    <td>{{ data.views|numberCustom }}</td>
+                    <td>{{ data.shares|numberCustom }}</td>
+                    <td>{{ data.comments|numberCustom }}</td>
+                    <td>{{ data.completeOrders|numberCustom }}</td>
                     <td>
                         <a [routerLink]="'/report/articles'" class="text-info-500">Xem chi tiết</a>
                     </td>

@@ -143,7 +143,7 @@
                       <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
                           class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
 
-                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | number:'1.0-3'  }}đ </span>
+                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom  }}đ </span>
 
                           <div class="fw-5" *ngIf="lstInventory && lstInventory[item.Id]">
                               <span class="text-neutral-1-400">Tồn kho: </span>
@@ -227,7 +227,7 @@
                           [ngModelOptions]="{standalone: true}" [ngModelOptions]="{standalone: true}" />
                       </tds-form-field>
                     </td>
-                    <td> {{ data.Price * data.Quantity | number:'1.0-3'  }} </td>
+                    <td> {{ data.Price * data.Quantity | numberCustom  }} </td>
                     <td>
                       <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(data, index)">
                         <span class="flex items-center text-neutral-1-500">
@@ -240,7 +240,7 @@
                     <td colspan="7">
                       <div class="flex items-center gap-x-4 justify-end">
                         <tds-label class="text-sm">Tổng tiền:</tds-label>
-                        <tds-label class="text-xl text-success-400"> {{ quickOrderModel?.TotalAmount | number:'1.0-3'   }}
+                        <tds-label class="text-xl text-success-400"> {{ quickOrderModel?.TotalAmount | numberCustom   }}
                         </tds-label>
                       </div>
                     </td>
@@ -373,7 +373,7 @@
                                         [ngModel]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}">
 
                                         <ng-template tds-label-tmp let-item="item">  {{item.data.ServiceName}}
-                                            <span *ngIf="item.data.TotalFee > 0">: {{item.data.TotalFee | number:'1.0-3'}}</span>
+                                            <span *ngIf="item.data.TotalFee > 0">: {{item.data.TotalFee | numberCustom}}</span>
                                         </ng-template>
 
                                     </tds-select>
@@ -448,7 +448,7 @@
                                 <span class="pr-4">Phí ship (đối tác)</span>
                                 <div class="col-span-2 flex-auto flex items-center">
                                   <div class="px-4">
-                                    <span class="py-1 px-2 text-info-400">{{saleModel.CustomerDeliveryPrice || 0 | number}}đ</span>
+                                    <span class="py-1 px-2 text-info-400">{{saleModel.CustomerDeliveryPrice || 0 | numberCustom}}đ</span>
                                   </div>
 
                                   <div class="px-4 border-l">
@@ -528,7 +528,7 @@
                                                   </div>
                                               </div>
                                           </tds-checkbox>
-                                          <span class="text-body-2 text-primary" *ngIf="child.Fee"> {{ child.Fee | number }}</span>
+                                          <span class="text-body-2 text-primary" *ngIf="child.Fee"> {{ child.Fee | numberCustom }}</span>
                                       </div>
                                   </div>
                               </div>

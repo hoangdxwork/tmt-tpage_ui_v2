@@ -1,3 +1,4 @@
+import { PipeModule } from './../../shared/pipe/pipe.module';
 import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
@@ -80,7 +81,8 @@ const SERVICES = [
     TDSEmptyModule,
     TDSTableModule,
     TDSSpinnerModule,
-    UploadImageModule
+    UploadImageModule,
+    PipeModule
   ],
   providers: [ ...SERVICES]
 })

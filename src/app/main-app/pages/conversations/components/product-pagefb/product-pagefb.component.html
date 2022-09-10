@@ -49,7 +49,7 @@
               </td>
               <td style="width: 40%">{{ data.NameGet }}</td>
               <td style="width: 15%; text-align: center">{{ data.UOMName }}</td>
-              <td style="width: 15%; text-align: right">{{ data.Price | number:'1.0-3' }}</td>
+              <td style="width: 15%; text-align: right">{{ data.Price | numberCustom }}</td>
               <td style="width: 20%; text-align: center">
                 <button tds-button-outline color="primary" size="sm" (click)="onPushItem(data)">
                   <span class="flex items-center">

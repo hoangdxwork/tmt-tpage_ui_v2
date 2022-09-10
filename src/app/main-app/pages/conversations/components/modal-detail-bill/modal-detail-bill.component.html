@@ -102,7 +102,7 @@
                     <span class="font-semibold">Xác nhận thanh toán:</span>
                     <span *ngIf="!data.PaymentMethod" class="text-error-500">Chưa chọn</span>
                     <span *ngIf="data.PaymentMethod" class="text-info-500">{{data.PaymentMethod}}</span>
-                    <span>{{data.CashOnDelivery | number:'1.0-3'}} đ</span>
+                    <span>{{data.CashOnDelivery | numberCustom}} đ</span>
                 </span>
             </div>
             <div>

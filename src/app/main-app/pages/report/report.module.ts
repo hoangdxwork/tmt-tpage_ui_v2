@@ -1,3 +1,4 @@
+import { PipeModule } from './../../shared/pipe/pipe.module';
 import { MainSharedModule } from './../../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDSEchartsModule } from 'tds-report';
@@ -59,6 +60,7 @@ import { TDSEmptyModule } from 'tds-ui/empty';
     TDSBadgeModule,
     TDSFormFieldModule,
     TDSEmptyModule,
+    PipeModule
   ]
 })
 export class ReportModule { }

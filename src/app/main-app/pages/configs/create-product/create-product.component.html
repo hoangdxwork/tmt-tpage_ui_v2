@@ -481,9 +481,9 @@
                   <tr *ngFor="let data of lstProductCombo; let i = index">
                     <td>{{ 1 + i }}</td>
                     <td>{{ data.Product.NameGet }}</td>
-                    <td>{{ data.Quantity | number:'1.0-3'  }}</td>
-                    <td>{{ (data.Product.ListPrice || 0) | number:'1.0-3'  }}đ</td>
-                    <td>{{ ((data.Product.ListPrice || 0) * data.Quantity) | number:'1.0-3'  }}đ</td>
+                    <td>{{ data.Quantity | numberCustom  }}</td>
+                    <td>{{ (data.Product.ListPrice || 0) | numberCustom  }}đ</td>
+                    <td>{{ ((data.Product.ListPrice || 0) * data.Quantity) | numberCustom  }}đ</td>
                     <td>
                       <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
                         (click)="showCreateComboModal(data, i)">

@@ -19,7 +19,7 @@
             <div *ngFor="let item of labelData">
                 <tds-flex flex="col" alignItems="center" justifyContent="center" class="px-12">
                     <span class="text-neutral-1-900 text-body-2 font-regular font-sans text-center py-2">{{item.name}}</span>
-                    <span class="text-{{item.color}} text-heading-4 font-semibold font-sans text-center">{{item.value|number}}</span>
+                    <span class="text-{{item.color}} text-heading-4 font-semibold font-sans text-center">{{item.value|numberCustom}}</span>
                 </tds-flex>
             </div>
         </div>

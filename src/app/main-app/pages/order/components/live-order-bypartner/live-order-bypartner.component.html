@@ -90,8 +90,8 @@
                                 <span class="ml-1">{{data.CRMTeamName}}</span>
                             </div>
                         </td>
-                        <td>{{data.TotalAmount || 0 | number:'1.0-3'  }}</td>
-                        <td>{{data.TotalQuantity || 0 | number:'1.0-3'  }}</td>
+                        <td>{{data.TotalAmount || 0 | numberCustom  }}</td>
+                        <td>{{data.TotalQuantity || 0 | numberCustom  }}</td>
                         <td>{{ data.DateCreated | date: 'dd/MM/yyyy' }}</td>
                         <td>
                           <!-- data.StatusText | getColorStatusText -->
