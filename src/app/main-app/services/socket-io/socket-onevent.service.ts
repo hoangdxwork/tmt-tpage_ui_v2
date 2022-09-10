@@ -14,6 +14,7 @@ import { CRMTeamService } from "../crm-team.service";
 import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
+import { SocketioOnReadConversationDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -69,42 +70,58 @@ export class SocketOnEventService {
           console.log(socketData);
 
           switch (socketData.EventName) {
-            case ChatmoniSocketEventName.chatomniOnMessage:
-                socketData = { ...socketData } as SocketioOnMessageDto;
-                let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
+              // TODO: thông báo tin nhắn, comment
+              case ChatmoniSocketEventName.chatomniOnMessage:
+                  socketData = { ...socketData } as SocketioOnMessageDto;
+                  let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
 
-                this.socketEvent$.next({
-                    Notification: modelMesage,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                });
+                  this.socketEvent$.next({
+                      Notification: modelMesage,
+                      Data: socketData,
+                      Team: team,
+                      EventName: socketData.EventName
+                  });
 
               break;
 
-            case ChatmoniSocketEventName.chatomniOnUpdate:
-                socketData = { ...socketData } as SocketioOnUpdateDto;
-                let modelUpdate = { ...this.prepareChatomniOnUpdate(socketData, team) };
+              // TODO: cập nhật tin nhắn lỗi
+              case ChatmoniSocketEventName.chatomniOnUpdate:
+                  socketData = { ...socketData } as SocketioOnUpdateDto;
+                  let modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
+
+                  this.socketEvent$.next({
+                      Notification: modelUpdate,
+                      Data: socketData,
+                      Team: team,
+                      EventName: socketData.EventName
+                  });
+
+              break;
+
+              // TODO: update đơn hàng hội thoại
+              case ChatmoniSocketEventName.onUpdate:
+                  socketData = { ...socketData } as SocketioOnOrderDto;
+                  let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
+
+                  this.socketEvent$.next({
+                      Notification: modelOrder,
+                      Data: socketData,
+                      Team: team,
+                      EventName: socketData.EventName
+                  })
+
+              break;
+
+              // TODO: user đang xem
+              case ChatmoniSocketEventName.chatomniOnReadConversation:
+                socketData = { ...socketData } as SocketioOnReadConversationDto;
 
                 this.socketEvent$.next({
-                    Notification: modelUpdate,
+                    Notification: null,
                     Data: socketData,
                     Team: team,
                     EventName: socketData.EventName
                 });
-
-            break;
-
-            case ChatmoniSocketEventName.onUpdate:
-                socketData = { ...socketData } as SocketioOnOrderDto;
-                let modelOrder = { ...this.prepareChatomniOnOrder(socketData) };
-
-                this.socketEvent$.next({
-                    Notification: modelOrder,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                })
 
               break;
           }
@@ -121,7 +138,7 @@ export class SocketOnEventService {
     switch (socketData.Message.MessageType) {
       case ChatomniMessageType.FacebookMessage:
         model = {
-          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name} </span> vừa nhắn tin`,
+          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa nhắn tin`,
           Message: `${socketData.Message?.Message}`,
           Attachments: socketData.Message.Data?.attachments,
           Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
@@ -131,7 +148,7 @@ export class SocketOnEventService {
 
       case ChatomniMessageType.FacebookComment:
         model = {
-          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name} </span> vừa bình luận`,
+          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa bình luận`,
           Message: `${socketData.Message?.Message}`,
           Attachments: socketData.Message.Data?.attachments,
           Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
@@ -142,7 +159,7 @@ export class SocketOnEventService {
       case ChatomniMessageType.TShopMessage:
         let message = { ...socketData.Message?.Data } as DataMessageTshop;
         model = {
-          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || message?.Recipient?.Name} </span> vừa nhắn tin`,
+          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || message?.Recipient?.Name || 'Người dùng TShop'} </span> vừa nhắn tin`,
           Message: `${socketData.Message?.Message}`,
           Attachments: socketData.Message.Data?.attachments,
           Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
@@ -153,7 +170,7 @@ export class SocketOnEventService {
       case ChatomniMessageType.TShopComment:
         let comment = { ...socketData.Message?.Data } as DataComentTShop;
         model = {
-          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || comment?.Actor?.Name} </span> vừa binh luận`,
+          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || comment?.Actor?.Name || 'Người dùng TShop'} </span> vừa binh luận`,
           Message: `${socketData.Message?.Message}`,
           Attachments: socketData.Message.Data?.attachments,
           Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
@@ -162,7 +179,7 @@ export class SocketOnEventService {
 
       default:
         model = {
-          Title: `${socketData.Conversation?.Name} vừa phản hồi`,
+          Title: `${socketData.Conversation?.Name || 'Người dùng'} vừa phản hồi`,
           Message: `${socketData.Message?.Message}`,
           Attachments: socketData.Message.Data?.attachments,
           Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
@@ -175,8 +192,7 @@ export class SocketOnEventService {
 
   }
 
-  // TODO: trương hợp tin nhắn cập nhật
-  prepareChatomniOnUpdate(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
+  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
         Title: `${socketData.Message}`,
@@ -188,10 +204,10 @@ export class SocketOnEventService {
     return { ...model };
   }
 
-  prepareChatomniOnOrder(socketData: SocketioOnOrderDto) {
+  prepareChatomniOnUpdateOrder(socketData: SocketioOnOrderDto) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
-        Title: `Order: ${socketData.Data?.Facebook_UserName} vừa cập nhật đơn hàng`,
+        Title: `Order: ${socketData.Data?.Facebook_UserName || 'Người dùng Facebook'} vừa cập nhật đơn hàng`,
         Message: `${socketData.Message}`,
         Attachments: {} as any,
         Url: ''

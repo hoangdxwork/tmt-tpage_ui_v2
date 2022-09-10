@@ -121,7 +121,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -1125,10 +1125,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       this.visibleIndex = index;
       this.priceValue = Number(price);
     }
-  }
-
-  onChangePrice(event:number){
-    this.priceValue = Number(event);
   }
 
   approvePrice(item: Detail_QuickSaleOnlineOrder, index: number) {

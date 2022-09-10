@@ -157,24 +157,36 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     // TODO: chek lại phân biệt message  & comment
     this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataItemDto) => {
-
-        switch (this.type) {
+        if(res && res.UserId == this.data.ConversationId){
+          switch (this.type) {
 
             case 'message':
+              if((res.Type == ChatomniMessageType.FacebookMessage || res.Type == ChatomniMessageType.TShopMessage)){
+                this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
+    
+                this.yiAutoScroll.forceScrollDown();
+                this.cdRef.markForCheck();
+              }
             break;
 
             case 'comment':
+              if((res.Type == ChatomniMessageType.FacebookComment || res.Type == ChatomniMessageType.TShopComment)){
+                this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
+    
+                this.yiAutoScroll.forceScrollDown();
+                this.cdRef.markForCheck();
+              }
             break;
 
-            default: break;
+            default:
+              this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
+  
+              this.yiAutoScroll.forceScrollDown();
+              this.cdRef.markForCheck();
+            break;
+          }
         }
 
-        if(res && res.UserId == this.data.ConversationId){
-            this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
-
-            this.yiAutoScroll.forceScrollDown();
-            this.cdRef.markForCheck();
-        }
       }
     })
   }

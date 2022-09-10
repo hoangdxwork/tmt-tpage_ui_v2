@@ -419,6 +419,7 @@ export class TDSConversationItemComponent implements OnInit  {
     if(this.isPrivateReply) {
       this.addQuickReplyComment(message);
     }
+
     else {
       const model = this.prepareModel(message);
       model.post_id = this.dataItem.ObjectId || this.dataItem.Data?.object?.id || null;
@@ -427,32 +428,32 @@ export class TDSConversationItemComponent implements OnInit  {
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: ResponseAddMessCommentDto) => {
-          res["status"] = ChatomniStatus.Done;
-          res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
-          res.name = this.team.Name;
+              res["status"] = ChatomniStatus.Done;
+              res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop ? 91 : 0);
+              res.name = this.team.Name;
 
-          let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
-          this.children = [ ...(this.children || []), data];
+              let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
+              this.children = [ ...(this.children || []), data];
 
-          //TODO: Đẩy qua conversation-all-v2
-          let itemLast = {...data}
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
-          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+              //TODO: Đẩy qua conversation-all-v2
+              let itemLast = {...data}
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
+              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
-          this.messageModel = null;
-          this.tdsMessage.success("Trả lời bình luận thành công");
+              this.messageModel = null;
+              this.tdsMessage.success("Trả lời bình luận thành công");
 
-          this.isReply = false;
-          this.isReplyingComment = false;
+              this.isReply = false;
+              this.isReplyingComment = false;
 
-          this.cdRef.markForCheck();
-        },
-        error: error => {
-          this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-          this.isReplyingComment = false;
+              this.cdRef.markForCheck();
+            },
+            error: error => {
+              this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
+              this.isReplyingComment = false;
 
-          this.cdRef.markForCheck();
-        }
+              this.cdRef.markForCheck();
+            }
       });
     }
   }
