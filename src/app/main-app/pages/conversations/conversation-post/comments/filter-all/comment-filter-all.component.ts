@@ -13,7 +13,7 @@ import { ChatomniConversationItemDto } from './../../../../../dto/conversation-a
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
 import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -71,7 +71,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   enumActivityStatus = ActivityStatus;
   messageModel!: string;
   isLoading: boolean = false;
-  isLoadingOrder: boolean = false;
+  currentId: string = '';
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
   isOpenDrawer: boolean = false;
@@ -453,12 +453,15 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
+    this.currentId = item.Id;
     // TODO: gán sự kiện loading cho tab
     this.postEvent.spinLoadingTab$.emit(true);
 
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
+        this.currentId = '';
+
         if(res) {
             // Thông tin khách hàng
             this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
@@ -467,11 +470,15 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
         }
+
+        this.cdRef.detectChanges();
       },
       error: (error: any) => {
+        this.currentId = '';
         // TODO: gán sự kiện loading cho tab
         this.postEvent.spinLoadingTab$.emit(false);
         this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+        this.cdRef.detectChanges();
       }
     })
   }

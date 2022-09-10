@@ -204,10 +204,10 @@
 
                 <div class="w-full h-full" *ngIf="lstBill">
                     <div class="w-full">
-                      <tds-filter-status (selectChange)="onChangeTabBill($event)" [ngModel]='tab_Bill' [ngModelOptions]="{standalone: true}" class="gap-2 flex flex-wrap">
+                      <tds-filter-status [ngModel]='tab_Bill' [ngModelOptions]="{standalone: true}" class="gap-2 flex flex-wrap">
 
                           <tds-filter-status-item *ngFor="let item of lstBill; let index = index"
-                              [name]='item.Value[0].ShowState' [value]='index' [count]='item.Total'>
+                              [name]='item.Value[0].ShowState' [value]='index' [count]='item.Total' (click)="onChangeTabBill(index)">
 
                               <ng-template tds-filter-status-template let-active='active' let-count='count' let-name='name' let-value>
 
