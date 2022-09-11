@@ -130,7 +130,9 @@ export class CsOrder_FromConversationHandler {
       }
 
       if(!order.Facebook_ASUserId && ((partner && partner.FacebookASIds) || conversationInfo.Conversation)) {
-          order.Facebook_ASUserId = partner.FacebookASIds || conversationInfo.Conversation.ConversationId;
+        //   order.Facebook_ASUserId = partner.FacebookASIds || conversationInfo.Conversation.ConversationId;
+          order.Facebook_ASUserId = conversationInfo.Conversation.ConversationId;
+
       }
 
       if(!order.Facebook_UserName && conversationInfo.Conversation.Name) {
