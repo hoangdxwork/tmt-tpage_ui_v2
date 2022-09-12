@@ -71,7 +71,7 @@ export class SO_PrepareFastSaleOrderHandler {
 
       //TODO: gán địa chỉ giao hàng
       saleModel.Ship_Receiver = {
-          Name: quickOrderModel.Name,
+          Name: quickOrderModel.PartnerName || quickOrderModel.Facebook_UserName,
           Street: saleModel.Address,
           Phone: saleModel.Phone,
 
