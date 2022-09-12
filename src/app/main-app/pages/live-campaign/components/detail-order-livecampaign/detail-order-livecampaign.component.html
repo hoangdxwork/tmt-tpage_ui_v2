@@ -46,7 +46,7 @@
         <thead>
           <tr>
             <th [align]="'center'" width="33px" [tdsLeft]="true"></th>
-            <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" [align]="'center'" [tdsLeft]="true"></th>
+            <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)" width="42px" [align]="'center'" [tdsLeft]="true"></th>
             <th [width]="'60px'" [tdsLeft]="true">STT</th>
             <th [width]="'170px'" [tdsLeft]="true">Mã đơn hàng</th>
             <th [width]="'170px'">Tên khách hàng</th>
