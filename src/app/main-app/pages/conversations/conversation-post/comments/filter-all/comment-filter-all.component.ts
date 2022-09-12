@@ -146,7 +146,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
             this.cdRef.detectChanges();
           break;
-          
+
           case ChatmoniSocketEventName.chatomniOnUpdate:
           break;
 
@@ -161,16 +161,16 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-      (this.dataSource$ as any) = null;
-      (this.dataSource as any) = null;
+        (this.dataSource$ as any) = null;
+        (this.dataSource as any) = null;
 
-      this.data = {...changes["data"].currentValue};
-      this.loadData();
-      this.loadPartnersByTimestamp();
+        this.data = {...changes["data"].currentValue};
+        this.loadData();
+        this.loadPartnersByTimestamp();
     }
 
     if(changes['commentOrders'] && !changes['commentOrders'].firstChange) {
-      this.commentOrders = {...changes['commentOrders'].currentValue};
+        this.commentOrders = {...changes['commentOrders'].currentValue};
     }
   }
 
@@ -227,7 +227,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    modal.componentInstance?.onSendProduct.subscribe(res=>{
+    modal.componentInstance?.onSendProduct.subscribe(res => {
       if(res){
           this.onProductSelected(res, item);
       }
@@ -299,27 +299,27 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
         // TODO: gửi về tin nhắn
         if(item.Data.is_private_reply){
+
           let modelv2 = this.prepareModelV2(msg);
           modelv2.RecipientId = item.Data?.id || item.ObjectId || null;
           modelv2.MessageType = 2;
 
-          this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe(
-            {
+          this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: ResponseAddMessCommentDtoV2[]) => {
 
-                item.Data.is_reply = false;
-                this.isReplyingComment = false;
-                this.message.success('Gửi tin thành công');
+                  item.Data.is_reply = false;
+                  this.isReplyingComment = false;
+                  this.message.success('Gửi tin thành công');
 
-                this.cdRef.detectChanges();
+                  this.cdRef.detectChanges();
               },
               error: error => {
 
-                item.Data.is_reply = false;
-                this.isReplyingComment = false;
-                this.message.error(`${error.error?.message}` || 'Gửi tin nhắn thất bại');
+                  item.Data.is_reply = false;
+                  this.isReplyingComment = false;
+                  this.message.error(`${error.error?.message}` || 'Gửi tin nhắn thất bại');
 
-                this.cdRef.detectChanges();
+                  this.cdRef.detectChanges();
               }
             }
           )
@@ -329,30 +329,29 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
           model.parent_id = item.ParentId || item.Data?.id || null;
           model.fbid = item.UserId;
 
-          this.activityMatchingService.replyComment(this.team!.Id, model)
-            .pipe(takeUntil(this.destroy$)).subscribe({
+          this.activityMatchingService.replyComment(this.team!.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
               next:(res: any) => {
 
-                res["status"] = ChatomniStatus.Done;
-                res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
-                res.name = this.team.Name;
-                let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res)
+                  res["status"] = ChatomniStatus.Done;
+                  res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
+                  res.name = this.team.Name;
+                  let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res)
 
-                this.message.success("Trả lời bình luận thành công.");
+                  this.message.success("Trả lời bình luận thành công.");
 
-                this.addReplyComment(item, model, data);
+                  this.addReplyComment(item, model, data);
 
-                item.Data.is_reply = false;
-                this.isReplyingComment = false;
+                  item.Data.is_reply = false;
+                  this.isReplyingComment = false;
 
-                this.cdRef.detectChanges();
+                  this.cdRef.detectChanges();
               },
               error: error => {
 
-                item.Data.is_reply = false;
-                this.isReplyingComment = false;
-                this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
-
+                  item.Data.is_reply = false;
+                  this.isReplyingComment = false;
+                  this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
+                  this.cdRef.detectChanges();
               }
             })
       }
@@ -422,6 +421,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                   this.conversationOrderFacade.hasValueOrderCode$.emit(order[0]?.code);
               }
           }
+        },
+        error: (error: any) => {
+            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
         }
     })
   }
@@ -453,9 +455,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       error: (error: any) => {
           // TODO: gán sự kiện loading cho tab
           this.postEvent.spinLoadingTab$.emit(false);
-
-          this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order.id, comment: item} );
-          this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     })
   }
@@ -484,15 +484,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
         }
-
-        this.cdRef.detectChanges();
       },
       error: (error: any) => {
-        this.currentId = '';
-        // TODO: gán sự kiện loading cho tab
-        this.postEvent.spinLoadingTab$.emit(false);
-        this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-        this.cdRef.detectChanges();
+          this.currentId = '';
+          this.postEvent.spinLoadingTab$.emit(false);
+          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     })
   }

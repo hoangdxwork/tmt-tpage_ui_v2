@@ -201,6 +201,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             case ChatmoniSocketEventName.onUpdate:
               break;
 
+            case ChatmoniSocketEventName.chatomniOnReadConversation:
+              break;
+
             default: break;
         }
       }
@@ -368,8 +371,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   this.cdRef.markForCheck();
               },
               error: (error: any) => {
-                  this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
                   this.isLoading = false;
+                  this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
                   this.cdRef.markForCheck();
               }
           })
