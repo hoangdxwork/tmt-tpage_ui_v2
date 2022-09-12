@@ -32,6 +32,9 @@ import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-c
 @Component({
   selector: 'app-create-product',
   templateUrl: './create-product.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  },
   providers: [TDSDestroyService]
 })
 export class ConfigAddProductComponent implements OnInit {
@@ -65,7 +68,7 @@ export class ConfigAddProductComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -190,9 +193,9 @@ export class ConfigAddProductComponent implements OnInit {
         next: (res: TDSSafeAny) => {
           delete res['@odata.context'];
           this.dataModel = { ...res };
-  
+
           this.formatProperty(res);
-        }, 
+        },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
         }
@@ -233,7 +236,7 @@ export class ConfigAddProductComponent implements OnInit {
       {
         next: (res: TDSSafeAny) => {
           this.categoryList = [...res.value];
-        }, 
+        },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
         }
@@ -599,7 +602,7 @@ export class ConfigAddProductComponent implements OnInit {
             next: (res: TDSSafeAny) => {
               this.message.success(Message.InsertSuccess);
               this.loadDataIndexDBCache();
-              this.isLoading = false;  
+              this.isLoading = false;
 
               this.router.navigateByUrl('/configs/products');
             },
@@ -623,7 +626,7 @@ export class ConfigAddProductComponent implements OnInit {
               this.message.success(Message.UpdatedSuccess);
               this.loadDataIndexDBCache();
               this.isLoading = false;
-  
+
               this.router.navigateByUrl('/configs/products');
             },
             error: err => {
@@ -673,7 +676,7 @@ export class ConfigAddProductComponent implements OnInit {
               delete res['@odata.context'];
               this.dataModel = { ...res };
               this.addProduct();
-            }, 
+            },
             error: err => {
               this.message.error(err?.error?.message || Message.CanNotLoadData);
             }

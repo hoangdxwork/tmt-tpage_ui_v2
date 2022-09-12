@@ -12,7 +12,10 @@ import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-edit-promotion',
-  templateUrl: './config-edit-promotion.component.html'
+  templateUrl: './config-edit-promotion.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 export class ConfigEditPromotionComponent implements OnInit {
 

@@ -79,16 +79,15 @@
                     <tds-switch size="md" formControlName="IsEnableShipping"></tds-switch>
                     <span class="text-neutral-1-900 text-body-2 pl-2">Thông báo khi có sự thay đổi trạng thái vận đơn</span>
                 </div>
-
-                <div *ngIf="_form.controls['IsEnableShipping'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4  w-full">
-                    <tds-form-field class="pb-4 w-[370px]">
+                <div *ngIf="_form.controls['IsEnableShipping'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4 w-full">
+                    <tds-form-field class="pb-4 " [ngClass]="{'max-w-[370px]': !_form.controls['ShippingStatues'].value || _form.controls['ShippingStatues'].value?.length < 3}">
                         <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Chọn trạng thái gửi</tds-label>
                         <tds-select valueField="Code" textField="Name" placeholder='Chọn trạng thái gửi'
                             formControlName="ShippingStatues" mode="multiple" [data]="lstShippingStatus" [allowClear]="true" >
                         </tds-select>
                     </tds-form-field>
 
-                    <div class="flex flex-col  w-full">
+                    <div class="flex flex-col w-full">
                         <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
                         <quill-editor formControlName="ShippingTemplate" [modules]="quillTagHelpers" class="input-quill-editor"></quill-editor>
                     </div>
