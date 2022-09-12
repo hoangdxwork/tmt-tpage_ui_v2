@@ -87,6 +87,7 @@ export class DefaultOrderComponent implements OnInit {
       bodyStyle: {
         padding: '0px'
       },
+      centered: true,
       viewContainerRef: this.viewContainerRef,
       componentParams:{
         defaultOrder: true
