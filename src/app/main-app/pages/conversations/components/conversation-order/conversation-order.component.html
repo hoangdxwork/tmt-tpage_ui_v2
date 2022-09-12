@@ -1,8 +1,8 @@
 <tds-spin [spinning]="isLoading">
     <div *ngIf="quickOrderModel">
-        <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll text-body-2">
+        <div class="w-full h-[calc(100vh-109px)] flex flex-col bg-neutral-3-100 overflow-y-auto tds-custom-scroll text-body-2">
             <!-- Thông tin khách hàng -->
-            <tds-collapse [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white mt-1">
+            <tds-collapse [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white">
                 <tds-collapse-panel header="Thông tin khách hàng" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
                     <div class="flex flex-col gap-3 p-2">
                         <!-- partner name -->
@@ -598,7 +598,10 @@
                     <i class="tdsi-truck-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
                 </span>
             </button>
-        </div>
+          </div>
+
+          <!-- Khoản trắng ở cuối giao diện -->
+          <div class="flex-auto bg-white mt-1"></div>
         </div>
     </div>
 </tds-spin>

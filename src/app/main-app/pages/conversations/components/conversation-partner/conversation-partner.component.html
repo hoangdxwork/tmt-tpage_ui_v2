@@ -185,7 +185,7 @@
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
                         {{ lastBill.Phone }} - {{ lastBill.Address }} </div>
 
-                    <div class="text-caption-1 font-semibold font-sans text-accent-3"> {{ lastBill.DeliveryNote }} </div>
+                    <div class="text-caption-1 font-semibold font-sans text-accent-3" [innerHtml]="lastBill.DeliveryNote | bbcodeConvert"></div>
                 </div>
               </tds-collapse-panel>
             </tds-collapse>
@@ -344,6 +344,9 @@
 
               </div>
           </div>
+
+          <!-- Khoản trắng ở cuối giao diện -->
+          <div class="flex-auto bg-white mt-1"></div>
       </div>
   </div>
   <ng-template #noData>
