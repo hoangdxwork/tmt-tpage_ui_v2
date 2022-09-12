@@ -172,7 +172,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
               let exist = this.data.ConversationId == res.Data.Conversation?.UserId;
               let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == res.Data.Message?.Id);
 
-              if(exist && index < 0) {
+              if(exist && index < 0 && this.dataSource) {
                   let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.data)};
 
                   switch (this.type) {
@@ -229,7 +229,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadMessages(data: ChatomniConversationItemDto): any {
-    this.isLoading = true;
 
     this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
@@ -942,6 +941,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   refreshRead() {
     this.validateData();
+    this.isLoading = true;
     this.loadMessages(this.data);
   }
 
