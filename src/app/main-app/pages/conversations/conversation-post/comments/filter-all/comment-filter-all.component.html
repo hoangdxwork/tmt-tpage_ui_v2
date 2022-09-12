@@ -60,7 +60,7 @@
 
                             <!-- thao tác -->
                             <div class="flex items-center pt-3">
-                                <button *ngIf="!isShowModal" type="button" [loading]="currentId == item.Id" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
+                                <button *ngIf="!isShowModal" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
 
                                 <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                     tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
@@ -225,10 +225,10 @@
                                   <tds-checkbox [checked]="item.Data.is_private_reply" (change)="isPrivateReply(item)"> Gửi về tin nhắn </tds-checkbox>
 
                                   <div class="icon-send flex flex-row mr-2">
-                                      <span class="p-1 hover:bg-neutral-3-50 rounded-md" *ngIf="item.Data.is_private_reply" (click)="onProductsbypageFb(item)"
+                                      <!-- <span class="p-1 hover:bg-neutral-3-50 rounded-md" *ngIf="item.Data.is_private_reply" (click)="onProductsbypageFb(item)"
                                           product-show-button  tooltipTitle="Sản phẩm" tooltipPlacement="top" tds-tooltip>
                                           <i class="tdsi-product-line text-xl"></i>
-                                      </span>
+                                      </span> -->
 
                                       <span class="p-1  hover:bg-neutral-3-50 rounded-md" container="body" placement="auto"
                                           tds-popover popoverTrigger="click" tooltipTitle="Emoji" tooltipPlacement="top" tds-tooltip

@@ -1,12 +1,12 @@
 <div class="w-full h-full pb-4 px-4">
-  <div class="flex flex-col w-full h-full rounded-xl">
-    <div class="flex flex-row items-center justify-between px-4 py-3 bg-white rounded-t-xl">
+  <div class="flex flex-col flex-auto w-full h-full pb-4 overflow-hidden rounded-xl">
+    <div class="flex flex-row items-center justify-between px-4 py-3 bg-white rounded-t-xl h-[60px]">
       <div class="flex flex-row items-center">
         <tds-avatar class="bg-primary-1 text-white" icon="tdsi-transport-fill"></tds-avatar>
         <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">ĐỐI TÁC GIAO HÀNG</span>
       </div>
     </div>
-    <div class="flex flex-row items-center justify-between py-2.5 px-4 bg-white rounded-b-xl">
+    <div class="flex flex-row items-center justify-between py-2.5 px-4 bg-white rounded-b-xl h-[54px]">
       <span class="text-neutral-1-900 text-title-1 font-semibold">Danh sách đối tác</span>
       <tds-form-field class="w-[368px] mr-2">
         <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" [tdsInputDebounce]="750"
@@ -123,46 +123,3 @@
     </div>
   </div>
 </div>
-
-
-<!--
-  <tds-table #basicTable [listData]="deliveryDataSource" [bordered]="true" (clickRefresh)="refreshDataDelivery(item)">
-    <thead>
-      <tr class="text-neutral-1-900 text-body-2 font-semibold">
-        <th width="400px">Tên</th>
-        <th>Đối tác giao hàng</th>
-        <th>Ngày tạo</th>
-        <th>Hiệu lực</th>
-        <th>Thao tác</th>
-      </tr>
-    </thead>
-    <tbody>
-      <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data" let-odd='odd'>
-        <tr class="text-neutral-1-900 text-body-2 font-regular">
-          <td>{{ data.Name }}</td>
-          <td>{{ data.DeliveryType }}</td>
-          <td>{{data.DateCreated | date:'dd/MM/yyyy HH:mm'}}</td>
-          <td>
-            <span class="flex items-center">
-              <i
-                class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
-            </span>
-          </td>
-          <td>
-            <button tds-button-icon color="secondary" size="sm" class=" mr-2" [routerLink]="['/configs/delivery/edit']"
-            [queryParams]="{id: data.Id}">
-              <span class="flex items-center">
-                <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
-              </span>
-            </button>
-            <button tds-button-icon color="secondary" size="sm" (click)="onDeleteDelivery(data)">
-              <span class="flex items-center">
-                <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
-              </span>
-            </button>
-          </td>
-        </tr>
-      </ng-template>
-    </tbody>
-  </tds-table>
- -->

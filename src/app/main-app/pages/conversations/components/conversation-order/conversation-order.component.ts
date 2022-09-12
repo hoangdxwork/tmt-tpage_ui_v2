@@ -884,8 +884,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = model.FormAction;
 
-debugger
-
     return {...fs_model};
   }
 

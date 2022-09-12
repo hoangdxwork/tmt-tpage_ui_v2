@@ -55,7 +55,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   lstConversation: ChatomniConversationItemDto[] = [];
 
   csid!: string;
-  conversationInfo!: ChatomniConversationInfoDto;
+  conversationInfo!: ChatomniConversationInfoDto | any;
   conversationItem!: ChatomniConversationItemDto | any;
 
   syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
@@ -168,7 +168,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       } as any;
 
                       // TODO: gán lại mess nếu gửi hình
-                      if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data && res.Data.Message.Data.attachments.data[0].image_data){
+                      if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(res.Data.Message.Data.attachments.data[0]?.image_data)){
                           this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
                       }
 
@@ -201,6 +201,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             case ChatmoniSocketEventName.onUpdate:
               break;
 
+            case ChatmoniSocketEventName.chatomniOnReadConversation:
+              break;
+
             default: break;
         }
       }
@@ -212,11 +215,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId) as number;
+            let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
             if(Number(index) >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
-
                 this.cdRef.detectChanges();
             }
         }
@@ -227,11 +229,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniLastMessageEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId) as number;
+            let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
             if(Number(index) >- 1) {
                 this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
                 this.lstConversation[index] = {...this.lstConversation[index]};
-
                 this.cdRef.detectChanges();
             }
         }
@@ -242,11 +243,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.countUnreadEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == id) as number;
+            let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
             if(Number(index) >- 1) {
-              this.lstConversation[index].CountUnread = 0;
-              this.lstConversation[index] = {...this.lstConversation[index]};
-              this.cdRef.detectChanges();
+                this.lstConversation[index].CountUnread = 0;
+                this.lstConversation[index] = {...this.lstConversation[index]};
+                this.cdRef.detectChanges();
             }
         }
       }
@@ -256,7 +257,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.chatbotStateEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == id) as number;
+            let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
             if(Number(index) >- 1) {
                 this.lstConversation[index].State = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
@@ -268,10 +269,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // TODO: Chọn sản phẩm, nếu đang tab khách hàng chuyển sang đơn hàng
     this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: string)=>{
+      next: (res: string) => {
         if(res === ChangeTabConversationEnum.order) {
             this.selectedIndex = 2;
-
             this.cdRef.detectChanges();
         }
       }
@@ -368,8 +368,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   this.cdRef.markForCheck();
               },
               error: (error: any) => {
-                  this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
                   this.isLoading = false;
+                  this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
                   this.cdRef.markForCheck();
               }
           })
@@ -390,7 +390,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             return;
         }
 
-        (this.conversationItem as any) = null;
+        delete this.conversationItem;
         this.setCurrentConversationItem(item);
     }
   }
@@ -698,7 +698,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   validateData() {
     this.lstConversation = [];
-    (this.conversationInfo as any) = null;
+    delete this.conversationInfo;
     delete this.conversationItem;
     delete this.dataSource$;
   }

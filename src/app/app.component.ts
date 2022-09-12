@@ -58,8 +58,8 @@ export class AppComponent {
     })
 
     this.tdsConfigService.set('notification', {
-      maxStack:3
-      });
+        maxStack: 3
+    });
   }
 
   init(): Observable<boolean> {

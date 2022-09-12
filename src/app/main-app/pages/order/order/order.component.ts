@@ -63,7 +63,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
   currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
-  isLoadingEdit: boolean = false;
   isOpenChat: boolean = false;
   orderMessage: TDSSafeAny;
 
@@ -549,11 +548,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onEdit(item: ODataSaleOnline_OrderModel) {
     if(item && item.Id) {
-      this.isLoadingEdit = true;
+      this.isLoading = true;
 
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-              this.isLoadingEdit = false;
+              this.isLoading = false;
 
               if(res && res.Id) {
                 delete res['@odata.context'];
@@ -579,7 +578,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               }
           },
           error: (error: any) => {
-            this.isLoadingEdit = false;
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
       });

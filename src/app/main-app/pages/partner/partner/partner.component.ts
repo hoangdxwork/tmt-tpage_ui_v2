@@ -6,7 +6,7 @@ import { ModalSendMessageComponent } from './../components/modal-send-message/mo
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
-import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { FilterObjPartnerModel, OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -103,12 +103,9 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
 
   widthTable: number = 0;
-  paddingCollapse: number = 36;
-  marginLeftCollapse: number = 0;
   isLoadingCollapse: boolean = false;
 
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
-  @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
 
   constructor(private modalService: TDSModalService,
     private odataPartnerService: OdataPartnerService,
@@ -319,23 +316,13 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
-    this.resizeObserver.observe(this.viewChildWidthTable).subscribe({
-      next: () => {
-        this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
-        this.viewChildWidthTable?.nativeElement.click();
-      }
-    });
-
-    setTimeout(() => {
-      let that = this;
-      let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
-
-      wrapScroll?.addEventListener('scroll', function () {
-        let scrollleft = wrapScroll.scrollLeft;
-        that.marginLeftCollapse = scrollleft;
+      this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - 36;
+      this.resizeObserver.observe(this.viewChildWidthTable).subscribe({
+        next: () => {
+          this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - 36;
+          this.viewChildWidthTable?.nativeElement.click();
+        }
       });
-    }, 500);
   }
 
   isHidden(columnName: string) {
@@ -346,12 +333,11 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.hiddenColumns = event;
     if (event && event.length > 0) {
       const gridConfig = {
-        columnConfig: event
+          columnConfig: event
       };
 
       const key = this.partnerService._keyCacheGrid;
       this.cacheApi.setItem(key, gridConfig);
-
       event.forEach(column => { this.isHidden(column.value) });
     }
   }

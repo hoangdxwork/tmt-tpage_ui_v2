@@ -33,7 +33,10 @@ import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-add-promotion',
-  templateUrl: './config-add-promotion.component.html'
+  templateUrl: './config-add-promotion.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
   lstDiscountType: any = [
