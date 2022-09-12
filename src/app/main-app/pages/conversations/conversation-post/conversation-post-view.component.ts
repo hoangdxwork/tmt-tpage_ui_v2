@@ -95,7 +95,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
 
     this.loadData();
     this.eventEmitter();
-    this.loadOrderTotal();
+    // this.loadOrderTotal();
   }
 
   eventEmitter() {
@@ -123,14 +123,14 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
     })
   }
 
-  loadOrderTotal(){
-    this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
-          this.orderTotal = res;
-          this.cdRef.detectChanges();
-      }
-    })
-  }
+  // loadOrderTotal(){
+  //   this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
+  //     next:(res) => {
+  //         this.orderTotal = res;
+  //         this.cdRef.detectChanges();
+  //     }
+  //   })
+  // }
 
   loadData() {
     let postId = this.data.ObjectId;
