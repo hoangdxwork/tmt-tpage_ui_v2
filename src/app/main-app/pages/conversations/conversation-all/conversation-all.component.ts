@@ -168,7 +168,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       } as any;
 
                       // TODO: gán lại mess nếu gửi hình
-                      if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data){
+                      if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(res.Data.Message.Data.attachments.data[0]?.image_data)){
                           this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
                       }
 
