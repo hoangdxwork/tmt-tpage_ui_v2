@@ -67,8 +67,6 @@ export class SocketOnEventService {
               return;
           }
 
-          console.log(socketData);
-
           switch (socketData.EventName) {
               // TODO: thông báo tin nhắn, comment
               case ChatmoniSocketEventName.chatomniOnMessage:
