@@ -1,68 +1,128 @@
-import { Router } from '@angular/router';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { CRMTeamDTO } from '../../../../dto/team/team.dto';
 import { CRMTeamService } from '../../../../services/crm-team.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { QuickReplyService } from '../../../../services/quick-reply.service';
 import { CreateQuickReplyDTO, QuickReplyDTO, AdvancedTemplateDTO, ButtonsDTO, PagesMediaDTO } from '../../../../dto/quick-reply.dto.ts/quick-reply.dto';
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 
 
 @Component({
   selector: 'create-quick-reply-modal',
-  templateUrl: './create-quick-reply-modal.component.html'
+  templateUrl: './create-quick-reply-modal.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
+export class CreateQuickReplyModalComponent implements OnInit {
   @Input() valueEditId!: TDSSafeAny;
-  private destroy$ = new Subject<void>();
+
+  data$!: Observable<Array<CRMTeamDTO> | null>;
 
   params!: TDSSafeAny;
-  nameTagList: Array<TDSSafeAny> = [];
-  contentTagList: Array<TDSSafeAny> = [];
-  MessageFormList: Array<TDSSafeAny> = [];
+  nameTagList: Array<TDSSafeAny> = [
+    { id: "Mã đơn hàng", value: "{order.code}" },
+    { id: "Mã vận đơn", value: "{order.tracking_code}" },
+    { id: "Mã đặt hàng", value: "{placeholder.code}" },
+  ];
+
+  contentTagList: Array<TDSSafeAny> = [
+    {
+      name: 'Khách hàng',
+      data: [
+        { id: "Tên KH", value: "{partner.name}" },
+        { id: "Mã KH", value: "{partner.code}" },
+        { id: "Điện thoại KH", value: "{partner.phone}" },
+        { id: "Địa chỉ KH", value: "{partner.address}" },
+        { id: "Công nợ KH", value: "{partner.debt}}" },
+      ]
+    },
+    {
+      name: 'Đơn hàng',
+      data: [
+        { id: "Mã đơn hàng", value: "{order.code}" },
+        { id: "Mã vận đơn", value: "{order.tracking_code}" },
+        { id: "Tổng tiền đơn hàng", value: "{order.total_amount}" },
+      ]
+    },
+    {
+      name: 'Đặt hàng',
+      data: [
+        { id: "Mã đặt hàng", value: "{placeholder.code}" },
+        { id: "Ghi chú đặt hàng", value: "{placeholder.note}" },
+        { id: "Chi tiết đặt hàng", value: "{placeholder.details}" },
+        { id: "Tag facebook", value: "{tag}" },
+        { id: "Yêu cầu gửi số điện thoại", value: "{required.phone}" },
+        { id: "Yêu cầu gửi địa chỉ", value: "{required.address}" },
+        { id: "Yêu cầu điện thoại, địa chỉ", value: "{required.phone_address}" },
+      ]
+    },
+  ];
+
+  MessageFormList: Array<TDSSafeAny> = [
+    { id: 'generic', value: 'Mẫu chung' },
+    { id: 'button', value: 'Mẫu nút' },
+    { id: 'media', value: 'Mẫu phương tiện' }
+  ];
+
+  buttonTypeList: Array<TDSSafeAny> = [
+    { id: "Post Back", value: "postback" },
+    { id: "Web Url", value: "web_url" },
+    { id: "Phone Number", value: "phone_number" },
+  ];
+
+  data: CreateQuickReplyDTO = {
+    Active: false,
+    SubjectHtml: '',
+  };
+
+  dataAdvancedTemplate: AdvancedTemplateDTO = {
+    SubTitle: '',
+    TemplateType: '',
+    Title: '',
+    Url: '',
+    Buttons: [],
+    Pages: [],
+    Text: ''
+  };
+
+  mediaChannelList: Array<CRMTeamDTO> = [];
+  dataMeidaRes: Array<CRMTeamDTO> = [];
+
   valueEdit!: QuickReplyDTO;
   templateType: string = 'generic';
   messageStructurePart: number = 1;
-  buttonTypeList: Array<TDSSafeAny> = [];
-  mediaChannelList: Array<CRMTeamDTO> = [];
-  dataMeidaRes: Array<CRMTeamDTO> = [];
+
   selectedIndex = 0;
   check : boolean = false;
   imageURL = '';
-  fileList: TDSUploadFile[] = [];
   currentItem: any;
 
-
-
-  teams$!: Observable<any[]>;
-  formQuickReply!: FormGroup
-  data!: CreateQuickReplyDTO;
-  dataAdvancedTemplate!: AdvancedTemplateDTO;
+  formQuickReply!: FormGroup;
   createImageForm!: FormGroup;
   createMessageForm!: FormGroup;
   mediaForm: Array<string> = [];
-  isLoading: boolean = false;
-
   buttonFormList: Array<FormGroup> = [];
-  subjectHtmlModel!: string;
+
+  isLoading: boolean = false;
 
   constructor(private modal: TDSModalRef,
     private formBuilder: FormBuilder,
     private message: TDSMessageService,
     private quickReplyService: QuickReplyService,
-    private crmService: CRMTeamService,
-    private router: Router) {
+    private crmTeamService: CRMTeamService,
+    private destroy$: TDSDestroyService) {
     this.createForm();
   }
 
   ngOnInit(): void {
-    this.loadData()
+    this.loadListTeam();
+    this.loadData();
+    this.getById();
   }
 
   createForm() {
@@ -93,122 +153,61 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
-    this.getAllFacebook()
-    this.nameTagList = [
-      { id: "Mã đơn hàng", value: "{order.code}" },
-      { id: "Mã vận đơn", value: "{order.tracking_code}" },
-      { id: "Mã đặt hàng", value: "{placeholder.code}" },
-    ]
-
-    this.contentTagList = [
-      {
-        name: 'Khách hàng',
-        data: [
-          { id: "Tên KH", value: "{partner.name}" },
-          { id: "Mã KH", value: "{partner.code}" },
-          { id: "Điện thoại KH", value: "{partner.phone}" },
-          { id: "Địa chỉ KH", value: "{partner.address}" },
-          { id: "Công nợ KH", value: "{partner.debt}}" },
-        ]
-      },
-      {
-        name: 'Đơn hàng',
-        data: [
-          { id: "Mã đơn hàng", value: "{order.code}" },
-          { id: "Mã vận đơn", value: "{order.tracking_code}" },
-          { id: "Tổng tiền đơn hàng", value: "{order.total_amount}" },
-        ]
-      },
-      {
-        name: 'Đặt hàng',
-        data: [
-          { id: "Mã đặt hàng", value: "{placeholder.code}" },
-          { id: "Ghi chú đặt hàng", value: "{placeholder.note}" },
-          { id: "Chi tiết đặt hàng", value: "{placeholder.details}" },
-          { id: "Tag facebook", value: "{tag}" },
-          { id: "Yêu cầu gửi số điện thoại", value: "{required.phone}" },
-          { id: "Yêu cầu gửi địa chỉ", value: "{required.address}" },
-          { id: "Yêu cầu điện thoại, địa chỉ", value: "{required.phone_address}" },
-        ]
-      },
-    ];
-
-    this.MessageFormList = [
-      { id: 'generic', value: 'Mẫu chung' },
-      { id: 'button', value: 'Mẫu nút' },
-      { id: 'media', value: 'Mẫu phương tiện' }
-    ];
-
-    this.currentItem = this.MessageFormList[0]
-
-    this.buttonTypeList = [
-      { id: "Post Back", value: "postback" },
-      { id: "Web Url", value: "web_url" },
-      { id: "Phone Number", value: "phone_number" },
-    ]
-
-    this.data = {
-      Active: false,
-      SubjectHtml: '',
-    }
-
-    this.dataAdvancedTemplate = {
-      SubTitle: '',
-      TemplateType: '',
-      Title: '',
-      Url: '',
-      Buttons: [],
-      Pages: [],
-      Text: ''
-    }
-
+    this.currentItem = this.MessageFormList[0];
   }
 
   getById() {
     if (this.valueEditId) {
       this.isLoading = true
-      this.quickReplyService.getById(this.valueEditId).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+      this.quickReplyService.getById(this.valueEditId).pipe(takeUntil(this.destroy$)).subscribe(
         {
-          this.valueEdit = res;
-          this.updateForm(this.valueEdit);
-        }
-      },
-        err => {
-          this.isLoading = false
-          this.message.error('Load dữ liệu thất bại');
+          next: (res) => {
+            {
+              this.valueEdit = res;
+              this.updateForm(this.valueEdit);
+            }
+          },
+          error: err => {
+              this.isLoading = false
+              this.message.error('Load dữ liệu thất bại');
+            }
         })
     }
   }
 
-  getAllFacebook() {
-    this.isLoading = true
-    this.crmService.getAllFacebooks().pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
-        if (TDSHelperObject.hasValue(dataTeam)) {
-
-          this.dataMeidaRes = dataTeam;
-
-          this.dataMeidaRes.forEach(data => {
-
-            if (data.Childs!.length == 0) {
-                data.Active = true;
-                this.mediaChannelList.push(data)
-            } else {
-              data.Active = false;
-
-              data.Childs!.forEach(dataChilds => {
-                dataChilds.Active = false
-                this.mediaChannelList.push(dataChilds)
-              })
-            }
-          })
-          this.getById()
+  loadListTeam() {
+    this.data$ = this.crmTeamService.onChangeListFaceBook();
+    this.data$.pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: dataTeam => {
+          if (dataTeam && TDSHelperObject.hasValue(dataTeam)) {
+            this.dataMeidaRes = dataTeam;
+  
+            this.dataMeidaRes.forEach(data => {
+  
+              if (data.Childs!.length == 0) {
+                  data.Active = true;
+                  data.Facebook_UserName = data.Name
+                  this.mediaChannelList.push(data)
+              } else {
+                data.Active = false;
+  
+                data.Childs!.forEach(dataChilds => {
+                  dataChilds.Active = false;
+                  dataChilds.Facebook_UserName = data.Name
+                  this.mediaChannelList.push(dataChilds)
+                })
+              }
+            })
+          }
+          this.isLoading = false
+        }, 
+        error: err => {
+          this.isLoading = false
+          this.message.error('Lấy dữ liệu page Facebook thất bại !')
         }
-        this.isLoading = false
-      }, err => {
-        this.isLoading = false
-        this.message.error('Lấy dữ liệu page Facebook thất bại !')
-      })
-
+      }
+    )
   }
 
   updateForm(data: QuickReplyDTO) {
@@ -216,22 +215,32 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
     this.formQuickReply.controls.subjectHtml.setValue(getNormalisedString(data.SubjectHtml) || data.Subject);
     this.formQuickReply.controls.bodyHtml.setValue(getNormalisedString(data.BodyHtml) || data.BodyPlain);
     this.formQuickReply.controls.active.setValue(data.Active);
-    let templateAd = JSON.parse(data.AdvancedTemplate);
 
-    if (templateAd) {
-      this.formQuickReply.controls.advancedTemplateRadio.setValue(true);
-      this.createMessageForm.controls.title.setValue(templateAd.Title);
-      this.createMessageForm.controls.subTitle.setValue(templateAd.SubTitle);
-      this.createMessageForm.controls.text.setValue(templateAd.Text);
-      this.templateType = templateAd.TemplateType
-      this.createImageForm.controls.image.setValue(templateAd.Url);
-      templateAd.Buttons.forEach((element: ButtonsDTO) => {
-        this.addButton(element)
-      });
-      templateAd.Pages.forEach((element: PagesMediaDTO) => {
-        this.addPage(element);
-      });
+    try {
+        let templateAd = JSON.parse(data.AdvancedTemplate);
+
+        if (templateAd) {
+          this.formQuickReply.controls.advancedTemplateRadio.setValue(true);
+          this.createMessageForm.controls.title.setValue(templateAd.Title);
+          this.createMessageForm.controls.subTitle.setValue(templateAd.SubTitle);
+          this.createMessageForm.controls.text.setValue(templateAd.Text);    
+          this.createImageForm.controls.image.setValue(templateAd.Url);
+
+          this.templateType = templateAd.TemplateType;
+
+          templateAd.Buttons.forEach((element: ButtonsDTO) => {
+            this.addButton(element)
+          });
+          templateAd.Pages.forEach((element: PagesMediaDTO) => {
+            this.addPage(element);
+          });
+        }
+
+        this.currentItem = this.MessageFormList.find(x=> x.id == this.templateType);
+
+      } catch (error) {
     }
+   
     this.isLoading = false
 
   }
@@ -318,39 +327,9 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
     this.createImageForm.controls.image.setValue(ev)
   }
 
-  getMessageFormIndex(name: string) {
-    return this.MessageFormList.findIndex(f => f.value === name);
-  }
-
-  isValidButton(list: FormGroup[]) {
-    let result = true;
-    if (list.length > 0) {
-      list.forEach(form => {
-        if (!form?.valid) {
-          result = false;
-        }
-      });
-      return result
-    } else {
-      return false;
-    }
-  }
-
-  onClickTeam(data: CRMTeamDTO) {
-    if (this.params?.teamId) {
-      let url = this.router.url.split("?")[0];
-      const params = { ...this.params };
-      params.teamId = data.Id;
-      this.router.navigate([url], { queryParams: params })
-    } else {
-      this.crmService.onUpdateTeam(data);
-    }
-  }
-
   cancel() {
     this.modal.destroy(null);
   }
-
 
   onSave() {
     let model = this.prepareModel();
@@ -359,25 +338,33 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
 
     if (this.valueEditId) {
       this.isLoading = true;
-      this.quickReplyService.update(this.valueEditId, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.isLoading = false;
-        this.message.success('Cập nhật trả lời nhanh thành công!');
-        this.modal.destroy(true);
-      }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Cập nhật trả lời nhanh thất bại!');
-        this.modal.destroy(null);
-      })
+      this.quickReplyService.update(this.valueEditId, model).pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: (res: any) => {
+            this.isLoading = false;
+            this.message.success('Cập nhật trả lời nhanh thành công!');
+            this.modal.destroy(true);
+          }, 
+          error: error => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Cập nhật trả lời nhanh thất bại!');
+            this.modal.destroy(null);
+          }
+        })
     } else {
       this.isLoading = false;
-      this.quickReplyService.insert(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.isLoading = false;
-        this.message.success('Thêm mới trả lời nhanh thành công!');
-        this.modal.destroy(true);
-      }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thêm mới trả lời nhanh thất bại!');
-      })
+      this.quickReplyService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: (res: any) => {
+            this.isLoading = false;
+            this.message.success('Thêm mới trả lời nhanh thành công!');
+            this.modal.destroy(true);
+          }, 
+          error: error => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thêm mới trả lời nhanh thất bại!');
+          }
+        })
     }
   }
 
@@ -426,11 +413,11 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
       if (this.mediaForm && this.mediaForm.length != 0) {
         this.dataAdvancedTemplate.Pages = []
         this.mediaForm.forEach(el => {
-          let data = this.mediaChannelList.find(x => x.Facebook_ASUserId == el)
+          let data = this.mediaChannelList.find(x => x.ChannelId == el)
           if (data) {
             let model: PagesMediaDTO = {
-              AttachmentId: data.Facebook_ASUserId,
-              PageId: data.Facebook_PageId,
+              AttachmentId: data.ChannelId,
+              PageId: data.OwnerId,
               PageName: data.Name
             }
             this.dataAdvancedTemplate.Pages?.push(model)
@@ -472,10 +459,5 @@ export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
     }
 
     return this.data;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
