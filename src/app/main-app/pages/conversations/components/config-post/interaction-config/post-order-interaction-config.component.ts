@@ -8,6 +8,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'post-order-interaction-config',
@@ -23,13 +24,57 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   isLoading: boolean = false;
   isEditReply: boolean = false;
 
-  constructor(
-    private modalRef: TDSModalRef,
+  tagHelpers = [
+    { id: "Bài live", value: "{order.live_title}" },
+    { id: "Tên KH", value: "{partner.name}" },
+    { id: "Mã KH", value: "{partner.code}" },
+    { id: "Điện thoại KH", value: "{partner.phone}" },
+    { id: "Địa chỉ KH", value: "{partner.address}" },
+    { id: "Đơn hàng", value: "{order}" },
+    { id: "Mã đơn hàng", value: "{order.code}" },
+    { id: "Chi tiết đơn hàng", value: "{order.details}" },
+    { id: "Tổng tiền đơn hàng", value: "{order.total_amount}" },
+    { id: "Bình luận chốt đơn", value: "{order.comment}" },
+    { id: "Sản phẩm chốt đơn", value: "{order.product}" },
+    { id: "Tên Facebook KH", value: "{facebook.name}" },
+  ];
+
+  quillTagHelpers = {
+    toolbar: null,
+    mention: {
+      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+      // readOnly: true,
+      mentionDenotationChars: ["@"],
+      showDenotationChar: false,
+      positioningStrategy: "relative",
+      defaultMenuOrientation: "bottom",
+      mentionContainerClass: "ql-mention-list-container",
+      renderItem: (item: { id: any; }, searItem: any) => {
+        return item.id;
+      },
+      source: (searchTerm: string, renderList: (arg0: { id: string; value: string; }[], arg1: any) => void, mentionChar: any) => {
+        let values;
+        values = this.tagHelpers as any;
+
+        if (searchTerm.length === 0) {
+          renderList(values, searchTerm);
+        } else {
+          const matches = [];
+          for (var i = 0; i < values.length; i++)
+            if (  ~values[i].id.toLowerCase().indexOf(searchTerm.toLowerCase()))
+              matches.push(values[i]);
+
+          renderList(matches, searchTerm);
+        }
+      },
+    } as any
+  } as any;
+
+  constructor( private modalRef: TDSModalRef,
     private message: TDSMessageService,
     private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef
-  ) { }
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.loadData(this.data.ObjectId);
@@ -41,15 +86,18 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
-          this.dataModel = {...res};
-          this.dataModel.OrderReplyTemplate = this.dataModel.OrderReplyTemplate.replace(/<p>|<\/p>/g, '');
+          if(TDSHelperString.hasValueString(res.OrderReplyTemplate)) {
+              res.OrderReplyTemplate = res.OrderReplyTemplate.replace(/\n/g, '<p><br></p>');
+          }
 
+          this.dataModel = res;
           this.isLoading = false;
           this.cdRef.detectChanges();
         },
         error:(err) => {
           this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadInteractionConfig);
           this.isLoading = false;
+          this.cdRef.detectChanges();
         }
       });
   }
@@ -60,11 +108,11 @@ export class PostOrderInteractionConfigComponent implements OnInit {
 
   prepareModel() {
     return {
-      IsEnableOrderReplyAuto: this.dataModel.IsEnableOrderReplyAuto,
-      IsEnableShopLink: this.dataModel.IsEnableShopLink,
-      IsOrderAutoReplyOnlyOnce: this.dataModel.IsOrderAutoReplyOnlyOnce,
-      OrderReplyTemplate: `<p>${this.dataModel.OrderReplyTemplate}</p>`,
-      ShopLabel: this.dataModel.ShopLabel,
+        IsEnableOrderReplyAuto: this.dataModel.IsEnableOrderReplyAuto,
+        IsEnableShopLink: this.dataModel.IsEnableShopLink,
+        IsOrderAutoReplyOnlyOnce: this.dataModel.IsOrderAutoReplyOnlyOnce,
+        OrderReplyTemplate: this.dataModel.OrderReplyTemplate,
+        ShopLabel: this.dataModel.ShopLabel,
       ShopLabel2: this.dataModel.ShopLabel2
     } as AutoOrderConfigDTO;
   }
@@ -82,7 +130,7 @@ export class PostOrderInteractionConfigComponent implements OnInit {
           this.isLoading = false;
 
           this.cdRef.detectChanges();
-        }, 
+        },
         error:(error) => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
           this.isLoading = false;
