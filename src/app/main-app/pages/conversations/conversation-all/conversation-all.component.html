@@ -117,7 +117,7 @@
                   <div class="flex-auto bg-white mt-1"></div>
                 </div>
 
-                <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0">
+                <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
                   <tds-empty [notFoundContent]="contentTpl">
                     <ng-template #contentTpl>
                       <div class="flex flex-col justify-center items-center">
@@ -127,13 +127,20 @@
                     </ng-template>
                   </tds-empty>
                 </div>
+
+                <div class="flex flex-auto justify-center bg-white" *ngIf="lstConversation.length == 0 && !isFilter && !isLoading">
+                    <div class="flex flex-col items-center pt-16">
+                        <img src="../../../assets/imagesv2/conversation/noDataConversation.svg" alt="">
+                        <span class="text-neutral-1-300">Chưa có hội thoại nào</span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!--Nội dung cuộc hội thoại-->
-        <div class="flex 2xl:w-[48%] w-[45%]">
+        <div class="flex 2xl:w-[48%] w-[45%]" *ngIf="conversationItem && currentTeam">
           <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-              <div class="flex w-full flex-col h-full" *ngIf="conversationItem && currentTeam" @eventFadeState>
+              <div class="flex w-full flex-col h-full" @eventFadeState>
                   <shared-tds-conversations
                       class="flex w-full h-full"
                       [data]="conversationItem"
@@ -147,7 +154,7 @@
         </div>
 
         <!--Xử lí thông tin khách hàng & Đơn hàng-->
-        <div class="flex 2xl:w-[32%] w-[32%] h-full" >
+        <div class="flex 2xl:w-[32%] w-[32%] h-full" *ngIf="conversationItem">
             <div class="w-full h-full flex flex-col">
                 <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
                     <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
@@ -200,8 +207,19 @@
                 </tds-tabset>
             </div>
         </div>
+
+        <!-- chưa có dữ liệu -->
+        <div class="flex-auto flex pl-1 " *ngIf="!conversationItem && !isLoading">
+            <div class="flex-auto flex flex-col justify-center items-center bg-white">
+                <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png" alt="">
+                <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp chăm sóc khách hàng toàn diện cho bán hàng Facebook</span>
+                <span class="text-neutral-1-300 pt-2">Quản lý tập trung các bình luận, tin nhắn từ các kênh Facebook giúp bạn không bỏ sót bất kỳ đơn nào.</span>
+            </div>
+        </div>
     </div>
 </tds-spin>
+
+
 
 <!-- Notification Admin Transfer ChatBot -->
 <ng-template #templateAdminTransferChatBot let-data="data" >

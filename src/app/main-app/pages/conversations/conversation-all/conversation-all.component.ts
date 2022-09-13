@@ -68,6 +68,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setOfCheckedId = new Set<string>();
 
   queryObj: QueryFilterConversationDto = {} as any;
+  isFilter: boolean = false;
 
   isRefreshing: boolean = false;
   isProcessing:boolean = false;
@@ -586,6 +587,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       ).subscribe({
         next: (text: string) => {
+            this.isFilter = true;
+            if(text == ''){
+              this.isFilter = false;
+            }
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.queryObj['Keyword'] = value;
             this.loadFilterDataSource();
