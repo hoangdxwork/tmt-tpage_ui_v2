@@ -139,8 +139,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
           case ChatmoniSocketEventName.chatomniOnMessage:
             if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
               let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
-
-              this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])]
+              this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
               this.sortChildComment(this.dataSource.Items);
             }
 
@@ -335,10 +334,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                   res["status"] = ChatomniStatus.Done;
                   res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
                   res.name = this.team.Name;
-                  let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res)
+                  let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res);
 
                   this.message.success("Trả lời bình luận thành công.");
-
                   this.addReplyComment(item, model, data);
 
                   item.Data.is_reply = false;
@@ -497,19 +495,19 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     if(this.isLoading) {
         return;
     }
-
+    
     this.isLoading = true;
     let id = `${this.team.Id}_${this.data.ObjectId}`;
-
-    this.dataSource$ = this.chatomniCommentService.nextDataSource(id);
+    this.dataSource$ = this.chatomniCommentService.nextDataSource(id, this.dataSource.Items);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
-
           if(TDSHelperArray.hasListValue(res?.Items)) {
               this.dataSource.Items = [...res.Items];
+              // TODO: merge bình luận đã gửi
+              this.dataSource.Items = this.mergeUpdatedData(this.dataSource.Items, this.childsComment);
               this.sortChildComment(this.dataSource.Items);
           }
-
+          
           this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
           this.isLoading = false;
           this.cdRef.markForCheck();
@@ -533,15 +531,28 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   sortChildComment(data: ChatomniDataItemDto[]){
-    let model: ChatomniDataItemDto[] = [];
-      data.map(x=>{
-          if(x.ParentId){
-            model = [...model, ...[x]]
-          }
-      })
-      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime))
-
+      let model: ChatomniDataItemDto[] = [];
+    
+      data.map(x => {
+        if(x.ParentId){
+          model = [...model, ...[x]];
+        }
+      });
+      
+      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
       this.childsComment = [...model];
+  }
+
+  mergeUpdatedData(data: ChatomniDataItemDto[], updateData: ChatomniDataItemDto[]){
+    let ids = data.map(x => { return x.Id });
+    //TODO: check bình luận mới gán vào data
+    updateData.forEach(f => {
+      if(!ids.includes(f.Id)){
+        data.push(f);
+      }
+    });
+
+    return [...data];
   }
 
   openMiniChat(data: ChatomniDataItemDto) {

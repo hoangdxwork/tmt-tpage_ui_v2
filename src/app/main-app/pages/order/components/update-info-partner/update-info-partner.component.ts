@@ -73,6 +73,7 @@ export class UpdateInfoPartnerComponent implements OnInit {
         name: data.City.name
       }
     }
+    
     if (data && data.District?.code) {
       this._districts = {
         cityCode: data.City?.code,
@@ -81,6 +82,7 @@ export class UpdateInfoPartnerComponent implements OnInit {
         name: data.District.name
       }
     }
+
     if (data && data.Ward?.code) {
       this._wards = {
         cityCode: data.City?.code,
@@ -91,11 +93,11 @@ export class UpdateInfoPartnerComponent implements OnInit {
         name: data.Ward.name
       }
     }
+
     if (data && data?.Street || data?.Address) {
       this._street = data?.Street || data?.Address;
     }
   }
-
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
     this._form.controls['Street'].setValue( item.Address ? item.Address : null);

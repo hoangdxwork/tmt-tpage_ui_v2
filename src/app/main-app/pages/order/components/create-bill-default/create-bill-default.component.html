@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="w-full mt-[30px] rounded-md h-[512px]">
+  <div class="w-full mt-[30px] rounded-md h-[512px]" *ngIf="lstLine">
     <div class="w-full h-full ">
       <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstLine" [showPagination]="false">
         <thead class="rounded">
@@ -53,7 +53,7 @@
                     <span>{{ data.Partner.Street }}</span>
                   </div>
                 </div>
-                <div *ngIf="lstCheckRowErrors[index]" class="text-error-500 italic text-caption-1">{{ lstCheckRowErrors[index] }}</div>
+                <div *ngIf="lstCheckRowErrors && lstCheckRowErrors[index]" class="text-error-500 italic text-caption-1">{{ lstCheckRowErrors[index] }}</div>
               </td>
               <!-- Đối tác -->
               <td class="align-top">
@@ -115,9 +115,9 @@
               <td colspan="3">
                 <div class="flex gap-x-2">
                   <tds-form-field class="w-full">
-                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText[index]" [ngModelOptions]="{standalone: true}"/>
                   </tds-form-field>
-                  <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="innerText ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress(index)">
+                  <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="innerText[index] ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress(data.Partner,index)">
                       <span class="flex items-center">
                         <i class="tdsi-location-fill"></i>
                       </span>

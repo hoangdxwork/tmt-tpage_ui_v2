@@ -50,6 +50,5 @@ export class ModalAddAddressV2Component implements OnInit {
     if(this.items){
       this.modal.destroy(this.items);
     }
-    
   }
 }
