@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { KeyCacheIndexDBDTO } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { Subject, finalize } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -26,10 +27,11 @@ import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte
 
 @Component({
   selector: 'modal-product-template',
-  templateUrl: './modal-product-template.component.html'
+  templateUrl: './modal-product-template.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class ModalProductTemplateComponent implements OnInit, OnDestroy {
+export class ModalProductTemplateComponent implements OnInit {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
   @Input() typeComponent!: any;
@@ -68,8 +70,6 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
 
-  private destroy$ = new Subject<void>();
-
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,
     private modal: TDSModalService,
@@ -81,7 +81,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
-    private notification: TDSNotificationService) {
+    private destroy$: TDSDestroyService) {
        this.createForm();
   }
 
@@ -157,18 +157,10 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     formControls["Barcode"].setValue(data.Barcode);
     formControls["Weight"].setValue(data.Weight);
     formControls["ListPrice"].setValue(data.ListPrice);
-    formControls["DiscountSale"].setValue(
-      data.DiscountSale
-    );
-    formControls["PurchasePrice"].setValue(
-      data.PurchasePrice
-    );
-    formControls["DiscountPurchase"].setValue(
-      data.DiscountPurchase
-    );
-    formControls["StandardPrice"].setValue(
-      data.StandardPrice
-    );
+    formControls["DiscountSale"].setValue(data.DiscountSale);
+    formControls["PurchasePrice"].setValue(data.PurchasePrice);
+    formControls["DiscountPurchase"].setValue(data.DiscountPurchase);
+    formControls["StandardPrice"].setValue(data.StandardPrice);
   }
 
   prepareModel() {
@@ -200,6 +192,12 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     }
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
 
+    if(this.lstVariants && this.lstVariants.length > 0){
+      this.lstVariants.map(x => {
+        console.log(x.Tags)
+        x.Tags = x.Tags ? x.Tags.join(',') : null;
+      })
+    }
     this.defaultGet["ProductVariants"] = [...this.lstVariants];
 
     return this.defaultGet;
@@ -410,11 +408,6 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
         this.loadUOMCateg();
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
 

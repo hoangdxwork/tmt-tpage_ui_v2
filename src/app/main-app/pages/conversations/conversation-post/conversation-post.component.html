@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="h-full">
     <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden text-body-2 text-neutral-1-900">
         <div class="2xl:w-1/5 w-1/4 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
             <div class="w-full flex flex-col gap-1 px-1">
@@ -61,8 +61,8 @@
                 </div>
             </div>
 
-            <div class="overflow-hidden flex flex-auto">
-                <div class="overflow-hidden flex flex-col relative flex-auto px-1 pt-1 gap-y-1" *ngIf="lstObjects && lstObjects.length > 0">
+            <div class="overflow-hidden flex flex-auto" *ngIf="lstObjects && lstObjects.length > 0">
+                <div class="overflow-hidden flex flex-col relative flex-auto px-1 pt-1 gap-y-1">
 
                     <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollObjects" is-lock="true"
                         observe-attributes yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
@@ -84,6 +84,19 @@
                     <div class="bg-white flex-auto"></div>
                 </div>
             </div>
+
+            <div class="flex flex-auto items-center justify-center bg-white mx-1 mt-1" *ngIf="!lstObjects || lstObjects.length == 0">
+                <tds-empty [notFoundContent]="contentTpl">
+                  <ng-template #contentTpl>
+                    <div class="flex flex-col flex-auto justify-center items-center px-8">
+                      <div>Không tìm thấy bài viết nào</div>
+                      <div class="text-body-2 font-regular mt-3 text-center">Hãy thử với từ khóa khác: nhập tên khách hàng, nội dung tin nhắn, số điện thoại</div>
+                    </div>
+                  </ng-template>
+                </tds-empty>
+
+                <div class="bg-white flex-auto"></div>
+            </div>
         </div>
 
         <!--Chọn bài viết để hiển thị chi tiết-->
@@ -91,7 +104,7 @@
             <div *ngIf="currentPost && currentTeam" class="h-full w-full">
                 <conversation-post-view [data]="currentPost" [team]="currentTeam"></conversation-post-view>
             </div>
-            <div *ngIf="!currentPost" class="h-full w-full text-center">
+            <div *ngIf="!currentPost" class="h-full w-full flex items-center justify-center">
                 <p class="text-body-2"> Hãy chọn một bài viết</p>
             </div>
         </div>

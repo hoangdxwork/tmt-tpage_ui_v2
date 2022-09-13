@@ -157,59 +157,62 @@
         </tds-tab>
         <tds-tab *ngIf="inLiveCampaign" title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200">
             <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
-                <div class="w-full">
-                    <div class="w-full h-[350px]">
-                        <tds-table #variantsTable [listData]="lstVariants"
-                            [showPagination]="false" [scroll]="{y:'auto'}">
-                          <thead>
-                            <tr>
-                              <th [width]="'80px'">STT</th>
-                              <th>Tên</th>
-                              <th>Giá</th>
-                              <th>Hoạt động</th>
-                              <th>Thao tác</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr *ngFor="let data of lstVariants; let i = index">
-                              <td [width]="'80px'">{{ 1 + i }}</td>
-                              <td>
-                                <div class="flex flex-col">
-                                  <span class="mb-2">{{ data.NameTemplate || data.Name }}</span>
-                                  <div class="flex flex-wrap items-center gap-1">
-                                    <tds-tag *ngFor="let item of data.AttributeValues" status='secondary'
-                                      rounded="rounded-full">
-                                      {{item.NameGet || (item.AttributeName + ': ' + item.Name)}}
-                                    </tds-tag>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
-                                  [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
-                                </tds-input-number>
-                              </td>
-                              <td>
-                                <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
-                              </td>
-                              <td>
-                                <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
-                                  (click)="showEditVariantsModal(data)">
-                                  <span class="flex items-center">
-                                    <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
-                                  </span>
-                                </button>
-                                <button tds-button-icon color="secondary" type="button" size="sm"
-                                  (click)="removeVariants(data)">
-                                  <span class="flex items-center">
-                                    <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
-                                  </span>
-                                </button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </tds-table>
-                      </div>
+                <div class="w-full h-[350px]">
+                    <tds-table #variantsTable [listData]="lstVariants" [showPagination]="false" [scroll]="{y:'auto'}">
+                      <thead>
+                        <tr>
+                          <th width="6%">STT</th>
+                          <th width="24%">Tên</th>
+                          <th width="30%">Mã chốt đơn</th>
+                          <th width="20%">Giá</th>
+                          <th width="10%">Hoạt động</th>
+                          <th width="10%">Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let data of lstVariants; let i = index">
+                          <td>{{ 1 + i }}</td>
+                          <td>
+                            <div class="flex flex-col">
+                              <span class="mb-2">{{ data.NameTemplate || data.Name }}</span>
+                              <div class="flex flex-wrap items-center gap-1">
+                                <tds-tag *ngFor="let item of data.AttributeValues" status='secondary'
+                                  rounded="rounded-full">
+                                  {{item.NameGet || (item.AttributeName + ': ' + item.Name)}}
+                                </tds-tag>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [(ngModel)]="data.Tags" [ngModelOptions]="{standalone: true}"
+                                [allowClear]="true" [data]="" mode="tags" class="w-full">
+                            </tds-select>
+                          </td>
+                          <td>
+                            <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
+                              [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
+                            </tds-input-number>
+                          </td>
+                          <td>
+                            <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
+                          </td>
+                          <td>
+                            <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                              (click)="showEditVariantsModal(data)">
+                              <span class="flex items-center">
+                                <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
+                              </span>
+                            </button>
+                            <button tds-button-icon color="secondary" type="button" size="sm"
+                              (click)="removeVariants(data)">
+                              <span class="flex items-center">
+                                <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
+                              </span>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </tds-table>
                 </div>
             </div>
             <ng-template #tableAttribute>
