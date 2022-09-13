@@ -46,7 +46,7 @@ export class ProductPagefbComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnInit(): void {
-   this.pageId;debugger
+   this.pageId;
   }
 
   loadData(pageSize: number, pageIndex: number) {

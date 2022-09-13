@@ -143,7 +143,7 @@ export class ConfigInteractiveMenusComponent implements OnInit, OnChanges, OnDes
     this.message.info(Message.Config.PageConfig.Saved);
   }
 
-  onOpenTab(item: ProfileMessageDTO, index: number) {debugger;
+  onOpenTab(item: ProfileMessageDTO, index: number) {
     item.tabSelected = !item.tabSelected ? true : false;
     this.lstData[index].tabSelected = item.tabSelected;
   }

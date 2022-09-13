@@ -51,9 +51,9 @@ export class ApplicationUserService extends BaseSevice {
     return this.apiService.getData<ODataApplicationUserDTO>(api, null);
   }
 
-  get(): Observable<any> {
+  get(params: string): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}`,
       method: CoreApiMethodType.get,
     }
 
