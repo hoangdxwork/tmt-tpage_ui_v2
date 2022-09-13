@@ -505,7 +505,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes['isLoadingAll'] && !changes['isLoadingAll'].firstChange) {debugger
+    if(changes['isLoadingAll'] && !changes['isLoadingAll'].firstChange) {
         this.isLoadingAll = changes['isLoadingAll'].currentValue;
     }
 

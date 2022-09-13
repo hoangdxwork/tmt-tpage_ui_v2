@@ -335,7 +335,7 @@ export class ConfigAddProductComponent implements OnInit {
     )
   }
 
-  loadProductUOMLine(id: TDSSafeAny) {debugger
+  loadProductUOMLine(id: TDSSafeAny) {
     this.productTemplateService.getProductUOMLine(id).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res) => {

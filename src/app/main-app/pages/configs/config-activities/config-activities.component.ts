@@ -66,7 +66,7 @@ export class ConfigActivitiesComponent implements OnInit {
     this.initSortColumn();
   }
 
-  loadData(pageSize: number, pageIndex: number) {debugger
+  loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
     let filters = this.odataTPosLoggingService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);

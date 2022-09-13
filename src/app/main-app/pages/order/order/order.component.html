@@ -128,7 +128,7 @@
 
                 <!-- STT -->
                 <td class="border-l truncate min-w-[64px] max-w-[130px]" [tdsLeft]="true">
-                  <span>{{ data.SessionIndex }}</span>
+                  <span> {{ index | numericalOrder: pageSize : pageIndex }} </span>
                 </td>
 
                 <!-- Code -->

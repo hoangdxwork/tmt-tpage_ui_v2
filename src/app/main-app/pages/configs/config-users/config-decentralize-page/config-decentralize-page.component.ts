@@ -9,6 +9,9 @@ import { ApplicationUserService } from 'src/app/main-app/services/application-us
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
+import { THelperDataRequest } from '@core/services/helper-data.service';
+import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
+import { SortEnum } from '@core/enum';
 
 @Component({
   selector: 'app-config-decentralize-page',
@@ -51,6 +54,13 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
   lstUsers: ApplicationUserDTO[] = [];
   isLoading: boolean = false;
   private destroy$ = new Subject<void>();
+  pageSize = 10;
+  pageIndex = 1;
+
+  sort: Array<SortDataRequestDTO> = [{
+    field: "DateCreated",
+    dir: SortEnum.desc
+  }];
 
   constructor(
     private router: Router,
@@ -74,8 +84,9 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
 
   loadUser() {
     this.isLoading = true;
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
 
-    this.applicationUserService.get()
+    this.applicationUserService.get(params)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstUsers = res.value;
