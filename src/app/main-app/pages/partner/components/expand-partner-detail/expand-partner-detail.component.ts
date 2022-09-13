@@ -42,7 +42,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   constructor(private modalService: TDSModalService,
     private odataPartnerService: OdataPartnerService,
     private partnerService: PartnerService,
-    private cdr: ChangeDetectorRef,
+    private cdrRef: ChangeDetectorRef,
     private message: TDSMessageService,
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
@@ -65,19 +65,19 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   }
 
   getResizeExpand() {
+    this.isLoading = true;
     let element = this.document.getElementById(`expand[${this.dataPartner.Id}]`) as any;
     if(element) {
         let containerTable = element.closest('.tds-table-container') as any;
         let containerExpand = element.closest('expand-partner-detail') as any;
 
         let wrapView = Number(containerTable.clientWidth - 36);
-        let marginExpand = Number(containerExpand.clientWidth) - wrapView;
-
-        if(marginExpand > 0) {
-            element.setAttribute('style', `width: ${wrapView}px; margin-left: ${marginExpand}px;`);
-        } else {
-            element.setAttribute('style', `width: ${wrapView}px`);
+        let marginExpand = 0;
+        if(containerExpand.clientWidth > containerTable.clientWidth) {
+            marginExpand = Number(containerExpand.clientWidth) - containerTable.clientWidth;
         }
+
+        element.setAttribute('style', `width: ${wrapView}px; margin-left: ${marginExpand}px;`);
 
         let scrollTable = element.closest('.tds-custom-scroll');
         if(element && scrollTable) {
@@ -89,6 +89,9 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
           });
         }
     }
+
+    this.isLoading = false;
+    this.cdrRef.detectChanges();
   }
 
   loadInvoice(partnerId: number, pageSize: number, pageIndex: number) {
@@ -102,7 +105,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
           this.lstInvocie = [...res.value];
 
           this.isLoading = false
-          this.cdr.markForCheck();
+          this.cdrRef.markForCheck();
         },
         error: (error: any) => {
           this.isLoading = false
@@ -131,7 +134,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
         this.countDebit = res['@odata.count'];
         this.lstCreditDebit = [...res.value];
         this.isLoading = false;
-        this.cdr.markForCheck();
+        this.cdrRef.markForCheck();
     })
   }
 
