@@ -3,7 +3,7 @@ import { PartnerStatusDTO } from './../../../../dto/partner/partner.dto';
 import { finalize, takeUntil } from 'rxjs';
 import { Message } from './../../../../../lib/consts/message.const';
 import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
-import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, AfterViewInit, HostListener, Inject } from '@angular/core';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -15,6 +15,7 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { Router } from '@angular/router';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'expand-partner-detail',
@@ -23,6 +24,8 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 })
 
 export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
+
+  @Input() dataPartner: any = {};
 
   lstCreditDebit: Array<CreditDebitDTO> = [];
   pageSize1 = 20;
@@ -36,14 +39,13 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   countInvocie: number = 1;
   revenues: any = {};
 
-  @Input() dataPartner: any = {};
-
   constructor(private modalService: TDSModalService,
     private odataPartnerService: OdataPartnerService,
     private partnerService: PartnerService,
     private cdr: ChangeDetectorRef,
     private message: TDSMessageService,
     private router: Router,
+    @Inject(DOCUMENT) private document: Document,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
     private commonService: CommonService) {
@@ -60,6 +62,33 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     })
 
     this.loadPartnerStatus();
+  }
+
+  getResizeExpand() {
+    let element = this.document.getElementById(`expand[${this.dataPartner.Id}]`) as any;
+    if(element) {
+        let containerTable = element.closest('.tds-table-container') as any;
+        let containerExpand = element.closest('expand-partner-detail') as any;
+
+        let wrapView = Number(containerTable.clientWidth - 36);
+        let marginExpand = Number(containerExpand.clientWidth) - wrapView;
+
+        if(marginExpand > 0) {
+            element.setAttribute('style', `width: ${wrapView}px; margin-left: ${marginExpand}px;`);
+        } else {
+            element.setAttribute('style', `width: ${wrapView}px`);
+        }
+
+        let scrollTable = element.closest('.tds-custom-scroll');
+        if(element && scrollTable) {
+          scrollTable.addEventListener('scroll', function() {
+              let scrollleft = Number(scrollTable.scrollLeft);
+              let wrapScroll = Number(scrollTable.clientWidth - 24);
+
+              element.setAttribute('style', `margin-left: ${scrollleft}px; width: ${wrapScroll}px;`)
+          });
+        }
+    }
   }
 
   loadInvoice(partnerId: number, pageSize: number, pageIndex: number) {
@@ -197,15 +226,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    let element = document.getElementById('detailPartner') as any;
-    let scrollTable = element.closest('.tds-table-body') as any;
-
-    if(element && scrollTable) {
-      scrollTable.addEventListener('scroll', function() {
-          let scrollleft = Number(scrollTable.scrollLeft);
-          let wrap = Number(scrollTable.clientWidth - 24);
-          element.setAttribute('style', `margin-left: ${scrollleft}px; width: ${wrap}px;`)
-      });
-    }
+    this.getResizeExpand();
   }
+
 }
