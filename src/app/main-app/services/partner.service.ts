@@ -248,10 +248,18 @@ export class PartnerService extends BaseSevice {
 
   updatePartnerSimple(data: TDSSafeAny) {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdatePartnerSimple `,
-      method: CoreApiMethodType.post,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdatePartnerSimple `,
+        method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
-  return this.apiService.getData<TDSSafeAny>(api, data);
+
+  getInvoice(id: number, state: string): Observable<any> {
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v2.0/partner/${id}/invoice?state=${state}`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
   }
 
 }
