@@ -65,19 +65,12 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   }
 
   getResizeExpand() {
-    this.isLoading = true;
     let element = this.document.getElementById(`expand[${this.dataPartner.Id}]`) as any;
     if(element) {
         let containerTable = element.closest('.tds-table-container') as any;
-        let containerExpand = element.closest('expand-partner-detail') as any;
-
+        let containerExpand = element.closest('.tds-custom-scroll') as any;
         let wrapView = Number(containerTable.clientWidth - 36);
-        let marginExpand = 0;
-        if(containerExpand.clientWidth > containerTable.clientWidth) {
-            marginExpand = Number(containerExpand.clientWidth) - containerTable.clientWidth;
-        }
-
-        element.setAttribute('style', `width: ${wrapView}px; margin-left: ${marginExpand}px;`);
+        element.setAttribute('style', `width: ${wrapView}px; margin-left: ${Number(containerExpand.scrollLeft) + 2}px;`);
 
         let scrollTable = element.closest('.tds-custom-scroll');
         if(element && scrollTable) {
@@ -90,7 +83,6 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
         }
     }
 
-    this.isLoading = false;
     this.cdrRef.detectChanges();
   }
 
