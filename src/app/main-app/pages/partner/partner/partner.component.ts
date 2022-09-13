@@ -6,7 +6,7 @@ import { ModalSendMessageComponent } from './../components/modal-send-message/mo
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
-import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit, HostListener, Inject } from '@angular/core';
 import { FilterObjPartnerModel, OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -32,13 +32,16 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { DOCUMENT } from '@angular/common';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'app-partner',
-  templateUrl: './partner.component.html'
+  templateUrl: './partner.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   lstOfData: Array<PartnerDTO> = [];
   pageSize = 20;
@@ -100,12 +103,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   ];
 
   expandSet = new Set<number>();
-  private destroy$ = new Subject<void>();
-
-  widthTable: number = 0;
   isLoadingCollapse: boolean = false;
-
-  @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
 
   constructor(private modalService: TDSModalService,
     private odataPartnerService: OdataPartnerService,
@@ -114,13 +112,15 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     private message: TDSMessageService,
     private tagService: TagService,
     private modal: TDSModalService,
+    private resizeObserver: TDSResizeObserver,
+    @Inject(DOCUMENT) private document: Document,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
     private excelExportService: ExcelExportService,
     private partnerService: PartnerService,
     private viewContainerRef: ViewContainerRef,
-    private resizeObserver: TDSResizeObserver,
     private configService: TDSConfigService,
+    private destroy$: TDSDestroyService,
     private chatomniMessageFacade: ChatomniMessageFacade) {
   }
 
@@ -314,18 +314,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           this.message.error(error?.error?.message ||'Tải dữ liệu phiếu bán hàng thất bại!');
       }
     });
-  }
-
-  ngAfterViewInit(): void {
-      this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - 36;
-      this.resizeObserver.observe(this.viewChildWidthTable).subscribe({
-        next: () => {
-          this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - 36;
-          this.viewChildWidthTable?.nativeElement.click();
-          console.log(this.widthTable);
-
-        }
-      });
   }
 
   isHidden(columnName: string) {
@@ -670,6 +658,9 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  ngAfterViewInit() {
   }
 
   ngOnDestroy(): void {
