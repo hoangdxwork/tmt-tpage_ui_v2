@@ -10,7 +10,7 @@ import { ProductCategoryService } from '../../../services/product-category.servi
 import { WallPicturesDTO } from '../../../dto/attachment/wall-pictures.dto';
 import { Message } from '../../../../lib/consts/message.const';
 import { CreateVariantsModalComponent } from '../components/create-variants-modal/create-variants-modal.component';
-import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from '../../../dto/configs/product/config-product-default.dto';
+import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants, UOMLine } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from '../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
@@ -50,6 +50,7 @@ export class ConfigAddProductComponent implements OnInit {
   distributorList: Array<ConfigUOMTypeDTO> = [];
   originCountryList: Array<ConfigOriginCountryDTO> = [];
   lstAttributes: Array<ConfigAttributeLine> = [];
+  lstUOM: Array<UOMLine> = [];
   lstVariants: Array<ConfigProductVariant> = [];
   lstProductCombo: Array<ComboProductDTO> = [];
   stockChangeProductList: Array<StockChangeProductQtyDTO> = [];
@@ -60,6 +61,10 @@ export class ConfigAddProductComponent implements OnInit {
   isLoadingAttribute = false;
   id: TDSSafeAny;
   minIndex = 0;
+
+  pageSize = 20;
+  pageIndex = 1;
+  count: number = 1;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -104,6 +109,7 @@ export class ConfigAddProductComponent implements OnInit {
       this.loadData(this.id);
       this.loadStockChangeProductQty(this.id);
       this.loadProductAttributeLine(this.id);
+      this.loadProductUOMLine(this.id);
       this.loadComboProducts(this.id);
     } else {
       this.loadDefault();
@@ -320,6 +326,20 @@ export class ConfigAddProductComponent implements OnInit {
       {
         next: (res) => {
           this.lstAttributes = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+
+        }
+      }
+    )
+  }
+
+  loadProductUOMLine(id: TDSSafeAny) {debugger
+    this.productTemplateService.getProductUOMLine(id).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res) => {
+          this.lstUOM = [...res.value];
         },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -594,7 +614,6 @@ export class ConfigAddProductComponent implements OnInit {
 
   addProduct() {
     let model = this.prepareModel();
-    console.log(model)
     if (model.Name) {
       this.productTemplateService.insertProductTemplate(model)
         .pipe(takeUntil(this.destroy$)).subscribe(
@@ -684,4 +703,6 @@ export class ConfigAddProductComponent implements OnInit {
       }
     }
   }
+
+
 }

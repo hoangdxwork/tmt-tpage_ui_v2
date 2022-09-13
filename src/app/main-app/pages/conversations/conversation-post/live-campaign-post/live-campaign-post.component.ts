@@ -187,7 +187,6 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
               }
             });
         },
-        onCancel:()=>{console.log('cancel')},
         okText: "Xác nhận",
         cancelText: "Hủy bỏ"
       })

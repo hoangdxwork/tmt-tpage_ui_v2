@@ -188,7 +188,59 @@
           </upload-pictures-wall>
         </tds-tab>
 
-        <tds-tab title="Tồn kho">
+        <tds-tab title="Đơn vị bán hàng">
+          <div class="h-full w-full">
+            <div class="rounded-xl border border-neutral-2-200 flex flex-col">
+              <div class="w-full px-4 py-2.5 flex justify-between items-center">
+                <span class="text-title-1 font-semibold text-neutral-1-900">Danh sách đơn hàng</span>
+                <button tds-button color="primary">
+                  <span class="flex items-center">
+                    <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Thêm đơn vị
+                  </span>
+                </button>
+              </div>
+              <div class="h-[300px] min-h-[300px] w-full">
+                <tds-table #salesUnitTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstUOM"
+                  [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"
+                  [loading]="isLoading">
+                  <thead>
+                    <tr>
+                      <th width="25%">Đơn vị</th>
+                      <th width="25%">Giá bán</th>
+                      <th width="25%">Mã vạch</th>
+                      <th width="25%">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-template ngFor let-data [ngForOf]="salesUnitTable.data">
+                      <tr>
+                        <td>{{ data.UOM.NameGet }} </td>
+                        <td>{{ data.ListPrice }}</td>
+                        <td>{{ data.Barcode }}</td>
+                        <td>
+                          <div class="flex gap-x-2">
+                            <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa">
+                              <span class="flex items-center">
+                                <i class="tdsi-edit-fill text-neutral-1-500"></i>
+                              </span>
+                            </button>
+                            <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa">
+                              <span class="flex items-center">
+                                <i class="tdsi-trash-fill text-neutral-1-500"></i>
+                              </span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      </ng-template>
+                  </tbody>
+              </tds-table>
+              </div>
+            </div>
+          </div>
+        </tds-tab>
+
+        <!-- <tds-tab title="Tồn kho">
           <div class="grid grid-cols-2 gap-y-4 gap-x-8">
             <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
               <tds-label>Theo dõi</tds-label>
@@ -218,7 +270,7 @@
               </tds-form-field>
             </div>
           </div>
-        </tds-tab>
+        </tds-tab> -->
 
         <tds-tab title="Bán hàng" *ngIf="_form.controls.SaleOK.value">
           <div
