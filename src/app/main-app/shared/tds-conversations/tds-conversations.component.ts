@@ -229,7 +229,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadMessages(data: ChatomniConversationItemDto): any {
-
+    this.isLoading = true;
     this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
@@ -941,7 +941,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   refreshRead() {
     this.validateData();
-    this.isLoading = true;
     this.loadMessages(this.data);
   }
 
