@@ -394,12 +394,13 @@ export class PostOrderConfigComponent implements OnInit {
 
         let defaultProductConfig = {...this.prepareProduct(res)};
         let content = this.getContentString(defaultProductConfig);
+
         let contentWithAttributes = this.getcontentWithAttributesString(defaultProductConfig) as string;
 
         let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
         if(idx >= 0) {
           this.dataModel.TextContentToOrders[idx].Product = defaultProductConfig;
-          this.dataModel.TextContentToOrders[idx].ContentWithAttributes = contentWithAttributes;
+          this.dataModel.TextContentToOrders[idx].ContentWithAttributes = contentWithAttributes || null;
 
           if(item.Content) {
               this.dataModel.TextContentToOrders[idx].Content =`${item.Content},${content.join(',')}`;
@@ -430,9 +431,12 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   getcontentWithAttributesString(productConfig: AutoOrderProductDTO) {
-    let attributeValues = productConfig.AttributeValues;
-
-    return attributeValues.join(",");
+    let attributeValues = this.handleWord(productConfig.ProductTemplateName);
+    if(attributeValues && attributeValues.length > 0) {
+        return attributeValues.join(",");
+    } else {
+        return null;
+    }
   }
 
   handleWord(text: string, code?: string): string[] {
@@ -497,7 +501,8 @@ export class PostOrderConfigComponent implements OnInit {
                 let product: AutoOrderProductDTO = {
                     ProductId: x.ProductId,
                     ProductCode: x.ProductCode,
-                    ProductName: x.ProductTemplateName || x.ProductName,
+                    ProductName: x.ProductName,
+                    ProductTemplateName: x.ProductTemplateName,
                     ProductNameGet: x.ProductNameGet,
                     Price: x.Price,
                     UOMId: x.UOMId,
@@ -506,7 +511,7 @@ export class PostOrderConfigComponent implements OnInit {
                     QtyLimit: x.LimitedQuantity,
                     QtyDefault: x.Quantity,
                     IsEnableRegexQty: liveCampaign && liveCampaign.EnableQuantityHandling ? true : false,
-                    IsEnableRegexAttributeValues: false,
+                    IsEnableRegexAttributeValues: true,
                     IsEnableOrderMultiple: false,
                     AttributeValues: [],
                     DescriptionAttributeValues: [],
@@ -560,8 +565,9 @@ export class PostOrderConfigComponent implements OnInit {
 
     result.ProductId = product.ProductId || product.Id;
     result.ProductCode = product.ProductCode || product.DefaultCode;
-    result.ProductName = product.ProductName || product.Name;
-    result.ProductNameGet = product.ProductNameGet || product.NameGet;
+    result.ProductName = product.ProductName;
+    result.ProductNameGet = product.ProductNameGet;
+    result.ProductTemplateName = product.ProductTemplateName;
     result.Price = product.Price || product.LstPrice || 0;
     result.UOMId = product.UOMId;
     result.UOMName = product.UOMName;
