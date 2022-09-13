@@ -253,15 +253,16 @@ export class TDSConversationItemComponent implements OnInit  {
       MessageType: 1,
       RecipientId: this.dataItem.Id
     }
+
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.tdsMessage.success("Thao tác thành công");
           if (TDSHelperArray.hasListValue(res)) {
             res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-              x["Status"] = ChatomniStatus.Done;
-              let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-              this.dataItem  = {...data}
+                x["Status"] = ChatomniStatus.Done;
+                let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+                this.dataItem  = {...data}
             });
           }
 
@@ -292,15 +293,15 @@ export class TDSConversationItemComponent implements OnInit  {
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        pageId: this.team.Facebook_PageId,
+        pageId: this.team.ChannelId,
       }
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-      if(res){
-        this.onProductSelected(res);
-      }
+        if(res){
+            this.onProductSelected(res);
+        }
       }
     });
   }
@@ -325,16 +326,16 @@ export class TDSConversationItemComponent implements OnInit  {
       this.activityMatchingService.addTemplateMessage(this.team.ChannelId, model)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-          this.activityDataFacade.messageServer(res);
-          this.conversationDataFacade.messageServer(res);
+            this.activityDataFacade.messageServer(res);
+            this.conversationDataFacade.messageServer(res);
 
-          this.tdsMessage.success('Gửi thành công sản phẩm');
-          this.cdRef.markForCheck();
-        },
-        error: error => {
-          this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
-          this.cdRef.markForCheck();
-        }
+            this.tdsMessage.success('Gửi thành công sản phẩm');
+            this.cdRef.markForCheck();
+          },
+          error: error => {
+            this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
+            this.cdRef.markForCheck();
+          }
       });
     }
   }
