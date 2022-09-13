@@ -50,8 +50,6 @@ export class CreateDefaultProductComponent implements OnInit {
       .subscribe({
         next:(res: ODataProductDTOV2) => {
           this.lstProduct = [...res.value];
-          console.log(this.lstProduct);
-
         },
         error:(err) => {
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);

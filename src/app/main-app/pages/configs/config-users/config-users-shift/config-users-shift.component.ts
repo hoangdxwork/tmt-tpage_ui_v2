@@ -114,7 +114,6 @@ export class ConfigUsersShiftComponent implements OnInit {
   }
 
   onFilter(value: TDSSafeAny) {
-    console.log(value);
     this.message.info(Message.FunctionNotWorking);
   }
 
@@ -173,11 +172,8 @@ export class ConfigUsersShiftComponent implements OnInit {
       size: 'lg',
       viewContainerRef: this.viewContainerRef,
     });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
+    modal.afterOpen.subscribe();
     modal.afterClose.subscribe((result) => {
-      // console.log('[afterClose] The result is:', result);
-      // if (TDSHelperObject.hasValue(result)) {
-      // }
       this.loadShifts();
     });
   }

@@ -249,6 +249,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {
+      this.expandSet = new Set<number>();
       this.expandSet.add(id);
     } else {
       this.expandSet.delete(id);
@@ -321,6 +322,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         next: () => {
           this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - 36;
           this.viewChildWidthTable?.nativeElement.click();
+          console.log(this.widthTable);
+
         }
       });
   }

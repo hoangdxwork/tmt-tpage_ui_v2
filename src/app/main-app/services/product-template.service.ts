@@ -104,6 +104,15 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getProductUOMLine(id:TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/ProductTemplate(${id})/UOMLines?$expand=UOM,Values`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
   getComboProducts(id:TDSSafeAny){
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/ComboProducts?$expand=Product`,

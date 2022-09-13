@@ -125,7 +125,6 @@ export class ConfigUsersOperationComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadUser();
       }
@@ -141,7 +140,6 @@ export class ConfigUsersOperationComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadUser();
       }
