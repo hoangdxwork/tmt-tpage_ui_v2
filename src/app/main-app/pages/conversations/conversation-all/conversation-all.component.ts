@@ -368,7 +368,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   this.conversationInfo = {...info};
                   this.isLoading = false;
                   this.cdRef.markForCheck();
-                  this.cdRef.detectChanges();
               },
               error: (error: any) => {
                   this.isLoading = false;

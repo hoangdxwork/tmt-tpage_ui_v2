@@ -63,6 +63,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @HostBinding("@eventFadeState") eventAnimation = true;
   @Input() partner?: any;
 
+  @Input() isLoadingAll: boolean = false;
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ChatomniConversationItemDto;
   @Input() type!: string;
@@ -71,6 +72,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() state!: number | undefined;
 
   isLoading: boolean = false;
+  isLoadingSpin: boolean = false;
   isProcessing: boolean = false;
 
   dataSource$!: Observable<ChatomniDataDto>;
@@ -229,7 +231,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadMessages(data: ChatomniConversationItemDto): any {
-    this.isLoading = true;
+    if(this.isLoadingAll) {
+        this.isLoading = true;
+    } else {
+        this.isLoadingSpin = true;
+        this.isLoading = true;
+    }
+
     this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
@@ -243,12 +251,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           }
 
           this.isLoading = false;
-          this.cdRef.markForCheck();
+          this.isLoadingSpin = false;
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
+          this.isLoadingSpin = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-          this.cdRef.markForCheck();
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -440,6 +450,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     delete this.messageModel;
 
     this.isLoading = false;
+    this.isLoadingSpin = false;
     this.isProcessing = false;
     this.uploadedImages = [];
     this.tags = [];
@@ -494,6 +505,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if(changes['isLoadingAll'] && !changes['isLoadingAll'].firstChange) {debugger
+        this.isLoadingAll = changes['isLoadingAll'].currentValue;
+    }
+
     if (changes["data"] && !changes["data"].firstChange) {
       this.validateData();
       (this.data as any) = null;
