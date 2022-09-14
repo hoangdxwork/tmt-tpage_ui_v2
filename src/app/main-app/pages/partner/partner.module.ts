@@ -1,3 +1,4 @@
+import { ChatomniConversationFacade } from './../../services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
@@ -97,7 +98,8 @@ const SERVICES = [
   ChatomniMessageFacade,
   ActivityMatchingService,
   ConversationService,
-  ChatomniCommentFacade
+  ChatomniCommentFacade,
+  ChatomniConversationFacade
 ]
 
 @NgModule({

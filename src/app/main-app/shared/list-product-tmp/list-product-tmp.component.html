@@ -50,13 +50,13 @@
                 </tds-dropdown-menu>
             </tds-button-group>
 
-            <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm"  (click)="showModalAddProduct()" type="button">
+            <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm"  (click)="showModalAddProduct()">
                 <span class="flex items-center">
                     <i class="tdsi-plus-fill"></i>
                 </span>
             </button>
 
-            <button tds-button-icon type="button" color="info" tds-tooltip tooltipTitle="Tải lại" type="button" [disabled]="disabledReload" (click)="reloadIndexDB()">
+            <button tds-button-icon type="button" color="info" tds-tooltip tooltipTitle="Tải lại" [disabled]="disabledReload" (click)="reloadIndexDB()">
                 <span class="flex items-center">
                     <i class="tdsi-reload-fill"></i>
                 </span>

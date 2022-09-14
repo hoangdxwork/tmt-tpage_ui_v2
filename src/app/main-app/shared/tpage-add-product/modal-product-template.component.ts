@@ -1,8 +1,8 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { KeyCacheIndexDBDTO } from './../../dto/product-pouchDB/product-pouchDB.dto';
-import { Subject, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ProductCategoryService } from '../../services/product-category.service';
@@ -12,13 +12,12 @@ import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { SharedService } from '../../services/shared.service';
-import { map, takeUntil, mergeMap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSNotificationService } from 'tds-ui/notification';
 import { ConfigAddAttributeProductModalComponent } from '../../pages/configs/components/config-attribute-modal/config-attribute-modal.component';
 import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from '../../dto/configs/product/config-product-default.dto';
 import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
@@ -191,19 +190,12 @@ export class ModalProductTemplateComponent implements OnInit {
       this.defaultGet["UOMPOId"] = formModel.UOMPO.Id;
     }
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
-
-    if(this.lstVariants && this.lstVariants.length > 0){
-      this.lstVariants.map(x => {
-        console.log(x.Tags)
-        x.Tags = x.Tags ? x.Tags.join(',') : null;
-      })
-    }
     this.defaultGet["ProductVariants"] = [...this.lstVariants];
 
     return this.defaultGet;
   }
 
-  onSave(type?: string) :any {
+  onSave(type?: string) :any {debugger
     let model = this.prepareModel();
     this.isLoading = true;
 
@@ -222,8 +214,8 @@ export class ModalProductTemplateComponent implements OnInit {
     
             this.loadProduct(type, product);
           }, 
-          error: error => {
-            this.message.error(`${error?.error?.message}`);
+          error: (error) => {
+            this.message.error(error?.error?.message || Message.InsertFail);
         }
         });
   }
@@ -408,6 +400,10 @@ export class ModalProductTemplateComponent implements OnInit {
         this.loadUOMCateg();
       }
     });
+  }
+
+  changeTags(event:any,i:number){
+    this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
   }
 }
 
