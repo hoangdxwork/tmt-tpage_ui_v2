@@ -223,20 +223,22 @@ export class TDSConversationItemComponent implements OnInit  {
       return
     }
 
+    let csid = this.dataItem.Data.id || this.csid;
     this.reloadingImage = true;
-    this.activityMatchingService.refreshAttachment(this.team.ChannelId, this.dataItem.Data.id || this.csid , item.id)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe({
+    this.activityMatchingService.refreshAttachment(this.team.ChannelId, csid , item.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-        this.tdsMessage.success('Thao tác thành công');
-        this.activityDataFacade.refreshAttachment(res);
-        this.dataItem.Data["is_error_attachment"] = false;
+            this.reloadingImage = false
+            this.tdsMessage.success('Thao tác thành công');
+            this.activityDataFacade.refreshAttachment(res);
+            this.dataItem.Data["is_error_attachment"] = false;
 
-        this.cdRef.markForCheck();
-      },
-      error: error => {
-          this.tdsMessage.error(`${error?.error?.message}` || 'Không thành công');
-      }
+            this.cdRef.markForCheck();
+        },
+        error: error => {
+            this.reloadingImage = false
+            this.tdsMessage.error(`${error.Message}` || 'Không thành công');
+            this.cdRef.markForCheck();
+        }
     });
   }
 
