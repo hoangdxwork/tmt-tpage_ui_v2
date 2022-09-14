@@ -77,25 +77,25 @@ export class ExpandLiveCampaignComponent implements OnInit, OnDestroy {
   }
 
   getResizeExpand() {
-    let element = this.document.getElementById(`expand[${this.liveCampaignId}]`) as any;
-    if(element) {
-        let containerTable = element.closest('.tds-table-container') as any;
-        let containerExpand = element.closest('.tds-custom-scroll') as any;
-        let wrapView = Number(containerTable.clientWidth - 36);
-        element.setAttribute('style', `width: ${wrapView}px; margin-left: ${Number(containerExpand.scrollLeft) + 2}px;`);
+    // let element = this.document.getElementById(`expand[${this.liveCampaignId}]`) as any;
+    // if(element) {
+    //     let containerTable = element.closest('.tds-table-container') as any;
+    //     let containerExpand = element.closest('.tds-custom-scroll') as any;
+    //     let wrapView = Number(containerTable.clientWidth - 36);
+    //     element.setAttribute('style', `width: ${wrapView}px; margin-left: ${Number(containerExpand.scrollLeft) + 2}px;`);
 
-        let scrollTable = element.closest('.tds-custom-scroll');
-        if(element && scrollTable) {
-          scrollTable.addEventListener('scroll', function() {
-              let scrollleft = Number(scrollTable.scrollLeft);
-              let wrapScroll = Number(scrollTable.clientWidth - 24);
+    //     let scrollTable = element.closest('.tds-custom-scroll');
+    //     if(element && scrollTable) {
+    //       scrollTable.addEventListener('scroll', function() {
+    //           let scrollleft = Number(scrollTable.scrollLeft);
+    //           let wrapScroll = Number(scrollTable.clientWidth - 24);
 
-              element.setAttribute('style', `margin-left: ${scrollleft}px; width: ${wrapScroll}px;`)
-          });
-        }
-    }
+    //           element.setAttribute('style', `margin-left: ${scrollleft}px; width: ${wrapScroll}px;`)
+    //       });
+    //     }
+    // }
 
-    this.cdrRef.detectChanges();
+    // this.cdrRef.detectChanges();
   }
 
   ngOnDestroy(): void {
