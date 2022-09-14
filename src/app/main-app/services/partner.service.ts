@@ -212,13 +212,13 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<TabPartnerCvsRequestDTO>(api, { PageId: page_id, UserId: psid });
   }
 
-  checkInfo(data: InputCheckInfoPartnerDTO) : Observable<CheckInfoPartnerDTO> {
+  checkInfo(data: InputCheckInfoPartnerDTO) : Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/checkinfo`,
+      url: `${this._BASE_URL}/rest/v2.0/partner/checkinfo`,
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getData<CheckInfoPartnerDTO>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   getLastOrder(partnerId: number): Observable<any> {
@@ -227,7 +227,7 @@ export class PartnerService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<CheckInfoPartnerDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getPartnersByTimestamp(teamId: any, timestamp: any): Observable<PartnerTimeStampDto> {
@@ -240,7 +240,7 @@ export class PartnerService extends BaseSevice {
 
   getAllByMDBPartnerId(partnerId: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}//rest/v1.0/partner/${partnerId}/pages`,
+        url: `${this._BASE_URL}/rest/v1.0/partner/${partnerId}/pages`,
         method: CoreApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
@@ -248,10 +248,18 @@ export class PartnerService extends BaseSevice {
 
   updatePartnerSimple(data: TDSSafeAny) {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdatePartnerSimple `,
-      method: CoreApiMethodType.post,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdatePartnerSimple `,
+        method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
-  return this.apiService.getData<TDSSafeAny>(api, data);
+
+  getInvoice(id: number, state: string): Observable<any> {
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v2.0/partner/${id}/invoice?state=${state}`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
   }
 
 }

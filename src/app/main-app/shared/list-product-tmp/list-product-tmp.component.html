@@ -1,15 +1,13 @@
 <div class="rounded-xl pb-3 bg-white pt-2 flex h-full flex-col gap-y-2">
     <div class="flex xl:gap-x-1.5 2xl:gap-x-2 justify-between px-3 relative">
         <tds-form-field class="min-w-[100px] xl:hidden 2xl:flex">
-            <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
-                (inputKeyup)="onInputKeyup($event)" />
+            <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750"  [(ngModel)]="innerText"  [ngModelOptions]="{standalone: true}" (inputKeyup)="onInputKeyup()" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
 
         <div class="inset-x-3 inset-t-0" [ngClass]="{'absolute 2xl:hidden': search == true, 'hidden' : search == false}">
             <tds-form-field>
-                <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
-                    (inputKeyup)="onInputKeyup($event)" />
+                <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750" [(ngModel)]="innerText"  [ngModelOptions]="{standalone: true}" (inputKeyup)="onInputKeyup()" />
                 <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
             </tds-form-field>
         </div>
@@ -52,15 +50,13 @@
                 </tds-dropdown-menu>
             </tds-button-group>
 
-            <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm"
-                (click)="showModalAddProduct()" type="button">
+            <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm"  (click)="showModalAddProduct()">
                 <span class="flex items-center">
                     <i class="tdsi-plus-fill"></i>
                 </span>
             </button>
 
-            <button tds-button-icon type="button" color="info" tds-tooltip tooltipTitle="Reload" type="button"
-                (click)="reloadIndexDB()">
+            <button tds-button-icon type="button" color="info" tds-tooltip tooltipTitle="Tải lại" [disabled]="disabledReload" (click)="reloadIndexDB()">
                 <span class="flex items-center">
                     <i class="tdsi-reload-fill"></i>
                 </span>

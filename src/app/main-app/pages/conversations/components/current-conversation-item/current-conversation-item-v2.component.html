@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="flex items-center gap-2" >
-                    <span *ngIf="type == 'all' && item.CountUnread > 0">
+                    <span *ngIf="item.CountUnread > 0">
                         <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread" title="Phản hồi chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
                     <span *ngIf="!isOpenCollapCheck" class="text-neutral-1-400 text-body-2 font-regular font-sans whitespace-nowrap">

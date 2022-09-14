@@ -12,7 +12,7 @@ export class CsOrder_SuggestionHandler {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  public onLoadSuggestion(item: ResultCheckAddressDTO, quickOrderModel: QuickSaleOnlineOrderModel) {debugger
+  public onLoadSuggestion(item: ResultCheckAddressDTO, quickOrderModel: QuickSaleOnlineOrderModel) {
     quickOrderModel.Address = item.Address;
 
     quickOrderModel.CityCode = item.CityCode;

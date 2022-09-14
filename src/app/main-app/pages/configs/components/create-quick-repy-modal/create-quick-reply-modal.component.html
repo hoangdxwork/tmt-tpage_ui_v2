@@ -56,27 +56,6 @@
             </textarea>
         </tds-form-field>
 
-        <!-- <tds-breadcrumb class="mb-2">
-            <div *ngFor="let data of contentTagList; let i = index">
-                <tds-breadcrumb-item [separator]="iconTemplate" [active]="currentBreadcrumb == i" (click)="currentBreadcrumb = i">
-                    {{data.name}}
-                </tds-breadcrumb-item>
-
-                <ng-template #iconTemplate>
-                    <i class="text-base leading-4 {{currentBreadcrumb == i ? 'tdsi-arrow-down-line text-primary-1' : 'tdsi-arrow-right-line text-neutral-1-600'}}"></i>
-                </ng-template>
-            </div>
-        </tds-breadcrumb>
-
-        <div class="flex flex-wrap gap-y-2 w-full">
-            <div *ngFor="let item of contentTagList[currentBreadcrumb].data;let i = index">
-                <div class="bg-primary-1 text-white text-caption-2 font-semibold rounded cursor-pointer px-2 py-0.5 mr-2"
-                    (click)="addTagToContent(currentBreadcrumb,item.value)">
-                    <span>{{item.id}}</span>
-                </div>
-            </div>
-        </div> -->
-
         <tds-tabset [clsTab]="'flex pr-4'" [tabBarStyle]="{'padding-right':'16px'}" [(selectedIndex)]="selectedIndex">
           <tds-tab *ngFor="let data of contentTagList; let i = index" [title]="titleTemplate" clsContent="py-2.5 px-0">
             <ng-template #titleTemplate let-active='active'>
@@ -121,10 +100,6 @@
                     Tin nhắn
                 </span>
             </div>
-            <!-- <tds-select valueField="id" textField="value" [(ngModel)]="templateType" placeholder='Chọn mẫu tin nhắn'
-                [data]="MessageFormList" class="w-[135px] truncate tds-message-form bg-white"
-                (ngModelChange)="getTemplateType($event)" classIcon="tdsi-arrow-down-fill">
-            </tds-select> -->
 
             <button tds-button color="secondary" class="w-[135px]" tds-dropdown trigger="click" [placement]="'bottomRight'" [tdsDropdownMenu]="menu">
               <div class="w-full flex">
@@ -203,7 +178,7 @@
             <div class="w-full">
                 <tds-form-field>
                     <tds-label>Chọn kênh upload media</tds-label>
-                    <tds-select *ngIf="mediaChannelList" valueField="Facebook_ASUserId" textField="Name" placeholder='Chọn kênh' disabledField="Active"
+                    <tds-select *ngIf="mediaChannelList" valueField="ChannelId" textField="Name" placeholder='Chọn kênh' disabledField="Active"
                         [(ngModel)]="mediaForm" [data]="mediaChannelList" mode="multiple">
                         <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value'
                             let-selected="selected">

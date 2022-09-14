@@ -50,8 +50,21 @@ export class AddLiveCampaignComponent implements OnInit {
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
 
-  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale, '1.0-3')}`;
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
 
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
     private crmTeamService: CRMTeamService,
@@ -251,15 +264,14 @@ export class AddLiveCampaignComponent implements OnInit {
   addProduct(product: DataPouchDBDTO){
     let detailValue = this._form.controls['Details'].value;
 
-    let indexExist = detailValue.findIndex((item: any) => `${item.ProductId}_${item.UOMId}` === product.Product_UOMId);
+    let indexExist = detailValue.findIndex((item: any) => `${item.ProductId}_${item.UOMId}` === product.Product_UOMId) as number;
 
-    if(indexExist > -1) {
+    if(Number(indexExist) > -1) {
       detailValue[indexExist].Quantity++;
 
       const control = <FormArray>this._form.controls['Details'];
       control.at(indexExist).setValue(detailValue[indexExist]);
-    }
-    else {
+    } else {
       const control = <FormArray>this._form.controls['Details'];
       control.push(this.initDetailBySelectProduct(detailValue.length, product));
     }
@@ -486,9 +498,9 @@ export class AddLiveCampaignComponent implements OnInit {
     let details = formValue.Details;
 
     if(TDSHelperArray.hasListValue(details)) {
-      let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price));
+      let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price)) as number;
 
-      if(find > -1) {
+      if(Number(find) > -1) {
         this.message.error(Message.LiveCampaign.ErrorNumberDetail);
 
         return 0;

@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Message } from '../../../../../lib/consts/message.const';
 import { ConfigAttributeLine, ConfigAttributeValue, ConfigAttribute } from '../../../../dto/configs/product/config-product-default.dto';
@@ -13,7 +14,8 @@ import { TDSModalRef } from 'tds-ui/modal';
 @Component({
   selector: 'app-config-attribute-modal',
   templateUrl: './config-attribute-modal.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestroy {
   @Input() defaultModel: Array<ConfigAttributeLine> = []; //TODO: model thuộc tính- giá trị
@@ -26,14 +28,13 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
 
   isLoading = false;
 
-  private destroy$ = new Subject<void>();
-
   constructor(
     private modal: TDSModalRef,
     private message: TDSMessageService,
     private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroy$: TDSDestroyService
   ) {
     this.createForm();
   }
@@ -49,6 +50,8 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   }
 
   loadProductAttributeValue() {
+    this.isLoading = true;
+
     this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
       (res: TDSSafeAny) => {
         this.valuesList = res.value;
@@ -82,15 +85,21 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
           });
         });
 
+        this.isLoading = false;
         this.cdr.markForCheck();
       },
       err => {
+        this.isLoading = false;
         this.message.error(err?.error?.message || Message.CanNotLoadData);
       }
     )
   }
 
   onSelectAttribute() {
+    if(this.isLoading){
+      return;
+    }
+    
     let lstSelectAttr = this._form.controls.Attributes.value as Array<ConfigAttribute> || [];
 
     if (lstSelectAttr.length == 0) {

@@ -13,10 +13,10 @@
         <div class="col-span-2 text-title-1 font-semibold">{{data?.PartnerDisplayName}}</div>
 
         <div>Tổng tiền:</div>
-        <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | number}}đ</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | numberCustom}}đ</div>
 
         <div>Tiền thu hộ:</div>
-        <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | number}}đ</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | numberCustom}}đ</div>
 
         <div *ngIf="data.IsDeposited">Tiền cọc</div>
         <div *ngIf="data.IsDeposited" class="col-span-2 text-title-1 font-semibold flex space-x-2">
@@ -31,7 +31,7 @@
       <div class="w-full mt-3 flex items-end" *ngIf="!data.IsDeposited">
         <tds-form-field class="w-full">
           <tds-label>Xác nhận tiền cọc:</tds-label>
-          <tds-input-number [ngModel]="currentDeposit" [min]="1" [max]="999999" [step]="1000">
+          <tds-input-number [ngModel]="currentDeposit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas">
           </tds-input-number>
         </tds-form-field>
 

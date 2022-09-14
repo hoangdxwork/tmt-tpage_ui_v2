@@ -3,25 +3,18 @@
         <div class="w-3/5 h-full flex flex-col gap-y-2">
             <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình phản hồi khi tạo đơn</div>
             <div class="flex flex-col gap-y-4 h-full w-full">
-      
+
                 <div class="flex items-center gap-x-2">
                   <tds-switch size="md" [(ngModel)]="dataModel.IsEnableOrderReplyAuto"></tds-switch>
                   <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gửi tin nhắn thông báo khi chốt đơn?</div>
                 </div>
-        
+
                 <div class="w-full h-full flex flex-col gap-y-4" *ngIf="dataModel.IsEnableOrderReplyAuto">
 
-                    <div *ngIf="!isEditReply" class="rounded-xl bg-light-100 p-4 relative">
-                        <div [innerHtml]="dataModel.OrderReplyTemplate | safeHtml" class="whitespace-pre-wrap"></div>
-                        <span class="absolute bottom-4 right-4 tdsi-edit-fill text-neutral-1-500 cursor-pointer" (click)="onEditReply()"></span>           
+                    <div  class="rounded-xl bg-light-100 p-4 relative">
+                        <quill-editor [(ngModel)]="dataModel.OrderReplyTemplate" [modules]="quillTagHelpers" class="input-quill-editor"></quill-editor>
                     </div>
 
-                    <div *ngIf="isEditReply">
-                        <tds-form-field class="relative">
-                            <textarea class="resize-none h-[80px]" tdsInput placeholder="Nhập nội dung" [(ngModel)]="dataModel.OrderReplyTemplate"></textarea>
-                            <span class="tdsi-error-fill absolute top-0.5 right-0.5 hover:cursor-pointer" (click)="onEditReply()"></span>
-                        </tds-form-field>
-                    </div>
                     <div class="w-full h-full flex flex-col gap-y-4 px-4">
 
                       <div class="w-full h-full flex flex-col gap-y-1">
@@ -36,12 +29,12 @@
                       <tds-form-field *ngIf="dataModel.IsEnableShopLink">
                           <tds-label>Tiêu đề nút xem giỏ hàng</tds-label>
 
-                          <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề nút xem giở hàng" [(ngModel)]="dataModel.ShopLabel"/>
+                          <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề nút xem giỏ hàng" [(ngModel)]="dataModel.ShopLabel"/>
                       </tds-form-field>
 
                       <tds-form-field *ngIf="dataModel.IsEnableShopLink">
                           <tds-label>Tiêu đề nút xác nhận đồng ý</tds-label>
-                          
+
                           <input tdsInput autocomplete="off"  placeholder="Nhập tiêu đề nút xác nhận đồng ý" [(ngModel)]="dataModel.ShopLabel2"/>
                       </tds-form-field>
 

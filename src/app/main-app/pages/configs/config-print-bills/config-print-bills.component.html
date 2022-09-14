@@ -25,7 +25,7 @@
                               <span class="text-body-2 font-semibold {{ printHubConnected ? 'text-info-500' : ''}}">Kết nối máy in</span>
                             </span>
                         </button>
-                        <span class="ml-3" *ngIf="printHubConnected">Đang kết nối ({{ printHubSaleOnlineOrderCount | number }})</span>
+                        <span class="ml-3" *ngIf="printHubConnected">Đang kết nối ({{ printHubSaleOnlineOrderCount | numberCustom }})</span>
 
                         <button *ngIf="isConnected" tds-button color="primary" (click)="onConnectPrinter('disconnect')">
                             <span class="flex items-center">

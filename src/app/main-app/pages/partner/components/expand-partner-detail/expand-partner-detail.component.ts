@@ -1,27 +1,31 @@
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { PartnerStatusDTO } from './../../../../dto/partner/partner.dto';
-import { finalize } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import { Message } from './../../../../../lib/consts/message.const';
 import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
-import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, AfterViewInit, HostListener, Inject } from '@angular/core';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { PartnerInvoiceDTO } from 'src/app/main-app/dto/partner/partner-invocie.dto';
 import { CreditDebitDTO } from 'src/app/main-app/dto/partner/partner-creditdebit.dto';
-import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-register-payment.dto';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { Router } from '@angular/router';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'expand-partner-detail',
-  templateUrl: './expand-partner-detail.component.html'
+  templateUrl: './expand-partner-detail.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
+
+  @Input() dataPartner: any = {};
 
   lstCreditDebit: Array<CreditDebitDTO> = [];
   pageSize1 = 20;
@@ -35,45 +39,81 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   countInvocie: number = 1;
   revenues: any = {};
 
-  @Input() dataPartner: any = {};
-
   constructor(private modalService: TDSModalService,
     private odataPartnerService: OdataPartnerService,
     private partnerService: PartnerService,
-    private cdr: ChangeDetectorRef,
+    private cdrRef: ChangeDetectorRef,
     private message: TDSMessageService,
     private router: Router,
+    @Inject(DOCUMENT) private document: Document,
+    private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
     private commonService: CommonService) {
   }
 
   ngOnInit(): void {
-    this.partnerService.getPartnerRevenueById(this.dataPartner.Id).subscribe((res: TDSSafeAny) => {
-      this.revenues = res;
-    }, error => {
-       this.message.error('Load doanh số đã xảy ra lỗi!')
+    this.partnerService.getPartnerRevenueById(this.dataPartner.Id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+            this.revenues = res;
+        },
+        error: (error: any) => {
+            this.message.error(`${error?.error?.message}`)
+        }
     })
+
     this.loadPartnerStatus();
+  }
+
+  getResizeExpand() {
+    // let element = this.document.getElementById(`expand[${this.dataPartner.Id}]`) as any;
+    // if(element) {
+    //     let containerTable = element.closest('.tds-table-container') as any;
+    //     let containerExpand = element.closest('.tds-custom-scroll') as any;
+    //     let wrapView = Number(containerTable.clientWidth - 36);
+    //     element.setAttribute('style', `width: ${wrapView}px; margin-left: ${Number(containerExpand.scrollLeft) + 2}px;`);
+
+    //     let scrollTable = element.closest('.tds-custom-scroll');
+    //     if(element && scrollTable) {
+    //       scrollTable.addEventListener('scroll', function() {
+    //           let scrollleft = Number(scrollTable.scrollLeft);
+    //           let wrapScroll = Number(scrollTable.clientWidth - 24);
+
+    //           element.setAttribute('style', `margin-left: ${scrollleft}px; width: ${wrapScroll}px;`)
+    //       });
+    //     }
+    // }
+
+    // this.cdrRef.detectChanges();
   }
 
   loadInvoice(partnerId: number, pageSize: number, pageIndex: number) {
     this.isLoading = true;
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-    this.odataPartnerService.getInvoicePartner(partnerId, params).pipe(finalize(()=>{ this.isLoading = false }))
-    .subscribe((res: any) => {
-        this.countInvocie = res['@odata.count'];
-        this.lstInvocie = [...res.value];
-        this.cdr.markForCheck();
-    },err=>{
-      this.message.error(err.error? err.error.message: Message.CanNotLoadData);
+
+    this.odataPartnerService.getInvoicePartner(partnerId, params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+
+          this.countInvocie = res['@odata.count'];
+          this.lstInvocie = [...res.value];
+
+          this.isLoading = false
+          this.cdrRef.markForCheck();
+        },
+        error: (error: any) => {
+          this.isLoading = false
+          this.message.error(error.error?.message);
+        }
     })
   }
 
   loadPartnerStatus() {
-    this.commonService.getPartnerStatus().subscribe(res => {
-      this.lstPartnerStatus = [...res];
-    },err=>{
-      this.message.error(err.error? err.error.message: 'Tải trạng thái khách hàng lỗi');
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+            this.lstPartnerStatus = [...res];
+        },
+        error: (error: any) => {
+            this.message.error(error.error.message || 'Tải trạng thái khách hàng lỗi');
+        }
     });
   }
 
@@ -81,12 +121,12 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
 
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-    this.odataPartnerService.getCreditDebitPartner(partnerId, params).subscribe((res: any) => {
+    this.odataPartnerService.getCreditDebitPartner(partnerId, params).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
         this.countDebit = res['@odata.count'];
         this.lstCreditDebit = [...res.value];
         this.isLoading = false;
-        this.cdr.markForCheck();
+        this.cdrRef.markForCheck();
     })
   }
 
@@ -113,8 +153,8 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   }
 
   showModalPayment(){
-    this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).subscribe((res) => {
-        if(res) {
+    this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
           delete res['@odata.context'];
 
           this.modalService.create({
@@ -126,9 +166,10 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
                 dataModel : res
               }
           });
-       }
-    }, error => {
-      this.message.error(`${error?.error.message}`)
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error.message}`)
+      }
     })
   }
 
@@ -150,11 +191,15 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
       let data = {
         status: `${status.value}_${status.text}`
       }
-      this.partnerService.updateStatus(this.dataPartner.Id, data).subscribe(res => {
-        this.message.success(Message.Partner.UpdateStatus);
-        this.dataPartner.StatusText = status.text;
-      },err=>{
-        this.message.error(err.error? err.error.message: 'Cập nhật trạng thái thất bại');
+
+      this.partnerService.updateStatus(this.dataPartner.Id, data).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.message.success(Message.Partner.UpdateStatus);
+            this.dataPartner.StatusText = status.text;
+        },
+        error: (err: any) => {
+          this.message.error(err.error? err.error.message: 'Cập nhật trạng thái thất bại');
+        }
       });
     }
     else {
@@ -176,5 +221,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.getResizeExpand();
   }
+
 }

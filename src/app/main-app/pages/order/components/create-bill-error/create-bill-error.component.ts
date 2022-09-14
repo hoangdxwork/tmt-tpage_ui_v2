@@ -53,7 +53,6 @@ export class CreateBillErrorComponent implements OnInit {
     }
 
     this.lstErrors.map(item => {
-      console.log(item)
       item?.replace('text-info font-bold','text-info-500 font-semibold');
     });
 

@@ -45,7 +45,7 @@ export class ConfigSmsMessagesComponent implements OnInit {
     })
   }
 
-  // getCustomProperties(data:TDSSafeAny){debugger
+  // getCustomProperties(data:TDSSafeAny){
   //   let obj = JSON.parse(JSON.stringify(data));
   //   if(JSON.parse(obj)?.type){
   //     return JSON.parse(obj).type?.datasource;

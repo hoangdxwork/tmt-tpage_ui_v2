@@ -108,7 +108,7 @@ export class EditOrderV2Component implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -356,8 +356,8 @@ export class EditOrderV2Component implements OnInit {
   }
 
   selectProduct(data: ProductDTOV2){
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMPOId);
-    if (index < 0){
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMPOId) as number;
+    if (Number(index) < 0){
         let item = {
             Factor: data.Factor,
             Price: data.Price,
@@ -628,8 +628,6 @@ export class EditOrderV2Component implements OnInit {
 
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
-              fs_model.SaleOnlineIds = [res.Id];
-              fs_model.PartnerId = res.PartnerId;
               this.createFastSaleOrder(fs_model, type);
           } else {
             this.isLoading = false;
@@ -677,11 +675,10 @@ export class EditOrderV2Component implements OnInit {
 
             if(type && res) {
                 this.printOrder(type, res);
-            } else {
-                this.modalRef.destroy(null);
             }
 
             this.isLoading = false;
+            this.modalRef.destroy('onLoadPage');
         },
         error: (error: any) => {
             this.isLoading = false;
@@ -935,7 +932,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   changeShipExtraMoney() {
-    let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
+    let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG') as number;
     this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
     this.calcFee();
 

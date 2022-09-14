@@ -146,7 +146,6 @@ export class ConfigPromotionsComponent implements OnInit {
   sendRequestTableTab(): void {
       this.loading = true;
       const requestData = this.TableData.filter(data => this.setOfCheckedId.has(data.id));
-      console.log(requestData);
       setTimeout(() => {
           this.setOfCheckedId.clear();
           this.refreshCheckedStatus();

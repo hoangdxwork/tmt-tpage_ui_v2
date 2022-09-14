@@ -15,6 +15,8 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
+import { SortEnum } from '@core/enum';
 
 @Component({
   selector: 'product-variant',

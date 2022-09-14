@@ -1,5 +1,5 @@
 <tds-spin [spinning]="isLoading">
-  <tds-tabset class="bg-transparent">
+  <tds-tabset class="bg-white w-full border rounded-md">
     <tds-tab [title]="titleDetail" clsContent="h-full w-full pb-2.5">
         <ng-template #titleDetail let-active="active">
             <div class="p-4 font-semibold  border-b-3 cursor-pointer group flex items-center"
@@ -38,7 +38,7 @@
                       <td>{{ data.Quantity }}</td>
 
                       <!-- Đơn giá -->
-                      <td>{{ data.Price || 0 | number }}</td>
+                      <td>{{ data.Price || 0 | numberCustom }}</td>
 
                       <!-- Hoạt động -->
                       <td>
@@ -70,11 +70,11 @@
           <div>Live ID:</div>
           <div class="col-span-2 font-semibold">{{liveCampaigns.Facebook_LiveId || '...'}}</div>
           <div>Đặt cọc tối thiểu:</div>
-          <div class="col-span-2 font-semibold">{{liveCampaigns.MinAmountDeposit || 0 | number}} đ</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.MinAmountDeposit || 0 | numberCustom}} đ</div>
         </div>
         <div class="grid grid-cols-3 gap-4">
           <div>Đặt cọc bắt buộc:</div>
-          <div class="col-span-2 font-semibold">{{liveCampaigns.MaxAmountDepositRequired || 0 | number}} đ</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.MaxAmountDepositRequired || 0 | numberCustom}} đ</div>
         </div>
       </div>
     </tds-tab>
@@ -121,18 +121,18 @@
               <div class="flex space-x-4 text-neutral-1-400">
                 <div class="flex items-center">
                   <i class="tdsi-like-line text-base"></i>
-                  <span class="ml-1">{{post.count_reactions || 0 | number}}</span>
+                  <span class="ml-1">{{post.count_reactions || 0 | numberCustom}}</span>
                 </div>
                 <div class="flex items-center">
                   <i class="tdsi-livechat-line text-base"></i>
-                  <span class="ml-1">{{post.count_comments || 0 | number}}</span>
+                  <span class="ml-1">{{post.count_comments || 0 | numberCustom}}</span>
                 </div>
               </div>
             </div>
             <div class="w-full">
               <div class="text-error-400 font-semibold">{{post.story}}</div>
               <div class="mt-1">
-                <div [innerHTML]="post.message | safeHtml"></div>
+                <div showMore [length]="100" [text]="post.message"></div>
               </div>
               <div class="mt-2 text-neutral-1-400 cursor-pointer w-fit" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc: {{post.updated_time | date:'HH:mm dd/MM'}}">
                 {{post.created_time | yiDiffDateTime}}

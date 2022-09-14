@@ -40,7 +40,7 @@
           </div>
           <div class="col-span-3 mt-1">
               <tds-form-field>
-                  <tds-input-number [min]="1" [step]="1" formControlName="Rounding">
+                  <tds-input-number [min]="1" [step]="1" formControlName="Rounding" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
               </tds-form-field>
           </div>

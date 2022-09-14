@@ -153,8 +153,8 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     updateStatus(data: CRMTagDTO) {
         this.changeStatus(data).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
-                let index = this.lstOfData.findIndex(x => x.Id === data.Id);
-                if (index > -1) {
+                let index = this.lstOfData.findIndex(x => x.Id === data.Id) as number;
+                if (Number(index) > -1) {
                     this.lstOfData[index].IsDeleted = !data.IsDeleted;
                 }
                 this.message.success('Cập nhật trạng thái thành công');

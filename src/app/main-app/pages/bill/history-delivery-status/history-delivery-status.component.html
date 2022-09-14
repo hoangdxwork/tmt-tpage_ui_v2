@@ -35,10 +35,10 @@
                             <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)" class="border-r text-center" [tdsLeft]="true"></td>
                             <td class="border-r text-center" [tdsLeft]="true">{{ data.Date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                             <td class="border-r">{{ data.CarrierName }}</td>
-                            <td class="border-r text-right">{{ data.TotalCOD || 0 | number }} đ</td>
-                            <td class="border-r text-right">{{ data.TotalCODShip || 0 | number }} đ</td>
-                            <td class="border-r text-right">{{ data.CountSuccess || 0 | number }}</td>
-                            <td class="border-r text-right">{{ data.CountError || 0 | number }}</td>
+                            <td class="border-r text-right">{{ data.TotalCOD || 0 | numberCustom }} đ</td>
+                            <td class="border-r text-right">{{ data.TotalCODShip || 0 | numberCustom }} đ</td>
+                            <td class="border-r text-right">{{ data.CountSuccess || 0 | numberCustom }}</td>
+                            <td class="border-r text-right">{{ data.CountError || 0 | numberCustom }}</td>
                             <td class="border-r">{{ data.Note || '---'}}</td>
                             <td class="border-r flex items-center justify-between" [tdsRight]="true">
                                 <button tds-button-icon color="secondary" size="sm"

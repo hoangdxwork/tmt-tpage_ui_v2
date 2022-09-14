@@ -26,6 +26,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { de } from 'date-fns/locale';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
 @Component({
   selector: 'app-conversation-post',
@@ -66,6 +67,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   keyFilter: string = '';
   currentPost?: ChatomniObjectsItemDto;
   isLoading: boolean = false;
+  isLoadingTab: boolean = false;
   isProcessing: boolean = false;
 
   selectedIndex: number = 0;
@@ -87,8 +89,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
     public crmService: CRMTeamService,
+    private postEvent: ConversationPostEvent,
     public activatedRoute: ActivatedRoute,
-    private cdRef: ChangeDetectorRef,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
@@ -143,6 +145,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.onChangeTabEvent();
     this.eventEmitter();
     this.loadLiveCampaign();
+    this.spinLoading();
   }
 
   eventEmitter() {
@@ -205,10 +208,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.chatomniConversationService.syncConversationInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
               next: (data: any) => {
                   this.syncConversationInfo = {...data};
-                  this.cdRef.markForCheck();
               }
           })
       }
+    })
+  }
+
+  spinLoading() {
+    this.postEvent.spinLoadingTab$.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (loading: boolean) => {
+            this.isLoadingTab = loading;
+        }
     })
   }
 
@@ -504,10 +514,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: any) => {
           delete res['@odata.context'];
           this.lstOfLiveCampaign = [...res.value];
-          this.cdRef.detectChanges();
       },
       error: (error: any) => {
-          this.cdRef.detectChanges();
+          this.message.error(`${error?.error?.message}`);
       }
     })
   }

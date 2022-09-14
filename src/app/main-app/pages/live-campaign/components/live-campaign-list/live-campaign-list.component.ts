@@ -156,6 +156,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
 
   onExpandChange(id: string | undefined, checked: boolean): void {
     if (checked) {
+      this.expandSet = new Set<string | undefined>();
       this.expandSet.add(id);
     } else {
       this.expandSet.delete(id);

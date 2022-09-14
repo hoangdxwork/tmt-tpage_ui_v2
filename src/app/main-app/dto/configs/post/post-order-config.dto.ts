@@ -12,6 +12,7 @@ export interface AutoOrderProductDTO {
     ProductCode: string;
     ProductName: string;
     ProductNameGet: string;
+    ProductTemplateName: string;
     Price: number;
     UOMId: number;
     UOMName: string;

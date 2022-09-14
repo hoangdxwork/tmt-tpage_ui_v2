@@ -15,7 +15,7 @@
               <span class="text-header-1 font-semibold text-right">{{ lstOfData.OrderSummary.ProductQuantity }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.OrderSummary.TotalAmount | number:'1.0-3'  }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.OrderSummary.TotalAmount | numberCustom  }}</span>
             </div>
           </div>
         </div>
@@ -33,7 +33,7 @@
               <span class="text-header-1 font-semibold text-right">{{ lstOfData.BillSummary.ProductQuantity }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.BillSummary.TotalAmount | number:'1.0-3'  }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.BillSummary.TotalAmount | numberCustom  }}</span>
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@
               <span class="text-header-1 font-semibold text-right">{{ lstOfData.PaySummary.ProductQuantity }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.PaySummary.TotalAmount | number:'1.0-3'  }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.PaySummary.TotalAmount | numberCustom  }}</span>
             </div>
           </div>
         </div>

@@ -15,7 +15,7 @@ import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operato
   templateUrl: './product-pagefb.component.html',
 })
 
-export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
+export class ProductPagefbComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
   @Input() pageId: any;
@@ -30,28 +30,38 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
   public filterObj: TDSSafeAny = {
     searchText: ''
   }
+
   isLoading: boolean = false;
   sortOptions: any[] = [
     { value: "count", text: "Sử dụng nhiều nhất" },
     { value: "recent", text: "Sử dụng gần nhất" },
   ];
+
   currentSort = "count";
   objProduct: TDSSafeAny = {};
 
   constructor( private odataProductService: OdataProductService,
     private message: TDSMessageService,
-    private modal: TDSModalRef) { }
+    private modal: TDSModalRef) {
+  }
+
+  ngOnInit(): void {
+   this.pageId;
+  }
 
   loadData(pageSize: number, pageIndex: number) {
     this.lstOfData = [];
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
 
-    this.getViewData(params).subscribe((res: any) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
-    }, error => {
-        this.message.error('Tải dữ liệu khách hàng thất bại!');
+    this.getViewData(params).subscribe({
+      next: (res: any) => {
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = [...res.value];
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}`);
+      }
     });
   }
 
@@ -72,9 +82,9 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
       map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      distinctUntilChanged(),
+      debounceTime(750), distinctUntilChanged(),
       switchMap((text: TDSSafeAny) => {
+
         this.pageIndex = 1;
         this.filterObj.searchText = text;
 
@@ -82,11 +92,14 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
         let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null);
         return this.getViewData(params);
       }))
-      .subscribe((res: any) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
-      }, error => {
-          this.message.error('Tìm kiếm không thành công');
+      .subscribe({
+        next: (res: any) => {
+            this.count = res['@odata.count'] as number;
+            this.lstOfData = [...res.value];
+        },
+        error: (error: any) => {
+            this.message.error(`${error?.error?.message}`);
+        }
       });
   }
 

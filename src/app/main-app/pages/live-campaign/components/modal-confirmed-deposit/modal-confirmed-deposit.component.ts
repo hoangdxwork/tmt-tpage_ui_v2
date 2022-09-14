@@ -1,3 +1,4 @@
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { finalize } from 'rxjs/operators';
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -21,6 +22,22 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
 
   currentDeposit: number = 0;
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    return value;
+  } ;
+
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
+    }
+    return value;
+  };
+
   constructor(
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
@@ -28,7 +45,6 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    debugger;
   }
 
   ngOnInit(): void {

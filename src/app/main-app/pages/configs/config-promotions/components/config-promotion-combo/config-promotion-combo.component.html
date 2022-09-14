@@ -211,7 +211,7 @@
                                 Giảm giá {{ detail?.value?.DiscountPercentage }} % trên tổng tiền
                               </span>
                               <span *ngIf="detail?.value?.DiscountMaxAmount > 0">
-                                , tối đa không quá {{ detail?.value?.DiscountMaxAmount | number }} đ
+                                , tối đa không quá {{ detail?.value?.DiscountMaxAmount | numberCustom }} đ
                               </span>
                           </td>
                           <!-- Hiệu lực -->

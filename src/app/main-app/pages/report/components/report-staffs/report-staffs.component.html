@@ -46,17 +46,17 @@
                         <tds-avatar [tdsSrc]="data.imageURL" class="mr-2.5"></tds-avatar>
                         {{ data.name }}
                     </td>
-                    <td>{{ data.conversations|number }}</td>
-                    <td>{{ data.messages|number }}</td>
-                    <td>{{ data.comments|number }}</td>
-                    <td>{{ data.customers|number }}</td>
-                    <td>{{ data.orders|number }}</td>
-                    <td>{{ data.responseTime|number }}</td>
-                    <td>{{ data.revenue|number }}</td>
+                    <td>{{ data.conversations|numberCustom }}</td>
+                    <td>{{ data.messages|numberCustom }}</td>
+                    <td>{{ data.comments|numberCustom }}</td>
+                    <td>{{ data.customers|numberCustom }}</td>
+                    <td>{{ data.orders|numberCustom }}</td>
+                    <td>{{ data.responseTime|numberCustom }}</td>
+                    <td>{{ data.revenue|numberCustom }}</td>
                     <td>
                         <span class="text-primary-1">{{ (data.completeOrders/data.oldCustomers)|percent}}</span>
                         <br>
-                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.oldCustomers|number}}</span>
+                        <span class="text-neutral-1-400">{{data.completeOrders|numberCustom}}/{{data.oldCustomers|numberCustom}}</span>
                     </td>
                 </tr>
             </ng-template>

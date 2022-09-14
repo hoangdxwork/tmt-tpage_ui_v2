@@ -27,7 +27,7 @@
         <td>{{order.PartnerName}}</td>
         <td>{{order.PhoneNumber}}</td>
         <td>{{order.Address}}</td>
-        <td>{{order.TotalAmount || 0 | number}}</td>
+        <td>{{order.TotalAmount || 0 | numberCustom}}</td>
         <td>
           <div class="flex gap-x-4 items-center">
             <div class="flex items-center gap-x-1" *ngIf="order.TotalSuccessMessage > 0">

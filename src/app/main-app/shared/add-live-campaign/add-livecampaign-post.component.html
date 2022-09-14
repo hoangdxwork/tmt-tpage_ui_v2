@@ -54,7 +54,8 @@
           <div class="grid grid-cols-3 gap-y-4 gap-x-3">
             <tds-label>Thời gian tổng hợp (phút)</tds-label>
               <tds-form-field class="col-span-2 w-full">
-                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"></tds-input-number>
+                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
+                    [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
             </tds-form-field>
 
             <tds-label>Ngày bắt đầu</tds-label>
@@ -74,13 +75,13 @@
             <tds-label>Số tiền cọc bắt buộc</tds-label>
               <tds-form-field class="col-span-2 w-full">
                   <tds-input-number [min]="0"  [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
-                  ></tds-input-number>
+                    [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
             </tds-form-field>
 
             <tds-label>Số tiền tối thiểu đặt cọc</tds-label>
               <tds-form-field class="col-span-2 w-full">
                   <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit"
-                  ></tds-input-number>
+                    [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
             </tds-form-field>
 
             <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">
@@ -134,7 +135,7 @@
                       <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
                           class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
 
-                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | number:'1.0-3'  }}đ </span>
+                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom  }}đ </span>
 
                           <div *ngIf="lstInventory && lstInventory[item.Id]">
                               <span class="text-neutral-1-400">Tồn kho: </span>
@@ -206,7 +207,7 @@
                           <!-- Số lượng -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="1" [step]="1" [(ngModel)]="detail.value.Quantity" [ngModelOptions]="{standalone: true}">
+                              <tds-input-number [min]="1" [step]="1" [(ngModel)]="detail.value.Quantity" [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </td>
@@ -214,7 +215,7 @@
                           <!-- Giới hạn trên đơn -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1" [(ngModel)]="detail.value.LimitedQuantity" [ngModelOptions]="{standalone: true}">
+                              <tds-input-number [min]="0" [step]="1" [(ngModel)]="detail.value.LimitedQuantity" [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </td>
@@ -222,7 +223,7 @@
                           <!-- Giá bán -->
                           <td>
                             <tds-form-field>
-                              <tds-input-number [min]="0" [step]="1000" [(ngModel)]="detail.value.Price" [ngModelOptions]="{standalone: true}">
+                              <tds-input-number [min]="0" [step]="1000" [(ngModel)]="detail.value.Price" [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                               </tds-input-number>
                             </tds-form-field>
                           </td>

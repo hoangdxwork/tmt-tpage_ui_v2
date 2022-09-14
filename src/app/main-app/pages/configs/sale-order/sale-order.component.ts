@@ -154,7 +154,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   changeIsEnableBill(event: any) {
     if(event == false) {
       this._form.controls['IsUsingProviderTemplate'].setValue(false)
-  }
+    }
   }
 
   onSave() {

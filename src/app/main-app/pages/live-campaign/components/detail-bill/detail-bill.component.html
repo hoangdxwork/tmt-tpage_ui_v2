@@ -107,15 +107,15 @@
             </td>
             <!-- Tổng tiền -->
             <td>
-              {{bill.AmountTotal || 0 | number}}
+              {{bill.AmountTotal || 0 | numberCustom}}
             </td>
             <!-- Đặt cọc -->
             <td>
-              {{bill.AmountDeposit || 0 | number}}
+              {{bill.AmountDeposit || 0 | numberCustom}}
             </td>
             <!-- Còn nợ -->
             <td>
-              {{bill.Residual || 0 | number}}
+              {{bill.Residual || 0 | numberCustom}}
             </td>
             <!-- Trạng thái -->
             <td>

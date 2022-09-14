@@ -355,7 +355,6 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     modal.afterClose.subscribe((result) => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadListTeam(true);
         // if (this.lstPageNotConnect[user.Id]) {

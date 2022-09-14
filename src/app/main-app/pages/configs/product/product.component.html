@@ -110,9 +110,9 @@
                                     data.DefaultCode }}
                                 </td>
                                 <td *ngIf="!isHiddenColumn('Name')" [width]="'258px'">{{ data.Name }}</td>
-                                <td *ngIf="!isHiddenColumn('ListPrice')" [width]="'192px'">{{ data.ListPrice | number }}
+                                <td *ngIf="!isHiddenColumn('ListPrice')" [width]="'192px'">{{ data.ListPrice | numberCustom }}
                                 </td>
-                                <td *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'192px'">{{ data.QtyAvailable | number }}</td>
+                                <td *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'192px'">{{ data.QtyAvailable | numberCustom }}</td>
                                 <td *ngIf="!isHiddenColumn('UOMName')" [width]="'192px'">{{ data.UOMName }}</td>
                                 <td *ngIf="!isHiddenColumn('Tags')" [width]="'192px'">
                                     <div class="flex flex-wrap items-center w-fit">

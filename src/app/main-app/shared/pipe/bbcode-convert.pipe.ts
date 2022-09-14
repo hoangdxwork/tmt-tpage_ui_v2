@@ -13,7 +13,7 @@ export class BBcodeConvertPipe implements PipeTransform {
 
     // if(typeof code === 'string') {
     //   if (/^[\[|\{](\s|.*|\w)*[\]|\}]$/.test(code)) {
-    //       code = JSON.parse(code);debugger
+    //       code = JSON.parse(code);
     //   }
     // }
 
