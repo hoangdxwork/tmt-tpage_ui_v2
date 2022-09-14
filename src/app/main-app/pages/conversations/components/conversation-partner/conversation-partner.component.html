@@ -28,7 +28,7 @@
                         </button>
                     </div>
 
-                    <div class="flex gap-2">
+                    <div class="flex gap-2" *ngIf="partner.Id">
                         <tds-button-group>
 
                           <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
@@ -47,7 +47,7 @@
                           </tds-dropdown-menu>
                         </tds-button-group>
 
-                        <div class="text-body-2 font-regular font-sans text-neutral-1-400">
+                        <div class="text-body-2 font-regular font-sans text-neutral-1-400" >
                             ID: <span class="font-semibold">{{partner.Id}}</span>
                         </div>
                     </div>
