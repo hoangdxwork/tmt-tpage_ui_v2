@@ -39,7 +39,6 @@ import { PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto'
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
 @Component({
@@ -96,7 +95,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private chatomniConversationService: ChatomniConversationService,
     private chatomniCommentService: ChatomniCommentService,
     private chatomniCommentFacade: ChatomniCommentFacade,
-    private saleOnline_OrderService: SaleOnline_OrderService,
     public crmService: CRMTeamService,
     private postEvent: ConversationPostEvent,
     private notification: TDSNotificationService,
@@ -495,7 +493,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     if(this.isLoading) {
         return;
     }
-    
+
     this.isLoading = true;
     let id = `${this.team.Id}_${this.data.ObjectId}`;
     this.dataSource$ = this.chatomniCommentService.nextDataSource(id, this.dataSource.Items);
@@ -507,7 +505,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
               this.dataSource.Items = this.mergeUpdatedData(this.dataSource.Items, this.childsComment);
               this.sortChildComment(this.dataSource.Items);
           }
-          
+
           this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
           this.isLoading = false;
           this.cdRef.markForCheck();
@@ -532,13 +530,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   sortChildComment(data: ChatomniDataItemDto[]){
       let model: ChatomniDataItemDto[] = [];
-    
+
       data.map(x => {
         if(x.ParentId){
           model = [...model, ...[x]];
         }
       });
-      
+
       model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
       this.childsComment = [...model];
   }

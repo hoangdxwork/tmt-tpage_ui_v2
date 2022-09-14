@@ -82,7 +82,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
     private cdRef: ChangeDetectorRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private facebookCommentService: FacebookCommentService,
-    private conversationPostEvent: ConversationPostEvent,
+    private postEvent: ConversationPostEvent,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService) {
@@ -122,15 +122,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
       }
     })
   }
-
-  // loadOrderTotal(){
-  //   this.conversationPostEvent.getOrderTotal$.pipe(takeUntil(this.destroy$)).subscribe({
-  //     next:(res) => {
-  //         this.orderTotal = res;
-  //         this.cdRef.detectChanges();
-  //     }
-  //   })
-  // }
 
   loadData() {
     let postId = this.data.ObjectId;
@@ -276,16 +267,20 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   fetchComments() {
     this.currentSort = this.sortOptions[0];
     this.currentFilter = this.filterOptions[0];
+    let teamId = this.team.Id;
 
-    this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.facebookCommentService.setSort(this.currentSort.value);
-          this.loadData();
-      },
-      error: error => {
-          this.message.error('Thao tác thất bại');
-      }
-    })
+    if(teamId && this.data.ObjectId) {
+      this.facebookCommentService.fetchComments(teamId, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.loadData();
+            // TODO: gán lại data để đẩy vào ngOnChanges CommentFilterAllComponent
+            this.data = {...this.data};
+        },
+        error: error => {
+            this.message.error(`${error?.error?.message}`);
+        }
+      })
+    }
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
