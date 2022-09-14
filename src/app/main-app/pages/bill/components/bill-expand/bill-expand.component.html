@@ -1,6 +1,6 @@
 <!-- <div class="bg-white border rounded-md h-full w-full relative" *ngIf="dataItem" id="expand[{{dataItem.Id}}]"> -->
   <!-- *ngIf="tabSelected == 'detail'" -->
-  <div class="inline-flex items-center absolute z-10 top-2 right-4" *ngIf="tabSelected == 'detail'">
+  <!-- <div class="inline-flex items-center absolute z-10 top-2 right-4" *ngIf="tabSelected == 'detail'">
     <tds-button-group *ngIf="dataItem.State != 'cancel'">
       <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
         <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown"
@@ -45,8 +45,8 @@
         </span>
       </button>
     </div>
-  </div>
-  <tds-tabset class="bg-white border rounded-md h-full w-full">
+  </div> -->
+  <tds-tabset class="bg-white border rounded-md h-full w-full" [tabBarExtraContent]="extraTemplate">
     <tds-tab title="Chi tiết" (tabSelect)="onLoadTab('detail')" clsContent="p-0">
       <ng-template tds-tab>
         <div class="flex flex-col items-end w-full h-full">
@@ -174,4 +174,52 @@
       </ng-template>
     </tds-tab>
   </tds-tabset>
+  <ng-template #extraTemplate>
+    <div class="flex items-center gap-x-2" *ngIf="tabSelected == 'detail'">
+      <tds-button-group *ngIf="dataItem.State != 'cancel'">
+        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+          <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown" placement="bottomRight"
+            class="mr-2" type="button">
+            <span class="flex items-center">
+              Thao tác
+              <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+            </span>
+          </button>
+        </tds-spin>
+
+        <tds-dropdown-menu #expandDropdown="tdsDropdownMenu">
+          <div class="w-[150px]">
+            <a (click)="print('A4')" tds-dropdown-item type="button">
+              <a> In A4 </a>
+            </a>
+            <a (click)="print('A5')" tds-dropdown-item type="button">
+              <a> In A5 </a>
+            </a>
+            <a (click)="print('delivery')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
+              <a> In giao hàng </a>
+            </a>
+            <a (click)="print('ship')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
+              <a> In phiếu ship </a>
+            </a>
+            <a (click)="excelDetail()" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
+              <a> Excel </a>
+            </a>
+          </div>
+        </tds-dropdown-menu>
+      </tds-button-group>
+
+      <ng-template #indicatorTemplate>
+        <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+      </ng-template>
+
+      <div *ngIf="dataItem.State !='cancel' && type == 'invoice'">
+        <button type="button" tds-button color="info" class="mr-2" (click)="showMessageModal()">
+          <span class="flex items-center">
+            <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>
+            Gửi tin nhắn facebook
+          </span>
+        </button>
+      </div>
+    </div>
+  </ng-template>
 <!-- </div> -->
