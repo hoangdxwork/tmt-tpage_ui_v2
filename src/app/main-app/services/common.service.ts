@@ -147,6 +147,15 @@ export class CommonService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, params);
-}
+  }
+
+  getPartnersById(params?: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getpartnersbyid`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, params);
+  }
 
 }
