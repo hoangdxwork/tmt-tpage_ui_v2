@@ -1,3 +1,5 @@
+import { Ward, District, City } from './../../../dto/fastsaleorder/register-payment';
+import { SuggestAddressService } from './../../../services/suggest-address.service';
 import { Validators } from '@angular/forms';
 import { SaleOnlineOrderGetDetailsDto } from './../../../dto/order/so-orderlines.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
@@ -26,7 +28,7 @@ import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, map, mergeMap, takeUntil } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
 import { AllFacebookChildTO } from 'src/app/main-app/dto/team/all-facebook-child.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -95,6 +97,13 @@ export class AddBillComponent implements OnInit {
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
+  lstCity!: Array<SuggestCitiesDTO>;
+  lstDistrict!: Array<SuggestDistrictsDTO>;
+  lstWard!: Array<SuggestWardsDTO>;
+
+  private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
+  private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
+  private wardSubject = new BehaviorSubject<SuggestWardsDTO[]>([]);
 
   keyFilter!: '';
   page: number = 1;
@@ -180,6 +189,7 @@ export class AddBillComponent implements OnInit {
     private accountTaxService: AccountTaxService,
     private viewContainerRef: ViewContainerRef,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
+    private suggestService: SuggestAddressService,
     private destroy$: TDSDestroyService) {
       this.createForm();
       this.loadCurrentCompany();
@@ -217,6 +227,7 @@ export class AddBillComponent implements OnInit {
         break;
     }
 
+    this.loadCity();
     this.loadSaleConfig();
     this.lstCarriers = this.loadCarrier();
     this.lstPaymentJournals = this.loadPaymentJournals();
@@ -482,7 +493,7 @@ export class AddBillComponent implements OnInit {
     return this.partnerService.getById(partnerId).pipe(mergeMap((partner: TDSSafeAny) => {
       delete partner['@odata.context'];
 
-      this._form.controls["Ship_Receiver"].reset();
+      // this._form.controls["Ship_Receiver"].reset();
       // this._form.controls['Partner'].setValue(partner);
       this._form.controls['PartnerId'].setValue(partnerId);
 
@@ -502,8 +513,10 @@ export class AddBillComponent implements OnInit {
     this.loadChangePartner(partnerId).pipe(finalize(() => this.isLoading = false)).subscribe({
         next: ([data, partner]) => {
             if (data && partner) {
-                this.preparePartnerHandler.prepareModel(this._form, data, partner);
-                this.mappingDataAddress(data);
+                this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
+                if(Number(this.id) == 0) {
+                  this.mappingDataAddress(data);
+                }
             }
         },
         error: (error: any) => {
@@ -1018,7 +1031,7 @@ export class AddBillComponent implements OnInit {
   }
 
   prepareModel(): any {
-    let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form)} as any;
+    let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại
     if(!Number(model.CompanyId) || Number(model.CompanyId) == 0) {
@@ -1394,20 +1407,7 @@ export class AddBillComponent implements OnInit {
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result) {
-          this._cities = {
-            code: result.CityCode,
-            name: result.CityName
-          }
-
-          this._districts = {
-            code: result.DistrictCode,
-            name: result.DistrictName
-          } as any;
-
-          this._wards = {
-            code: result.WardCode,
-            name: result.WardName
-          } as any;
+          this.setAddress(result);
 
           this.prepareSuggestionsBill.onLoadSuggestion(this._form, result);
           this.innerText = result.Address;
@@ -1426,4 +1426,244 @@ export class AddBillComponent implements OnInit {
       this.onSave('SaveAndOpen');
     }
   }
+
+  setAddress(result: ResultCheckAddressDTO){
+    this._cities = {
+      code: result.CityCode,
+      name: result.CityName
+    }
+
+    this._districts = {
+      code: result.DistrictCode,
+      name: result.DistrictName
+    } as any;
+
+    this._wards = {
+      code: result.WardCode,
+      name: result.WardName
+    } as any;
+  }
+
+  loadCity(): void {
+    this.suggestService.setCity();
+    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.lstCity = [...res];
+        this.citySubject.next(res);
+    });
+  }
+
+  loadDistricts(code: string) {
+    this.suggestService.setDistrict(code);
+    this.suggestService.getDistrict().subscribe((res: any) => {
+        this.lstDistrict = [...res];
+        this.districtSubject.next(res);
+    });
+  }
+
+  loadWards(code: string) {
+    this.suggestService.setWard(code);
+    this.suggestService.getWard().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.lstWard = [...res];
+        this.wardSubject.next(res);
+    });
+  }
+
+
+  changeCity(event: SuggestCitiesDTO) {
+    if (event) {
+      this.loadDistricts(event.code);
+      this._form.controls['Ship_Receiver'].patchValue({
+        City: event,
+        District:  null,
+        Ward:  null
+      });
+
+      this.mappingStreet();
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Ship_Receiver'].value.Street,
+        ShortAddress: '',
+        CityCode: event.code,
+        CityName: event.name,
+        DistrictCode: '',
+        DistrictName: '',
+        WardCode: '',
+        WardName: '',
+        Score: 0
+      }
+
+      this.setAddress(item);
+    } else {
+      this.lstDistrict = [];
+      this.lstWard = [];
+
+      this._form.controls['Ship_Receiver'].patchValue({
+        City: null,
+        District:  null,
+        Ward:  null
+      });
+
+      this.mappingStreet();
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Ship_Receiver'].value.Street,
+        ShortAddress: '',
+        CityCode: '',
+        CityName: '',
+        DistrictCode: '',
+        DistrictName: '',
+        WardCode: '',
+        WardName: '',
+        Score: 0
+      }
+
+      this.setAddress(item);
+    }
+  }
+
+  changeDistrict(event: SuggestDistrictsDTO) {
+    if (event) {
+      this.loadWards(event.code);
+
+      this._form.controls['Ship_Receiver'].patchValue({
+        District:  event,
+        Ward:  null
+      });
+
+      this.mappingStreet();
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        ShortAddress: '',
+        CityCode: event.cityCode,
+        CityName: event.cityName,
+        DistrictCode: event.code,
+        DistrictName: event.name,
+        WardCode: '',
+        WardName: '',
+        Score: 0
+      }
+
+      this.setAddress(item);
+    }else{
+      this.lstWard = [];
+
+      this._form.controls['Ship_Receiver'].patchValue({
+        District:  null,
+        Ward:  null
+      });
+
+      this.mappingStreet();
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        ShortAddress: '',
+        CityCode: this._form.controls['Ship_Receiver'].value?.City?.code,
+        CityName: this._form.controls['Ship_Receiver'].value?.City?.name,
+        DistrictCode: '',
+        DistrictName: '',
+        WardCode: '',
+        WardName: '',
+        Score: 0
+      }
+
+      this.setAddress(item);
+    }
+  }
+
+  changeWard(event: SuggestWardsDTO) {
+    if(event) {
+      this._form.controls['Ship_Receiver'].patchValue({
+        Ward:  event
+      });
+      this.mappingStreet();
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        ShortAddress: '',
+        CityCode: event.cityCode,
+        CityName: event.cityName,
+        DistrictCode: event.districtCode,
+        DistrictName: event.districtName,
+        WardCode: event.code,
+        WardName: event.name,
+        Score: 0
+      }
+      this.setAddress(item);
+
+    }else{
+      this.mappingStreet();
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        ShortAddress: '',
+        CityCode: this._form.controls['Ship_Receiver'].value?.City?.code,
+        CityName: this._form.controls['Ship_Receiver'].value?.City?.name,
+        DistrictCode: this._form.controls['Ship_Receiver'].value?.District?.code,
+        DistrictName: this._form.controls['Ship_Receiver'].value?.District?.name,
+        WardCode: '',
+        WardName: '',
+        Score: 0
+    }
+    this.setAddress(item);
+
+    }
+  }
+
+  changeStreet(event: any){
+    if(event) {
+      this._form.controls['Street'].setValue(event.target.value);
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        ShortAddress: '',
+        CityCode: this._form.controls['Ship_Receiver'].value?.City?.code,
+        CityName: this._form.controls['Ship_Receiver'].value?.City?.name,
+        DistrictCode: this._form.controls['Ship_Receiver'].value?.District?.code,
+        DistrictName: this._form.controls['Ship_Receiver'].value?.District?.name,
+        WardCode: this._form.controls['Ship_Receiver'].value?.Ward?.code,
+        WardName: this._form.controls['Ship_Receiver'].value?.Ward?.name,
+        Score: 0
+      }
+      this.setAddress(item);
+    }
+  }
+
+  handleCityFilter(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstCity?.filter((x: SuggestCitiesDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.citySubject.next(result);
+    }
+  }
+
+  handleFilterDistrict(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstDistrict?.filter((x: SuggestDistrictsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.districtSubject.next(result);
+    }
+  }
+
+  handleFilterWard(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstWard?.filter((x: SuggestWardsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.wardSubject.next(result);
+    }
+  }
+
+  mappingStreet(){
+    let street = (this._form.controls['Ship_Receiver'].value?.Ward?.name ? (this._form.controls['Ship_Receiver'].value?.Ward?.name + ', '): '')
+      + (this._form.controls['Ship_Receiver'].value?.District?.name ? (this._form.controls['Ship_Receiver'].value?.District?.name + ', '): '')
+      + (this._form.controls['Ship_Receiver'].value?.City?.name ? this._form.controls['Ship_Receiver'].value?.City?.name: '')
+
+    this._form.controls['Ship_Receiver'].patchValue({Street: street});
+    this.innerText = this._form.controls['Ship_Receiver'].value?.Street;
+  }
+
 }
