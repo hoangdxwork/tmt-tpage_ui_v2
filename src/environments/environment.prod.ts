@@ -15,6 +15,6 @@ export const environment = {
   },
   facebook: {
     appId: '327268081110321',
-    appVersion: 'v6.0',
+    appVersion: 'v11.0',
   }
 };
