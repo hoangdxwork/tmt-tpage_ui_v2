@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg h-full w-full relative" *ngIf="dataItem" id="buildDetail">
+<div class="bg-white border rounded-md h-full w-full relative" *ngIf="dataItem" id="expand[{{dataItem.Id}}]">
   <!-- *ngIf="tabSelected == 'detail'" -->
   <div class="inline-flex items-center absolute z-10 top-2 right-4" *ngIf="tabSelected == 'detail'">
     <tds-button-group *ngIf="dataItem.State != 'cancel'">

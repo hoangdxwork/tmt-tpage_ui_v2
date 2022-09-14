@@ -1,5 +1,5 @@
-<tds-spin [spinning]="isLoading">
-  <tds-tabset class="bg-transparent">
+<!-- <tds-spin [spinning]="isLoading" id="expand[{{liveCampaignId}}]"> -->
+  <tds-tabset class="bg-white w-full border rounded-md" id="expand[{{liveCampaignId}}]">
     <tds-tab [title]="titleDetail" clsContent="h-full w-full pb-2.5">
         <ng-template #titleDetail let-active="active">
             <div class="p-4 font-semibold  border-b-3 cursor-pointer group flex items-center"
@@ -142,4 +142,4 @@
         </div>
     </tds-tab>
   </tds-tabset>
-</tds-spin>
+<!-- </tds-spin> -->
