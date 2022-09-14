@@ -290,6 +290,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onExpandChange(id: string, checked: boolean): void {
     if (checked) {
+      this.expandSet = new Set<string>();
       this.expandSet.add(id);
     } else {
       this.expandSet.delete(id);
