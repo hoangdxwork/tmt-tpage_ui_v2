@@ -202,7 +202,6 @@
                       </div>
                     </div>
                   </div>
-
                 </td>
 
                 <!-- Kênh kết nối -->
@@ -220,11 +219,17 @@
 
                     <div class="flex items-center gap-1">
                       <p class="text-[#929DAA]">{{data.Telephone}}</p>
-                      <tds-tag class="ml-1" *ngIf="data.NameNetwork"  [status]="data.NameNetwork | nameNetWork" type="outline">
-                        {{ data.NameNetwork }}
-                      </tds-tag>
-                      <button *ngIf="data.Address" class="bg-orange-500 rounded-md p-1">
-                        <span class="flex items-center text-white ">
+                      <!-- <tds-tag class="ml-1" *ngIf="data.PartnerStatus" type="outline">
+                        {{ data.PartnerStatus.sT }}
+                      </tds-tag> -->
+                      <div tds-button color="secondary"
+                          class="border border-solid rounded px-2 py-px" [ngStyle]="(data.PartnerStatus.sS) | buttonStatusColor">
+                          <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
+                            {{ data.PartnerStatus.sT }}
+                          </span>
+                      </div>
+                      <button *ngIf="data.Address" class="bg-orange-500 rounded p-[3px]">
+                        <span class="flex items-center justify-center text-white ">
                           <i class="tdsi-pin-fill"></i>
                         </span>
                       </button>

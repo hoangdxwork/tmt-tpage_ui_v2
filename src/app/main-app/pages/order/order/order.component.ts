@@ -10,7 +10,7 @@ import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetec
 import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
-import { SortEnum, THelperCacheService } from 'src/app/lib';
+import { SortEnum, THelperCacheService, TIDictionary } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { FilterObjSOOrderModel, OdataSaleOnline_OrderService, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -38,6 +38,7 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
+import { number } from 'echarts';
 
 @Component({
   selector: 'app-order',
@@ -51,6 +52,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
 
   lstOfData!: ODataSaleOnline_OrderModel[];
+  getStatus!: TIDictionary<String>;
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -221,6 +223,25 @@ export class OrderComponent implements OnInit, AfterViewInit {
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          let lstId = this.lstOfData.map((x) => x.PartnerId);
+          this.loadParnerStatus(lstId);
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
+      }
+    });
+  }
+
+  loadParnerStatus(params: Array<number>) {
+    this.commonService.getPartnersById(params).subscribe({
+      next: (res: TIDictionary<String>) => {
+        if(res) {
+          this.lstOfData.map( x => {
+            if(res[x.PartnerId]) {
+              x.PartnerStatus = res[x.PartnerId];
+            }
+          })
+        }
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
