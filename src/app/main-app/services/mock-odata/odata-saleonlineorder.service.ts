@@ -54,6 +54,8 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+
+
   removeIds(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.RemoveIds`,
