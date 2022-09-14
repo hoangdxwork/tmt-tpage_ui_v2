@@ -35,17 +35,17 @@ export class SendDeliveryComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if(this.ids) {
       this.isLoading = true;
-      this.fastSaleOrderService.getOrderSendShipIds({ids: this.ids})
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (res: any) => {
+      this.fastSaleOrderService.getOrderSendShipIds({ids: this.ids}).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.isLoading = false;
             this.lstOrders = res.value;
-            if(TDSHelperArray.isArray(this.lstOrders)) this.isLoading = false;
+            if(TDSHelperArray.isArray(this.lstOrders))
             this.cdRef.markForCheck();
           },
-          err=>{
+          error: (err: any) => {
             this.message.error(err?.error?.message || 'Không tìm thấy đơn hàng phù hợp');
-          })
+          }
+      })
     } else {
       this.message.error('Không tìm thấy mã vận đơn');
     }
@@ -63,27 +63,31 @@ export class SendDeliveryComponent implements OnInit, OnDestroy {
     }
 
     let model = {
-        ids: this.lstOrders.map((x: OrderSendShipDTO) => x.Id)
+        ids: this.lstOrders?.map((x: OrderSendShipDTO) => x.Id)
     }
-    this.isLoading = true;
-    this.cdRef.markForCheck();
 
-    this.fastSaleOrderService.actionSendDelivery(model)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((res: any) => {
-        if(res.Error && TDSHelperArray.isArray(res.Errors)) {
-              this.isVisible = true;
-              this.message.error(res.Error);
-              this.lstErrors = res.Errors;
-              this.isLoading = false;
-              this.cdRef.markForCheck();
-        } else {
-            this.message.success('Thao tác thành công');
-            this.modal.destroy(null);
-        }
-    },
-    err=>{
-      this.message.error(err?.error?.message || 'Gửi lại vận đơn thất bại');
+    if(model.ids?.length == 0) {
+      this.message.warning('Không có mã vận đơn phù hợp nào');
+      return
+    }
+
+    this.isLoading = true;
+    this.fastSaleOrderService.actionSendDelivery(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res.Error && TDSHelperArray.isArray(res.Errors)) {
+                this.isVisible = true;
+                this.message.error(res.Error);
+                this.lstErrors = res.Errors;
+                this.isLoading = false;
+          } else {
+              this.message.success('Thao tác thành công');
+              this.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              this.modal.destroy(null);
+          }
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message || 'Gửi lại vận đơn thất bại');
+      }
     })
   }
 
