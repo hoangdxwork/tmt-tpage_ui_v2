@@ -98,11 +98,11 @@ const routes: Routes = [
       },
       {
         path: "omni-product",
-        loadChildren: () => import('omnichannel/modules/product').then(m => m.ProductModule)
+        loadChildren: () => import('omnichannel/modules/products').then(m => m.ProductModule)
       },
       {
         path: "omni-order",
-        loadChildren: () => import('omnichannel/modules/order').then(m => m.OrderModule)
+        loadChildren: () => import('omnichannel/modules/orders').then(m => m.OrderModule)
       },
       {
         path: "omni-product-tpos",
