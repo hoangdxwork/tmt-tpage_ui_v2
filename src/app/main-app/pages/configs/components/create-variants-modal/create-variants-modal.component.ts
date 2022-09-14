@@ -28,17 +28,21 @@ export class CreateVariantsModalComponent implements OnInit, OnDestroy {
   isEdit = false;
   isRootVariant = false;
   isLoading = false;
-  numberWithCommas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    return value
-  };
-  parserComas = (value: TDSSafeAny) => {
-    if (value != null) {
-      return TDSHelperString.replaceAll(value, ',', '');
+    return value;
+  } ;
+
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,'.','');
     }
-    return value
+    return value;
   };
 
   private destroy$ = new Subject<void>();

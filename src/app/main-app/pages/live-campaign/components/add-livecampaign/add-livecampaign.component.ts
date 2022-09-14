@@ -245,7 +245,7 @@ export class AddLiveCampaignComponent implements OnInit {
     }
   }
 
-  onLoadProduct(data: TDSSafeAny) {
+  onLoadProduct(data: TDSSafeAny) {debugger
     // TODO: cập nhật 1 sản phẩm hoặc các biến thể của sản phẩm vào danh sách
     if(TDSHelperArray.isArray(data)) {
       let datas = [...data] as DataPouchDBDTO[];
@@ -271,8 +271,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
       const control = <FormArray>this._form.controls['Details'];
       control.at(indexExist).setValue(detailValue[indexExist]);
-    }
-    else {
+    } else {
       const control = <FormArray>this._form.controls['Details'];
       control.push(this.initDetailBySelectProduct(detailValue.length, product));
     }

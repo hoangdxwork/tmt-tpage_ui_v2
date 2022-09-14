@@ -624,7 +624,7 @@
                                 <ng-template #popoverContentShip_ExtraMoney>
                                   <div class="flex gap-x-2">
                                     <tds-form-field>
-                                      <tds-input-number [min]='0' [step]="100" [(ngModel)]="extraMoney" [formatter]="numberWithCommas" [parser]="parserComas"
+                                      <tds-input-number [min]='0' [step]="1000" [(ngModel)]="extraMoney" [formatter]="numberWithCommas" [parser]="parserComas"
                                         (ngModelChange)="changeExtramoney($event)"
                                         [ngModelOptions]="{standalone: true}">
                                       </tds-input-number>
@@ -971,7 +971,7 @@
                     </span>
                   </div>
                   <div class="col-span-2">
-                    <tds-input-number [min]="0" [step]="100" formControlName="DecreaseAmount" [formatter]="numberWithCommas" [parser]="parserComas"
+                    <tds-input-number [min]="0" [step]="1000" formControlName="DecreaseAmount" [formatter]="numberWithCommas" [parser]="parserComas"
                       (ngModelChange)="changeDecreaseAmount($event)">
                     </tds-input-number>
                   </div>

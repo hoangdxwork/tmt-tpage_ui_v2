@@ -131,7 +131,7 @@ export class ConfigAddProductComponent implements OnInit {
     this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
-        this.dataModel = { ...res };
+        this.dataModel = { ...res };console.log(this.dataModel)
 
         // TODO: lấy danh sách biến thể
         if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
