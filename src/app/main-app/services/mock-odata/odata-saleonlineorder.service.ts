@@ -15,7 +15,7 @@ export interface FilterObjSOOrderModel {
   dateRange: {
     startDate: Date,
     endDate: Date
-  }
+  } | any;
 }
 
 export interface TabNavsDTO {
