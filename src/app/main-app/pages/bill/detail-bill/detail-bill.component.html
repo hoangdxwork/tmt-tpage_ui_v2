@@ -66,32 +66,34 @@
                     </button>
                 </div>
             </div>
-            <div  class="flex justify-end items-center py-4" *ngIf="dataModel.State !== 'cancel'">
-                <tds-button-split class="mr-2" color="secondary">
-                    <span class="flex items-center js-label font-semibold">
-                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu</span>
-                    <div class="js-content flex flex-col ">
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill80')">Bill 80</button>
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill58')">Bill 58</button>
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('A4')">In A4</button>
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('A5')">In A5</button>
-                    </div>
-                </tds-button-split>
-                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('delivery')">
-                    <span class="flex items-center">
-                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In giao hàng
-                    </span>
-                </button>
-                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
-                    <span class="flex items-center">
-                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
-                    </span>
-                </button>
-                <tds-steps [current]="indexStep" [status]="isStatusStep">
-                    <tds-step tdsTitle="Nháp"></tds-step>
-                    <tds-step [tdsTitle]="dataModel.State == 'cancel' ? 'Đã hủy' : 'Xác nhận'"></tds-step>
-                    <tds-step tdsTitle="Đã thanh toán"></tds-step>
-                </tds-steps>
+            <div class="flex justify-end items-center py-4" *ngIf="dataModel.State !== 'cancel'">
+                <div class="flex" >
+                    <tds-button-split class="mr-2" color="secondary">
+                        <span class="flex items-center js-label font-semibold truncate">
+                            <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu</span>
+                        <div class="js-content flex flex-col ">
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('bill80')">Bill 80</button>
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('bill58')">Bill 58</button>
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('A4')">In A4</button>
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('A5')">In A5</button>
+                        </div>
+                    </tds-button-split>
+                    <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('delivery')">
+                        <span class="flex items-center">
+                            <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In giao hàng
+                        </span>
+                    </button>
+                    <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
+                        <span class="flex items-center">
+                            <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
+                        </span>
+                    </button>
+                    <tds-steps [current]="indexStep" [status]="isStatusStep">
+                        <tds-step tdsTitle="Nháp"></tds-step>
+                        <tds-step [tdsTitle]="dataModel.State == 'cancel' ? 'Đã hủy' : 'Xác nhận'"></tds-step>
+                        <tds-step tdsTitle="Đã thanh toán"></tds-step>
+                    </tds-steps>
+                </div>
             </div>
         </div>
         <div class="flex gap-x-4 p-4 tds-custom-scroll">
