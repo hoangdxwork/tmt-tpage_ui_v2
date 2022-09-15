@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { TAuthService } from './../lib/services/auth.service';
 import { ChangeDetectorRef, NgModule } from '@angular/core';
@@ -35,7 +36,7 @@ const omniConfigFactory = (authService: TAuthService): OmnichannelConfigurationP
   const appUrl = BaseHelper.getBaseApi();
   let authToken = authService.getAccessToken().access_token;
   return {
-      socketUrl: 'https://socket-tpos.dev.tmtco.org/chatomni',
+      socketUrl: environment.socketUrl,
       eCom: {
           app: 'tpos',
           clientId: clientId,
