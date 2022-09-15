@@ -1,4 +1,4 @@
-<button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
+<button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="loadSummaryStatus()"
     size="md" class="relative" tds-tooltip tooltipTitle="Lọc dữ liệu"  [(visible)]="isVisible">
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg text-neutral-1-500 leading-none"></i>

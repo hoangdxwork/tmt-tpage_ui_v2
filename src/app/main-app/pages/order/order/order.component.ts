@@ -552,6 +552,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     }
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   columnsChange(event: Array<ColumnTableDTO>) {

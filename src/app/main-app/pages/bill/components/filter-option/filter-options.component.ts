@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
+import { TabNavsDTO } from "@app/services/mock-odata/odata-saleonlineorder.service";
 import { addDays } from "date-fns";
 import { Subject, takeUntil } from "rxjs";
 import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
@@ -10,11 +11,13 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utili
 @Component({
   selector: 'filter-options',
   templateUrl: './filter-options.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   @Input() lstTags: Array<TDSSafeAny> = [];
+  @Input() summaryStatus: Array<TabNavsDTO> = [];
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() filterObj!: FilterObjFastSaleModel;
   @Input() lstCarriers: Array<DeliveryCarrierDTOV2> = [];
@@ -42,11 +45,12 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   isVisible: boolean = false;
 
   constructor(private message: TDSMessageService,
-    private fastSaleOrderService: FastSaleOrderService) {
+    private fastSaleOrderService: FastSaleOrderService,
+    private cdr : ChangeDetectorRef) {
   }
 
   ngOnInit() {
-    this.loadSummaryStatus();
+    // this.loadSummaryStatus();
     this.checkActiveStatus();
   }
 
@@ -99,27 +103,16 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   }
 
   loadSummaryStatus(){
-    let model = {
-        DateStart: this.filterObj.dateRange.startDate,
-        DateEnd: this.filterObj.dateRange.endDate,
-        SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()) ,
-        TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
-        TrackingRef: this.filterObj.hasTracking,
-        DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType : null,
-    };
-
-    this.fastSaleOrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        if(TDSHelperArray.hasListValue(res)) {
-            res.map((x: any) => {
-              let exits = this.status.filter(a => a.Type === x.Type)[0];
-              if(exits) {
-                  exits.Total = x.Total;
-              }
-            })
+    if(this.summaryStatus) {
+      this.summaryStatus.map((x) => {
+        let index = this.status.findIndex(a => a.Type == x.Name)
+        if(index != -1) {
+          this.status[index].Total = x.Total
         }
-      }, error => {
-        this.message.error(`${error?.error?.message}`)
-    })
+      })
+
+      this.cdr.detectChanges();
+    }
   }
 
   onApply() {

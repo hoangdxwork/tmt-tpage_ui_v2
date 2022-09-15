@@ -1,4 +1,4 @@
-import { OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SaleOnline_OrderService } from './../../../../services/sale-online-order.service';
@@ -19,6 +19,7 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() tabNavs!: TabNavsDTO[];
+  @Input() summaryStatus: Array<TabNavsDTO> = [];
   @Input() lstDataTag: Array<TDSSafeAny> = [];
   @Input() filterObj!: FilterObjSOOrderModel;
   @Input() isLiveCamp!: boolean;
@@ -33,30 +34,24 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private saleOnline_OrderService: SaleOnline_OrderService) {
+  constructor(
+    private saleOnline_OrderService: SaleOnline_OrderService,
+    private cdr : ChangeDetectorRef,) {
   }
 
   ngOnInit(): void {
-    this.loadSummaryStatus();
   }
 
   loadSummaryStatus() {
-    let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange.startDate,
-      DateEnd: this.filterObj.dateRange.endDate,
-      SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
-    }
+    if(this.summaryStatus) {
+      this.summaryStatus.map(x => {
+        if(x.Index != 1){
+          this.listStatus.push(x);
+        }
+      })
 
-    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe((res: Array<TDSSafeAny>) => {
-        res.forEach(item => {
-          this.listStatus.push({
-            Name: item.StatusText,
-            Total: item.Total,
-            IsSelected: false
-          })
-        });
-      });
+      this.cdr.detectChanges();
+    }
   }
 
   onChangeDate(event: any[]) {
