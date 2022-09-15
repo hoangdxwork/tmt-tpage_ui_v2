@@ -32,6 +32,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import th from 'date-fns/esm/locale/th/index.js';
 
 @Component({
   selector: 'app-conversation-all',
@@ -42,10 +43,9 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
-  itemSize = 50;
+  itemSize = 100;
   infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
   @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
-
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -317,6 +317,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isLoading = true;
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
+
             if (res && TDSHelperArray.hasListValue(res.Items)) {
 
                 this.lstConversation = [...res.Items];
@@ -613,9 +614,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   cdkVirtualScroll() {
     if(this.viewPort.scrolledIndexChange && this.lstConversation) {
-
         this.viewPort.scrolledIndexChange.pipe(auditTime(300), tap((currIndex: number) => {
-            this.nextBatch(currIndex, this.infinite.value);
+
+          let measure = this.viewPort.measureScrollOffset('bottom') as number;
+
+          if(measure === 0 && !this.isProcessing) {
+              this.nextBatch(currIndex, this.infinite.value);
+          }
+
         })).subscribe();
 
         setTimeout(() => this.infinite.next(this.lstConversation), 300);
@@ -654,37 +660,34 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     return [...chunk, ...items];
   }
 
-  nextBatch(currIndex: number, items: ChatomniConversationItemDto[]) {
-    const start = this.viewPort.getRenderedRange().start;
-    const end = this.viewPort.getRenderedRange().end;
+  nextBatch(currIndex: number, items: ChatomniConversationItemDto[]) {debugger
+    // const start = this.viewPort.getRenderedRange().start;
+    // const end = this.viewPort.getRenderedRange().end;
 
     const total = this.viewPort.getDataLength();
     const buffer = Math.floor(this.viewPort.getViewportSize() / this.itemSize);
 
-    debugger
+    if (total <= (currIndex + buffer) && !this.isProcessing) {
 
+      this.isProcessing = true;
+      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
 
-    // if (total == items.length && total <= (currIndex + buffer) && !this.isProcessing) {
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniConversationDto) => {
+            if(res && res.Items){
+                this.lstConversation = [...(res.Items || [])];
 
-    //   this.isProcessing = true;
-    //   this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+                const state = this.getNextBatch(this.lstConversation, currIndex, buffer);
+                this.infinite.next(state);
+            }
 
-    //   this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-    //     next: (res: ChatomniConversationDto) => {
-    //         if(res && res.Items){
-    //             this.lstConversation = [...(res.Items || [])];
-
-    //             const state = this.getNextBatch(this.lstConversation, currIndex, buffer);
-    //             this.infinite.next(state);
-    //         }
-
-    //         this.isProcessing = false;
-    //     },
-    //     error: (error) => {
-    //         this.isProcessing = false;
-    //     }
-    //   })
-    // }
+            this.isProcessing = false;
+        },
+        error: (error) => {
+            this.isProcessing = false;
+        }
+      })
+    }
   }
 
   onTabOderOutput(ev: boolean){
