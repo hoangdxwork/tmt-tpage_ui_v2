@@ -6,7 +6,7 @@
           <div class="grid grid-cols-3 gap-y-4 gap-x-3">
 
             <tds-label>Tên chiến dịch</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                 <input tdsInput placeholder="Nhập tên chiến dịch" [required]='true' formControlName="Name" />
                 <tds-error>
                     Vui lòng nhập tên chiến dịch
@@ -14,7 +14,7 @@
             </tds-form-field>
 
             <tds-label>Chốt đơn xác nhận</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="value" textField="text"
                     placeholder='Trạng thái chốt đơn' [valuePrimitive]="false" formControlName="Config"
                     disabledField="isActive" [data]="lstConfig" [allowClear]="true">
@@ -22,7 +22,7 @@
             </tds-form-field>
 
             <tds-label>Nhân viên chốt đơn</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn nhân viên chốt đơn' [valuePrimitive]="false" mode="multiple" formControlName="Users"
                     disabledField="isActive" [data]="lstUser" [allowClear]="true">
@@ -35,7 +35,7 @@
             </tds-form-field>
 
             <tds-label>Mẫu tin chốt đơn</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="ConfirmedOrder_Template"
                     disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
@@ -43,7 +43,7 @@
             </tds-form-field>
 
             <tds-label>Mẫu tin dự bị</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="Preliminary_Template"
                     disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
@@ -53,36 +53,39 @@
 
           <div class="grid grid-cols-3 gap-y-4 gap-x-3">
             <tds-label>Thời gian tổng hợp (phút)</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                   <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
                     [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
             </tds-form-field>
 
             <tds-label>Ngày bắt đầu</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                   <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime [ngModel]="_form.value.StartDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate"
                   (ngModelChange)="onChangeDate($event,0)">
                   </tds-date-picker>
             </tds-form-field>
 
             <tds-label>Ngày kết thúc</tds-label>
-              <tds-form-field class="col-span-2 w-full">
+            <tds-form-field class="col-span-2 w-full">
                   <tds-date-picker placeholder="Chọn ngày kết thúc" showTime [ngModel]="_form.value.EndDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate"
                   (ngModelChange)="onChangeDate($event,1)">
                   </tds-date-picker>
             </tds-form-field>
 
-            <tds-label>Số tiền cọc bắt buộc</tds-label>
-              <tds-form-field class="col-span-2 w-full">
-                  <tds-input-number [min]="0"  [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
-                    [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+            <tds-label>Đặt cọc bắt buộc</tds-label>
+            <tds-form-field class="col-span-2 w-full">
+                  <tds-input-number [min]="0" [step]="1000" placeholder="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
+                    [formatter]="numberWithCommas" [parser]="parserComas" (ngModelChange)="onChangeDeposit($event)"></tds-input-number>
             </tds-form-field>
 
-            <tds-label>Số tiền tối thiểu đặt cọc</tds-label>
-              <tds-form-field class="col-span-2 w-full">
-                  <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit"
-                    [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
-            </tds-form-field>
+            <tds-label>Đặt cọc tối thiểu</tds-label>
+            <div class="flex flex-col gap-y-1 w-full col-span-2">
+              <tds-form-field>
+                <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" placeholder="0" formControlName="MinAmountDeposit"
+                  [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+              </tds-form-field>
+              <span *ngIf="isDepositChange" class="text-error-400 text-caption-1">*Số tiền đặt cọc bắt buộc nhỏ hơn số tiền đặt cọc giỏ hàng thì trường này là bắt buộc</span>
+            </div>
 
             <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">
               <div class="flex justify-between gap-x-3">

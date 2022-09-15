@@ -90,7 +90,16 @@
               </td>
 
               <!-- Tên khách hàng -->
-              <td> {{order.PartnerName}}</td>
+              <td>
+                <div class="flex items-center gap-1">
+                  <span>{{ order.PartnerName }}</span>
+                  <button *ngIf="order.Address" class="bg-orange-500 rounded-md p-1" tds-tooltip tooltipTitle="{{ order.Address }}">
+                    <span class="flex items-center text-white ">
+                      <i class="tdsi-pin-fill"></i>
+                    </span>
+                  </button>
+                </div>
+              </td>
 
               <!-- Số điện thoại -->
               <td> {{order.Telephone}}</td>

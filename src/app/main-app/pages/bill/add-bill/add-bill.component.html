@@ -805,7 +805,7 @@
 
       <div class="flex gap-x-4 h-full" *ngIf="dataModel && dataModel.State == 'draft'">
           <div class="xl:w-1/3 2xl:w-1/3 h-full">
-            <list-product-tmp [priceListItems]="priceListItems" [isLoadingProduct]="isLoadingProduct"
+            <list-product-tmp [type]="'order'" [priceListItems]="priceListItems" [isLoadingProduct]="isLoadingProduct"
               (onLoadProductToOrderLines)="onLoadProductToOrderLines($event)"></list-product-tmp>
           </div>
           <div class="xl:w-2/3 2xl:w-2/3 h-full">
