@@ -42,8 +42,8 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   loadSummaryStatus() {
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange.startDate,
-      DateEnd: this.filterObj.dateRange.endDate,
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }

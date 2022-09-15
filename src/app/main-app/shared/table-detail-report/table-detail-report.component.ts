@@ -50,6 +50,14 @@ export class TableDetailReportComponent implements OnInit {
     ngOnInit(): void { }
 
     showModalLiveCampaignOrder(lstOrder: any[]) {
+        if(!lstOrder){
+            return
+        }
+
+        if(lstOrder.length == 0){
+            return
+        }
+
         this.modalService.create({
             title: 'Đơn hàng chờ chốt',
             size: 'xl',
@@ -62,6 +70,14 @@ export class TableDetailReportComponent implements OnInit {
     }
 
     showModalLiveCampaignBill(lstFastSaleOrder: any[]) {
+        if(!lstFastSaleOrder){
+            return
+        }
+
+        if(lstFastSaleOrder.length == 0){
+            return
+        }
+
         this.modalService.create({
             title: 'Hóa đơn chờ chốt',
             size: 'xl',
