@@ -1,53 +1,7 @@
 <!-- <div class="bg-white border rounded-md h-full w-full relative" *ngIf="dataItem" id="expand[{{dataItem.Id}}]"> -->
   <!-- *ngIf="tabSelected == 'detail'" -->
-  <!-- <div class="inline-flex items-center absolute z-10 top-2 right-4" *ngIf="tabSelected == 'detail'">
-    <tds-button-group *ngIf="dataItem.State != 'cancel'">
-      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown"
-          class="mr-2" type="button">
-          <span class="flex items-center">
-            Thao tác
-            <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-          </span>
-        </button>
-      </tds-spin>
-
-      <tds-dropdown-menu #expandDropdown="tdsDropdownMenu">
-        <div class="w-full">
-          <a (click)="print('A4')" tds-dropdown-item type="button">
-            <a> In A4 </a>
-          </a>
-          <a (click)="print('A5')" tds-dropdown-item type="button">
-            <a> In A5 </a>
-          </a>
-          <a (click)="print('delivery')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
-            <a> In giao hàng </a>
-          </a>
-          <a (click)="print('ship')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
-            <a> In phiếu ship </a>
-          </a>
-          <a (click)="excelDetail()" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
-            <a> Excel </a>
-          </a>
-        </div>
-      </tds-dropdown-menu>
-    </tds-button-group>
-
-    <ng-template #indicatorTemplate>
-      <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-    </ng-template>
-
-    <div *ngIf="dataItem.State !='cancel' && type == 'invoice'">
-      <button type="button" tds-button color="info" class="mr-2" (click)="showMessageModal()">
-        <span class="flex items-center">
-          <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>
-          Gửi tin nhắn facebook
-        </span>
-      </button>
-    </div>
-  </div> -->
-  <tds-tabset class="bg-white border rounded-md h-full w-full" [tabBarExtraContent]="extraTemplate">
-    <tds-tab title="Chi tiết" (tabSelect)="onLoadTab('detail')" clsContent="p-0">
+  <tds-tabset class="bg-white border rounded-md h-full w-full" [(selectedIndex)]="selectedIndex" (selectChange)="onSelectedChange($event)" [tabBarExtraContent]="extraTemplate">
+    <tds-tab title="Chi tiết" clsContent="p-0">
       <ng-template tds-tab>
         <div class="flex flex-col items-end w-full h-full">
           <tds-table #basicTable
@@ -104,7 +58,7 @@
         </div>
       </ng-template>
     </tds-tab>
-    <tds-tab title="Thông tin" (tabSelect)="onLoadTab('information')">
+    <tds-tab title="Thông tin">
       <ng-template tds-tab>
         <div class="grid grid-cols-3 text-body-2 xl:gap-4 2xl:gap-8">
           <div class="grid grid-cols-3 gap-y-4 xl:gap-x-2 2xl:gap-x-4">
@@ -146,7 +100,7 @@
         </div>
       </ng-template>
     </tds-tab>
-    <tds-tab title="Lịch sử" (tabSelect)="onLoadTab('histories')">
+    <tds-tab title="Lịch sử">
       <ng-template tds-tab>
         <div class="px-4 max-h-[200px] overflow-auto tds-panel-scroll">
           <!-- *ngFor="let item of logOrder" -->
@@ -175,7 +129,7 @@
     </tds-tab>
   </tds-tabset>
   <ng-template #extraTemplate>
-    <div class="flex items-center gap-x-2" *ngIf="tabSelected == 'detail'">
+    <div class="flex items-center gap-x-2">
       <tds-button-group *ngIf="dataItem.State != 'cancel'">
         <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
           <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown" placement="bottomRight"
