@@ -9,7 +9,7 @@ import { ModalSendMessageAllComponent } from '../components/modal-send-message-a
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, auditTime, tap } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -31,6 +31,7 @@ import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/ma
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-conversation-all',
@@ -40,6 +41,11 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+
+  itemSize = 50;
+  infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
+  @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
+
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -314,6 +320,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if (res && TDSHelperArray.hasListValue(res.Items)) {
 
                 this.lstConversation = [...res.Items];
+                console.log(this.lstConversation.length)
+
                 let csid = this.paramsUrl?.csid || null;
 
                 //TODO: check psid khi load lần 2,3,4...
@@ -333,6 +341,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.validateData();
             }
 
+            this.cdkVirtualScroll();
             this.isLoading = false;
         },
         error: (error: any) => {
@@ -600,6 +609,82 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       })
     }
+  }
+
+  cdkVirtualScroll() {
+    if(this.viewPort.scrolledIndexChange && this.lstConversation) {
+
+        this.viewPort.scrolledIndexChange.pipe(auditTime(300), tap((currIndex: number) => {
+            this.nextBatch(currIndex, this.infinite.value);
+        })).subscribe();
+
+        setTimeout(() => this.infinite.next(this.lstConversation), 300);
+    }
+  }
+
+  getNextIndex(index: number) {
+    return (index >= this.lstConversation.length) ? (index % this.lstConversation.length) : index;
+  }
+
+  getPrevIndex(index: number, total: number) {
+    return (index < 0) ? (index % total) : (index - 1);
+  }
+
+  getNextBatch(items: ChatomniConversationItemDto[], currIndex: number, range: number) {
+    const nextIndex = this.getNextIndex(currIndex + range);
+    let chunk: any[] = [];
+
+    if (currIndex >= this.lstConversation.length) {
+
+      const lastRange = (currIndex + range) - this.lstConversation.length;
+      const last = this.lstConversation.slice(nextIndex, lastRange);
+      const first = this.lstConversation.slice(0, lastRange);
+
+      chunk = [...first, ...last];
+
+    } else {
+        chunk = this.lstConversation.slice(nextIndex, nextIndex + range) as any[];
+    }
+    return [...items, ...chunk];
+  }
+
+  getPrevBatch(items: ChatomniConversationItemDto[], currIndex: number, range: number) {
+    const prevIndex = this.getPrevIndex(currIndex - range, items.length) as number;
+    const chunk = items.slice(prevIndex, range) as ChatomniConversationItemDto[];
+    return [...chunk, ...items];
+  }
+
+  nextBatch(currIndex: number, items: ChatomniConversationItemDto[]) {
+    const start = this.viewPort.getRenderedRange().start;
+    const end = this.viewPort.getRenderedRange().end;
+
+    const total = this.viewPort.getDataLength();
+    const buffer = Math.floor(this.viewPort.getViewportSize() / this.itemSize);
+
+    debugger
+
+
+    // if (total == items.length && total <= (currIndex + buffer) && !this.isProcessing) {
+
+    //   this.isProcessing = true;
+    //   this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+
+    //   this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+    //     next: (res: ChatomniConversationDto) => {
+    //         if(res && res.Items){
+    //             this.lstConversation = [...(res.Items || [])];
+
+    //             const state = this.getNextBatch(this.lstConversation, currIndex, buffer);
+    //             this.infinite.next(state);
+    //         }
+
+    //         this.isProcessing = false;
+    //     },
+    //     error: (error) => {
+    //         this.isProcessing = false;
+    //     }
+    //   })
+    // }
   }
 
   onTabOderOutput(ev: boolean){
