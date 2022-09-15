@@ -1,6 +1,20 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="text-body-2 text-neutral-1-900">
   <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" *ngIf="lstOfData">
-    <tds-tab title="Tổng quan" clsContent="p-4 border-t border-neutral-2-200" [clsContent]="'w-full h-full'">
+    <tds-tab [title]="overview" clsContent="p-4 border-t border-neutral-2-200" [clsContent]="'w-full h-full'">
+      <ng-template #overview let-active="active">
+        <div class="flex gap-x-2 items-center justify-center">
+          <div class="flex items-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group"
+            [ngClass]='{"text-neutral-1-900 dark:text-d-neutral-1-900":active,"text-neutral-1-400 dark:text-d-neutral-1-400 hover:text-neutral-1-900 hover:dark:text-d-neutral-1-900":!active}'>
+
+            <span  class="font-semibold mr-2">Tổng quan</span>
+            
+            <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+              class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+            </div>
+            
+          </div>
+        </div>
+      </ng-template>
       <div class="w-full h-full bg-neutral-3-50 grid grid-cols-2 gap-6 gap-y-9 p-4">
         <div class="flex bg-white p-6 rounded-xl gap-x-6 gap-y-4" *ngIf="lstOfData.OrderSummary">
           <tds-avatar tdsSrc="../../../assets/imagesv2/live-campaign/product.svg" [size]="60" [shape]="'square'" [isAvatar]="false"></tds-avatar>
@@ -9,13 +23,13 @@
             <span class="text-header-1 font-semibold">Chờ chốt</span>
             <div class="grid grid-cols-2 items-end gap-3 w-full pt-3">
               <span class="text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
-              <span class="text-header-1 font-semibold text-right">{{ lstOfData.OrderSummary.OrderQuantity }}</span>
+              <span class="text-header-1 font-semibold text-right">{{ lstOfData.OrderSummary.OrderQuantity || 0 }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
-              <span class="text-header-1 font-semibold text-right">{{ lstOfData.OrderSummary.ProductQuantity }}</span>
+              <span class="text-header-1 font-semibold text-right">{{ lstOfData.OrderSummary.ProductQuantity || 0 }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.OrderSummary.TotalAmount | numberCustom  }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ (lstOfData.OrderSummary.TotalAmount || 0) | numberCustom  }}</span>
             </div>
           </div>
         </div>
@@ -27,13 +41,13 @@
             <span class="text-header-1 font-semibold">Chờ thanh toán</span>
             <div class="grid grid-cols-2 items-end gap-3 w-full pt-3">
               <span class="text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
-              <span class="text-header-1 font-semibold text-right">{{ lstOfData.BillSummary.OrderQuantity }}</span>
+              <span class="text-header-1 font-semibold text-right">{{ lstOfData.BillSummary.OrderQuantity || 0 }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
-              <span class="text-header-1 font-semibold text-right">{{ lstOfData.BillSummary.ProductQuantity }}</span>
+              <span class="text-header-1 font-semibold text-right">{{ lstOfData.BillSummary.ProductQuantity || 0 }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.BillSummary.TotalAmount | numberCustom  }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ (lstOfData.BillSummary.TotalAmount || 0) | numberCustom  }}</span>
             </div>
           </div>
         </div>
@@ -45,13 +59,13 @@
             <span class="text-header-1 font-semibold">Thanh toán</span>
             <div class="grid grid-cols-2 items-end gap-3 w-full pt-3">
               <span class="text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
-              <span class="text-header-1 font-semibold text-right">{{ lstOfData.PaySummary.OrderQuantity }}</span>
+              <span class="text-header-1 font-semibold text-right">{{ lstOfData.PaySummary.OrderQuantity || 0 }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
-              <span class="text-header-1 font-semibold text-right">{{ lstOfData.PaySummary.ProductQuantity }}</span>
+              <span class="text-header-1 font-semibold text-right">{{ lstOfData.PaySummary.ProductQuantity || 0 }}</span>
 
               <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-              <span class="text-header-1 font-semibold text-right text-info-500">{{ lstOfData.PaySummary.TotalAmount | numberCustom  }}</span>
+              <span class="text-header-1 font-semibold text-right text-info-500">{{ (lstOfData.PaySummary.TotalAmount || 0) | numberCustom  }}</span>
             </div>
           </div>
         </div>
@@ -76,7 +90,26 @@
       </div>
     </tds-tab>
 
-    <tds-tab title="Sản phẩm ({{lstOfData.Details?.length}})" clsContent="p-4 border-t border-neutral-2-200">
+    <tds-tab [title]="productTitle" clsContent="p-4 border-t border-neutral-2-200">
+      <ng-template #productTitle let-active="active">
+        <div class="flex gap-x-2 items-center justify-center">
+          <div class="flex items-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group"
+            [ngClass]='{"text-neutral-1-900 dark:text-d-neutral-1-900":active,"text-neutral-1-400 dark:text-d-neutral-1-400 hover:text-neutral-1-900 hover:dark:text-d-neutral-1-900":!active}'>
+
+            <span  class="font-semibold mr-2">Sản phẩm</span>
+
+            <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+              [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 dark:text-d-neutral-1-500 bg-neutral-3-100 dark:bg-d-neutral-3-300  group-hover:text-white group-hover:bg-primary-1':!active}">
+              {{lstOfData.Details?.length}}
+            </div>
+
+            <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+              class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+            </div>
+            
+          </div>
+        </div>
+      </ng-template>
       <div class="w-full mt-4 rounded-md">
         <table-detail-report [liveCampaignId]="liveCampaignId" [lstDetails]="lstOfData.Details"></table-detail-report>
       </div>

@@ -100,8 +100,8 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   loadSummaryStatus(){
     let model = {
-        DateStart: this.filterObj.dateRange.startDate,
-        DateEnd: this.filterObj.dateRange.endDate,
+        DateStart: this.filterObj.dateRange?.startDate,
+        DateEnd: this.filterObj.dateRange?.endDate,
         SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()) ,
         TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
         TrackingRef: this.filterObj.hasTracking,

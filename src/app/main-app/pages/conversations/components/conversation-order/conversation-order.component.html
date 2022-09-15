@@ -499,6 +499,16 @@
                             </div>
                         </div>
 
+                        <div class="col-span-3 w-full flex flex-col">
+                            <div class="flex flex-row items-center gap-x-2 w-full">
+                              <tds-form-field class="flex flex-auto">
+                                <tds-label class="pr-3">Ghi chú giao hàng</tds-label>
+                                <input tdsInput autocomplete="off" [(ngModel)]="saleModel.DeliveryNote" [ngModelOptions]="{standalone: true}"
+                                placeholder="Nhập ghi chú" />
+                              </tds-form-field>
+                            </div>
+                        </div>
+
                         <!-- ship extras service -->
                         <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="col-span-3">
                             <div class="grid grid-cols-3 gap-y-4 gap-x-6">

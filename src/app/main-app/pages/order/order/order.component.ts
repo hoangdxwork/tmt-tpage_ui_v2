@@ -258,8 +258,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   loadSummaryStatus() {
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange.startDate,
-      DateEnd: this.filterObj.dateRange.endDate,
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
@@ -328,7 +328,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   showModalCreateBillFast(ids: string[]) {
     this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {console.log(res)
+        next: (res: any) => {
           if (res) {
             this.modal.create({
                 title: 'Tạo hóa đơn nhanh',

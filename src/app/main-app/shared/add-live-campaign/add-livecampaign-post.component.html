@@ -118,7 +118,7 @@
             <div class="w-1/2 flex gap-x-2">
               <div class="relative w-full">
                 <tds-form-field>
-                  <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
+                  <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
                       [(ngModel)]="textSearchProduct" [ngModelOptions]="{standalone: true}"
                       (inputKeyup)="onSearchProduct($event)">
 
@@ -177,7 +177,7 @@
                         <th width="15%">Giá bán</th>
                         <th width="13%" class="text-center">
                           <button tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()">
-                            <span class="flex items-center">
+                            <span class="flex items-center text-neutral-1-500">
                               <i class="tdsi-trash-fill"></i>
                             </span>
                           </button>
@@ -231,7 +231,7 @@
                           <!-- Thao tác -->
                           <td class="text-center">
                             <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail.value)">
-                              <span class="flex items-center">
+                              <span class="flex items-center text-neutral-1-500">
                                 <i class="tdsi-trash-fill"></i>
                               </span>
                             </button>
