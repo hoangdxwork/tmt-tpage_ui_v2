@@ -436,9 +436,18 @@ export class TDSConversationItemComponent implements OnInit  {
               res.name = this.team.Name;
 
               let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
+              if(data){
+                data.ParentId = model.parent_id;
+                data.ObjectId = model.post_id;
+                data.Data.id = this.dataItem.Data?.id;
+              }
+          
               this.children = [ ...(this.children || []), data];
 
-              //TODO: Đẩy qua conversation-all-v2
+              //TODO: Đẩy qua tds-conversation
+              this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
+
+              //TODO: Đẩy qua conversation-all
               let itemLast = {...data}
               let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
               this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);

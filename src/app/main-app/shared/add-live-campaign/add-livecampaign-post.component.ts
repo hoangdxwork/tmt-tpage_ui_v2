@@ -1,23 +1,23 @@
+import { LiveCampaignDTO } from './../../dto/live-campaign/odata-live-campaign.dto';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
-
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Output, EventEmitter, Input, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
-import { Observable, map, takeUntil } from 'rxjs';
+import { Observable, takeUntil } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { compareAsc, differenceInCalendarDays } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
@@ -45,7 +45,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
     { text: "Xác nhận", value: "Confirmed" },
     { text: "Xác nhận và gửi vận đơn", value: "ConfirmedAndSendLading" },
   ];
-
+  dataModel!: LiveCampaignDTO;
   lstUser: ApplicationUserDTO[] = [];
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
   lstProductSearch: ProductDTOV2[] = [];
@@ -53,6 +53,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
   textSearchProduct!: string;
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
+  isDepositChange: boolean = false;
   _form!: FormGroup;
   companyCurrents!: CompanyCurrentDTO;
 
@@ -191,6 +192,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
       this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res) => {
               delete res['@odata.context'];
+              this.dataModel = res;
               this.updateForm(res);
               this.isLoading = false;
           },
@@ -225,6 +227,14 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   disabledDate = (current: Date): boolean => differenceInCalendarDays(current, new Date()) < 0;
+
+  onChangeDeposit(event:any){
+    if(event != this.dataModel.MaxAmountDepositRequired){
+      this.isDepositChange = true;
+    }else{ 
+      this.isDepositChange = false;
+    }
+  }
 
   initFormDetails(details: any[]) {
 

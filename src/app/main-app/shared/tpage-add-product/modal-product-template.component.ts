@@ -34,7 +34,7 @@ export class ModalProductTemplateComponent implements OnInit {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
   @Input() typeComponent!: any;
-  @Input() inLiveCampaign: boolean = false;
+  @Input() type!: string;
 
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
@@ -93,32 +93,47 @@ export class ModalProductTemplateComponent implements OnInit {
   loadDefault() {
     this.isLoading = true;
 
-    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
+    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: TDSSafeAny) => {
         delete res["@odata.context"];
         this.defaultGet = res;
         this.updateForm(res);
-
-    }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.isLoading = false;
+      }, 
+      error:(error) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
     });
   }
 
   loadCategory() {
     this.isLoading = true;
 
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-      this.lstCategory = [...res.value];
-    },
-    error=>{
-      this.message.error(error?.error?.message || Message.CanNotLoadData);
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.lstCategory = [...res.value];
+        this.isLoading = false;
+      },
+      error:(error) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
     });
   }
 
   loadUOMCateg() {
     this.isLoading = true;
 
-    this.productUOMService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
-      this.lstUOMCategory = [...res.value];
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next:res => {
+        this.lstUOMCategory = [...res.value];
+        this.isLoading = false;
+      },
+      error:(err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
     });
   }
 
@@ -195,11 +210,11 @@ export class ModalProductTemplateComponent implements OnInit {
     return this.defaultGet;
   }
 
-  onSave(type?: string) :any {debugger
+  onSave(type?: string) :any {
     let model = this.prepareModel();
     this.isLoading = true;
 
-    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$))
       .subscribe(
         {
           next: (res: any) => {
@@ -213,8 +228,10 @@ export class ModalProductTemplateComponent implements OnInit {
             // Khi gán dữ liệu , lấy field VariantFirstId
     
             this.loadProduct(type, product);
+            this.isLoading = false;
           }, 
           error: (error) => {
+            this.isLoading = false;
             this.message.error(error?.error?.message || Message.InsertFail);
         }
         });
@@ -295,12 +312,15 @@ export class ModalProductTemplateComponent implements OnInit {
     formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
 
-    return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
         this.message.success(Message.Upload.Success);
         this._form.controls["ImageUrl"].setValue(res[0].urlImageProxy);
         this.cdRef.markForCheck();
-    }, error => {
-      this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
+      }, 
+      error:(error) => {
+        this.message.error(error?.Message || 'Upload xảy ra lỗi');
+      }
     });
   }
 
@@ -327,14 +347,18 @@ export class ModalProductTemplateComponent implements OnInit {
 
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
+          this.isLoading = true;
           this.lstAttributes = result;
           let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
+
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
+              this.isLoading = false;
             },
             (err) => {
+              this.isLoading = false;
               this.message.error(err?.error?.message || Message.CanNotLoadData);
             }
           )
@@ -406,6 +430,3 @@ export class ModalProductTemplateComponent implements OnInit {
     this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
   }
 }
-
-
-

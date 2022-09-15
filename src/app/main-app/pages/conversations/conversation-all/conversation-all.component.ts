@@ -413,7 +413,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
+          if(res && res.Items){
             this.lstConversation = [...(res.Items || [])];
+          }
 
             this.isProcessing = false;
             this.yiAutoScroll.scrollToElement('scrollConversation', 750);
@@ -437,6 +439,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+    this.isProcessing = false;
 
     if (this.clickReload >= 5) {
         this.message.info("Đã kích hoạt cập nhật hội thoại.");

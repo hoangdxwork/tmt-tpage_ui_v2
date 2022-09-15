@@ -6,7 +6,7 @@ import { ChatomniSendMessageService } from './../../services/chatomni-service/ch
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
-import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -157,6 +157,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
       }
     })
+
+    this.chatomniEventEmiter.childCommentConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: ExtrasChildsDto) => {
+          if(res && res.Data.id && this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[res.Data.id]){
+            this.dataSource.Extras!.Childs[res.Data.id] = [...this.dataSource.Extras!.Childs[res.Data.id], res];
+          }
+        }
+      }
+    )
   }
 
   onEventSocket() {
@@ -464,13 +474,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.isProcessing = true;
     let id = `${this.team.Id}_${this.data.ConversationId}`;
 
-    this.dataSource$ = this.chatomniMessageService.nextDataSource(id, this.dataSource?.Items);
+    this.dataSource$ = this.chatomniMessageService.nextDataSource(id, this.dataSource);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
           if(res) {
               if(res.Extras) {
                 this.dataSource.Extras = res.Extras;
               }
+
               if(TDSHelperArray.hasListValue(res.Items)) {
                 this.dataSource.Items = [...res.Items];
               }

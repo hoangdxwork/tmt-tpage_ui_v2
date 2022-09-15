@@ -93,6 +93,22 @@ const routes: Routes = [
         loadChildren: () => import('./pages/user/user.module').then(m => m.UserModule)
       },
       {
+        path: "omni-connection",
+        loadChildren: () => import('omnichannel/modules/connections').then(m => m.ConnectionModule)
+      },
+      {
+        path: "omni-product",
+        loadChildren: () => import('omnichannel/modules/products').then(m => m.ProductModule)
+      },
+      {
+        path: "omni-order",
+        loadChildren: () => import('omnichannel/modules/orders').then(m => m.OrderModule)
+      },
+      {
+        path: "omni-product-tpos",
+        loadChildren: () => import('omnichannel/modules/product-tpos').then(m => m.ProductTposModule)
+      },
+      {
         path:  "*",
         redirectTo: '/dashboard',
       },

@@ -61,7 +61,7 @@ export class ChatomniMessageService extends BaseSevice  {
       }), shareReplay({ bufferSize: 1, refCount: true }));
   }
 
-  nextDataSource(id: string, dataSourceItem: ChatomniDataItemDto[]): Observable<ChatomniDataDto> {
+  nextDataSource(id: string, dataSource: ChatomniDataDto): Observable<ChatomniDataDto> {
 
     let exist = this.omniFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
@@ -82,8 +82,8 @@ export class ChatomniMessageService extends BaseSevice  {
             }
           }
 
-          if(dataSourceItem && dataSourceItem.length > 0){
-            exist.Items = [ ...dataSourceItem, ...res.Items ];
+          if(dataSource && dataSource.Items && dataSource.Items.length > 0){
+            exist.Items = [ ...dataSource.Items, ...res.Items ];
           } else {
             exist.Items = [ ...exist.Items, ...res.Items ];
           }

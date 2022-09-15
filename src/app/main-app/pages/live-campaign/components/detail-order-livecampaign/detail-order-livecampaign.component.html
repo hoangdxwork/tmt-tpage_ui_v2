@@ -52,7 +52,7 @@
             <th [width]="'170px'">Tên khách hàng</th>
             <th [width]="'170px'">Số điện thoại</th>
             <th [width]="'170px'">Tổng tiền</th>
-            <th [width]="'170px'" class="w-full truncate">Tổng sản phẩm chờ chốt</th>
+            <th [width]="'170px'" class="w-full truncate">Tổng số lượng của đơn</th>
             <th [width]="'170px'">Trạng thái</th>
             <th [width]="'170px'">Nhân viên</th>
             <th [width]="'170px'">Thời gian</th>
@@ -90,7 +90,16 @@
               </td>
 
               <!-- Tên khách hàng -->
-              <td> {{order.PartnerName}}</td>
+              <td>
+                <div class="flex items-center gap-1">
+                  <span>{{ order.PartnerName }}</span>
+                  <button *ngIf="order.Address" class="bg-orange-500 rounded-md p-1" tds-tooltip tooltipTitle="{{ order.Address }}">
+                    <span class="flex items-center text-white ">
+                      <i class="tdsi-pin-fill"></i>
+                    </span>
+                  </button>
+                </div>
+              </td>
 
               <!-- Số điện thoại -->
               <td> {{order.Telephone}}</td>
