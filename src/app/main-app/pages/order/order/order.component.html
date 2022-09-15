@@ -223,7 +223,7 @@
                       <tds-tag class="ml-1" *ngIf="data.NameNetwork"  [status]="data.NameNetwork | nameNetWork" type="outline">
                         {{ data.NameNetwork }}
                       </tds-tag>
-                      <button *ngIf="data.Address" class="bg-orange-500 rounded-md p-1">
+                      <button *ngIf="data.Address" class="bg-orange-500 rounded-md p-1" tds-tooltip tooltipTitle="{{ data.Address }}">
                         <span class="flex items-center text-white ">
                           <i class="tdsi-pin-fill"></i>
                         </span>

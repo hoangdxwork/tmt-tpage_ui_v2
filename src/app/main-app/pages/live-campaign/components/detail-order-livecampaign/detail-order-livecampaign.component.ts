@@ -6,7 +6,6 @@ import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMTeamService } from '../../../../services/crm-team.service';
 import { PartnerService } from '../../../../services/partner.service';
 import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
-
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
@@ -348,16 +347,19 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
 
     // get data currentConversation
     this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
-        if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
-
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: MDBByPSIdDTO) => {
+          if (res) {
+            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+            this.currentConversation = { ...model };
+  
+            this.psid = res.psid;
+            this.isOpenDrawer = true;
+          }
+        }, 
+        error:(error) => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
         }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       })
   }
 
@@ -493,12 +495,5 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
         type: "order"
       }
     });
-    modal.afterClose.subscribe(result => {
-    })
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

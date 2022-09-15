@@ -30,7 +30,9 @@ export interface DataPouchDBDTO {
   IsDiscount: boolean;
   CategId: number;
   CategName: string;
-  Tags: string
+  Tags: string,
+  QtyAvailable?: number,
+  VirtualAvailable?: number
 }
 
 export interface ProductPouchDBDTO {

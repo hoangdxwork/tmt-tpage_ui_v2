@@ -8,7 +8,7 @@
             <tds-breadcrumb-item>{{liveCampaignId ? 'Chỉnh sửa' : 'Thêm mới'}}</tds-breadcrumb-item>
         </tds-breadcrumb>
         <div class="">
-            <span class="text-header-1 text-neutral-1-900 font-semibold">{{liveCampaignId ? 'Chỉnh sửa chiến dịch' : 'Thêm mới chiến dịch'}}</span>
+            <span class="text-header-1 text-neutral-1-900 font-semibold">{{ liveCampaignId ? 'Chỉnh sửa chiến dịch' : 'Thêm mới chiến dịch' }}</span>
         </div>
       </div>
 
@@ -23,7 +23,7 @@
       <div class="bg-white rounded-xl">
         <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
           <tds-collapse-panel [header]="header" [disabled]=false [(active)]="isShowFormInfo"
-            [expandedIcon]="icon" bordered="false" >
+            [expandedIcon]="icon" bordered="false">
 
             <!-- Header -->
             <ng-template #header>
@@ -68,9 +68,11 @@
               </div>
 
               <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">Số tiền cọc bắt buộc</tds-label>
+                <tds-label class="w-1/4">Đặt cọc bắt buộc</tds-label>
                 <tds-form-field class="w-3/4">
-                  <tds-input-number [min]='0' [step]="1000" formControlName="MaxAmountDepositRequired" [formatter]="numberWithCommas" [parser]="parserComas"> 
+                  <tds-input-number [min]='0' [step]="1000" placeholder="0" formControlName="MaxAmountDepositRequired" 
+                    (ngModelChange)="onChangeDeposit($event)"
+                    [formatter]="numberWithCommas" [parser]="parserComas"> 
                   </tds-input-number>
                 </tds-form-field>
               </div>
@@ -95,12 +97,17 @@
                 </tds-form-field>
               </div>
 
-              <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">Số tiền tối thiểu đặt cọc</tds-label>
-                <tds-form-field class="w-3/4">
-                    <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit" 
-                      [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
-                </tds-form-field>
+              <div class="flex flex-col justify-start gap-y-1 relative">
+                <div class="flex gap-x-4 items-center">
+                  <tds-label class="w-1/4">Đặt cọc tối thiểu</tds-label>
+                  <tds-form-field class="w-3/4" [color]="isDepositChange ? 'error' : 'default'">
+                      <tds-input-number [min]="0" [step]="1000" placeholder="0" formControlName="MinAmountDeposit" 
+                        [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                  </tds-form-field>
+                </div>
+                <span *ngIf="isDepositChange" class="text-error-400 text-caption-2 absolute -bottom-4 right-0">
+                  *Nếu tiền đặt cọc bắt buộc nhỏ hơn tổng tiền giỏ hàng thì trường này là bắt buộc
+                </span>
               </div>
 
               <div class="flex gap-x-4 items-center">
@@ -160,7 +167,7 @@
 
       <div class="flex-auto flex gap-x-4">
         <div class="h-full w-1/3">
-            <list-product-tmp [inLiveCampaign]="true" (onLoadProductToLiveCampaign)="onLoadProduct($event)"></list-product-tmp>
+            <list-product-tmp [type]="'liveCampaign'" (onLoadProductToLiveCampaign)="onLoadProduct($event)"></list-product-tmp>
         </div>
 
         <div class="h-full w-2/3">
@@ -208,7 +215,60 @@
                           </span>
 
                           <!-- Tags -->
-                          <div class="flex w-full gap-x-2 items-center" (click)="openTag(index)" tds-popover
+                          <div class="flex items-center gap-x-1">
+                            <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm" 
+                              (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                              [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
+
+                            <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
+                                <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" status='primary' tds-tooltip [tooltipTitle]="item">
+                                    <tds-tag class="truncate mr-1 mb-1" status='primary'>{{ item }}</tds-tag>
+                                </div>
+                                <button (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                  [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left" 
+                                  color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
+                                    <div class="w-5 h-5 relative">
+                                        <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                                        <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
+                                            height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- button thêm nhãn -->
+                            <ng-template #contentAddtag>
+                                <div class="w-[304px]">
+                                    <tds-form-field>
+                                        <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
+                                          [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" 
+                                          [data]="(detail.value.Tags | stringToStringArray)" >
+                                        </tds-select>
+                                    </tds-form-field>
+                                </div>
+                            </ng-template>
+
+                            <ng-template #footerAddTag>
+                                <div class="flex justify-end pt-2">
+                                    <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onCloseTag()">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-close-fill"></i>
+                                        </span>
+                                    </button>
+                                    <button tds-button-icon size="sm" color="primary" (click)="onSaveTag(index)">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-checkbox-check-fill"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            </ng-template>
+                        </div>
+
+
+
+
+                          <!-- <div class="flex w-full gap-x-2 items-center" (click)="openTag(index)" tds-popover
                               [popoverVisible]="indClickTag == index" popoverTrigger="click"
                               [popoverContent]="contentAddTag" [popoverBackdrop]="true" popoverPlacement="left">
                             <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span>
@@ -221,7 +281,7 @@
                             </div>
                           </div>
 
-                           <!-- Template thêm nhãn -->
+                           
                           <ng-template #contentAddTag>
                             <div class="w-96 flex flex-col gap-y-4">
                               <tds-form-field>
@@ -242,7 +302,7 @@
                                 </button>
                               </div>
                             </div>
-                          </ng-template>
+                          </ng-template> -->
 
                         </div>
                       </div>
