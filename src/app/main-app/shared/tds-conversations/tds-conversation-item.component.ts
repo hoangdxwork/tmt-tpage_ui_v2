@@ -223,20 +223,22 @@ export class TDSConversationItemComponent implements OnInit  {
       return
     }
 
+    let csid = this.dataItem.Data.id || this.csid;
     this.reloadingImage = true;
-    this.activityMatchingService.refreshAttachment(this.team.ChannelId, this.dataItem.Data.id || this.csid , item.id)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe({
+    this.activityMatchingService.refreshAttachment(this.team.ChannelId, csid , item.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-        this.tdsMessage.success('Thao tác thành công');
-        this.activityDataFacade.refreshAttachment(res);
-        this.dataItem.Data["is_error_attachment"] = false;
+            this.reloadingImage = false
+            this.tdsMessage.success('Thao tác thành công');
+            this.activityDataFacade.refreshAttachment(res);
+            this.dataItem.Data["is_error_attachment"] = false;
 
-        this.cdRef.markForCheck();
-      },
-      error: error => {
-          this.tdsMessage.error(`${error?.error?.message}` || 'Không thành công');
-      }
+            this.cdRef.markForCheck();
+        },
+        error: error => {
+            this.reloadingImage = false
+            this.tdsMessage.error(`${error.Message}` || 'Không thành công');
+            this.cdRef.markForCheck();
+        }
     });
   }
 
@@ -434,9 +436,18 @@ export class TDSConversationItemComponent implements OnInit  {
               res.name = this.team.Name;
 
               let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
+              if(data){
+                data.ParentId = model.parent_id;
+                data.ObjectId = model.post_id;
+                data.Data.id = this.dataItem.Data?.id;
+              }
+          
               this.children = [ ...(this.children || []), data];
 
-              //TODO: Đẩy qua conversation-all-v2
+              //TODO: Đẩy qua tds-conversation
+              this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
+
+              //TODO: Đẩy qua conversation-all
               let itemLast = {...data}
               let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
               this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);

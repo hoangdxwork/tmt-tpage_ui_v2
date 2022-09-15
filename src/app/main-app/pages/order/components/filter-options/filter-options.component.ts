@@ -23,7 +23,7 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   @Input() filterObj!: FilterObjSOOrderModel;
   @Input() isLiveCamp!: boolean;
 
-  datePicker: any = [addDays(new Date(), -30), new Date()];
+  datePicker!: any[] | any;
   lstTags: Array<TDSSafeAny> = [];
   selectTags: Array<TDSSafeAny> = [];
   listStatus: Array<TDSSafeAny> = [];
@@ -94,11 +94,13 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   }
 
   onApply() {
-    this.filterObj.dateRange = {
+    if(this.datePicker){
+      this.filterObj.dateRange = {
         startDate: this.datePicker[0],
         endDate: this.datePicker[1]
     }
-
+    }
+    
     this.isActive = true;
     this.onLoadOption.emit(this.filterObj);
     this.closeMenu();
@@ -114,17 +116,14 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   }
 
   onCancel() {
-    this.datePicker = [addDays(new Date(), -30), new Date()];
+    this.datePicker = null;
     this.selectTags = [];
 
     this.filterObj = {
       tags: [],
       status: [],
       searchText: '',
-      dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
-      }
+      dateRange: null
     }
 
     this.isActive = false;

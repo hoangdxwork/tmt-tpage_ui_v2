@@ -1,3 +1,6 @@
+import { environment } from 'src/environments/environment';
+import { LocalStorage } from '@ngx-pwa/local-storage';
+import { TAuthService } from './../lib/services/auth.service';
 import { ChangeDetectorRef, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -24,7 +27,41 @@ import { TDSMessageModule } from 'tds-ui/message';
 import { TDSModalModule } from 'tds-ui/modal';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSTagModule } from 'tds-ui/tag';
+import { OmnichannelConfigurationParams, OMNI_CONFIG } from 'omnichannel/core/services';
+import { BaseHelper } from './shared/helper/base.helper';
 
+// The Factory function
+const omniConfigFactory = (authService: TAuthService): OmnichannelConfigurationParams => {
+  const clientId = BaseHelper.getClientId();
+  const appUrl = BaseHelper.getBaseApi();
+  let authToken = authService.getAccessToken().access_token;
+  return {
+      socketUrl: environment.socketUrl,
+      eCom: {
+          app: 'tpos',
+          clientId: clientId,
+          apiUrl: appUrl,
+          tiktokShop: {
+              eChannel: 0,
+              appKey: '4l89pg',
+              appSecret: '2c9d1a45484d0d171a995814ee0b5b12b1d02820',
+          },
+          lazada: {
+              eChannel: 1,
+          },
+          tiki: {
+              eChannel: 2,
+          },
+          shopee: {
+              eChannel: 3,
+          }
+      },
+      tposApp: {
+          appUrl: appUrl,
+          authToken: authToken
+      }
+  }
+};
 @NgModule({
   declarations: [
     LayoutComponent
@@ -56,6 +93,9 @@ import { TDSTagModule } from 'tds-ui/tag';
   ],
   providers:[
     // ...SERVICES,
+    { provide: OMNI_CONFIG, useFactory: omniConfigFactory,
+      deps: [TAuthService]
+    },
   ]
 })
 export class MainAppModule { }

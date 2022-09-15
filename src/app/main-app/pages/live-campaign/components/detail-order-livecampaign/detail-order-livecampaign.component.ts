@@ -56,10 +56,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     tags: [],
     status: [],
     searchText: '',
-    dateRange: {
-      startDate: addDays(new Date(), -30),
-      endDate: new Date()
-    }
+    dateRange: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
@@ -156,10 +153,10 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       tags: event.tags,
       status: event?.status != 'Tất cả' ? event?.status : null,
       searchText: event.searchText,
-      dateRange: {
+      dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate,
-      }
+      } : null
     }
 
     this.loadData(this.pageSize, this.pageIndex);

@@ -25,7 +25,6 @@ import { ProductService } from '@app/services/product.service';
 export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
-  @ViewChild('innerText') innerText!: ElementRef;
 
   @Input() priceListItems: any;
   @Input() isLoadingProduct: boolean = false;
@@ -42,6 +41,8 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   search: boolean = false;
   retryClick: number = 0;
   disabledReload: boolean = false;
+
+  innerText!: string;
 
   cacheObject: KeyCacheIndexDBDTO = {
     cacheCount: -1,
@@ -278,7 +279,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.retryClick = this.retryClick + 1;
     this.currentType = { text: "Bán chạy", value: "PosSalesCount" };
     this.currentOption = { text: 'Tất cả', value: 'all'};
-    this.innerText.nativeElement!.value = '';
+    this.innerText = '';
 
     this.keyFilter = '';
     this.indClick = -1;
@@ -341,7 +342,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   onInputKeyup(){
     this.isLoading = true;
-    this.keyFilter = this.innerText.nativeElement?.value || '';
+    this.keyFilter = this.innerText || '';
 
     this.loadDataTable();
 

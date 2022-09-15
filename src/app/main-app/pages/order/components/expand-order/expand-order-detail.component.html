@@ -1,5 +1,5 @@
-<!-- <tds-spin [spinning]="isLoading" id="expand[{{dataOrder.Id}}]"> -->
-  <div id="expand[{{dataOrder.Id}}]">
+<tds-spin [spinning]="isLoading">
+  <!-- <div id="expand[{{dataOrder.Id}}]"> -->
     <tds-tabset class="bg-white w-full border rounded-md">
       <tds-tab [title]="'Thông tin'" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
         <div class="grid grid-cols-3 gap-x-4 mt-4">
@@ -105,7 +105,7 @@
       </tds-tab>
       <tds-tab [title]="'Chi tiết'" clsContent="border-t border-neutral-2-200 w-full h-full p-0 -mt-px">
         <div class="w-full rounded-md h-[240px]" >
-          <div class="w-full h-full pb-2.5">
+          <div class="w-full h-full pb-2.5 text-body-2">
             <tds-table #basicTable [listData]="lstDetail" [showPagination]="false" [scroll]="{y:'auto'}">
               <thead class="rounded">
                   <tr>
@@ -140,5 +140,5 @@
         </div>
       </tds-tab>
     </tds-tabset>
-  </div>
-<!-- </tds-spin> -->
+  <!-- </div> -->
+</tds-spin>

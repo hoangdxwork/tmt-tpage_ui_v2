@@ -15,7 +15,7 @@ export interface FilterObjSOOrderModel {
   dateRange: {
     startDate: Date,
     endDate: Date
-  }
+  } | any;
 }
 
 export interface TabNavsDTO {
@@ -53,6 +53,8 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
+
+
 
   removeIds(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {

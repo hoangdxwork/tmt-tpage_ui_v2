@@ -215,9 +215,26 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         link: `/facebook`,
       },
       // {
-      //   name: "Thống kê",
-      //   icon: "tdsi-chart-pie-fill",
-      //   link: `/report`,
+      //   name: "Sàn thương mại điện tử",
+      //   icon: "tdsi-cart-fill",
+      //   listChild: [
+      //     {
+      //       name: "Kết nối",
+      //       link: `/omni-connection`,
+      //     },
+      //     {
+      //       name: "Sản phẩm sàn TMĐT",
+      //       link: `/omni-product`,
+      //     },
+      //     {
+      //       name: "Đơn hàng",
+      //       link: `/omni-order`,
+      //     },
+      //     {
+      //       name: "Sản phẩm TPOS",
+      //       link: `/omni-product-tpos`,
+      //     },
+      //   ]
       // },
       {
         name: "Cấu hình",

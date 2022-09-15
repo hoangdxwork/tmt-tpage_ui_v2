@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../../shared/directives/directives.module';
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
 import { ChatomniMessageFacade } from './../../services/chatomni-facade/chatomni-message.facade';
@@ -197,6 +198,7 @@ const SERVICES = [
     TDSDrawerModule,
     TDSConversationsModule,
     OrderModule,
+    DirectivesModule,
   ],
   providers: [
     ...SERVICES
