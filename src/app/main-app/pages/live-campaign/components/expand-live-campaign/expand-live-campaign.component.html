@@ -21,7 +21,7 @@
                         <th>Đơn vị tính</th>
                         <th>Số lượng</th>
                         <th>Đơn giá</th>
-                        <th>Hoạt động</th>
+                        <!-- <th>Hoạt động</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -41,9 +41,9 @@
                       <td>{{ data.Price || 0 | numberCustom }}</td>
 
                       <!-- Hoạt động -->
-                      <td>
+                      <!-- <td>
                         <tds-switch size="md" [checked]="data.IsActive" (change)="onChangeActive($event, data)"></tds-switch>
-                      </td>
+                      </td> -->
                   </tr>
                 </tbody>
             </tds-table>

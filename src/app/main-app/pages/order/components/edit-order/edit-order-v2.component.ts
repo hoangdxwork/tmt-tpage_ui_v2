@@ -1,4 +1,4 @@
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -18,9 +18,8 @@ import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-use
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { Subject, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { finalize } from 'rxjs/operators';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -587,9 +586,11 @@ export class EditOrderV2Component implements OnInit {
       return;
     }
 
-    if(TDSHelperString.hasValueString(formAction)) {
+    if(formAction && TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
-        this.saleModel.FormAction = formAction;
+        if(this.saleModel) {
+          this.saleModel.FormAction = formAction;
+        }
     }
 
     let fs_model = {} as FastSaleOrder_DefaultDTOV2;
@@ -675,10 +676,10 @@ export class EditOrderV2Component implements OnInit {
 
             if(type && res) {
                 this.printOrder(type, res);
+            }else{
+              this.isLoading = false;
+              this.modalRef.destroy('onLoadPage');
             }
-
-            this.isLoading = false;
-            this.modalRef.destroy('onLoadPage');
         },
         error: (error: any) => {
             this.isLoading = false;
@@ -700,13 +701,15 @@ export class EditOrderV2Component implements OnInit {
     if (obs) {
       obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-          this.onCancel();
+          this.isLoading = false;
+          this.modalRef.destroy('onLoadPage');
 
       }, (error: TDSSafeAny) => {
           if(error?.error?.message) {
               this.notification.error( 'Lỗi in phiếu', error?.error?.message);
           }
-          this.onCancel();
+          this.isLoading = false;
+          this.modalRef.destroy('onLoadPage');
       });
     }
   }

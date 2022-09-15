@@ -18,12 +18,12 @@ export class SocketService  {
 
   constructor(private notificationService: TDSNotificationService,
     @Inject(DOCUMENT) private document: Document) {
-
+ 
     this.initSocket();
   }
 
   initSocket(): void {
-    let hostname = this.document.location.hostname;
+    let hostname = 'tmt30.tpos.vn';
 
     this.socket = io(environment.socketUrl, {
         transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
