@@ -188,11 +188,15 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
   changeCity(event: SuggestCitiesDTO) {
     if (event) {
+      this._form.controls['District'].setValue(null);
+      this.lstDistrict = [];
+
+      this._form.controls['Ward'].setValue(null);
+      this.lstWard = [];
+
       this.loadDistricts(event.code);
 
       this._form.controls['City'].setValue(event);
-      this._form.controls['District'].setValue(null);
-      this._form.controls['Ward'].setValue(null);
 
       this.mappingStreet();
 
@@ -237,10 +241,12 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
   changeDistrict(event: SuggestDistrictsDTO) {
     if (event) {
+      this._form.controls['Ward'].setValue(null);
+      this.lstWard = [];
+
       this.loadWards(event.code);
 
       this._form.controls['District'].setValue(event);
-      this._form.controls['Ward'].setValue(null);
 
       this.mappingStreet();
 
@@ -370,6 +376,7 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
   selectAddress(item: ResultCheckAddressDTO, index: number) {
     if(item) {
+      this._form.reset();
         this.index = index;
         this._form.controls['Street'].setValue(item.Address);
         if(item.CityCode) {

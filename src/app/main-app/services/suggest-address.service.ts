@@ -66,7 +66,6 @@ export class SuggestAddressService extends BaseSevice {
     } else {
       this.apiDistrict(code).subscribe({
         next: (res: any) => {
-            this.lstDistrict[code] = [...res];
             this._districts.next(res);
         }
       })
@@ -92,7 +91,6 @@ export class SuggestAddressService extends BaseSevice {
     } else {
       this.apiWard(code).subscribe({
         next: (res: any) => {
-            this.lstWard[code] = [...res];
             this._wards.next(res);
         }
       })

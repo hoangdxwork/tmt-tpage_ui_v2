@@ -177,11 +177,14 @@ export class SuggestAddressComponent implements OnInit, OnChanges, AfterViewInit
 
   changeCity(event: SuggestCitiesDTO) {
     if (event) {
-      this.loadDistricts(event.code);
-
-      this._form.controls['City'].setValue(event);
       this._form.controls['District'].setValue(null);
+      this.lstDistricts = [];
+
       this._form.controls['Ward'].setValue(null);
+      this.lstWards = [];
+
+      this.loadDistricts(event.code);
+      this._form.controls['City'].setValue(event);
 
       this.mappingStreet();
 
@@ -225,10 +228,11 @@ export class SuggestAddressComponent implements OnInit, OnChanges, AfterViewInit
 
   changeDistrict(event: SuggestDistrictsDTO) {
     if (event) {
-      this.loadWards(event.code);
-
-      this._form.controls['District'].setValue(event);
       this._form.controls['Ward'].setValue(null);
+      this.lstWards = [];
+
+      this.loadWards(event.code);
+      this._form.controls['District'].setValue(event);
 
       this.mappingStreet();
 
@@ -371,6 +375,7 @@ export class SuggestAddressComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   selectAddress(item: ResultCheckAddressDTO, index: number) {
+    this._form.reset();
     if(item) {
         this.index = index;
         this._form.controls['Street'].setValue(item.Address);
@@ -398,6 +403,7 @@ export class SuggestAddressComponent implements OnInit, OnChanges, AfterViewInit
         }else{
           this._form.controls['Ward'].patchValue(null);
         }
+
         this.onLoadSuggestion.emit(item);
     }
   }
