@@ -55,7 +55,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
-  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
+  lstCarriers!: Array<DeliveryCarrierDTOV2>;
 
   public filterObj: FilterObjFastSaleModel = {
     tags: [],
@@ -160,12 +160,18 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     })
-
-    this.lstCarriers = this.loadCarrier();
+    this.loadCarrier();
   }
 
   loadCarrier() {
-    return this.deliveryCarrierService.get().pipe(map(res => res.value));
+    this.deliveryCarrierService.get().subscribe({
+      next: (res: any) => {
+        this.lstCarriers = res.value;
+      },
+      error: (error: any) => {
+        this.message.error(`${error?.error?.message}` || 'Tải dữ liệu thất bại!');
+      }
+    })
   }
 
   loadSummaryStatus() {
@@ -452,7 +458,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onLoadOption(event: FilterObjFastSaleModel): void {
+  onLoadOption(event: FilterObjFastSaleModel): void {debugger
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.indClickTag = -1;
@@ -475,6 +481,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   // Drawer tin nhắn facebook

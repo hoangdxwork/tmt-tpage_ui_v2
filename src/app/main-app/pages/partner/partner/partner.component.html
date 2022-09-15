@@ -128,7 +128,7 @@
                         <tbody>
                             <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                                 <tr class="text-body-2 text-neutral-900 font-regular" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                                    <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true"></td>
+                                    <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true"></td>
                                     <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
                                         class="border-l border-r text-center border-neutral-200" [tdsLeft]="true">
                                     </td>
