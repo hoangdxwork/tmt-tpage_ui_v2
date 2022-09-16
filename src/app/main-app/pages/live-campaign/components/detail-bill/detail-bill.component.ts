@@ -201,20 +201,6 @@ export class DetailBillComponent implements OnInit {
     });
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "draft":
-        return "secondary";
-      case "paid":
-        return "primary";
-      case "open":
-        return "info";
-      case "cancel":
-          return "error";
-      default:
-        return "warning";
-    }
-  }
 
   onSearch(data: TDSSafeAny) {
     this.tabIndex = 1;

@@ -64,19 +64,6 @@ export class TableOrderWaitComponent implements OnInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "Nháp":
-        return "info";
-      case "Đơn hàng":
-        return "success";
-      case "Hủy":
-        return "error";
-      default:
-        return "warning";
-    }
-  }
-
   showModelHistory(orderId: string | undefined) {
     this.modal.create({
       title: 'Lịch sử giỏ hàng',

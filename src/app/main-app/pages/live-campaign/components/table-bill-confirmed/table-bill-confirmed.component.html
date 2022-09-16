@@ -35,7 +35,7 @@
         <td>{{ data.TotalQuantity }}</td>
         <td>{{ data.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</td>
         <td>
-          <tds-tag [status]="getColorStatusText(data.State)" size="sm" type="outline">{{data.ShowState}}</tds-tag>
+          <tds-tag [status]="data.State | getColorStatusState" size="sm" type="outline">{{data.ShowState}}</tds-tag>
         </td>
         <td>
           <button tds-button color="primary" size="sm" (click)="showModelHistory(data.OrderId)">Xem lịch sử</button>

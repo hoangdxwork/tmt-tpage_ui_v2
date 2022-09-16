@@ -121,7 +121,7 @@
 
               <!-- Trạng thái -->
               <td>
-                <tds-tag [status]="getColorStatusText(order.StatusText)" type="outline">
+                <tds-tag [status]="order.StatusText | getColorStatusText" type="outline">
                   {{ order.StatusText }}
                 </tds-tag>
               </td>
