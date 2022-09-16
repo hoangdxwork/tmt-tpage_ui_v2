@@ -45,6 +45,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
     { text: "Xác nhận", value: "Confirmed" },
     { text: "Xác nhận và gửi vận đơn", value: "ConfirmedAndSendLading" },
   ];
+  
   dataModel!: LiveCampaignDTO;
   lstUser: ApplicationUserDTO[] = [];
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
@@ -125,7 +126,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
       IsAssignToUserNotAllowed: [true],
       IsShift: [false],
       Facebook_UserId: [null],
-      Facebook_UserName: [null],
+      Facebook_UserName: [null]
     });
   }
 
@@ -217,15 +218,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
     this.initFormDetails(data.Details);
   }
 
-  onChangeDate(event:Date, type:number){
-    if(type == 0){
-      this._form.controls["StartDate"].setValue(event.toISOString());
-    }
-    if(type == 1){
-      this._form.controls["EndDate"].setValue(event.toISOString());
-    }
-  }
-
+  //TODO: disable các giá trị ngày không khả dụng
   disabledDate = (current: Date): boolean => differenceInCalendarDays(current, new Date()) < 0;
 
   onChangeDeposit(event:any){
@@ -268,12 +261,14 @@ export class AddLiveCampaignPostComponent implements OnInit {
         UOMName: [null],
         Tags: [null],
         LimitedQuantity: [null],
+        LiveCampaign_Id: [null],
         ProductCode: [null],
         ImageUrl: [null],
         IsActive: true
     });
 
     if(x) {
+      x.LiveCampaign_Id = this.id;
       item.patchValue(x);
     }
 

@@ -1,21 +1,17 @@
-import { ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { ChangeDetectorRef } from '@angular/core';
 import { OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { SaleOnline_OrderService } from './../../../../services/sale-online-order.service';
-import { takeUntil } from 'rxjs';
-import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { addDays } from 'date-fns/esm';
 import { FilterObjSOOrderModel, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
-import { TDSContextMenuService } from 'tds-ui/dropdown';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'order-filter-options',
   templateUrl: './filter-options.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class FilterOptionsComponent implements OnInit, OnDestroy {
+export class FilterOptionsComponent implements OnInit {
 
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() tabNavs!: TabNavsDTO[];
@@ -32,25 +28,26 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   isActive: boolean = false;
   isVisible: boolean = false;
 
-  private destroy$ = new Subject<void>();
-
   constructor(
-    private saleOnline_OrderService: SaleOnline_OrderService,
-    private cdr : ChangeDetectorRef,) {
+    private cdr : ChangeDetectorRef,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
+    
   }
 
   loadSummaryStatus() {
-    if(this.summaryStatus) {
-      this.summaryStatus.map(x => {
-        if(x.Index != 1){
-          this.listStatus.push(x);
-        }
-      })
-      this.cdr.detectChanges();
-    }
+    // if(this.summaryStatus) {
+    //   this.summaryStatus.map(x => {
+    //     if(x.Index != 1) {
+    //       this.listStatus.push(x);
+    //     }
+    //   })
+    //   this.cdr.detectChanges();
+    // }
+    console.log(this.summaryStatus)
+    this.cdr.detectChanges();
   }
 
   onChangeDate(event: any[]) {
@@ -105,7 +102,7 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
     if(exist) {
       return true;
     } else {
-      return false
+      return false;
     }
   }
 
@@ -128,10 +125,5 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   closeMenu(): void {
     this.isVisible = false;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
