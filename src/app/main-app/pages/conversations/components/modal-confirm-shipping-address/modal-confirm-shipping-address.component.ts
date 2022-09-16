@@ -70,15 +70,13 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
   }
 
   getDistrict(id: any) {
-    this.suggestAddressService.setDistrict(id);
-    this.suggestAddressService.getDistrict().subscribe((res: any) => {
+    this.suggestAddressService.getDistrict(id).subscribe((res: any) => {
       this.lstDistricts = [...res];
     })
   }
 
   getWard(id: any) {
-    this.suggestAddressService.setWard(id);
-    this.suggestAddressService.getWard().subscribe((res: any) => {
+    this.suggestAddressService.getWard(id).subscribe((res: any) => {
       this.lstWards = [...res];
     })
   }

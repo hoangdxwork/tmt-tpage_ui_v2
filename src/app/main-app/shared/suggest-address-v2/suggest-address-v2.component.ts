@@ -54,7 +54,6 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   constructor(private fb: FormBuilder,
       private cdRef: ChangeDetectorRef,
       private message: TDSMessageService,
-      private readonly tdsConfigService: TDSConfigService,
       private suggestService: SuggestAddressService) {
         this.createForm();
         this.loadCity();
@@ -142,28 +141,35 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   loadCity(): void {
     this.lstCity = [];
     this.suggestService.setCity();
-    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstCity = [...res];
-        this.citySubject.next(res);
-    });
+    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstCity = [...res];
+          this.citySubject.next(res);
+        }
+      });
   }
 
   loadDistricts(code: string) {
     this.lstDistrict = [];
-    this.suggestService.setDistrict(code);
-    this.suggestService.getDistrict().subscribe((res: any) => {
-        this.lstDistrict = [...res];
-        this.districtSubject.next(res);
-    });
+    this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstDistrict = [...res];
+          this.districtSubject.next(res);
+        }
+      });
   }
 
   loadWards(code: string) {
     this.lstWard = [];
-    this.suggestService.setWard(code);
-    this.suggestService.getWard().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstWard = [...res];
-        this.wardSubject.next(res);
-    });
+    this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstWard = [...res];
+          this.wardSubject.next(res);
+        }
+      });
   }
 
   handleCityFilter(value: string) {

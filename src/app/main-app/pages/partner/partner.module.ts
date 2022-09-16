@@ -16,7 +16,6 @@ import { ModalSampleMessageComponent } from './components/modal-sample-message/m
 import { ModalSendMessageComponent } from './components/modal-send-message/modal-send-message.component';
 import { ModalConvertPartnerComponent } from './components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './components/modal-edit-partner/modal-edit-partner.component';
-import { ModalAddAddressComponent } from './components/modal-add-address/modal-add-address.component';
 import { ExpandPartnerDetailComponent } from './components/expand-partner-detail/expand-partner-detail.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
@@ -106,7 +105,6 @@ const SERVICES = [
   declarations: [
     PartnerComponent,
     ExpandPartnerDetailComponent,
-    ModalAddAddressComponent,
     ModalEditPartnerComponent,
     ModalConvertPartnerComponent,
     ModalSendMessageComponent,
