@@ -223,21 +223,6 @@ export class DetailBillPaymentComponent implements OnInit {
     });
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "draft":
-        return "secondary";
-      case "paid":
-        return "primary";
-      case "open":
-        return "info";
-      case "cancel":
-          return "error";
-      default:
-        return "warning";
-    }
-  }
-
   showModalDeposit(data: FastSaleOrderModelDTO) {
     let modal = this.modal.create({
       title: 'Xác nhận tiền cọc',

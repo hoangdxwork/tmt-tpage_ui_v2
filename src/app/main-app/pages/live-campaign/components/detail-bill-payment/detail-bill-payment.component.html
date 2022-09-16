@@ -146,7 +146,7 @@
             <!-- Trạng thái -->
             <td>
               <div class="w-full">
-                <tds-tag [status]="getColorStatusText(data.State)" size="sm" type="outline">{{data.ShowState}}</tds-tag>
+                <tds-tag [status]="data.State |  getColorStatusState" size="sm" type="outline">{{data.ShowState}}</tds-tag>
                 <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán</p>
               </div>
             </td>

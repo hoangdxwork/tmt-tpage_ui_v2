@@ -151,7 +151,7 @@
 
                                 <drawer-detail-bill [isBillNearest]="true" [bill]="lastBill"></drawer-detail-bill>
 
-                                <tds-tag status='primary' class="w-full truncate" type="outline" [status]="getColorStatusText(lastBill.ShowState)">
+                                <tds-tag status='primary' class="w-full truncate" type="outline" [status]="lastBill.ShowState | getColorStatusShowState">
                                   {{ lastBill.ShowState }}
                                 </tds-tag>
 
@@ -239,7 +239,7 @@
                                       </div>
 
                                       <div class="w-[125px] text-center">
-                                          <tds-badge [status]="getColorStatusText(item.ShowState)" [text]="item.ShowState"></tds-badge>
+                                          <tds-badge [status]="item.ShowState | getColorStatusShowState" [text]="item.ShowState"></tds-badge>
                                       </div>
                                   </div>
                               </ng-template>
@@ -267,7 +267,7 @@
 
                                   <label>Trạng thái GH:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <tds-tag status='primary' type="outline" [status]="getColorStatusText(item.ShowState)">{{item.ShowState}}</tds-tag>
+                                      <tds-tag status='primary' type="outline" [status]="item.ShowState | getColorStatusShowState">{{item.ShowState}}</tds-tag>
                                   </div>
 
                                   <div class="flex flex-row items-center justify-end w-full col-span-4">

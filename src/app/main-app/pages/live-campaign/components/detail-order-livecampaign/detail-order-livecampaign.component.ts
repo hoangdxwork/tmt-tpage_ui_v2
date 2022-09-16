@@ -242,19 +242,6 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "Nháp":
-        return "info";
-      case "Đơn hàng":
-        return "success";
-      case "Hủy":
-        return "error";
-      default:
-        return "warning";
-    }
-  }
-
   onSearch(data: TDSSafeAny) {
     this.tabIndex = 1;
     this.pageIndex = 1;

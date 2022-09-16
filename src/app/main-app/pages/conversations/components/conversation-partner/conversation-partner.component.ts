@@ -335,18 +335,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     else return '#28A745';
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "Nháp":
-        return "info";
-      case "Đã thanh toán":
-        return "success";
-      case "Hủy bỏ":
-        return "error";
-      default:
-        return "warning";
-    }
-  }
 
   onBlockPhone() {
     let phone = this.partner?.Phone;
