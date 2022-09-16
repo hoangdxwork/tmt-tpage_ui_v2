@@ -44,13 +44,12 @@ export class FilterOptionsComponent implements OnInit {
     //   })
     //   this.cdr.detectChanges();
     // }
-    console.log(this.summaryStatus)
     this.listStatus = this.summaryStatus.map(f=> {
       return {
         Name: f.Name,
         Index: f.Index,
         Total: f.Total,
-        isSelected: false
+        IsSelected: this.filterObj? (this.filterObj.status?.includes(f.Name)? true: false ) : false
       }
     });
     
@@ -77,10 +76,10 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   selectState(event: any): void {
-    if(this.filterObj.status.includes(event.Name)) {
+    if(this.filterObj && this.filterObj.status && this.filterObj.status.includes(event.Name)) {
         this.filterObj.status = this.filterObj.status.filter((x: any) => !(x == event.Name));
     } else {
-        this.filterObj.status.push(event.Name);
+        this.filterObj.status = [...(this.filterObj.status || []), ...[event.Name]];
     }
     this.checkActiveStatus();
   }

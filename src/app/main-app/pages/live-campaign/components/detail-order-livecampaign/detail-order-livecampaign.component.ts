@@ -1,7 +1,8 @@
+import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { TIDictionary } from './../../../../../lib/dto/dictionary.dto';
 import { CommonService } from './../../../../services/common.service';
 import { TagService } from './../../../../services/tag.service';
-import { FilterObjSOOrderModel } from './../../../../services/mock-odata/odata-saleonlineorder.service';
+import { FilterObjSOOrderModel, TabNavsDTO } from './../../../../services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CRMMatchingService } from '../../../../services/crm-matching.service';
 import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
@@ -15,7 +16,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
@@ -80,6 +81,10 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
 
+  isTabNavs: boolean = false;
+  public tabNavs: Array<TabNavsDTO> = [];
+  public summaryStatus: Array<TabNavsDTO> = [];
+
   constructor(private message: TDSMessageService,
     private modal: TDSModalService,
     private printerService: PrinterService,
@@ -99,6 +104,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadTags();
+    this.loadSummaryStatus();
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -163,6 +169,37 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
           this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
       }
     });
+  }
+
+  loadSummaryStatus() {
+    let model: SaleOnlineOrderSummaryStatusDTO = {
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
+      SearchText: this.filterObj.searchText,
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+    }
+
+
+    this.isTabNavs = true;
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
+      finalize(() => this.isTabNavs = false)).subscribe({
+        next: (res: Array<TDSSafeAny>) => {
+            let tabs: TabNavsDTO[] = [];
+            let total = 0;
+
+            res?.map((x: TDSSafeAny, index: number) => {
+                total += x.Total;
+                index = index + 2;
+
+                tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
+            });
+           
+            tabs.sort((a, b) => a.Index - b.Index);
+
+            this.tabNavs = [...tabs];
+            this.summaryStatus = this.tabNavs;
+        }
+      });
   }
 
   onLoadOption(event: any): void {
