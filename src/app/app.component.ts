@@ -48,11 +48,16 @@ export class AppComponent {
 
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
-        let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
 
-        if (res && res.Notification && !exist) {
-          this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+        let localSocket = localStorage.getItem('_socketNotification') as any;
+        let checkNotti = JSON.parse(localSocket || null) || '';
+
+        if(checkNotti != 'OFF') {
+            this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
+            let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+            if (res && res.Notification && !exist) {
+                this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+            }
         }
       }
     })
