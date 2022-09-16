@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
 import { Message } from '../../../lib/consts/message.const';
@@ -23,7 +24,8 @@ export class TableDetailReportComponent implements OnInit {
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
-    lstSearch!: ReportLiveCampaignDetailDTO[];
+    routerCheck!: string;
+    // lstSearch!: ReportLiveCampaignDetailDTO[];
 
     numberWithCommas =(value:TDSSafeAny) =>{
         if(value != null)
@@ -43,13 +45,15 @@ export class TableDetailReportComponent implements OnInit {
 
     constructor(private message: TDSMessageService,
         private modalService: TDSModalService,
+        private router: Router,
         private viewContainerRef: ViewContainerRef,
         private destroy$: TDSDestroyService,
         private liveCampaignService: LiveCampaignService
     ) { }
 
     ngOnInit(): void {
-      this.lstSearch = [...this.lstDetails];
+    //   this.lstSearch = [...this.lstDetails];
+       this.routerCheck = this.router.url;
     }
 
     showModalLiveCampaignOrder(lstOrder: any[]) {
@@ -130,7 +134,7 @@ export class TableDetailReportComponent implements OnInit {
     }
 
     onSearch(event: TDSSafeAny) {
-      this.lstSearch = [...this.lstDetails];
-      this.lstSearch = this.lstSearch.filter((item) => (item.ProductName && TDSHelperString.stripSpecialChars(item.ProductName.toLowerCase().trim()).indexOf(TDSHelperString.stripSpecialChars(event.value.toLowerCase().trim())) !== -1))
+    //   this.lstSearch = [...this.lstDetails];
+    //   this.lstSearch = this.lstSearch.filter((item) => (item.ProductName && TDSHelperString.stripSpecialChars(item.ProductName.toLowerCase().trim()).indexOf(TDSHelperString.stripSpecialChars(event.value.toLowerCase().trim())) !== -1))
     }
 }
