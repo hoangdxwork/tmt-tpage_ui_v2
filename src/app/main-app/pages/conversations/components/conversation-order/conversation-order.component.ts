@@ -684,27 +684,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let model1 = this.insertFromPostModel;
     let model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
 
-    let model = Object.assign({}, model1, model2);
+    let model = Object.assign({}, model1, model2) as any;
     if(formAction) {
         model.FormAction = formAction;
     }
 
-    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
-    if(this.isEnableCreateOrder && this.saleModel) {
-        fs_model = {...this.prepareCsFastSaleOrder(model)};
-
-        if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
-            return false;
-        }
-        if (!TDSHelperString.hasValueString(fs_model.Phone)) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
-            return false;
-        }
-        if (!TDSHelperString.hasValueString(fs_model.Address)) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
-            return false;
-        }
+    if(this.isEnableCreateOrder) {
+      if (!TDSHelperArray.hasListValue(model.Details)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          return false;
+      }
+      if (!TDSHelperString.hasValueString(model.Telephone)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
+          return false;
+      }
+      if (!TDSHelperString.hasValueString(model.Address)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+          return false;
+      }
     }
 
     this.isLoading = true;
@@ -718,6 +715,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           if(this.isEnableCreateOrder) {
+              let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+              fs_model = {...this.prepareCsFastSaleOrder(this.quickOrderModel)};
+
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               fs_model.PartnerId = res.PartnerId;
@@ -751,19 +751,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         model.FormAction = formAction;
     }
 
-    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
-    if(this.isEnableCreateOrder && this.saleModel) {
-        fs_model = {...this.prepareCsFastSaleOrder(model)};
-
-        if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
+    if(this.isEnableCreateOrder) {
+        if (!TDSHelperArray.hasListValue(model.Details)) {
             this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
             return false;
         }
-        if (!TDSHelperString.hasValueString(fs_model.Phone)) {
+        if (!TDSHelperString.hasValueString(model.Telephone)) {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
             return false;
         }
-        if (!TDSHelperString.hasValueString(fs_model.Address)) {
+        if (!TDSHelperString.hasValueString(model.Address)) {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
             return false;
         }
@@ -773,11 +770,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
+          delete res['@odata.context'];
+          this.quickOrderModel = {...res};
+
           if(!this.isEnableCreateOrder && type) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
           }
 
           if(this.isEnableCreateOrder) {
+              let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+              fs_model = {...this.prepareCsFastSaleOrder(this.quickOrderModel)};
+
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               fs_model.PartnerId = res.PartnerId;
@@ -872,7 +875,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
-  prepareCsFastSaleOrder(model: any): any {
+  prepareCsFastSaleOrder(model: QuickSaleOnlineOrderModel): any {
     //TODO: gán model cho tạo hóa đơn
     let fs_model = {} as FastSaleOrder_DefaultDTOV2;
 
