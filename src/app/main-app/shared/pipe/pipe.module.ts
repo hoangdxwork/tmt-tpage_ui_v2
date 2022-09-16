@@ -33,6 +33,7 @@ import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 import { LatestMessageTypePipe } from './lastest-message-type.pipe';
 import { NumericalOrder } from './numerical-order.pipe';
 import { jsonPayloadPipe } from './json-payload.pipe';
+import { GetShowStatePipe } from './get-show-state.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -71,7 +72,8 @@ const cmp =[
   CheckTagSelectedCommnetPipe,
   LatestMessageTypePipe,
   NumericalOrder,
-  jsonPayloadPipe
+  jsonPayloadPipe,
+  GetShowStatePipe
 ]
 
 @NgModule({

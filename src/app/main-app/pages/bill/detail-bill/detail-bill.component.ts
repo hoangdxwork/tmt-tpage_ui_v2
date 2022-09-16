@@ -157,18 +157,6 @@ export class DetailBillComponent implements OnInit{
     })
   }
 
-  getShowState(type: string): any {
-    switch (type) {
-      case 'draf':
-        return 'Nháp';
-      case 'cancel':
-        return 'Hủy bỏ';
-      case 'open':
-        return 'Xác nhận';
-      case 'paid':
-        return 'Đã thanh toán';
-    }
-  }
 
   showPaymentInfo(i: number){
     this.indx = i;
