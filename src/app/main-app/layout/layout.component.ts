@@ -298,11 +298,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       let localSocket = localStorage.getItem('_socketNotification') as any;
       let checkNotti = JSON.parse(localSocket || null);
 
-      if(!TDSHelperString.hasValueString(checkNotti)) {
-          this.notiSocket = "ON";
-          localStorage.setItem('_socketNotification', JSON.stringify(this.notiSocket));
-      }
-
       if(TDSHelperString.hasValueString(checkNotti)) {
         if(checkNotti == "ON") {
             this.notiSocket = "OFF";
