@@ -340,7 +340,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.validateData();
             }
 
-            this.cdkVirtualScroll();
+            // this.cdkVirtualScroll();
             this.isLoading = false;
         },
         error: (error: any) => {
@@ -622,7 +622,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         })).subscribe();
       }
 
-    setTimeout(() => this.infinite.next(this.lstConversation), 300);
+    setTimeout(() => this.infinite.next(this.lstConversation), 350);
   }
 
   nextBatch() {

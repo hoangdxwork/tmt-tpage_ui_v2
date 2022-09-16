@@ -86,7 +86,7 @@
                 </div>
 
                 <!-- List danh sách chat -->
-                <!-- <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
+                <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
 
                   <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
                       yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
@@ -115,9 +115,9 @@
                   </div>
 
                   <div class="flex-auto bg-white mt-1"></div>
-                </div> -->
+                </div>
 
-                <ng-container *ngIf="infinite | async; let items" class="w-full h-full relative">
+                <!-- <ng-container *ngIf="infinite | async; let items" class="w-full h-full relative">
 
                   <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full flex flex-col gap-y-1"
                       [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize">
@@ -142,7 +142,7 @@
                           </div>
                       </div>
                   </cdk-virtual-scroll-viewport>
-                </ng-container>
+                </ng-container> -->
 
                 <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
                   <tds-empty [notFoundContent]="contentTpl">
