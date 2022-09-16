@@ -541,8 +541,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.status = event.status;
 
     this.filterObj.dateRange = {
-      startDate: event.dateRange.startDate,
-      endDate: event.dateRange.endDate
+      startDate: event.dateRange ? event.dateRange?.startDate: null,
+      endDate: event.dateRange?  event.dateRange?.endDate: null
     }
 
     if (TDSHelperArray.hasListValue(event.status)) {
