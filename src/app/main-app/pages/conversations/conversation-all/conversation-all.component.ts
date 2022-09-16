@@ -296,8 +296,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           })
       }
     })
-
-
   }
 
   loadData(team: any) {
@@ -614,80 +612,36 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   cdkVirtualScroll() {
     if(this.viewPort.scrolledIndexChange && this.lstConversation) {
-        this.viewPort.scrolledIndexChange.pipe(auditTime(300), tap((currIndex: number) => {
+        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap((currIndex: number) => {
+            const end = this.viewPort.getRenderedRange().end;
+            const total = this.viewPort.getDataLength();
 
-          let measure = this.viewPort.measureScrollOffset('bottom') as number;
+            if(end == total && !this.isProcessing) {
+                this.nextBatch();
+            }
+        })).subscribe();
+      }
 
-          if(measure === 0 && !this.isProcessing) {
-              this.nextBatch(currIndex, this.infinite.value);
+    setTimeout(() => this.infinite.next(this.lstConversation), 300);
+  }
+
+  nextBatch() {
+    this.isProcessing = true;
+    this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationDto) => {
+          if(res && res.Items){
+              this.lstConversation = [...(res.Items || [])];
+              this.infinite.next(this.lstConversation);
           }
 
-        })).subscribe();
-
-        setTimeout(() => this.infinite.next(this.lstConversation), 300);
-    }
-  }
-
-  getNextIndex(index: number) {
-    return (index >= this.lstConversation.length) ? (index % this.lstConversation.length) : index;
-  }
-
-  getPrevIndex(index: number, total: number) {
-    return (index < 0) ? (index % total) : (index - 1);
-  }
-
-  getNextBatch(items: ChatomniConversationItemDto[], currIndex: number, range: number) {
-    const nextIndex = this.getNextIndex(currIndex + range);
-    let chunk: any[] = [];
-
-    if (currIndex >= this.lstConversation.length) {
-
-      const lastRange = (currIndex + range) - this.lstConversation.length;
-      const last = this.lstConversation.slice(nextIndex, lastRange);
-      const first = this.lstConversation.slice(0, lastRange);
-
-      chunk = [...first, ...last];
-
-    } else {
-        chunk = this.lstConversation.slice(nextIndex, nextIndex + range) as any[];
-    }
-    return [...items, ...chunk];
-  }
-
-  getPrevBatch(items: ChatomniConversationItemDto[], currIndex: number, range: number) {
-    const prevIndex = this.getPrevIndex(currIndex - range, items.length) as number;
-    const chunk = items.slice(prevIndex, range) as ChatomniConversationItemDto[];
-    return [...chunk, ...items];
-  }
-
-  nextBatch(currIndex: number, items: ChatomniConversationItemDto[]) {debugger
-    // const start = this.viewPort.getRenderedRange().start;
-    // const end = this.viewPort.getRenderedRange().end;
-
-    const total = this.viewPort.getDataLength();
-    const buffer = Math.floor(this.viewPort.getViewportSize() / this.itemSize);
-
-    if (total <= (currIndex + buffer) && !this.isProcessing) {
-
-      this.isProcessing = true;
-      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
-
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ChatomniConversationDto) => {
-            if(res && res.Items){
-                this.lstConversation = [...(res.Items || [])];
-
-                const state = this.getNextBatch(this.lstConversation, currIndex, buffer);
-                this.infinite.next(state);
-            }
-
-            this.isProcessing = false;
-        },
-        error: (error) => {
-            this.isProcessing = false;
-        }
-      })
-    }
+          this.isProcessing = false;
+      },
+      error: (error) => {
+          this.isProcessing = false;
+      }
+    })
   }
 
   onTabOderOutput(ev: boolean){

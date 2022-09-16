@@ -120,7 +120,7 @@
                 <ng-container *ngIf="infinite | async; let items" class="w-full h-full relative">
 
                   <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full flex flex-col gap-y-1"
-                      [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize" >
+                      [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize">
 
                       <div *cdkVirtualFor="let item of items; let i=index; trackBy: trackByIndex" class="w-full h-full">
                           <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState class="w-full h-full">
