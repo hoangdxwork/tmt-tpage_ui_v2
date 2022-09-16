@@ -61,8 +61,8 @@
             <tds-checkbox class="px-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
         </div>
         <!-- danh sách đơn hàng -->
-        <div class="flex flex-col justify-between w-full h-full pl-4 pb-4" *ngIf="lstOfData.length > 0; else noData">
-            <div class="flex flex-col gap-y-4 overflow-auto tds-custom-scroll w-full h-[680px] pr-2">
+        <div class="flex flex-col justify-between w-full h-full pl-4 pb-4 overflow-hidden" *ngIf="lstOfData.length > 0; else noData">
+            <div class="flex flex-col gap-y-4 overflow-auto tds-custom-scroll w-full  pr-2">
                 <tds-collapse accordion="true" *ngFor="let order of lstOfData; let index = index" class="!rounded-xl">
                     <tds-collapse-panel [header]="headerOrder" [active]="false" (activeChange)="onActiveChange(order, $event, index)" class="!rounded-xl"
                         [extra]="extraTpl1">
