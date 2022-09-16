@@ -18,7 +18,8 @@
             </button>
         </div>
         <!-- filter status -->
-        <div *ngIf="tabNavs.length > 1" [ngClass]="isOpenCollapCheck ? 'hidden' : ''" class="px-4 flex">
+        <!-- có api thì gán lại tabNavs.length > 1 -->
+        <div *ngIf="tabNavs.length > 0" [ngClass]="isOpenCollapCheck ? 'hidden' : ''" class="px-4 flex">
             <tds-filter-status [(ngModel)]='tabIndex' (selectChange)="onSelectChange($event)">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
                 <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">

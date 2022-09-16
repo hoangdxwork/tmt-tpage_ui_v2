@@ -33,9 +33,7 @@ export class FilterOptionsComponent implements OnInit {
     private destroy$: TDSDestroyService) {
   }
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit(): void {}
 
   loadSummaryStatus() {
     // if(this.summaryStatus) {
@@ -47,6 +45,15 @@ export class FilterOptionsComponent implements OnInit {
     //   this.cdr.detectChanges();
     // }
     console.log(this.summaryStatus)
+    this.listStatus = this.summaryStatus.map(f=> {
+      return {
+        Name: f.Name,
+        Index: f.Index,
+        Total: f.Total,
+        isSelected: false
+      }
+    });
+    
     this.cdr.detectChanges();
   }
 

@@ -45,11 +45,11 @@
         (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr>
-            <th [align]="'center'" width="33px" [tdsLeft]="true"></th>
-            <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)" width="42px" [align]="'center'" [tdsLeft]="true"></th>
+            <th [align]="'center'" [width]="'33px'" [tdsLeft]="true"></th>
+            <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)" [width]="'42px'" [align]="'center'" [tdsLeft]="true"></th>
             <th [width]="'60px'" [tdsLeft]="true">STT</th>
             <th [width]="'170px'" [tdsLeft]="true">Mã đơn hàng</th>
-            <th [width]="'170px'">Tên khách hàng</th>
+            <th [width]="'300px'">Tên khách hàng</th>
             <th [width]="'170px'">Số điện thoại</th>
             <th [width]="'170px'">Tổng tiền</th>
             <th [width]="'170px'" class="w-full truncate">Tổng số lượng của đơn</th>
@@ -91,13 +91,22 @@
 
               <!-- Tên khách hàng -->
               <td>
-                <div class="flex items-center gap-1">
-                  <span>{{ order.PartnerName }}</span>
-                  <button *ngIf="order.Address" class="bg-orange-500 rounded-md p-1" tds-tooltip tooltipTitle="{{ order.Address }}">
-                    <span class="flex items-center text-white ">
-                      <i class="tdsi-pin-fill"></i>
-                    </span>
-                  </button>
+                <div class="w-full flex flex-col gap-y-1">
+                  <p class="truncate max-w-[200px]">{{order.PartnerName}}</p>
+                  <div class="flex items-center">
+                    <!-- <p *ngIf="order.Telephone" class="text-[#929DAA] mr-1">{{order.Telephone}}</p> -->
+                    <div tds-button color="secondary" *ngIf="order.PartnerStatus"
+                        class="border border-solid rounded px-2 py-px mr-1" [ngStyle]="(order.PartnerStatus.sS) | buttonStatusColor">
+                        <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
+                          {{ order.PartnerStatus.sT }}
+                        </span>
+                    </div>
+                    <button *ngIf="order.Address" class="bg-orange-500 rounded p-[3px]" tds-tooltip tooltipTitle="{{ order.Address }}">
+                      <span class="flex items-center justify-center text-white ">
+                        <i class="tdsi-pin-fill"></i>
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </td>
 

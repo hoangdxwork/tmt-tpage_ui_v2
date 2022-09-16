@@ -50,7 +50,6 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.loadSummaryStatus();
     this.checkActiveStatus();
   }
 
@@ -104,12 +103,13 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   loadSummaryStatus(){
     if(this.summaryStatus) {
-      this.summaryStatus.map((x) => {
-        let index = this.status.findIndex(a => a.Type == x.Name)
-        if(index != -1) {
-          this.status[index].Total = x.Total
-        }
-      })
+      // this.summaryStatus.map((x) => {
+      //   let index = this.status.findIndex(a => a.Type == x.Name)
+      //   if(index != -1) {
+      //     this.status[index].Total = x.Total
+      //   }
+      // })
+  
 
       this.cdr.detectChanges();
     }

@@ -8,7 +8,7 @@
     </div>
     <div class="h-full pb-2.5">
         <tds-table #table [showSizeChanger]="true" [frontPagination]="false"
-            [listData]="lstOfData" [scroll]="{y:'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
+            [listData]="lstOfData" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
             (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
             <thead>
                 <tr>

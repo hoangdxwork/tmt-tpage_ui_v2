@@ -121,7 +121,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   indClickStatus = -1;
   currentStatus: TDSSafeAny;
-  public lstOftabNavs: Array<TabNavsDTO> = [];
+  public summaryStatus: Array<TabNavsDTO> = [];
   public tabNavs: Array<TabNavsDTO> = [];
   public lstTags: Array<TDSSafeAny> = [];
   expandSet = new Set<number>();
@@ -203,7 +203,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
               tabs.sort((a, b) => a.Index - b.Index);
 
               this.tabNavs = [...tabs];
-              this.lstOftabNavs = this.tabNavs;
+              this.summaryStatus = this.tabNavs;
           }
       });
   }
@@ -458,7 +458,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onLoadOption(event: FilterObjFastSaleModel): void {debugger
+  onLoadOption(event: FilterObjFastSaleModel): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.indClickTag = -1;
@@ -475,9 +475,9 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if (TDSHelperArray.hasListValue(event.status)) {
-      this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
+      this.tabNavs = this.summaryStatus.filter(f => event.status.includes(f.Name));
     }else{
-      this.tabNavs = this.lstOftabNavs;
+      this.tabNavs = this.summaryStatus;
     }
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);

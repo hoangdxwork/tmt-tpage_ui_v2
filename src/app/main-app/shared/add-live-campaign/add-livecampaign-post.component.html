@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="w-full h-full">
   <form [formGroup]="_form">
     <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
       <tds-tab title="Thông tin" clsContent="p-4 border-t border-neutral-2-200">
@@ -116,7 +116,6 @@
       </tds-tab>
       <tds-tab title="Sản phẩm ({{ detailsFormGroups.value?.length || 0 }})" clsContent="p-4 border-t border-neutral-2-200">
         <div class="w-full h-full flex flex-col gap-y-2">
-
           <div class="w-full">
             <div class="w-1/2 flex gap-x-2">
               <div class="relative w-full">
@@ -168,9 +167,9 @@
             </div>
           </div>
 
-          <div class="w-full mt-4 rounded-md" >
-            <div class="w-full h-full">
-              <tds-table class="tds-table-rounded" #detailTable [bordered]="true" [listData]="detailsFormGroups.value" [showPagination]="false" [scroll]="{y:'240px'}">
+          <div class="w-full mt-4 rounded-md">
+            <div class="w-full">
+              <tds-table class="tds-table-rounded" #detailTable [bordered]="true" [listData]="detailsFormGroups.value" [showPagination]="false" [scroll]="{ y:'400px' }">
                 <thead class="rounded">
                     <tr>
                         <th width="6%">STT</th>

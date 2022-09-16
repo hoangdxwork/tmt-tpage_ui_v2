@@ -224,7 +224,7 @@
                             {{ data.PartnerStatus.sT }}
                           </span>
                       </div>
-                      <button *ngIf="data.Address" class="bg-orange-500 rounded p-[3px]">
+                      <button *ngIf="data.Address" class="bg-orange-500 rounded p-[3px]" tds-tooltip tooltipTitle="{{ data.Address }}">
                         <span class="flex items-center justify-center text-white ">
                           <i class="tdsi-pin-fill"></i>
                         </span>
