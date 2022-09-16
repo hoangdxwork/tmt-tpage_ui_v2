@@ -20,7 +20,7 @@
         </button>
 
         <tds-form-field class="w-[320px]">
-            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" 
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
               [(ngModel)]="filterObj.searchText"
               [tdsInputDebounce]="750"
               (inputKeyup)="onSearch($event)"/>
@@ -28,7 +28,7 @@
         </tds-form-field>
 
         <order-filter-options (onLoadOption)="onLoadOption($event)"  [summaryStatus]="summaryStatus"
-        [filterObj]="filterObj" [lstDataTag]="lstDataTag" [isLiveCamp]="true">
+          [filterObj]="filterObj" [lstDataTag]="lstDataTag" [isLiveCamp]="true">
         </order-filter-options>
     </div>
 
@@ -158,7 +158,7 @@
 
             <tr [expand]="expandSet.has(order.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 w-full">
               <div #expandOrderLivecampaign [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
-                <expand-order-livecampaign *ngIf="expandSet.has(order.Id)" [dataOrder]="order">
+                <expand-order-livecampaign class="w-full p-3 block" *ngIf="expandSet.has(order.Id)" [dataOrder]="order">
                 </expand-order-livecampaign>
               </div>
             </tr>

@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading" class="text-body-2 text-neutral-1-900">
+<tds-spin [spinning]="isLoading" class="text-body-2 text-neutral-1-900 flex h-[532px] overflow-hidden">
   <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" *ngIf="lstOfData">
     <tds-tab [title]="overview" clsContent="p-4 border-t border-neutral-2-200" [clsContent]="'w-full h-full'">
       <ng-template #overview let-active="active">
@@ -90,7 +90,7 @@
       </div>
     </tds-tab>
 
-    <tds-tab [title]="productTitle" clsContent="border-t border-neutral-2-200">
+    <tds-tab [title]="productTitle" clsContent="border-t border-neutral-2-200"  clsContent="border-t border-neutral-2-200 w-full h-full -mt-px">
       <ng-template #productTitle let-active="active">
         <div class="flex gap-x-2 items-center justify-center">
           <div class="flex items-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group"
@@ -110,7 +110,7 @@
           </div>
         </div>
       </ng-template>
-      <div class="w-full rounded-md">
+      <div class="w-full h-full rounded-md">
         <table-detail-report [liveCampaignId]="liveCampaignId" [lstDetails]="lstOfData.Details"></table-detail-report>
       </div>
     </tds-tab>
