@@ -571,7 +571,7 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
-  onSave(formAction?: string, type?: string): any {debugger
+  onSave(formAction?: string, type?: string): any {
 
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
@@ -599,12 +599,12 @@ export class EditOrderV2Component implements OnInit {
           return;
       }
 
-      if (!model.Telephone) {
+      if (!TDSHelperString.hasValueString(model.Telephone)) {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
           return;
       }
 
-      if (!model.Address) {
+      if (!TDSHelperString.hasValueString(model.Address)) {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
           return;
       }
@@ -612,11 +612,18 @@ export class EditOrderV2Component implements OnInit {
 
     this.isLoading = true;
     this.saleOnline_OrderService.update(id, model).pipe(mergeMap((x) => {
-        return this.saleOnline_OrderService.getById(id);
+          return this.saleOnline_OrderService.getById(id);
       }))
       .subscribe({
         next: (res: any): any => {
+
           delete res['@odata.context'];
+          // this.quickOrderModel.Details.map(x => {
+          //     let item = res.Details?.find((a: any) => a.ProductId === x.ProductId && a.UOMId === x.UOMId) as any;
+          //     if(item && (item.Quantity < x.Quantity)) {
+
+          //     }
+          // })
           this.quickOrderModel = {...res};
 
           if(!this.isEnableCreateOrder && type) {
@@ -636,9 +643,9 @@ export class EditOrderV2Component implements OnInit {
 
               this.createFastSaleOrder(fs_model, type);
           } else {
-            this.isLoading = false;
-            this.message.success('Cập nhật đơn hàng thành công');
-            this.modalRef.destroy(null);
+              this.isLoading = false;
+              this.message.success('Cập nhật đơn hàng thành công');
+              this.modalRef.destroy(null);
           }
       },
       error: (error: any) => {
