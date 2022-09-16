@@ -18,8 +18,8 @@ export class PrepareAddCampaignHandler {
         model.Note = formValue.Note;
         model.ResumeTime = formValue.ResumeTime;
         model.DateCreated = new Date();
-        model.StartDate = formValue.StartDate;
-        model.EndDate = formValue.EndDate;
+        model.StartDate = new Date(formValue.StartDate);
+        model.EndDate = new Date(formValue.EndDate);
         model.Preliminary_TemplateId = formValue.Preliminary_Template?.Id;
         model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_Template?.Id;
         model.MinAmountDeposit = formValue.MinAmountDeposit;
@@ -30,9 +30,9 @@ export class PrepareAddCampaignHandler {
         model.IsShift = formValue.IsShift;
         model.Facebook_UserId = formValue.FacebookUserId;
         model.Facebook_UserName = formValue.Facebook_UserName;
-
+        
         if (TDSHelperArray.hasListValue(formValue.Details)) {
-          formValue.Details.forEach((detail: any, index: number) => {
+          formValue.Details.map((detail: any, index: number) => {
             detail["Index"] = index;
           });
         }

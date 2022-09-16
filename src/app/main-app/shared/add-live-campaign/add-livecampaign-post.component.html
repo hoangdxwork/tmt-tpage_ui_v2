@@ -60,15 +60,13 @@
 
             <tds-label>Ngày bắt đầu</tds-label>
             <tds-form-field class="col-span-2 w-full">
-                  <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime [ngModel]="_form.value.StartDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate"
-                  (ngModelChange)="onChangeDate($event,0)">
+                  <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime formControlName="StartDate" [disabledDate]="disabledDate">
                   </tds-date-picker>
             </tds-form-field>
 
             <tds-label>Ngày kết thúc</tds-label>
             <tds-form-field class="col-span-2 w-full">
-                  <tds-date-picker placeholder="Chọn ngày kết thúc" showTime [ngModel]="_form.value.EndDate" [ngModelOptions]="{standalone: true}" [disabledDate]="disabledDate"
-                  (ngModelChange)="onChangeDate($event,1)">
+                  <tds-date-picker placeholder="Chọn ngày kết thúc" showTime formControlName="EndDate" [disabledDate]="disabledDate">
                   </tds-date-picker>
             </tds-form-field>
 
