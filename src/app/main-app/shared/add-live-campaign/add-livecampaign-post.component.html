@@ -114,7 +114,7 @@
           </div>
         </div>
       </tds-tab>
-      <tds-tab title="Sản phẩm" clsContent="p-4 border-t border-neutral-2-200">
+      <tds-tab title="Sản phẩm ({{ detailsFormGroups.value?.length || 0 }})" clsContent="p-4 border-t border-neutral-2-200">
         <div class="w-full h-full flex flex-col gap-y-2">
 
           <div class="w-full">
@@ -202,7 +202,7 @@
                                   {{detail?.value.ProductNameGet || detail?.value.ProductName}}
                                   <span *ngIf="detail?.value?.UOMName">({{detail?.value?.UOMName}})</span>
                                 </span>
-                                <span class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span>
+                                <!-- <span class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span> -->
                               </div>
                             </div>
                           </td>

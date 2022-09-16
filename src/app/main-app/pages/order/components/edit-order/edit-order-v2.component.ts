@@ -611,7 +611,7 @@ export class EditOrderV2Component implements OnInit {
     }
 
     this.isLoading = true;
-    this.saleOnline_OrderService.update(id, model).pipe(mergeMap((x) => { 
+    this.saleOnline_OrderService.update(id, model).pipe(mergeMap((x) => {
         return this.saleOnline_OrderService.getById(id);
       }))
       .subscribe({
@@ -626,7 +626,7 @@ export class EditOrderV2Component implements OnInit {
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
               let fs_model = {} as FastSaleOrder_DefaultDTOV2;
-              
+
               this.updateShipExtras();
               this.updateShipServiceExtras();
               this.updateShipmentDetailsAship();
@@ -686,7 +686,7 @@ export class EditOrderV2Component implements OnInit {
 
             if(type && res) {
                 this.printOrder(type, res);
-            }else{
+            } else {
               this.isLoading = false;
               this.modalRef.destroy('onLoadPage');
             }
