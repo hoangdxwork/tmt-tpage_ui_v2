@@ -138,7 +138,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
               let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
               this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
-              this.sortChildComment(this.dataSource.Items);
             }
 
             this.cdRef.detectChanges();

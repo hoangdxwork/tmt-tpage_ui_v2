@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ModalInfoBillComponent } from '../modal-info-bill/modal-info-bill.component';
@@ -13,22 +14,26 @@ export class ModalLiveCampaignBillComponent implements OnInit {
   constructor(
     private modalRef: TDSModalRef,
     private modal: TDSModalService,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
   }
 
   showModelInfoOrder(id: number) {
-    this.modal.create({
-      title: 'Thông tin hóa đơn',
-      size:'xl',
-      content: ModalInfoBillComponent,
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        billId: id
-      }
-    });
+    let returnUrl = `bill/detail/${id}`
+    this.router.navigate([returnUrl]);
+    
+    // this.modal.create({
+    //   title: 'Thông tin hóa đơn',
+    //   size:'xl',
+    //   content: ModalInfoBillComponent,
+    //   viewContainerRef: this.viewContainerRef,
+    //   componentParams: {
+    //     billId: id
+    //   }
+    // });
   }
 
   onCancel() {

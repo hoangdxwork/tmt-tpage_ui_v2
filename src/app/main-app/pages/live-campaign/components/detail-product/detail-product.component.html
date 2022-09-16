@@ -1,8 +1,8 @@
 <div class="w-full h-full flex flex-col bg-white rounded-xl text-body-2 text-neutral-900">
     <div class="py-2.5 px-4 flex justify-end items-center">
         <tds-form-field class="w-1/4">
-            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput
-                (keyup.enter)="onSearch($event)" />
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput [tdsInputDebounce]="750" [(ngModel)]="innerText"
+                [ngModelOptions]="{standalone: true}" (inputKeyup)="onSearch($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
         </tds-form-field>
     </div>

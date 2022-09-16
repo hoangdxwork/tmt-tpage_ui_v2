@@ -386,7 +386,7 @@
                                 <span>Trạng thái</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ getShowState(dataModel.State) || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.State | getShowState}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
