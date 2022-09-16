@@ -1,3 +1,5 @@
+import { TIDictionary } from './../../../../../lib/dto/dictionary.dto';
+import { CommonService } from './../../../../services/common.service';
 import { TagService } from './../../../../services/tag.service';
 import { FilterObjSOOrderModel } from './../../../../services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
@@ -5,9 +7,7 @@ import { CRMMatchingService } from '../../../../services/crm-matching.service';
 import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMTeamService } from '../../../../services/crm-team.service';
 import { PartnerService } from '../../../../services/partner.service';
-import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { addDays } from 'date-fns';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -30,6 +30,7 @@ import { CreateBillFastComponent } from '@app/pages/order/components/create-bill
 import { GetListOrderIdsDTO } from '@app/dto/saleonlineorder/list-order-ids.dto';
 import { FastSaleOrderService } from '@app/services/fast-sale-order.service';
 import { ModalHistoryChatComponent } from '@app/pages/order/components/modal-history-chat/modal-history-chat.component';
+import { ODataSaleOnline_OrderModel } from '@app/dto/saleonlineorder/odata-saleonline-order.dto';
 
 @Component({
   selector: 'detail-order-livecampaign',
@@ -66,7 +67,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     dir: SortEnum.desc,
   }];
 
-  lstOfData: Array<TDSSafeAny> = [];
+  lstOfData: Array<ODataSaleOnline_OrderModel> = [];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -93,6 +94,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     private chatomniMessageFacade: ChatomniMessageFacade,
     private destroy$: TDSDestroyService,
     private resizeObserver: TDSResizeObserver,
+    private commonService: CommonService,
     private tagService: TagService) { }
 
   ngOnInit(): void {
@@ -130,6 +132,8 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          let lstId = this.lstOfData.map((x) => x.PartnerId);
+          this.loadParnerStatus(lstId);
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || Message.CanNotLoadData);
@@ -142,6 +146,23 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     return this.odataLiveCampaignOrderService
         .getView(params, this.filterObj, this.liveCampaignId)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false ));
+  }
+
+  loadParnerStatus(params: Array<number>) {
+    this.commonService.getPartnersById(params).subscribe({
+      next: (res: TIDictionary<String>) => {
+        if(res) {
+          this.lstOfData.map( x => {
+            if(res[x.PartnerId]) {
+              x.PartnerStatus = res[x.PartnerId];
+            }
+          })
+        }
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
+      }
+    });
   }
 
   onLoadOption(event: any): void {
@@ -180,7 +201,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  onEdit(item: QuickSaleOnlineOrderModel) {
+  onEdit(item: ODataSaleOnline_OrderModel) {
     if(item && item.Id) {
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
