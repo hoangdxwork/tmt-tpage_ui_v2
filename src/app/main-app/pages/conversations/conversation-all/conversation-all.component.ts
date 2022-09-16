@@ -9,7 +9,7 @@ import { ModalSendMessageAllComponent } from '../components/modal-send-message-a
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, auditTime, tap } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -31,6 +31,8 @@ import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/ma
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import th from 'date-fns/esm/locale/th/index.js';
 
 @Component({
   selector: 'app-conversation-all',
@@ -40,6 +42,10 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+
+  itemSize = 100;
+  infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
+  @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -290,8 +296,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           })
       }
     })
-
-
   }
 
   loadData(team: any) {
@@ -311,9 +315,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isLoading = true;
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
+
             if (res && TDSHelperArray.hasListValue(res.Items)) {
 
                 this.lstConversation = [...res.Items];
+                console.log(this.lstConversation.length)
+
                 let csid = this.paramsUrl?.csid || null;
 
                 //TODO: check psid khi load lần 2,3,4...
@@ -333,6 +340,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.validateData();
             }
 
+            // this.cdkVirtualScroll();
             this.isLoading = false;
         },
         error: (error: any) => {
@@ -600,6 +608,40 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       })
     }
+  }
+
+  cdkVirtualScroll() {
+    if(this.viewPort.scrolledIndexChange && this.lstConversation) {
+        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap((currIndex: number) => {
+            const end = this.viewPort.getRenderedRange().end;
+            const total = this.viewPort.getDataLength();
+
+            if(end == total && !this.isProcessing) {
+                this.nextBatch();
+            }
+        })).subscribe();
+      }
+
+    setTimeout(() => this.infinite.next(this.lstConversation), 350);
+  }
+
+  nextBatch() {
+    this.isProcessing = true;
+    this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationDto) => {
+          if(res && res.Items){
+              this.lstConversation = [...(res.Items || [])];
+              this.infinite.next(this.lstConversation);
+          }
+
+          this.isProcessing = false;
+      },
+      error: (error) => {
+          this.isProcessing = false;
+      }
+    })
   }
 
   onTabOderOutput(ev: boolean){
