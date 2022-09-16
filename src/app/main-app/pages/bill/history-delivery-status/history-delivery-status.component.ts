@@ -109,6 +109,7 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
 
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {
+        this.expandSet = new Set<number>()
         this.expandSet.add(id);
     } else {
         this.expandSet.delete(id);

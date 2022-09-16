@@ -23,6 +23,7 @@ export class TableDetailReportComponent implements OnInit {
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
+    lstSearch!: ReportLiveCampaignDetailDTO[];
 
     numberWithCommas =(value:TDSSafeAny) =>{
         if(value != null)
@@ -31,7 +32,7 @@ export class TableDetailReportComponent implements OnInit {
         }
         return value;
       } ;
-      
+
       parserComas = (value: TDSSafeAny) =>{
         if(value != null)
         {
@@ -47,7 +48,9 @@ export class TableDetailReportComponent implements OnInit {
         private liveCampaignService: LiveCampaignService
     ) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+      this.lstSearch = [...this.lstDetails];
+    }
 
     showModalLiveCampaignOrder(lstOrder: any[]) {
         if(!lstOrder){
@@ -117,11 +120,17 @@ export class TableDetailReportComponent implements OnInit {
             },
             err => {
                 this.message.error(err?.error?.message || Message.UpdateQuantityFail);
+
                 this.indClickQuantity = '';
             })
     }
 
     closeQuantityPopover(): void {
         this.indClickQuantity = '';
+    }
+
+    onSearch(event: TDSSafeAny) {
+      this.lstSearch = [...this.lstDetails];
+      this.lstSearch = this.lstSearch.filter((item) => (item.ProductName && TDSHelperString.stripSpecialChars(item.ProductName.toLowerCase().trim()).indexOf(TDSHelperString.stripSpecialChars(event.value.toLowerCase().trim())) !== -1))
     }
 }

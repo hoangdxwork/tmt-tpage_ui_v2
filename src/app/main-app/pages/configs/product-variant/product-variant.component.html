@@ -85,8 +85,7 @@
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
-                        <tr
-                            class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.Id) ? 'bg-background-6':''}}">
+                        <tr [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
                             <td [checked]="setOfCheckedId.has(data.Id)" [tdsLeft]="true"
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
                             <td [tdsLeft]="true">

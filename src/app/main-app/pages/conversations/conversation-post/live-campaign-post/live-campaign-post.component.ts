@@ -230,6 +230,9 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
           title: `${name}`,
           content: OverviewLiveCampaignComponent,
           size: "xl",
+          bodyStyle: {
+            padding: '0px',
+          },
           viewContainerRef: this.viewContainerRef,
           componentParams:{
             liveCampaignId: this.currentLiveCampaign?.Id,
