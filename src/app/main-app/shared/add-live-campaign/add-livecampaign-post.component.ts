@@ -234,6 +234,12 @@ export class AddLiveCampaignPostComponent implements OnInit {
     }else{ 
       this.isDepositChange = false;
     }
+
+    if(this.isDepositChange) {
+      setTimeout(()=>{
+        this.isDepositChange = false;
+      }, 5 * 1000);
+    }
   }
 
   initFormDetails(details: any[]) {

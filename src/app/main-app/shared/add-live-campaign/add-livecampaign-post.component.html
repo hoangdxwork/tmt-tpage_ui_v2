@@ -80,11 +80,13 @@
 
             <tds-label>Đặt cọc tối thiểu</tds-label>
             <div class="flex flex-col gap-y-1 w-full col-span-2">
-              <tds-form-field>
+              <tds-form-field [color]="isDepositChange ? 'error' : 'default'">
                 <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" placeholder="0" formControlName="MinAmountDeposit"
                   [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
               </tds-form-field>
-              <span *ngIf="isDepositChange" class="text-error-400 text-caption-1">*Số tiền đặt cọc bắt buộc nhỏ hơn số tiền đặt cọc giỏ hàng thì trường này là bắt buộc</span>
+              <span *ngIf="isDepositChange" class="text-error-400 text-caption-1">
+                *Nếu tiền đặt cọc bắt buộc nhỏ hơn tổng tiền giỏ hàng thì trường này là bắt buộc
+              </span>
             </div>
 
             <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">

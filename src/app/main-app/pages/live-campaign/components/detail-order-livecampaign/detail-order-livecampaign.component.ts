@@ -449,7 +449,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           if (res) {
-            this.modal.create({
+            const modal = this.modal.create({
                 title: 'Tạo hóa đơn nhanh',
                 content: CreateBillFastComponent,
                 centered: true,
@@ -459,6 +459,12 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
                   lstData: [...res.value] as GetListOrderIdsDTO[]
                 }
             });
+
+            modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+              next:(res) => {
+                this.loadData(this.pageSize, this.pageIndex);
+              }
+            })
           }
           this.isLoading = false;
         },
