@@ -1,3 +1,4 @@
+import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { AutoOrderConfigDTO, ConversationPostConfigDTO, TBotRequestCallbackFailedDTO, AutoLabelConfigDTO, AutoHiddenConfigDTO } from '../dto/configs/post/post-order-config.dto';
 import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
@@ -27,10 +28,25 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
   public onLoadedPost$: EventEmitter<any> = new EventEmitter();
   public onRemoveOrderComment$: EventEmitter<any> = new EventEmitter();
 
+  private readonly _keyCacheDefaultProductPost = '_keycache_default_product_post';
+
   constructor(private apiService: TCommonService,
     public caheApi: THelperCacheService) {
       super(apiService);
       this.setQuery();
+  }
+
+  getDefaultProductPost(): Detail_QuickSaleOnlineOrder | null {
+    let item = localStorage.getItem(this._keyCacheDefaultProductPost);
+    return item ? JSON.parse(item) : null;
+  }
+
+  setDefaultProductPost(product: Detail_QuickSaleOnlineOrder){
+    localStorage.setItem(this._keyCacheDefaultProductPost,JSON.stringify(product));
+  }
+
+  removeCache(){
+    localStorage.removeItem(this._keyCacheDefaultProductPost);
   }
 
   loadPost(data: any) {

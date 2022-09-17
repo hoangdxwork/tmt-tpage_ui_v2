@@ -1,3 +1,6 @@
+import { ModalProductDefaultComponent } from './../components/modal-product-default/modal-product-default.component';
+import { ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
+import { ModalListProductComponent } from './../components/modal-list-product/modal-list-product.component';
 import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
 import { LiveCampaignService } from './../../../services/live-campaign.service';
 import { LiveCampaignModel } from '../../../dto/live-campaign/odata-live-campaign-model.dto';
@@ -14,11 +17,11 @@ import { ModalReportOrderPostComponent } from '../components/post-filter/modal-r
 import { ConfigPostOutletComponent } from '../components/config-post/config-post-outlet.component';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
-import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
+import { QuickSaleOnlineOrderModel, Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 
 @Component({
@@ -38,6 +41,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   isShowFilterUser = false;
   indeterminate: boolean = false;
   checked: boolean = false;
+
+  defaultProductPost?: Detail_QuickSaleOnlineOrder;
 
   sortOptions: any[] = [
     { value: "CreatedTime desc", text: "Mới nhất" },
@@ -88,6 +93,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.loadDefaultProduct();
     this.eventEmitter();
   }
 
@@ -274,6 +280,75 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
 
   onIndeterminate(event: TDSSafeAny) {
     this.indeterminate = event;
+  }
+
+  loadDefaultProduct(){
+    let exist = this.facebookPostService.getDefaultProductPost();
+
+    if(exist && exist.ProductId){
+        this.defaultProductPost = exist;
+    }
+  }
+
+  showModalSelectProduct(data: TDSSafeAny){
+    if(data){
+      const modal = this.modalService.create({
+        title: 'Sản phẩm mặc định',
+        content: ModalProductDefaultComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef,
+        componentParams:{
+          defaultProduct: data
+        }
+      });
+
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: boolean) => {
+        let exist = this.facebookPostService.getDefaultProductPost();
+        this.defaultProductPost = exist as TDSSafeAny;
+
+        this.cdRef.detectChanges();
+      })
+    } else {
+      const modal = this.modalService.create({
+        title: 'Chọn sản phẩm',
+        content: ModalListProductComponent,
+        size: "xl",
+        bodyStyle: {
+          padding: '0px'
+        },
+        viewContainerRef: this.viewContainerRef,
+        componentParams:{
+          defaultOrder: true
+        }
+      });
+  
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductDTOV2) => {
+        if(TDSHelperObject.hasValue(result)){
+          this.defaultProductPost = this.prepareModel(result);
+  
+          this.facebookPostService.setDefaultProductPost(this.defaultProductPost);
+  
+          this.cdRef.detectChanges();
+        }
+      })
+    }
+    
+  }
+
+  prepareModel(data: TDSSafeAny){
+    return {
+      Id: null,
+      Quantity: 1,
+      Price: data?.ListPrice || data?.Price,
+      ProductId: data?.Id,
+      ProductName: data?.Name,
+      ProductNameGet: data?.NameGet,
+      ProductCode: data?.DefaultCode,
+      UOMId: data?.UOMId,
+      UOMName: data?.UOMName || data?.UOM?.Name,
+      Factor: data?.Factor,
+      ImageUrl: data?.ImageUrl
+    } as Detail_QuickSaleOnlineOrder;
   }
 
 }
