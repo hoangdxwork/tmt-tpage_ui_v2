@@ -142,6 +142,7 @@ import { ConversationAllComponent } from './conversation-all/conversation-all.co
 import { TDSPaginationModule } from 'tds-ui/pagination';
 import { QuillModule } from 'ngx-quill';
 import { quillOptions } from 'src/app/app.module';
+import { ModalProductDefaultComponent } from './components/modal-product-default/modal-product-default.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -250,6 +251,7 @@ const SERVICES = [
     CommentFilterAllComponent,
     LiveCampaignPostComponent,
     ModalAddAddressV2Component,
+    ModalProductDefaultComponent,
 
   ],
 
