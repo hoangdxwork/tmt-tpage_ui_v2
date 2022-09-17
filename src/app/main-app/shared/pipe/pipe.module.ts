@@ -1,3 +1,4 @@
+import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
 import { ConvertToCRMTagsListPipe } from './convert-to-CRMTagList.pipe';
 import { ChatomniFacebookType, ChatomniTShopType, ChatomniTShopData, ChatomniFacebookData } from './fb-post-type.pipe';
@@ -76,7 +77,8 @@ const cmp =[
   GetShowStatePipe,
   getColorStatusShowStatePipe,
   GetColorStatusStatePipe,
-  GetColorStatusTextPipe
+  GetColorStatusTextPipe,
+  TruncateStringPipe
 ]
 
 @NgModule({

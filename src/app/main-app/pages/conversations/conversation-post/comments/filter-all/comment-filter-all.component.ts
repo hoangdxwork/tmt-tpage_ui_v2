@@ -1,3 +1,5 @@
+import { OdataCommentOrderPostDTO, CommentOrderPost, CommentOrder } from './../../../../../dto/conversation/post/comment-order-post.dto';
+import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
 import { ChatmoniSocketEventName } from './../../../../../services/socket-io/soketio-event';
 import { CRMTagService } from './../../../../../services/crm-tag.service';
 import { CreateTagModalComponent } from './../../../../configs/components/create-tag-modal/create-tag-modal.component';
@@ -13,7 +15,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren, EventEmitter } from '@angular/core';
 import { Observable, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -56,7 +58,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
 
-  @Input() commentOrders!: any;
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
   @Input() isShowModal: boolean = false;
@@ -83,6 +84,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   conversationItem!: ChatomniConversationItemDto;
   currentConversation!: ChatomniConversationItemDto;
+  commentOrders?: any = {};
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -93,6 +95,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private crmMatchingService: CRMMatchingService,
     private activityMatchingService: ActivityMatchingService,
     private chatomniConversationService: ChatomniConversationService,
+    private facebookCommentService: FacebookCommentService,
     private chatomniCommentService: ChatomniCommentService,
     private chatomniCommentFacade: ChatomniCommentFacade,
     public crmService: CRMTeamService,
@@ -113,9 +116,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         this.loadData();
         this.loadPartnersByTimestamp();
         this.loadTags();
+        this.loadCommentsOrderByPost()
     }
 
     this.onEventSocket();
+    this.eventEmitter();
   }
 
   loadPartnersByTimestamp() {
@@ -155,6 +160,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
+  eventEmitter() {
+    this.facebookCommentService.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.loadCommentsOrderByPost();
+      }
+    })
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
         (this.dataSource$ as any) = null;
@@ -163,10 +176,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         this.data = {...changes["data"].currentValue};
         this.loadData();
         this.loadPartnersByTimestamp();
-    }
-
-    if(changes['commentOrders'] && !changes['commentOrders'].firstChange) {
-        this.commentOrders = {...changes['commentOrders'].currentValue};
+        this.loadCommentsOrderByPost()
     }
   }
 
@@ -408,7 +418,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
               // Thông tin đơn hàng
               this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-
+              
               // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
               if(order && TDSHelperString.hasValueString(order[0]?.code)){
                   // Truyền sang coversation-post
@@ -455,7 +465,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
-  onInsertFromPost(item: ChatomniDataItemDto) {
+  onInsertFromPost(item: ChatomniDataItemDto, order?: any[]) {
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
@@ -475,9 +485,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             // Thông tin khách hàng
             this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
 
+            if(order && TDSHelperString.hasValueString(order[0]?.code)){
+              this.conversationOrderFacade.hasValueOrderCode$.emit(order[0]?.code);
+            }
+
             // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+            
         }
       },
       error: (error: any) => {
@@ -485,7 +500,40 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
           this.postEvent.spinLoadingTab$.emit(false);
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
-    })
+    });
+
+  }
+
+  loadCommentsOrderByPost() {debugger
+    this.facebookCommentService.getCommentsOrderByPost(this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: OdataCommentOrderPostDTO) => {debugger
+        if(res && res.value) {
+            let comments = [...res.value];
+          
+            comments.map((x: CommentOrderPost) => {
+                this.commentOrders[x.asuid] = [];
+                this.commentOrders[x.uid] = [];
+                //gán lại data bằng syntax 
+                x.orders?.map((a: CommentOrder) => {
+                    this.commentOrders[x.asuid].push(a);
+                });
+
+                if (x.uid && x.uid != x.asuid) {
+                  x.orders?.map((a: any) => {
+                      this.commentOrders[x.uid].push(a);
+                  });
+                }
+            });
+        }
+
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      }
+    });
   }
 
   nextData(event: any) {

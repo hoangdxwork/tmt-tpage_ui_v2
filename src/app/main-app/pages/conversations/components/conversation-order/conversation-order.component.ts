@@ -1,3 +1,4 @@
+import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from './../../../../dto/conversation/post/comment-order-post.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
@@ -643,30 +644,32 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           //TODO: trường hợp tạo lần đầu thì gọi in phiếu
           if(res.IsCreated) {
-              // Check lại hàm này
-              let fbid = model.Facebook_ASUserId;
-              this.saleOnline_OrderService.setCommentOrder(res, fbid);
 
               if(!this.saleOnlineSettings.isDisablePrint) {
                   this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               }
+              //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
+              this.facebookCommentService.onChangeCommentsOrderByPost$.emit(res);
 
               this.message.success('Tạo đơn hàng thành công');
-          }
-          else
-          if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
+          } else {
+
+            if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               this.message.success('Cập nhật đơn hàng thành công');
+            }
+
+            // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
+            this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
+
+            // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
+            this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
+            this.isUpdated = false;
+
+            this.cdRef.detectChanges();
           }
 
-          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
-          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
 
-          // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
-          this.isUpdated = false;
-          this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
-
-          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -846,6 +849,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           if(this.type == 'post') {
               // TODO: nếu là bài viết sau khi thanh toán, sẽ load lại đơn hàng kế tiếp theo postid
               // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
+              
+              //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
+              this.facebookCommentService.onChangeCommentsOrderByPost$.emit(res);
 
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;

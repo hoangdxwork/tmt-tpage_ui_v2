@@ -79,7 +79,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   lstObjects!: ChatomniObjectsItemDto[];
   lstOfLiveCampaign: any[] = [];
 
-  queryObj?: any = { type!: "", sort!: "", q!: "" };
+  queryObj?: any = { type: "", sort: "", q: "" };
   isRefreshing: boolean = false;
   partners$!: Observable<any>;
 
@@ -516,9 +516,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.lstOfLiveCampaign = [...res.value];
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}`);
+          this.message.error(`${error?.error?.message}` || `Tải danh sách chiến dịch thật bại`);
       }
     })
   }
-
 }

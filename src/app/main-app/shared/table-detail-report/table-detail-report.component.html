@@ -1,12 +1,12 @@
-<div class="flex flex-col w-full h-full">
-    <!-- <div class="p-4">
+<div class="flex flex-col w-full h-[480px]" *ngIf="lstSearch">
+    <div class="p-4">
       <tds-form-field class="w-full">
         <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
-    </div> -->
-    <tds-table #detailTable [listData]="lstDetails" [pageSize]="lstDetails.length"
-        [showPagination]="false" [scroll]="{ y: '450px'}">
+    </div>
+
+    <tds-table #detailTable [listData]="lstSearch" [pageSize]="lstSearch.length" [showPagination]="false" [scroll]="{ y: 'auto'}">
         <thead>
             <tr>
                 <th [width]="'6%'">STT</th>
@@ -22,14 +22,12 @@
                     <td>{{ i + 1 }}</td>
                     <td>
                         <div class="flex flex-row gap-x-3">
-                            <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60"
-                                class="rounded-xl"></tds-avatar>
+                            <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
                             <div class="flex flex-col gap-y-2 w-[250px]">
                                 <tds-label>{{ data.ProductName }}</tds-label>
                                 <div *ngIf="data.Tags" class="flex flex-wrap items-center gap-1">
-                                    <tds-tag *ngFor="let item of data.Tags | stringToStringArray" tds-tooltip
-                                        tooltipTitle="{{item}}" status='secondary' size="sm">
-                                        {{item}}
+                                    <tds-tag *ngFor="let item of data.Tags | stringToStringArray" class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
+                                        {{ item | truncateString }}
                                     </tds-tag>
                                 </div>
                             </div>
@@ -114,7 +112,7 @@
                             Còn lại: {{ ((data.Quantity - data.UsedQuantity) | numberCustom ) || 0 }}
                         </div>
                     </td>
-                    <td>{{ data.Price | numberCustom  }}</td>
+                    <td>{{ (data.Price | numberCustom) || 0 }}</td>
                 </tr>
             </ng-template>
         </tbody>
