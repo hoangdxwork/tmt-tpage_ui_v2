@@ -1,3 +1,5 @@
+import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
+import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { Injectable } from "@angular/core";
 import { CompanyCurrentDTO } from "@app/dto/configs/company-current.dto";
 import { ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
@@ -14,7 +16,8 @@ export class CsOrder_PrepareModelHandler {
   public phoneRegex = /(?:\b|[^0-9])((0|o|84|\+84)(\s?)([2-9]|1[0-9])(\d|o(\s|\.)?){8})(?:\b|[^0-9])/;
   saleConfig!: SaleOnlineSettingDTO;
 
-  constructor(private crmTeamService: CRMTeamService) {}
+  constructor(private crmTeamService: CRMTeamService,
+    private facebookPostService: FacebookPostService) {}
 
   public prepareInsertFromMessage(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
 
@@ -95,6 +98,25 @@ export class CsOrder_PrepareModelHandler {
       this.phoneRegex = config.PhoneRegex;
     }
 
+    //TODO: check sản phẩm mặc định
+    let product = this.facebookPostService.getDefaultProductPost() as Detail_QuickSaleOnlineOrder;
+          x.Details = [];
+
+          if(product && product.ProductId) {
+              let item = {
+                ProductId: product.ProductId,
+                ProductName: product.ProductName,
+                ProductNameGet: product.ProductNameGet,
+                UOMId: product.UOMId,
+                UOMName: product.UOMName,
+                Quantity: product.Quantity,
+                Price: product.Price,
+                Factor: product.Factor
+              } as Detail;
+
+              x.Details.push(item);
+          }
+
     if(this.phoneRegex && comment.Message) {
       let regex = new RegExp(this.phoneRegex);
       let exec = regex.exec(comment.Message) as any[];
@@ -166,6 +188,18 @@ export interface InsertFromPostDto {
   UserId: string;
   PartnerName: string;
   Telephone: string;
+  Details?: Detail[];
+}
+
+export interface Detail {
+  ProductId: number;
+  ProductName: string;
+  ProductNameGet: string;
+  UOMId: number;
+  UOMName: string;
+  Quantity: number;
+  Price: number;
+  Factor: number;
 }
 
 export interface InsertFromMessageDto {
