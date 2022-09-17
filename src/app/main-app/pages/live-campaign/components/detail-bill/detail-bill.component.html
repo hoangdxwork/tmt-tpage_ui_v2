@@ -1,6 +1,22 @@
 <div class="w-full h-full bg-white rounded-xl pb-2">
   <div class="flex flex-col h-full">
     <div class="p-4 font-semibold text-xl flex gap-x-3 justify-end">
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+        <button tds-button color="info" (click)="print('print')">
+          <span class="flex items-center">
+            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In hóa đơn
+          </span>
+        </button>
+      </tds-spin>
+
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+        <button tds-button color="info" (click)="print('printShips')">
+          <span class="flex items-center">
+            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
+          </span>
+      </button>
+      </tds-spin>
+
       <tds-form-field class="w-[320px]">
         <input tdsInput placeholder="Tìm kiếm" autocomplete="off" 
           [(ngModel)]="filterObj.searchText"
@@ -26,6 +42,8 @@
         (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr>
+            <th [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" width="42px"
+                (checkedChange)="onAllChecked($event)" class="border-r"></th>
             <th [width]="'3.5%'">STT</th>
             <th [width]="'9.6%'">Số hóa đơn</th>
             <th [width]="'9.6%'">Tên khách hàng</th>
@@ -41,6 +59,9 @@
         </thead>
         <tbody>
           <tr *ngFor="let bill of tableMessage.data; let index=index">
+            <td [tdsLeft]="true" [checked]="setOfCheckedId.has(bill.Id)"
+                  (checkedChange)="onItemChecked(bill.Id, $event)" class="border-r">
+                </td>
             <td>
               {{index + 1}}
             </td>
@@ -120,7 +141,7 @@
             <!-- Trạng thái -->
             <td>
               <div class="w-full">
-                <tds-tag [status]="getColorStatusText(bill.State)" size="sm" type="outline">{{bill.ShowState}}</tds-tag>
+                <tds-tag [status]="bill.State | getColorStatusState" size="sm" type="outline">{{bill.ShowState}}</tds-tag>
                 <p *ngIf="bill.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán</p>
               </div>
             </td>
@@ -173,3 +194,8 @@
     </ng-container>
   </tds-drawer>
 </div>
+
+<ng-template #indicatorTemplate>
+  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+</ng-template>
+

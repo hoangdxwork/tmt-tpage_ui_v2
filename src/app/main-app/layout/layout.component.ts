@@ -6,7 +6,7 @@ import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
 import { TDSMenuDTO } from 'tds-ui/menu';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
@@ -29,6 +29,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   withLayout!: number;
   withLaptop: number = 1600;
   establishedConnected?: boolean = true;
+  notiSocket!: string;
 
   @ViewChild('withLayout') ViewChildWithLayout!: ElementRef;
 
@@ -65,6 +66,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    // TODO: check trạng thái bât tắt socket thông báo
+    let localSocket = localStorage.getItem('_socketNotification') as any;
+    let checkNotti = JSON.parse(localSocket || null);
+    this.notiSocket = checkNotti;
+
     this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.lstMenu = this.setMenu(res);
         this.currentTeam = res;
@@ -215,9 +221,26 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         link: `/facebook`,
       },
       // {
-      //   name: "Thống kê",
-      //   icon: "tdsi-chart-pie-fill",
-      //   link: `/report`,
+      //   name: "Sàn thương mại điện tử",
+      //   icon: "tdsi-cart-fill",
+      //   listChild: [
+      //     {
+      //       name: "Kết nối",
+      //       link: `/omni-connection`,
+      //     },
+      //     {
+      //       name: "Sản phẩm sàn TMĐT",
+      //       link: `/omni-product`,
+      //     },
+      //     {
+      //       name: "Đơn hàng",
+      //       link: `/omni-order`,
+      //     },
+      //     {
+      //       name: "Sản phẩm TPOS",
+      //       link: `/omni-product-tpos`,
+      //     },
+      //   ]
       // },
       {
         name: "Cấu hình",
@@ -269,6 +292,21 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   onPackOfData() {
     this.router.navigateByUrl(`user/pack-of-data/info`);
+  }
+
+  changeNotiSocketInfo() {
+      let localSocket = localStorage.getItem('_socketNotification') as any;
+      let checkNotti = JSON.parse(localSocket || null);
+
+      if(TDSHelperString.hasValueString(checkNotti)) {
+        if(checkNotti == "ON") {
+            this.notiSocket = "OFF";
+            localStorage.setItem('_socketNotification', JSON.stringify(this.notiSocket));
+        } else {
+            this.notiSocket = "ON";
+            localStorage.setItem('_socketNotification', JSON.stringify(this.notiSocket));
+        }
+      }
   }
 
   // onSave() {

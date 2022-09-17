@@ -21,11 +21,6 @@ export class SuggestAddressService extends BaseSevice {
   private readonly _cities = new ReplaySubject<any[]>();
   public lstCity: any[] = [];
 
-  private readonly _districts = new ReplaySubject<any[]>();
-  public lstDistrict: any = {};
-
-  private readonly _wards = new ReplaySubject<any[]>();
-  public lstWard: any = {};
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -56,23 +51,8 @@ export class SuggestAddressService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, { provider: "Undefined" });
   }
 
-  getDistrict(): Observable<any> {
-      return this._districts.asObservable();
-  }
 
-  setDistrict(code: string) {
-    if(TDSHelperArray.hasListValue(this.lstDistrict[code])) {
-        this._districts.next(this.lstDistrict[code]);
-    } else {
-      this.apiDistrict(code).subscribe({
-        next: (res: any) => {
-            this._districts.next(res);
-        }
-      })
-    }
-  }
-
-  apiDistrict(code: string): Observable<any> {
+  getDistrict(code: string): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getdistricts(${code})`,
       method: CoreApiMethodType.post,
@@ -81,23 +61,7 @@ export class SuggestAddressService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, { provider: "Undefined" });
   }
 
-  getWard(): Observable<any> {
-      return this._wards.asObservable();
-  }
-
-  setWard(code: string) {
-    if(TDSHelperArray.hasListValue(this.lstWard[code])) {
-        this._districts.next(this.lstWard[code]);
-    } else {
-      this.apiWard(code).subscribe({
-        next: (res: any) => {
-            this._wards.next(res);
-        }
-      })
-    }
-  }
-
-  apiWard(code: string): Observable<any> {
+  getWard(code: string): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getwards(${code})`,
       method: CoreApiMethodType.post,

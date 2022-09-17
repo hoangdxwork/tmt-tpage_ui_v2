@@ -64,21 +64,6 @@ export class TableBillConfirmedComponent implements OnInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "draft":
-        return "secondary";
-      case "paid":
-        return "primary";
-      case "open":
-        return "info";
-      case "cancel":
-          return "error";
-      default:
-        return "warning";
-    }
-  }
-
   showModelHistory(orderId: string | undefined) {
     this.modal.create({
       title: 'Lịch sử giỏ hàng',

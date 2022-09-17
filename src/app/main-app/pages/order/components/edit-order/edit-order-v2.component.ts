@@ -1,4 +1,4 @@
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -18,9 +18,8 @@ import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-use
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { Subject, takeUntil } from 'rxjs';
+import { takeUntil, mergeMap } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { finalize } from 'rxjs/operators';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -578,66 +577,85 @@ export class EditOrderV2Component implements OnInit {
     let id = this.quickOrderModel.Id as string;
 
     if (!this.checkPhoneValidate() || !model.Telephone) {
-      this.message.error(model.Telephone ? 'Vui lòng nhập số điện thoại hợp lệ' : 'Vui lòng nhập số điện thoại');
+      this.message.error(model.Telephone ? 'Số điện thoại không hợp lệ' : 'Vui lòng nhập số điện thoại');
       return;
     }
 
     if (!this.checkEmailValidate() && model.Email) {
-      this.message.error('Vui lòng nhập địa chỉ email hợp lệ');
+      this.message.error(model.Email ? 'Địa chỉ email không hợp lệ' : 'Vui lòng nhập địa chỉ email');
       return;
     }
 
-    if(TDSHelperString.hasValueString(formAction)) {
+    if(formAction && TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
-        this.saleModel.FormAction = formAction;
+        if(this.saleModel) {
+          this.saleModel.FormAction = formAction;
+        }
     }
 
-    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
-
     if(this.isEnableCreateOrder) {
-
-      this.updateShipExtras();
-      this.updateShipServiceExtras();
-      this.updateShipmentDetailsAship();
-
-      fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-      fs_model.CompanyId = this.companyCurrents?.CompanyId;
-
-      if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
+      if (!TDSHelperArray.hasListValue(model.Details)) {
           this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
-          return false;
+          return;
       }
 
-      if (!fs_model.Phone) {
+      if (!TDSHelperString.hasValueString(model.Telephone)) {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
-          return false;
+          return;
       }
 
-      if (!fs_model.Address) {
+      if (!TDSHelperString.hasValueString(model.Address)) {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
-          return false;
+          return;
       }
     }
 
     this.isLoading = true;
-    this.saleOnline_OrderService.update(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any): any => {
+    this.saleOnline_OrderService.update(id, model).pipe(mergeMap((x) => {
+          return this.saleOnline_OrderService.getById(id);
+      }))
+      .subscribe({
+        next: (res: any): any => {
+
+          delete res['@odata.context'];
+          // this.quickOrderModel.Details.map(x => {
+          //     let item = res.Details?.find((a: any) => a.ProductId === x.ProductId && a.UOMId === x.UOMId) as any;
+          //     if(item && (item.Quantity < x.Quantity)) {
+
+          //     }
+          // })
+          this.quickOrderModel = {...res};
+
           if(!this.isEnableCreateOrder && type) {
               this.orderPrintService.printId(id, this.quickOrderModel);
           }
 
           if(this.isEnableCreateOrder) {
               // call api tạo hóa đơn
+              let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+
+              this.updateShipExtras();
+              this.updateShipServiceExtras();
+              this.updateShipmentDetailsAship();
+
+              fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
+              fs_model.CompanyId = this.companyCurrents?.CompanyId;
+
               this.createFastSaleOrder(fs_model, type);
           } else {
-            this.isLoading = false;
-            this.message.success('Cập nhật đơn hàng thành công');
-            this.modalRef.destroy(null);
+              this.isLoading = false;
+              this.message.success('Cập nhật đơn hàng thành công');
+              this.modalRef.destroy(null);
           }
       },
       error: (error: any) => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+
+        if(TDSHelperString.isString(error)){
+          this.message.error(error);
+        }else{
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        }
 
         setTimeout(() => {
             this.modalRef.destroy(null);
@@ -675,10 +693,10 @@ export class EditOrderV2Component implements OnInit {
 
             if(type && res) {
                 this.printOrder(type, res);
+            } else {
+              this.isLoading = false;
+              this.modalRef.destroy('onLoadPage');
             }
-
-            this.isLoading = false;
-            this.modalRef.destroy('onLoadPage');
         },
         error: (error: any) => {
             this.isLoading = false;
@@ -700,13 +718,15 @@ export class EditOrderV2Component implements OnInit {
     if (obs) {
       obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-          this.onCancel();
+          this.isLoading = false;
+          this.modalRef.destroy('onLoadPage');
 
       }, (error: TDSSafeAny) => {
           if(error?.error?.message) {
               this.notification.error( 'Lỗi in phiếu', error?.error?.message);
           }
-          this.onCancel();
+          this.isLoading = false;
+          this.modalRef.destroy('onLoadPage');
       });
     }
   }

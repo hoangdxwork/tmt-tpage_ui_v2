@@ -1,6 +1,6 @@
 
 <button tds-button-icon color="secondary" tds-dropdown trigger="click"
-    [tdsDropdownMenu]="menu" [autoClose]="false" [clickHide]="false"
+    [tdsDropdownMenu]="menu" [autoClose]="false" [clickHide]="false" (click)="loadSummaryStatus()"
     size="md" class="relative" [(visible)]="isVisible" tds-tooltip tooltipTitle="Lọc dữ liệu">
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg leading-none text-neutral-1-500"></i>
@@ -19,7 +19,7 @@
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI</p>
           <div class="w-full flex flex-wrap items-center gap-x-2 gap-y-2">
             <div *ngFor="let item of status">
-              <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectState(item)">
+              <tds-tag mode="checkable" (checkedChange)="selectState(item)">
                 {{item.Name}} ({{item.Total}})
               </tds-tag>
             </div>

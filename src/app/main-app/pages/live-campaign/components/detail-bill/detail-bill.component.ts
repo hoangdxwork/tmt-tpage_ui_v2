@@ -1,3 +1,4 @@
+import { PrinterService } from './../../../../services/printer.service';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { takeUntil } from 'rxjs';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
@@ -17,7 +18,7 @@ import { finalize } from 'rxjs/operators';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Router } from '@angular/router';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
@@ -39,10 +40,7 @@ export class DetailBillComponent implements OnInit {
     deliveryType: '',
     isWaitPayment: false,
     searchText: '',
-    dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
-    }
+    dateRange: null
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -67,6 +65,12 @@ export class DetailBillComponent implements OnInit {
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
 
+  isProcessing!: boolean;
+  checked = false;
+  indeterminate = false;
+  setOfCheckedId = new Set<number>();
+  idsModel: any = [];
+
   constructor(
     private message: TDSMessageService,
     private tagService: TagService,
@@ -77,7 +81,8 @@ export class DetailBillComponent implements OnInit {
     private destroy$: TDSDestroyService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
-    private chatomniMessageFacade: ChatomniMessageFacade
+    private chatomniMessageFacade: ChatomniMessageFacade,
+    private printerService: PrinterService
   ) { }
 
   ngOnInit() {
@@ -129,10 +134,10 @@ export class DetailBillComponent implements OnInit {
       liveCampaignId: this.liveCampaignId,
       deliveryType: event.deliveryType,
       searchText: event.searchText,
-      dateRange: {
+      dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate
-      }
+      } : null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -150,10 +155,7 @@ export class DetailBillComponent implements OnInit {
       liveCampaignId: this.liveCampaignId,
       deliveryType: '',
       searchText: '',
-      dateRange: {
-          startDate: addDays(new Date(), -30),
-          endDate: new Date(),
-      }
+      dateRange: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -199,20 +201,6 @@ export class DetailBillComponent implements OnInit {
     });
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "draft":
-        return "secondary";
-      case "paid":
-        return "primary";
-      case "open":
-        return "info";
-      case "cancel":
-          return "error";
-      default:
-        return "warning";
-    }
-  }
 
   onSearch(data: TDSSafeAny) {
     this.tabIndex = 1;
@@ -303,5 +291,64 @@ export class DetailBillComponent implements OnInit {
     this.isOpenDrawer = false;
   }
 
+  print(type: string) {
+    let that = this;
+    if (this.isProcessing) {
+      return
+    }
+
+    if (this.checkValueEmpty() == 1) {
+      let obs: TDSSafeAny;
+      switch (type) {
+        case "print":
+          obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.idsModel}`);
+          break;
+        case "printShips":
+          obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.idsModel}`);
+          break;
+      }
+      if (TDSHelperObject.hasValue(obs)) {
+        this.isProcessing = true;
+        obs.pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+            that.printerService.printHtml(res);
+        })
+      }
+    }
+  }
+
+  checkValueEmpty() {
+    let ids: any[] = [...this.setOfCheckedId];
+    this.idsModel = [...ids];
+
+    if (this.idsModel.length == 0) {
+      this.message.error('Vui lòng chọn tối thiểu một dòng!');
+      return 0;
+    }
+
+    return 1;
+  }
+
+  updateCheckedSet(id: number, checked: boolean): void {
+    if (checked) {
+      this.setOfCheckedId.add(id);
+    } else {
+      this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: number, checked: boolean): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(value: boolean): void {
+    this.lstOfData.forEach((x: any) => this.updateCheckedSet(x.Id, value));
+    this.refreshCheckedStatus();
+  }
+
+  refreshCheckedStatus(): void {
+    this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
+  }
 
 }

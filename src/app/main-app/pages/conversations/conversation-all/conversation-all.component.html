@@ -117,6 +117,33 @@
                   <div class="flex-auto bg-white mt-1"></div>
                 </div>
 
+                <!-- <ng-container *ngIf="infinite | async; let items" class="w-full h-full relative">
+
+                  <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full flex flex-col gap-y-1"
+                      [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize">
+
+                      <div *cdkVirtualFor="let item of items; let i=index; trackBy: trackByIndex" class="w-full h-full">
+                          <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState class="w-full h-full">
+
+                            <a (click)="changeCurrentConversationItem(item)" class="w-full
+                               {{ conversationItem.ConversationId == item.ConversationId? 'cursor-no-drop' : 'cursor-pointer'}}">
+                                <current-conversation-item-v2
+                                    [item]="item" [csid]="item.ConversationId" [type]="type"
+                                    [conversationItem]="conversationItem"
+                                    [state]="item.State"
+                                    [team]="currentTeam" [isFastSend]="isFastSend"
+                                    [isOpenCollapCheck]="isOpenCollapCheck"
+                                    [checked]="setOfCheckedId.has(item.ConversationId)"
+                                    (checkedChange)="onItemChecked(item.ConversationId, $event)">
+
+                                </current-conversation-item-v2>
+                                --- {{i}} {{item.Name}}---
+                            </a>
+                          </div>
+                      </div>
+                  </cdk-virtual-scroll-viewport>
+                </ng-container> -->
+
                 <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
                   <tds-empty [notFoundContent]="contentTpl">
                     <ng-template #contentTpl>

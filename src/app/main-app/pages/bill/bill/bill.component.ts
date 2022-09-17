@@ -55,7 +55,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
-  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
+  lstCarriers!: Array<DeliveryCarrierDTOV2>;
 
   public filterObj: FilterObjFastSaleModel = {
     tags: [],
@@ -121,7 +121,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   indClickStatus = -1;
   currentStatus: TDSSafeAny;
-  public lstOftabNavs: Array<TabNavsDTO> = [];
+  public summaryStatus: Array<TabNavsDTO> = [];
   public tabNavs: Array<TabNavsDTO> = [];
   public lstTags: Array<TDSSafeAny> = [];
   expandSet = new Set<number>();
@@ -160,18 +160,24 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     })
-
-    this.lstCarriers = this.loadCarrier();
+    this.loadCarrier();
   }
 
   loadCarrier() {
-    return this.deliveryCarrierService.get().pipe(map(res => res.value));
+    this.deliveryCarrierService.get().subscribe({
+      next: (res: any) => {
+        this.lstCarriers = res.value;
+      },
+      error: (error: any) => {
+        this.message.error(`${error?.error?.message}` || 'Tải dữ liệu thất bại!');
+      }
+    })
   }
 
   loadSummaryStatus() {
     let model = {
-      DateStart: this.filterObj.dateRange.startDate,
-      DateEnd: this.filterObj.dateRange.endDate,
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
       SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()),
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
       TrackingRef: this.filterObj.hasTracking,
@@ -197,7 +203,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
               tabs.sort((a, b) => a.Index - b.Index);
 
               this.tabNavs = [...tabs];
-              this.lstOftabNavs = this.tabNavs;
+              this.summaryStatus = this.tabNavs;
           }
       });
   }
@@ -469,12 +475,13 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if (TDSHelperArray.hasListValue(event.status)) {
-      this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
+      this.tabNavs = this.summaryStatus.filter(f => event.status.includes(f.Name));
     }else{
-      this.tabNavs = this.lstOftabNavs;
+      this.tabNavs = this.summaryStatus;
     }
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   // Drawer tin nhắn facebook

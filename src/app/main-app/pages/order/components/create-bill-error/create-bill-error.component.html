@@ -1,6 +1,6 @@
 <div *tdsModalTitle>
   <div class="flex flex-row items-center gap-x-2">
-    <tds-checkbox [checked]="checkedAll" [indeterminate]="indeterminate" (change)="changeAll($event.checked)" *ngIf="isOpenCheckBox" [disabled]="isLoading"></tds-checkbox>
+    <tds-checkbox [checked]="checkedAll" [indeterminate]="indeterminate" (change)="changeAll($event.checked)" *ngIf="isOpenCheckBox && !isLoading" [disabled]="isLoading"></tds-checkbox>
     <tds-label class="text-error-500">Danh sách lỗi</tds-label>
   </div>
 </div>
@@ -8,7 +8,7 @@
 <tds-spin [spinning]="isLoading">
   <div class="flex flex-col w-full">
     <div class="flex flex-col gap-y-2 max-h-[500px] overflow-y-auto tds-custom-scroll pr-2">
-      <div *ngFor="let err of lstErrors" class="text-body-2 bg-neutral-3-50" is>
+      <div *ngFor="let err of lstErrors" class="text-body-2 bg-neutral-3-50">
         <div [innerHTML]="err"></div>
       </div>
 

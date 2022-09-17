@@ -20,29 +20,28 @@
         <thead>
             <tr>
                 <th class="border-r" [tdsLeft]="true" rowspan="2"></th>
-                <th  [tdsLeft]="true" class="border-r" rowspan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
-                <th  class="text-center border-r border-b" colspan="3"  *ngIf="isHidden('Order')">Đơn hàng</th>
-                <th  class="text-center border-r border-b" colspan="3"  *ngIf="isHidden('Product')">Sản phẩm</th>
-                <th  class="border-r" rowspan="2" *ngIf="isHidden('ResumeTime')">Thống kê gửi tin</th>
-                <th  class="border-r" rowspan="2" *ngIf="isHidden('IsActive')">Hoạt động</th>
-                <th  class="border-r" rowspan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
-                <th  class="border-r" [tdsRight]="true" rowspan="2">Thao tác</th>
+                <th [tdsLeft]="true" class="border-r" rowspan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
+                <th class="text-center border-r border-b" colspan="3" *ngIf="isHidden('Order')">Đơn hàng</th>
+                <th class="text-center border-r border-b" colspan="3" *ngIf="isHidden('Product')">Sản phẩm</th>
+                <th class="border-r" rowspan="2" *ngIf="isHidden('ResumeTime')">Thống kê gửi tin</th>
+                <th class="border-r" rowspan="2" *ngIf="isHidden('IsActive')">Hoạt động</th>
+                <th class="border-r" rowspan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
+                <th class="border-r" [tdsRight]="true" rowspan="2">Thao tác</th>
             </tr>
             <tr>
-                <th class="border-r"  *ngIf="isHidden('Order')">Chờ chốt</th>
-                <th class="border-r"  *ngIf="isHidden('Order')">Đã chốt</th>
-                <th class="border-r"  *ngIf="isHidden('Order')">Đã hủy</th>
-
-                <th class="border-r"  *ngIf="isHidden('Product')">Chờ chốt</th>
-                <th class="border-r"  *ngIf="isHidden('Product')">Đã chốt</th>
-                <th class="border-r"  *ngIf="isHidden('Product')">Đã hủy</th>
+                <th class="border-r" *ngIf="isHidden('Order')">Chờ chốt</th>
+                <th class="border-r" *ngIf="isHidden('Order')">Đã chốt</th>
+                <th class="border-r" *ngIf="isHidden('Order')">Đã hủy</th>
+                <th class="border-r" *ngIf="isHidden('Product')">Chờ chốt</th>
+                <th class="border-r" *ngIf="isHidden('Product')">Đã chốt</th>
+                <th class="border-r" *ngIf="isHidden('Product')">Đã hủy</th>
             </tr>
         </thead>
         <tbody>
           <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
             <tr class="text-body-2 text-neutral-900 font-regular">
 
-                <td [expand]="expandSet.has(data.Id)" class="border-r"
+                <td [expand]="expandSet.has(data.Id)" class="border-r text-center"
                     (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true"
                     [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
                 </td>
@@ -150,10 +149,8 @@
             </tr>
             <!-- expand  details -->
             <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
-              <!-- <div class="flex items-center justify-center k-grid-table-wrap-detail"> -->
-                  <expand-live-campaign class="w-full p-3 block" *ngIf="expandSet.has(data.Id)" [liveCampaignId]="data.Id"></expand-live-campaign>
-              <!-- </div> -->
-          </tr>
+              <expand-live-campaign class="w-full p-3 block" *ngIf="expandSet.has(data.Id)" [liveCampaignId]="data.Id"></expand-live-campaign>
+            </tr>
           </ng-template>
         </tbody>
     </tds-table>

@@ -87,19 +87,6 @@ export class ModalListBillComponent implements OnInit {
     this.modal.destroy(null)
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "Đã xác nhận":
-        return "info";
-      case "Đã thanh toán":
-        return "success";
-      case "Nháp":
-        return "secondary";
-      default :
-        return "error";
-    }
-  }
-
   showModalDetailBill(data : BillofPartnerDTO){
     const modal = this.modalService.create({
       title: `Hóa đơn [${data.Number}]`,

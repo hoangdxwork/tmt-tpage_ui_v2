@@ -1,14 +1,14 @@
 <div class="w-full h-full flex flex-col bg-white rounded-xl text-body-2 text-neutral-900">
     <div class="py-2.5 px-4 flex justify-end items-center">
         <tds-form-field class="w-1/4">
-            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput
-                (keyup.enter)="onSearch($event)" />
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput [tdsInputDebounce]="750" [(ngModel)]="innerText"
+                [ngModelOptions]="{standalone: true}" (inputKeyup)="onSearch($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
         </tds-form-field>
     </div>
     <div class="h-full pb-2.5">
         <tds-table #table [showSizeChanger]="true" [frontPagination]="false"
-            [listData]="lstOfData" [scroll]="{y:'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
+            [listData]="lstOfData" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
             (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
             <thead>
                 <tr>
@@ -84,7 +84,7 @@
                             <tds-tabset>
                                 <tds-tab title="Đơn hàng chờ chốt" clsContent="p-0">
                                     <ng-template tds-tab>
-                                        <div class="w-full h-[240px]">
+                                        <div class="w-full h-[360px]">
                                             <table-order-wait [liveCampaignId]="liveCampaignId"
                                                 [productId]="product.ProductId">
                                             </table-order-wait>
@@ -93,7 +93,7 @@
                                 </tds-tab>
                                 <tds-tab title="Đơn hàng bị hủy & bị xóa" clsContent="p-0">
                                     <ng-template tds-tab>
-                                        <div class="w-full h-[240px]">
+                                        <div class="w-full h-[360px]">
                                             <table-order-cancel [liveCampaignId]="liveCampaignId"
                                                 [productId]="product.ProductId">
                                             </table-order-cancel>
@@ -102,7 +102,7 @@
                                 </tds-tab>
                                 <tds-tab title="Hóa đơn đã chốt" clsContent="p-0">
                                     <ng-template tds-tab>
-                                        <div class="w-full h-[240px]">
+                                        <div class="w-full h-[360px]">
                                             <table-bill-confirmed [liveCampaignId]="liveCampaignId"
                                                 [productId]="product.ProductId">
                                             </table-bill-confirmed>
@@ -111,7 +111,7 @@
                                 </tds-tab>
                                 <tds-tab title="Hóa đơn bị hủy & bị xóa" clsContent="p-0">
                                     <ng-template tds-tab>
-                                        <div class="w-full h-[240px]">
+                                        <div class="w-full h-[360px]">
                                             <table-bill-cancel [liveCampaignId]="liveCampaignId"
                                                 [productId]="product.ProductId">
                                             </table-bill-cancel>

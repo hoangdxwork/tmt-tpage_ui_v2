@@ -28,14 +28,14 @@
               </span>
           </button>
 
-          <button tds-button color="primary" size="md" class="flex items-center"
+          <button tds-button-icon color="primary" size="md" class="flex items-center"
               tds-tooltip tooltipTitle="Chỉnh sửa chiến dịch" (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)">
               <span class="flex items-center gap-x-2">
                   <i class="tdsi-edit-fill text-lg"></i>
               </span>
           </button>
 
-          <button *ngIf="currentLiveCampaign" tds-button color="error" size="md" class="flex items-center"
+          <button *ngIf="currentLiveCampaign" tds-button-icon color="error" size="md" class="flex items-center"
               tds-tooltip tooltipTitle="Bỏ chọn chiến dịch" (click)="removeLiveCampaign()">
               <span class="flex items-center gap-x-2">
                   <i class="tdsi-close-fill text-lg"></i>

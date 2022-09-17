@@ -1,18 +1,15 @@
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { mergeMap } from 'rxjs/operators';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
-import { CommonService } from '../../services/common.service';
-import { finalize, map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { orderBy as _orderBy } from 'lodash';
 import { ProductTemplateV2DTO } from '../../dto/product-template/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
 import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
-import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -31,7 +28,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   @Input() priceListItems: any;
   @Input() isLoadingProduct: boolean = false;
-  @Input() inLiveCampaign: boolean = false;
+  @Input() type!: string;
 
   @Output() onLoadProductToOrderLines: EventEmitter<any> = new EventEmitter<any>();
   @Output() onLoadProductToLiveCampaign: EventEmitter<any> = new EventEmitter<any>();
@@ -92,7 +89,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.loadCurrentCompany();
     this.loadData();
   }
-
 
   loadData() {
     this.isLoading = true;
@@ -180,7 +176,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     }
 
     if(TDSHelperArray.hasListValue(this.priceListItems)) {
-
         data.forEach((x: DataPouchDBDTO) => {
           if(x.SaleOK && ! x.IsDiscount) {
               let price = this.priceListItems[`${x.ProductTmplId}_${x.UOMId}`];
@@ -253,7 +248,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         typeComponent: 'lst-product-tmp',
-        inLiveCampaign: this.inLiveCampaign
+        type: this.type
       }
     });
 
@@ -261,7 +256,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
         next:(res: any) => {
           if(res) {
             let productTmplItems = res[0];
-
+            
             if(res[1]) {
               let cacheObject = res[1];
               this.indexDbStorage = [...cacheObject.cacheDbStorage];
@@ -304,10 +299,12 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.indClick = index as number;
 
     // TODO: trường hợp thêm sản phẩm vào đơn hàng
-    if (!this.inLiveCampaign) {
-      this.onLoadProductToOrderLines.emit(data);
-    } else {
-      this.filterLstVariants(data);
+    switch(this.type){
+      case 'order':
+        this.onLoadProductToOrderLines.emit(data);
+        break;
+      case 'liveCampaign':
+        this.filterLstVariants(data);
     }
   }
 
@@ -316,8 +313,13 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
     model.map((x: DataPouchDBDTO)=>{
       x.Tags = productTmplItems?.Tags || null;
-      return x
-    })
+
+      if(this.inventories && this.inventories[data.Id]){
+        x.QtyAvailable = this.inventories[data.Id].QtyAvailable || 0;
+        x.VirtualAvailable = this.inventories[data.Id].VirtualAvailable || 0;
+      }
+      return x;
+    });
 
     this.lstVariants = [...model];
   }
@@ -349,9 +351,11 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   getAllVariants(){
     // TODO: trường hợp thêm list các biến thể của sản phẩm
-    if (!this.inLiveCampaign) {
+    switch(this.type){
+      case 'order':
         this.onLoadProductToOrderLines.emit(this.lstVariants);
-    } else {
+        break;
+      case 'liveCampaign':
         this.onLoadProductToLiveCampaign.emit(this.lstVariants);
     }
     this.indClick = -1;
@@ -367,4 +371,3 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.search = !this.search;
   }
 }
-

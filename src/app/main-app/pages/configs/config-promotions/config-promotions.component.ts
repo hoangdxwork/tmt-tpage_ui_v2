@@ -195,6 +195,7 @@ export class ConfigPromotionsComponent implements OnInit {
 
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {
+      this.expandSet = new Set<number>();
       this.expandSet.add(id);
       // this.loadDetail(id);
     } else {

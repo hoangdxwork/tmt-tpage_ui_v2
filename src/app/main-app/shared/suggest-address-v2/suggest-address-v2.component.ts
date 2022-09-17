@@ -54,16 +54,9 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   constructor(private fb: FormBuilder,
       private cdRef: ChangeDetectorRef,
       private message: TDSMessageService,
-      private readonly tdsConfigService: TDSConfigService,
       private suggestService: SuggestAddressService) {
         this.createForm();
-  }
-
-  ngOnInit(): void {
-    this.loadCity();
-    this.tdsConfigService.set('message', {
-      maxStack: 3
-    });
+        this.loadCity();
   }
 
   createForm() {
@@ -75,65 +68,108 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-
-    if (this._cities && this._cities.code) {
-      this._form.controls['City'].patchValue(this._cities);
-
-      const code = this._cities.code;
-      this.loadDistricts(code);
-    } else {
-      this._form.controls['City'].patchValue(null);
+  ngOnInit(): void {
+    if(this._cities && this._cities.code) {
+        const code = this._cities.code;
+        this._form.controls['City'].patchValue(this._cities);
+        this.loadDistricts(code);
     }
 
-    if (this._districts && this._districts.code) {
-      this._form.controls['District'].patchValue(this._districts);
-
-      const code = this._districts.code;
-      this.loadWards(code);
-    } else {
-      this._form.controls['District'].patchValue(null);
+    if(this._districts && this._districts.code) {
+        const code = this._districts.code;
+        this._form.controls['District'].patchValue(this._districts);
+        this.loadWards(code);
     }
 
     if(this._wards && this._wards.code) {
-      this._form.controls['Ward'].patchValue(this._wards);
-    } else {
-      this._form.controls['Ward'].patchValue(null);
+        this._form.controls['Ward'].patchValue(this._wards);
     }
 
     if(this._street) {
+      this._form.controls['Street'].setValue(this._street);
+        this.innerText = this._street;
+
+        if(!this.isSelectAddress){
+            this.checkAddress(null);
+        }
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+
+    if(changes['_cities'] && !changes['_cities'].firstChange) {
+        this._form.controls['City'].patchValue(null);
+        this._cities = {...changes['_cities'].currentValue }
+
+        if(this._cities && this._cities.code) {
+            const code = this._cities.code;
+            this._form.controls['City'].patchValue(this._cities);
+            this.loadDistricts(code);
+        }
+    }
+
+    if(changes['_districts'] && !changes['_districts'].firstChange) {
+        this._form.controls['District'].patchValue(null);
+        this._districts = {...changes['_districts'].currentValue }
+
+        if(this._districts && this._districts.code) {
+            const code = this._districts.code;
+            this._form.controls['District'].patchValue(this._districts);
+            this.loadWards(code);
+        }
+    }
+
+    if(changes['_wards'] && !changes['_wards'].firstChange) {
+        this._form.controls['Ward'].patchValue(null);
+        this._wards = {...changes['_wards'].currentValue }
+
+        if(this._wards && this._wards.code) {
+            this._form.controls['Ward'].patchValue(this._wards);
+        }
+    }
+
+    if(changes['_street'] && !changes['_street'].firstChange) {
         this._form.controls['Street'].setValue(this._street);
         this.innerText = this._street;
+
         if(!this.isSelectAddress){
-          this.checkAddress(null);
+            this.checkAddress(null);
         }
-    } else {
-        this._form.controls['Street'].setValue(null);
     }
   }
 
   loadCity(): void {
+    this.lstCity = [];
     this.suggestService.setCity();
-    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstCity = [...res];
-        this.citySubject.next(res);
-    });
+    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstCity = [...res];
+          this.citySubject.next(res);
+        }
+      });
   }
 
   loadDistricts(code: string) {
-    this.suggestService.setDistrict(code);
-    this.suggestService.getDistrict().subscribe((res: any) => {
-        this.lstDistrict = [...res];
-        this.districtSubject.next(res);
-    });
+    this.lstDistrict = [];
+    this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstDistrict = [...res];
+          this.districtSubject.next(res);
+        }
+      });
   }
 
   loadWards(code: string) {
-    this.suggestService.setWard(code);
-    this.suggestService.getWard().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.lstWard = [...res];
-        this.wardSubject.next(res);
-    });
+    this.lstWard = [];
+    this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          this.lstWard = [...res];
+          this.wardSubject.next(res);
+        }
+      });
   }
 
   handleCityFilter(value: string) {
@@ -160,211 +196,144 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   changeStreet(event: any){
     if(event) {
       this._form.controls['Street'].setValue(event.target.value);
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Street'].value,
-        ShortAddress: '',
-        CityCode: this._form.controls['City'].value?.code,
-        CityName: this._form.controls['City'].value?.name,
-        DistrictCode: this._form.controls['District'].value?.code,
-        DistrictName: this._form.controls['District'].value?.name,
-        WardCode: this._form.controls['Ward'].value?.code,
-        WardName: this._form.controls['Ward'].value?.name,
-        Score: 0
-      }
-
-      this.onLoadSuggestion.emit(item);
     }
+
+    let item: ResultCheckAddressDTO = {
+        Address: this._form.controls['Street'].value,
+        CityCode: this._form.controls['City'].value ? this._form.controls['City'].value?.code :null,
+        CityName: this._form.controls['City'].value ? this._form.controls['City'].value?.name : null,
+        DistrictCode:  this._form.controls['District'].value ? this._form.controls['District'].value?.code : null,
+        DistrictName: this._form.controls['District'].value ? this._form.controls['District'].value?.name : null,
+        WardCode: this._form.controls['Ward'].value ? this._form.controls['Ward'].value?.code : null,
+        WardName: this._form.controls['Ward'].value ? this._form.controls['Ward'].value?.name : null
+    } as any
+
+    this.onLoadSuggestion.emit(item);
   }
 
   mappingStreet(){
-    let street = (this._form.controls['Ward'].value?.name ? (this._form.controls['Ward'].value.name + ', '): '')
+    let street = (this._form.controls['Ward'].value?.name ? (this._form.controls['Ward'].value.name + ', ') : '')
       + (this._form.controls['District'].value?.name ? (this._form.controls['District'].value.name + ', '): '')
-      + (this._form.controls['City'].value?.name ? this._form.controls['City'].value?.name: '')
+      + (this._form.controls['City'].value?.name ? this._form.controls['City'].value?.name: '');
 
     this._form.controls['Street'].setValue(street);
   }
 
-  changeCity(event: SuggestCitiesDTO) {
-    if (event) {
-      this._form.controls['District'].setValue(null);
-      this.lstDistrict = [];
+  changeCity(city: SuggestCitiesDTO) {
+    this._form.controls['City'].setValue(null);
+    this._form.controls['District'].setValue(null);
+    this.lstDistrict = [];
+    this._form.controls['Ward'].setValue(null);
+    this.lstWard = [];
 
-      this._form.controls['Ward'].setValue(null);
-      this.lstWard = [];
-
-      this.loadDistricts(event.code);
-
-      this._form.controls['City'].setValue(event);
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Street'].value,
-        ShortAddress: '',
-        CityCode: event.code,
-        CityName: event.name,
-        DistrictCode: '',
-        DistrictName: '',
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
-      this.onLoadSuggestion.emit(item);
-    } else {
-      this.lstDistrict = [];
-      this.lstWard = [];
-
-      this._form.controls['City'].setValue(null);
-      this._form.controls['District'].setValue(null);
-      this._form.controls['Ward'].setValue(null);
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Street'].value,
-        ShortAddress: '',
-        CityCode: '',
-        CityName: '',
-        DistrictCode: '',
-        DistrictName: '',
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
-      this.onLoadSuggestion.emit(item);
+    if (city && city.code ) {
+        this._form.controls['City'].setValue(city);
+        this.loadDistricts(city.code);
     }
-  }
+    this.mappingStreet();
 
-  changeDistrict(event: SuggestDistrictsDTO) {
-    if (event) {
-      this._form.controls['Ward'].setValue(null);
-      this.lstWard = [];
-
-      this.loadWards(event.code);
-
-      this._form.controls['District'].setValue(event);
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
+    let item: ResultCheckAddressDTO = {
         Address: this._form.controls['Street'].value,
-        ShortAddress: '',
-        CityCode: event.cityCode,
-        CityName: event.cityName,
-        DistrictCode: event.code,
-        DistrictName: event.name,
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
-
-      this.onLoadSuggestion.emit(item);
-    }else{
-      this.lstWard = [];
-
-      this._form.controls['District'].setValue(null);
-      this._form.controls['Ward'].setValue(null);
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Street'].value,
-        ShortAddress: '',
-        CityCode: this._form.controls['City'].value.code,
-        CityName: this._form.controls['City'].value.name,
-        DistrictCode: '',
-        DistrictName: '',
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
-      this.onLoadSuggestion.emit(item);
-    }
-  }
-
-  changeWard(event: SuggestWardsDTO) {
-    if(event) {
-      this._form.controls['Ward'].setValue(event);
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Street'].value,
-        ShortAddress: '',
-        CityCode: event.cityCode,
-        CityName: event.cityName,
-        DistrictCode: event.districtCode,
-        DistrictName: event.districtName,
-        WardCode: event.code,
-        WardName: event.name,
-        Score: 0
-      }
-
-      this.onLoadSuggestion.emit(item);
-    }else{
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Street'].value,
-        ShortAddress: '',
-        CityCode: this._form.controls['City'].value.code,
-        CityName: this._form.controls['City'].value.name,
-        DistrictCode: this._form.controls['District'].value.code,
-        DistrictName: this._form.controls['District'].value.name,
-        WardCode: '',
-        WardName: '',
-        Score: 0
-    }
+        CityCode: city ? city.code : null,
+        CityName: city ? city.name : null,
+        DistrictCode: null,
+        DistrictName: null,
+        WardCode: null,
+        WardName: null
+    } as any;
 
     this.onLoadSuggestion.emit(item);
+  }
+
+  changeDistrict(district: SuggestDistrictsDTO) {
+    this._form.controls['District'].setValue(null);
+    this._form.controls['Ward'].setValue(null);
+    this.lstWard = [];
+
+    if (district && district.code) {
+        this._form.controls['District'].setValue(district);
+        this.loadWards(district.code);
     }
+    this.mappingStreet();
+
+    let item: ResultCheckAddressDTO = {
+        Address: this._form.controls['Street'].value,
+        CityCode: district ? district.cityCode : null,
+        CityName:  district ? district.cityName : null,
+        DistrictCode: district ? district.code : null,
+        DistrictName: district ? district.name : null,
+        WardCode: null,
+        WardName: null
+    } as any;
+
+    this.onLoadSuggestion.emit(item);
+  }
+
+  changeWard(ward: SuggestWardsDTO) {
+    this._form.controls['Ward'].setValue(null);
+
+    if(ward && ward.code) {
+      this._form.controls['Ward'].setValue(ward);
+    }
+    this.mappingStreet();
+
+    let item: ResultCheckAddressDTO = {
+        Address: this._form.controls['Street'].value,
+        CityCode: ward ? ward.cityCode : null,
+        CityName: ward ? ward.cityName : null,
+        DistrictCode: ward ? ward.districtCode : null,
+        DistrictName: ward ? ward.districtName : null,
+        WardCode: ward ? ward.code : null,
+        WardName: ward ? ward.name : null
+    } as any;
+
+    this.onLoadSuggestion.emit(item);
   }
 
   suggest(text: string): Observable<any[]> {
     this.arrowkeyLocation = -1;
+
+    text = TDSHelperString.stripSpecialChars(text.toLowerCase().trim());
     text = encodeURIComponent(text);
 
     return this.suggestService.suggest(text)
-      .pipe(map(res => {
-          this.suggestCount = res.data.length;
-          return res.data;
+      .pipe(map((res: any) => {
+          this.suggestCount = Number(res.data?.length);
+          return res?.data;
       }));
   }
 
   checkAddress(event: any) {
-    let text = this.innerText;
 
-    if(!TDSHelperString.hasValueString(text)) {
+    if(!TDSHelperString.hasValueString(this.innerText)) {
       this.message.error('Vui lòng nhập dữ liệu trước khi kiểm tra!');
       return
     }
+
     this.isAlert = false;
     this.isLoading = true;
+    let text = TDSHelperString.stripSpecialChars(this.innerText.toLowerCase().trim());
     text = encodeURIComponent(text);
+
     this.suggestService.checkAddress(text).pipe(takeUntil(this.destroy$)).subscribe({
       next : (res: any) => {
-        if (res.success && TDSHelperArray.isArray(res.data)) {
-          this.index = 0;
-          this.selectAddress(res.data[0], 0);
-          this.tempAddresses = res.data;
-        }
-        if (res.data?.length == 0) {
-          this.isAlert = true;
-        }
-        this.isLoading = false;
-        this.cdRef.detectChanges();
+          if (res.success && TDSHelperArray.isArray(res.data)) {
+              this.index = 0;
+              this.selectAddress(res.data[0], 0);
+              this.tempAddresses = res.data;
+          }
+
+          if (res.data?.length == 0) {
+            this.isAlert = true;
+          }
+
+          this.isLoading = false;
+          this.cdRef.detectChanges();
       }, error: (error: any) => {
-        this.isAlert = true;
-        this.message.error('Không tìm thấy kết quả phù hợp!');
-        this.isLoading = false;
+
+          this.isAlert = true;
+          this.message.error('Không tìm thấy kết quả phù hợp!');
+          this.isLoading = false;
       }
     })
   }
@@ -376,8 +345,9 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
   selectAddress(item: ResultCheckAddressDTO, index: number) {
     if(item) {
-      this._form.reset();
+        this._form.reset();
         this.index = index;
+
         this._form.controls['Street'].setValue(item.Address);
         if(item.CityCode) {
             this._form.controls['City'].patchValue({
@@ -386,23 +356,26 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
             });
             this.loadDistricts(item.CityCode)
         }
+
         if(item.DistrictCode) {
-          this._form.controls['District'].patchValue({
+            this._form.controls['District'].patchValue({
                 code: item.DistrictCode,
                 name: item.DistrictName
             });
             this.loadWards(item.DistrictCode)
-        }else{
+        } else {
           this._form.controls['District'].patchValue(null);
         }
+
         if(item.WardCode) {
-          this._form.controls['Ward'].patchValue({
+            this._form.controls['Ward'].patchValue({
                 code: item.WardCode,
                 name: item.WardName
             });
-        }else{
+        } else {
           this._form.controls['Ward'].patchValue(null);
         }
+
         this.onLoadSuggestion.emit(item);
     }
   }

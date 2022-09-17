@@ -258,8 +258,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   loadSummaryStatus() {
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange.startDate,
-      DateEnd: this.filterObj.dateRange.endDate,
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
@@ -328,7 +328,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   showModalCreateBillFast(ids: string[]) {
     this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {console.log(res)
+        next: (res: any) => {
           if (res) {
             this.modal.create({
                 title: 'Tạo hóa đơn nhanh',
@@ -541,8 +541,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.status = event.status;
 
     this.filterObj.dateRange = {
-      startDate: event.dateRange.startDate,
-      endDate: event.dateRange.endDate
+      startDate: event.dateRange ? event.dateRange?.startDate: null,
+      endDate: event.dateRange?  event.dateRange?.endDate: null
     }
 
     if (TDSHelperArray.hasListValue(event.status)) {
@@ -552,6 +552,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     }
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   columnsChange(event: Array<ColumnTableDTO>) {

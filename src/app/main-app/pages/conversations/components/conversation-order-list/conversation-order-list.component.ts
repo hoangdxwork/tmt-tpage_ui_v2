@@ -89,7 +89,8 @@ export class ConversationOrderListComponent implements OnInit {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
     this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        this.loadSummaryStatus();
+        // đóng tạm thời
+        // this.loadSummaryStatus();
         this.loadData(this.pageSize, this.pageIndex);
       }
     })
@@ -98,8 +99,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.chatomniObjectFacade.onChangeListOrderFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (item: ChatomniObjectsItemDto) => {
         this.currentPost = item;
-
-        this.loadSummaryStatus();
+        // đóng tạm thời
+        // this.loadSummaryStatus();
         this.loadData(this.pageSize, this.pageIndex);
       }
     });
@@ -113,6 +114,9 @@ export class ConversationOrderListComponent implements OnInit {
       next:(res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          //gán tạm thời
+          let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
+          this.tabNavs = [...data];
       },
       error:(error) => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -151,7 +155,8 @@ export class ConversationOrderListComponent implements OnInit {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
-    this.loadSummaryStatus();
+    // đóng tạm thời
+    // this.loadSummaryStatus();
   }
 
   changePageSize(pageSize:number){
@@ -169,8 +174,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = event.value;
-
-    this.loadSummaryStatus();
+    // đóng tạm thời
+    // this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -434,8 +439,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = '';
-
-    this.loadSummaryStatus();
+    // đóng tạm thời
+    // this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 }

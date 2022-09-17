@@ -1,14 +1,14 @@
+import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
+import { TIDictionary } from './../../../../../lib/dto/dictionary.dto';
+import { CommonService } from './../../../../services/common.service';
 import { TagService } from './../../../../services/tag.service';
-import { FilterObjSOOrderModel } from './../../../../services/mock-odata/odata-saleonlineorder.service';
+import { FilterObjSOOrderModel, TabNavsDTO } from './../../../../services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CRMMatchingService } from '../../../../services/crm-matching.service';
 import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMTeamService } from '../../../../services/crm-team.service';
 import { PartnerService } from '../../../../services/partner.service';
-import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
-
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { addDays } from 'date-fns';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -16,7 +16,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
@@ -31,6 +31,7 @@ import { CreateBillFastComponent } from '@app/pages/order/components/create-bill
 import { GetListOrderIdsDTO } from '@app/dto/saleonlineorder/list-order-ids.dto';
 import { FastSaleOrderService } from '@app/services/fast-sale-order.service';
 import { ModalHistoryChatComponent } from '@app/pages/order/components/modal-history-chat/modal-history-chat.component';
+import { ODataSaleOnline_OrderModel } from '@app/dto/saleonlineorder/odata-saleonline-order.dto';
 
 @Component({
   selector: 'detail-order-livecampaign',
@@ -57,10 +58,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     tags: [],
     status: [],
     searchText: '',
-    dateRange: {
-      startDate: addDays(new Date(), -30),
-      endDate: new Date()
-    }
+    dateRange: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
@@ -70,7 +68,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     dir: SortEnum.desc,
   }];
 
-  lstOfData: Array<TDSSafeAny> = [];
+  lstOfData: Array<ODataSaleOnline_OrderModel> = [];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -82,6 +80,10 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
+
+  isTabNavs: boolean = false;
+  public tabNavs: Array<TabNavsDTO> = [];
+  public summaryStatus: Array<TabNavsDTO> = [];
 
   constructor(private message: TDSMessageService,
     private modal: TDSModalService,
@@ -97,10 +99,12 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     private chatomniMessageFacade: ChatomniMessageFacade,
     private destroy$: TDSDestroyService,
     private resizeObserver: TDSResizeObserver,
+    private commonService: CommonService,
     private tagService: TagService) { }
 
   ngOnInit(): void {
     this.loadTags();
+    this.loadSummaryStatus();
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -134,6 +138,8 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          let lstId = this.lstOfData.map((x) => x.PartnerId);
+          this.loadParnerStatus(lstId);
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || Message.CanNotLoadData);
@@ -148,6 +154,54 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false ));
   }
 
+  loadParnerStatus(params: Array<number>) {
+    this.commonService.getPartnersById(params).subscribe({
+      next: (res: TIDictionary<String>) => {
+        if(res) {
+          this.lstOfData.map( x => {
+            if(res[x.PartnerId]) {
+              x.PartnerStatus = res[x.PartnerId];
+            }
+          })
+        }
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
+      }
+    });
+  }
+
+  loadSummaryStatus() {
+    let model: SaleOnlineOrderSummaryStatusDTO = {
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
+      SearchText: this.filterObj.searchText,
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+    }
+
+
+    this.isTabNavs = true;
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
+      finalize(() => this.isTabNavs = false)).subscribe({
+        next: (res: Array<TDSSafeAny>) => {
+            let tabs: TabNavsDTO[] = [];
+            let total = 0;
+
+            res?.map((x: TDSSafeAny, index: number) => {
+                total += x.Total;
+                index = index + 2;
+
+                tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
+            });
+           
+            tabs.sort((a, b) => a.Index - b.Index);
+
+            this.tabNavs = [...tabs];
+            this.summaryStatus = this.tabNavs;
+        }
+      });
+  }
+
   onLoadOption(event: any): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
@@ -157,10 +211,10 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       tags: event.tags,
       status: event?.status != 'Tất cả' ? event?.status : null,
       searchText: event.searchText,
-      dateRange: {
+      dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate,
-      }
+      } : null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -184,7 +238,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  onEdit(item: QuickSaleOnlineOrderModel) {
+  onEdit(item: ODataSaleOnline_OrderModel) {
     if(item && item.Id) {
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
@@ -244,19 +298,6 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
           this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
       }
     });
-  }
-
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "Nháp":
-        return "info";
-      case "Đơn hàng":
-        return "success";
-      case "Hủy":
-        return "error";
-      default:
-        return "warning";
-    }
   }
 
   onSearch(data: TDSSafeAny) {
@@ -348,16 +389,19 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
 
     // get data currentConversation
     this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
-        if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
-
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: MDBByPSIdDTO) => {
+          if (res) {
+            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+            this.currentConversation = { ...model };
+  
+            this.psid = res.psid;
+            this.isOpenDrawer = true;
+          }
+        }, 
+        error:(error) => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
         }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       })
   }
 
@@ -450,7 +494,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           if (res) {
-            this.modal.create({
+            const modal = this.modal.create({
                 title: 'Tạo hóa đơn nhanh',
                 content: CreateBillFastComponent,
                 centered: true,
@@ -460,6 +504,12 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
                   lstData: [...res.value] as GetListOrderIdsDTO[]
                 }
             });
+
+            modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+              next:(res) => {
+                this.loadData(this.pageSize, this.pageIndex);
+              }
+            })
           }
           this.isLoading = false;
         },
@@ -493,12 +543,5 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
         type: "order"
       }
     });
-    modal.afterClose.subscribe(result => {
-    })
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

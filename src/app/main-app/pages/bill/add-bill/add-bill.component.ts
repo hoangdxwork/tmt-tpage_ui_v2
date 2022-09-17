@@ -441,8 +441,17 @@ export class AddBillComponent implements OnInit {
     let result = this.prepareSuggestionsBill.mappingAddress(data);
 
     this._cities = result?._cities || { code:'', name:'' };
+    if(this._cities && this._cities.code) {
+      this.loadDistricts(this._cities.code);
+    }
+
     this._districts = result?._districts || this._districts;
+    if(this._districts && this._districts.code) {
+      this.loadWards(this._districts.code);
+    }
+
     this._wards = result?._wards || this._wards;
+
     this._street = result?._street || this._street;
     this.innerText = this._street;
   }
@@ -1453,167 +1462,103 @@ export class AddBillComponent implements OnInit {
   }
 
   loadDistricts(code: string) {
-    this.suggestService.setDistrict(code);
-    this.suggestService.getDistrict().subscribe((res: any) => {
+    this.suggestService.getDistrict(code).subscribe((res: any) => {
         this.lstDistrict = [...res];
         this.districtSubject.next(res);
     });
   }
 
   loadWards(code: string) {
-    this.suggestService.setWard(code);
-    this.suggestService.getWard().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.lstWard = [...res];
         this.wardSubject.next(res);
     });
   }
 
 
-  changeCity(event: SuggestCitiesDTO) {
-    if (event) {
-      this.loadDistricts(event.code);
+  changeCity(city: SuggestCitiesDTO) {
+    this._form.controls['Ship_Receiver'].patchValue({
+      City: null,
+      District: null,
+      Ward: null
+    });
+
+    this.lstDistrict = [];
+    this.lstWard = [];
+
+    if (city && city.code ) {
       this._form.controls['Ship_Receiver'].patchValue({
-        City: event,
-        District:  null,
-        Ward:  null
+        City: city
       });
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Ship_Receiver'].value.Street,
-        ShortAddress: '',
-        CityCode: event.code,
-        CityName: event.name,
-        DistrictCode: '',
-        DistrictName: '',
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
-
-      this.setAddress(item);
-    } else {
-      this.lstDistrict = [];
-      this.lstWard = [];
-
-      this._form.controls['Ship_Receiver'].patchValue({
-        City: null,
-        District:  null,
-        Ward:  null
-      });
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Ship_Receiver'].value.Street,
-        ShortAddress: '',
-        CityCode: '',
-        CityName: '',
-        DistrictCode: '',
-        DistrictName: '',
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
-
-      this.setAddress(item);
+        this.loadDistricts(city.code);
     }
-  }
+    this.mappingStreet();
 
-  changeDistrict(event: SuggestDistrictsDTO) {
-    if (event) {
-      this.loadWards(event.code);
-
-      this._form.controls['Ship_Receiver'].patchValue({
-        District:  event,
-        Ward:  null
-      });
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
+    let item: ResultCheckAddressDTO = {
         Address: this._form.controls['Ship_Receiver'].value?.Street,
-        ShortAddress: '',
-        CityCode: event.cityCode,
-        CityName: event.cityName,
-        DistrictCode: event.code,
-        DistrictName: event.name,
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
+        CityCode: city ? city.code : null,
+        CityName: city ? city.name : null,
+        DistrictCode: null,
+        DistrictName: null,
+        WardCode: null,
+        WardName: null
+    } as any;
 
-      this.setAddress(item);
-    }else{
-      this.lstWard = [];
-
-      this._form.controls['Ship_Receiver'].patchValue({
-        District:  null,
-        Ward:  null
-      });
-
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Ship_Receiver'].value?.Street,
-        ShortAddress: '',
-        CityCode: this._form.controls['Ship_Receiver'].value?.City?.code,
-        CityName: this._form.controls['Ship_Receiver'].value?.City?.name,
-        DistrictCode: '',
-        DistrictName: '',
-        WardCode: '',
-        WardName: '',
-        Score: 0
-      }
-
-      this.setAddress(item);
-    }
-  }
-
-  changeWard(event: SuggestWardsDTO) {
-    if(event) {
-      this._form.controls['Ship_Receiver'].patchValue({
-        Ward:  event
-      });
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Ship_Receiver'].value?.Street,
-        ShortAddress: '',
-        CityCode: event.cityCode,
-        CityName: event.cityName,
-        DistrictCode: event.districtCode,
-        DistrictName: event.districtName,
-        WardCode: event.code,
-        WardName: event.name,
-        Score: 0
-      }
-      this.setAddress(item);
-
-    }else{
-      this.mappingStreet();
-
-      let item: ResultCheckAddressDTO = {
-        Telephone: null,
-        Address: this._form.controls['Ship_Receiver'].value?.Street,
-        ShortAddress: '',
-        CityCode: this._form.controls['Ship_Receiver'].value?.City?.code,
-        CityName: this._form.controls['Ship_Receiver'].value?.City?.name,
-        DistrictCode: this._form.controls['Ship_Receiver'].value?.District?.code,
-        DistrictName: this._form.controls['Ship_Receiver'].value?.District?.name,
-        WardCode: '',
-        WardName: '',
-        Score: 0
-    }
     this.setAddress(item);
+  }
 
+  changeDistrict(district: SuggestDistrictsDTO) {
+    this._form.controls['Ship_Receiver'].patchValue({
+      District: null,
+      Ward: null
+    });
+
+    this.lstWard = [];
+
+    if (district && district.code) {
+      this._form.controls['Ship_Receiver'].patchValue({
+        District: district
+      });
+        this.loadWards(district.code);
     }
+    this.mappingStreet();
+
+    let item: ResultCheckAddressDTO = {
+        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        CityCode: district ? district.cityCode : null,
+        CityName:  district ? district.cityName : null,
+        DistrictCode: district ? district.code : null,
+        DistrictName: district ? district.name : null,
+        WardCode: null,
+        WardName: null
+    } as any;
+
+    this.setAddress(item);
+  }
+
+  changeWard(ward: SuggestWardsDTO) {
+    this._form.controls['Ship_Receiver'].patchValue({
+      Ward: null
+    });
+
+    if(ward && ward.code) {
+      this._form.controls['Ship_Receiver'].patchValue({
+        Ward: ward
+      });
+    }
+    this.mappingStreet();
+
+    let item: ResultCheckAddressDTO = {
+        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        CityCode: ward ? ward.cityCode : null,
+        CityName: ward ? ward.cityName : null,
+        DistrictCode: ward ? ward.districtCode : null,
+        DistrictName: ward ? ward.districtName : null,
+        WardCode: ward ? ward.code : null,
+        WardName: ward ? ward.name : null
+    } as any;
+   
+    this.setAddress(item)
   }
 
   changeStreet(event: any){

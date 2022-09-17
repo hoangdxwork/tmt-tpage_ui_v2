@@ -1,4 +1,4 @@
-<div class="w-full h-full text-body-2 text-neutral-1-900 h-[473px]">
+<div class="w-full text-body-2 text-neutral-1-900 h-[473px]">
   <tds-table #tableMessage [listData]="data" [scroll]="{y:'auto'}">
     <thead>
       <tr>
@@ -40,12 +40,12 @@
 
         <!-- Trạng thái -->
         <td>
-          {{data.State}}
+          {{data.State | getShowState}}
         </td>
 
         <!-- Xem chi tiết -->
         <td>
-          <button tds-button type="submit" color="primary" (click)="showModelInfoOrder(data.Id)">
+          <button tds-button type="submit" color="primary" (click)="showModelInfoOrder(data.OrderId)">
             Xem chi tiết
           </button>
         </td>

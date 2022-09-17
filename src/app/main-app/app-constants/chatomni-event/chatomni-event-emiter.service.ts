@@ -1,5 +1,5 @@
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
-import { ChatomniDataItemDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniDataItemDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ChatomniLastMessageEventEmitterDto, ChatomniTagsEventEmitterDto } from './../../dto/conversation-all/chatomni/chatomni-conversation';
 import { EventEmitter, Injectable } from "@angular/core";
 
@@ -31,6 +31,9 @@ export class ChatomniEventEmiterService {
 
     //TODO: Truyền thông tin địa chỉ khi chọn địa chỉ ở tds-conversation-item-v2 sang conversation-partner, conversation-order
     public selectAddressEmiter$ = new EventEmitter<ResultCheckAddressDTO>();
+
+    //TODO: tryền bình luận con sang tds-conversation
+    public childCommentConversationEmiter$ = new EventEmitter<ExtrasChildsDto>();
 
     constructor() {
     }

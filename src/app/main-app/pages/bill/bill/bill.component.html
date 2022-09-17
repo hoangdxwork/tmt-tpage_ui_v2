@@ -22,7 +22,7 @@
               </div>
           </div>
 
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]>
           </action-dropdown>
         </div>
         <div *ngIf="setOfCheckedId.size == 0" class="flex flex-row items-center justify-start">
@@ -42,7 +42,7 @@
             <tds-form-field>
               <tds-select valueField="Id" textField="Name" class="xl:w-[100px] 2xl:w-[190px] truncate"
                 placeholder="Chọn đối tác" [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
-                disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
+                disabledField="isActive" [data]="lstCarriers" [allowClear]="true">
               </tds-select>
             </tds-form-field>
           </div>
@@ -52,8 +52,8 @@
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
 
-          <filter-options [lstTags]="lstTags" (onLoadOption)="onLoadOption($event)"
-              [filterObj]="filterObj" [lstCarriers]="(lstCarriers | async) || []"></filter-options>
+          <filter-options [lstTags]="lstTags" [summaryStatus]="summaryStatus" (onLoadOption)="onLoadOption($event)"
+              [filterObj]="filterObj" [lstCarriers]="lstCarriers"></filter-options>
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
       </div>

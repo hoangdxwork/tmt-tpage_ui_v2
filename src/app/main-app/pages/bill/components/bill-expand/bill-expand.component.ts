@@ -1,3 +1,4 @@
+import { TDSTabChangeEvent } from 'tds-ui/tabs';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
@@ -28,7 +29,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   isProcessing: boolean = false;
   isLoading: boolean = false;
   logOrder: any;
-  tabSelected = 'detail';
+  selectedIndex = 0;
 
   constructor(
     private fSOService: FastSaleOrderService,
@@ -149,16 +150,16 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  onLoadTab(tabName: string) {
-    this.tabSelected = tabName;
-
-    switch (tabName) {
-      case 'detail':
+  onSelectedChange(ev: TDSTabChangeEvent) {
+    switch (ev.index) {
+      case 0:
         this.loadData();
         break;
-      case 'information':
+
+      case 1:
         break;
-      case 'histories':
+        
+      case 2:
         this.logOrder = [];
 
         this.fSOService.getHistoryEditOrder(this.dataItem.Id).subscribe((res: any) => {

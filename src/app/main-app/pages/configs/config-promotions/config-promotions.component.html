@@ -63,7 +63,7 @@
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
-                        <tr class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.Id) ? 'bg-background-6':''}}">
+                        <tr class="text-neutral-1-900 text-body-2 font-regular" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
                             <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)"></td>
                             <td [checked]="setOfCheckedId.has(data.Id)" [align]="'center'"
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
@@ -88,7 +88,7 @@
                             </td>
                         </tr>
                         <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-neutral-3-50">
-                            <div class="bg-white rounded-xl">
+                            <div class="bg-white rounded-xl m-3">
                                 <tds-tabset class="w-full">
                                     <tds-tab title="Chi tiết coupon">
                                         <span class="italic text-xs text-success-400"> Chức năng chưa phát triển </span>
