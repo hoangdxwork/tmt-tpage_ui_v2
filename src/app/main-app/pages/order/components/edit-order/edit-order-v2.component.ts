@@ -586,10 +586,10 @@ export class EditOrderV2Component implements OnInit {
       return;
     }
 
-    if(formAction && TDSHelperString.hasValueString(formAction)) {
+    if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
         if(this.saleModel) {
-          this.saleModel.FormAction = formAction;
+            this.saleModel.FormAction = formAction;
         }
     }
 
