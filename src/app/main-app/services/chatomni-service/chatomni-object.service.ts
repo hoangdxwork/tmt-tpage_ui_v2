@@ -17,6 +17,7 @@ export class ChatomniObjectService extends BaseSevice  {
   baseRestApi: string = "rest/v2.0/chatomni";
 
   urlNext: string | undefined;
+  _keycache_params_postid = "_params_postid";
 
   constructor(private apiService: TCommonService,
     private objFacade: ChatomniObjectFacade) {
@@ -65,6 +66,7 @@ export class ChatomniObjectService extends BaseSevice  {
       if (TDSHelperObject.hasValue(res)) {
           this.objFacade.setData(teamId, res);
       }
+
       this.urlNext = res.Paging?.UrlNext;
 
       let result = this.objFacade.getData(teamId);
@@ -89,18 +91,29 @@ export class ChatomniObjectService extends BaseSevice  {
       let url = this.urlNext as string;
       return this.getLink(url).pipe(map((res: ChatomniObjectsDto) => {
 
-        if(res.Extras) {
+        if(res && res.Extras) {
           exist.Extras = {
               Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
               Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
           }
         }
 
+        // TODO: item đầu tiên trong list trả về bị trùng item cuối cùng trong danh sách hiện tại
+        if(res && res.Items && res.Items.length > 0) {
+            let x = res.Items[0];
+            let f = exist.Items.filter(y => y.ObjectId == x.ObjectId)[0];
+
+            if(f && f?.ObjectId) {
+                res.Items = res.Items.filter(y => y.ObjectId !== x.ObjectId);
+            }
+        }
+
+        exist.Items = [...exist.Items, ...(res.Items || [])];
+
         // TODO nếu trùng urlNext thì xóa không cho load
-        if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
+        if (res && this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging?.UrlNext;
 
-            exist.Items = [...exist.Items, ...res.Items];
             exist.Paging = { ...res.Paging };
 
         } else {

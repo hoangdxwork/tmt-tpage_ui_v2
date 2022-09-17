@@ -19,10 +19,9 @@ export class ChatomniConversationService extends BaseSevice {
   baseRestApi: string = "rest/v2.0/chatomni";
   urlNext: string | undefined;
 
-  _keyCheckCsidRouter = 'check_Csid_Router';
+  _keycache_params_csid = "_params_csid";
 
   constructor(private apiService: TCommonService,
-    private crmMatchingService: CRMMatchingService,
       private csFacade: ChatomniConversationFacade) {
       super(apiService)
   }
@@ -100,18 +99,18 @@ export class ChatomniConversationService extends BaseSevice {
       return this.getLink(url).pipe(map((res: ChatomniConversationDto) => {
 
         if(!res) {
-          let result = this.csFacade.getData(teamId);
-          return result;
+            let result = this.csFacade.getData(teamId);
+            return result;
         }
 
-        if(res.Extras) {
+        if(res && res.Extras) {
           exist.Extras = {
               Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
           }
         }
 
          // TODO: Lọc conversation item trùng khi socket trả về không có trong lstConversation
-        if(res.Items && res.Items.length > 0) {
+        if(res && res.Items && res.Items.length > 0) {
 
           res.Items.forEach((x: ChatomniConversationItemDto) => {
             let idx = lstConversation.findIndex(a => a.ConversationId == x.ConversationId);
@@ -161,16 +160,6 @@ export class ChatomniConversationService extends BaseSevice {
     return this.getInfo(teamId, csid).pipe(map((x: any) => {
         return x;
     }),shareReplay(1))
-    // mergeMap((x: any) => {
-    //   if(x.Partner && x.Partner.Phone)  {
-    //       return this.crmMatchingService.checkPhoneReport(x.Partner.Phone).pipe(map((p: any) => {
-    //           x.Partner.PhoneReport = p.is_report;
-    //           return x;
-    //       }))
-    //   } else {
-    //       return x;
-    //   }
-    // }), )
   }
 
 }
