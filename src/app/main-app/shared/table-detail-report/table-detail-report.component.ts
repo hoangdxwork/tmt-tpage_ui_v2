@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
 import { Message } from '../../../lib/consts/message.const';
@@ -23,6 +24,8 @@ export class TableDetailReportComponent implements OnInit {
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
+    routerCheck!: string;
+    // lstSearch!: ReportLiveCampaignDetailDTO[];
 
     numberWithCommas =(value:TDSSafeAny) =>{
         if(value != null)
@@ -31,7 +34,7 @@ export class TableDetailReportComponent implements OnInit {
         }
         return value;
       } ;
-      
+
       parserComas = (value: TDSSafeAny) =>{
         if(value != null)
         {
@@ -42,14 +45,26 @@ export class TableDetailReportComponent implements OnInit {
 
     constructor(private message: TDSMessageService,
         private modalService: TDSModalService,
+        private router: Router,
         private viewContainerRef: ViewContainerRef,
         private destroy$: TDSDestroyService,
         private liveCampaignService: LiveCampaignService
     ) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+    //   this.lstSearch = [...this.lstDetails];
+       this.routerCheck = this.router.url;
+    }
 
     showModalLiveCampaignOrder(lstOrder: any[]) {
+        if(!lstOrder){
+            return
+        }
+
+        if(lstOrder.length == 0){
+            return
+        }
+
         this.modalService.create({
             title: 'Đơn hàng chờ chốt',
             size: 'xl',
@@ -62,6 +77,14 @@ export class TableDetailReportComponent implements OnInit {
     }
 
     showModalLiveCampaignBill(lstFastSaleOrder: any[]) {
+        if(!lstFastSaleOrder){
+            return
+        }
+
+        if(lstFastSaleOrder.length == 0){
+            return
+        }
+
         this.modalService.create({
             title: 'Hóa đơn chờ chốt',
             size: 'xl',
@@ -101,11 +124,17 @@ export class TableDetailReportComponent implements OnInit {
             },
             err => {
                 this.message.error(err?.error?.message || Message.UpdateQuantityFail);
+
                 this.indClickQuantity = '';
             })
     }
 
     closeQuantityPopover(): void {
         this.indClickQuantity = '';
+    }
+
+    onSearch(event: TDSSafeAny) {
+    //   this.lstSearch = [...this.lstDetails];
+    //   this.lstSearch = this.lstSearch.filter((item) => (item.ProductName && TDSHelperString.stripSpecialChars(item.ProductName.toLowerCase().trim()).indexOf(TDSHelperString.stripSpecialChars(event.value.toLowerCase().trim())) !== -1))
     }
 }

@@ -53,7 +53,6 @@ export class CreateBillErrorComponent implements OnInit {
     }
 
     this.lstErrors.map(item => {
-      console.log(item)
       item?.replace('text-info font-bold','text-info-500 font-semibold');
     });
 
@@ -139,7 +138,7 @@ export class CreateBillErrorComponent implements OnInit {
           this.printerService.printHtml(res);
           // TODO: nếu không còn lỗi thì đóng modal
           if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected)){
-            this.onCancel();
+            this.onCancel(null);
           }
         }, 
         error:(error: TDSSafeAny) => {
@@ -148,15 +147,15 @@ export class CreateBillErrorComponent implements OnInit {
           }
           // TODO: nếu không còn lỗi thì đóng modal
           if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected)){
-            this.onCancel();
+            this.onCancel(null);
           }
         }
       });
     }
   }
 
-  onCancel() {
-    this.modalRef.destroy(null);
+  onCancel(result?:TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
   onSave() {
@@ -210,7 +209,7 @@ export class CreateBillErrorComponent implements OnInit {
             this.isOpenCheckBox = false;
             //TODO: nếu không in và không còn lỗi thì đóng modal
             if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected) && !this.isPrintShip && !this.isPrint){
-              this.onCancel();
+              this.onCancel(null);
             }
           }
 
@@ -219,6 +218,8 @@ export class CreateBillErrorComponent implements OnInit {
         error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || Message.InsertFail);
+
+          this.onCancel(err);
           this.cdr.detectChanges();
         }
       });
@@ -271,7 +272,7 @@ export class CreateBillErrorComponent implements OnInit {
             this.isOpenCheckBox = false;
             //TODO: nếu không in và không còn lỗi thì đóng modal
             if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected) && !this.isPrintShip && !this.isPrint){
-              this.onCancel();
+              this.onCancel(null);
             }
           }
 
@@ -281,9 +282,11 @@ export class CreateBillErrorComponent implements OnInit {
 
           this.cdr.detectChanges();
         },
-        error:(error) => {
+        error:(err) => {
           this.isLoading = false;
-          this.message.error(error?.error?.message || Message.InsertFail);
+          this.message.error(err?.error?.message || Message.InsertFail);
+          
+          this.onCancel(err);
           this.cdr.detectChanges();
         }
       });

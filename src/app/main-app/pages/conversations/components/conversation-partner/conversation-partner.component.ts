@@ -8,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { MDBFacebookMappingNoteDTO,PartnerStatusDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { MDBFacebookMappingNoteDTO,PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
@@ -22,15 +22,13 @@ import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone
 import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { CreateOrUpdatePartnerModel } from 'src/app/main-app/dto/conversation-partner/create-update-partner.dto';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { CsPartner_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-cspartner/prepare-suggestion.handler';
 import { CsPartner_PrepareModelHandler } from 'src/app/main-app/handler-v2/chatomni-cspartner/prepare-partner.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenueDto, Conversation_LastBillDto, GroupBy_ConversationBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
-import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
 @Component({
     selector: 'conversation-partner',
@@ -80,9 +78,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private cdRef: ChangeDetectorRef,
+    private postEvent: ConversationPostEvent,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private conversationDataFacade: ConversationDataFacade,
-    private chatomniConversationService: ChatomniConversationService,
     private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
     private csPartner_PrepareModelHandler: CsPartner_PrepareModelHandler,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -113,6 +111,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       next: (res: ChatomniConversationInfoDto) => {
           if(TDSHelperObject.hasValue(res)) {
               this.loadData(res);
+
+              // TODO: gán sự kiện loading cho tab conversation-post
+              this.postEvent.spinLoadingTab$.emit(false);
           }
       }
     })
@@ -297,7 +298,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     })
   }
 
-  onChangeTabBill(event: any) {debugger
+  onChangeTabBill(event: any) {
     if(this.tab_Bill == event) {
       this.tab_Bill = null;
     } else {
@@ -334,18 +335,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     else return '#28A745';
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    switch(status) {
-      case "Nháp":
-        return "info";
-      case "Đã thanh toán":
-        return "success";
-      case "Hủy bỏ":
-        return "error";
-      default:
-        return "warning";
-    }
-  }
 
   onBlockPhone() {
     let phone = this.partner?.Phone;

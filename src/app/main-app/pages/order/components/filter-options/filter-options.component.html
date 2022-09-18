@@ -1,12 +1,12 @@
-<button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
-    size="md" class="relative" tds-tooltip tooltipTitle="Lọc dữ liệu"  [(visible)]="isVisible">
+<button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="loadSummaryStatus()"
+    size="md" class="relative" tds-tooltip tooltipTitle="Lọc dữ liệu" [autoClose]="false" [(visible)]="isVisible">
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg text-neutral-1-500 leading-none"></i>
   </span>
   <span *ngIf="checkActive() && isActive" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[-11px] right-[-6px]" style="font-size: 22px"></span>
 </button>
 <tds-dropdown-menu #menu="tdsDropdownMenu">
-  <div class="w-full p-4" *ngIf="filterObj">
+  <div class="max-w-[420px] p-4" *ngIf="filterObj">
 
     <!-- Date -->
     <div class="mb-4">

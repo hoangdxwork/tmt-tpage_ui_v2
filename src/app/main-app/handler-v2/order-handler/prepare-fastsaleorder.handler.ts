@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FastSaleOrder_DefaultDTOV2 } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
+import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 
 @Injectable()
 
@@ -27,14 +28,30 @@ export class SO_PrepareFastSaleOrderHandler {
       saleModel.Phone = quickOrderModel.Telephone || quickOrderModel.PartnerPhone;
       saleModel.Address = quickOrderModel.Address || quickOrderModel.Partner?.Street;
       saleModel.Name = quickOrderModel.Name;
+      saleModel.ReceiverNote = quickOrderModel.Note;
 
       // khi ko phải là khách hàng
       saleModel.PartnerId = quickOrderModel.PartnerId ||  quickOrderModel.Partner?.Id;
-      if(Number(saleModel.PartnerId)) {
-          saleModel.Partner = {
-            Id: saleModel.PartnerId,
-            Name: quickOrderModel.PartnerName || quickOrderModel.Partner?.Name
-        } as any;
+      if(Number( saleModel.PartnerId) > 0 && quickOrderModel.Partner) {
+          saleModel.Partner = { ...quickOrderModel.Partner } as any;
+
+          if(!TDSHelperString.hasValueString(saleModel.Partner?.CityCode) && saleModel.Partner && quickOrderModel.CityCode) {
+              saleModel.Partner.CityCode = quickOrderModel.CityCode;
+              saleModel.Partner.CityName = quickOrderModel.CityName;
+              saleModel.Partner.DistrictCode = quickOrderModel.DistrictCode;
+              saleModel.Partner.DistrictName = quickOrderModel.DistrictName;
+              saleModel.Partner.WardCode = quickOrderModel.WardCode;
+              saleModel.Partner.WardName = quickOrderModel.WardName;
+          }
+
+          if(!saleModel.Partner?.Phone && saleModel.Partner && quickOrderModel.Telephone) {
+              saleModel.Partner.Phone = quickOrderModel.Telephone;
+          }
+
+          if(!saleModel.Partner?.Street && saleModel.Partner && quickOrderModel.Address) {
+              saleModel.Partner.Street = quickOrderModel.Address;
+          }
+
       } else {
           delete saleModel.PartnerId;
           delete saleModel.Partner;
@@ -52,8 +69,30 @@ export class SO_PrepareFastSaleOrderHandler {
 
       saleModel.DateCreated = new Date();
 
+      //TODO: gán địa chỉ giao hàng
+      saleModel.Ship_Receiver = {
+          Name: quickOrderModel.PartnerName || quickOrderModel.Facebook_UserName,
+          Street: saleModel.Address,
+          Phone: saleModel.Phone,
+
+          City: quickOrderModel.CityCode ? {
+            code: quickOrderModel.CityCode,
+            name: quickOrderModel.CityName
+          } : null,
+
+          District: quickOrderModel.DistrictCode ? {
+            code: quickOrderModel.DistrictCode,
+            name: quickOrderModel.DistrictName
+          } : null,
+
+          Ward: quickOrderModel.WardCode ? {
+            code: quickOrderModel.WardCode,
+            name: quickOrderModel.WardName
+          } : null,
+      } as any;
+
       saleModel.OrderLines = [];
-      quickOrderModel.Details.map((x: Detail_QuickSaleOnlineOrder) => {
+      quickOrderModel.Details?.map((x: Detail_QuickSaleOnlineOrder) => {
         let item = {
             DiscountAmount: 0,
             Discount_Fixed: 0,

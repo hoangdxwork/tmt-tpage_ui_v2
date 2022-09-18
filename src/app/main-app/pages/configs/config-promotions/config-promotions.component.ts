@@ -146,7 +146,6 @@ export class ConfigPromotionsComponent implements OnInit {
   sendRequestTableTab(): void {
       this.loading = true;
       const requestData = this.TableData.filter(data => this.setOfCheckedId.has(data.id));
-      console.log(requestData);
       setTimeout(() => {
           this.setOfCheckedId.clear();
           this.refreshCheckedStatus();
@@ -196,6 +195,7 @@ export class ConfigPromotionsComponent implements OnInit {
 
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {
+      this.expandSet = new Set<number>();
       this.expandSet.add(id);
       // this.loadDetail(id);
     } else {

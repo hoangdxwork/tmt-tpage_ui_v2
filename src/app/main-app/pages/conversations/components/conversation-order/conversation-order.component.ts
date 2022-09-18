@@ -64,6 +64,7 @@ import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorde
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
 @Component({
   selector: 'conversation-order',
@@ -93,7 +94,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   saleConfig!: InitSaleDTO;
 
-  visibleIndex: boolean = false;
+  visibleIndex: number = -1;
   keyFilterUser: string = '';
   isOpenCarrier = false;
 
@@ -151,6 +152,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private deliveryCarrierService: DeliveryCarrierService,
     private auth: TAuthService,
     private partnerService: PartnerService,
+    private postEvent: ConversationPostEvent,
     private cdRef: ChangeDetectorRef,
     private productService: ProductService,
     private saleOnline_OrderService: SaleOnline_OrderService,
@@ -231,9 +233,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.selectProduct(res);
-          let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId);
+          let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
 
-          if(index > -1){
+          if(Number(index) > -1){
               this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
               `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
           }
@@ -287,10 +289,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                       this.quickOrderModel = {...obs};
                       this.mappingAddress(this.quickOrderModel);
                   }
+
+                  // TODO: gán sự kiện loading cho tab conversation-post
+                  this.postEvent.spinLoadingTab$.emit(false);
+
                   this.isLoading = false;
                   this.cdRef.detectChanges();
               },
               error: (error: any) => {
+                  // TODO: gán sự kiện loading cho tab conversation-post
+                  this.postEvent.spinLoadingTab$.emit(false);
+
                   this.isLoading = false;
                   this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
                   this.cdRef.detectChanges();
@@ -425,7 +434,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
     this.isEnableCreateOrder = event.checked;
-    this.visibleIndex = false;
+    this.visibleIndex = -1;
 
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
@@ -626,6 +635,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         next:(res: any) => {
           delete res['@odata.context'];
 
+          // TODO: gán sự kiện loading cho tab conversation-post
+          this.postEvent.spinLoadingTab$.emit(false);
+
           this.isLoading = false;
           this.quickOrderModel = {...res};
 
@@ -652,15 +664,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
           this.isUpdated = false;
-          let csid = comment.UserId;
-          this.chatomniConversationFacade.onSyncConversationInfo$.emit(csid);
+          this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
 
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.cdRef.detectChanges();
+
+          // TODO: gán sự kiện loading cho tab conversation-post
+          this.postEvent.spinLoadingTab$.emit(false);
+
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -669,27 +684,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let model1 = this.insertFromPostModel;
     let model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
 
-    let model = Object.assign({}, model1, model2);
+    let model = Object.assign({}, model1, model2) as any;
     if(formAction) {
         model.FormAction = formAction;
     }
 
-    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
-    if(this.isEnableCreateOrder && this.saleModel) {
-        fs_model = {...this.prepareCsFastSaleOrder(model)};
-
-        if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
-            return false;
-        }
-        if (!TDSHelperString.hasValueString(fs_model.Phone)) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
-            return false;
-        }
-        if (!TDSHelperString.hasValueString(fs_model.Address)) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
-            return false;
-        }
+    if(this.isEnableCreateOrder) {
+      if (!TDSHelperArray.hasListValue(model.Details)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          return false;
+      }
+      if (!TDSHelperString.hasValueString(model.Telephone)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
+          return false;
+      }
+      if (!TDSHelperString.hasValueString(model.Address)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+          return false;
+      }
     }
 
     this.isLoading = true;
@@ -703,6 +715,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           if(this.isEnableCreateOrder) {
+              let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+              fs_model = {...this.prepareCsFastSaleOrder(this.quickOrderModel)};
+
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               fs_model.PartnerId = res.PartnerId;
@@ -717,8 +732,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
               this.isUpdated = false;
-              let csid = res.Facebook_ASUserId;
-              this.chatomniConversationFacade.onSyncConversationInfo$.emit(csid);
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(res.Facebook_ASUserId);
           }
 
           this.cdRef.detectChanges();
@@ -737,19 +751,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         model.FormAction = formAction;
     }
 
-    let fs_model = {} as FastSaleOrder_DefaultDTOV2;
-    if(this.isEnableCreateOrder && this.saleModel) {
-        fs_model = {...this.prepareCsFastSaleOrder(model)};
-
-        if (!TDSHelperArray.hasListValue(fs_model.OrderLines)) {
+    if(this.isEnableCreateOrder) {
+        if (!TDSHelperArray.hasListValue(model.Details)) {
             this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
             return false;
         }
-        if (!TDSHelperString.hasValueString(fs_model.Phone)) {
+        if (!TDSHelperString.hasValueString(model.Telephone)) {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
             return false;
         }
-        if (!TDSHelperString.hasValueString(fs_model.Address)) {
+        if (!TDSHelperString.hasValueString(model.Address)) {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
             return false;
         }
@@ -759,11 +770,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
+          delete res['@odata.context'];
+          this.quickOrderModel = {...res};
+
           if(!this.isEnableCreateOrder && type) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
           }
 
           if(this.isEnableCreateOrder) {
+              let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+              fs_model = {...this.prepareCsFastSaleOrder(this.quickOrderModel)};
+
               // call api tạo hóa đơn
               fs_model.SaleOnlineIds = [res.Id];
               fs_model.PartnerId = res.PartnerId;
@@ -858,7 +875,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
-  prepareCsFastSaleOrder(model: any): any {
+  prepareCsFastSaleOrder(model: QuickSaleOnlineOrderModel): any {
     //TODO: gán model cho tạo hóa đơn
     let fs_model = {} as FastSaleOrder_DefaultDTOV2;
 
@@ -1021,8 +1038,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   selectProduct(item: DataPouchDBDTO) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId);
-    if(index < 0) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId) as number;
+    if(Number(index) < 0) {
       let data = {...item} as ProductDTOV2;
 
       let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
@@ -1120,35 +1137,26 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.visibleShipExtraMoney = false;
   }
 
-  openPopover(price:number, index:number){
-    this.visibleIndex = false;
-    this.priceValue = Number(price);
-  }
-
-  onChangePrice(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
-    if(Number(event) >= 0) {
-      let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
-      if(exit) {
-          this.quickOrderModel.Details[index].Price = event;
-          this.calcTotal();
-          this.coDAmount();
-      }
+  openPopover(event:boolean, price:number, index:number){
+    if(event){
+      this.visibleIndex = index;
+      this.priceValue = Number(price);
     }
   }
 
   approvePrice(item: Detail_QuickSaleOnlineOrder, index: number) {
+    this.visibleIndex = -1;
+
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
     if(exit) {
         this.quickOrderModel.Details[index].Price = this.priceValue;
         this.calcTotal();
         this.coDAmount();
     }
-
-    this.closePriceDetail();
   }
 
   closePriceDetail() {
-    this.visibleIndex = false;
+    this.visibleIndex = -1;
   }
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
@@ -1204,11 +1212,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   pushItemProduct(data: ProductDTOV2) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId);
-    if (index < 0){
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId) as number;
+    if (Number(index) < 0){
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
 
-        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
+        this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
     } else{
         this.quickOrderModel.Details[index].Quantity += 1;
     }
@@ -1258,12 +1266,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeShipExtraMoney(event: any) {
-    if(event) {
-      let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
-      this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
-      this.calcFee();
+    if(event && TDSHelperArray.hasListValue(this.shipExtraServices)) {
+        let idx = this.shipExtraServices?.findIndex((f: any) => f.ServiceId === 'XMG');
+        this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
+        this.calcFee();
 
-      this.visibleShipExtraMoney = false;
+        this.visibleShipExtraMoney = false;
     }
   }
 
@@ -1372,6 +1380,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
+
   validateData(){
     this.isEditPartner = false;
     this.isEnableCreateOrder = false;
@@ -1384,5 +1393,4 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     (this._wards as any) = null;
     (this._street as any) = null;
   }
-
 }

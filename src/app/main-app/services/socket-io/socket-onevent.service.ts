@@ -14,6 +14,7 @@ import { CRMTeamService } from "../crm-team.service";
 import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
+import { SocketioOnReadConversationDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -66,45 +67,59 @@ export class SocketOnEventService {
               return;
           }
 
-          console.log(socketData);
-
           switch (socketData.EventName) {
-            case ChatmoniSocketEventName.chatomniOnMessage:
-                socketData = { ...socketData } as SocketioOnMessageDto;
-                let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
+              // TODO: thông báo tin nhắn, comment
+              case ChatmoniSocketEventName.chatomniOnMessage:
+                  socketData = { ...socketData } as SocketioOnMessageDto;
+                  let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
 
-                this.socketEvent$.next({
-                    Notification: modelMesage,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                });
+                  this.socketEvent$.next({
+                      Notification: modelMesage,
+                      Data: socketData,
+                      Team: team,
+                      EventName: socketData.EventName
+                  });
 
               break;
 
-            case ChatmoniSocketEventName.chatomniOnUpdate:
-                socketData = { ...socketData } as SocketioOnUpdateDto;
-                let modelUpdate = { ...this.prepareChatomniOnUpdate(socketData, team) };
+              // TODO: cập nhật tin nhắn lỗi
+              case ChatmoniSocketEventName.chatomniOnUpdate:
+                  socketData = { ...socketData } as SocketioOnUpdateDto;
+                  let modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
+
+                  this.socketEvent$.next({
+                      Notification: modelUpdate,
+                      Data: socketData,
+                      Team: team,
+                      EventName: socketData.EventName
+                  });
+
+              break;
+
+              // TODO: update đơn hàng hội thoại
+              case ChatmoniSocketEventName.onUpdate:
+                  socketData = { ...socketData } as SocketioOnOrderDto;
+                  let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
+
+                  this.socketEvent$.next({
+                      Notification: modelOrder,
+                      Data: socketData,
+                      Team: team,
+                      EventName: socketData.EventName
+                  })
+
+              break;
+
+              // TODO: user đang xem
+              case ChatmoniSocketEventName.chatomniOnReadConversation:
+                socketData = { ...socketData } as SocketioOnReadConversationDto;
 
                 this.socketEvent$.next({
-                    Notification: modelUpdate,
+                    Notification: null,
                     Data: socketData,
                     Team: team,
                     EventName: socketData.EventName
                 });
-
-            break;
-
-            case ChatmoniSocketEventName.onUpdate:
-                socketData = { ...socketData } as SocketioOnOrderDto;
-                let modelOrder = { ...this.prepareChatomniOnOrder(socketData) };
-
-                this.socketEvent$.next({
-                    Notification: modelOrder,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                })
 
               break;
           }
@@ -175,8 +190,7 @@ export class SocketOnEventService {
 
   }
 
-  // TODO: trương hợp tin nhắn cập nhật
-  prepareChatomniOnUpdate(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
+  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
         Title: `${socketData.Message}`,
@@ -188,7 +202,7 @@ export class SocketOnEventService {
     return { ...model };
   }
 
-  prepareChatomniOnOrder(socketData: SocketioOnOrderDto) {
+  prepareChatomniOnUpdateOrder(socketData: SocketioOnOrderDto) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
         Title: `Order: ${socketData.Data?.Facebook_UserName || 'Người dùng Facebook'} vừa cập nhật đơn hàng`,

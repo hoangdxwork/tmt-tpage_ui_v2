@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ChatomniDataDto, ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { map, Observable, shareReplay } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { ChatomniCommentFacade } from "../chatomni-facade/chatomni-comment.facade";
 
@@ -81,8 +81,8 @@ export class ChatomniCommentService extends BaseSevice  {
 
   }
 
-  nextDataSource(id: string): Observable<ChatomniDataDto> {
-
+  nextDataSource(id: string, dataSourceItem: ChatomniDataItemDto[]): Observable<ChatomniDataDto> {
+    
     let exist = this.commentFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
 
@@ -90,8 +90,7 @@ export class ChatomniCommentService extends BaseSevice  {
             obs.next();
             obs.complete();
         })
-    }
-    else {
+    } else {
         let url = this.urlNext  as string;
         return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
 
@@ -100,6 +99,12 @@ export class ChatomniCommentService extends BaseSevice  {
                   Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
                   Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
               }
+            }
+
+            if(dataSourceItem && dataSourceItem.length > 0){
+              exist.Items = [ ...dataSourceItem, ...res.Items ];
+            } else {
+              exist.Items = [ ...exist.Items, ...res.Items ];
             }
 
             exist.Items = [ ...exist.Items, ...res.Items ];

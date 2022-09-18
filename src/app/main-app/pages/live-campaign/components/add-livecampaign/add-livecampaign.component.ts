@@ -1,5 +1,3 @@
-import { vi_VN } from 'tds-ui/i18n';
-import { formatNumber } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -44,6 +42,8 @@ export class AddLiveCampaignComponent implements OnInit {
   indClickTag: number = -1;
   datePicker: Date[] = [];
   tagsProduct: string[] = [];
+  isDepositChange: boolean = false;
+  modelTags: Array<string> = [];
 
   dataModel!: LiveCampaignDTO;
 
@@ -57,7 +57,7 @@ export class AddLiveCampaignComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -65,6 +65,7 @@ export class AddLiveCampaignComponent implements OnInit {
     }
     return value;
   };
+
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
     private crmTeamService: CRMTeamService,
@@ -147,7 +148,7 @@ export class AddLiveCampaignComponent implements OnInit {
               }
             },
             error:(error) => {
-              this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
+              this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
             }
           })
     }
@@ -200,6 +201,11 @@ export class AddLiveCampaignComponent implements OnInit {
   initDetails(data: LiveCampaignProductDTO | null) {
     if(data != null) {
 
+      let tags: string[] = [];
+      if(data.Tags){
+        tags = data.Tags.split(",");
+      }
+      
       return this.fb.group({
           Id: [data.Id],
           ImageUrl: [data.ImageUrl],
@@ -218,7 +224,7 @@ export class AddLiveCampaignComponent implements OnInit {
           UsedQuantity: [data.UsedQuantity],
           UOMId: [data.UOMId],
           UOMName: [data.UOMName],
-          Tags: [ data.Tags.split(",")],
+          Tags: [tags],
       })
     } else {
 
@@ -235,6 +241,7 @@ export class AddLiveCampaignComponent implements OnInit {
           ProductName: [null],
           ProductNameGet: [null],
           Quantity: [null],
+          QtyAvailable: [null],
           RemainQuantity: [null],
           ScanQuantity: [null],
           UsedQuantity: [null],
@@ -256,7 +263,6 @@ export class AddLiveCampaignComponent implements OnInit {
 
     } else {
       let product = {...data};
-
       this.addProduct(product);
     }
   }
@@ -264,15 +270,14 @@ export class AddLiveCampaignComponent implements OnInit {
   addProduct(product: DataPouchDBDTO){
     let detailValue = this._form.controls['Details'].value;
 
-    let indexExist = detailValue.findIndex((item: any) => `${item.ProductId}_${item.UOMId}` === product.Product_UOMId);
+    let indexExist = detailValue.findIndex((item: any) => `${item.ProductId}_${item.UOMId}` === product.Product_UOMId) as number;
 
-    if(indexExist > -1) {
+    if(Number(indexExist) > -1) {
       detailValue[indexExist].Quantity++;
 
       const control = <FormArray>this._form.controls['Details'];
       control.at(indexExist).setValue(detailValue[indexExist]);
-    }
-    else {
+    } else {
       const control = <FormArray>this._form.controls['Details'];
       control.push(this.initDetailBySelectProduct(detailValue.length, product));
     }
@@ -287,7 +292,7 @@ export class AddLiveCampaignComponent implements OnInit {
       Price: [null],
       UOMId: [null],
       UOMName: [null],
-      Quantity: [1],
+      Quantity: [product?.QtyAvailable || 1],
       LimitedQuantity: [0],
       Index: [index],
       Tags: [null],
@@ -347,13 +352,29 @@ export class AddLiveCampaignComponent implements OnInit {
 
   openTag(index: number) {
     this.indClickTag = index;
+    //TODO: lấy dữ liệu từ formArray
+    let data = this.detailsForm.at(index).value;
+
+    if(data && TDSHelperArray.isArray(data.Tags)){
+      this.modelTags = data.Tags;
+    }else{
+      this.modelTags = data ? data.Tags.split(",") : [];
+    }
   }
 
   onCloseTag() {
+    this.modelTags = [];
     this.indClickTag = -1;
   }
 
-  onSaveTag() {
+  onSaveTag(index: number) {
+    //TODO: dữ liệu từ formArray
+    let details = this.detailsForm.at(index).value;
+    details.Tags = this.modelTags;
+    //TODO: cập nhật vào formArray
+    this.detailsForm.at(index).patchValue(details);
+    this.modelTags = [];
+    this.indClickTag = -1;
   }
 
   onChangeCollapse(event: TDSSafeAny) {
@@ -499,9 +520,9 @@ export class AddLiveCampaignComponent implements OnInit {
     let details = formValue.Details;
 
     if(TDSHelperArray.hasListValue(details)) {
-      let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price));
+      let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price)) as number;
 
-      if(find > -1) {
+      if(Number(find) > -1) {
         this.message.error(Message.LiveCampaign.ErrorNumberDetail);
 
         return 0;
@@ -522,6 +543,20 @@ export class AddLiveCampaignComponent implements OnInit {
       event.forEach(x => {
           this.datePicker.push(x);
       })
+    }
+  }
+
+  onChangeDeposit(event:any){
+    if(event != this.dataModel.MaxAmountDepositRequired){
+      this.isDepositChange = true;
+    }else{ 
+      this.isDepositChange = false;
+    }
+
+    if(this.isDepositChange) {
+      setTimeout(()=>{
+        this.isDepositChange = false;
+      }, 10 * 1000);
     }
   }
 
@@ -558,7 +593,6 @@ export class AddLiveCampaignComponent implements OnInit {
     } else {
       this.message.error('Chưa có sản phẩm nào được chọn');
     }
-
   }
 
   directPage(route: string) {

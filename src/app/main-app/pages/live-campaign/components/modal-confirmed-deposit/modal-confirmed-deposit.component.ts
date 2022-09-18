@@ -29,7 +29,7 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -45,7 +45,6 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    debugger;
   }
 
   ngOnInit(): void {

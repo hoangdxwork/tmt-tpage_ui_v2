@@ -1,3 +1,4 @@
+import { TDSTabChangeEvent } from 'tds-ui/tabs';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
@@ -7,11 +8,12 @@ import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.
 import { OdataFSOrderLinesV2, FSOrderLinesV2 } from './../../../../dto/fastsaleorder/fastsale-orderline.dto';
 import { finalize, takeUntil } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewContainerRef, Inject, ChangeDetectorRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-bill-expand',
@@ -27,7 +29,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   isProcessing: boolean = false;
   isLoading: boolean = false;
   logOrder: any;
-  tabSelected = 'detail';
+  selectedIndex = 0;
 
   constructor(
     private fSOService: FastSaleOrderService,
@@ -35,6 +37,8 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     private excelExportService: ExcelExportService,
     private message: TDSMessageService,
     private modalService: TDSModalService,
+    @Inject(DOCUMENT) private document: Document,
+    private cdrRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef) { }
 
@@ -146,16 +150,16 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  onLoadTab(tabName: string) {
-    this.tabSelected = tabName;
-
-    switch (tabName) {
-      case 'detail':
+  onSelectedChange(ev: TDSTabChangeEvent) {
+    switch (ev.index) {
+      case 0:
         this.loadData();
         break;
-      case 'information':
+
+      case 1:
         break;
-      case 'histories':
+        
+      case 2:
         this.logOrder = [];
 
         this.fSOService.getHistoryEditOrder(this.dataItem.Id).subscribe((res: any) => {
@@ -168,6 +172,32 @@ export class BillExpandComponent implements OnInit, OnDestroy {
         })
         break;
     }
+  }
+
+  ngAfterViewInit() {
+    this.getResizeExpand();
+  }
+
+  getResizeExpand() {
+    // let element = this.document.getElementById(`expand[${this.dataItem.Id}]`) as any;
+    // if(element) {
+    //     let containerTable = element.closest('.tds-table-container') as any;
+    //     let containerExpand = element.closest('.tds-custom-scroll') as any;
+    //     let wrapView = Number(containerTable.clientWidth - 36);
+    //     element.setAttribute('style', `width: ${wrapView}px; margin-left: ${Number(containerExpand.scrollLeft) + 2}px;`);
+
+    //     let scrollTable = element.closest('.tds-custom-scroll');
+    //     if(element && scrollTable) {
+    //       scrollTable.addEventListener('scroll', function() {
+    //           let scrollleft = Number(scrollTable.scrollLeft);
+    //           let wrapScroll = Number(scrollTable.clientWidth - 24);
+
+    //           element.setAttribute('style', `margin-left: ${scrollleft}px; width: ${wrapScroll}px;`)
+    //       });
+    //     }
+    // }
+
+    // this.cdrRef.detectChanges();
   }
 
 }

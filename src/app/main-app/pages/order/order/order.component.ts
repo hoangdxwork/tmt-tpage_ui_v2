@@ -10,7 +10,7 @@ import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetec
 import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
-import { SortEnum, THelperCacheService } from 'src/app/lib';
+import { SortEnum, THelperCacheService, TIDictionary } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { FilterObjSOOrderModel, OdataSaleOnline_OrderService, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -38,6 +38,7 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
+import { number } from 'echarts';
 
 @Component({
   selector: 'app-order',
@@ -51,6 +52,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
 
   lstOfData!: ODataSaleOnline_OrderModel[];
+  getStatus!: TIDictionary<String>;
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -63,6 +65,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
+  isOpenChat: boolean = false;
   orderMessage: TDSSafeAny;
 
   public filterObj: FilterObjSOOrderModel = {
@@ -220,6 +223,25 @@ export class OrderComponent implements OnInit, AfterViewInit {
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          let lstId = this.lstOfData.map((x) => x.PartnerId);
+          this.loadParnerStatus(lstId);
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
+      }
+    });
+  }
+
+  loadParnerStatus(params: Array<number>) {
+    this.commonService.getPartnersById(params).subscribe({
+      next: (res: TIDictionary<String>) => {
+        if(res) {
+          this.lstOfData.map( x => {
+            if(res[x.PartnerId]) {
+              x.PartnerStatus = res[x.PartnerId];
+            }
+          })
+        }
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
@@ -236,8 +258,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   loadSummaryStatus() {
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange.startDate,
-      DateEnd: this.filterObj.dateRange.endDate,
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
@@ -289,6 +311,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onExpandChange(id: string, checked: boolean): void {
     if (checked) {
+      this.expandSet = new Set<string>();
       this.expandSet.add(id);
     } else {
       this.expandSet.delete(id);
@@ -305,7 +328,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   showModalCreateBillFast(ids: string[]) {
     this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {console.log(res)
+        next: (res: any) => {
           if (res) {
             this.modal.create({
                 title: 'Tạo hóa đơn nhanh',
@@ -518,8 +541,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.status = event.status;
 
     this.filterObj.dateRange = {
-      startDate: event.dateRange.startDate,
-      endDate: event.dateRange.endDate
+      startDate: event.dateRange ? event.dateRange?.startDate: null,
+      endDate: event.dateRange?  event.dateRange?.endDate: null
     }
 
     if (TDSHelperArray.hasListValue(event.status)) {
@@ -529,6 +552,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     }
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   columnsChange(event: Array<ColumnTableDTO>) {
@@ -547,8 +571,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onEdit(item: ODataSaleOnline_OrderModel) {
     if(item && item.Id) {
+      this.isLoading = true;
+
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
+              this.isLoading = false;
 
               if(res && res.Id) {
                 delete res['@odata.context'];
@@ -574,6 +601,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               }
           },
           error: (error: any) => {
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
           }
       });
@@ -719,6 +747,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isOpenChat = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -732,6 +761,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               pageIds.push(x.page_id);
           });
 
+          this.isOpenChat = false;
           if (pageIds.length == 0) {
               return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
@@ -766,7 +796,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
           });
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
+        this.isOpenChat = false;
+        this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
       }
     })
   }

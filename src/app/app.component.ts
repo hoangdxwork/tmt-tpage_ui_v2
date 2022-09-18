@@ -4,7 +4,7 @@ import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
@@ -35,6 +35,13 @@ export class AppComponent {
     private loader: PageLoadingService,
     private destroy$: TDSDestroyService) {
     this.loader.show();
+
+    let localSocket = localStorage.getItem('_socketNotification') as any;
+    let checkNotti = JSON.parse(localSocket || null);
+
+    if(!TDSHelperString.hasValueString(checkNotti)) {
+        localStorage.setItem('_socketNotification', JSON.stringify("ON"));
+    }
   }
 
   ngOnInit() {
@@ -48,18 +55,23 @@ export class AppComponent {
 
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
-        let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
 
-        if (res && res.Notification && !exist) {
-          this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+        let localSocket = localStorage.getItem('_socketNotification') as any;
+        let checkNotti = JSON.parse(localSocket || null) || '';
+
+        if(checkNotti != 'OFF') {
+            this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
+            let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+            if (res && res.Notification && !exist) {
+                this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+            }
         }
       }
     })
 
     this.tdsConfigService.set('notification', {
-      maxStack:3
-      });
+        maxStack: 3
+    });
   }
 
   init(): Observable<boolean> {

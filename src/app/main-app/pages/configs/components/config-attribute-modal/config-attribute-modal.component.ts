@@ -1,9 +1,9 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Message } from '../../../../../lib/consts/message.const';
 import { ConfigAttributeLine, ConfigAttributeValue, ConfigAttribute } from '../../../../dto/configs/product/config-product-default.dto';
 import { takeUntil } from 'rxjs/operators';
 import { ProductTemplateService } from '../../../../services/product-template.service';
-import { Subject } from 'rxjs';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
@@ -13,27 +13,27 @@ import { TDSModalRef } from 'tds-ui/modal';
 @Component({
   selector: 'app-config-attribute-modal',
   templateUrl: './config-attribute-modal.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestroy {
   @Input() defaultModel: Array<ConfigAttributeLine> = []; //TODO: model thuộc tính- giá trị
 
   _form!: FormGroup;
-  valuesList: Array<ConfigAttributeValue> = [];
+  lstData: Array<ConfigAttributeValue> = [];
   attributeList: Array<ConfigAttribute> = []; //TODO: list get toàn bộ thuộc tính
   lstValue: Array<ConfigAttributeLine> = [];//TODO: danh sách value (data của select attribute)
   dataModel: Array<ConfigAttributeLine> = [];
 
   isLoading = false;
 
-  private destroy$ = new Subject<void>();
-
   constructor(
     private modal: TDSModalRef,
     private message: TDSMessageService,
     private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroy$: TDSDestroyService
   ) {
     this.createForm();
   }
@@ -49,13 +49,15 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   }
 
   loadProductAttributeValue() {
-    this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.valuesList = res.value;
+    this.isLoading = true;
+
+    this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: TDSSafeAny) => {
+        this.lstData = res.value;
         this.attributeList = [];
 
         // TODO: lấy danh sách toàn bộ attribute từ danh sách attribute-value
-        this.valuesList.forEach(item => {
+        this.lstData.forEach(item => {
           let exist = this.attributeList.find(f => f.Id === item.AttributeId);
 
           if (!exist) {
@@ -72,25 +74,29 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
         this.dataModel = [...this.defaultModel];
         
         //TODO: lấy danh sách select value cho các dòng attribute
-        this.dataModel.forEach((data) => {
-          let lstValues = this.valuesList.filter(f => f.AttributeId == data.AttributeId);
-
-          this.lstValue.push({
+        this.lstValue = this.dataModel.map((data) => {
+          return {
             Attribute: data.Attribute,
             AttributeId: data.AttributeId,
-            Values: lstValues
-          });
+            Values: this.lstData.filter(f => f.AttributeId == data.AttributeId)
+          }
         });
 
+        this.isLoading = false;
         this.cdr.markForCheck();
       },
-      err => {
+      error:(err) => {
+        this.isLoading = false;
         this.message.error(err?.error?.message || Message.CanNotLoadData);
       }
-    )
+    })
   }
 
   onSelectAttribute() {
+    if(this.isLoading){
+      return;
+    }
+    
     let lstSelectAttr = this._form.controls.Attributes.value as Array<ConfigAttribute> || [];
 
     if (lstSelectAttr.length == 0) {
@@ -104,7 +110,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
       let exist = this.dataModel.find(f => f.AttributeId == attr.Id);
 
       if (!exist) {
-        let lstValues = this.valuesList.filter(f => f.AttributeId == attr.Id);
+        let lstValues = this.lstData.filter(f => f.AttributeId == attr.Id);
 
         this.dataModel.push({
           Attribute: attr,
@@ -162,11 +168,11 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
     this._form.reset();
   }
 
-  cancel() {
+  onCancel() {
     this.modal.destroy(this.defaultModel);
   }
 
-  save() {
+  onSave() {
     if (!TDSHelperString.hasValueString(this.checkValidate())) {
       this.onSubmit();
     } else {

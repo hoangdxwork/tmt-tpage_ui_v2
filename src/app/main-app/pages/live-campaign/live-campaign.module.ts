@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../../shared/directives/directives.module';
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
 import { ChatomniMessageFacade } from './../../services/chatomni-facade/chatomni-message.facade';
@@ -90,6 +91,7 @@ import { CommonHandler } from '../../handler-v2/common.handler';
 import { ExpandOrderLivecampaignComponent } from './components/expand-order-livecampaign/expand-order-livecampaign.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { OrderModule } from '../order/order.module';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -152,7 +154,8 @@ const SERVICES = [
   ChatomniMessageFacade,
   ActivityMatchingService,
   ConversationService,
-  ChatomniCommentFacade
+  ChatomniCommentFacade,
+  ChatomniConversationFacade
 ]
 
 @NgModule({
@@ -194,7 +197,8 @@ const SERVICES = [
     TDSTimelineModule,
     TDSDrawerModule,
     TDSConversationsModule,
-    OrderModule
+    OrderModule,
+    DirectivesModule,
   ],
   providers: [
     ...SERVICES

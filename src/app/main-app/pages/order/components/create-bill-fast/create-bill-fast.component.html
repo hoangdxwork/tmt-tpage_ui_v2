@@ -59,6 +59,7 @@
                     <span class="text-neutral-1-600 italic text-xs">{{data?.Carrier?.GHN_NoteCode ? data.Carrier.GHN_NoteCode : '(Chưa có ghi chú)'}}</span>
                   </div>
                 </div>
+                <div *ngIf="lstCheckRowErrors[index]" class="text-error-500 italic text-caption-1">{{ lstCheckRowErrors[index] }}</div>
               </td>
               <!-- Đối tác -->
               <td class="align-top">
@@ -73,7 +74,7 @@
               <!-- Tiền hàng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number tds-tooltip tooltipTitle="{{ data.AmountTotal | number:'1.0-3'  }}" [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
+                  <tds-input-number tds-tooltip tooltipTitle="{{ data.AmountTotal | numberCustom  }}" [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
                     [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
@@ -81,7 +82,7 @@
               <!-- Phí ship -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number tds-tooltip tooltipTitle="{{ data.DeliveryPrice | number:'1.0-3'  }}" [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
+                  <tds-input-number tds-tooltip tooltipTitle="{{ data.DeliveryPrice | numberCustom  }}" [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
                     [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
@@ -89,7 +90,7 @@
               <!-- Khối lượng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number tds-tooltip tooltipTitle="{{ data.ShipWeight | number:'1.0-3'  }}" [min]="0" [step]="1" [(ngModel)]="data.ShipWeight"
+                  <tds-input-number tds-tooltip tooltipTitle="{{ data.ShipWeight | numberCustom  }}" [min]="0" [step]="1" [(ngModel)]="data.ShipWeight"
                      [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
@@ -154,7 +155,7 @@
                               <!-- Số lượng -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="1" [step]="1" tds-tooltip tooltipTitle="{{ orderLines.ProductUOMQty | number:'1.0-3' }}"
+                                  <tds-input-number [min]="1" [step]="1" tds-tooltip tooltipTitle="{{ orderLines.ProductUOMQty | numberCustom }}"
                                     (ngModelChange)="changeQuantityProduct($event, index, i)" [formatter]="numberWithCommas" [parser]="parserComas"
                                     [(ngModel)]="orderLines.ProductUOMQty" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
@@ -163,7 +164,7 @@
                               <!-- Số tiền -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceUnit | number:'1.0-3' }}"
+                                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceUnit | numberCustom }}"
                                     (ngModelChange)="changePriceProduct($event, index, i)"  [(ngModel)]="orderLines.PriceUnit" [formatter]="numberWithCommas" [parser]="parserComas"
                                     [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
@@ -172,7 +173,7 @@
                               <!-- Tổng tiền -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceSubTotal | number:'1.0-3' }}"
+                                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceSubTotal | numberCustom }}"
                                     (ngModelChange)="changePriceProduct($event, index, i)" [(ngModel)]="orderLines.PriceSubTotal" [formatter]="numberWithCommas" [parser]="parserComas"
                                     [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>

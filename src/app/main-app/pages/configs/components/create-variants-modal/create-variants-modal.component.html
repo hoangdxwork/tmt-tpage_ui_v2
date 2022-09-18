@@ -6,8 +6,7 @@
                     (getResult)="getImage($event)" (getBase64)="getBase64($event)">
                 </upload-pictures-wall>
                 <div class="flex flex-col gap-y-3">
-                    <label class="font-semibold text-header-2">Sản phẩm {{ _form.controls["NameTemplate"].value
-                        }}</label>
+                    <label class="font-semibold text-header-2">Sản phẩm {{ _form.controls["NameTemplate"].value }}</label>
                     <tds-checkbox formControlName="SaleOK">Có thể bán</tds-checkbox>
                     <tds-checkbox formControlName="PurchaseOK">Có thể mua</tds-checkbox>
                     <tds-checkbox formControlName="Active">Hiệu lực</tds-checkbox>
@@ -26,7 +25,8 @@
 
                 <tds-label>Giá biến thể</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                    <tds-input-number formControlName="PriceVariant" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                    <tds-input-number formControlName="PriceVariant" [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" 
+                        [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                     <tds-error>
                         Vui lòng nhập giá biến thể
                     </tds-error>

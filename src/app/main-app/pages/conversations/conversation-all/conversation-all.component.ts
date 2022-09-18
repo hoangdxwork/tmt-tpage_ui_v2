@@ -7,9 +7,9 @@ import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/ch
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, auditTime, tap } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -31,6 +31,8 @@ import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/ma
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import th from 'date-fns/esm/locale/th/index.js';
 
 @Component({
   selector: 'app-conversation-all',
@@ -40,6 +42,10 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+
+  itemSize = 100;
+  infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
+  @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -55,8 +61,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   lstConversation: ChatomniConversationItemDto[] = [];
 
   csid!: string;
-  conversationInfo!: ChatomniConversationInfoDto;
-  conversationItem!: ChatomniConversationItemDto;
+  conversationInfo!: ChatomniConversationInfoDto | any;
+  conversationItem!: ChatomniConversationItemDto | any;
 
   syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
 
@@ -68,6 +74,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setOfCheckedId = new Set<string>();
 
   queryObj: QueryFilterConversationDto = {} as any;
+  isFilter: boolean = false;
 
   isRefreshing: boolean = false;
   isProcessing:boolean = false;
@@ -120,6 +127,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           // TODO: change Team
           if(team.Id != this.currentTeam?.Id) {
+              this.lstConversation = [];
+              delete this.conversationItem;
+              localStorage.removeItem(this.chatomniConversationService._keyCheckCsidRouter);
+
               this.fetchLiveConversations(team);
               this.setCurrentTeam(team);
           }
@@ -151,11 +162,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         switch(res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-              if( res.Data?.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
+              if(res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
 
                   // TODO: mapping dữ liệu danh sách conversation
-                  let index = this.lstConversation?.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId);
-                  if(index >- 1) {
+                  let index = this.lstConversation?.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId) as number;
+                  if(Number(index) >- 1) {
 
                       this.lstConversation[index].LatestMessage = {
                           CreatedTime: res.Data.Message?.CreatedTime,
@@ -164,12 +175,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       } as any;
 
                       // TODO: gán lại mess nếu gửi hình
-                      if(res.Data.Message?.Data?.attachments?.data){
-                          this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data?.length} hình ảnh` as string;
+                      if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(res.Data.Message.Data.attachments.data[0]?.image_data)){
+                          this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
                       }
 
                       this.lstConversation[index].Message = res.Data.Message?.Message;
-                      this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+
+                      if(!res.Data.Message?.IsOwner){
+                        this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+                      }
                       this.lstConversation[index] = {...this.lstConversation[index]};
 
                       // TODO: Check vị trí ConversationId và add vào đàu tiên
@@ -179,15 +193,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                           this.lstConversation = [...[model], ...(this.lstConversation || [])]
                       }
                   } else {
-                      // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
-                      // viết hàm prepareModel add item to lstConversation;
-                  }
-
-                  // TODO: mapping dữ liệu khung chat hiện tại
-                  let exist = this.conversationItem.ConversationId == res.Data.Conversation?.UserId;
-                  if(exist) {
-                      let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
-                      this.chatomniEventEmiterService.onSocketDataSourceEmiter$.emit(item);
+                      // // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
+                      // let itemNewMess = this.chatomniConversationFacade.prepareCreateMessageOnEventSocket(res)
+                      // this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
                   }
 
                   this.cdRef.detectChanges();
@@ -198,6 +206,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               break;
 
             case ChatmoniSocketEventName.onUpdate:
+              break;
+
+            case ChatmoniSocketEventName.chatomniOnReadConversation:
               break;
 
             default: break;
@@ -211,11 +222,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId);
-            if(index >- 1) {
+            let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
+            if(Number(index) >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
-
                 this.cdRef.detectChanges();
             }
         }
@@ -226,11 +236,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniLastMessageEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == res.ConversationId);
-            if(index >- 1) {
+            let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
+            if(Number(index) >- 1) {
                 this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
                 this.lstConversation[index] = {...this.lstConversation[index]};
-
                 this.cdRef.detectChanges();
             }
         }
@@ -241,11 +250,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.countUnreadEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == id);
-            if(index >- 1) {
-              this.lstConversation[index].CountUnread = 0;
-              this.lstConversation[index] = {...this.lstConversation[index]};
-              this.cdRef.detectChanges();
+            let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
+            if(Number(index) >- 1) {
+                this.lstConversation[index].CountUnread = 0;
+                this.lstConversation[index] = {...this.lstConversation[index]};
+                this.cdRef.detectChanges();
             }
         }
       }
@@ -255,8 +264,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.chatbotStateEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x=> x.ConversationId == id);
-            if(index >- 1) {
+            let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
+            if(Number(index) >- 1) {
                 this.lstConversation[index].State = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.cdRef.detectChanges();
@@ -267,10 +276,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // TODO: Chọn sản phẩm, nếu đang tab khách hàng chuyển sang đơn hàng
     this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: string)=>{
+      next: (res: string) => {
         if(res === ChangeTabConversationEnum.order) {
             this.selectedIndex = 2;
-
             this.cdRef.detectChanges();
         }
       }
@@ -307,9 +315,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isLoading = true;
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
+
             if (res && TDSHelperArray.hasListValue(res.Items)) {
 
                 this.lstConversation = [...res.Items];
+                console.log(this.lstConversation.length)
+
                 let csid = this.paramsUrl?.csid || null;
 
                 //TODO: check psid khi load lần 2,3,4...
@@ -329,6 +340,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.validateData();
             }
 
+            // this.cdkVirtualScroll();
             this.isLoading = false;
         },
         error: (error: any) => {
@@ -367,8 +379,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   this.cdRef.markForCheck();
               },
               error: (error: any) => {
-                  this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
                   this.isLoading = false;
+                  this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
                   this.cdRef.markForCheck();
               }
           })
@@ -389,7 +401,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             return;
         }
 
-        (this.conversationItem as any) = null;
+        delete this.conversationItem;
         this.setCurrentConversationItem(item);
     }
   }
@@ -405,22 +417,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
 
       this.isProcessing = true;
-      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryObj);
+      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
 
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
-
-          if(TDSHelperArray.hasListValue(res?.Items)) {
-            res.Items.forEach((x) => {
-                let idx = this.lstConversation.find(a => a.ConversationId == x.ConversationId);
-                if(idx) {
-                    res.Items = res.Items.filter(y => x.ConversationId != y.ConversationId)
-                }
-            });
-
-        }
-
-        this.lstConversation = [...this.lstConversation, ...(res.Items || [])];
+          if(res && res.Items){
+            this.lstConversation = [...(res.Items || [])];
+          }
 
             this.isProcessing = false;
             this.yiAutoScroll.scrollToElement('scrollConversation', 750);
@@ -444,6 +447,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+    this.isProcessing = false;
 
     if (this.clickReload >= 5) {
         this.message.info("Đã kích hoạt cập nhật hội thoại.");
@@ -594,12 +598,50 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       ).subscribe({
         next: (text: string) => {
+            this.isFilter = true;
+            if(text == ''){
+              this.isFilter = false;
+            }
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.queryObj['Keyword'] = value;
             this.loadFilterDataSource();
         }
       })
     }
+  }
+
+  cdkVirtualScroll() {
+    if(this.viewPort.scrolledIndexChange && this.lstConversation) {
+        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap((currIndex: number) => {
+            const end = this.viewPort.getRenderedRange().end;
+            const total = this.viewPort.getDataLength();
+
+            if(end == total && !this.isProcessing) {
+                this.nextBatch();
+            }
+        })).subscribe();
+      }
+
+    setTimeout(() => this.infinite.next(this.lstConversation), 350);
+  }
+
+  nextBatch() {
+    this.isProcessing = true;
+    this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationDto) => {
+          if(res && res.Items){
+              this.lstConversation = [...(res.Items || [])];
+              this.infinite.next(this.lstConversation);
+          }
+
+          this.isProcessing = false;
+      },
+      error: (error) => {
+          this.isProcessing = false;
+      }
+    })
   }
 
   onTabOderOutput(ev: boolean){
@@ -708,8 +750,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   validateData() {
     this.lstConversation = [];
-    (this.conversationInfo as any) = null;
+    delete this.conversationInfo;
+    delete this.conversationItem;
     delete this.dataSource$;
   }
-
 }

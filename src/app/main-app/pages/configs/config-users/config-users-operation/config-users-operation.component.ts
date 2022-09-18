@@ -14,6 +14,9 @@ import { Observable } from 'rxjs';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
+import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
+import { SortEnum } from '@core/enum';
+import { THelperDataRequest } from '@core/services/helper-data.service';
 
 export interface DataUser {
   id: number;
@@ -38,7 +41,14 @@ export class ConfigUsersOperationComponent implements OnInit {
   lstTeam!: CRMTeamDTO[];
 
   isLoading: boolean = false;
+  pageSize = 10;
+  pageIndex = 1;
   userManagerPage: TDSSafeAny = null;
+
+  sort: Array<SortDataRequestDTO> = [{
+    field: "DateCreated",
+    dir: SortEnum.desc
+  }];
 
   // userManagerPage$!: Observable<TDSSafeAny>;
   // userManagerPageNot$!: Observable<TDSSafeAny>;
@@ -63,11 +73,14 @@ export class ConfigUsersOperationComponent implements OnInit {
 
   loadUser() {
     this.isLoading = true;
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
 
-    this.applicationUserService.get()
+    this.applicationUserService.get(params)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstUsers = res.value;
+        console.log(this.lstUsers);
+
         this.loadCRMTeamUser();
       });
   }
@@ -123,7 +136,6 @@ export class ConfigUsersOperationComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadUser();
       }
@@ -139,7 +151,6 @@ export class ConfigUsersOperationComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadUser();
       }

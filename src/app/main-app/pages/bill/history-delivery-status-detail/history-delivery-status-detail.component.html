@@ -66,7 +66,7 @@
     <!-- table -->
     <div class="h-full w-full pb-2.5">
       <div #tableWidth class="rounded-md bg-white w-full flex flex-col">
-        <tds-table #headerTable [listData]="lstOfData" [showPagination]="false" [scroll]="{x:'auto'}">
+        <tds-table #headerTable [listData]="lstOfData" [showPagination]="false">
           <thead>
               <tr>
                   <th width="80px" [align]="'center'" [tdsLeft]="true">STT</th>
@@ -92,12 +92,12 @@
                           <span class="text-info-500 font-semibold">{{ data.ShipCode }}</span>
                       </td>
                       <td *ngIf="isHidden('CarrierName')">{{ data.CarrierName }}</td>
-                      <td *ngIf="isHidden('OrderAmount')" class="text-right">{{ data.OrderAmount || 0 | number }} đ</td>
-                      <td *ngIf="isHidden('TotalCOD')" class="text-right">{{ historyDeliveryData.TotalCOD || 0 |number }} đ</td>
-                      <td *ngIf="isHidden('TotalCODShip')" class="text-right">{{ historyDeliveryData.TotalCODShip || 0 | number }} đ</td>
-                      <td *ngIf="isHidden('ShipAmount')" class="text-right">{{ data.ShipAmount || 0 | number }} đ</td>
-                      <td *ngIf="isHidden('DeliveryPrice')" class="text-right">{{ data.DeliveryPrice || 0 | number }} đ</td>
-                      <td *ngIf="isHidden('CustomerDeliveryPrice')" class="text-right">{{ data.CustomerDeliveryPrice || 0 | number }} đ</td>
+                      <td *ngIf="isHidden('OrderAmount')" class="text-right">{{ data.OrderAmount || 0 | numberCustom }} đ</td>
+                      <td *ngIf="isHidden('TotalCOD')" class="text-right">{{ historyDeliveryData.TotalCOD || 0 | numberCustom }} đ</td>
+                      <td *ngIf="isHidden('TotalCODShip')" class="text-right">{{ historyDeliveryData.TotalCODShip || 0 | numberCustom }} đ</td>
+                      <td *ngIf="isHidden('ShipAmount')" class="text-right">{{ data.ShipAmount || 0 | numberCustom }} đ</td>
+                      <td *ngIf="isHidden('DeliveryPrice')" class="text-right">{{ data.DeliveryPrice || 0 | numberCustom }} đ</td>
+                      <td *ngIf="isHidden('CustomerDeliveryPrice')" class="text-right">{{ data.CustomerDeliveryPrice || 0 | numberCustom }} đ</td>
                       <td *ngIf="isHidden('Status')" class="text-center w-full" [tdsRight]="true">
                           <tds-tag [status]="checkStatus(data.Status)" type="outline">{{data.Status}}</tds-tag>
                       </td>

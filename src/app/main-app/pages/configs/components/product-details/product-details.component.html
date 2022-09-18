@@ -1,4 +1,4 @@
-<div class="w-full h-full">
+<div class="w-full h-full bg-white rounded-md border border-neutral-2-100">
   <tds-tabset (selectedIndexChange)="onChangeTab($event)">
     <tds-tab [title]="titleItem1" clsContent="p-4 border-t">
       <ng-template #titleItem1 let-active="active">
@@ -218,7 +218,7 @@
               <td>{{ data.LocationNameGet }}</td>
               <td>{{ data.LocationDestNameGet }}</td>
               <td>{{ data.ProductUOMName }}</td>
-              <td>{{ data.ProductQty | number }}</td>
+              <td>{{ data.ProductQty | numberCustom }}</td>
               <td>{{ data.Date | date:'dd/MM/yyy HH:mm' }}</td>
             </tr>
           </ng-template>

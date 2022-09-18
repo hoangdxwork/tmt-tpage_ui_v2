@@ -11,7 +11,10 @@ import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'config-delivery-update',
-  templateUrl: './config-delivery-update.component.html'
+  templateUrl: './config-delivery-update.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 
 export class ConfigDeliveryUpdateComponent implements OnInit {
@@ -28,7 +31,7 @@ export class ConfigDeliveryUpdateComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {

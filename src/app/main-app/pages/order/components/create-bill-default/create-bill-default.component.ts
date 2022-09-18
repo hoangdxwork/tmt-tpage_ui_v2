@@ -1,3 +1,4 @@
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from './../../../../dto/suggest-address/suggest-address.dto';
 import { TDSConfigService } from 'tds-ui/core/config';
 import { CreateBillErrorComponent } from '../create-bill-error/create-bill-error.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -33,7 +34,8 @@ export class CreateBillDefaultComponent implements OnInit {
   lstCarriers: Array<Carrier> = [];
   lstData!: OrderBillDefaultDTO;
   lstLine: Array<DataErrorDefaultDTOV2> = [];
-  innerText: string = '';
+  lstCheckRowErrors: Array<string> = [];
+  innerText: string[] = [];
   phoneRegex!:string;
 
   isApplyPromotion: boolean = false;
@@ -42,6 +44,11 @@ export class CreateBillDefaultComponent implements OnInit {
 
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
+
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
+  _street!: string;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -103,6 +110,10 @@ export class CreateBillDefaultComponent implements OnInit {
           this.lstData = {...res};
 
           this.lstLine = this.lstData.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
+          this.lstLine.forEach((x, i) =>{
+            this.checkPartnerInfo(x.Partner, i);
+          });
+
           this.isLoading = false;
         },
         error:(err) => {
@@ -127,20 +138,42 @@ export class CreateBillDefaultComponent implements OnInit {
     if (data && data.City) {
       data.CityCode = data.City.code;
       data.CityName = data.City.Name;
+      this._cities = {
+        code: data.City.code,
+        name: data.City.name
+      }
     }
+
     if (data && data.District) {
       data.DistrictCode = data.District.code;
       data.DistrictName = data.District.Name;
+      this._districts = {
+        cityCode: data.City?.code,
+        cityName: data.City?.name,
+        code: data.District.code,
+        name: data.District.name
+      }
     }
+
     if (data && data.Ward) {
       data.WardCode = data.Ward.code;
       data.WardName = data.Ward.Name;
+      this._wards = {
+        cityCode: data.City?.code,
+        cityName: data.City?.name,
+        districtCode: data.District?.code,
+        districtName: data.District?.name,
+        code: data.Ward.code,
+        name: data.Ward.name
+      }
+    }
+
+    if (data && data?.Street) {
+      this._street = data?.Street;
     }
   }
 
   createLines(line: TDSSafeAny): DataErrorDefaultDTOV2 {
-    this.mappingAddress(line.Partner);
-
     return {
       COD: line.COD,
       CheckAddress: line.CheckAddress,
@@ -184,13 +217,35 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO, index: number) {
-    if (TDSHelperObject.hasValue(item)) {
+    if (TDSHelperObject.hasValue(item) && this.lstLine[index].Partner) {
       this.lstLine[index].Partner.Street = item.Address;
+
       this.lstLine[index].Partner.CityCode = item.CityCode;
       this.lstLine[index].Partner.CityName = item.CityName;
+      this.lstLine[index].Partner.City = {
+        code: item.CityCode,
+        name: item.CityName
+      };
+
       this.lstLine[index].Partner.DistrictCode = item.DistrictCode;
       this.lstLine[index].Partner.DistrictName = item.DistrictName;
+      this.lstLine[index].Partner.District = {
+        code: item.DistrictCode,
+        name: item.DistrictName,
+        cityCode: item.CityCode,
+        cityName: item.CityName
+      };
+
       this.lstLine[index].Partner.WardCode = item.WardCode;
+      this.lstLine[index].Partner.Ward = {
+        code: item.WardCode,
+        name: item.WardName,
+        cityCode: item.CityCode,
+        cityName: item.CityName,
+        districtCode: item.DistrictCode,
+        districtName: item.DistrictName,
+      };
+
       this.lstLine[index].Partner.WardName = item.WardName;
     }
   }
@@ -276,31 +331,32 @@ export class CreateBillDefaultComponent implements OnInit {
 
     if(partner){
       if(!partner.Name) {
-        error += `<li class="text-error-400">Tên</li>`;
+        error = `*Chưa có Tên`;
       }
 
       if(!partner.Phone){
-        error += `<li class="text-error-400">Số điện thoại</li>`;
+        if(error != ``){
+          error += `, Số điện thoại`
+        }else{
+          error = `*Chưa có Số điện thoại`;
+        }
       }
 
       if(!partner.Street){
-        error += `<li class="text-error-400">Địa chỉ</li>`;
+        if(error != ``){
+          error += `, Địa chỉ`;
+        }else{
+          error = `*Chưa có Địa chỉ`;
+        }
       }
 
       if(error != ``){
-        let message = `Khách hàng <b class="text-info-500 font-semibold">${partner.Name}</b> thiếu thông tin:<br><ul>` + error + `</ul>`
-
-        this.notification.error('Lỗi', message, { duration: 10000, pauseOnHover: true });
-        return false;
+        this.lstCheckRowErrors[i] = error;
       }
     }else{
-      let message = `Dòng thứ <b class="text-info-500 font-semibold">${ i + 1 }</b> thiếu thông tin khách hàng`;
-
-      this.notification.error('Lỗi', message, { duration: 10000, pauseOnHover: true });
-      return false;
+      let message = `*Không có thông tin khách hàng`;
+      this.lstCheckRowErrors[i] = message;
     }
-
-    return true;
   }
 
   checkCarrier(model: OrderBillDefaultDTO){
@@ -311,7 +367,6 @@ export class CreateBillDefaultComponent implements OnInit {
     
     let hasError = false;
     model.Lines.forEach((x, i) => {
-      
       if(!x.CarrierId){
         this.notification.error(`Lỗi`, `Dòng thứ <b class="text-info-500 font-semibold">${i + 1}</b> chưa chọn đối tác giao hàng`, { duration: 10000, pauseOnHover: true });
         hasError = true;
@@ -331,22 +386,13 @@ export class CreateBillDefaultComponent implements OnInit {
     }
 
     let model = this.prepareModel();
-    
+    console.log(model)
     if (!this.checkCarrier(model)) {
       return;
     }
     
     if (!model.Lines || model.Lines.length == 0) {
       this.message.error(Message.EmptyData);
-      return;
-    }
-
-    let hasErrorMessage = false;
-    model.Lines.forEach((x, i) =>{
-      hasErrorMessage = !this.checkPartnerInfo(x.Partner, i);
-    });
-
-    if(hasErrorMessage){
       return;
     }
 
@@ -403,25 +449,35 @@ export class CreateBillDefaultComponent implements OnInit {
     this.modalRef.destroy(null);
   }
 
-  showModalSuggestAddress(index: number){
-    let modal =  this.modal.create({
-      title: 'Thêm địa chỉ',
-      content: ModalAddAddressV2Component,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        _street: this.innerText,
-        isSelectAddress: true
-      }
-    });
+  showModalSuggestAddress(partner: Partner, index: number){
+    if(partner){
+      this.mappingAddress(partner);
 
-    modal.afterClose.subscribe({
-      next:(result: ResultCheckAddressDTO) => {
-        if(result){
-          this.onLoadSuggestion(result, index);
-          this.innerText = result.Address;
+      let modal =  this.modal.create({
+        title: 'Thêm địa chỉ',
+        content: ModalAddAddressV2Component,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          _street: this._street,
+          _cities: this._cities,
+          _districts: this._districts,
+          _wards: this._wards,
+          isSelectAddress: true
         }
-      }
-    })
+      });
+
+      modal.afterClose.subscribe({
+        next:(result: ResultCheckAddressDTO) => {
+          if(result){
+            this.onLoadSuggestion(result, index);
+            this._street = result.Address;
+            this.innerText[index] = this._street;
+          }
+        }
+      })
+    }else{
+      this.message.error('Không có thông tin khách hàng');
+    }
   }
 }

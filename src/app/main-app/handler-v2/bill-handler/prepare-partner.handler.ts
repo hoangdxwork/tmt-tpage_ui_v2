@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 
 export class PreparePartnerHandler {
     
-    public prepareModel(form:FormGroup, data:ChangePartnerPriceListDTO, partner: PartnerDetailDTO) {
+    public prepareModel(form:FormGroup, data:ChangePartnerPriceListDTO, partner: PartnerDetailDTO, idEdit: any) {
         data.PartnerDisplayName = partner.Name;
         data.PartnerPhone = partner.Phone;
         data.PartnerNameNoSign = partner.NameNoSign;
@@ -49,7 +49,7 @@ export class PreparePartnerHandler {
         form.controls['PreviousBalance'].setValue(data.PreviousBalance);
 
         //TODO: Cập nhật lại dataSuggestion
-        if (data && data.Ship_Receiver) {
+        if (data && data.Ship_Receiver && Number(idEdit) == 0) {
             form.controls['Ship_Receiver'].patchValue({
                 Name: data.Ship_Receiver?.Name,
                 Phone: data.Ship_Receiver?.Phone,

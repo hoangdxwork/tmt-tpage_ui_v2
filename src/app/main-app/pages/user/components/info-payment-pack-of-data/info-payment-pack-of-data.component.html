@@ -15,7 +15,7 @@
                         </div>
                         <div class="flex gap-x-6">
                             <div class="w-1/3"><span class="font-regular truncate">Giá	</span></div>
-                            <div class="w-2/3"><span class="font-semibold">{{dataPayment?.Package?.price| number}} VNĐ</span></div>
+                            <div class="w-2/3"><span class="font-semibold">{{dataPayment?.Package?.price| numberCustom}} VNĐ</span></div>
                         </div>
                         <div class="flex gap-x-6">
                             <div class="w-1/3"><span class="font-regular truncate">Ngày kết thúc:</span></div>
@@ -29,7 +29,7 @@
                         </div>
                         <div class="flex gap-x-6 items-center">
                             <div class="w-1/3"><span class="font-regular truncate">Tổng tiền:</span></div>
-                            <div class="w-2/3"><span class="font-semibold text-accent-3">{{dataPayment.TotalAmount | number}} VNĐ</span></div>
+                            <div class="w-2/3"><span class="font-semibold text-accent-3">{{dataPayment.TotalAmount | numberCustom}} VNĐ</span></div>
                         </div>
                     </div>
                     <div *ngIf="isPaymentInfoData" class="flex flex-col gap-y-4">

@@ -29,6 +29,7 @@ export class DetailProductComponent implements OnInit {
   isLoading: boolean = false;
 
   lstOfData: any[] = [];
+  innerText!: string;
 
   constructor(
     private message: TDSMessageService,
@@ -80,7 +81,7 @@ export class DetailProductComponent implements OnInit {
   }
 
   onSearch(event: TDSSafeAny) {
-    let text =  event?.target.value;
+    let text = this.innerText;
 
     this.pageIndex = 1;
     this.filterObj.searchText = text;

@@ -18,7 +18,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
 
-  dataSource: { [id: string] : ChatomniDataDto } = {}; //this.chatomniDataSource[id]
+  dataSource: { [id: string] : ChatomniDataDto } = {};
 
   constructor(private apiService: TCommonService) {
     super(apiService)

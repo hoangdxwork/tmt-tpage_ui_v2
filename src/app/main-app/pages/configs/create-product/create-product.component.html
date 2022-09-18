@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading" class="w-full h-full">
+<tds-spin [spinning]="isLoading" class="w-full h-full flex">
   <form [formGroup]="_form" autocomplete="off" *ngIf="dataModel && _form" class="h-full">
     <div class="w-full pb-4 px-4 h-full overflow-y-scroll tds-custom-scroll">
       <div class="flex flex-col w-full bg-white rounded-t-xl">
@@ -188,7 +188,59 @@
           </upload-pictures-wall>
         </tds-tab>
 
-        <tds-tab title="Tồn kho">
+        <tds-tab title="Đơn vị bán hàng">
+          <div class="h-full w-full">
+            <div class="rounded-xl border border-neutral-2-200 flex flex-col">
+              <div class="w-full px-4 py-2.5 flex justify-between items-center">
+                <span class="text-title-1 font-semibold text-neutral-1-900">Danh sách đơn hàng</span>
+                <button tds-button color="primary">
+                  <span class="flex items-center">
+                    <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Thêm đơn vị
+                  </span>
+                </button>
+              </div>
+              <div class="h-[300px] min-h-[300px] w-full">
+                <tds-table #salesUnitTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstUOM"
+                  [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"
+                  [loading]="isLoading">
+                  <thead>
+                    <tr>
+                      <th width="25%">Đơn vị</th>
+                      <th width="25%">Giá bán</th>
+                      <th width="25%">Mã vạch</th>
+                      <th width="25%">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-template ngFor let-data [ngForOf]="salesUnitTable.data">
+                      <tr>
+                        <td>{{ data.UOM.NameGet }} </td>
+                        <td>{{ data.ListPrice }}</td>
+                        <td>{{ data.Barcode }}</td>
+                        <td>
+                          <div class="flex gap-x-2">
+                            <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa">
+                              <span class="flex items-center">
+                                <i class="tdsi-edit-fill text-neutral-1-500"></i>
+                              </span>
+                            </button>
+                            <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa">
+                              <span class="flex items-center">
+                                <i class="tdsi-trash-fill text-neutral-1-500"></i>
+                              </span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      </ng-template>
+                  </tbody>
+              </tds-table>
+              </div>
+            </div>
+          </div>
+        </tds-tab>
+
+        <!-- <tds-tab title="Tồn kho">
           <div class="grid grid-cols-2 gap-y-4 gap-x-8">
             <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
               <tds-label>Theo dõi</tds-label>
@@ -218,7 +270,7 @@
               </tds-form-field>
             </div>
           </div>
-        </tds-tab>
+        </tds-tab> -->
 
         <tds-tab title="Bán hàng" *ngIf="_form.controls.SaleOK.value">
           <div
@@ -375,15 +427,15 @@
 
           <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
             <div class="w-full">
-              <tds-table #variantsTable [widthConfig]="['6%','34%','20%','20%','20%']" [listData]="lstVariants"
-                  [showPagination]="false" >
+              <tds-table #variantsTable [widthConfig]="['6%','34%','20%','20%','20%']" [listData]="lstVariants" [showPagination]="false">
                 <thead>
                   <tr>
-                    <th>STT</th>
-                    <th>Tên</th>
-                    <th>Giá</th>
-                    <th>Hoạt động</th>
-                    <th>Thao tác</th>
+                    <th width="6%">STT</th>
+                    <th width="24%">Tên</th>
+                    <th width="30%">Mã chốt đơn</th>
+                    <th width="20%">Giá</th>
+                    <th width="10%">Hoạt động</th>
+                    <th width="10%">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -400,8 +452,14 @@
                       </div>
                     </td>
                     <td>
-                      <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
-                        [min]="0" [step]="100"
+                      <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [(ngModel)]="data.Tags" [ngModelOptions]="{standalone: true}"
+                          [allowClear]="true" [data]="" mode="tags" class="w-full">
+                      </tds-select>
+                    </td>
+                    <td>
+                      <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}" 
+                        [formatter]="numberWithCommas" [parser]="parserComas"
+                        [min]="0" [step]="1000"
                         class="text-neutral-1-900 text-body-2 font-regular">
                       </tds-input-number>
                     </td>
@@ -409,7 +467,8 @@
                       <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
                     </td>
                     <td>
-                      <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                      <div class="flex flex-row items-center gap-x-1">
+                        <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
                         (click)="showEditVariantsModal(data)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
@@ -421,6 +480,7 @@
                           <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
                         </span>
                       </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -481,9 +541,9 @@
                   <tr *ngFor="let data of lstProductCombo; let i = index">
                     <td>{{ 1 + i }}</td>
                     <td>{{ data.Product.NameGet }}</td>
-                    <td>{{ data.Quantity | number:'1.0-3'  }}</td>
-                    <td>{{ (data.Product.ListPrice || 0) | number:'1.0-3'  }}đ</td>
-                    <td>{{ ((data.Product.ListPrice || 0) * data.Quantity) | number:'1.0-3'  }}đ</td>
+                    <td>{{ data.Quantity | numberCustom }}</td>
+                    <td>{{ (data.Product.ListPrice || 0) | numberCustom }}đ</td>
+                    <td>{{ ((data.Product.ListPrice || 0) * data.Quantity) | numberCustom }}đ</td>
                     <td>
                       <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
                         (click)="showCreateComboModal(data, i)">
@@ -506,7 +566,7 @@
 
           <ng-template #comboTable>
               <div class="flex flex-col gap-y-8 justify-center items-center">
-                  <div class="flex flex-col gap-y-4 items-center" >
+                  <div class="flex flex-col gap-y-4 items-center">
                       <img src="../../assets/imagesv2/live-campaign/noData.svg" alt="">
                       <span class="text-neutral-1-400 text-body-2">Chưa có thành phần nào</span>
                   </div>

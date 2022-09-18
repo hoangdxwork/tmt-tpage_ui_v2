@@ -24,7 +24,6 @@ import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
 import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
-import { GetOrderStatusPipe } from './get-order-status.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
 import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe } from './check-tag-selected.pipe';
@@ -33,6 +32,8 @@ import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 import { LatestMessageTypePipe } from './lastest-message-type.pipe';
 import { NumericalOrder } from './numerical-order.pipe';
 import { jsonPayloadPipe } from './json-payload.pipe';
+import { GetShowStatePipe } from './get-show-state.pipe';
+import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPipe, GetColorStatusTextPipe } from './get-order-status.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -71,7 +72,11 @@ const cmp =[
   CheckTagSelectedCommnetPipe,
   LatestMessageTypePipe,
   NumericalOrder,
-  jsonPayloadPipe
+  jsonPayloadPipe,
+  GetShowStatePipe,
+  getColorStatusShowStatePipe,
+  GetColorStatusStatePipe,
+  GetColorStatusTextPipe
 ]
 
 @NgModule({

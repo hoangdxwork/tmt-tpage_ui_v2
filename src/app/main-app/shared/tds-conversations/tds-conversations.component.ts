@@ -1,9 +1,12 @@
+import { ChatmoniSocketEventName } from './../../services/socket-io/soketio-event';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
-import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -16,7 +19,7 @@ import {
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding, Inject
 } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { takeUntil } from 'rxjs/operators';
@@ -60,6 +63,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @HostBinding("@eventFadeState") eventAnimation = true;
   @Input() partner?: any;
 
+  @Input() isLoadingAll: boolean = false;
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ChatomniConversationItemDto;
   @Input() type!: string;
@@ -68,6 +72,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() state!: number | undefined;
 
   isLoading: boolean = false;
+  isLoadingSpin: boolean = false;
   isProcessing: boolean = false;
 
   dataSource$!: Observable<ChatomniDataDto>;
@@ -119,7 +124,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private partnerService: PartnerService,
     private destroy$: TDSDestroyService,
     private chatomniEventEmiter: ChatomniEventEmiterService,
-    private chatomniSendMessageService: ChatomniSendMessageService) {
+    private chatomniSendMessageService: ChatomniSendMessageService,
+    private socketOnEventService: SocketOnEventService,
+    private chatomniConversationFacade: ChatomniConversationFacade) {
       this.userLoggedId = this.sharedService.userLogged?.Id;
   }
 
@@ -150,43 +157,76 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
       }
     })
+
+    this.chatomniEventEmiter.childCommentConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: ExtrasChildsDto) => {
+          if(res && res.Data.id && this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[res.Data.id]){
+            this.dataSource.Extras!.Childs[res.Data.id] = [...this.dataSource.Extras!.Childs[res.Data.id], res];
+          }
+        }
+      }
+    )
   }
 
   onEventSocket() {
     // TODO: mapping tin nhắn từ socket-io
     // TODO: chek lại phân biệt message  & comment
-    this.chatomniEventEmiter.onSocketDataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniDataItemDto) => {
-        if(res && res.UserId == this.data.ConversationId){
-          switch (this.type) {
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
 
-            case 'message':
-              if((res.Type == ChatomniMessageType.FacebookMessage || res.Type == ChatomniMessageType.TShopMessage)){
-                this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
-    
-                this.yiAutoScroll.forceScrollDown();
-                this.cdRef.markForCheck();
+        switch(res.EventName){
+
+          case ChatmoniSocketEventName.chatomniOnMessage:
+            if(res.Data && res.Data.Conversation && this.data){
+
+              // TODO: mapping dữ liệu khung chat hiện tại
+              let exist = this.data.ConversationId == res.Data.Conversation?.UserId;
+              let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == res.Data.Message?.Id);
+
+              if(exist && index < 0 && this.dataSource) {
+                  let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.data)};
+
+                  switch (this.type) {
+
+                    case 'message':
+
+                      if((item.Type == ChatomniMessageType.FacebookMessage || item.Type == ChatomniMessageType.TShopMessage)){
+                        this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
+
+                        this.yiAutoScroll.forceScrollDown();
+                        this.cdRef.detectChanges();
+                      }
+                    break;
+
+                    case 'comment':
+                      if((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)){
+                        this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
+
+                        this.yiAutoScroll.forceScrollDown();
+                        this.cdRef.detectChanges();
+                      }
+                    break;
+
+                    default:
+                      this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
+
+                      this.yiAutoScroll.forceScrollDown();
+                      this.cdRef.detectChanges();
+                    break;
+                  }
+                }
               }
-            break;
+          break;
 
-            case 'comment':
-              if((res.Type == ChatomniMessageType.FacebookComment || res.Type == ChatomniMessageType.TShopComment)){
-                this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
-    
-                this.yiAutoScroll.forceScrollDown();
-                this.cdRef.markForCheck();
-              }
-            break;
+          case ChatmoniSocketEventName.chatomniOnUpdate:
+          break;
 
-            default:
-              this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
-  
-              this.yiAutoScroll.forceScrollDown();
-              this.cdRef.markForCheck();
-            break;
-          }
+          case ChatmoniSocketEventName.onUpdate:
+          break;
+
+          default: break;
         }
-
       }
     })
   }
@@ -201,7 +241,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadMessages(data: ChatomniConversationItemDto): any {
-    this.isLoading = true;
+    if(this.isLoadingAll) {
+        this.isLoading = true;
+    } else {
+        this.isLoadingSpin = true;
+        this.isLoading = true;
+    }
 
     this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
@@ -216,12 +261,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           }
 
           this.isLoading = false;
-          this.cdRef.markForCheck();
+          this.isLoadingSpin = false;
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
+          this.isLoadingSpin = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-          this.cdRef.markForCheck();
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -413,6 +460,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     delete this.messageModel;
 
     this.isLoading = false;
+    this.isLoadingSpin = false;
     this.isProcessing = false;
     this.uploadedImages = [];
     this.tags = [];
@@ -426,13 +474,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.isProcessing = true;
     let id = `${this.team.Id}_${this.data.ConversationId}`;
 
-    this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
+    this.dataSource$ = this.chatomniMessageService.nextDataSource(id, this.dataSource);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
           if(res) {
               if(res.Extras) {
                 this.dataSource.Extras = res.Extras;
               }
+
               if(TDSHelperArray.hasListValue(res.Items)) {
                 this.dataSource.Items = [...res.Items];
               }
@@ -467,6 +516,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if(changes['isLoadingAll'] && !changes['isLoadingAll'].firstChange) {
+        this.isLoadingAll = changes['isLoadingAll'].currentValue;
+    }
+
     if (changes["data"] && !changes["data"].firstChange) {
       this.validateData();
       (this.data as any) = null;
@@ -687,14 +740,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   messageResponseV2(res: any, model: ChatomniSendMessageModelDto) {
     if (TDSHelperArray.hasListValue(res)) {
-      res.map((x: ResponseAddMessCommentDtoV2, i: number) => {
+      res?.map((x: ResponseAddMessCommentDtoV2, i: number) => {
         x["Status"] = ChatomniStatus.Done;
 
         if (TDSHelperArray.hasListValue(model.Attachment) && !x.Message) {
           x["Attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
         }
         let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-        this.dataSource.Items = [...this.dataSource.Items, data];
+
+        //TODO: Kiểm tra Id conversation đã được push từ socket thì không push vào nữa
+        let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == data.Id);
+        if(index < 0) {
+          this.dataSource.Items = [...this.dataSource.Items, data];
+        }
 
         if(i == res.length - 1){
 
@@ -708,6 +766,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
         }
       });
+
+      this.cdRef.detectChanges();
     }
 
     // TODO: Gửi tín hiệu phản hồi
@@ -892,11 +952,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onSendSucceed(data: any) {
-    let dataToBroadcast = {
-      user: this.sharedService.userLogged,
-      conversation: this.data
-    };
-    this.sgRConnectionService.sendMessage('onSentConversation', dataToBroadcast);
+    // let dataToBroadcast = {
+    //   user: this.sharedService.userLogged,
+    //   conversation: this.data
+    // };
+    // this.sgRConnectionService.sendMessage('onSentConversation', dataToBroadcast);
   }
 
   openPost(item: any, type: any) {

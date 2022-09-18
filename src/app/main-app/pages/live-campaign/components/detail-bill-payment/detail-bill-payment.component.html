@@ -132,21 +132,21 @@
             </td>
 
             <!-- Tiền cọc -->
-            <td>{{ data.AmountDeposit || 0 | number }}</td>
+            <td>{{ data.AmountDeposit || 0 | numberCustom }}</td>
 
             <!-- Còn nợ -->
-            <td>{{ data.Residual || 0 | number }}</td>
+            <td>{{ data.Residual || 0 | numberCustom }}</td>
 
             <!-- Tổng tiền -->
-            <td>{{ data.AmountTotal || 0 | number }}</td>
+            <td>{{ data.AmountTotal || 0 | numberCustom }}</td>
 
             <!-- Tiền thu hộ -->
-            <td>{{ data.CashOnDelivery || 0 | number }}</td>
+            <td>{{ data.CashOnDelivery || 0 | numberCustom }}</td>
 
             <!-- Trạng thái -->
             <td>
               <div class="w-full">
-                <tds-tag [status]="getColorStatusText(data.State)" size="sm" type="outline">{{data.ShowState}}</tds-tag>
+                <tds-tag [status]="data.State |  getColorStatusState" size="sm" type="outline">{{data.ShowState}}</tds-tag>
                 <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán</p>
               </div>
             </td>

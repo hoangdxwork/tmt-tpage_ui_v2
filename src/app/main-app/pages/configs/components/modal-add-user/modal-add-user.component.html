@@ -22,11 +22,11 @@
             </div>
         </div>
         <div class="w-full grid grid-cols-2 gap-x-12 gap-y-4">
-            <tds-form-field class="w-full">
+            <tds-form-field class="w-full" [color]="!_form.controls['PhoneNumber'].valid && _form.controls['PhoneNumber'].touched ? 'error' : 'default'">
                 <tds-label>Số điện thoại</tds-label>
                 <input formControlName="PhoneNumber" tdsInput autocomplete="off" [required]="true"
                     placeholder="Nhập số điện thoại" />
-                <tds-error>Vui lòng nhập số điện thoại</tds-error>
+                <tds-error *ngIf="!_form.controls['PhoneNumber'].valid && _form.controls['PhoneNumber'].touched">{{ getErrorMessage() }}</tds-error>
             </tds-form-field>
             <tds-form-field class="w-full">
                 <tds-label>Email</tds-label>
@@ -49,11 +49,11 @@
                   </ng-template>
                 </tds-error>
             </tds-form-field>
-            <tds-form-field class="w-full">
+            <tds-form-field class="w-full" [color]="!_form.controls['Password'].valid && _form.controls['Password'].touched ? 'error' : 'default'">
                 <tds-label>Mật Khẩu</tds-label>
-                <input formControlName="Password" [required]="true" type="password" tdsInput
+                <input formControlName="Password" [required]="true" type="password" tdsInput [minlength]="6"
                     placeholder="Nhập mật khẩu" autocomplete="off" />
-                <tds-error>Vui lòng nhập mật khẩu</tds-error>
+                <tds-error>Vui lòng nhập mật khẩu với ít nhất 6 kí tự</tds-error>
             </tds-form-field>
             <tds-form-field class="w-full">
                 <tds-label>Nhập lại mật Khẩu</tds-label>

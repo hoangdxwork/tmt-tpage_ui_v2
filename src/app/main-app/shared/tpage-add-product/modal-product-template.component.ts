@@ -1,7 +1,8 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { KeyCacheIndexDBDTO } from './../../dto/product-pouchDB/product-pouchDB.dto';
-import { Subject, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ProductCategoryService } from '../../services/product-category.service';
@@ -11,13 +12,12 @@ import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { SharedService } from '../../services/shared.service';
-import { map, takeUntil, mergeMap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSNotificationService } from 'tds-ui/notification';
 import { ConfigAddAttributeProductModalComponent } from '../../pages/configs/components/config-attribute-modal/config-attribute-modal.component';
 import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from '../../dto/configs/product/config-product-default.dto';
 import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
@@ -26,14 +26,15 @@ import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte
 
 @Component({
   selector: 'modal-product-template',
-  templateUrl: './modal-product-template.component.html'
+  templateUrl: './modal-product-template.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class ModalProductTemplateComponent implements OnInit, OnDestroy {
+export class ModalProductTemplateComponent implements OnInit {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
   @Input() typeComponent!: any;
-  @Input() inLiveCampaign: boolean = false;
+  @Input() type!: string;
 
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
@@ -68,8 +69,6 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
 
-  private destroy$ = new Subject<void>();
-
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,
     private modal: TDSModalService,
@@ -81,7 +80,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
-    private notification: TDSNotificationService) {
+    private destroy$: TDSDestroyService) {
        this.createForm();
   }
 
@@ -94,32 +93,47 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
   loadDefault() {
     this.isLoading = true;
 
-    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
+    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: TDSSafeAny) => {
         delete res["@odata.context"];
         this.defaultGet = res;
         this.updateForm(res);
-
-    }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.isLoading = false;
+      }, 
+      error:(error) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
     });
   }
 
   loadCategory() {
     this.isLoading = true;
 
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-      this.lstCategory = [...res.value];
-    },
-    error=>{
-      this.message.error(error?.error?.message || Message.CanNotLoadData);
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.lstCategory = [...res.value];
+        this.isLoading = false;
+      },
+      error:(error) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
     });
   }
 
   loadUOMCateg() {
     this.isLoading = true;
 
-    this.productUOMService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
-      this.lstUOMCategory = [...res.value];
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next:res => {
+        this.lstUOMCategory = [...res.value];
+        this.isLoading = false;
+      },
+      error:(err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
     });
   }
 
@@ -157,18 +171,10 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     formControls["Barcode"].setValue(data.Barcode);
     formControls["Weight"].setValue(data.Weight);
     formControls["ListPrice"].setValue(data.ListPrice);
-    formControls["DiscountSale"].setValue(
-      data.DiscountSale
-    );
-    formControls["PurchasePrice"].setValue(
-      data.PurchasePrice
-    );
-    formControls["DiscountPurchase"].setValue(
-      data.DiscountPurchase
-    );
-    formControls["StandardPrice"].setValue(
-      data.StandardPrice
-    );
+    formControls["DiscountSale"].setValue(data.DiscountSale);
+    formControls["PurchasePrice"].setValue(data.PurchasePrice);
+    formControls["DiscountPurchase"].setValue(data.DiscountPurchase);
+    formControls["StandardPrice"].setValue(data.StandardPrice);
   }
 
   prepareModel() {
@@ -199,7 +205,6 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
       this.defaultGet["UOMPOId"] = formModel.UOMPO.Id;
     }
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
-
     this.defaultGet["ProductVariants"] = [...this.lstVariants];
 
     return this.defaultGet;
@@ -209,7 +214,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     let model = this.prepareModel();
     this.isLoading = true;
 
-    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$))
       .subscribe(
         {
           next: (res: any) => {
@@ -223,9 +228,11 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
             // Khi gán dữ liệu , lấy field VariantFirstId
     
             this.loadProduct(type, product);
+            this.isLoading = false;
           }, 
-          error: error => {
-            this.message.error(`${error?.error?.message}`);
+          error: (error) => {
+            this.isLoading = false;
+            this.message.error(error?.error?.message || Message.InsertFail);
         }
         });
   }
@@ -305,12 +312,15 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
 
-    return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
         this.message.success(Message.Upload.Success);
         this._form.controls["ImageUrl"].setValue(res[0].urlImageProxy);
         this.cdRef.markForCheck();
-    }, error => {
-      this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
+      }, 
+      error:(error) => {
+        this.message.error(error?.Message || 'Upload xảy ra lỗi');
+      }
     });
   }
 
@@ -337,14 +347,18 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
 
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
+          this.isLoading = true;
           this.lstAttributes = result;
           let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
+
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
+              this.isLoading = false;
             },
             (err) => {
+              this.isLoading = false;
               this.message.error(err?.error?.message || Message.CanNotLoadData);
             }
           )
@@ -412,11 +426,7 @@ export class ModalProductTemplateComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  changeTags(event:any,i:number){
+    this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
   }
 }
-
-
-

@@ -31,7 +31,7 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
   selectedIndex: number = 0;
 
   id!: any;
-  
+
   isLoading: boolean = false;
   isProcessing: boolean = false;
   popoverVisible: boolean = false;
@@ -51,7 +51,7 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
     private cacheApi: THelperCacheService,
     private router: Router) { }
 
-    
+
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["bill"] && !changes["bill"].firstChange){
       this.bill = changes["bill"].currentValue;
@@ -75,7 +75,15 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
     this.loadData();
   }
 
+  validateData(){
+    this.dataModel = {} as TDSSafeAny;
+    this.productUOMQtyTotal = 0;
+    this.productPriceTotal = 0;
+    this.indexStep = 1;
+  }
+
   loadData(): void {
+    this.validateData();
     this.loadBill();
     this.loadPaymentInfoJson();
   }
@@ -176,15 +184,18 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
           let model = { id: parseInt(that.id) }
           this.isLoading = true;
 
-          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-              that.message.success('Xác nhận gửi vận đơn thành công!');
-              that.loadData();
-
-          }, error => {
-
-            let err = error.error.message.split('Error:')?.[1];
-            that.message.error(err ?? 'Gửi vận đơn thất bại');
-            this.isLoading = false;
+          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.isLoading = false;
+                that.isProcessing = false;
+                that.message.success('Xác nhận gửi vận đơn thành công!');
+                that.loadData();
+            },
+            error: (error: any) => {
+              this.isLoading = false;
+              that.isProcessing = false
+              this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+            }
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -309,19 +320,6 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
           that.isProcessing = false;
       }
     })
-  }
-
-  getShowState(type: string): any {
-    switch (type) {
-      case 'draf':
-        return 'Nháp';
-      case 'cancel':
-        return 'Hủy bỏ';
-      case 'open':
-        return 'Xác nhận';
-      case 'paid':
-        return 'Đã thanh toán';
-    }
   }
 
   onClose(){

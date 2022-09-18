@@ -10,15 +10,15 @@
               <span>Chờ chốt</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{data?.OrderSummary?.OrderQuantity || 0 | number}}</span>
+                <span>{{data?.OrderSummary?.OrderQuantity || 0 | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{data?.OrderSummary?.ProductQuantity || 0 | number}}</span>
+                <span>{{data?.OrderSummary?.ProductQuantity || 0 | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{data?.OrderSummary?.TotalAmount || 0 | number}}</span>
+                <span class="text-info-500">{{data?.OrderSummary?.TotalAmount || 0 | numberCustom}}</span>
               </div>
             </div>
           </div>
@@ -32,15 +32,15 @@
               <span>Chờ thanh toán</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{data?.BillSummary?.OrderQuantity || 0 | number}}</span>
+                <span>{{data?.BillSummary?.OrderQuantity || 0 | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{data?.BillSummary?.ProductQuantity || 0 | number}}</span>
+                <span>{{data?.BillSummary?.ProductQuantity || 0 | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{data?.BillSummary?.TotalAmount || 0 | number}}</span>
+                <span class="text-info-500">{{data?.BillSummary?.TotalAmount || 0 | numberCustom}}</span>
               </div>
             </div>
           </div>
@@ -54,15 +54,15 @@
               <span>Thanh toán</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{data?.PaySummary?.OrderQuantity || 0 | number}}</span>
+                <span>{{data?.PaySummary?.OrderQuantity || 0 | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{data?.PaySummary?.ProductQuantity || 0 | number}}</span>
+                <span>{{data?.PaySummary?.ProductQuantity || 0 | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{data?.PaySummary?.TotalAmount || 0 | number}}</span>
+                <span class="text-info-500">{{data?.PaySummary?.TotalAmount || 0 | numberCustom}}</span>
               </div>
             </div>
           </div>
@@ -76,15 +76,15 @@
               <span>Tổng hoá đơn</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{(data?.BillSummary?.OrderQuantity || 0) + (data?.PaySummary?.OrderQuantity || 0) | number}}</span>
+                <span>{{(data?.BillSummary?.OrderQuantity || 0) + (data?.PaySummary?.OrderQuantity || 0) | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{(data?.BillSummary?.ProductQuantity || 0) + (data?.PaySummary?.ProductQuantity || 0) | number}}</span>
+                <span>{{(data?.BillSummary?.ProductQuantity || 0) + (data?.PaySummary?.ProductQuantity || 0) | numberCustom}}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{(data?.BillSummary?.TotalAmount || 0) + (data?.PaySummary?.TotalAmount || 0) | number}}</span>
+                <span class="text-info-500">{{(data?.BillSummary?.TotalAmount || 0) + (data?.PaySummary?.TotalAmount || 0) | numberCustom}}</span>
               </div>
             </div>
           </div>
@@ -92,8 +92,8 @@
       </div>
 
       <!-- Danh sách sản phẩm -->
-      <div class="flex gap-x-4">
-        <div class="w-2/3 bg-white rounded-xl h-full">
+      <div class="flex gap-x-4 h-full overflow-hidden">
+        <div class="w-2/3 h-fit bg-white rounded-xl">
           <div class="p-4 font-semibold text-xl">
             <span>Sản phẩm</span>
           </div>

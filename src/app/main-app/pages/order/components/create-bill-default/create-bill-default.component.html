@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="w-full mt-[30px] rounded-md h-[512px]">
+  <div class="w-full mt-[30px] rounded-md h-[512px]" *ngIf="lstLine">
     <div class="w-full h-full ">
       <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstLine" [showPagination]="false">
         <thead class="rounded">
@@ -36,7 +36,7 @@
               <td class="align-top"> {{ index + 1 }} </td>
               <!-- Khách hàng -->
               <td class="align-top">
-                <div class="flex flex-col gap-y-2 text-sm">
+                <div class="flex flex-col gap-y-2 text-sm pb-2">
                   <div class="flex">
                     {{ data.Partner.Name }}
                   </div>
@@ -53,6 +53,7 @@
                     <span>{{ data.Partner.Street }}</span>
                   </div>
                 </div>
+                <div *ngIf="lstCheckRowErrors && lstCheckRowErrors[index]" class="text-error-500 italic text-caption-1">{{ lstCheckRowErrors[index] }}</div>
               </td>
               <!-- Đối tác -->
               <td class="align-top">
@@ -66,7 +67,7 @@
               <!-- Tiền hàng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="100"  tds-tooltip tooltipTitle="{{ data.TotalAmount | number:'1.0-3' }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                  <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.TotalAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
                     [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
@@ -74,7 +75,7 @@
               <!-- Phí ship -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.ShipAmount | number:'1.0-3' }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                  <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.ShipAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
                     [(ngModel)]="data.ShipAmount" [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
@@ -82,7 +83,7 @@
               <!-- Khối lượng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1"  tds-tooltip tooltipTitle="{{ data.ShipWeight | number:'1.0-3' }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                  <tds-input-number [min]="0" [step]="1"  tds-tooltip tooltipTitle="{{ data.ShipWeight | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
                     [(ngModel)]="data.ShipWeight" [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
@@ -114,9 +115,9 @@
               <td colspan="3">
                 <div class="flex gap-x-2">
                   <tds-form-field class="w-full">
-                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText[index]" [ngModelOptions]="{standalone: true}"/>
                   </tds-form-field>
-                  <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="innerText ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress(index)">
+                  <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="innerText[index] ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress(data.Partner,index)">
                       <span class="flex items-center">
                         <i class="tdsi-location-fill"></i>
                       </span>

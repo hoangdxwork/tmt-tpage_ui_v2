@@ -82,7 +82,7 @@
           </tds-form-field>
 
           <div *ngIf="tabNavs && filterObj">
-              <order-filter-options (onLoadOption)="onLoadOption($event)"
+              <order-filter-options (onLoadOption)="onLoadOption($event)" [summaryStatus]="lstOftabNavs"
                   [tabNavs]="tabNavs" [lstDataTag]="lstDataTag" [filterObj]="filterObj">
               </order-filter-options>
           </div>
@@ -96,7 +96,7 @@
           [loading]="isLoading" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
-              <th [align]="'center'" width="33px" [tdsLeft]="true"></th>
+              <th [align]="'center'" width="44px" [tdsLeft]="true"></th>
               <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" class="border-l" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
               <th [tdsLeft]="true" class="border-l">STT</th>
@@ -128,7 +128,7 @@
 
                 <!-- STT -->
                 <td class="border-l truncate min-w-[64px] max-w-[130px]" [tdsLeft]="true">
-                  <span>{{ data.SessionIndex }}</span>
+                  <span> {{ data.SessionIndex }} </span>
                 </td>
 
                 <!-- Code -->
@@ -202,7 +202,6 @@
                       </div>
                     </div>
                   </div>
-
                 </td>
 
                 <!-- Kênh kết nối -->
@@ -215,16 +214,18 @@
 
                 <!-- Tên -->
                 <td *ngIf="isHidden('Name')" class="border-l min-w-[260px] max-w-[500px]">
-                  <div class="w-full">
+                  <div class="w-full flex flex-col gap-y-1">
                     <p class="truncate">{{data.PartnerName}}</p>
-
-                    <div class="flex items-center gap-1">
-                      <p class="text-[#929DAA]">{{data.Telephone}}</p>
-                      <tds-tag class="ml-1" *ngIf="data.NameNetwork"  [status]="data.NameNetwork | nameNetWork" type="outline">
-                        {{ data.NameNetwork }}
-                      </tds-tag>
-                      <button *ngIf="data.Address" class="bg-orange-500 rounded-md p-1">
-                        <span class="flex items-center text-white ">
+                    <div class="flex items-center">
+                      <p *ngIf="data.Telephone" class="text-[#929DAA] mr-1">{{data.Telephone}}</p>
+                      <div tds-button color="secondary" *ngIf="data.PartnerStatus"
+                          class="border border-solid rounded px-2 py-px mr-1" [ngStyle]="(data.PartnerStatus.sS) | buttonStatusColor">
+                          <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
+                            {{ data.PartnerStatus.sT }}
+                          </span>
+                      </div>
+                      <button *ngIf="data.Address" class="bg-orange-500 rounded p-[3px]" tds-tooltip tooltipTitle="{{ data.Address }}">
+                        <span class="flex items-center justify-center text-white ">
                           <i class="tdsi-pin-fill"></i>
                         </span>
                       </button>
@@ -239,12 +240,12 @@
 
                 <!-- Tổng tiền -->
                 <td *ngIf="isHidden('TotalAmount')" class="border-l text-right min-w-[140px] max-w-[280px]">
-                  <span>{{data.TotalAmount || 0 | number:'1.0-3' | numberCustom }} đ</span>
+                  <span>{{data.TotalAmount || 0 | numberCustom | numberCustom }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
                 <td *ngIf="isHidden('TotalQuantity')" class="border-l min-w-[140px] max-w-[280px] truncate">
-                  <span>{{data.TotalQuantity || 0 | number:'1.0-3' | numberCustom }}</span>
+                  <span>{{data.TotalQuantity || 0 | numberCustom | numberCustom }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
@@ -301,12 +302,8 @@
                 </td>
               </tr>
               <!-- expand order details -->
-              <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-gray-200 w-full">
-                <div #billOrderLines
-                  [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
-                  <expand-order-detail *ngIf="expandSet.has(data.Id)" [dataOrder]="data">
-                  </expand-order-detail>
-                </div>
+              <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
+                <expand-order-detail class="w-full p-3 block" *ngIf="expandSet.has(data.Id)" [dataOrder]="data"></expand-order-detail>
               </tr>
             </ng-template>
           </tbody>
@@ -344,24 +341,25 @@
           <div class="grid grid-cols-2 gap-x-9 gap-y-3">
             <div class="flex gap-x-1">
               <span class="w-1/3">Mã</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.Code?orderMessage.Code:'...' || 'N/A'}}</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.Code?orderMessage.Code:'...' || 'N/A'}} 
+                <tds-tag class="ml-2" [status]="orderMessage?.StatusText | getColorStatusText" size="sm" type="outline">{{orderMessage?.StatusText}}</tds-tag>
+              </span>
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Tổng tiền</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | number:'1.0-3'  }}</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | numberCustom  }}</span>
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Ngày tạo</span>
               <span class="w-2/3 font-semibold">{{orderMessage.DateCreated | date:'dd/MM/yyyy'}}</span>
             </div>
             <div class="flex gap-x-1">
-              <span class="w-1/3">Kênh bán hàng</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.CRMTeamName?orderMessage.CRMTeamName:'...' ||
-                'N/A'}}</span>
+              <span class="w-1/3">Ghi chú</span>
+              <div showMore [length]="100" [text]="orderMessage?.Note" class="w-2/3 font-semibold"></div>
             </div>
             <div class="flex gap-x-1">
-              <span class="w-1/3">Trạng thái</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.StatusText?orderMessage.StatusText:'...' }}</span>
+              <span class="w-1/3">Kênh bán hàng</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.CRMTeamName?orderMessage.CRMTeamName:'...' || 'N/A'}}</span>
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Nhân viên</span>

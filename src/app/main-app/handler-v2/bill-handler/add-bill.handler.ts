@@ -6,8 +6,7 @@ import { FormGroup } from '@angular/forms';
 
 export class AddBillHandler {
 
-  prepareModel(data: FastSaleOrder_DefaultDTOV2, _form: FormGroup) {
-
+  prepareModel(data: FastSaleOrder_DefaultDTOV2, _form: FormGroup, idEdit: any) {
     const formModel = _form.value;
     data = Object.assign(data, formModel);
 
@@ -79,7 +78,7 @@ export class AddBillHandler {
     data.Ship_ServiceExtrasText = data.Ship_ServiceExtras ? JSON.stringify(data.Ship_ServiceExtras) : data.Ship_ServiceExtrasText;
     data.Ship_ExtrasText = data.Ship_ExtrasText ? JSON.stringify(data.Ship_Extras) : data.Ship_ExtrasText;
 
-    if (data.Ship_Receiver) {
+    if (data.Ship_Receiver && Number(idEdit) == 0) {
       data.Ship_Receiver.Name = data.ReceiverName;
       data.Ship_Receiver.Phone = data.ReceiverPhone;
 

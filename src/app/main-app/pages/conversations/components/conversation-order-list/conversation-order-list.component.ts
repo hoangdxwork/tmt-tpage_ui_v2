@@ -19,6 +19,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 import { FacebookPostService } from '@app/services/facebook-post.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
+import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 
 @Component({
   selector: 'conversation-order-list',
@@ -59,7 +60,7 @@ export class ConversationOrderListComponent implements OnInit {
 
   currentPost!: ChatomniObjectsItemDto;
   isLoading: boolean = false;
-  isLoadingLine: boolean = false;
+  isLoadingLine: boolean[] = [];
   lstOfData: Array<ConversationOrderDTO> = [];
   tabNavs: Array<TDSSafeAny> = [];
   lstLine: any[] = [];
@@ -88,7 +89,8 @@ export class ConversationOrderListComponent implements OnInit {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
     this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        this.loadSummaryStatus();
+        // đóng tạm thời
+        // this.loadSummaryStatus();
         this.loadData(this.pageSize, this.pageIndex);
       }
     })
@@ -97,8 +99,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.chatomniObjectFacade.onChangeListOrderFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (item: ChatomniObjectsItemDto) => {
         this.currentPost = item;
-
-        this.loadSummaryStatus();
+        // đóng tạm thời
+        // this.loadSummaryStatus();
         this.loadData(this.pageSize, this.pageIndex);
       }
     });
@@ -112,6 +114,9 @@ export class ConversationOrderListComponent implements OnInit {
       next:(res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          //gán tạm thời
+          let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
+          this.tabNavs = [...data];
       },
       error:(error) => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -126,15 +131,15 @@ export class ConversationOrderListComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false ));
   }
 
-  getLine(id: string) {
-    this.isLoadingLine = true;
+  getLine(id: string, index: number) {
+    this.isLoadingLine[index] = true;
     this.saleOnline_OrderService.getLines(id).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
-          this.lstLine = res ? [...res.value] : [];
-          this.isLoadingLine = false;
+          this.lstLine[index] = res ? [...res.value] : [];
+          this.isLoadingLine[index] = false;
       },
       error:(err) => {
-          this.isLoadingLine = false;
+          this.isLoadingLine[index] = false;
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
       }
     });
@@ -150,7 +155,8 @@ export class ConversationOrderListComponent implements OnInit {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
-    this.loadSummaryStatus();
+    // đóng tạm thời
+    // this.loadSummaryStatus();
   }
 
   changePageSize(pageSize:number){
@@ -168,8 +174,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = event.value;
-
-    this.loadSummaryStatus();
+    // đóng tạm thời
+    // this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -206,8 +212,8 @@ export class ConversationOrderListComponent implements OnInit {
                   break;
               }
           });
-
-          this.conversationPostEvent.getOrderTotal$.emit(total);
+          //TODO: load số lượng đơn hàng 
+          // this.conversationPostEvent.getOrderTotal$.emit(total);
 
           this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
           this.tabNavs.sort((a, b) => a.Index - b.Index);
@@ -232,8 +238,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  onActiveChange(order: any, event: boolean) {
-    event && this.getLine(order.Id);
+  onActiveChange(order: any, event: boolean, index: number) {
+    event && this.getLine(order.Id, index);
   }
 
   onCheck(orderId: string, event: TDSSafeAny) {
@@ -309,11 +315,11 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   printMulti() {
-    if(this.isLoadingActive){
+    if(this.isLoading){
       return
     }
 
-    this.isLoadingActive = true;
+    this.isLoading = true;
     let ids = [...this.setOfCheckedId];
     let datas = this.lstOfData.filter(x => ids.includes(x.Id));
 
@@ -322,13 +328,17 @@ export class ConversationOrderListComponent implements OnInit {
           this.orderPrintService.printIpFromOrder(x);
       });
 
-      this.isLoadingActive = false;
+      this.isLoading = false;
     }
   }
 
   exportExcel() {
-    if (this.isLoadingActive) { return }
+    if (this.isLoading) { 
+      return;
+    }
+
     let ids = [...this.setOfCheckedId];
+    this.isLoading = true;
 
     this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
       {
@@ -337,12 +347,12 @@ export class ConversationOrderListComponent implements OnInit {
         postId: this.currentPost.ObjectId,
         ids: ids,
       }, `don_hang_online`)
-      .pipe(finalize(() => this.isLoadingActive = false), takeUntil(this.destroy$))
+      .pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe();
   }
 
   deleteMulti() {
-    if(this.isLoadingActive){
+    if(this.isLoading){
       return
     }
 
@@ -364,7 +374,7 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   deleteIds(ids: string[]) {
-    this.isLoadingActive = true;
+    this.isLoading = true;
 
     this.odataSaleOnline_OrderService.removeIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
@@ -374,10 +384,10 @@ export class ConversationOrderListComponent implements OnInit {
             this.facebookPostService.onRemoveOrderComment$.emit(ids);
 
             this.loadData(this.pageSize, this.pageIndex);
-            this.isLoadingActive = false;
+            this.isLoading = false;
         },
         error:(error) => {
-            this.isLoadingActive = false;
+            this.isLoading = false;
             this.message.error(error?.error?.message || JSON.stringify(error));
         }
       });
@@ -386,6 +396,7 @@ export class ConversationOrderListComponent implements OnInit {
   onEdit(item: any, event: TDSSafeAny) {
     if(item && item.Id) {
       this.isLoading = true;
+
       this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
               if(res && res.Id) {
@@ -405,10 +416,8 @@ export class ConversationOrderListComponent implements OnInit {
                 })
 
                 modal.afterClose?.subscribe({
-                  next: (obs: string) => {
-                    if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-                        this.loadData(this.pageSize, this.pageIndex);
-                    }
+                  next: (obs: any) => {
+                    this.loadData(this.pageSize, this.pageIndex);
                   },
                 })
               }
@@ -430,8 +439,8 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = '';
-
-    this.loadSummaryStatus();
+    // đóng tạm thời
+    // this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 }

@@ -13,7 +13,7 @@ import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carri
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
-import { CarrierListOrderDTO, GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
+import { CarrierListOrderDTO, GetListOrderIdsDTO, PartnerListOrderDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 import { CreateBillDefaultErrorDTO } from '@app/dto/order/default-error.dto';
 
 @Component({
@@ -31,6 +31,7 @@ export class CreateBillFastComponent implements OnInit {
 
   lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
   lstCarriers: Array<CarrierListOrderDTO> = [];
+  lstCheckRowErrors: Array<string> = [];
   carrierForAll!: CarrierListOrderDTO;
   isLoading: boolean = false;
   isPrint: boolean = false;
@@ -68,6 +69,9 @@ export class CreateBillFastComponent implements OnInit {
     if(TDSHelperArray.hasListValue(this.lstData)) {
       this.loadCarrier();
       this.updateAmountTotal(this.lstData);
+      this.lstData.forEach((x, i) =>{
+        this.checkPartnerInfo(x.Partner, i);
+      });
     }
   }
 
@@ -302,6 +306,39 @@ export class CreateBillFastComponent implements OnInit {
       }else{
         this.modalRef.destroy(true);
       }
+    }
+  }
+
+  checkPartnerInfo(partner: PartnerListOrderDTO, i: number){
+    let error = ``;
+
+    if(partner){
+      if(!partner.Name) {
+        error = `*Chưa có Tên`;
+      }
+
+      if(!partner.Phone){
+        if(error != ``){
+          error += `, Số điện thoại`
+        }else{
+          error = `*Chưa có Số điện thoại`;
+        }
+      }
+
+      if(!partner.Street){
+        if(error != ``){
+          error += `, Địa chỉ`;
+        }else{
+          error = `*Chưa có Địa chỉ`;
+        }
+      }
+
+      if(error != ``){
+        this.lstCheckRowErrors[i] = error;
+      }
+    }else{
+      let message = `*Không có thông tin khách hàng`;
+      this.lstCheckRowErrors[i] = message;
     }
   }
 

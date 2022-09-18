@@ -157,18 +157,6 @@ export class DetailBillComponent implements OnInit{
     })
   }
 
-  getShowState(type: string): any {
-    switch (type) {
-      case 'draf':
-        return 'Nháp';
-      case 'cancel':
-        return 'Hủy bỏ';
-      case 'open':
-        return 'Xác nhận';
-      case 'paid':
-        return 'Đã thanh toán';
-    }
-  }
 
   showPaymentInfo(i: number){
     this.indx = i;
@@ -239,17 +227,15 @@ export class DetailBillComponent implements OnInit{
 
           that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: TDSSafeAny) => {
-              that.message.success('Xác nhận gửi vận đơn thành công!');
+              this.isLoading = true;
               that.isProcessing = false;
-
+              that.message.success('Xác nhận gửi vận đơn thành công!');
               that.loadData();
             },
             error:(error) => {
               that.isProcessing = false;
               this.isLoading = false;
-
-              let err = error.error.message.split('Error:')?.[1];
-              that.message.error(err || 'Gửi vận đơn thất bại');
+              this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
             }
           })
       },

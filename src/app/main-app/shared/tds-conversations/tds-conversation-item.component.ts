@@ -223,20 +223,22 @@ export class TDSConversationItemComponent implements OnInit  {
       return
     }
 
+    let csid = this.dataItem.Data.id || this.csid;
     this.reloadingImage = true;
-    this.activityMatchingService.refreshAttachment(this.team.ChannelId, this.dataItem.Data.id || this.csid , item.id)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe({
+    this.activityMatchingService.refreshAttachment(this.team.ChannelId, csid , item.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-        this.tdsMessage.success('Thao tác thành công');
-        this.activityDataFacade.refreshAttachment(res);
-        this.dataItem.Data["is_error_attachment"] = false;
+            this.reloadingImage = false
+            this.tdsMessage.success('Thao tác thành công');
+            this.activityDataFacade.refreshAttachment(res);
+            this.dataItem.Data["is_error_attachment"] = false;
 
-        this.cdRef.markForCheck();
-      },
-      error: error => {
-          this.tdsMessage.error(`${error?.error?.message}` || 'Không thành công');
-      }
+            this.cdRef.markForCheck();
+        },
+        error: error => {
+            this.reloadingImage = false
+            this.tdsMessage.error(`${error.Message}` || 'Không thành công');
+            this.cdRef.markForCheck();
+        }
     });
   }
 
@@ -253,15 +255,16 @@ export class TDSConversationItemComponent implements OnInit  {
       MessageType: 1,
       RecipientId: this.dataItem.Id
     }
+
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.tdsMessage.success("Thao tác thành công");
           if (TDSHelperArray.hasListValue(res)) {
             res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-              x["Status"] = ChatomniStatus.Done;
-              let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-              this.dataItem  = {...data}
+                x["Status"] = ChatomniStatus.Done;
+                let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+                this.dataItem  = {...data}
             });
           }
 
@@ -292,15 +295,15 @@ export class TDSConversationItemComponent implements OnInit  {
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        pageId: this.team.Facebook_PageId,
+        pageId: this.team.ChannelId,
       }
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-      if(res){
-        this.onProductSelected(res);
-      }
+        if(res){
+            this.onProductSelected(res);
+        }
       }
     });
   }
@@ -325,16 +328,16 @@ export class TDSConversationItemComponent implements OnInit  {
       this.activityMatchingService.addTemplateMessage(this.team.ChannelId, model)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-          this.activityDataFacade.messageServer(res);
-          this.conversationDataFacade.messageServer(res);
+            this.activityDataFacade.messageServer(res);
+            this.conversationDataFacade.messageServer(res);
 
-          this.tdsMessage.success('Gửi thành công sản phẩm');
-          this.cdRef.markForCheck();
-        },
-        error: error => {
-          this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
-          this.cdRef.markForCheck();
-        }
+            this.tdsMessage.success('Gửi thành công sản phẩm');
+            this.cdRef.markForCheck();
+          },
+          error: error => {
+            this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
+            this.cdRef.markForCheck();
+          }
       });
     }
   }
@@ -419,6 +422,7 @@ export class TDSConversationItemComponent implements OnInit  {
     if(this.isPrivateReply) {
       this.addQuickReplyComment(message);
     }
+
     else {
       const model = this.prepareModel(message);
       model.post_id = this.dataItem.ObjectId || this.dataItem.Data?.object?.id || null;
@@ -427,32 +431,41 @@ export class TDSConversationItemComponent implements OnInit  {
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: ResponseAddMessCommentDto) => {
-          res["status"] = ChatomniStatus.Done;
-          res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
-          res.name = this.team.Name;
+              res["status"] = ChatomniStatus.Done;
+              res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop ? 91 : 0);
+              res.name = this.team.Name;
 
-          let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
-          this.children = [ ...(this.children || []), data];
+              let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
+              if(data){
+                data.ParentId = model.parent_id;
+                data.ObjectId = model.post_id;
+                data.Data.id = this.dataItem.Data?.id;
+              }
+          
+              this.children = [ ...(this.children || []), data];
 
-          //TODO: Đẩy qua conversation-all-v2
-          let itemLast = {...data}
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
-          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+              //TODO: Đẩy qua tds-conversation
+              this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
 
-          this.messageModel = null;
-          this.tdsMessage.success("Trả lời bình luận thành công");
+              //TODO: Đẩy qua conversation-all
+              let itemLast = {...data}
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
+              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
-          this.isReply = false;
-          this.isReplyingComment = false;
+              this.messageModel = null;
+              this.tdsMessage.success("Trả lời bình luận thành công");
 
-          this.cdRef.markForCheck();
-        },
-        error: error => {
-          this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-          this.isReplyingComment = false;
+              this.isReply = false;
+              this.isReplyingComment = false;
 
-          this.cdRef.markForCheck();
-        }
+              this.cdRef.markForCheck();
+            },
+            error: error => {
+              this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
+              this.isReplyingComment = false;
+
+              this.cdRef.markForCheck();
+            }
       });
     }
   }

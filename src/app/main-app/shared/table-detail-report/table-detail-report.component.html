@@ -1,6 +1,12 @@
-<div class="w-full h-full">
-    <tds-table #detailTable [listData]="lstDetails"
-        [showPagination]="false" [scroll]="{y:'400px'}">
+<div class="flex flex-col w-full h-full">
+    <!-- <div class="p-4">
+      <tds-form-field class="w-full">
+        <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
+        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
+    </div> -->
+    <tds-table #detailTable [listData]="lstDetails" [pageSize]="lstDetails.length"
+        [showPagination]="false" [scroll]="{ y: '450px'}">
         <thead>
             <tr>
                 <th [width]="'6%'">STT</th>
@@ -102,13 +108,13 @@
                                 </div>
                             </ng-template>
                         </div>
-                        <div class="text-neutral-1-400 text-caption-2">Chờ chốt: {{ (data.QueueQuantity | number:'1.0-3' ) || 0 }}</div>
-                        <div class="text-neutral-1-400 text-caption-2">Đã chốt: {{ (data.UsedQuantity | number:'1.0-3' ) || 0 }}</div>
+                        <div class="text-neutral-1-400 text-caption-2">Chờ chốt: {{ (data.QueueQuantity | numberCustom ) || 0 }}</div>
+                        <div class="text-neutral-1-400 text-caption-2">Đã chốt: {{ (data.UsedQuantity | numberCustom ) || 0 }}</div>
                         <div class="text-caption-2 font-semibold" [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
-                            Còn lại: {{ (data.RemainRealQuantity | number:'1.0-3' ) || 0 }}
+                            Còn lại: {{ ((data.Quantity - data.UsedQuantity) | numberCustom ) || 0 }}
                         </div>
                     </td>
-                    <td>{{ data.Price | number:'1.0-3'  }}</td>
+                    <td>{{ data.Price | numberCustom  }}</td>
                 </tr>
             </ng-template>
         </tbody>

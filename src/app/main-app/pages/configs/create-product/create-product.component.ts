@@ -10,7 +10,7 @@ import { ProductCategoryService } from '../../../services/product-category.servi
 import { WallPicturesDTO } from '../../../dto/attachment/wall-pictures.dto';
 import { Message } from '../../../../lib/consts/message.const';
 import { CreateVariantsModalComponent } from '../components/create-variants-modal/create-variants-modal.component';
-import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from '../../../dto/configs/product/config-product-default.dto';
+import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants, UOMLine } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from '../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
@@ -32,6 +32,9 @@ import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-c
 @Component({
   selector: 'app-create-product',
   templateUrl: './create-product.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  },
   providers: [TDSDestroyService]
 })
 export class ConfigAddProductComponent implements OnInit {
@@ -47,6 +50,7 @@ export class ConfigAddProductComponent implements OnInit {
   distributorList: Array<ConfigUOMTypeDTO> = [];
   originCountryList: Array<ConfigOriginCountryDTO> = [];
   lstAttributes: Array<ConfigAttributeLine> = [];
+  lstUOM: Array<UOMLine> = [];
   lstVariants: Array<ConfigProductVariant> = [];
   lstProductCombo: Array<ComboProductDTO> = [];
   stockChangeProductList: Array<StockChangeProductQtyDTO> = [];
@@ -58,6 +62,10 @@ export class ConfigAddProductComponent implements OnInit {
   id: TDSSafeAny;
   minIndex = 0;
 
+  pageSize = 20;
+  pageIndex = 1;
+  count: number = 1;
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -65,7 +73,7 @@ export class ConfigAddProductComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -101,6 +109,7 @@ export class ConfigAddProductComponent implements OnInit {
       this.loadData(this.id);
       this.loadStockChangeProductQty(this.id);
       this.loadProductAttributeLine(this.id);
+      this.loadProductUOMLine(this.id);
       this.loadComboProducts(this.id);
     } else {
       this.loadDefault();
@@ -122,7 +131,7 @@ export class ConfigAddProductComponent implements OnInit {
     this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
-        this.dataModel = { ...res };
+        this.dataModel = { ...res };console.log(this.dataModel)
 
         // TODO: lấy danh sách biến thể
         if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
@@ -190,9 +199,9 @@ export class ConfigAddProductComponent implements OnInit {
         next: (res: TDSSafeAny) => {
           delete res['@odata.context'];
           this.dataModel = { ...res };
-  
+
           this.formatProperty(res);
-        }, 
+        },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
         }
@@ -233,7 +242,7 @@ export class ConfigAddProductComponent implements OnInit {
       {
         next: (res: TDSSafeAny) => {
           this.categoryList = [...res.value];
-        }, 
+        },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
         }
@@ -317,6 +326,20 @@ export class ConfigAddProductComponent implements OnInit {
       {
         next: (res) => {
           this.lstAttributes = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+
+        }
+      }
+    )
+  }
+
+  loadProductUOMLine(id: TDSSafeAny) {
+    this.productTemplateService.getProductUOMLine(id).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res) => {
+          this.lstUOM = [...res.value];
         },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -591,7 +614,6 @@ export class ConfigAddProductComponent implements OnInit {
 
   addProduct() {
     let model = this.prepareModel();
-    console.log(model)
     if (model.Name) {
       this.productTemplateService.insertProductTemplate(model)
         .pipe(takeUntil(this.destroy$)).subscribe(
@@ -599,7 +621,7 @@ export class ConfigAddProductComponent implements OnInit {
             next: (res: TDSSafeAny) => {
               this.message.success(Message.InsertSuccess);
               this.loadDataIndexDBCache();
-              this.isLoading = false;  
+              this.isLoading = false;
 
               this.router.navigateByUrl('/configs/products');
             },
@@ -623,7 +645,7 @@ export class ConfigAddProductComponent implements OnInit {
               this.message.success(Message.UpdatedSuccess);
               this.loadDataIndexDBCache();
               this.isLoading = false;
-  
+
               this.router.navigateByUrl('/configs/products');
             },
             error: err => {
@@ -673,7 +695,7 @@ export class ConfigAddProductComponent implements OnInit {
               delete res['@odata.context'];
               this.dataModel = { ...res };
               this.addProduct();
-            }, 
+            },
             error: err => {
               this.message.error(err?.error?.message || Message.CanNotLoadData);
             }
@@ -681,4 +703,6 @@ export class ConfigAddProductComponent implements OnInit {
       }
     }
   }
+
+
 }

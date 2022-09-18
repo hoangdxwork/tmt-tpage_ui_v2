@@ -66,32 +66,34 @@
                     </button>
                 </div>
             </div>
-            <div  class="flex justify-end items-center py-4" *ngIf="dataModel.State !== 'cancel'">
-                <tds-button-split class="mr-2" color="secondary">
-                    <span class="flex items-center js-label font-semibold">
-                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu</span>
-                    <div class="js-content flex flex-col ">
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill80')">Bill 80</button>
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill58')">Bill 58</button>
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('A4')">In A4</button>
-                        <button tds-button-menu-item class="text-left p-3" (click)="print('A5')">In A5</button>
-                    </div>
-                </tds-button-split>
-                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('delivery')">
-                    <span class="flex items-center">
-                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In giao hàng
-                    </span>
-                </button>
-                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
-                    <span class="flex items-center">
-                        <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
-                    </span>
-                </button>
-                <tds-steps [current]="indexStep" [status]="isStatusStep">
-                    <tds-step tdsTitle="Nháp"></tds-step>
-                    <tds-step [tdsTitle]="dataModel.State == 'cancel' ? 'Đã hủy' : 'Xác nhận'"></tds-step>
-                    <tds-step tdsTitle="Đã thanh toán"></tds-step>
-                </tds-steps>
+            <div class="flex justify-end items-center py-4" *ngIf="dataModel.State !== 'cancel'">
+                <div class="flex" >
+                    <tds-button-split class="mr-2" color="secondary">
+                        <span class="flex items-center js-label font-semibold truncate">
+                            <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu</span>
+                        <div class="js-content flex flex-col ">
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('bill80')">Bill 80</button>
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('bill58')">Bill 58</button>
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('A4')">In A4</button>
+                            <button tds-button-menu-item class="text-left p-3" (click)="print('A5')">In A5</button>
+                        </div>
+                    </tds-button-split>
+                    <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('delivery')">
+                        <span class="flex items-center">
+                            <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In giao hàng
+                        </span>
+                    </button>
+                    <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
+                        <span class="flex items-center">
+                            <i class="tdsi-print-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
+                        </span>
+                    </button>
+                    <tds-steps [current]="indexStep" [status]="isStatusStep">
+                        <tds-step tdsTitle="Nháp"></tds-step>
+                        <tds-step [tdsTitle]="dataModel.State == 'cancel' ? 'Đã hủy' : 'Xác nhận'"></tds-step>
+                        <tds-step tdsTitle="Đã thanh toán"></tds-step>
+                    </tds-steps>
+                </div>
             </div>
         </div>
         <div class="flex gap-x-4 p-4 tds-custom-scroll">
@@ -100,7 +102,7 @@
                 <div class="rounded-xl bg-white p-4 flex flex-col">
                     <div class="mb-7">
                         <h1 class="text-header-1 font-semibold flex items-center">
-                            <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng: {{dataModel.Number || 'N/A'}}
+                            <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng: {{ dataModel.Number || 'N/A' }}
                         </h1>
                     </div>
                     <div class="grid grid-cols-2 gap-y-4 2xl:gap-x-8 xl:gap-x-6">
@@ -109,17 +111,21 @@
                                 <tds-avatar [size]="84" [tdsSrc]="dataModel.Partner.ImageUrl"></tds-avatar>
                             </div>
                             <div class="flex flex-auto flex-col gap-y-2">
-                                <div class="flex">
-                                    <span class="text-header-2 font-semibold mr-2 w-1/2 h-full flex justify-start">{{dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign}}</span>
-                                    <div class="w-1/2 h-[28px] flex justify-end items-center">
-                                      <tds-tag *ngIf="dataModel.Partner?.StatusText" status='primary' size="sm" rounded="rounded-full">{{dataModel.Partner.StatusText}}</tds-tag>
-                                    </div>
+                                <div class="inline-flex">
+                                    <span class="text-header-2 font-semibold mr-2 h-full flex justify-start">
+                                        {{ dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign }}
+                                    </span>
+                                    <tds-tag *ngIf="dataModel.Partner?.StatusText" status='primary' size="sm" rounded="rounded-full" class="flex items-center h-[28px]">
+                                        <span class="w-fit whitespace-nowrap">
+                                            {{dataModel.Partner.StatusText}}
+                                        </span>
+                                    </tds-tag>
                                 </div>
                                 <span class="text-neutral-1-600">
-                                    <i class="tdsi-call-fill mr-2"></i> {{dataModel.Ship_Receiver?.Phone || '---'}}
+                                    <i class="tdsi-call-fill mr-2"></i> {{ dataModel.Ship_Receiver?.Phone || '---' }}
                                 </span>
                                 <span class="text-neutral-1-600">
-                                    <i class="tdsi-pin-fill mr-2"></i> {{dataModel.Ship_Receiver?.Street || '---'}}
+                                    <i class="tdsi-pin-fill mr-2"></i> {{ dataModel.Ship_Receiver?.Street || '---' }}
                                 </span>
                             </div>
                         </div>
@@ -139,7 +145,7 @@
                                 </div>
                                 <div class="flex items-center">
                                     <div class="rounded-full bg-neutral-3-100 px-2">
-                                        <span class="text-neutral-1-700 font-semibold">{{dataModel.ShowShipStatus || '---'}}</span>
+                                        <span class="text-neutral-1-700 font-semibold">{{ dataModel.ShowShipStatus || '---' }}</span>
                                     </div>
                                     <span class="text-info-500 font-semibold ml-2 w-1/3 truncate" *ngIf="dataModel.TrackingRef">{{ dataModel.TrackingRef }}</span>
                                 </div>
@@ -150,7 +156,7 @@
                                 <span>Nợ cũ</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.PreviousBalance || 0 | numberCustom }} đ</span>
+                                <span class="font-semibold">{{ dataModel.PreviousBalance || 0 | numberCustom }} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -158,7 +164,7 @@
                                 <span>Tiền thu hộ</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
+                                <span class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -166,7 +172,7 @@
                                 <span>Bảng giá</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.PriceList?.Name || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.PriceList?.Name || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -174,11 +180,11 @@
                                 <span>Phí giao hàng</span>
                             </div>
                             <div class="w-2/3 flex items-center gap-x-6">
-                                <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
+                                <span class="font-semibold">{{ dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
                                 <div class="rounded-full bg-info-200 px-2" *ngIf="dataModel.ShipWeight" tds-tooltip tooltipTitle="Khối lượng: {{dataModel.ShipWeight}} (g)">
                                     <span class="text-info-500 font-semibold flex items-center gap-x-1">
                                         <i class="tdsi-unit-fill text-base"></i>
-                                        {{dataModel.ShipWeight || '---'}}
+                                        {{ dataModel.ShipWeight || '---' }}
                                     </span>
                                 </div>
                             </div>
@@ -188,7 +194,7 @@
                                 <span>Số tiền trả</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.PaymentAmount || 0 | numberCustom }} đ</span>
+                                <span class="font-semibold">{{ dataModel.PaymentAmount || 0 | numberCustom }} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -196,7 +202,7 @@
                                 <span>Kho hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.Warehouse?.Name || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.Warehouse?.Name || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -205,7 +211,7 @@
                             </div>
                             <div class="w-2/3">
                                 <span class="font-semibold" *ngIf="dataModel.PaymentJournal?.Name">
-                                    {{dataModel.PaymentJournal?.Name}} ({{dataModel.PaymentJournal?.Type}})
+                                    {{ dataModel.PaymentJournal?.Name }} ({{ dataModel.PaymentJournal?.Type }})
                                 </span>
                                 <span class="font-semibold" *ngIf="!dataModel.PaymentJournal?.Name">---</span>
                             </div>
@@ -215,7 +221,7 @@
                                 <span>Người giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.Deliver || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.Deliver || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -223,10 +229,7 @@
                                 <span>Kênh</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold" *ngIf="dataModel.Team?.Name">
-                                    {{dataModel.Team?.Name}}
-                                </span>
-                                <span class="font-semibold" *ngIf="!dataModel.Team?.Name">---</span>
+                                <span class="font-semibold">{{ dataModel.Team?.Name || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -234,7 +237,7 @@
                                 <span>Tham chiếu</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.Reference || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.Reference || '---' }}</span>
                             </div>
                         </div>
                     </div>
@@ -262,16 +265,16 @@
                             <tbody>
                                 <ng-template ngFor let-data let-i="index" [ngForOf]="tableProduct.data">
                                     <tr>
-                                        <td>{{ i +1 }}</td>
+                                        <td>{{ i + 1 }}</td>
                                         <td>
                                             {{ data.Product.NameGet }}
-                                            <p class="text-[13px] italic text-[#0184FF]" *ngIf="data.User && data.User.Name">Nhân viên: {{data.User.Name}}</p>
+                                            <p class="text-[13px] italic text-[#0184FF]" *ngIf="data.User && data.User.Name">Nhân viên: {{ data.User.Name || '---' }}</p>
                                         </td>
                                         <td>{{ data.ProductUOMName }}</td>
-                                        <td>{{ data.ProductUOMQty }}</td>
-                                        <td>{{ data.PriceUnit | numberCustom  }} đ</td>
-                                        <td>{{ data.Discount}} %</td>
-                                        <td>{{ data.PriceTotal | numberCustom  }} đ</td>
+                                        <td>{{ data.ProductUOMQty | numberCustom }}</td>
+                                        <td>{{ data.PriceUnit | numberCustom }} đ</td>
+                                        <td>{{ data.Discount }} %</td>
+                                        <td>{{ data.PriceTotal | numberCustom }} đ</td>
                                     </tr>
                                 </ng-template>
                             </tbody>
@@ -282,23 +285,23 @@
                         <div class="w-1/2 text-right flex flex-col">
                             <div class="flex mb-5">
                                 <span class="w-1/2"> Tổng số lượng</span>
-                                <span class="w-1/2 font-semibold">{{productUOMQtyTotal || 0 | numberCustom }} </span>
+                                <span class="w-1/2 font-semibold">{{ productUOMQtyTotal || 0 | numberCustom }} </span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel && (dataModel.Discount > 0 || dataModel.DecreaseAmount > 0 || dataModel.AmountTax > 0)">
                                 <span class="w-1/2"> Tổng trước thuế</span>
-                                <span class="w-1/2 font-semibold"> {{productPriceTotal || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2 font-semibold"> {{ productPriceTotal || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.DiscountAmount > 0">
                                 <span class="w-1/2"> Chiết khấu ({{dataModel.Discount || 0}}%)</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.DiscountAmount || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2 font-semibold"> {{ dataModel.DiscountAmount || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.DecreaseAmount > 0">
                                 <span class="w-1/2"> Giảm giá</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.DecreaseAmount || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2 font-semibold"> {{ dataModel.DecreaseAmount || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5" *ngIf="dataModel.AmountTax > 0">
-                                <span class="w-1/2"> Thuế ({{dataModel.Tax?.Amount}}%)</span>
-                                <span class="w-1/2 font-semibold"> {{dataModel.AmountTax || 0 | numberCustom }} đ</span>
+                                <span class="w-1/2"> Thuế ({{ dataModel.Tax?.Amount | numberCustom }}%)</span>
+                                <span class="w-1/2 font-semibold"> {{ dataModel.AmountTax || 0 | numberCustom }} đ</span>
                             </div>
                             <div class="flex mb-5 border-b border-neutral-2-100">
                                 <span class="w-1/2 font-semibold">Tổng tiền</span>
@@ -310,26 +313,26 @@
                                         tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán" [popoverBackdrop]="true"
                                         [popoverVisible]="indx == i" [popoverContent]="infoPricePay" (click)="showPaymentInfo(i)">
                                     </span>
-                                    Trả lúc {{payment.Date | date: "dd-MM-yyyy"}}</span>
-                                <span class="w-1/2 font-semibold"> {{payment.Amount || 0 | numberCustom }} {{payment.Currency}}</span>
+                                    Trả lúc {{ (payment.Date | date: "dd-MM-yyyy") || '---' }}</span>
+                                <span class="w-1/2 font-semibold"> {{ payment.Amount || 0 | numberCustom }} {{payment.Currency}}</span>
 
                                 <ng-template #infoPricePay>
                                     <div class="w-w-full text-left flex flex-col">
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2"> Tên</span>
-                                            <span class="w-2/3 text-body-2"> {{payment.Name}}</span>
+                                            <span class="w-2/3 text-body-2"> {{ payment.Name || '---' }}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2"> Ngày</span>
-                                            <span class="w-2/3 text-body-2"> {{payment.Date | date:"dd-MM-yyyy"}}</span>
+                                            <span class="w-2/3 text-body-2"> {{ (payment.Date | date:"dd/MM/yyyy") || '---' }}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2"> Phương thức</span>
-                                            <span class="w-2/3 text-body-2"> {{payment.JournalName}}</span>
+                                            <span class="w-2/3 text-body-2"> {{ payment.JournalName || '---' }}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2">Tham chiếu</span>
-                                            <span class="w-2/3 text-body-2 text-[#0184FF]">{{payment.Ref}}</span>
+                                            <span class="w-2/3 text-body-2 text-[#0184FF]">{{ payment.Ref || '---' }}</span>
                                         </div>
                                         <div class="flex mb-3">
                                             <span class="w-1/3 text-body-2">Số tiền</span>
@@ -359,7 +362,7 @@
                                 <span>Người bán</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.User?.Name}}</span>
+                                <span class="font-semibold">{{ dataModel.User?.Name || '---'}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -367,7 +370,7 @@
                                 <span>Seri</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.Seri}}</span>
+                                <span class="font-semibold">{{ dataModel.Seri || '---'}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -375,7 +378,7 @@
                                 <span>Ngày hóa đơn</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.DateInvoice | date:"dd-MM-yyyy HH:mm"}}</span>
+                                <span class="font-semibold">{{ (dataModel.DateInvoice | date:"dd/MM/yyyy HH:mm") || '---'}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -383,7 +386,7 @@
                                 <span>Trạng thái</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{getShowState(dataModel.State)}}</span>
+                                <span class="font-semibold">{{ dataModel.State | getShowState}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -391,7 +394,7 @@
                                 <span>Ngày hóa đơn đỏ</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.DateOrderRed | date:"dd-MM-yyyy HH:mm"}}</span>
+                                <span class="font-semibold">{{ (dataModel.DateOrderRed | date:"dd/MM/yyyy HH:mm") || '---'}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -399,7 +402,7 @@
                                 <span>Ghi chú đơn hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.Comment}}</span>
+                                <span class="font-semibold">{{ dataModel.Comment || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -407,7 +410,7 @@
                                 <span>Số hóa đơn đỏ</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.NumberOrder}}</span>
+                                <span class="font-semibold">{{ dataModel.NumberOrder || '---' }}</span>
                             </div>
                         </div>
                     </div>
@@ -427,7 +430,7 @@
                                 <span>Đối tác giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.Carrier?.Name }}</span>
+                                <span class="font-semibold">{{ dataModel.Carrier?.Name || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -435,7 +438,7 @@
                                 <span>Giao hàng thu tiền</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ (dataModel.CashOnDelivery || 0) | number}} đ</span>
+                                <span class="font-semibold">{{ (dataModel.CashOnDelivery || 0) | numberCustom }} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -443,7 +446,7 @@
                                 <span>Đối soát GH</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ShowShipStatus}}</span>
+                                <span class="font-semibold">{{ dataModel.ShowShipStatus || '---'}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -451,7 +454,7 @@
                                 <span>Phí giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ (dataModel.DeliveryPrice || 0) | number}} đ</span>
+                                <span class="font-semibold">{{ (dataModel.DeliveryPrice || 0) | numberCustom }} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -459,7 +462,7 @@
                                 <span>Khối lượng ship (g)</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ (dataModel.ShipWeight || 0) | number }}</span>
+                                <span class="font-semibold">{{ (dataModel.ShipWeight || 0) | numberCustom }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -467,7 +470,7 @@
                                 <span>Tiền cọc</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ (dataModel.AmountDeposit || 0) | number}} đ</span>
+                                <span class="font-semibold">{{ (dataModel.AmountDeposit || 0) | numberCustom }} đ</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -475,7 +478,8 @@
                                 <span>Mã vận đơn</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold text-info-500">{{ dataModel.TrackingRef }}</span>
+                                <span class="font-semibold text-info-500" *ngIf="dataModel.TrackingRef">{{ dataModel.TrackingRef }}</span>
+                                <span class="font-semibold" *ngIf="!dataModel.TrackingRef">{{ '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -483,7 +487,7 @@
                                 <span>Trạng thái vận đơn</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.ShipPaymentStatus }}</span>
+                                <span class="font-semibold">{{ dataModel.ShipPaymentStatus || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 ">
@@ -491,7 +495,8 @@
                                 <span>Ghi chú giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span >{{ dataModel.DeliveryNote }}</span>
+                                <span class="italic" *ngIf="dataModel.DeliveryNote">{{ dataModel.DeliveryNote }}</span>
+                                <span *ngIf="!dataModel.DeliveryNote">{{ '---' }}</span>
                             </div>
                         </div>
                         <!-- Thông tin nâng cao -->
@@ -541,7 +546,7 @@
                                 <span>Tên người nhận</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ReceiverName}}</span>
+                                <span class="font-semibold">{{ dataModel.ReceiverName || '---' }}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -549,7 +554,7 @@
                                 <span>Điện thoại</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ReceiverPhone}}</span>
+                                <span class="font-semibold">{{ dataModel.ReceiverPhone || '---'}}</span>
                             </div>
                         </div>
                         <!-- <div class="flex gap-x-6 items-center">
@@ -565,7 +570,7 @@
                                 <span>Địa chỉ giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ReceiverAddress}}</span>
+                                <span class="font-semibold">{{ dataModel.ReceiverAddress || '---'}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -573,7 +578,7 @@
                                 <span>Ghi chú</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ReceiverNote}}</span>
+                                <span class="font-semibold">{{ dataModel.ReceiverNote || '---'}}</span>
                             </div>
                         </div>
                     </div>

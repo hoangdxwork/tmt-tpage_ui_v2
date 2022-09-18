@@ -107,7 +107,7 @@
                         [total]="count" [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                         <thead>
                             <tr>
-                                <th width="33px" [tdsLeft]="true"></th>
+                                <th width="44px" [tdsLeft]="true"></th>
                                 <th width="42px" [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate"
                                     class="border-x text-center" (checkedChange)="onAllChecked($event)">
                                 </th>
@@ -128,7 +128,7 @@
                         <tbody>
                             <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                                 <tr class="text-body-2 text-neutral-900 font-regular" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                                    <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true"></td>
+                                    <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true"></td>
                                     <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
                                         class="border-l border-r text-center border-neutral-200" [tdsLeft]="true">
                                     </td>
@@ -207,7 +207,7 @@
                                     <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right min-w-[200px] max-w-[400px] truncate">{{ data.Zalo }}</td>
                                     <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right min-w-[120px] max-w-[240px]">
                                       <div class="w-full truncate">
-                                        {{ data.Credit || 0 | number }}
+                                        {{ data.Credit || 0 | numberCustom }}
                                       </div>
                                     </td>
                                     <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200 min-w-[120px] max-w-[240px]">
@@ -238,9 +238,7 @@
                                 </tr>
                                 <!-- expand partner details -->
                                 <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
-                                    <div #viewChildDetailPartner [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}" class="flex items-center justify-center k-grid-table-wrap-detail">
-                                        <expand-partner-detail class="w-full" *ngIf="expandSet.has(data.Id)" [dataPartner]="data"></expand-partner-detail>
-                                    </div>
+                                  <expand-partner-detail class="w-full p-3 block" *ngIf="expandSet.has(data.Id)" [dataPartner]="data"></expand-partner-detail>
                                 </tr>
                             </ng-template>
                         </tbody>
