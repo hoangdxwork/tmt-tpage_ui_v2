@@ -709,6 +709,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: any) => {
           delete res['@odata.context'];
           this.quickOrderModel = {...res};
+          this.quickOrderModel.FormAction = formAction;
 
           if(!this.isEnableCreateOrder && type == 'print') {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
@@ -747,6 +748,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onSave(formAction?: string, type?: string): any {
     let model = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
+    debugger;
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
     }
@@ -772,6 +774,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           delete res['@odata.context'];
           this.quickOrderModel = {...res};
+          this.quickOrderModel.FormAction = formAction;
 
           if(!this.isEnableCreateOrder && type) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
