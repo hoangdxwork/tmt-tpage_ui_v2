@@ -15,7 +15,6 @@ import { BaseSevice } from './base.service';
 export class FacebookCommentService extends BaseSevice implements  OnDestroy {
 
   @Output() onFilterSortCommentPost$ = new EventEmitter<any>();
-  @Output() onChangeCommentsOrderByPost$ = new EventEmitter<any>();
 
   prefix: string = "odata";
   table: string = "";

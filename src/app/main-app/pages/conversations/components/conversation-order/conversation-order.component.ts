@@ -649,8 +649,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               }
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
-              this.facebookCommentService.onChangeCommentsOrderByPost$.emit(res);
-
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit(res);
+              // TODO: cập nhật mã đơn hàng lên tab
+              this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
               this.message.success('Tạo đơn hàng thành công');
           } else {
 
@@ -665,11 +666,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
             this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
             this.isUpdated = false;
-
-            this.cdRef.detectChanges();
           }
 
-
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -851,8 +850,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
               
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
-              this.facebookCommentService.onChangeCommentsOrderByPost$.emit(res);
-
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit(res);
+              this.conversationOrderFacade.hasValueOrderCode$.emit('');
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];

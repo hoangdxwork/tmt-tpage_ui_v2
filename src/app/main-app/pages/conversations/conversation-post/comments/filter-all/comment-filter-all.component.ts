@@ -15,7 +15,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren, EventEmitter, AfterViewInit } from '@angular/core';
 import { Observable, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -51,7 +51,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
+export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
@@ -111,6 +111,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     private crmTagService: CRMTagService) {
   }
 
+  ngAfterViewInit(): void {
+    this.cdRef.markForCheck();
+  }
+
   ngOnInit() {
     if(this.data && this.team) {
         this.loadData();
@@ -161,7 +165,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   eventEmitter() {
-    this.facebookCommentService.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.conversationOrderFacade.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
         this.loadCommentsOrderByPost();
       }
@@ -472,27 +476,23 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         return;
     }
 
-    this.currentId = item.Id;
+    // this.currentId = item.Id;
     // TODO: gán sự kiện loading cho tab
     this.postEvent.spinLoadingTab$.emit(true);
 
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
-        this.currentId = '';
+        // this.currentId = '';
 
         if(res) {
             // Thông tin khách hàng
             this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
-
-            if(order && TDSHelperString.hasValueString(order[0]?.code)){
-              this.conversationOrderFacade.hasValueOrderCode$.emit(order[0]?.code);
-            }
-
             // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+            // Truyền sang coversation-post
+            this.conversationOrderFacade.hasValueOrderCode$.emit(order?.[0]?.code);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-            
         }
       },
       error: (error: any) => {
@@ -504,9 +504,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  loadCommentsOrderByPost() {debugger
+  loadCommentsOrderByPost() {
+    this.commentOrders = {};
     this.facebookCommentService.getCommentsOrderByPost(this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: OdataCommentOrderPostDTO) => {debugger
+      next: (res: OdataCommentOrderPostDTO) => {
         if(res && res.value) {
             let comments = [...res.value];
           
@@ -515,19 +516,19 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
                 this.commentOrders[x.uid] = [];
                 //gán lại data bằng syntax 
                 x.orders?.map((a: CommentOrder) => {
-                    this.commentOrders[x.asuid].push(a);
+                    this.commentOrders![x.asuid].push(a);
                 });
 
                 if (x.uid && x.uid != x.asuid) {
                   x.orders?.map((a: any) => {
-                      this.commentOrders[x.uid].push(a);
+                      this.commentOrders[x.uid].push(a);      
                   });
                 }
+                this.cdRef.detectChanges();
             });
         }
-
-        this.isLoading = false;
         this.cdRef.detectChanges();
+        this.isLoading = false;
       },
       error: (error: any) => {
         this.isLoading = false;
