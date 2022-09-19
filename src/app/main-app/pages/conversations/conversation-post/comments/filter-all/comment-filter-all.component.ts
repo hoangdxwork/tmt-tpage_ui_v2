@@ -422,7 +422,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy, 
               // Thông tin đơn hàng
               this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-              
+
               // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
               if(order && TDSHelperString.hasValueString(order[0]?.code)){
                   // Truyền sang coversation-post
@@ -510,11 +510,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy, 
       next: (res: OdataCommentOrderPostDTO) => {
         if(res && res.value) {
             let comments = [...res.value];
-          
+            this.commentOrders = {};
+
             comments.map((x: CommentOrderPost) => {
                 this.commentOrders[x.asuid] = [];
                 this.commentOrders[x.uid] = [];
-                //gán lại data bằng syntax 
+                //gán lại data bằng syntax
                 x.orders?.map((a: CommentOrder) => {
                     this.commentOrders![x.asuid].push(a);
                 });
