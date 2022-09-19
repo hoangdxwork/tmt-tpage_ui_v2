@@ -42,7 +42,7 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
-  itemSize = 100;
+  itemSize = 80;
   infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
   @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 
@@ -339,6 +339,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.validateData();
             }
 
+            this.cdkVirtualScroll();
             this.isLoading = false;
         },
         error: (error: any) => {
@@ -393,7 +394,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         if(this.isOpenCollapCheck){
             this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
             this.refreshCheckedStatus();
-
             return;
         }
 
@@ -406,30 +406,30 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     return data.Id;
   }
 
-  nextData(event: any): any {
-    if(event) {
-      if (this.isProcessing) {
-          return false;
-      }
+  // nextData(event: any): any {
+  //   if(event) {
+  //     if (this.isProcessing) {
+  //         return false;
+  //     }
 
-      this.isProcessing = true;
-      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+  //     this.isProcessing = true;
+  //     this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
 
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ChatomniConversationDto) => {
-          if(res && res.Items){
-            this.lstConversation = [...(res.Items || [])];
-          }
+  //     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+  //       next: (res: ChatomniConversationDto) => {
+  //         if(res && res.Items){
+  //           this.lstConversation = [...(res.Items || [])];
+  //         }
 
-            this.isProcessing = false;
-            this.yiAutoScroll.scrollToElement('scrollConversation', 750);
-        },
-        error: (error) => {
-            this.isProcessing = false;
-        }
-      })
-    }
-  }
+  //           this.isProcessing = false;
+  //           this.yiAutoScroll.scrollToElement('scrollConversation', 750);
+  //       },
+  //       error: (error) => {
+  //           this.isProcessing = false;
+  //       }
+  //     })
+  //   }
+  // }
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
@@ -597,41 +597,49 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       ).subscribe({
         next: (text: string) => {
             this.isFilter = true;
+
             if(text == ''){
               this.isFilter = false;
             }
+
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.queryObj['Keyword'] = value;
             this.loadFilterDataSource();
         }
       })
     }
+
+    this.cdkVirtualScroll();
   }
 
   cdkVirtualScroll() {
-    if(this.viewPort.scrolledIndexChange && this.lstConversation) {
-        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap((currIndex: number) => {
+    if(this.viewPort && this.viewPort.scrolledIndexChange && this.lstConversation) {
+        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap(() => {
+
             const end = this.viewPort.getRenderedRange().end;
             const total = this.viewPort.getDataLength();
 
             if(end == total && !this.isProcessing) {
                 this.nextBatch();
             }
-        })).subscribe();
+
+        })).pipe(takeUntil(this.destroy$)).subscribe();
       }
 
-    setTimeout(() => this.infinite.next(this.lstConversation), 350);
+    setTimeout(() => this.infinite.next([...this.lstConversation]), 750);
   }
 
   nextBatch() {
     this.isProcessing = true;
-    this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+    let teamId = this.currentTeam?.Id as any;
+    this.dataSource$ = this.chatomniConversationService.nextDataSource(teamId, this.type, this.lstConversation, this.queryObj);
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
+
           if(res && res.Items){
               this.lstConversation = [...(res.Items || [])];
-              this.infinite.next(this.lstConversation);
+              this.infinite.next([...this.lstConversation]);
           }
 
           this.isProcessing = false;

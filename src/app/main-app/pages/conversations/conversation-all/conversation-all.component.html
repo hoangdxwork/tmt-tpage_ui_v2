@@ -86,14 +86,11 @@
                 </div>
 
                 <!-- List danh sách chat -->
-                <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
-
+                <!-- <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
                   <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
                       yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
-
                       <div *ngFor="let item of lstConversation; let i= index ; trackBy: trackByIndex">
                           <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
-
                             <a (click)="changeCurrentConversationItem(item)"
                               class="w-full {{ conversationItem.ConversationId == item.ConversationId? 'cursor-no-drop' : 'cursor-pointer'}}">
                                 <current-conversation-item-v2
@@ -108,25 +105,23 @@
                             </a>
                           </div>
                       </div>
-
                       <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
                           <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
                       </div>
                   </div>
-
                   <div class="flex-auto bg-white mt-1"></div>
-                </div>
+                </div> -->
 
-                <!-- <ng-container *ngIf="infinite | async; let items" class="w-full h-full relative">
+                <ng-container *ngIf="infinite | async; let items" >
 
-                  <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full flex flex-col gap-y-1"
-                      [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize">
+                  <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full"
+                      [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize" style="overflow-x: hidden;">
 
-                      <div *cdkVirtualFor="let item of items; let i=index; trackBy: trackByIndex" class="w-full h-full">
-                          <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState class="w-full h-full">
+                      <div *cdkVirtualFor="let item of items; let i=index; trackBy: trackByIndex" class="w-full h-full bg-white mb-1">
+                          <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" class="w-full h-full">
 
-                            <a (click)="changeCurrentConversationItem(item)" class="w-full
-                               {{ conversationItem.ConversationId == item.ConversationId? 'cursor-no-drop' : 'cursor-pointer'}}">
+                            <a (click)="changeCurrentConversationItem(item)" class="w-full h-full
+                               {{ conversationItem.ConversationId == item.ConversationId ? 'cursor-no-drop' : 'cursor-pointer'}}">
                                 <current-conversation-item-v2
                                     [item]="item" [csid]="item.ConversationId" [type]="type"
                                     [conversationItem]="conversationItem"
@@ -135,14 +130,12 @@
                                     [isOpenCollapCheck]="isOpenCollapCheck"
                                     [checked]="setOfCheckedId.has(item.ConversationId)"
                                     (checkedChange)="onItemChecked(item.ConversationId, $event)">
-
                                 </current-conversation-item-v2>
-                                --- {{i}} {{item.Name}}---
                             </a>
                           </div>
                       </div>
                   </cdk-virtual-scroll-viewport>
-                </ng-container> -->
+                </ng-container>
 
                 <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
                   <tds-empty [notFoundContent]="contentTpl">
