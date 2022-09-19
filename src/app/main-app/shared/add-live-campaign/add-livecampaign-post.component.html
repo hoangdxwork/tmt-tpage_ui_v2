@@ -201,10 +201,10 @@
                                   {{ detail?.value.ProductNameGet || detail?.value.ProductName }}
                                   <span *ngIf="detail?.value?.UOMName">({{ detail?.value?.UOMName }})</span>
                                 </span>
-                                
+
                                 <!-- Tags -->
                                 <div class="flex items-center gap-x-1">
-                                  <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer" 
+                                  <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
                                     (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                     [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
@@ -213,7 +213,7 @@
                                       <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                     </div>
                                     <button (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
-                                      [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left" 
+                                      [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                       tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                       color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
                                         <div class="w-5 h-5 relative">
@@ -231,7 +231,7 @@
                                       <div class="w-[304px]">
                                           <tds-form-field>
                                               <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                                [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" 
+                                                [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
                                                 [data]="(detail.value.Tags | stringToStringArray)" >
                                               </tds-select>
                                           </tds-form-field>
@@ -300,7 +300,7 @@
     </tds-tabset>
 
     <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
-      <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+      <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Hủy bỏ</button>
       <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
     </div>
 

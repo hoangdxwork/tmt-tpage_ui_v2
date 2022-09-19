@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'TDSIcons';
   src:
-    url('fonts/TDSIcons.ttf?po0a6e') format('truetype'),
-    url('fonts/TDSIcons.woff?po0a6e') format('woff'),
-    url('fonts/TDSIcons.svg?po0a6e#TDSIcons') format('svg');
+    url('fonts/TDSIcons.ttf?57mwc2') format('truetype'),
+    url('fonts/TDSIcons.woff?57mwc2') format('woff'),
+    url('fonts/TDSIcons.svg?57mwc2#TDSIcons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -24,6 +24,51 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.tdsi-edit-1-line:before {
+  content: "\eb0a";
+}
+.tdsi-building-fill:before {
+  content: "\eac0";
+}
+.tdsi-shopee-fill:before {
+  content: "\eabe";
+}
+.tdsi-tiktok-fill:before {
+  content: "\eabf";
+}
+.tdsi-keyboard-return-fill:before {
+  content: "\eabd";
+}
+.tdsi-laptop-fill:before {
+  content: "\eb09";
+}
+.tdsi-maintenance-fill:before {
+  content: "\eb03";
+}
+.tdsi-milk-fill:before {
+  content: "\eb04";
+}
+.tdsi-other-fill:before {
+  content: "\eb05";
+}
+.tdsi-probation-fill:before {
+  content: "\eb06";
+}
+.tdsi-standard-fill:before {
+  content: "\eb07";
+}
+.tdsi-half-fill:before {
+  content: "\eb08";
+}
+.tdsi-twitter-fill:before {
+  content: "\eb00";
+}
+.tdsi-instagram-fill:before {
+  content: "\eb01";
+}
+.tdsi-linkedin-fill:before {
+  content: "\eb02";
+}
 .tdsi-facebook-f-fill:before {
   content: "\eaff";
 }
@@ -191,18 +236,6 @@
 }
 .tdsi-mic-setting-fill:before {
   content: "\eace";
-}
-.tdsi-arrow-left-bottom-fill:before {
-  content: "\eabd";
-}
-.tdsi-arrow-left-top-fill:before {
-  content: "\eabe";
-}
-.tdsi-arrow-right-bottom-fill:before {
-  content: "\eabf";
-}
-.tdsi-arrow-right-top-fill:before {
-  content: "\eac0";
 }
 .tdsi-call-incoming-fill:before {
   content: "\eac1";

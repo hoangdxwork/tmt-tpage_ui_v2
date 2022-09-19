@@ -28,19 +28,27 @@
               </span>
           </button>
 
-          <button tds-button-icon color="primary" size="md" class="flex items-center"
+          <button tds-button-icon color="primary" (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)">
+            <i class="tdsi-edit-fill"></i>
+          </button>
+
+          <button tds-button-icon color="error" (click)="removeLiveCampaign()">
+            <i class="tdsi-close-fill"></i>
+          </button>
+
+          <!-- <button tds-button-icon color="primary" size="md" class="flex items-center"
               tds-tooltip tooltipTitle="Chỉnh sửa chiến dịch" (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)">
               <span class="flex items-center gap-x-2">
                   <i class="tdsi-edit-fill text-lg"></i>
               </span>
-          </button>
+          </button> -->
 
-          <button *ngIf="currentLiveCampaign" tds-button-icon color="error" size="md" class="flex items-center"
+          <!-- <button *ngIf="currentLiveCampaign" tds-button-icon color="error" size="md" class="flex items-center"
               tds-tooltip tooltipTitle="Bỏ chọn chiến dịch" (click)="removeLiveCampaign()">
               <span class="flex items-center gap-x-2">
                   <i class="tdsi-close-fill text-lg"></i>
               </span>
-          </button>
+          </button> -->
       </div>
 
       <div class="pr-2 h-[calc(100vh-500px)] overflow-auto tds-custom-scroll">
@@ -51,7 +59,7 @@
 
                 <div class="w-3/5 text-sm">
                   <p class="font-semibold">{{ item.Name }}</p>
-                  <p *ngIf="item.Facebook_UserName" class="mt-2" style="font-style: italic">Page: {{item.Facebook_UserName}}</p>
+                  <!-- <p *ngIf="item.Facebook_UserName" class="mt-2" style="font-style: italic">Page: {{item.Facebook_UserName}}</p> -->
                 </div>
 
                 <div class="w-1/5 text-sm text-neutral-1-400"> {{ item.DateCreated | date : "dd/MM/yyyy HH:mm" }}</div>
@@ -67,7 +75,7 @@
   </div>
 
   <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
-      <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCannel()">Đóng</button>
+      <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCannel()">Hủy bỏ</button>
       <button *ngIf="currentLiveCampaign" tds-button class="w-[100px]" type="button" color="primary" (click)="onSave()">Lưu</button>
   </div>
 </tds-spin>

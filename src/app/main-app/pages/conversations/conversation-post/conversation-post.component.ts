@@ -42,7 +42,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     { id: 'all', name: 'Tất cả bài viết' },
     { id: 'added_video', name: 'Video' },
     { id: 'added_photos', name: 'Hình ảnh' },
-    { id: 'mobile_status_update', name: 'Status' },
+    { id: 'mobile_status_update', name: 'Trạng thái' },
     { id: 'published_story', name: 'Story đã đăng' },
     { id: 'shared_story', name: 'Story đã chia sẻ' }
   ];
@@ -50,8 +50,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   lstSort: any[] = [
     { id: 'ChannelCreatedTime desc', name: 'Ngày tạo mới nhất' },
     { id: 'ChannelCreatedTime asc', name: 'Ngày tạo cũ nhất' },
-    { id: 'ChannelUpdatedTime desc', name: 'Ngày update mới nhất' },
-    { id: 'ChannelUpdatedTime asc', name: 'Ngày update cũ nhất' }
+    { id: 'ChannelUpdatedTime desc', name: 'Ngày cập nhật mới nhất' },
+    { id: 'ChannelUpdatedTime asc', name: 'Ngày cập nhật cũ nhất' }
   ];
 
   syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
