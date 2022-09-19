@@ -495,7 +495,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     });
-
   }
 
   loadCommentsOrderByPost() {
@@ -504,7 +503,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
       next: (res: OdataCommentOrderPostDTO) => {
         if(res && res.value) {
             let comments = [...res.value];
-            this.commentOrders = {};
 
             comments.map((x: CommentOrderPost) => {
                 this.commentOrders[x.asuid] = [];
@@ -516,7 +514,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
                 if (x.uid && x.uid != x.asuid) {
                   x.orders?.map((a: any) => {
-                      this.commentOrders[x.uid].push(a);      
+                      this.commentOrders[x.uid].push(a);
                   });
                 }
             });
