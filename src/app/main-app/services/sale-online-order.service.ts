@@ -20,8 +20,6 @@ export class SaleOnline_OrderService extends BaseSevice {
   public _keyCreateBillOrder: string = 'saleonline_order:create_bill_order';
   public _keyCacheFilter: string = 'saleonline_order:filter_cache';
 
-  public onSetCommentOrders$: EventEmitter<any> = new EventEmitter();
-
   constructor(private apiService: TCommonService) {
     super(apiService)
   }
@@ -160,10 +158,6 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<any>(api, data);
-  }
-
-  setCommentOrder(data: QuickSaleOnlineOrderModel, fbid: string) {
-    this.onSetCommentOrders$.emit({ data: data, fbid: fbid });
   }
 
   updateStatusSaleOnline(idOrder: any, value: any): Observable<TDSSafeAny> {

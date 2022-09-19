@@ -7,7 +7,7 @@ import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/ch
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, fromEvent, Observable, auditTime, tap } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -32,7 +32,6 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import th from 'date-fns/esm/locale/th/index.js';
 
 @Component({
   selector: 'app-conversation-all',
@@ -80,7 +79,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isProcessing:boolean = false;
   clickReload: number = 0;
   isCheckedAll: boolean = false;
-  checkCsidRouter: string = '';
   selectedIndex: number = 0;
 
   private notificationRef!: TDSNotificationRef;
@@ -111,6 +109,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   ngOnInit(): void {
+
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (team) => {
@@ -121,15 +120,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // TODO: change team in component
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe({
       next: ([team, params]: any) => {
+
           if (!TDSHelperObject.hasValue(team)) {
               return this.onRedirect();
           }
 
-          // TODO: change Team
+          // TODO: change Team F5
           if(team.Id != this.currentTeam?.Id) {
               this.lstConversation = [];
               delete this.conversationItem;
-              localStorage.removeItem(this.chatomniConversationService._keyCheckCsidRouter);
 
               this.fetchLiveConversations(team);
               this.setCurrentTeam(team);
@@ -144,8 +143,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           if(exist){
               this.loadData(team);
           }
-
-          this.checkCsidRouter = localStorage.getItem(this.chatomniConversationService._keyCheckCsidRouter) || '';
       }
     })
 
@@ -317,30 +314,31 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         next: (res: ChatomniConversationDto) => {
 
             if (res && TDSHelperArray.hasListValue(res.Items)) {
-
                 this.lstConversation = [...res.Items];
-                console.log(this.lstConversation.length)
 
-                let csid = this.paramsUrl?.csid || null;
+                let currentOmni: ChatomniConversationItemDto;
+                let params_csid: string;
 
-                //TODO: check psid khi load lần 2,3,4...
-                let exits = this.lstConversation.filter(x => x.ConversationId == csid)[0] ;
-
-                //TODO: kiểm tra khi chọn menu tin nhắn và bình luận, giữ item đang chọn
-                let exitsTab = this.lstConversation.filter(x => x.ConversationId == this.checkCsidRouter)[0] ;
-                if (exits || exitsTab) {
-                    this.setCurrentConversationItem(exits || exitsTab);
-                } else {
-                    //TODO: load lần đầu tiên'
-                    this.setCurrentConversationItem(this.lstConversation[0]);
+                // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
+                params_csid = this.paramsUrl?.csid;
+                if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
+                    params_csid = this.getStorageConversationId();
                 }
+
+                currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
+
+                // TODO: nếu không tồn tại params_csid thì lấy item đầu tiên
+                if(!TDSHelperObject.hasValue(currentOmni) && !TDSHelperString.hasValueString(currentOmni?.ConversationId)) {
+                    currentOmni = this.lstConversation[0];
+                }
+
+                this.setCurrentConversationItem(currentOmni);
 
             } else {
                 //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
                 this.validateData();
             }
 
-            // this.cdkVirtualScroll();
             this.isLoading = false;
         },
         error: (error: any) => {
@@ -355,11 +353,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setCurrentConversationItem(item: ChatomniConversationItemDto) {
     if (TDSHelperObject.hasValue(item)) {
 
+      // TODO: lưu lại Storage item đang active để hiện thị tiếp ở message, inbox nếu tồn tại trong danh sách
+      this.setStorageConversationId(item.ConversationId)
+
       if (this.isFastSend == true) {
           // Check lại trường hợp này
           // this.conversationDataFacade.checkSendMessage(this.currentTeam!.ChannelId, this.type, item.ConversationId);
-      }
-      else {
+      } else {
           //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
           this.conversationItem = {...item};
           this.csid = item.ConversationId;
@@ -385,10 +385,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               }
           })
       }
-
-      // TODO: lưu lại item đang active để hiện thị tiếp ở message, inbox nếu trùng csid
-      const _keyCache = this.chatomniConversationService._keyCheckCsidRouter;
-      localStorage.setItem(_keyCache, item.ConversationId);
     }
   }
 
@@ -437,6 +433,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
+        this.removeStorageConversationId();
+
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
         this.router.navigateByUrl(uriParams);
@@ -753,5 +751,26 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.conversationInfo;
     delete this.conversationItem;
     delete this.dataSource$;
+  }
+
+  setStorageConversationId(id: string): any {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    localStorage.setItem(_keyCache, JSON.stringify(id));
+  }
+
+  getStorageConversationId(): any {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    let item = localStorage.getItem(_keyCache) as any;
+
+    if(item) {
+        return JSON.parse(item);
+    } else {
+        return null;
+    }
+  }
+
+  removeStorageConversationId() {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    localStorage.removeItem(_keyCache);
   }
 }

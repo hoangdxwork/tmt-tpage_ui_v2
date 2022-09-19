@@ -1,3 +1,4 @@
+import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from './../../../../dto/conversation/post/comment-order-post.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
@@ -336,7 +337,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSyncConversationInfo(conversationInfo: ChatomniConversationInfoDto) {
-    this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(this.quickOrderModel, conversationInfo, this.type)};
+    this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(conversationInfo, this.team, this.type)};
     this.mappingAddress(this.quickOrderModel);
     this.cdRef.detectChanges();
   }
@@ -643,28 +644,31 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           //TODO: trường hợp tạo lần đầu thì gọi in phiếu
           if(res.IsCreated) {
-              // Check lại hàm này
-              let fbid = model.Facebook_ASUserId;
-              this.saleOnline_OrderService.setCommentOrder(res, fbid);
 
               if(!this.saleOnlineSettings.isDisablePrint) {
                   this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               }
-
+              //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'createOrder', data: res});
+              // TODO: cập nhật mã đơn hàng lên tab
+              this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
               this.message.success('Tạo đơn hàng thành công');
-          }
-          else
-          if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
+          } else {
+
+            if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               this.message.success('Cập nhật đơn hàng thành công');
+            }
+
+            // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
+            this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
+
+            // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
+            this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
+            // TODO: cập nhật mã đơn hàng lên tab
+            this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
+            this.isUpdated = false;
           }
-
-          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
-          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
-
-          // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
-          this.isUpdated = false;
-          this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
 
           this.cdRef.detectChanges();
       },
@@ -836,8 +840,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           this.shipServices = [];
           this.shipExtraServices = [];
-          delete this.saleModel.Ship_ServiceId;
-          delete this.saleModel.Ship_ServiceName;
           this.saleModel = {} as any;
           this.enableInsuranceFee = false;
           this.isEnableCreateOrder = false;
@@ -850,6 +852,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // TODO: nếu là bài viết sau khi thanh toán, sẽ load lại đơn hàng kế tiếp theo postid
               // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
 
+              //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'createFSO', data: this.quickOrderModel});
+              this.conversationOrderFacade.hasValueOrderCode$.emit(null);
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
@@ -1216,9 +1221,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   pushItemProduct(data: ProductDTOV2) {
     let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId) as number;
-    if (Number(index) < 0){
+    if (Number(index) < 0 || !index){
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
-
         this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
     } else{
         this.quickOrderModel.Details[index].Quantity += 1;

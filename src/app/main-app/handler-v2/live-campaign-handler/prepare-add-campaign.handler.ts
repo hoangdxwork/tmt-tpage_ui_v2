@@ -1,4 +1,4 @@
-import { TDSHelperArray } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { FormGroup } from '@angular/forms';
 import { Injectable } from "@angular/core";
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
@@ -30,10 +30,19 @@ export class PrepareAddCampaignHandler {
         model.IsShift = formValue.IsShift;
         model.Facebook_UserId = formValue.FacebookUserId;
         model.Facebook_UserName = formValue.Facebook_UserName;
-        
+
         if (TDSHelperArray.hasListValue(formValue.Details)) {
-          formValue.Details.map((detail: any, index: number) => {
-            detail["Index"] = index;
+          formValue.Details.map((x: any, index: number) => {
+              if(!TDSHelperString.hasValueString(x.Id)) {
+                  delete x.Id;
+              }
+
+              x["Index"] = index;
+              x.Tags = x?.Tags.toString();
+
+              if(TDSHelperString.hasValueString(formValue.Id)) {
+                  x.LiveCampaign_Id = formValue.Id;
+              }
           });
         }
 

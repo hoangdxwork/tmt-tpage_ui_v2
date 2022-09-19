@@ -1,8 +1,9 @@
+import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
@@ -24,7 +25,6 @@ import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/ch
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
-import { de } from 'date-fns/locale';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 
@@ -60,12 +60,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   currentType: any = { id: 'all', name: 'Tất cả bài viết' };
   currentSort: any = {};
 
-  postId: any;
   postChilds: TDSSafeAny[] = [];
   listBadge: any = {};
 
   keyFilter: string = '';
-  currentPost?: ChatomniObjectsItemDto;
+  currentPost?: ChatomniObjectsItemDto | any;
   isLoading: boolean = false;
   isLoadingTab: boolean = false;
   isProcessing: boolean = false;
@@ -79,7 +78,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   lstObjects!: ChatomniObjectsItemDto[];
   lstOfLiveCampaign: any[] = [];
 
-  queryObj?: any = { type!: "", sort!: "", q!: "" };
+  queryObj?: any = { type: "", sort: "", q: "" };
   isRefreshing: boolean = false;
   partners$!: Observable<any>;
 
@@ -98,6 +97,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniObjectService: ChatomniObjectService,
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
+    private facebookCommentService: FacebookCommentService,
     private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
@@ -121,16 +121,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           // TODO: change Team
           if(team?.Id != this.currentTeam?.Id) {
+              delete this.currentPost;
               this.fetchPosts(team);
               this.setCurrentTeam(team);
           }
 
           this.type = params?.params?.type;
           this.setParamsUrl(params.params);
-
-          if(TDSHelperString.isString(params?.params?.post_id)) {
-              this.postId = params.params.post_id;
-          }
 
           let exist = (TDSHelperString.isString(this.currentPost?.ObjectId) != TDSHelperString.isString(this.paramsUrl.post_id))
             || (!TDSHelperString.isString(this.currentPost?.ObjectId) && !TDSHelperString.isString(this.paramsUrl?.post_id));
@@ -197,6 +194,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         if(TDSHelperString.hasValueString(code)){
             this.codeOrder = code;
             this.isDisableTabOrder = false;
+        }else{
+          this.codeOrder = '';
+          // this.isDisableTabOrder = true;
         }
       }
     })
@@ -293,6 +293,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   loadData(){
+    if(this.isLoading) {
+        return;
+    }
+
     this.isLoading = true;
     this.validateData();
 
@@ -326,15 +330,23 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           if(res && res.Items) {
 
               this.lstObjects = [...res.Items];
-              if(TDSHelperArray.hasListValue(res.Items)){
-                  let exits = res.Items?.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
 
-                  if(TDSHelperObject.hasValue(exits)){
-                      this.selectPost(exits);
-                  } else {
-                      this.selectPost(res.Items[0]);
-                  }
+              let currentObject: ChatomniObjectsItemDto;
+              let params_postid: string;
+
+              params_postid = this.paramsUrl?.post_id;
+              if(!TDSHelperString.hasValueString(params_postid) || params_postid == "undefined") {
+                  params_postid = this.getStoragePostId();
               }
+
+              currentObject = this.lstObjects.filter(x => x.ObjectId == params_postid)[0];
+
+              // TODO: nếu không tồn tại params_postid thì lấy item đầu tiên
+              if(!TDSHelperObject.hasValue(currentObject) && !TDSHelperString.hasValueString(currentObject?.ObjectId)) {
+                  currentObject = this.lstObjects[0];
+              }
+
+              this.selectPost(currentObject);
           }
 
           this.isLoading = false;
@@ -352,6 +364,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   selectPost(item: ChatomniObjectsItemDto | any): any {
     if(TDSHelperObject.hasValue(item) && item.Data){
+
+        // TODO: lưu lại Storage item đang active khi click menu khá
+        this.setStoragePostId(item.ObjectId);
         this.currentPost = item;
 
         //TODO: Facebook load danh sách bài viết con từ bài viết chính
@@ -389,7 +404,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   nextData(event: any): any {
-    if (this.isProcessing) {
+    if (this.isProcessing || this.isLoading) {
         return;
     }
 
@@ -418,10 +433,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
-        let uri = this.router.url.split("?")[0];
-        let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+      this.removeStoragePostId();
 
-        this.router.navigateByUrl(uriParams);
+      let uri = this.router.url.split("?")[0];
+      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+      this.router.navigateByUrl(uriParams);
     }
 
     this.crmService.onUpdateTeam(data);
@@ -516,9 +532,29 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.lstOfLiveCampaign = [...res.value];
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}`);
+          this.message.error(`${error?.error?.message}` || `Tải danh sách chiến dịch thật bại`);
       }
     })
   }
 
+  setStoragePostId(id: string): any {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    localStorage.setItem(_keyCache, JSON.stringify(id));
+  }
+
+  getStoragePostId(): any {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    let item = localStorage.getItem(_keyCache) as any;
+
+    if(item) {
+        return JSON.parse(item);
+    } else {
+        return null;
+    }
+  }
+
+  removeStoragePostId() {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    localStorage.removeItem(_keyCache);
+  }
 }

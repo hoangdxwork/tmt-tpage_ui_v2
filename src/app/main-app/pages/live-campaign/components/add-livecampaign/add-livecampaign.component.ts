@@ -39,10 +39,10 @@ export class AddLiveCampaignComponent implements OnInit {
   _form!: FormGroup;
   isLoading: boolean = false;
   isShowFormInfo: boolean = true;
-  indClickTag: number = -1;
   datePicker: Date[] = [];
   tagsProduct: string[] = [];
   isDepositChange: boolean = false;
+  indClickTag: number = -1;
   modelTags: Array<string> = [];
 
   dataModel!: LiveCampaignDTO;
@@ -125,8 +125,7 @@ export class AddLiveCampaignComponent implements OnInit {
     if(liveCampaignId) {
       this.isLoading = true;
 
-      this.liveCampaignService.getDetailById(liveCampaignId).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-          .subscribe({
+      this.liveCampaignService.getDetailById(liveCampaignId).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe({
             next:(res) => {
               if(res) {
                   delete res['@odata.context'];
@@ -142,6 +141,9 @@ export class AddLiveCampaignComponent implements OnInit {
                   //TODO: trường hợp copy sẽ xóa Id
                   if(isCopy == true) {
                       delete this.dataModel.Id;
+                      this.dataModel.Details?.map(x => {
+                          delete x.Id;
+                      })
                   }
 
                   this.updateForm(this.dataModel);
@@ -205,7 +207,7 @@ export class AddLiveCampaignComponent implements OnInit {
       if(data.Tags){
         tags = data.Tags.split(",");
       }
-      
+
       return this.fb.group({
           Id: [data.Id],
           ImageUrl: [data.ImageUrl],
@@ -219,6 +221,7 @@ export class AddLiveCampaignComponent implements OnInit {
           ProductName: [data.ProductName],
           ProductNameGet: [data.ProductNameGet],
           Quantity: [data.Quantity],
+          LiveCampaign_Id: [data.LiveCampaign_Id],
           RemainQuantity: [data.RemainQuantity],
           ScanQuantity: [data.ScanQuantity],
           UsedQuantity: [data.UsedQuantity],
@@ -227,7 +230,6 @@ export class AddLiveCampaignComponent implements OnInit {
           Tags: [tags],
       })
     } else {
-
       return this.fb.group({
           Id: [null],
           ImageUrl: [null],
@@ -241,6 +243,7 @@ export class AddLiveCampaignComponent implements OnInit {
           ProductName: [null],
           ProductNameGet: [null],
           Quantity: [null],
+          LiveCampaign_Id: [null],
           QtyAvailable: [null],
           RemainQuantity: [null],
           ScanQuantity: [null],
@@ -387,31 +390,23 @@ export class AddLiveCampaignComponent implements OnInit {
 
   removeDetail(index: number, detail: TDSSafeAny) {
     if(TDSHelperString.hasValueString(detail?.Id)) {
-
       this.isLoading = true;
-
       this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false)).subscribe({
         next:(res) => {
-          if(TDSHelperArray.hasListValue(res?.value)) {
-
-            this.message.error(Message.LiveCampaign.ErrorRemoveLine);
-
-          }
-          else {
-            const control = <FormArray>this._form.controls['Details'];
-
-            control.removeAt(index);
-          }
-
+            if(TDSHelperArray.hasListValue(res?.value)) {
+              this.message.error(Message.LiveCampaign.ErrorRemoveLine);
+            }  else {
+                const control = <FormArray>this._form.controls['Details'];
+                control.removeAt(index);
+            }
         },
         error:(error) => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }
       });
-    }
-    else {
-      const control = <FormArray>this._form.controls['Details'];
 
+    }  else {
+      const control = <FormArray>this._form.controls['Details'];
       control.removeAt(index);
     }
   }
@@ -420,11 +415,9 @@ export class AddLiveCampaignComponent implements OnInit {
     if(this.isCheckValue() === 1) {
 
       let model = this.prepareModel();
-
       if( model.Id && this.liveCampaignId == model.Id ) {
         this.update(model, isUpdate);
-      }
-      else {
+      } else {
         this.create(model);
       }
     }
@@ -433,16 +426,15 @@ export class AddLiveCampaignComponent implements OnInit {
   create(model: any) {
     if(!model.Name) {
       this.message.error('Vui lòng nhập tên chiến dịch');
-
       return
     }
 
     this.isLoading = true;
-
     this.liveCampaignService.create(model).pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next:(res) => {
-          this.message.success(Message.ManipulationSuccessful);
+            this.message.success(Message.ManipulationSuccessful);
+            this.router.navigateByUrl(`/live-campaign/detail/${res.Id}`);
         },
         error:(error) => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
@@ -452,11 +444,11 @@ export class AddLiveCampaignComponent implements OnInit {
 
   update(model: any, isUpdate?: boolean) {
     this.isLoading = true;
-
     this.liveCampaignService.update(model, isUpdate || false).pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next:(res) => {
-          this.message.success(Message.ManipulationSuccessful);
+            this.message.success(Message.ManipulationSuccessful);
+            this.router.navigateByUrl(`/live-campaign/detail/${model.Id}`);
         },
         error:(error) => {
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
@@ -466,7 +458,6 @@ export class AddLiveCampaignComponent implements OnInit {
 
   prepareModel() {
     let formValue = this._form.value;
-
     let model = {} as any;
 
     model.Id = (formValue.Id) ? formValue.Id : undefined;
@@ -494,14 +485,18 @@ export class AddLiveCampaignComponent implements OnInit {
     model.Facebook_UserId = formValue.FacebookUserId;
     model.Facebook_UserName = formValue.Facebook_UserName;
 
-    if (TDSHelperArray.hasListValue(formValue.Details)) {
+    formValue.Details?.forEach((x: any, index: number) => {
+      if(!TDSHelperString.hasValueString(x.Id)) {
+          delete x.Id;
+      }
 
-      formValue.Details.forEach((detail: any, index: number) => {
+      x["Index"] = index;
+      x.Tags = x?.Tags?.toString();
 
-        detail["Index"] = index;
-        detail.Tags = detail?.Tags.toString();
-      });
-    }
+      if(TDSHelperString.hasValueString(model.Id)) {
+        x.LiveCampaign_Id = model.Id;
+      }
+    });
 
     let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
     if(TDSHelperObject.hasValue(team) && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
@@ -510,13 +505,11 @@ export class AddLiveCampaignComponent implements OnInit {
     }
 
     model.Details = formValue.Details;
-
     return model;
   }
 
   isCheckValue() {
     let formValue = this._form.value;
-
     let details = formValue.Details;
 
     if(TDSHelperArray.hasListValue(details)) {
@@ -524,7 +517,6 @@ export class AddLiveCampaignComponent implements OnInit {
 
       if(Number(find) > -1) {
         this.message.error(Message.LiveCampaign.ErrorNumberDetail);
-
         return 0;
       }
     }
@@ -549,7 +541,7 @@ export class AddLiveCampaignComponent implements OnInit {
   onChangeDeposit(event:any){
     if(event != this.dataModel.MaxAmountDepositRequired){
       this.isDepositChange = true;
-    }else{ 
+    }else{
       this.isDepositChange = false;
     }
 

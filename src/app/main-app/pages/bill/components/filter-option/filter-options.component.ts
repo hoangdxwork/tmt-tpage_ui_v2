@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { TabNavsDTO } from "@app/services/mock-odata/odata-saleonlineorder.service";
 import { addDays } from "date-fns";
@@ -11,10 +12,11 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utili
 @Component({
   selector: 'filter-options',
   templateUrl: './filter-options.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 
-export class FilterOptionsComponent implements OnInit, OnDestroy {
+export class FilterOptionsComponent implements OnInit {
 
   @Input() lstTags: Array<TDSSafeAny> = [];
   @Input() summaryStatus: Array<TabNavsDTO> = [];
@@ -23,10 +25,13 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   @Input() lstCarriers: Array<DeliveryCarrierDTOV2> = [];
 
   datePicker: any = [addDays(new Date(), -30), new Date()];
+
   trackingRefs = [
     { text: 'Chưa có mã vận đơn', value: 'noCode' },
     { text: 'Đã có mã vận đơn', value: 'isCode' },
   ];
+
+  lstStatus: Array<TDSSafeAny> = [];
 
   status = [
     { Name: 'Nháp', Type: 'draft', Total: 0, IsSelected: false },
@@ -34,8 +39,6 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
     { Name: 'Đã thanh toán', Type: 'paid', Total: 0, IsSelected: false },
     { Name: 'Hủy bỏ', Type: 'cancel', Total: 0, IsSelected: false }
   ];
-
-  private destroy$ = new Subject<void>();
 
   modelCarrier: TDSSafeAny;
   selectTags:  Array<TDSSafeAny> = [];
@@ -46,10 +49,12 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   constructor(private message: TDSMessageService,
     private fastSaleOrderService: FastSaleOrderService,
-    private cdr : ChangeDetectorRef) {
+    private cdr : ChangeDetectorRef,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit() {
+    // this.loadSummaryStatus();
     this.checkActiveStatus();
   }
 
@@ -103,17 +108,21 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   loadSummaryStatus(){
     if(this.summaryStatus) {
-      // this.summaryStatus.map((x) => {
-      //   let index = this.status.findIndex(a => a.Type == x.Name)
-      //   if(index != -1) {
-      //     this.status[index].Total = x.Total
+      this.filterObj.status.forEach(x => {
+
+      })
+      // this.lstStatus = this.summaryStatus.map((x) => {
+      //   return {
+      //     Name: x.Name,
+      //     Index: x.Index,
+      //     Total: x.Total,
+      //     isSelected: false
       //   }
       // })
-  
-
-      this.cdr.detectChanges();
     }
   }
+
+
 
   onApply() {
     this.filterObj.dateRange = {
@@ -168,10 +177,5 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   closeMenu() {
     this.isVisible = false;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
