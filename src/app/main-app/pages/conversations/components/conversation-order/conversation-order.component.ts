@@ -649,7 +649,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               }
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
-              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit(res);
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'createOrder', data: res});
               // TODO: cập nhật mã đơn hàng lên tab
               this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
               this.message.success('Tạo đơn hàng thành công');
@@ -665,6 +665,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
             this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
+            // TODO: cập nhật mã đơn hàng lên tab
+            this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
             this.isUpdated = false;
           }
 
@@ -850,7 +852,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
 
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
-              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit(res);
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'createFSO', data: this.quickOrderModel});
               this.conversationOrderFacade.hasValueOrderCode$.emit(null);
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
