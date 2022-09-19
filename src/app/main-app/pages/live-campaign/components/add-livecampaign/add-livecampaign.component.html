@@ -216,26 +216,27 @@
 
                           <!-- Tags -->
                           <div class="flex items-center gap-x-1">
-                            <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm" 
+                            <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer" 
                               (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                               [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
-                            <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
-                                <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" status='primary' tds-tooltip [tooltipTitle]="item">
-                                    <tds-tag class="truncate mr-1 mb-1" status='primary'>{{ item }}</tds-tag>
+                              <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
+                                <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
+                                  <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                 </div>
                                 <button (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                   [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left" 
+                                  tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                   color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
                                     <div class="w-5 h-5 relative">
-                                        <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
-                                        <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
-                                            height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745" />
-                                        </svg>
+                                      <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                                      <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
+                                        height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745" />
+                                      </svg>
                                     </div>
                                 </button>
-                            </div>
+                              </div>
 
                             <!-- button thêm nhãn -->
                             <ng-template #contentAddtag>
@@ -263,47 +264,7 @@
                                     </button>
                                 </div>
                             </ng-template>
-                        </div>
-
-
-
-
-                          <!-- <div class="flex w-full gap-x-2 items-center" (click)="openTag(index)" tds-popover
-                              [popoverVisible]="indClickTag == index" popoverTrigger="click"
-                              [popoverContent]="contentAddTag" [popoverBackdrop]="true" popoverPlacement="left">
-                            <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span>
-                            <div *ngIf="detail?.value.Tags.length > 0" class="flex w-full flex-wrap gap-2">
-                              <tds-tag *ngFor="let item of (detail.value.Tags | stringToStringArray)" status='primary' tds-tooltip [tooltipTitle]="item" >
-                                <div class="truncate max-w-[100px]">
-                                  {{item}}
-                                </div>
-                              </tds-tag>
-                            </div>
                           </div>
-
-                           
-                          <ng-template #contentAddTag>
-                            <div class="w-96 flex flex-col gap-y-4">
-                              <tds-form-field>
-                                <tds-select placeholder='Nhập và chọn Tag' [valuePrimitive]="false" valueField="id" textField="name" formControlName="Tags"
-                                  [allowClear]="true" [data]="(detail.value.Tags | stringToStringArray)"  mode="tags">
-                                </tds-select>
-                              </tds-form-field>
-                              <div class="flex gap-x-2 justify-end">
-                                <button tds-button-icon color="error" type="button" (click)="onCloseTag()">
-                                  <span class="flex items-center text-white">
-                                      <i class="tdsi-close-fill"></i>
-                                  </span>
-                                </button>
-                                <button tds-button-icon color="primary" type="button" (click)="onSaveTag()">
-                                  <span class="flex items-center text-white">
-                                      <i class="tdsi-checkbox-check-fill"></i>
-                                  </span>
-                                </button>
-                              </div>
-                            </div>
-                          </ng-template> -->
-
                         </div>
                       </div>
                     </td>

@@ -57,6 +57,8 @@ export class AddLiveCampaignPostComponent implements OnInit {
   isDepositChange: boolean = false;
   _form!: FormGroup;
   companyCurrents!: CompanyCurrentDTO;
+  indClickTag: number = -1;
+  modelTags: Array<string> = [];
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -222,7 +224,9 @@ export class AddLiveCampaignPostComponent implements OnInit {
   disabledDate = (current: Date): boolean => differenceInCalendarDays(current, new Date()) < 0;
 
   onChangeDeposit(event:any){
-    if(event != this.dataModel.MaxAmountDepositRequired){
+    let maxAmountDepositRequired = this.dataModel? this.dataModel.MaxAmountDepositRequired: this._form.controls["MaxAmountDepositRequired"].value;
+
+    if(event != maxAmountDepositRequired){
       this.isDepositChange = true;
     }else{ 
       this.isDepositChange = false;
@@ -233,6 +237,33 @@ export class AddLiveCampaignPostComponent implements OnInit {
         this.isDepositChange = false;
       }, 10 * 1000);
     }
+  }
+
+  openTag(index: number) {
+    this.indClickTag = index;
+    //TODO: lấy dữ liệu từ formArray
+    let data = this.detailsFormGroups.at(index).value;
+
+    if(data && TDSHelperArray.isArray(data.Tags)){
+      this.modelTags = data.Tags;
+    }else{
+      this.modelTags = data.Tags ? data.Tags.split(",") : [];
+    }
+  }
+
+  onCloseTag() {
+    this.modelTags = [];
+    this.indClickTag = -1;
+  }
+
+  onSaveTag(index: number) {
+    //TODO: dữ liệu từ formArray
+    let details = this.detailsFormGroups.at(index).value;
+    details.Tags = this.modelTags;
+    //TODO: cập nhật vào formArray
+    this.detailsFormGroups.at(index).patchValue(details);
+    this.modelTags = [];
+    this.indClickTag = -1;
   }
 
   initFormDetails(details: any[]) {
@@ -285,8 +316,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
             if(TDSHelperArray.hasListValue(res?.value)) {
                 this.message.error(Message.LiveCampaign.ErrorRemoveLine);
             } else {
-                const control = this.detailsFormGroups;
-                control.removeAt(index);
+              this.detailsFormGroups.removeAt(index);
             }
 
             this.isLoading = false;
@@ -297,8 +327,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
         }
       });
     } else {
-        const control = this.detailsFormGroups;
-        control.removeAt(index);
+        this.detailsFormGroups.removeAt(index);
     }
   }
 
@@ -341,13 +370,12 @@ export class AddLiveCampaignPostComponent implements OnInit {
           UsedQuantity: 0
         } as LiveCampaignProductDTO;
 
-        const formArray = this.detailsFormGroups;
         // TODO: thêm sản phẩm vào đầu danh sách nếu đã chưa tồn tại
-        let lstProduct =  formArray.value as LiveCampaignProductDTO[];
+        let lstProduct =  this.detailsFormGroups.value as LiveCampaignProductDTO[];
         lstProduct.unshift(product);
 
         //TODO: cập nhật lại danh sách sản phẩm
-        formArray.clear();
+        this.detailsFormGroups.clear();
         this.initFormDetails(lstProduct);
       }
     })
@@ -363,9 +391,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   selectProduct(data: ProductDTOV2){
-    const formArray = this.detailsFormGroups;
-
-    let exist = formArray.value.find((f:LiveCampaignProductDTO) => f.ProductId == data.Id && f.UOMId == data.UOMId);
+    let exist = this.detailsFormGroups.value.find((f:LiveCampaignProductDTO) => f.ProductId == data.Id && f.UOMId == data.UOMId);
     // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
     if(!exist){
       let product = {
@@ -389,17 +415,17 @@ export class AddLiveCampaignPostComponent implements OnInit {
       } as LiveCampaignProductDTO;
 
       // TODO: thêm sản phẩm vào đầu danh sách nếu đã chưa tồn tại
-      let lstProduct =  formArray.value as LiveCampaignProductDTO[];
+      let lstProduct =  this.detailsFormGroups.value as LiveCampaignProductDTO[];
       lstProduct.unshift(product);
 
       //TODO: cập nhật lại danh sách sản phẩm
-      formArray.clear();
+      this.detailsFormGroups.clear();
       this.initFormDetails(lstProduct);
     } else {
       exist.Quantity += 1;
 
       // TODO: cập nhật lượng lên 1
-      let formControl = formArray.at(indexOf(formArray.value, exist)) as FormGroup;
+      let formControl = this.detailsFormGroups.at(indexOf(this.detailsFormGroups.value, exist)) as FormGroup;
       formControl.controls["Quantity"].setValue(exist.Quantity);
     }
 
@@ -411,14 +437,22 @@ export class AddLiveCampaignPostComponent implements OnInit {
       let model = this.prepareHandler.prepareModel(this._form);
 
       let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
-      if(TDSHelperObject.hasValue(team) && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
+      if(team?.Id && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
           model.Facebook_UserId = team.ChannelId;
           model.Facebook_UserName = team.Name;
       }
 
       this.isLoading = true;
       if(this.id) {
-        model.Id = this.id;
+        this.updateLiveCampaign(this.id, model);
+      } else {
+        this.createLiveCampaign(model);
+      }
+    }
+  }
+
+  updateLiveCampaign(id: string, model: LiveCampaignModel){
+        model.Id = id;
         this.liveCampaignService.update(model, true).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res:LiveCampaignModel) => {
               this.message.success('Cập nhật chiến dịch live thành công');
@@ -428,23 +462,26 @@ export class AddLiveCampaignPostComponent implements OnInit {
           error: (error: any) => {
               this.isLoading = false;
               this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-          }
-        });
-      } else {
-        this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res:LiveCampaignModel) => {
-              this.message.success('Thêm mới chiến dịch live thành công');
 
-              this.onCannel(res);
-              this.isLoading = false;
-          },
-          error: (error: any) => {
-              this.isLoading = false;
-              this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+              this.detailsFormGroups.clear();
+              this.initFormDetails(this.dataModel.Details);
           }
         });
+  }
+
+  createLiveCampaign(model: LiveCampaignModel){
+    this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res:LiveCampaignModel) => {
+          this.message.success('Thêm mới chiến dịch live thành công');
+
+          this.onCannel(res);
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       }
-    }
+    });
   }
 
   isCheckValue() {

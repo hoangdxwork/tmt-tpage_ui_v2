@@ -15,6 +15,7 @@ import { Component, OnInit, ChangeDetectionStrategy, Input, ViewContainerRef, On
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
+
 export class ConversationInfopostItemComponent implements OnInit, OnChanges {
 
   @Input() team!: CRMTeamDTO;

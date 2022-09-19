@@ -10,15 +10,15 @@
               <span>Chờ chốt</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{data?.OrderSummary?.OrderQuantity || 0 | numberCustom}}</span>
+                <span>{{ data?.OrderSummary?.OrderQuantity || 0 | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{data?.OrderSummary?.ProductQuantity || 0 | numberCustom}}</span>
+                <span>{{ data?.OrderSummary?.ProductQuantity || 0 | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{data?.OrderSummary?.TotalAmount || 0 | numberCustom}}</span>
+                <span class="text-info-500">{{ data?.OrderSummary?.TotalAmount || 0 | numberCustom }}</span>
               </div>
             </div>
           </div>
@@ -32,15 +32,15 @@
               <span>Chờ thanh toán</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{data?.BillSummary?.OrderQuantity || 0 | numberCustom}}</span>
+                <span>{{ data?.BillSummary?.OrderQuantity || 0 | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{data?.BillSummary?.ProductQuantity || 0 | numberCustom}}</span>
+                <span>{{ data?.BillSummary?.ProductQuantity || 0 | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{data?.BillSummary?.TotalAmount || 0 | numberCustom}}</span>
+                <span class="text-info-500">{{ data?.BillSummary?.TotalAmount || 0 | numberCustom }}</span>
               </div>
             </div>
           </div>
@@ -54,15 +54,15 @@
               <span>Thanh toán</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{data?.PaySummary?.OrderQuantity || 0 | numberCustom}}</span>
+                <span>{{ data?.PaySummary?.OrderQuantity || 0 | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{data?.PaySummary?.ProductQuantity || 0 | numberCustom}}</span>
+                <span>{{ data?.PaySummary?.ProductQuantity || 0 | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{data?.PaySummary?.TotalAmount || 0 | numberCustom}}</span>
+                <span class="text-info-500">{{ data?.PaySummary?.TotalAmount || 0 | numberCustom }}</span>
               </div>
             </div>
           </div>
@@ -76,15 +76,15 @@
               <span>Tổng hoá đơn</span>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng đơn</span>
-                <span>{{(data?.BillSummary?.OrderQuantity || 0) + (data?.PaySummary?.OrderQuantity || 0) | numberCustom}}</span>
+                <span>{{ (data?.BillSummary?.OrderQuantity || 0) + (data?.PaySummary?.OrderQuantity || 0) | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Số lượng sản phẩm</span>
-                <span>{{(data?.BillSummary?.ProductQuantity || 0) + (data?.PaySummary?.ProductQuantity || 0) | numberCustom}}</span>
+                <span>{{ (data?.BillSummary?.ProductQuantity || 0) + (data?.PaySummary?.ProductQuantity || 0) | numberCustom }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-neutral-1-500 font-normal">Tổng tiền</span>
-                <span class="text-info-500">{{(data?.BillSummary?.TotalAmount || 0) + (data?.PaySummary?.TotalAmount || 0) | numberCustom}}</span>
+                <span class="text-info-500">{{ (data?.BillSummary?.TotalAmount || 0) + (data?.PaySummary?.TotalAmount || 0) | numberCustom }}</span>
               </div>
             </div>
           </div>
@@ -93,11 +93,11 @@
 
       <!-- Danh sách sản phẩm -->
       <div class="flex gap-x-4 h-full overflow-hidden">
-        <div class="w-2/3 h-fit bg-white rounded-xl">
+        <div class="w-2/3 h-fit bg-white rounded-xl" *ngIf="data?.Details">
           <div class="p-4 font-semibold text-xl">
             <span>Sản phẩm</span>
           </div>
-          <table-detail-report [liveCampaignId]="liveCampaignId" [lstDetails]="lstDetails"></table-detail-report>
+          <table-detail-report [liveCampaignId]="liveCampaignId" [lstDetails]="data.Details" class="w-full h-full"></table-detail-report>
         </div>
 
         <!-- Thông tin -->
@@ -109,34 +109,34 @@
           <div class="flex flex-col gap-y-4 p-4 bg-white">
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Tên chiến dịch</span>
-              <span class="font-semibold text-sm">{{dataLiveCampaign?.Name}}</span>
+              <span class="font-semibold text-sm">{{ dataLiveCampaign?.Name }}</span>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Facebook</span>
-              <span class="font-semibold text-sm text-info-500">{{dataLiveCampaign?.Facebook_UserName}}</span>
+              <span class="font-semibold text-sm text-info-500">{{ dataLiveCampaign?.Facebook_UserName }}</span>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Live ID</span>
-              <span class="font-semibold text-sm">{{dataLiveCampaign?.Facebook_LiveId}}</span>
+              <span class="font-semibold text-sm">{{ dataLiveCampaign?.Facebook_LiveId }}</span>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Ngày tạo</span>
-              <span class="font-semibold text-sm">{{dataLiveCampaign?.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</span>
+              <span class="font-semibold text-sm">{{ dataLiveCampaign?.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</span>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Nhân viên chốt đơn</span>
               <span class="font-semibold text-sm" *ngFor="let user of dataLiveCampaign?.Users; let i = index">
-                  {{user.Name}}
+                  {{ user.Name }}
                   <span *ngIf="dataLiveCampaign?.Users && dataLiveCampaign.Users.length > (i + 1)">,</span>
               </span>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Trạng thái xác nhận chốt đơn</span>
-              <span class="font-semibold text-sm">{{dataLiveCampaign?.ShowConfig}}</span>
+              <span class="font-semibold text-sm">{{ dataLiveCampaign?.ShowConfig }}</span>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Ghi chú</span>
-              <span class="font-semibold text-sm">{{dataLiveCampaign?.Note}}</span>
+              <span class="font-semibold text-sm">{{ dataLiveCampaign?.Note }}</span>
             </div>
           </div>
 
@@ -147,27 +147,27 @@
                 <div class="flex flex-col gap-y-4 bg-white">
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Mẫu tin chốt đơn</span>
-                    <span class="font-semibold text-sm">{{dataLiveCampaign?.ConfirmedOrder_Template?.Name}}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.ConfirmedOrder_Template?.Name }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Mẫu tin dự bị</span>
-                    <span class="font-semibold text-sm">{{dataLiveCampaign?.Preliminary_Template?.Name}}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.Preliminary_Template?.Name }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Thời gian tổng hợp (phút)</span>
-                    <span class="font-semibold text-sm">{{dataLiveCampaign?.ResumeTime}}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.ResumeTime }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Thời gian kết thúc tổng hợp (phút)</span>
-                    <span class="font-semibold text-sm">{{dataLiveCampaign?.EndDate | date: 'dd/MM/yyyy HH:mm'}}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.EndDate | date: 'dd/MM/yyyy HH:mm' }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Số tiền cọc bắt buộc</span>
-                    <span class="font-semibold text-sm">{{dataLiveCampaign?.MaxAmountDepositRequired}}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.MaxAmountDepositRequired }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Số tiền tối thiểu đặt cọc</span>
-                    <span class="font-semibold text-sm">{{dataLiveCampaign?.MinAmountDeposit}}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.MinAmountDeposit }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Bật số lượng</span>

@@ -39,10 +39,10 @@ export class AddLiveCampaignComponent implements OnInit {
   _form!: FormGroup;
   isLoading: boolean = false;
   isShowFormInfo: boolean = true;
-  indClickTag: number = -1;
   datePicker: Date[] = [];
   tagsProduct: string[] = [];
   isDepositChange: boolean = false;
+  indClickTag: number = -1;
   modelTags: Array<string> = [];
 
   dataModel!: LiveCampaignDTO;

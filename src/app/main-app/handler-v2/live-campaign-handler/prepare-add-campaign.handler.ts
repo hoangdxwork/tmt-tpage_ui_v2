@@ -34,6 +34,7 @@ export class PrepareAddCampaignHandler {
         if (TDSHelperArray.hasListValue(formValue.Details)) {
           formValue.Details.map((detail: any, index: number) => {
             detail["Index"] = index;
+            detail.Tags = detail?.Tags.toString();
           });
         }
 
