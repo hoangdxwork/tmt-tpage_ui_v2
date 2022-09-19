@@ -16,7 +16,7 @@ import { ChatomniConversationItemDto } from './../../../../../dto/conversation-a
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
 import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -163,7 +163,20 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   eventEmitter() {
     this.conversationOrderFacade.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
-        this.loadCommentsOrderByPost();
+        
+        if(res){
+          switch(res.type){
+            case 'createFSO':
+              delete this.commentOrders[res.data?.Facebook_ASUserId];
+              break;
+            case 'createOrder':
+              this.loadCommentsOrderByPost();
+              break;
+            default:
+              this.loadCommentsOrderByPost();
+          }
+        }
+        this.cdRef.detectChanges();
       }
     })
   }
