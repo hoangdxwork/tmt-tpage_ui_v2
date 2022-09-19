@@ -9,7 +9,7 @@ import { MessagePayloadDto } from '@app/dto/conversation-all/chatomni/message-pa
 
 export class jsonPayloadPipe implements PipeTransform {
 
-  constructor(private sanitizer: DomSanitizer){
+  constructor(private sanitizer: DomSanitizer) {
   }
 
   transform(json: any) : any {
