@@ -15,8 +15,8 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, NgZone, OnChanges, SimpleChanges, ElementRef, ViewChildren, EventEmitter, AfterViewInit } from '@angular/core';
-import { Observable, finalize } from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
+import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -51,7 +51,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
@@ -109,10 +109,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy, 
     private chatomniMessageFacade: ChatomniMessageFacade,
     private omniMessageFacade: ChatomniMessageFacade,
     private crmTagService: CRMTagService) {
-  }
-
-  ngAfterViewInit(): void {
-    this.cdRef.markForCheck();
   }
 
   ngOnInit() {
@@ -476,14 +472,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy, 
         return;
     }
 
-    // this.currentId = item.Id;
     // TODO: gán sự kiện loading cho tab
     this.postEvent.spinLoadingTab$.emit(true);
 
     // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
-        // this.currentId = '';
 
         if(res) {
             // Thông tin khách hàng
@@ -525,7 +519,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy, 
                       this.commentOrders[x.uid].push(a);      
                   });
                 }
-                this.cdRef.detectChanges();
             });
         }
         this.cdRef.detectChanges();

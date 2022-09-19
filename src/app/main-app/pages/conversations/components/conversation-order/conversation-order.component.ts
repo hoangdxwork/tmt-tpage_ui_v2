@@ -851,7 +851,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
               this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit(res);
-              this.conversationOrderFacade.hasValueOrderCode$.emit('');
+              this.conversationOrderFacade.hasValueOrderCode$.emit(null);
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
