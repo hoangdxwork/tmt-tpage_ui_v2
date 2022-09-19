@@ -88,10 +88,10 @@
                                 <span class="text-body-2 w-[130px] truncate" tds-tooltip
                                     tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
                                 <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                                    <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
+                                    <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{ inventories[data.Id].QtyAvailable > 0 ? inventories[data.Id].QtyAvailable : 0 }}</span>
                                 </span>
                                 <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
-                                    <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
+                                    <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{ inventories[data.Id].VirtualAvailable > 0 ? inventories[data.Id].VirtualAvailable : 0 }}</span>
                                 </span>
                             </div>
                         </td>
