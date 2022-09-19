@@ -1,8 +1,9 @@
+import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
@@ -96,6 +97,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniObjectService: ChatomniObjectService,
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
+    private facebookCommentService: FacebookCommentService,
     private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
@@ -192,6 +194,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         if(TDSHelperString.hasValueString(code)){
             this.codeOrder = code;
             this.isDisableTabOrder = false;
+        }else{
+          this.codeOrder = '';
+          // this.isDisableTabOrder = true;
         }
       }
     })
