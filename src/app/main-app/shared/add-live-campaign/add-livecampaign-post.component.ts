@@ -45,7 +45,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
     { text: "Xác nhận", value: "Confirmed" },
     { text: "Xác nhận và gửi vận đơn", value: "ConfirmedAndSendLading" },
   ];
-  
+
   dataModel!: LiveCampaignDTO;
   lstUser: ApplicationUserDTO[] = [];
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
@@ -67,7 +67,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -228,7 +228,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
     if(event != maxAmountDepositRequired){
       this.isDepositChange = true;
-    }else{ 
+    }else{
       this.isDepositChange = false;
     }
 
@@ -278,6 +278,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
   initDetail(x?: LiveCampaignProductDTO) {
     let item = this.fb.group({
+        Id: [null],
         Index: [null],
         Quantity: [null],
         RemainQuantity: [null],
@@ -318,7 +319,6 @@ export class AddLiveCampaignPostComponent implements OnInit {
             } else {
               this.detailsFormGroups.removeAt(index);
             }
-
             this.isLoading = false;
         },
         error:(err) => {
@@ -351,8 +351,8 @@ export class AddLiveCampaignPostComponent implements OnInit {
         let data = result[0] as ProductTemplateV2DTO;
 
         let product = {
-          Id: this.id,
           Quantity: 1,
+          LiveCampaign_Id: this.id || null,
           LimitedQuantity: 0,
           Price: data.ListPrice || 0,
           Note: null,
@@ -395,8 +395,8 @@ export class AddLiveCampaignPostComponent implements OnInit {
     // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
     if(!exist){
       let product = {
-        Id: this.id,
         Quantity: 1,
+        LiveCampaign_Id: this.id || null,
         LimitedQuantity: 0,
         Price: data.Price || 0,
         Note: data.Note || null,

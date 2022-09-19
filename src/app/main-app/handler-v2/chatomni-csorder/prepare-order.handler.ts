@@ -100,22 +100,22 @@ export class CsOrder_PrepareModelHandler {
 
     //TODO: check sản phẩm mặc định
     let product = this.facebookPostService.getDefaultProductPost() as Detail_QuickSaleOnlineOrder;
-          x.Details = [];
+    x.Details = [];
 
-          if(product && product.ProductId) {
-              let item = {
-                ProductId: product.ProductId,
-                ProductName: product.ProductName,
-                ProductNameGet: product.ProductNameGet,
-                UOMId: product.UOMId,
-                UOMName: product.UOMName,
-                Quantity: product.Quantity,
-                Price: product.Price,
-                Factor: product.Factor
-              } as Detail;
+    if(product && product.ProductId) {
+        let item = {
+          ProductId: product.ProductId,
+          ProductName: product.ProductName,
+          ProductNameGet: product.ProductNameGet,
+          UOMId: product.UOMId,
+          UOMName: product.UOMName,
+          Quantity: product.Quantity,
+          Price: product.Price,
+          Factor: product.Factor
+        } as Detail;
 
-              x.Details.push(item);
-          }
+        x.Details.push(item);
+    }
 
     if(this.phoneRegex && comment.Message) {
       let regex = new RegExp(this.phoneRegex);
@@ -127,7 +127,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note =  `{before}${comment.Message}`;
+        x.Note = `{before}${comment.Message}`;
     }
 
     return {...x};

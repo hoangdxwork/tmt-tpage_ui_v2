@@ -5,7 +5,7 @@ import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { ProductTemplateUOMLineService } from "@app/services/product-template-uom-line.service";
 import { SharedService } from "@app/services/shared.service";
 import { UserInitDTO } from "@core/dto";
-import { TDSHelperArray, TDSHelperObject } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 
 @Injectable()
 
@@ -18,7 +18,7 @@ export class CsOrder_FromConversationHandler {
       this.loadUserLogged();
     }
 
-    getOrderFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO){
+    getOrderFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type?: string){
       let order: QuickSaleOnlineOrderModel = {} as any;
       let partner: ConversationPartnerDto = {} as any;
 
@@ -27,10 +27,10 @@ export class CsOrder_FromConversationHandler {
       }
 
       // TODO: trường hợp có đơn hàng nháp gần nhất
-      if(conversationInfo && TDSHelperObject.hasValue(conversationInfo.Order)) {
+      if(conversationInfo && TDSHelperObject.hasValue(conversationInfo.Order) && type != 'post') {
           order = {... conversationInfo.Order} as any;
-          order.Details = [];
 
+          order.Details = [];
           if(TDSHelperArray.hasListValue(conversationInfo.Order?.Details)) {
               conversationInfo.Order.Details.forEach(x => {
                   let item = {
@@ -62,7 +62,7 @@ export class CsOrder_FromConversationHandler {
           let x = this.productTemplateUOMLineService.getDefaultProduct() as Detail_QuickSaleOnlineOrder;
           order.Details = [];
 
-          if(x && x.ProductId) {
+          if(x && x.ProductId && type != 'post') {
               let item = {
                   Id: null,
                   Quantity: 1,
@@ -87,32 +87,19 @@ export class CsOrder_FromConversationHandler {
           }
       }
 
-      if(!order.CRMTeamId && team) {
+      if(team && !order.CRMTeamId) {
           order.CRMTeamId = team.Id;
           order.CRMTeamName = team.Name;
       }
 
-      if(!order.Telephone && (partner && partner.Phone || conversationInfo.Conversation?.Phone)) {
-          order.Telephone = partner.Phone || conversationInfo.Conversation?.Phone;
-      }
+      order.Telephone = order.Telephone || partner?.Phone || conversationInfo.Conversation?.Phone;
+      order.Address =  order.Address || partner?.Street as string;
+      order.Email = order.Email || partner?.Email || conversationInfo.Conversation?.Email;
 
-      if(!order.Address && partner && partner.Street) {
-          order.Address = partner.Street;
-      }
+      order.PartnerId = order.PartnerId || conversationInfo.Partner?.Id;
+      order.PartnerName = order.PartnerName || conversationInfo.Conversation.Name || partner.Name;
 
-      if(!order.Email && (partner && partner.Email || conversationInfo.Conversation?.Email) ) {
-          order.Email = partner.Email || conversationInfo.Conversation?.Email;
-      }
-
-      if(!order.PartnerId && partner && partner.Id) {
-          order.PartnerId = partner.Id;
-      }
-
-      if(!order.PartnerName && conversationInfo.Conversation.Name) {
-          order.PartnerName = conversationInfo.Conversation.Name;
-      }
-
-      if(!order.UserId && this.userInit) {
+      if(this.userInit && !order.UserId) {
           order.UserId = this.userInit.Id;
           order.User = {
               Id: this.userInit.Id,
@@ -120,26 +107,24 @@ export class CsOrder_FromConversationHandler {
           } as any;
       }
 
-      if(!order.CityCode && partner && (partner.CityCode || partner.City?.code)) {
-          order.CityCode = (partner.CityCode || partner.City?.code) as any;
-          order.CityName = (partner.CityName || partner.City?.name) as any;
-          order.DistrictCode = (partner.DistrictCode || partner.District?.code) as any;
-          order.DistrictName = (partner.DistrictName || partner.District?.name) as any;
-          order.WardCode = (partner.WardCode || partner.Ward?.code) as any;
-          order.WardName = (partner.WardName || partner.Ward?.code) as any;
+      if(!TDSHelperString.hasValueString(order.CityCode)) {
+        order.CityCode = (partner?.CityCode || partner?.City?.code) as any;
+        order.CityName = (partner?.CityName || partner?.City?.name) as any;
       }
 
-      if(!order.Facebook_ASUserId && ((partner && partner.FacebookASIds) || conversationInfo.Conversation)) {
-          order.Facebook_ASUserId = partner.FacebookASIds || conversationInfo.Conversation.ConversationId;
+      if(!TDSHelperString.hasValueString(order.DistrictCode)) {
+        order.DistrictCode = (partner?.DistrictCode || partner?.District?.code) as any;
+        order.DistrictName =  (partner?.DistrictName || partner?.District?.name) as any;
       }
 
-      if(!order.Facebook_UserName && conversationInfo.Conversation.Name) {
-          order.Facebook_UserName = conversationInfo.Conversation.Name;
+      if(!TDSHelperString.hasValueString(order.WardCode)) {
+        order.WardCode = (partner?.WardCode || partner?.Ward?.code) as any;
+        order.WardName = (partner?.WardName || partner?.Ward?.code) as any;
       }
 
-      if(!order.Facebook_UserId) {
-          order.Facebook_UserId = conversationInfo.Conversation.UserId;
-      }
+      order.Facebook_ASUserId = order.Facebook_ASUserId || conversationInfo.Conversation?.ConversationId;
+      order.Facebook_UserName = order.Facebook_UserName || conversationInfo.Conversation?.Name;
+      order.Facebook_UserId = order.Facebook_UserId || conversationInfo.Conversation?.UserId;
 
       // TODO: nếu không có đơn hàng cũ thì tính tạm tổng tiền với product mặc định
       if(!conversationInfo.Order && TDSHelperArray.hasListValue(order.Details)) {
@@ -151,45 +136,9 @@ export class CsOrder_FromConversationHandler {
       return {...order}
     }
 
-    onSyncConversationInfoToOrder(quickOrderModel: QuickSaleOnlineOrderModel, conversationInfo: ChatomniConversationInfoDto, type: string) {
-
-      if(conversationInfo && TDSHelperObject.hasValue(conversationInfo.Order) && type !== 'post') {
-
-          conversationInfo.Order.Details = [];
-          conversationInfo.Order.Details = [...(quickOrderModel.Details) || []];// gán lại danh sách sản phẩm đã nhập hiện tại ,ko lấy server
-          quickOrderModel = Object.assign(quickOrderModel, conversationInfo.Order) as any;
-
-      } else {
-          let partner = conversationInfo.Partner;
-
-          if(partner && partner.Name && !quickOrderModel.PartnerName) {
-              quickOrderModel.PartnerName = partner.Name;
-          }
-
-          if(partner && partner.Phone && !quickOrderModel.Telephone) {
-              quickOrderModel.Telephone = partner.Phone;
-          }
-
-          if(partner && partner.Email && !quickOrderModel.Email) {
-              quickOrderModel.Email = partner.Email;
-          }
-
-          if(partner && partner.Street && !quickOrderModel.CityCode) {
-              quickOrderModel.Address = partner.Street;
-          }
-
-          if(partner && (partner.CityCode || partner.City?.code)) {
-              quickOrderModel.CityCode = (partner.CityCode || partner.City?.code) as any;
-              quickOrderModel.CityName = (partner.CityName || partner.City?.name) as any;
-              quickOrderModel.DistrictCode = (partner.DistrictCode || partner.District?.code) as any;
-              quickOrderModel.DistrictName = (partner.DistrictName || partner.District?.name) as any;
-              quickOrderModel.WardCode = (partner.WardCode || partner.Ward?.code) as any;
-              quickOrderModel.WardName = (partner.WardName || partner.Ward?.code) as any;
-          }
-
-      }
-
-      return {...quickOrderModel};
+    onSyncConversationInfoToOrder(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type: string) {
+        let data = { ... this.getOrderFromConversation(conversationInfo, team, type) }
+        return { ...data };
     }
 
     loadUserLogged() {

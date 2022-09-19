@@ -337,7 +337,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSyncConversationInfo(conversationInfo: ChatomniConversationInfoDto) {
-    this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(this.quickOrderModel, conversationInfo, this.type)};
+    this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(conversationInfo, this.team, this.type)};
     this.mappingAddress(this.quickOrderModel);
     this.cdRef.detectChanges();
   }
@@ -668,8 +668,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             this.cdRef.detectChanges();
           }
-
-
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -712,6 +710,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: any) => {
           delete res['@odata.context'];
           this.quickOrderModel = {...res};
+          this.quickOrderModel.FormAction = formAction;
 
           if(!this.isEnableCreateOrder && type == 'print') {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
@@ -775,6 +774,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           delete res['@odata.context'];
           this.quickOrderModel = {...res};
+          this.quickOrderModel.FormAction = formAction;
 
           if(!this.isEnableCreateOrder && type) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
@@ -836,8 +836,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           this.shipServices = [];
           this.shipExtraServices = [];
-          delete this.saleModel.Ship_ServiceId;
-          delete this.saleModel.Ship_ServiceName;
           this.saleModel = {} as any;
           this.enableInsuranceFee = false;
           this.isEnableCreateOrder = false;
@@ -849,7 +847,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           if(this.type == 'post') {
               // TODO: nếu là bài viết sau khi thanh toán, sẽ load lại đơn hàng kế tiếp theo postid
               // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
-              
+
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
               this.facebookCommentService.onChangeCommentsOrderByPost$.emit(res);
 
@@ -1219,9 +1217,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   pushItemProduct(data: ProductDTOV2) {
     let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId) as number;
-    if (Number(index) < 0){
+    if (Number(index) < 0 || !index){
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
-
         this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
     } else{
         this.quickOrderModel.Details[index].Quantity += 1;

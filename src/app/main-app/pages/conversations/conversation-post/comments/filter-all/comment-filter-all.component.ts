@@ -418,7 +418,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
               // Thông tin đơn hàng
               this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-              
+
               // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
               if(order && TDSHelperString.hasValueString(order[0]?.code)){
                   // Truyền sang coversation-post
@@ -492,7 +492,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
             // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-            
+
         }
       },
       error: (error: any) => {
@@ -504,16 +504,17 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  loadCommentsOrderByPost() {debugger
+  loadCommentsOrderByPost() {
     this.facebookCommentService.getCommentsOrderByPost(this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: OdataCommentOrderPostDTO) => {debugger
+      next: (res: OdataCommentOrderPostDTO) => {
         if(res && res.value) {
             let comments = [...res.value];
-          
+            this.commentOrders = {};
+
             comments.map((x: CommentOrderPost) => {
                 this.commentOrders[x.asuid] = [];
                 this.commentOrders[x.uid] = [];
-                //gán lại data bằng syntax 
+                //gán lại data bằng syntax
                 x.orders?.map((a: CommentOrder) => {
                     this.commentOrders[x.asuid].push(a);
                 });
