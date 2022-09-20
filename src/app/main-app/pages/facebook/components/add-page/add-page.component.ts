@@ -36,19 +36,23 @@ export class AddPageComponent implements OnInit {
     let model = this.prepareModel();
     this.isLoading = true;
 
-    this.crmTeamService.insert(model).subscribe(res => {
-        this.message.success(Message.SaveSuccess);
-        this.isLoading = false;
-        this.onCancel(true);
-    }, error => {
-      if(error?.error?.message) {
-        this.message.error(error?.error?.message);
-      }
-      else {
-        this.message.error(Message.ErrorOccurred);
-      }
-      this.isLoading = false;
-    });
+    this.crmTeamService.insert(model).subscribe(
+      {
+        next: res => {
+          this.message.success(Message.SaveSuccess);
+          this.isLoading = false;
+          this.onCancel(true);
+      }, 
+        error: error => {
+          if(error?.error?.message) {
+            this.message.error(error?.error?.message);
+          }
+          else {
+            this.message.error(Message.ErrorOccurred);
+          }
+          this.isLoading = false;
+        }
+      });
   }
 
   prepareModel() {
@@ -56,7 +60,7 @@ export class AddPageComponent implements OnInit {
 
     let model = {
       Id: 0,
-      Facebook_ASUserId: this.user.Facebook_ASUserId,
+      Facebook_ASUserId: this.user.OwnerId,
       Facebook_Link: this.data.picture.data.url,
       Facebook_PageId: this.data.id,
       Facebook_PageLogo: null,
@@ -66,7 +70,7 @@ export class AddPageComponent implements OnInit {
       Facebook_UserAvatar: this.user.Facebook_UserAvatar,
       Facebook_UserId: this.user.Facebook_UserId,
       Facebook_UserName: this.user.Facebook_UserName,
-      Facebook_UserToken: this.user.Facebook_UserToken,
+      Facebook_UserToken: this.user.OwnerToken,
       Name: formValue["name"],
       ParentId: this.user.Id,
       Type: "Facebook"
