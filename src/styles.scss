@@ -75,3 +75,6 @@ select:-webkit-autofill:focus {
   padding: 6px;
 }
 
+.cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
+  width: inherit;
+}
