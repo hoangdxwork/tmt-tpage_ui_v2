@@ -1,3 +1,6 @@
+import { FastSaleOrderService } from './../../../../services/fast-sale-order.service';
+import { GetListOrderIdsDTO } from './../../../../dto/saleonlineorder/list-order-ids.dto';
+import { CreateBillFastComponent } from './../../../order/components/create-bill-fast/create-bill-fast.component';
 import { ConversationPostEvent } from './../../../../handler-v2/conversation-post/conversation-post.event';
 import { ConversationOrderDTO } from './../../../../dto/coversation-order/conversation-order.dto';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
@@ -77,8 +80,8 @@ export class ConversationOrderListComponent implements OnInit {
     private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
-    private cdr: ChangeDetectorRef,
-    private excelExportService: ExcelExportService) {
+    private fastSaleOrderService: FastSaleOrderService,
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -261,8 +264,8 @@ export class ConversationOrderListComponent implements OnInit {
         case 'print':
           this.printMulti();
           break;
-        case 'excel':
-          this.exportExcel();
+        case 'fastSO':
+          this.onCreateQuicklyFS();
           break;
         case 'delete':
           this.deleteMulti();
@@ -332,24 +335,63 @@ export class ConversationOrderListComponent implements OnInit {
     }
   }
 
-  exportExcel() {
-    if (this.isLoading) { 
-      return;
+  onCreateQuicklyFS() {
+    if (this.checkValueEmpty() == 1) {
+      this.isLoading = true;
+      let ids = [...this.setOfCheckedId];
+      this.showModalCreateBillFast(ids)
     }
-
-    let ids = [...this.setOfCheckedId];
-    this.isLoading = true;
-
-    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
-      {
-        data: JSON.stringify({}),
-        campaignId: null,
-        postId: this.currentPost.ObjectId,
-        ids: ids,
-      }, `don_hang_online`)
-      .pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe();
   }
+
+  showModalCreateBillFast(ids: string[]) {
+    this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if (res) {
+            this.modalService.create({
+                title: 'Tạo hóa đơn nhanh',
+                content: CreateBillFastComponent,
+                centered: true,
+                size: 'xl',
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  lstData: [...res.value] as GetListOrderIdsDTO[]
+                }
+            });
+
+            this.modalService.afterAllClose.subscribe({
+              next:(x: any) =>{
+                this.loadData(this.pageSize,this.pageIndex);
+              }
+            });
+          }
+
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+        }
+      });
+  }
+
+  // exportExcel() {
+  //   if (this.isLoading) { 
+  //     return;
+  //   }
+
+  //   let ids = [...this.setOfCheckedId];
+  //   this.isLoading = true;
+
+  //   this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
+  //     {
+  //       data: JSON.stringify({}),
+  //       campaignId: null,
+  //       postId: this.currentPost.ObjectId,
+  //       ids: ids,
+  //     }, `don_hang_online`)
+  //     .pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+  //     .subscribe();
+  // }
 
   deleteMulti() {
     if(this.isLoading){
