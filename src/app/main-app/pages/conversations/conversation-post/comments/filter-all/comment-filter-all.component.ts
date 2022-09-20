@@ -150,6 +150,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
               this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
             }
 
+            this.infinite.next([...this.dataSource.Items]);
+
             this.cdRef.detectChanges();
           break;
 

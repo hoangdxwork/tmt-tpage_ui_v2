@@ -1,3 +1,4 @@
+import { FacebookService } from './../../../services/facebook.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FacebookUser } from './../../../../lib/dto/facebook.dto';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
@@ -71,7 +72,8 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     private viewContainerRef: ViewContainerRef,
     private facebookLoginService: FacebookLoginService,
     private viewportScroller: ViewportScroller,
-    private _destroy$: TDSDestroyService) {}
+    private _destroy$: TDSDestroyService,
+    private facebookService: FacebookService) {}
 
   ngAfterViewInit(): void {
       this.facebookLoginService.init().pipe(takeUntil(this._destroy$)).subscribe(
@@ -450,34 +452,8 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   }
 
   loadPageNotConnect(team: CRMTeamDTO) {
-    let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
-
     this.isLoading = true;
-    this.facebookGraphService.getUserPages(team.OwnerToken).pipe(takeUntil(this._destroy$)).subscribe(
-      {
-        next: (res) => {
-
-          if(TDSHelperArray.hasListValue(res?.data)) {
-  
-            this.lstPageNotConnect[team.Id] = res.data;
-            this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
-  
-            if(this.lstData[team.Id]['notConnected']?.length > 0) {
-              this.message.success(`Tìm thấy ${this.lstData[team.Id]['notConnected']?.length} kênh mới`);
-            } else {
-              this.message.info('Không tìm thấy kênh mới nào');
-            }
-          } else {
-            this.message.info('Không tìm thấy kênh mới nào');
-          }
-  
-          this.isLoading = false;
-        },
-        error: error => {
-          this.message.error(Message.ConnectionChannel.TokenExpires);
-          this.isLoading = false;
-        }
-      })
+    this.verifyConnect(team);
   }
 
   onChangeCollapse(id: number, event: TDSSafeAny) {
@@ -563,4 +539,54 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     this.message.info(Message.FunctionNotWorking);
   }
 
+  verifyConnect(team: CRMTeamDTO) {
+    let model = this.prepareModel(team);
+    let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
+
+    this.facebookService.verifyConect(model).pipe(takeUntil(this._destroy$)).subscribe(
+      {
+        next: res => {
+          this.facebookGraphService.getUserPages(team.OwnerToken).pipe(takeUntil(this._destroy$)).subscribe(
+            {
+              next: (res) => {
+      
+                if(TDSHelperArray.hasListValue(res?.data)) {
+        
+                  this.lstPageNotConnect[team.Id] = res.data;
+                  this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
+        
+                  if(this.lstData[team.Id]['notConnected']?.length > 0) {
+                    this.message.success(`Tìm thấy ${this.lstData[team.Id]['notConnected']?.length} kênh mới`);
+                  } else {
+                    this.message.info('Không tìm thấy kênh mới nào');
+                  }
+                } else {
+                  this.message.info('Không tìm thấy kênh mới nào');
+                }
+        
+                this.isLoading = false;
+              },
+              error: error => {
+                this.message.error(Message.ConnectionChannel.TokenExpires);
+                this.isLoading = false;
+              }
+            })
+        },
+        error: error => { 
+          this.isLoading = false;
+        }
+      }
+    )
+  }
+
+  prepareModel(team: CRMTeamDTO) {
+    let model = {
+      FacebookAvatar: team.ChannelAvatar || team.Facebook_UserAvatar || team.OwnerAvatar,
+      FacebookId : team.ChannelId || team.Facebook_UserId || team.OwnerId,
+      FacebookName: team.Name || team.Facebook_UserName,
+      Token: team.OwnerToken || team.ChannelToken
+    } as any
+
+    return model;
+  }
 }
