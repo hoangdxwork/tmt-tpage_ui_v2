@@ -1,3 +1,4 @@
+import { FacebookService } from './../../../services/facebook.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FacebookUser } from './../../../../lib/dto/facebook.dto';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
@@ -71,7 +72,8 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     private viewContainerRef: ViewContainerRef,
     private facebookLoginService: FacebookLoginService,
     private viewportScroller: ViewportScroller,
-    private _destroy$: TDSDestroyService) {}
+    private _destroy$: TDSDestroyService,
+    private facebookService: FacebookService) {}
 
   ngAfterViewInit(): void {
       this.facebookLoginService.init().pipe(takeUntil(this._destroy$)).subscribe(
@@ -450,6 +452,8 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   }
 
   loadPageNotConnect(team: CRMTeamDTO) {
+    this.verifyConnect(team);
+
     let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
 
     this.isLoading = true;
@@ -563,4 +567,25 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     this.message.info(Message.FunctionNotWorking);
   }
 
+  verifyConnect(team: CRMTeamDTO) {
+    let model = this.prepareModel(team);
+
+    this.facebookService.verifyConect(model).pipe(takeUntil(this._destroy$)).subscribe(
+      {
+        next: res => {},
+        error: error => { }
+      }
+    )
+  }
+
+  prepareModel(team: CRMTeamDTO) {
+    let model = {
+      FacebookAvatar: team.ChannelAvatar || team.Facebook_UserAvatar || team.OwnerAvatar,
+      FacebookId : team.ChannelId || team.Facebook_UserId || team.OwnerId,
+      FacebookName: team.Name || team.Facebook_UserName,
+      Token: team.OwnerToken || team.ChannelToken
+    } as any
+
+    return model
+  }
 }
