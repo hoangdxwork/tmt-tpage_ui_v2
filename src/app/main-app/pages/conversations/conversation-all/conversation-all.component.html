@@ -159,7 +159,7 @@
         <!--Nội dung cuộc hội thoại-->
         <div class="flex 2xl:w-[48%] w-[45%]" *ngIf="conversationItem && currentTeam">
           <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-              <div class="flex w-full flex-col h-full" @eventFadeState>
+              <div class="flex w-full flex-col h-full">
                   <shared-tds-conversations
                       class="flex w-full h-full"
                       [data]="conversationItem"
