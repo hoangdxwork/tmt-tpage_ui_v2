@@ -759,6 +759,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.conversationInfo;
     delete this.conversationItem;
     delete this.dataSource$;
+    this.infinite.next([]);
   }
 
   setStorageConversationId(id: string): any {

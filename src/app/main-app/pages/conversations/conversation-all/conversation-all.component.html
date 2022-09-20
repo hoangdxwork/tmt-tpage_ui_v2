@@ -112,7 +112,7 @@
                   <div class="flex-auto bg-white mt-1"></div>
                 </div> -->
 
-                <ng-container *ngIf="infinite | async; let items" >
+                <ng-container *ngIf="infinite | async; let items">
 
                   <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full"
                       [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize" style="overflow-x: hidden;">
