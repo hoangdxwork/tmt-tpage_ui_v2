@@ -1179,6 +1179,27 @@ export class AddBillComponent implements OnInit {
     }
   }
 
+  applyPromotion(type: string){
+    switch(type){
+      case 'coupon':
+        this.onSave();
+        this.showApplyCouponModal();
+        break;
+      case 'promotion':
+        this.onSave();
+        this.showApplyPromotionModal();
+        break;
+    }
+  }
+
+  showApplyCouponModal(){
+    
+  }
+
+  showApplyPromotionModal(){
+
+  }
+
   removelocalStorage() {
     const key1 = this.saleOnline_OrderService._keyCreateBillOrder;
     localStorage.removeItem(key1);
