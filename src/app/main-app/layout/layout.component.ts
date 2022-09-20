@@ -111,8 +111,9 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   //lay danh sách facebook
   getAllFacebook() {
-    this.crmService.getAllFacebooks().pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
-        // console.log(f)
+    this.crmService.getAllFacebooks().pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (dataTeam: any) => {
+
         if (TDSHelperObject.hasValue(dataTeam)) {
             this.crmService.onUpdateListFaceBook(dataTeam);
 
@@ -121,16 +122,16 @@ export class LayoutComponent implements OnInit, AfterViewInit {
                 this.crmService.onUpdateTeam(team);
             })
         }
-
         else {
             this.crmService.onUpdateListFaceBook(null);
             this.crmService.onUpdateTeam(null);
         }
-      }, err => {
-
+      },
+      error: (error: any) => {
         this.crmService.onUpdateListFaceBook(null);
         this.crmService.onUpdateTeam(null);
-      })
+      }
+    })
   }
 
   setMenu(data: CRMTeamDTO | null): Array<TDSMenuDTO> {
