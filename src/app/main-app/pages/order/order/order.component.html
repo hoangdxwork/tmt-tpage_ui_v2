@@ -215,14 +215,21 @@
                 <!-- Tên -->
                 <td *ngIf="isHidden('Name')" class="border-l min-w-[260px] max-w-[500px]">
                   <div class="w-full flex flex-col gap-y-1">
-                    <p class="truncate">{{data.PartnerName}}</p>
                     <div class="flex items-center">
-                      <p *ngIf="data.Telephone" class="text-[#929DAA] mr-1">{{data.Telephone}}</p>
+                      <p class="truncate mr-1">{{data.PartnerName}}</p>
                       <div tds-button color="secondary" *ngIf="data.PartnerStatus"
                           class="border border-solid rounded px-2 py-px mr-1" [ngStyle]="(data.PartnerStatus.sS) | buttonStatusColor">
                           <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
                             {{ data.PartnerStatus.sT }}
                           </span>
+                      </div>
+                    </div>
+                    <div class="flex items-center">
+                      <p *ngIf="data.Telephone" class="text-[#929DAA] mr-1">{{data.Telephone}}</p>
+                      <div class="flex flex-col mr-1">
+                        <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
+                          {{ data.NameNetwork }}
+                        </tds-tag>
                       </div>
                       <button *ngIf="data.Address" class="bg-orange-500 rounded p-[3px]" tds-tooltip tooltipTitle="{{ data.Address }}">
                         <span class="flex items-center justify-center text-white ">
@@ -341,7 +348,7 @@
           <div class="grid grid-cols-2 gap-x-9 gap-y-3">
             <div class="flex gap-x-1">
               <span class="w-1/3">Mã</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.Code?orderMessage.Code:'...' || 'N/A'}} 
+              <span class="w-2/3 font-semibold">{{orderMessage.Code?orderMessage.Code:'...' || 'N/A'}}
                 <tds-tag class="ml-2" [status]="orderMessage?.StatusText | getColorStatusText" size="sm" type="outline">{{orderMessage?.StatusText}}</tds-tag>
               </span>
             </div>
