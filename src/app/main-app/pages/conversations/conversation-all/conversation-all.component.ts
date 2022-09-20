@@ -46,8 +46,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
   @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 
-  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
-
   @HostBinding("@eventFadeState") eventAnimation = true;
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
@@ -187,7 +185,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       let model = {...this.lstConversation[index]};
                       if(index > 0){
                           this.lstConversation = this.lstConversation.filter(x => x.ConversationId != res.Data.Conversation?.UserId);
-                          this.lstConversation = [...[model], ...(this.lstConversation || [])]
+                          this.lstConversation = [...[model], ...(this.lstConversation || [])];
                       }
                   } else {
                       // // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
@@ -195,6 +193,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       // this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
                   }
 
+                  this.infinite.next([...this.lstConversation]);
                   this.cdRef.detectChanges();
               }
             break;
@@ -445,29 +444,28 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+    this.queryObj = {} as any;
+    this.innerText.nativeElement.value = '';
     this.isProcessing = false;
 
     if (this.clickReload >= 5) {
-        this.message.info("Đã kích hoạt cập nhật hội thoại.");
+        this.message.info("Đã kích hoạt cập nhật hội thoại");
         this.clickReload = 0;
 
         if (this.currentTeam) {
           this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res) => {
-                this.message.success('Yêu cầu cập nhật thành công');
-            },
-            error: (error) => {
-                this.message.success('Yêu cầu cập nhật thất bại');
-            }
+              next: (res) => {
+                  this.loadData(this.currentTeam);
+                  this.message.success('Yêu cầu cập nhật thành công');
+              },
+              error: (error) => {
+                  this.message.success('Yêu cầu cập nhật thất bại');
+              }
           });
         }
     } else {
-        this.queryObj = {} as any;
-        this.innerText.nativeElement.value = '';
-
         this.isRefreshing = true;
         this.loadFilterDataSource();
-        this.cdRef.markForCheck();
     }
 
     setTimeout(() => {
@@ -658,12 +656,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isLoading = true;
     this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, this.queryObj).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
-          this.lstConversation = [...res?.Items];
 
+          this.lstConversation = [...res?.Items];
           this.totalConversations = res?.Items.length;
+
+          this.infinite.next([...this.lstConversation]);
+
           this.isLoading = false;
           this.isRefreshing = false;
-
           this.cdRef.markForCheck();
       },
       error: (error: any) => {
