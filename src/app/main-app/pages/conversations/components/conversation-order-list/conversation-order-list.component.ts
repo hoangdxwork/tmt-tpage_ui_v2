@@ -89,24 +89,23 @@ export class ConversationOrderListComponent implements OnInit {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
     this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        // đóng tạm thời
-        // this.loadSummaryStatus();
-        this.loadData(this.pageSize, this.pageIndex);
+        setTimeout(() => {
+          this.loadData(this.pageSize, this.pageIndex);
+        }, 1000)
       }
     })
 
     // TODO: load danh sách đơn hàng khi chọn 1 hội thoại objects
     this.chatomniObjectFacade.onChangeListOrderFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (item: ChatomniObjectsItemDto) => {
-        this.currentPost = item;
-        // đóng tạm thời
-        // this.loadSummaryStatus();
-        this.loadData(this.pageSize, this.pageIndex);
+          this.currentPost = item;
+          this.loadData(this.pageSize, this.pageIndex);
       }
     });
   }
 
   loadData(pageSize: number, pageIndex: number) {
+    this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilterByPost(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
@@ -114,12 +113,15 @@ export class ConversationOrderListComponent implements OnInit {
       next:(res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+
           //gán tạm thời
           let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
           this.tabNavs = [...data];
+          this.cdr.detectChanges();
       },
       error:(error) => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.cdr.detectChanges();
       }
     });
   }
@@ -155,8 +157,6 @@ export class ConversationOrderListComponent implements OnInit {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
-    // đóng tạm thời
-    // this.loadSummaryStatus();
   }
 
   changePageSize(pageSize:number){
@@ -174,8 +174,6 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = event.value;
-    // đóng tạm thời
-    // this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -212,7 +210,7 @@ export class ConversationOrderListComponent implements OnInit {
                   break;
               }
           });
-          //TODO: load số lượng đơn hàng 
+          //TODO: load số lượng đơn hàng
           // this.conversationPostEvent.getOrderTotal$.emit(total);
 
           this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
@@ -333,7 +331,7 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   exportExcel() {
-    if (this.isLoading) { 
+    if (this.isLoading) {
       return;
     }
 
