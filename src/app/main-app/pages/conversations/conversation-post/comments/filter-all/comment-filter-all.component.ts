@@ -15,8 +15,8 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, AfterViewInit } from '@angular/core';
+import { Observable, tap, BehaviorSubject, auditTime } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -42,6 +42,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'comment-filter-all',
@@ -51,7 +52,11 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
+export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+
+  itemSize = 80;
+  infinite = new BehaviorSubject<ChatomniDataItemDto[]>([]);
+  @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
@@ -64,8 +69,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
 
-  dataSource$!: Observable<ChatomniDataDto>;
-  dataSource!: ChatomniDataDto;
+  dataSource$!: Observable<ChatomniDataDto> | any;
+  dataSource!: ChatomniDataDto | any;
   childs: any = {} // dictionary return ChatomniDataItemDto[]
   childsComment: ChatomniDataItemDto[] = [];
 
@@ -163,7 +168,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
   eventEmitter() {
     this.conversationOrderFacade.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
-        
+
         if(res){
           switch(res.type){
             case 'createFSO':
@@ -183,8 +188,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-        (this.dataSource$ as any) = null;
-        (this.dataSource as any) = null;
+        delete this.dataSource$;
+        delete this.dataSource;
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -195,6 +200,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   loadData() {
     this.isLoading = true;
+    this.infinite.next([]);
+
     this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
 
     if(this.dataSource$) {
@@ -202,6 +209,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
         next: (res: ChatomniDataDto) => {
             this.dataSource = {...res};
             this.sortChildComment(this.dataSource.Items);
+
+            this.cdkVirtualScroll();
 
             this.isLoading = false;
             this.cdRef.markForCheck();
@@ -542,6 +551,50 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  cdkVirtualScroll() {
+    if(this.viewPort && this.viewPort.scrolledIndexChange && this.dataSource?.Items) {
+        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap(() => {
+
+            const end = this.viewPort.getRenderedRange().end;
+            const total = this.viewPort.getDataLength();
+
+            if(end == total && !this.isLoading) {
+                this.nextBatch();
+            }
+
+        })).pipe(takeUntil(this.destroy$)).subscribe();
+      }
+
+    setTimeout(() => this.infinite.next([...this.dataSource?.Items]), 750);
+  }
+
+  nextBatch() {
+    this.isLoading = true;
+    let id = `${this.team.Id}_${this.data.ObjectId}`;
+    this.dataSource$ = this.chatomniCommentService.nextDataSource(id, this.dataSource.Items);
+
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniDataDto) => {
+
+          if(res && TDSHelperArray.hasListValue(res?.Items)) {
+              this.dataSource.Items = [...res.Items];
+              // TODO: merge bình luận đã gửi
+              this.dataSource.Items = this.mergeUpdatedData(this.dataSource.Items, this.childsComment);
+              this.sortChildComment(this.dataSource.Items);
+
+              this.infinite.next([...this.dataSource.Items]);
+          }
+
+          this.isLoading = false;
+          this.cdRef.markForCheck();
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.cdRef.markForCheck();
+      }
+    })
+  }
+
   nextData(event: any) {
     if(this.isLoading) {
         return;
@@ -586,7 +639,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
       data.map(x => {
         if(x.ParentId){
-          model = [...model, ...[x]];
+            model = [...model, ...[x]];
         }
       });
 
@@ -599,7 +652,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
     //TODO: check bình luận mới gán vào data
     updateData.forEach(f => {
       if(!ids.includes(f.Id)){
-        data.push(f);
+          data.push(f);
       }
     });
 
@@ -744,6 +797,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, OnDestroy {
 
   removeTagOnView(tag: any) {
 
+  }
+
+  ngAfterViewInit() {
+    this.cdkVirtualScroll();
   }
 
   ngOnDestroy(): void {
