@@ -89,8 +89,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
   conversationItem!: ChatomniConversationItemDto;
   currentConversation!: ChatomniConversationItemDto;
-  currentItem!: ChatomniDataItemDto;
-  previousItems: ChatomniDataItemDto[] = [];
   commentOrders?: any = {};
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
@@ -148,11 +146,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
           case ChatmoniSocketEventName.chatomniOnMessage:
             if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
-              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
-              this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
+                let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)};
+                this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
+                this.infinite.next([...this.dataSource.Items]);
             }
 
-            this.infinite.next([...this.dataSource.Items]);
 
             this.cdRef.detectChanges();
           break;
@@ -215,9 +213,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniDataDto) => {
             this.dataSource = {...res};
-            // TODO: gán vị trí hiện tại của item và danh sách item đầu vào
-            this.previousItems = [...res.Items];
-            this.currentItem = this.previousItems[0];
 
             this.sortChildComment(this.dataSource.Items);
             this.cdkVirtualScroll();
