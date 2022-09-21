@@ -641,7 +641,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Ship_ExtrasText?: any;
     Ship_InsuranceFee: number;
     CurrencyName: string;
-    TeamId: number;
+    TeamId: number | any;
     TeamOrderCode?: any;
     TeamOrderId?: any;
     TeamType: string;
@@ -671,7 +671,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     SaleOrder?: any;
     OrderLines?: OrderLineV2[] | any[];
     Ship_ServiceExtras: ShipServiceExtra[];
-    Team: Team;
+    Team: Team | any;
     ShipmentDetailsAship?: ShipmentDetailsAshipDTO;
     MessageCount: number;
     MoveId?: any;

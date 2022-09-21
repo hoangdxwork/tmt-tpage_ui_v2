@@ -191,7 +191,7 @@ export class CRMTeamService extends BaseSevice {
         let items: any[] = [];
         if(teams && teams.length > 0) {
             teams.forEach(x => {
-                if(x.Childs && x. Childs.length > 0) {
+                if(x.Childs && x.Childs.length > 0) {
                     x.Childs.forEach((a: any) => {
                         delete a.Childs;
                         items.push(a);
