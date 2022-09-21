@@ -86,7 +86,7 @@
                 </div>
 
                 <!-- List danh sách chat -->
-                <!-- <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
+                <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
                   <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
                       yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
                       <div *ngFor="let item of lstConversation; let i= index ; trackBy: trackByIndex">
@@ -110,33 +110,9 @@
                       </div>
                   </div>
                   <div class="flex-auto bg-white mt-1"></div>
-                </div> -->
+                </div>
 
-                <ng-container *ngIf="infinite | async; let items">
-                    <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full"
-                        [itemSize]="itemSize" [maxBufferPx]="itemSize" [minBufferPx]="itemSize" style="overflow-x: hidden;">
-
-                        <div *cdkVirtualFor="let item of items; let i=index; trackBy: trackByIndex" class="w-full h-full bg-white mb-1">
-                            <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" class="w-full h-full">
-
-                              <a (click)="changeCurrentConversationItem(item)" class="w-full h-full
-                                {{ conversationItem.ConversationId == item.ConversationId ? 'cursor-no-drop' : 'cursor-pointer'}}">
-                                  <current-conversation-item-v2
-                                      [item]="item" [csid]="item.ConversationId" [type]="type"
-                                      [conversationItem]="conversationItem"
-                                      [state]="item.State"
-                                      [team]="currentTeam" [isFastSend]="isFastSend"
-                                      [isOpenCollapCheck]="isOpenCollapCheck"
-                                      [checked]="setOfCheckedId.has(item.ConversationId)"
-                                      (checkedChange)="onItemChecked(item.ConversationId, $event)">
-                                  </current-conversation-item-v2>
-                              </a>
-                            </div>
-                        </div>
-                    </cdk-virtual-scroll-viewport>
-                </ng-container>
-
-                <!-- <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
+                <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
                   <tds-empty [notFoundContent]="contentTpl">
                     <ng-template #contentTpl>
                       <div class="flex flex-col justify-center items-center">
@@ -152,7 +128,7 @@
                         <img src="../../../assets/imagesv2/conversation/noDataConversation.svg" alt="">
                         <span class="text-neutral-1-300">Chưa có hội thoại nào</span>
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
 

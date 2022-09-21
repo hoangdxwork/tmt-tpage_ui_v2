@@ -31,6 +31,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 
 @Component({
   selector: 'app-conversation-all',
@@ -41,9 +42,7 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
-  itemSize = 80;
-  infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
-  @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
+  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
   @HostBinding("@eventFadeState") eventAnimation = true;
   @HostBinding("@openCollapse") eventAnimationCollap = false;
@@ -51,6 +50,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateAdminTransferChatBot') templateAdminTransferChatBot!: TemplateRef<{}>;
   @ViewChild('templateChatbotTranserAdmin') templateChatbotTranserAdmin!: TemplateRef<{}>;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
+
 
   isLoading: boolean = false;
   dataSource$?: Observable<ChatomniConversationDto> ;
@@ -192,7 +192,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       // this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
                   }
 
-                  this.infinite.next([...this.lstConversation]);
                   this.cdRef.detectChanges();
               }
             break;
@@ -221,7 +220,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(Number(index) >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
-                this.cdRef.detectChanges();
+                this.cdRef.markForCheck();
             }
         }
       }
@@ -337,7 +336,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.validateData();
             }
 
-            this.cdkVirtualScroll();
             this.isLoading = false;
         },
         error: (error: any) => {
@@ -404,30 +402,30 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     return data.Id;
   }
 
-  // nextData(event: any): any {
-  //   if(event) {
-  //     if (this.isProcessing) {
-  //         return false;
-  //     }
+  nextData(event: any): any {
+    if(event) {
+      if (this.isProcessing) {
+          return false;
+      }
 
-  //     this.isProcessing = true;
-  //     this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+      this.isProcessing = true;
+      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
 
-  //     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-  //       next: (res: ChatomniConversationDto) => {
-  //         if(res && res.Items){
-  //           this.lstConversation = [...(res.Items || [])];
-  //         }
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: ChatomniConversationDto) => {
+          if(res && res.Items){
+            this.lstConversation = [...(res.Items || [])];
+          }
 
-  //           this.isProcessing = false;
-  //           this.yiAutoScroll.scrollToElement('scrollConversation', 750);
-  //       },
-  //       error: (error) => {
-  //           this.isProcessing = false;
-  //       }
-  //     })
-  //   }
-  // }
+            this.isProcessing = false;
+            this.yiAutoScroll.scrollToElement('scrollConversation', 750);
+        },
+        error: (error) => {
+            this.isProcessing = false;
+        }
+      })
+    }
+  }
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
@@ -605,46 +603,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       })
     }
-
-    this.cdkVirtualScroll();
-  }
-
-  cdkVirtualScroll() {
-    if(this.viewPort && this.viewPort.scrolledIndexChange && this.lstConversation) {
-        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap(() => {
-
-            const end = this.viewPort.getRenderedRange().end;
-            const total = this.viewPort.getDataLength();
-
-            if(end == total && !this.isProcessing) {
-                this.nextBatch();
-            }
-
-        })).pipe(takeUntil(this.destroy$)).subscribe();
-      }
-
-    setTimeout(() => this.infinite.next([...this.lstConversation]), 750);
-  }
-
-  nextBatch() {
-    this.isProcessing = true;
-    let teamId = this.currentTeam?.Id as any;
-    this.dataSource$ = this.chatomniConversationService.nextDataSource(teamId, this.type, this.lstConversation, this.queryObj);
-
-    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniConversationDto) => {
-
-          if(res && res.Items){
-              this.lstConversation = [...(res.Items || [])];
-              this.infinite.next([...this.lstConversation]);
-          }
-
-          this.isProcessing = false;
-      },
-      error: (error) => {
-          this.isProcessing = false;
-      }
-    })
   }
 
   onTabOderOutput(ev: boolean){
@@ -658,8 +616,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           this.lstConversation = [...res?.Items];
           this.totalConversations = res?.Items.length;
-
-          this.infinite.next([...this.lstConversation]);
 
           this.isLoading = false;
           this.isRefreshing = false;
@@ -758,7 +714,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.conversationInfo;
     delete this.conversationItem;
     delete this.dataSource$;
-    this.infinite.next([]);
   }
 
   setStorageConversationId(id: string): any {
