@@ -127,7 +127,6 @@ export class EditOrderV2Component implements OnInit {
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
     private modalRef: TDSModalRef,
-    private fb: FormBuilder,
     private auth: TAuthService,
     private notification: TDSNotificationService,
     private message: TDSMessageService,
@@ -318,14 +317,6 @@ export class EditOrderV2Component implements OnInit {
       return new RegExp(this.phoneRegex).test(this.quickOrderModel.Telephone);
     }else{
       return /^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g.test(this.quickOrderModel.Telephone);
-    }
-  }
-
-  checkEmailValidate(){
-    if(this.emailRegex){
-      return new RegExp(this.emailRegex).test(this.quickOrderModel.Email);
-    }else{
-      return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(this.quickOrderModel.Email);
     }
   }
 
@@ -578,11 +569,6 @@ export class EditOrderV2Component implements OnInit {
 
     if (!this.checkPhoneValidate() || !model.Telephone) {
       this.message.error(model.Telephone ? 'Số điện thoại không hợp lệ' : 'Vui lòng nhập số điện thoại');
-      return;
-    }
-
-    if (!this.checkEmailValidate() && model.Email) {
-      this.message.error(model.Email ? 'Địa chỉ email không hợp lệ' : 'Vui lòng nhập địa chỉ email');
       return;
     }
 
