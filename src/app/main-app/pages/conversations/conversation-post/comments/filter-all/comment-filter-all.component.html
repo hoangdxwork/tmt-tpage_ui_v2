@@ -2,10 +2,10 @@
     <div class="overflow-hidden flex flex-col flex-auto w-full h-full gap-y-3" style="padding: 0.75rem 0 0.75rem 0.75rem">
 
         <ng-container *ngIf="infinite | async; let items">
-          <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full"
+          <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full" (scrolledIndexChange)="onIndexChange($event)"
               [itemSize]="itemSize" [maxBufferPx]="itemSize" [minBufferPx]="itemSize" style="overflow-x: hidden;">
 
-              <div *cdkVirtualFor="let item of items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="h-full w-full">
+              <div *cdkVirtualFor="let item of items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="h-full w-full pr-2"> 
                 <div *ngIf="item" class="flex flex-auto w-full" style="padding-bottom: 0.75rem">
 
                     <div *ngIf="item.Type == 12">
