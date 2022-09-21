@@ -27,8 +27,6 @@ import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.servi
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
-import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { TDSModalService } from 'tds-ui/modal';
 import { ProductPagefbComponent } from '@app/pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ReplaceHelper } from '@app/shared/helper/replace.helper';
@@ -47,19 +45,16 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 @Component({
   selector: 'comment-filter-all',
   templateUrl: './comment-filter-all.component.html',
-  animations: [eventFadeStateTrigger],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
 export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewInit {
 
-  itemSize = 80;
+  itemSize = 100;
   infinite = new BehaviorSubject<ChatomniDataItemDto[]>([]);
   @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 
-  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
-  @HostBinding("@eventFadeState") eventAnimation = true;
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
 
@@ -89,8 +84,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
   conversationItem!: ChatomniConversationItemDto;
   currentConversation!: ChatomniConversationItemDto;
-  currentItem!: ChatomniDataItemDto;
-  previousItems: ChatomniDataItemDto[] = [];
   commentOrders?: any = {};
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
@@ -142,17 +135,20 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onEventSocket(){
+
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+        let index = 1;
+
         switch(res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
             if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
-              let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
-              this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
-            }
+                let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
+                this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
 
-            this.infinite.next([...this.dataSource.Items]);
+                this.infinite.next([...this.dataSource.Items]);
+            }
 
             this.cdRef.detectChanges();
           break;
@@ -163,7 +159,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
           case ChatmoniSocketEventName.onUpdate:
           break;
 
-        default: break;
+          default:
+            break;
         }
       }
     })
@@ -210,18 +207,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     this.infinite.next([]);
 
     this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
-    
+
     if(this.dataSource$) {
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniDataDto) => {
             this.dataSource = {...res};
-            // TODO: gán vị trí hiện tại của item và danh sách item đầu vào
-            this.previousItems = [...res.Items];
-            this.currentItem = this.previousItems[0];
-
             this.sortChildComment(this.dataSource.Items);
-            this.cdkVirtualScroll();
 
+            this.cdkVirtualScroll();
             this.isLoading = false;
             this.cdRef.markForCheck();
         },
@@ -570,7 +563,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   cdkVirtualScroll() {
     if(this.viewPort && this.viewPort.scrolledIndexChange && this.dataSource?.Items) {
         this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap(() => {
-       
+
             const end = this.viewPort.getRenderedRange().end;
             const total = this.viewPort.getDataLength();
 
@@ -581,7 +574,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
         })).pipe(takeUntil(this.destroy$)).subscribe();
       }
 
-    setTimeout(() => this.infinite.next([...this.dataSource?.Items]), 750);
+      if(this.dataSource && TDSHelperArray.hasListValue(this.dataSource?.Items)) {
+          setTimeout(() => this.infinite.next([...this.dataSource?.Items]), 750);
+      }
   }
 
   nextBatch() {
@@ -621,6 +616,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     this.dataSource$ = this.chatomniCommentService.nextDataSource(id, this.dataSource.Items);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
+
           if(TDSHelperArray.hasListValue(res?.Items)) {
               this.dataSource.Items = [...res.Items];
               // TODO: merge bình luận đã gửi
@@ -628,7 +624,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
               this.sortChildComment(this.dataSource.Items);
           }
 
-          this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
+          // this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
           this.isLoading = false;
           this.cdRef.markForCheck();
       },
@@ -653,7 +649,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   sortChildComment(data: ChatomniDataItemDto[]){
       let model: ChatomniDataItemDto[] = [];
 
-      data.map(x => {
+      data?.map(x => {
         if(x.ParentId){
             model = [...model, ...[x]];
         }
