@@ -63,7 +63,7 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   loadAllFacebookChilds() {
-    return this.crmTeamService.getAllFacebookChildsv2().pipe(map(res => res.value));
+    return this.crmTeamService.getAllFacebookChildsV2().pipe(map(res => res.value));
   }
 
   loadCampaign() {
