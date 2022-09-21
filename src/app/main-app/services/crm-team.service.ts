@@ -178,7 +178,7 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  getAllFacebookChilds(): Observable<ODataAllFacebookChildTO> {
+  getAllFacebookChildsv2(): Observable<ODataAllFacebookChildTO> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAllFacebook?$expand=Childs`,
       method: CoreApiMethodType.get

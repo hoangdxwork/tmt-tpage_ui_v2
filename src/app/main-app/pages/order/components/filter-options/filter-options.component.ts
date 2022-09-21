@@ -63,7 +63,7 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   loadAllFacebookChilds() {
-    return this.crmTeamService.getAllFacebookChilds().pipe(map(res => res.value));
+    return this.crmTeamService.getAllFacebookChildsv2().pipe(map(res => res.value));
   }
 
   loadCampaign() {
@@ -75,24 +75,12 @@ export class FilterOptionsComponent implements OnInit {
       })
   }
 
-  onChangeTeams(event: any[]) {
-    this.selectTeams = [];
-    if(event) {
-      event.forEach(x => {
-          this.selectTeams.push(x);
-      })
-    }
-    this.filterObj.teams = this.selectTeams;
+  onChangeTeams(event: any) {
+    this.filterObj.teams = event;
   }
 
-  onChangeCampaign(event: any[]) {
-    this.selectCampaign = [];
-    if(event) {
-      event.forEach(x => {
-          this.selectCampaign.push(x);
-      })
-    }
-    this.filterObj.liveCampaign = this.selectCampaign;
+  onChangeCampaign(event: any) {
+    this.filterObj.liveCampaign = event;
   }
 
 
