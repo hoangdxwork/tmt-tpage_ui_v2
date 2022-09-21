@@ -782,7 +782,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.quickOrderModel = {...res};
           this.quickOrderModel.FormAction = formAction;
 
-          if(!this.isEnableCreateOrder && type) {
+          if(!this.isEnableCreateOrder && type) {            
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
           }
 
@@ -804,6 +804,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.message.success('Tạo đơn hàng thành công');
               }
 
+              // TODO: cập nhật mã đơn hàng lên tab
+              this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
+              
               // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
               this.chatomniConversationFacade.onSyncConversationInfo$.emit();
           }
