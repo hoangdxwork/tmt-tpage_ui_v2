@@ -37,8 +37,34 @@
                 valueField="Id" textField="Name"
                 placeholder='Chọn thẻ' [(ngModel)]="selectTags"
                 (ngModelChange)="onChangeTags($event)"
-                [data]="lstDataTag" mode="multiple" >
+                [data]="lstDataTag" mode="multiple">
             </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+
+    <!-- Chiến dịch live -->
+    <div class="w-full mb-4">
+      <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">CHIẾN DỊCH LIVE</p>
+      <div class="w-full">
+        <tds-form-field>
+            <tds-select valueField="Id" textField="Name" (ngModelChange)="onChangeCampaign($event)"
+                placeholder='Chọn chiến dịch' [(ngModel)]="selectCampaign"
+                [data]="lstCampaign" [allowClear]="true">
+            </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+
+    <!-- Chọn kênh -->
+    <div class="w-full mb-4">
+      <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">CHỌN KÊNH</p>
+      <div class="w-full">
+        <tds-form-field>
+          <tds-select valueField="Id" textField="Name" (ngModelChange)="onChangeTeams($event)"
+            placeholder='Chọn kênh' [(ngModel)]="selectTeams"
+            [data]="(lstTeams | async) || []" [allowClear]="true">
+          </tds-select>
         </tds-form-field>
       </div>
     </div>

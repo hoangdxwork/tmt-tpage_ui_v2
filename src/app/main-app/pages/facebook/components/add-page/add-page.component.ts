@@ -33,6 +33,15 @@ export class AddPageComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if(this.isLoading) {
+      return
+    }
+
+    if(!this.addPageForm.value["name"]){
+      this.message.error("Vui lòng nhập tên page");
+      return
+    }
+
     let model = this.prepareModel();
     this.isLoading = true;
 
@@ -89,7 +98,7 @@ export class AddPageComponent implements OnInit {
 
   createForm() {
     this.addPageForm = this.fb.group({
-      name :['', Validators.required],
+      name :[''],
       pageName : [{value: '', disabled: true}, Validators.required],
       userName:[{value: '', disabled: true}, Validators.required],
     });

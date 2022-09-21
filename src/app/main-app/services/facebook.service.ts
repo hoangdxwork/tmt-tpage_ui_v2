@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {  Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ChannelFacebookConfigDTO, GreetingDTO, ProfileMessageDTO, QuickQuestionDTO } from '../dto/configs/page-config.dto';
 import { BaseSevice } from './base.service';
 
@@ -51,5 +52,14 @@ export class FacebookService extends BaseSevice {
     }
 
     return this.apiService.getData<ChannelFacebookConfigDTO>(api, greetings);
+  }
+
+  verifyConect(model: TDSSafeAny){
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/facebook/verify`,
+      method: CoreApiMethodType.post
+    }
+
+    return this.apiService.getData<ChannelFacebookConfigDTO>(api, model);
   }
 }

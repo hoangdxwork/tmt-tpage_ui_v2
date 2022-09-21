@@ -152,6 +152,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
               this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
             }
 
+            this.infinite.next([...this.dataSource.Items]);
+
             this.cdRef.detectChanges();
           break;
 
@@ -170,19 +172,22 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   eventEmitter() {
     this.conversationOrderFacade.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
+        switch(res?.type){
 
-        if(res){
-          switch(res.type){
-            case 'createFSO':
-              delete this.commentOrders[res.data?.Facebook_ASUserId];
-              break;
-            case 'createOrder':
-              this.loadCommentsOrderByPost();
-              break;
-            default:
-              this.loadCommentsOrderByPost();
-          }
+          case 'deleteCode':
+
+            if(this.data.LiveCampaignId) {
+                delete this.commentOrders[res.data?.Facebook_ASUserId];
+            }
+            break;
+
+          case 'addCode':
+            this.loadCommentsOrderByPost();
+            break;
+
+          default: break;
         }
+
         this.cdRef.detectChanges();
       }
     })

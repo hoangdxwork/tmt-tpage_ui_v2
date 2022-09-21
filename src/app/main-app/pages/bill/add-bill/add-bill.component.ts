@@ -87,7 +87,7 @@ export class AddBillComponent implements OnInit {
   lstPrices!: Observable<PartnerCategoryDTO[]>;
   lstCustomers!: Observable<CustomerDTO[]>;
   lstWareHouses!: Observable<StockWarehouseDTO[]>;
-  lstTeams!: Observable<AllFacebookChildTO[]>;
+  lstTeams!: Observable<any[]>;
   lstUser!: Observable<ApplicationUserDTO[]>;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
   lstTax!: TaxDTO[];
@@ -206,7 +206,6 @@ export class AddBillComponent implements OnInit {
 
     switch (this.path) {
         case 'copy':
-
             const key = this.fastSaleOrderService._keyCacheCopyInvoice;
             let obs = localStorage.getItem(key) as string;
             if(TDSHelperString.hasValueString(obs)) {
@@ -215,6 +214,7 @@ export class AddBillComponent implements OnInit {
             } else {
                 this.router.navigateByUrl('bill/create');
             }
+
         break;
 
         case 'edit':
@@ -551,6 +551,8 @@ export class AddBillComponent implements OnInit {
     if (event && event.Id) {
       // this._form.controls['Warehouse'].setValue(event);
       this._form.controls['WarehouseId'].setValue(event.Id);
+    }  else {
+      this._form.controls['WarehouseId'].setValue(null);
     }
   }
 
@@ -558,6 +560,8 @@ export class AddBillComponent implements OnInit {
     if (event && event.Id) {
       // this._form.controls['PaymentJournal'].setValue(event);
       this._form.controls['PaymentJournalId'].setValue(event.Id);
+    } else {
+      this._form.controls['PaymentJournalId'].setValue(null);
     }
   }
 
@@ -565,6 +569,8 @@ export class AddBillComponent implements OnInit {
     if (event && event.Id) {
       // this._form.controls['Team'].setValue(event);
       this._form.controls['TeamId'].setValue(event.Id);
+    } else {
+       this._form.controls['TeamId'].setValue(null);
     }
   }
 
@@ -572,6 +578,8 @@ export class AddBillComponent implements OnInit {
     if (event && event.Id) {
       // this._form.controls['User'].setValue(event);
       this._form.controls['UserId'].setValue(event.Id);
+    } else {
+        this._form.controls['UserId'].setValue(null);
     }
   }
 
@@ -1100,6 +1108,7 @@ export class AddBillComponent implements OnInit {
     this.updateShipmentDetailsAship();
 
     let model = this.prepareModel();
+    delete model.Team; // TODO: xóa team, chỉ lưu teamId
 
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
@@ -1177,6 +1186,27 @@ export class AddBillComponent implements OnInit {
             }
         });
     }
+  }
+
+  applyPromotion(type: string){
+    switch(type){
+      case 'coupon':
+        this.onSave();
+        this.showApplyCouponModal();
+        break;
+      case 'promotion':
+        this.onSave();
+        this.showApplyPromotionModal();
+        break;
+    }
+  }
+
+  showApplyCouponModal(){
+
+  }
+
+  showApplyPromotionModal(){
+
   }
 
   removelocalStorage() {
@@ -1377,7 +1407,7 @@ export class AddBillComponent implements OnInit {
   }
 
   loadAllFacebookChilds() {
-    return this.crmTeamService.getAllFacebookChilds().pipe(map(res => res.value));
+    return this.crmTeamService.getAllFacebookChildsV2().pipe(map(res => res));
   }
 
   loadUser() {
@@ -1557,7 +1587,7 @@ export class AddBillComponent implements OnInit {
         WardCode: ward ? ward.code : null,
         WardName: ward ? ward.name : null
     } as any;
-   
+
     this.setAddress(item)
   }
 

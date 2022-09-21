@@ -15,7 +15,9 @@ export interface FilterObjSOOrderModel {
   dateRange: {
     startDate: Date,
     endDate: Date
-  } | any;
+  } | any,
+  teams?: TDSSafeAny,
+  liveCampaign?: TDSSafeAny,
 }
 
 export interface TabNavsDTO {
