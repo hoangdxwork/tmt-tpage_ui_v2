@@ -83,7 +83,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   idxClickTag: number = -1;
 
   conversationItem!: ChatomniConversationItemDto;
-  currentConversation!: ChatomniConversationItemDto;
+  currentConversation!: ChatomniConversationItemDto | any;
   commentOrders?: any = {};
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
@@ -138,15 +138,19 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        let index = 1;
 
         switch(res.EventName){
-
           case ChatmoniSocketEventName.chatomniOnMessage:
-            if(this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId){
-                let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem)}
-                this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
+            let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId;
+            if(exist) {
+                let item = { ...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
 
+                // TODO: nếu là comment child thì cũng push thẳng xóa ParentId
+                if(item && TDSHelperString.hasValueString(item.ParentId)) {
+                    item.ParentId = null;
+                }
+
+                this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
                 this.infinite.next([...this.dataSource.Items]);
             }
 
@@ -172,7 +176,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
         switch(res?.type){
 
           case 'deleteCode':
-
             if(this.data.LiveCampaignId) {
                 delete this.commentOrders[res.data?.Facebook_ASUserId];
             }
@@ -211,8 +214,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     if(this.dataSource$) {
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniDataDto) => {
-            this.dataSource = {...res};
-            this.sortChildComment(this.dataSource.Items);
+            this.dataSource = { ...res };
+
+            if(this.dataSource && TDSHelperArray.hasListValue(this.dataSource.Items)) {
+                this.sortChildComment(this.dataSource.Items);
+            }
 
             this.cdkVirtualScroll();
             this.isLoading = false;
@@ -507,8 +513,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
         if(res) {
             // Thông tin khách hàng
             this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+
             // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+
             // Truyền sang coversation-post
             this.conversationOrderFacade.hasValueOrderCode$.emit(order?.[0]?.code);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
@@ -532,6 +540,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
             comments.map((x: CommentOrderPost) => {
                 this.commentOrders[x.asuid] = [];
                 this.commentOrders[x.uid] = [];
+
                 //gán lại data bằng syntax
                 x.orders?.map((a: CommentOrder) => {
                     this.commentOrders![x.asuid].push(a);
@@ -544,6 +553,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
                 }
             });
         }
+
         this.cdRef.detectChanges();
         this.isLoading = false;
       },
@@ -589,9 +599,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
           if(res && TDSHelperArray.hasListValue(res?.Items)) {
               this.dataSource.Items = [...res.Items];
+
               // TODO: merge bình luận đã gửi
               this.dataSource.Items = this.mergeUpdatedData(this.dataSource.Items, this.childsComment);
-              this.sortChildComment(this.dataSource.Items);
+
+              if(TDSHelperArray.hasListValue(this.dataSource.Items)) {
+                  this.sortChildComment(this.dataSource.Items);
+              }
 
               this.infinite.next([...this.dataSource.Items]);
           }
@@ -602,34 +616,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       error: (error: any) => {
           this.isLoading = false;
           this.cdRef.markForCheck();
-      }
-    })
-  }
-
-  nextData(event: any) {
-    if(this.isLoading) {
-        return;
-    }
-
-    this.isLoading = true;
-    let id = `${this.team.Id}_${this.data.ObjectId}`;
-    this.dataSource$ = this.chatomniCommentService.nextDataSource(id, this.dataSource.Items);
-    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniDataDto) => {
-
-          if(TDSHelperArray.hasListValue(res?.Items)) {
-              this.dataSource.Items = [...res.Items];
-              // TODO: merge bình luận đã gửi
-              this.dataSource.Items = this.mergeUpdatedData(this.dataSource.Items, this.childsComment);
-              this.sortChildComment(this.dataSource.Items);
-          }
-
-          // this.yiAutoScroll.scrollToElement('scrollCommentAll', 750);
-          this.isLoading = false;
-          this.cdRef.markForCheck();
-      },
-      error: (error: any) => {
-          this.isLoading = false;
       }
     })
   }
@@ -660,9 +646,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   mergeUpdatedData(data: ChatomniDataItemDto[], updateData: ChatomniDataItemDto[]){
-    let ids = data.map(x => { return x.Id });
+    let ids = data?.map(x => { return x.Id });
+
     //TODO: check bình luận mới gán vào data
-    updateData.forEach(f => {
+    updateData?.forEach(f => {
       if(!ids.includes(f.Id)){
           data.push(f);
       }
@@ -673,13 +660,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
-      this.loadMDBByPSId(this.team.ChannelId, data.UserId);
+        this.loadMDBByPSId(this.team.ChannelId, data.UserId);
     }
   }
 
   loadMDBByPSId(pageId: string, psid: string) {
     // Xoá hội thoại hiện tại
-    (this.currentConversation as any) = null;
+    delete this.currentConversation;
 
     // get data currentConversation
     this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
@@ -707,10 +694,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
     let value = this.getTextOfContentMessage(index);
     if (child && index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
-      data.note = this.contentMessageChild._results[index].nativeElement.outerText;
+        data.note = this.contentMessageChild._results[index].nativeElement.outerText;
     }
     else {
-      data.note = value;
+        data.note = value;
     }
 
     this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
@@ -808,7 +795,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   removeTagOnView(tag: any) {
-
   }
 
   ngAfterViewInit() {

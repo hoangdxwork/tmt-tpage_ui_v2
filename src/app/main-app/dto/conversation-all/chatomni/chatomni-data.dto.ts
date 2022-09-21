@@ -115,7 +115,7 @@ export interface ChatomniDataItemDto {
   Data: ChatomniFacebookDataDto; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
   Id: string;
   ObjectId: string;
-  ParentId?: string;
+  ParentId?: string | any;
   Message: string;
   Source?: any;
   Type: ChatomniMessageType;
