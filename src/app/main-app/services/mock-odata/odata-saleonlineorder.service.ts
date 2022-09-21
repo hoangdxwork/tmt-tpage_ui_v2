@@ -40,7 +40,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
   getView(params: string, filterObj: FilterObjSOOrderModel): Observable<ODataSaleOnline_OrderDTOV2> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&(LiveCampaignId=${filterObj.liveCampaign}&(CRMTeamId=${filterObj.teams}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
