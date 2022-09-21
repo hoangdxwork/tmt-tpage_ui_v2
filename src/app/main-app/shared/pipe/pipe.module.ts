@@ -35,6 +35,7 @@ import { NumericalOrder } from './numerical-order.pipe';
 import { jsonPayloadPipe } from './json-payload.pipe';
 import { GetShowStatePipe } from './get-show-state.pipe';
 import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPipe, GetColorStatusTextPipe } from './get-order-status.pipe';
+import { OnSetWidthTagPipe } from './set-width-tagpipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -78,7 +79,8 @@ const cmp =[
   getColorStatusShowStatePipe,
   GetColorStatusStatePipe,
   GetColorStatusTextPipe,
-  TruncateStringPipe
+  TruncateStringPipe,
+  OnSetWidthTagPipe
 ]
 
 @NgModule({
