@@ -336,7 +336,9 @@ export class ConversationOrderListComponent implements OnInit {
   onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
-      let ids = [...this.setOfCheckedId];
+      let ids: any[] = [];
+      ids = [...this.setOfCheckedId];
+
       this.showModalCreateBillFast(ids)
     }
   }
