@@ -29,12 +29,12 @@
                 <th class="border-r" [tdsRight]="true" rowspan="2">Thao tác</th>
             </tr>
             <tr>
-                <th class="border-r" *ngIf="isHidden('Order')">Chờ chốt</th>
-                <th class="border-r" *ngIf="isHidden('Order')">Đã chốt</th>
-                <th class="border-r" *ngIf="isHidden('Order')">Đã hủy</th>
-                <th class="border-r" *ngIf="isHidden('Product')">Chờ chốt</th>
-                <th class="border-r" *ngIf="isHidden('Product')">Đã chốt</th>
-                <th class="border-r" *ngIf="isHidden('Product')">Đã hủy</th>
+                <th class="border-r text-center" *ngIf="isHidden('Order')">Chờ chốt</th>
+                <th class="border-r text-center" *ngIf="isHidden('Order')">Đã chốt</th>
+                <th class="border-r text-center" *ngIf="isHidden('Order')">Đã hủy</th>
+                <th class="border-r text-center" *ngIf="isHidden('Product')">Chờ chốt</th>
+                <th class="border-r text-center" *ngIf="isHidden('Product')">Đã chốt</th>
+                <th class="border-r text-center" *ngIf="isHidden('Product')">Đã hủy</th>
             </tr>
         </thead>
         <tbody>
@@ -54,34 +54,34 @@
                 </td>
 
                 <!-- Đơn hàng -->
-                <td class="border-r" *ngIf="isHidden('Order')">
+                <td class="border-r text-center" *ngIf="isHidden('Order')">
                     <div class="w-full">
                         <span>{{data.SumOrderWaitCheckOut | numberCustom }}</span>
                     </div>
                 </td>
-                <td class="border-r" *ngIf="isHidden('Order')">
+                <td class="border-r text-center" *ngIf="isHidden('Order')">
                     <div class="w-full">
                         <span>{{data.SumOrderCheckOut | numberCustom }}</span>
                     </div>
                 </td>
-                <td class="border-r"  *ngIf="isHidden('Order')">
+                <td class="border-r text-center"  *ngIf="isHidden('Order')">
                     <div class="w-full">
                         <span class="text-error-400"> {{data.SumOrderCancelCheckOut | numberCustom }}</span>
                     </div>
                 </td>
 
                 <!-- Sản phẩm -->
-                <td class="border-r" *ngIf="isHidden('Product')">
+                <td class="border-r text-center" *ngIf="isHidden('Product')">
                     <div class="w-full">
                         <span> {{data.SumQtyWaitCheckOut | numberCustom }}</span>
                     </div>
                 </td>
-                <td class="border-r" *ngIf="isHidden('Product')">
+                <td class="border-r text-center" *ngIf="isHidden('Product')">
                   <div class="w-full">
                       <span> {{data.SumQtyCheckOut | numberCustom }}</span>
                   </div>
                 </td>
-                <td class="border-r"  *ngIf="isHidden('Product')">
+                <td class="border-r text-center"  *ngIf="isHidden('Product')">
                     <div class="w-full">
                         <span class="text-error-400"> {{data.SumCancelCheckout | numberCustom }}</span>
                     </div>

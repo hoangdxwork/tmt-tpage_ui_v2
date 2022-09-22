@@ -99,13 +99,13 @@
               <th [align]="'center'" width="44px" [tdsLeft]="true"></th>
               <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" class="border-l" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
-              <th [tdsLeft]="true" class="border-l">STT</th>
-              <th *ngIf="isHidden('Code')" [tdsLeft]="true" class="border-l">Mã</th>
+              <th [tdsLeft]="true" [width]="'90px'" class="border-l text-center">STT</th>
+              <th *ngIf="isHidden('Code')" [tdsLeft]="true" class="border-l min-w-[120px] max-w-[240px]">Mã</th>
               <th *ngIf="isHidden('CRMTeamName')" class="border-l">Kênh kết nối</th>
               <th *ngIf="isHidden('Name')" class="border-l">Khách hàng</th>
               <th *ngIf="isHidden('Address')" class="border-l">Địa chỉ</th>
               <th *ngIf="isHidden('TotalAmount')" class="border-l text-right">Tổng tiền</th>
-              <th *ngIf="isHidden('TotalQuantity')" class="border-l">Tổng SL</th>
+              <th *ngIf="isHidden('TotalQuantity')" class="border-l text-center">Tổng SL</th>
               <th *ngIf="isHidden('DateCreated')" class="border-l">Ngày tạo đơn</th>
               <th *ngIf="isHidden('StatusText')" width="160px" class="border-l">Trạng thái</th>
               <th *ngIf="isHidden('UserName')" class="border-l">Nhân viên</th>
@@ -127,12 +127,12 @@
                 </td>
 
                 <!-- STT -->
-                <td class="border-l truncate min-w-[64px] max-w-[130px]" [tdsLeft]="true">
+                <td class="border-l text-center" [tdsLeft]="true">
                   <span> {{ data.SessionIndex }} </span>
                 </td>
 
                 <!-- Code -->
-                <td *ngIf="isHidden('Code')" class="border-l min-w-[200px] max-w-[400px]" [tdsLeft]="true">
+                <td *ngIf="isHidden('Code')" class="border-l min-w-[120px] max-w-[240px]" [tdsLeft]="true">
                   <div class="w-full flex">
                     <span class="w-full truncate" [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
                   </div>
@@ -246,17 +246,17 @@
                 </td>
 
                 <!-- Tổng tiền -->
-                <td *ngIf="isHidden('TotalAmount')" class="border-l text-right min-w-[140px] max-w-[280px]">
+                <td *ngIf="isHidden('TotalAmount')" class="border-l text-right min-w-[140px] max-w-[280px] truncate">
                   <span>{{data.TotalAmount || 0 | numberCustom | numberCustom }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
-                <td *ngIf="isHidden('TotalQuantity')" class="border-l min-w-[140px] max-w-[280px] truncate">
+                <td *ngIf="isHidden('TotalQuantity')" class="border-l min-w-[140px] max-w-[280px] truncate text-center">
                   <span>{{data.TotalQuantity || 0 | numberCustom | numberCustom }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
-                <td *ngIf="isHidden('DateCreated')" class="border-l min-w-[155px] max-w-[300px] truncate">
+                <td *ngIf="isHidden('DateCreated')" class="border-l min-w-[155px] max-w-[300px]">
                   <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm:ss"}}</span>
                 </td>
 

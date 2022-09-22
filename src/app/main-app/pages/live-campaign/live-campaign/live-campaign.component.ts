@@ -4,7 +4,6 @@ import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.ser
 import { ReportLiveCampaignOverviewDTO } from 'src/app/main-app/dto/live-campaign/report-livecampain-overview.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
-import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({

@@ -21,7 +21,7 @@ export interface ReportSummaryOverviewResponseDTO {
 
 export interface InputSummaryPostDTO {
   PageId?: string;
-  PageIds: string[];
+  PageIds?: string[];
   DateStart: Date;
   DateEnd: Date;
 }

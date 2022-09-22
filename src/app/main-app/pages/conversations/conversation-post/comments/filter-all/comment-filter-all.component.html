@@ -2,10 +2,10 @@
     <div class="overflow-hidden flex flex-col flex-auto w-full h-full gap-y-3" style="padding: 0.75rem 0 0.75rem 0.75rem">
 
         <ng-container *ngIf="infinite | async; let items">
-          <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full" (scrolledIndexChange)="onIndexChange($event)"
+          <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full" (scrolledIndexChange)="scrolledIndexChange($event)"
               [itemSize]="itemSize" [maxBufferPx]="itemSize" [minBufferPx]="itemSize" style="overflow-x: hidden;">
 
-              <div *cdkVirtualFor="let item of items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="h-full w-full pr-2"> 
+              <div *cdkVirtualFor="let item of items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="h-full w-full pr-2">
                 <div *ngIf="item" class="flex flex-auto w-full" style="padding-bottom: 0.75rem">
 
                     <div *ngIf="item.Type == 12">
@@ -205,7 +205,7 @@
                         </div>
 
                       <!-- Input trả lời bình luận -->
-                      <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative" *ngIf="item.Data?.is_reply" @eventFadeState>
+                      <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative" *ngIf="item.Data?.is_reply">
                           <div [ngClass]="isReplyingComment ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
                           <div class="flex justify-between gap-2 pb-2">
 
@@ -252,7 +252,7 @@
                       <!-- Trả lời bình luận -->
 
                       <div *ngFor="let data of childsComment; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
-                        <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3" @eventFadeState>
+                        <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3">
 
                             <tpage-avatar-facebook [shape]="'circle'" [size]="'md'" [psid]="data.UserId" [token]="team.ChannelToken">
                             </tpage-avatar-facebook>

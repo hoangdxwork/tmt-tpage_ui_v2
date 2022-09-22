@@ -5,9 +5,8 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
-import { Message } from 'src/app/lib/consts/message.const';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { Observable, takeUntil } from 'rxjs';
@@ -16,29 +15,34 @@ import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { differenceInCalendarDays } from 'date-fns';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
-import { indexOf } from 'lodash';
 import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { SharedService } from '@app/services/shared.service';
-import { Guid } from 'guid-typescript';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
+import { TDSTableComponent } from 'tds-ui/table';
 
 @Component({
   selector: 'add-livecampaign-post',
   templateUrl: './add-livecampaign-post.component.html',
   providers: [TDSDestroyService]
 })
+
 export class AddLiveCampaignPostComponent implements OnInit {
 
   @Input() id?: string;
   @Input() isCopy?: boolean;
+
+  selectedIndex: number = 0;
+  _form!: FormGroup;
+
+  @ViewChild('virtualTable', { static: false }) tdsTableComponent?: TDSTableComponent<any>;
 
   lstConfig: any = [
     { text: "Nháp", value: "Draft" },
@@ -55,26 +59,24 @@ export class AddLiveCampaignPostComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
   isDepositChange: boolean = false;
-  _form!: FormGroup;
   companyCurrents!: CompanyCurrentDTO;
   indClickTag: number = -1;
   modelTags: Array<string> = [];
+  isEditDetails: { [id: string] : boolean } = {};
 
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return value;
-  } ;
+  }
 
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return TDSHelperString.replaceAll(value,'.','');
     }
     return value;
-  };
+  }
 
   constructor(private crmTeamService: CRMTeamService,
     private modal: TDSModalService,
@@ -99,7 +101,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(this.id && Guid.isGuid(this.id)) {
+    if(this.id && TDSHelperString.hasValueString(this.id)) {
       this.loadData(this.id);
     }
 
@@ -148,16 +150,17 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
   loadProduct(textSearch: string) {
     this.isLoadingProduct = true;
-    let top = 20;
+    let top = 30;
     let skip = 0;
 
     this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: ODataProductDTOV2) => {
-        this.lstProductSearch = [...res.value];
-        this.isLoadingProduct = false;
+          this.lstProductSearch = [...res.value];
+          this.isLoadingProduct = false;
       },
       error:(err) =>{
-       this.message.error(err?.error?.message || 'Không thể tải danh sách sản phẩm');
+          this.isLoadingProduct = false
+          this.message.error(err?.error?.message || 'Không thể tải danh sách sản phẩm');
       }
     });
   }
@@ -267,13 +270,10 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   initFormDetails(details: any[]) {
-
-    if(TDSHelperArray.hasListValue(details)) {
-      details.forEach(x => {
-          const control = <FormArray>this._form.controls['Details'];
-          control.push(this.initDetail(x));
-      });
-    }
+    details?.forEach(x => {
+        const control = <FormArray>this._form.controls['Details'];
+        control.push(this.initDetail(x));
+    });
   }
 
   initDetail(x?: LiveCampaignProductDTO) {
@@ -308,31 +308,62 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   removeDetail(index: number, detail: TDSSafeAny) {
-    if(TDSHelperString.hasValueString(detail?.Id)) {
-      this.isLoading = true;
-      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-            delete res['@odata.context']
+    let id = this.id as string;
 
-            if(TDSHelperArray.hasListValue(res?.value)) {
-                this.message.error(Message.LiveCampaign.ErrorRemoveLine);
-            } else {
+    if(TDSHelperString.hasValueString(this.id)) {
+      this.isLoading = true;
+      this.liveCampaignService.deleteDetails(id, [detail.Id]).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.isLoading = false;
+              this.message.success('Thao tác thành công');
+
               this.detailsFormGroups.removeAt(index);
-            }
-            this.isLoading = false;
-        },
-        error:(err) => {
-            this.isLoading = false;
-            this.message.error(`${err?.error?.message || JSON.stringify(err)}`);
-        }
-      });
+              delete this.isEditDetails[detail.Id];
+          },
+          error: (err: any) => {
+              this.isLoading = false;
+              this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
+          }
+      })
     } else {
         this.detailsFormGroups.removeAt(index);
     }
   }
 
   removeAllDetail() {
-    this.message.info('Chưa thể xóa tất cả sản phẩm.');
+    let formDetails = this.detailsFormGroups.value as LiveCampaignProductDTO[];
+
+    if(TDSHelperString.hasValueString(this.id)) {
+      let ids = formDetails?.map(x => x.Id) as any[];
+
+      this.modal.warning({
+          title: 'Xóa tất cả sản phẩm',
+          content: 'Xác nhận xóa tất cả sản phẩm trong chiến dịch',
+          onOk: () => {
+
+              this.isLoading = true;
+              let id = this.id as string;
+
+              this.liveCampaignService.deleteDetails(id, ids).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (res: any) => {
+                    this.isLoading = false;
+                    this.message.success('Thao tác thành công');
+                    this.isEditDetails = {};
+                    this.detailsFormGroups.clear();
+                },
+                error: (err: any) => {
+                    this.isLoading = false;
+                    this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+                }
+              })
+          },
+          onCancel:() => {},
+          okText:"Xác nhận",
+          cancelText:"Hủy bỏ"
+      });
+    } else {
+        this.detailsFormGroups.clear();
+    }
   }
 
   createProduct() {
@@ -342,41 +373,39 @@ export class AddLiveCampaignPostComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          typeComponent: null,
+            typeComponent: null
         }
     });
 
-    modal.afterClose.subscribe(result => {
-      if(TDSHelperObject.hasValue(result)) {
-        let data = result[0] as ProductTemplateV2DTO;
+    modal.afterClose.subscribe((result: any[]) => {
+      if(result && result[0]) {
+        let x = result[0] as ProductTemplateV2DTO;
 
-        let product = {
-          Quantity: 1,
-          LiveCampaign_Id: this.id || null,
-          LimitedQuantity: 0,
-          Price: data.ListPrice || 0,
-          Note: null,
-          ProductId: data.Id,
-          ProductName: data.Name,
-          ProductNameGet: data.NameGet,
-          RemainQuantity: 0,
-          ScanQuantity: 0,
-          Tags: data.Tags || '',
-          UOMId: data.UOMId,
-          UOMName: data.UOMName,
-          ProductCode: data.DefaultCode,
-          ImageUrl: data.ImageUrl,
-          IsActive: data.Active,
-          UsedQuantity: 0
+        let item = {
+            Quantity: 1,
+            LiveCampaign_Id: this.id || null,
+            LimitedQuantity: 0,
+            Price: x.ListPrice || 0,
+            Note: null,
+            ProductId: x.VariantFirstId,
+            ProductName: x.Name,
+            ProductNameGet: x.NameGet,
+            RemainQuantity: 0,
+            ScanQuantity: 0,
+            Tags: x.Tags || '',
+            UOMId: x.UOMId,
+            UOMName: x.UOMName,
+            ProductCode: x.DefaultCode,
+            ImageUrl: x.ImageUrl,
+            IsActive: x.Active,
+            UsedQuantity: 0,
         } as LiveCampaignProductDTO;
 
-        // TODO: thêm sản phẩm vào đầu danh sách nếu đã chưa tồn tại
-        let lstProduct =  this.detailsFormGroups.value as LiveCampaignProductDTO[];
-        lstProduct.unshift(product);
-
-        //TODO: cập nhật lại danh sách sản phẩm
-        this.detailsFormGroups.clear();
-        this.initFormDetails(lstProduct);
+        if(TDSHelperString.hasValueString(this.id)) {
+            this.addProductLiveCampaignDetails(item);
+        } else {
+            this.pushItemToFormArray(item);
+        }
       }
     })
   }
@@ -391,45 +420,98 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   selectProduct(data: ProductDTOV2){
-    let exist = this.detailsFormGroups.value.find((f:LiveCampaignProductDTO) => f.ProductId == data.Id && f.UOMId == data.UOMId);
+    let formDetails = this.detailsFormGroups.value as any[];
+    let exist = formDetails.filter((f:LiveCampaignProductDTO) => f.ProductId == data.Id && f.UOMId == data.UOMId)[0];
+
     // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
     if(!exist){
-      let product = {
-        Quantity: 1,
-        LiveCampaign_Id: this.id || null,
-        LimitedQuantity: 0,
-        Price: data.Price || 0,
-        Note: data.Note || null,
-        ProductId: data.Id,
-        ProductName: data.Name,
-        ProductNameGet: data.NameGet,
-        RemainQuantity: 0,
-        ScanQuantity: 0,
-        Tags:'',
-        UOMId: data.UOMId,
-        UOMName: data.UOMName,
-        ProductCode: data.DefaultCode,
-        ImageUrl: data.ImageUrl,
-        IsActive: data.Active,
-        UsedQuantity: 0
-      } as LiveCampaignProductDTO;
+        let qty = Number(this.lstInventory[data.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 0;
+        let item = {
+            Quantity: qty,
+            LiveCampaign_Id: this.id || null,
+            LimitedQuantity: 0,
+            Price: data.Price || 0,
+            Note: data.Note || null,
+            ProductId: data.Id,
+            ProductName: data.Name,
+            ProductNameGet: data.NameGet,
+            RemainQuantity: 0,
+            ScanQuantity: 0,
+            Tags: '',
+            UOMId: data.UOMId,
+            UOMName: data.UOMName,
+            ProductCode: data.DefaultCode,
+            ImageUrl: data.ImageUrl,
+            IsActive: data.Active,
+            UsedQuantity: 0
+        } as LiveCampaignProductDTO;
 
-      // TODO: thêm sản phẩm vào đầu danh sách nếu đã chưa tồn tại
-      let lstProduct =  this.detailsFormGroups.value as LiveCampaignProductDTO[];
-      lstProduct.unshift(product);
+        if(TDSHelperString.hasValueString(this.id)) {
+            this.addProductLiveCampaignDetails(item);
+        } else {
+            this.pushItemToFormArray(item);
+        }
 
-      //TODO: cập nhật lại danh sách sản phẩm
-      this.detailsFormGroups.clear();
-      this.initFormDetails(lstProduct);
     } else {
-      exist.Quantity += 1;
-
-      // TODO: cập nhật lượng lên 1
-      let formControl = this.detailsFormGroups.at(indexOf(this.detailsFormGroups.value, exist)) as FormGroup;
-      formControl.controls["Quantity"].setValue(exist.Quantity);
+        exist.Quantity += 1;
+        if(TDSHelperString.hasValueString(this.id)) {
+            this.addProductLiveCampaignDetails(exist);
+        } else {
+            this.pushItemToFormArray(exist);
+        }
     }
 
     this.closeSearchProduct();
+  }
+
+  addProductLiveCampaignDetails(item: LiveCampaignProductDTO) {
+    let id = this.id as string;
+    item.Tags = item.Tags.toString();
+    let model = [item];
+
+    this.isLoading = true;
+    this.liveCampaignService.updateDetails(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.isLoading = false;
+          this.message.success('Cập nhật thành công');
+
+          let x = res[0] as LiveCampaignProductDTO;
+          x.ProductName = item.ProductName;
+          x.ProductNameGet = item.ProductNameGet;
+
+          let formDetails = this.detailsFormGroups.value as any[];
+          let index = formDetails.findIndex(f => f.Id == x.Id && f.ProductId == x.ProductId);
+
+          if(Number(index) >= 0) {
+              index = Number(index);
+              this.detailsFormGroups.at(index).patchValue(x);
+          } else {
+              formDetails = [...[x], ...formDetails]
+              this.detailsFormGroups.clear();
+              this.initFormDetails(formDetails)
+          }
+
+          delete this.isEditDetails[x.Id];
+        },
+        error: (err: any) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
+        }
+    })
+  }
+
+  pushItemToFormArray(item: LiveCampaignProductDTO) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    if(Number(index) >= 0) {
+        index = Number(index);
+        this.detailsFormGroups.at(index).patchValue(item);
+    } else {
+        formDetails = [...[item], ...formDetails]
+        this.detailsFormGroups.clear();
+        this.initFormDetails(formDetails)
+    }
   }
 
   onSave() {
@@ -442,44 +524,44 @@ export class AddLiveCampaignPostComponent implements OnInit {
           model.Facebook_UserName = team.Name;
       }
 
-      this.isLoading = true;
-      if(this.id) {
-        this.updateLiveCampaign(this.id, model);
+      if(TDSHelperString.hasValueString(this.id)) {
+          let id = this.id as string;
+          this.updateLiveCampaign(id, model);
       } else {
-        this.createLiveCampaign(model);
+          this.createLiveCampaign(model);
       }
     }
   }
 
   updateLiveCampaign(id: string, model: LiveCampaignModel){
-        model.Id = id;
-        this.liveCampaignService.update(model, true).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res:LiveCampaignModel) => {
-              this.message.success('Cập nhật chiến dịch live thành công');
-              this.onCannel(res);
-              this.isLoading = false;
-          },
-          error: (error: any) => {
-              this.isLoading = false;
-              this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+    model.Id = id;
+    model.Details = [];
 
-              this.detailsFormGroups.clear();
-              this.initFormDetails(this.dataModel.Details);
-          }
-        });
-  }
-
-  createLiveCampaign(model: LiveCampaignModel){
-    this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.isLoading = true;
+    this.liveCampaignService.updateSimple(id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res:LiveCampaignModel) => {
-          this.message.success('Thêm mới chiến dịch live thành công');
-
-          this.onCannel(res);
           this.isLoading = false;
+          this.message.success('Cập nhật chiến dịch live thành công');
+          this.onCannel(res);
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
+    });
+  }
+
+  createLiveCampaign(model: LiveCampaignModel){
+    this.isLoading = true;
+    this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res:LiveCampaignModel) => {
+          this.isLoading = false;
+          this.message.success('Thêm mới chiến dịch live thành công');
+          this.onCannel(res);
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       }
     });
   }
@@ -488,19 +570,8 @@ export class AddLiveCampaignPostComponent implements OnInit {
     let formValue = this._form.value;
 
     if(!TDSHelperString.hasValueString(formValue.Name)){
-      this.message.error('Vui lòng nhập tên chiến dịch');
-
-      return 0;
-    }
-
-    if(TDSHelperArray.hasListValue(formValue.Details)) {
-      let find = formValue.Details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price));
-
-      if(find > -1) {
-        this.message.error(Message.LiveCampaign.ErrorNumberDetail);
-
+        this.message.error('Vui lòng nhập tên chiến dịch');
         return 0;
-      }
     }
 
     return 1;
@@ -511,6 +582,40 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   onCannel(data?: any) {
-    this.modalRef.destroy(data);
+    if(Object.keys(this.isEditDetails).length > 0) {
+      this.modal.info({
+            title: 'Thao tác chưa được lưu',
+            content: 'Xác nhận đóng và không lưu dữ liệu',
+            onOk: () => {
+                this.modalRef.destroy(data);
+            },
+            onCancel:() => {},
+            okText: "Đóng",
+            cancelText: "Hủy bỏ"
+      });
+    } else {
+        this.modalRef.destroy(data);
+    }
   }
+
+  onEditDetails(item: TDSSafeAny) {
+    if(item && item.Id) {
+        this.isEditDetails[item.Id] = true;
+    }
+  }
+
+  onSaveDetails(item: TDSSafeAny) {
+    if(item && item.Id) {
+        this.addProductLiveCampaignDetails(item);
+    }
+  }
+
+  scrollToIndex(index: number): void {
+    this.tdsTableComponent?.cdkVirtualScrollViewport?.scrollToIndex(index);
+  }
+
+  trackByIndex(i: any): number {
+    return i;
+  }
+
 }

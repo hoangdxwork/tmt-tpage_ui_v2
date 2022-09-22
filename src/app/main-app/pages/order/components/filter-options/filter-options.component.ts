@@ -63,7 +63,7 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   loadAllFacebookChilds() {
-    return this.crmTeamService.getAllFacebookChildsv2().pipe(map(res => res.value));
+    return this.crmTeamService.getAllFacebookChildsV2().pipe(map(res => res));
   }
 
   loadCampaign() {
@@ -76,13 +76,12 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   onChangeTeams(event: any) {
-    this.filterObj.teams = event;
+    this.filterObj.teamId = event;
   }
 
   onChangeCampaign(event: any) {
-    this.filterObj.liveCampaign = event;
+    this.filterObj.liveCampaignId = event;
   }
-
 
   onChangeDate(event: any[]) {
     this.datePicker = [];

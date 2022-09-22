@@ -1,15 +1,14 @@
-import { finalize } from 'rxjs/operators';
-import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
-import { CommonService } from 'src/app/main-app/services/common.service';
-import { MessageDeliveryHistoryDTO } from 'src/app/main-app/dto/common/table.dto';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MessageDeliveryHistoryDTO } from '@app/dto/common/table.dto';
+import { CommonService } from '@app/services/common.service';
+import { finalize } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
-  selector: 'drawer-order-message',
-  templateUrl: './drawer-order-message.component.html',
-  styleUrls: ['./drawer-order-message.component.scss']
+  selector: 'drawer-bill-message',
+  templateUrl: './drawer-bill-message.component.html',
 })
-export class DrawerOrderMessageComponent implements OnInit {
+export class DrawerBillMessageComponent implements OnInit {
 
   @Input() isOpenDrawer!: boolean;
   @Input() liveCampaignId!: string;
@@ -17,8 +16,7 @@ export class DrawerOrderMessageComponent implements OnInit {
 
   @Output() eventClose = new EventEmitter();
 
-  lstData: MessageDeliveryHistoryDTO[] = []
-
+  lstData: MessageDeliveryHistoryDTO[] = [];
   count = 0;
   isLoading: boolean = false;
   skip: number = 0;
@@ -35,17 +33,16 @@ export class DrawerOrderMessageComponent implements OnInit {
 
   loadData(liveCampaignId: string, orderId: string, skip: number, take: number) {
     this.isLoading = true;
-
-    this.commonService.getHistoryMessageSentSO(liveCampaignId, orderId, skip, take)
+    console.log(orderId)
+    this.commonService.getHistoryMessageSentFSOrderDetail(liveCampaignId, orderId, skip, take)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstData = res?.Datas;
-        this.count = res?.Total || 0;
+        this.count = res?.Total || 0;console.log(res)
       }, error => {
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });
   }
-
 
   close() {
     this.isOpenDrawer = false;

@@ -1,0 +1,46 @@
+<tds-drawer [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column'}"
+    [visible]="isOpenDrawer" [size]="'lg'" [placement]="'right'" [title]="titleMessage" [footer]="footerTpl"
+    (onClose)="close()">
+
+    <ng-container *tdsDrawerContent>
+      <div class="h-full overflow-scroll tds-custom-scroll pr-1">
+        <div class="h-full flex flex-col gap-y-4 bg-neutral-3-200">
+          <div class="bg-white rounded-xl w-full flex flex-col gap-y-2 p-4" *ngFor="let message of lstData">
+            <div class="flex gap-x-2" [ngClass]="message.IsSuccess ? 'text-success-400' : 'text-error-400'">
+              <span *ngIf="message.IsSuccess"><i class="tdsi-success-line"></i></span>
+              <span *ngIf="!message.IsSuccess"><i class="tdsi-warning-2-fill"></i></span>
+
+              <div class="flex flex-col gap-y-1">
+                <span *ngIf="message.IsSuccess">Gửi thành công</span>
+                <span *ngIf="!message.IsSuccess">Gửi thất bại</span>
+
+                <span class="text-xs flex" *ngIf="!message.IsSuccess">
+                  {{message.ErrorMessage}}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex gap-x-2 items-baseline">
+              <img src="../../../assets/imagesv2/iconMessDrawer.svg" alt="" class="w-8 h-8">
+              <div class="flex flex-col gap-y-2">
+                <div class="bg-neutral-3-50 p-4 rounded-bl-lg rounded-r-lg text-[13px]">
+                  {{message.Message}}
+                </div>
+
+                <span class="text-neutral-1-400 text-[13px]"> {{message.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #titleMessage>
+
+    </ng-template>
+
+    <ng-template #footerTpl>
+
+    </ng-template>
+
+</tds-drawer>

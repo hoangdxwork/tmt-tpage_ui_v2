@@ -7,6 +7,7 @@ import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from '../base.service';
 import { ODataSaleOnline_OrderDTOV2 } from '../../dto/saleonlineorder/odata-saleonline-order.dto';
+import { Guid } from 'guid-typescript';
 
 export interface FilterObjSOOrderModel {
   tags: string[],
@@ -16,8 +17,8 @@ export interface FilterObjSOOrderModel {
     startDate: Date,
     endDate: Date
   } | any,
-  teams?: TDSSafeAny,
-  liveCampaign?: TDSSafeAny,
+  liveCampaignId?: string,
+  teamId?: string,
 }
 
 export interface TabNavsDTO {
@@ -39,8 +40,9 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
   }
 
   getView(params: string, filterObj: FilterObjSOOrderModel): Observable<ODataSaleOnline_OrderDTOV2> {
+
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&(LiveCampaignId=${filterObj.liveCampaign}&(CRMTeamId=${filterObj.teams}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
@@ -93,6 +95,25 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         logic: 'and'
       })
     }
+
+    if (filterObj && Number(filterObj?.teamId)) {
+      dataFilter.filters.push({
+          filters: [
+            { field: "CRMTeamId", operator: OperatorEnum.eq, value: filterObj?.teamId },
+          ],
+          logic: 'and'
+      })
+    }
+
+    if (filterObj && filterObj?.liveCampaignId) {
+      dataFilter.filters.push({
+          filters: [
+            { field: "LiveCampaignId", operator: OperatorEnum.eq, value: Guid.parse(filterObj.liveCampaignId) },
+          ],
+          logic: 'and'
+      })
+    }
+
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
       let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())

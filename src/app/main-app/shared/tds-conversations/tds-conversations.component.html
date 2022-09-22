@@ -160,6 +160,7 @@
                             [name]="data.Name" [dataItem]="item"
                             [type]="type" [partner]="partner"
                             [dataSource]="dataSource" [index]="i"
+                            [companyCurrents]="companyCurrents"
                             [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[item?.Data?.id]: []">
                         </tds-conversation-item>
                     </ng-container>

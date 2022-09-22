@@ -1,5 +1,5 @@
 export interface LiveCampaignProductDTO {
-  Id?: string;
+  Id?: string | any;
   Index: number;
   Quantity: number;
   RemainQuantity: number;
