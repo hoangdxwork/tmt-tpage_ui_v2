@@ -256,7 +256,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
         next:(res: any) => {
           if(res) {
             let productTmplItems = res[0];
-            
+
             if(res[1]) {
               let cacheObject = res[1];
               this.indexDbStorage = [...cacheObject.cacheDbStorage];
