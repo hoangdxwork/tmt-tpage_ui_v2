@@ -35,6 +35,9 @@ export class TableBillMessageComponent implements OnInit {
   psid: any;
   isOpenDrawer: boolean = false;
 
+  isOpenDrawerBillMessage: boolean = false;
+  openMessageByOrderId!: string;
+
   private destroy$ = new Subject<void>();
   constructor(
     private commonService: CommonService,
@@ -131,9 +134,9 @@ export class TableBillMessageComponent implements OnInit {
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
           this.currentConversation = { ...model };
-          
+
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }
@@ -149,6 +152,15 @@ export class TableBillMessageComponent implements OnInit {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  closeDrawerBillMessage() {
+    this.isOpenDrawerBillMessage = false;
+  }
+
+  openDrawerBillMessage(orderId: any) {
+    this.isOpenDrawerBillMessage = true;
+    this.openMessageByOrderId = orderId;
   }
 
   refreshData() {

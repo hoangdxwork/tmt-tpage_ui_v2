@@ -59,12 +59,12 @@
   </tds-table>
 
   <drawer-order-message *ngIf="isOpenDrawerOrderMessage && openMessageByOrderId" [isOpenDrawer]="isOpenDrawerOrderMessage"
-  [liveCampaignId]="liveCampaignId"
-  [orderId]="openMessageByOrderId"
-  (eventClose)="closeDrawerOrderMessage()">
-</drawer-order-message>
+    [liveCampaignId]="liveCampaignId"
+    [orderId]="openMessageByOrderId"
+    (eventClose)="closeDrawerOrderMessage()">
+  </drawer-order-message>
 
-<tds-drawer [visible]="isOpenDrawer"
+  <tds-drawer [visible]="isOpenDrawer"
     [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
     [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
     <ng-template #titleMessage>

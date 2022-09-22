@@ -92,6 +92,7 @@ import { ExpandOrderLivecampaignComponent } from './components/expand-order-live
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { OrderModule } from '../order/order.module';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { DrawerBillMessageComponent } from './components/drawer-bill-message/drawer-bill-message.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -120,6 +121,7 @@ const cmp =[
   ModalConfirmedDepositComponent,
   ModalPaymentComponent,
   DrawerOrderMessageComponent,
+  DrawerBillMessageComponent,
   FilterOptionCampaignComponent,
   ExpandOrderLivecampaignComponent
 ]
@@ -160,7 +162,7 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ...cmp
+    ...cmp,
   ],
   imports: [
     CommonModule,
