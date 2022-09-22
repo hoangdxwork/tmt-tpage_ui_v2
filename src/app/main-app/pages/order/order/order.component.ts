@@ -76,8 +76,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
       startDate: addDays(new Date(), -30),
       endDate: new Date()
     },
-    teams: '',
-    liveCampaign: '',
+    teamId: '',
+    liveCampaignId: '',
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -553,12 +553,12 @@ export class OrderComponent implements OnInit, AfterViewInit {
       this.tabNavs = this.lstOftabNavs;
     }
 
-    if(TDSHelperString.hasValueString(event.liveCampaign)) {
-      this.filterObj.liveCampaign = event.liveCampaign;
+    if(TDSHelperString.hasValueString(event.liveCampaignId)) {
+      this.filterObj.liveCampaignId = event.liveCampaignId;
     }
 
-    if(TDSHelperString.hasValueString(event.teams)) {
-      this.filterObj.teams = event.teams
+    if(TDSHelperString.hasValueString(event.teamId)) {
+      this.filterObj.teamId = event.teamId
     }
 
     this.removeCheckedRow();

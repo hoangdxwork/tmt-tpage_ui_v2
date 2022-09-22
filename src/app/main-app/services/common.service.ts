@@ -122,6 +122,15 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<MessageDeliveryHistoryResultDTO>(api, null);
   }
 
+  getHistoryMessageSentFSOrderDetail(liveCampaignId: string, orderId: string, skip: number, take: number): Observable<MessageDeliveryHistoryResultDTO> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentfsorderdetail?liveCampaignId=${liveCampaignId}&fsOrderId=${orderId}&skip=${skip}&take=${take}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<MessageDeliveryHistoryResultDTO>(api, null);
+  }
+
   getStatusTypeExt(): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/common/statusTypeExt`,
