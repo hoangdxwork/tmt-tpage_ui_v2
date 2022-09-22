@@ -203,7 +203,7 @@
 
                         <!-- lọc tất cả bình luận -->
                         <ng-container *ngSwitchCase="0" class="w-full">
-                            <div class="emotion-count flex flex-row items-center flex-auto justify-between w-full">
+                            <div class="emotion-count flex flex-row items-center flex-auto gap-x-4 justify-between w-full">
                                 <div class="flex gap-x-2">
                                     <div class="flex flex-row">
                                         <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px"
@@ -213,7 +213,12 @@
                                     </div>
                                     <span> {{(data.Data | facebookType).count_reactions || 0}} </span>
                                 </div>
-                                <div class="flex gap-x-3">
+                                <div class="flex gap-x-3 flex-auto justify-end items-center">
+                                    <tds-form-field class="flex-auto">
+                                        <span tdsPrefix><i class="tdsi-search-fill"></i></span>
+                                        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearchFilterComment()"
+                                        [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}" />
+                                    </tds-form-field> 
                                     <span class="comment-count"> {{(data.Data | facebookType).count_comments || 0}} bình luận </span>
                                     <span class="share-count  mr-3"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
                                 </div>
@@ -323,7 +328,7 @@
                             [commentOrders]="commentOrders">
                         </post-comment-all> -->
 
-                        <comment-filter-all [data]="data" [team]="team">
+                        <comment-filter-all [data]="data" [team]="team" [innerText]="textSearchFilterComment">
                         </comment-filter-all>
                     </div>
 

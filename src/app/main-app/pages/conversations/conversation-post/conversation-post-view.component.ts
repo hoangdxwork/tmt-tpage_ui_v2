@@ -129,7 +129,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   }
 
   onSearchFilterComment() {
-    this.textSearchFilterComment = this.innerText
+    this.textSearchFilterComment = this.innerText;
   }
 
   onChangeFilterComment(event: TDSSafeAny) {

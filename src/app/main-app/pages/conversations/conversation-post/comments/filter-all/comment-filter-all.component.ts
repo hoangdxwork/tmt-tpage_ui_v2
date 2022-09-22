@@ -61,6 +61,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
   @Input() isShowModal: boolean = false;
+  @Input() innerText!: string;
   scrolledIndex: number = 0;
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
@@ -86,6 +87,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   conversationItem!: ChatomniConversationItemDto;
   currentConversation!: ChatomniConversationItemDto | any;
   commentOrders?: any = {};
+  filterObj : TDSSafeAny;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -207,14 +209,23 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
         this.loadPartnersByTimestamp();
         this.loadCommentsOrderByPost()
     }
+
+    if (changes["innerText"] && !changes["innerText"].firstChange) {
+      let text = changes["innerText"].currentValue;
+      this.innerText = TDSHelperString.stripSpecialChars(text.trim().toLocaleLowerCase());
+      this.filterObj = {
+        Keywords: this.innerText
+      }
+
+      this.loadData();
+    }
   }
 
   loadData() {
     this.isLoading = true;
     this.infinite.next([]);
 
-    this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId);
-
+    this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId, this.filterObj);
     if(this.dataSource$) {
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniDataDto) => {
