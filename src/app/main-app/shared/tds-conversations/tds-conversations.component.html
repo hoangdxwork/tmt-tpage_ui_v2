@@ -1,6 +1,6 @@
 <section *ngIf="data && team" class="chat-block text-body-2 text-neutral-1-900 w-full h-full flex flex-col relative">
     <div #chatHeader class="chat-header flex items-center p-2">
-        <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
+        <div *ngIf="!isOpenSearch; else templateSearch" class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
             <div class="flex flex-row items-center">
                 <div class="avatar mr-2 relative">
                     <tpage-avatar-facebook [size]="48"
@@ -96,11 +96,29 @@
                         <img src="../../../assets/imagesv2/conversation/box-add.svg" width="21px" height="21px">
                     </button>
                 </div>
+
+                <button *ngIf="!isOpenSearch" type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onOpenSearch()">
+                    <i class="tdsi-search-fill"></i>
+                </button>
+                
                 <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="refreshRead()">
                     <i [ngClass]="isLoading?'animate-spin':''" class="tdsi-reload-fill"></i>
                 </button>
             </div>
         </div>
+
+        <ng-template #templateSearch>
+            <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl px-3 py-[15px]">
+                <div class="flex-auto flex gap-x-2 items-center ">
+                    <span class="tdsi-search-fill text-xl leading-none text-neutral-1-500"></span>
+                    <input tdsInput autocomplete="off" [(ngModel)]="searchText" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" [ngModelOptions]="{standalone: true}"
+                         placeholder="Tìm kiếm tin nhắn" class="resize-none no-scrollbar rounded-xl !text-neutral-1-400 w-full"/>
+                </div>
+                <button type="button" tds-button-flat-icon color="secondary" size="xl" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onCloseSearch()">
+                    <i class="tdsi-close-fill"></i>
+                </button>
+            </div>
+        </ng-template>
     </div>
 
     <!-- main -->

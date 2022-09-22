@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ChatomniDataDto, ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { map, Observable, shareReplay } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { ChatomniCommentFacade } from "../chatomni-facade/chatomni-comment.facade";
 
@@ -32,7 +32,7 @@ export class ChatomniCommentService extends BaseSevice  {
 
     let url = `${this._BASE_URL}/${this.baseRestApi}/${id}/comments`;
     if (TDSHelperString.hasValueString(queryString)) {
-        url = `${url}&${queryString}`;
+        url = `${url}?${queryString}`;
     }
 
     let api: CoreAPIDTO = {
@@ -81,7 +81,7 @@ export class ChatomniCommentService extends BaseSevice  {
 
   }
 
-  nextDataSource(id: string, dataSourceItem: ChatomniDataItemDto[]): Observable<ChatomniDataDto> {
+  nextDataSource(id: string, dataSourceItem: ChatomniDataItemDto[], queryObj?: TDSSafeAny): Observable<ChatomniDataDto> {
     
     let exist = this.commentFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
@@ -92,7 +92,7 @@ export class ChatomniCommentService extends BaseSevice  {
         })
     } else {
         let url = this.urlNext  as string;
-        return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
+        return this.getLink(url, queryObj).pipe(map((res: ChatomniDataDto) => {
 
             if(res.Extras) {
               exist.Extras = {

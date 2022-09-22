@@ -1,4 +1,5 @@
-<div *ngIf="item" (click)="selectPost(item)"  class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
+<div class="flex flex-col ">
+    <div *ngIf="item" (click)="selectPost(item)"  class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
     {{currentPost?.ObjectId == item.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
 
     <div class="flex flex-col gap-y-3" *ngIf="item">
@@ -7,10 +8,11 @@
                 <img [src]="(item.Data | facebookType)?.picture" alt=""
                     class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
 
-                <!-- <span class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
-                    *ngIf="item.Data?.count_post_child && item.Data.count_post_child > 0">
-                    {{'+' + item.count_post_child}}
-                </span> -->
+                <span class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
+                    *ngIf="(item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data && (item.Data | facebookType)?.attachments!.data[0].subattachments
+                    && (item.Data | facebookType)?.attachments!.data[0].subattachments.data">
+                    {{'+' + (item.Data | facebookType)?.attachments!.data[0].subattachments.data.length}}
+                </span>
             </div>
             <ng-template #noPicture>
                 <div *ngIf="!(item.Data | facebookType)?.picture; else errorPicture">
@@ -135,17 +137,19 @@
                 </ng-template> -->
             </div>
 
-            <div *ngIf="item.LiveCampaign" class="flex">
+            <!-- Chờ sửa api mở lại sau -->
+            <!-- <div *ngIf="item.LiveCampaign" class="flex">
                 <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
                     tds-tooltip tooltipTitle="Bật tạo đơn tự động">
                     <i class="tdsi-flash-on-fill text-white leading-5"></i>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
 
-<div *ngIf="postChilds && postChilds.length > 0" class="pl-7 flex flex-col gap-y-1">
+<!-- <div *ngIf="postChilds && postChilds.length > 0 && currentPost?.Id == item.Id"  class="pl-7 flex flex-col gap-y-1">
+    
     <div *ngFor="let postChild of postChilds">
         <ng-container *ngIf="postChild.parent_id && postChild.parent_id == item!.ObjectId">
             <div class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4 {{ currentPost?.ObjectId == postChild.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"
@@ -155,7 +159,7 @@
                     <div class="relative w-[120px] h-[88px]">
                         <div *ngIf="postChild.picture; else noPicture" class="relative">
                             <img [src]="postChild.picture" alt=""
-                                class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md">
+                                class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
                         </div>
                         <ng-template #noPicture>
                             <div *ngIf="!postChild.picture; else errorPicture">
@@ -236,4 +240,6 @@
             </div>
         </ng-container>
     </div>
+</div> -->
 </div>
+

@@ -103,6 +103,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   isAlertChatbot: boolean = true;
 
   visibleDrawerBillDetail: boolean = false;
+  isOpenSearch!: boolean;
+  searchText: string = '';
+  filterObj: TDSSafeAny;
   order: TDSSafeAny;
 
   constructor(private modalService: TDSModalService,
@@ -248,7 +251,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.isLoading = true;
     }
 
-    this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
+    this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type, this.filterObj);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
           if(res) {
@@ -464,6 +467,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.isProcessing = false;
     this.uploadedImages = [];
     this.tags = [];
+    this.filterObj = null;
   }
 
   nextData() {
@@ -1181,6 +1185,32 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onVisibleDrawer(event: boolean){
     this.visibleDrawerBillDetail = event;
+  }
+
+  onOpenSearch(){
+    this.isOpenSearch = true;
+  }
+
+  onCloseSearch(){
+    this.isOpenSearch = false;
+    this.searchText = '';
+    this.filterObj = null;
+
+    this.loadMessages(this.data)
+  }
+
+  onSearch(event: TDSSafeAny){
+    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
+      this.pageId = this.team.ChannelId;
+
+      let value = TDSHelperString.stripSpecialChars(this.searchText.trim().toLocaleLowerCase());
+      this.filterObj = {
+        Keywords: value
+      }
+      this.dataSource.Items = [];
+
+      this.loadMessages(this.data);
+  }
   }
 
   ngOnDestroy(): void {

@@ -1,3 +1,4 @@
+import { AutoOrderConfigDTO } from '@app/dto/configs/post/post-order-config.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
@@ -98,7 +99,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
     private facebookCommentService: FacebookCommentService,
-    private objectFacebookPostEvent: ObjectFacebookPostEvent) {
+    private objectFacebookPostEvent: ObjectFacebookPostEvent,
+    private cdRef: ChangeDetectorRef) {
       super(crmService, activatedRoute, router);
   }
 
@@ -374,9 +376,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             case CRMTeamType._Facebook:
 
               let x = item.Data as MDB_Facebook_Mapping_PostDto;
-              if(x.parent_id) {
+              let postChildId = (x.parent_id || item.fbid);
+              if(this.currentTeam!.Id && TDSHelperString.hasValueString(postChildId)) {
 
-                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe({
+                this.facebookPostService.getByPostParent(this.currentTeam!.Id, postChildId).pipe(takeUntil(this.destroy$)).subscribe({
                   next: (res: any) => {
                     if(res && TDSHelperArray.hasListValue(res.Items)) {
                         this.postChilds = [...res.Items];
