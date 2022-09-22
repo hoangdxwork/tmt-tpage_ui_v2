@@ -64,6 +64,7 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.handler';
 import { PrepareDetailsOrderLineHandler } from '@app/handler-v2/order-handler/prepare-details-orderLine.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
+import de from 'date-fns/locale/de';
 
 @Component({
   selector: 'app-add-bill',
@@ -87,7 +88,7 @@ export class AddBillComponent implements OnInit {
   lstPrices!: Observable<PartnerCategoryDTO[]>;
   lstCustomers!: Observable<CustomerDTO[]>;
   lstWareHouses!: Observable<StockWarehouseDTO[]>;
-  lstTeams!: Observable<AllFacebookChildTO[]>;
+  lstTeams!: Observable<any[]>;
   lstUser!: Observable<ApplicationUserDTO[]>;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
   lstTax!: TaxDTO[];
@@ -206,7 +207,6 @@ export class AddBillComponent implements OnInit {
 
     switch (this.path) {
         case 'copy':
-
             const key = this.fastSaleOrderService._keyCacheCopyInvoice;
             let obs = localStorage.getItem(key) as string;
             if(TDSHelperString.hasValueString(obs)) {
@@ -215,6 +215,7 @@ export class AddBillComponent implements OnInit {
             } else {
                 this.router.navigateByUrl('bill/create');
             }
+
         break;
 
         case 'edit':
@@ -373,6 +374,16 @@ export class AddBillComponent implements OnInit {
     delete this.id;
     let model = { Type: 'invoice', SaleOrderIds: [] };
 
+    let currentTeam = this.crmTeamService.getCurrentTeam();
+    if(currentTeam && data){
+        data.TeamId = currentTeam.Id;
+        data.PageName = currentTeam.Name;
+        data.Team = {
+            Id: currentTeam.Id,
+            Name: currentTeam.Name
+        } as any
+    }
+
     this.fastSaleOrderService.apiDefaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
             delete res['@odata.context'];
@@ -519,7 +530,7 @@ export class AddBillComponent implements OnInit {
 
   changePartner(partnerId: any) {
     this.isLoading = true;
-    this.loadChangePartner(partnerId).pipe(finalize(() => this.isLoading = false)).subscribe({
+    this.loadChangePartner(partnerId).subscribe({
         next: ([data, partner]) => {
             if (data && partner) {
                 this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
@@ -527,8 +538,10 @@ export class AddBillComponent implements OnInit {
                   this.mappingDataAddress(data);
                 }
             }
+            this.isLoading = false
         },
         error: (error: any) => {
+            this.isLoading = false
             this.message.error(`${error?.error?.message}` || 'Thay đổi khách hàng đã xảy ra lỗi!');
         }
     })
@@ -549,28 +562,26 @@ export class AddBillComponent implements OnInit {
 
   onChangeWarehouse(event: any) {
     if (event && event.Id) {
-      // this._form.controls['Warehouse'].setValue(event);
       this._form.controls['WarehouseId'].setValue(event.Id);
     }
   }
 
   onChangePayment(event: any) {
     if (event && event.Id) {
-      // this._form.controls['PaymentJournal'].setValue(event);
       this._form.controls['PaymentJournalId'].setValue(event.Id);
     }
   }
 
   onChangeTeam(event: any) {
     if (event && event.Id) {
-      // this._form.controls['Team'].setValue(event);
-      this._form.controls['TeamId'].setValue(event.Id);
+        this._form.controls['TeamId'].setValue(event.Id);
+    } else {
+        this._form.controls['TeamId'].setValue(null);
     }
   }
 
   onChangeUser(event: any) {
     if (event && event.Id) {
-      // this._form.controls['User'].setValue(event);
       this._form.controls['UserId'].setValue(event.Id);
     }
   }
@@ -1079,6 +1090,14 @@ export class AddBillComponent implements OnInit {
       break;
     }
 
+    if(model.TeamId && model.Team) {
+      model.TeamId = Number(model.TeamId);
+      model.Team = {
+        Id: model.TeamId,
+        Name: model.Team.Name
+      }
+    }
+
     return {...model};
   }
 
@@ -1177,6 +1196,27 @@ export class AddBillComponent implements OnInit {
             }
         });
     }
+  }
+
+  applyPromotion(type: string){
+    switch(type){
+      case 'coupon':
+        this.onSave();
+        this.showApplyCouponModal();
+        break;
+      case 'promotion':
+        this.onSave();
+        this.showApplyPromotionModal();
+        break;
+    }
+  }
+
+  showApplyCouponModal(){
+
+  }
+
+  showApplyPromotionModal(){
+
   }
 
   removelocalStorage() {
@@ -1377,7 +1417,7 @@ export class AddBillComponent implements OnInit {
   }
 
   loadAllFacebookChilds() {
-    return this.crmTeamService.getAllFacebookChilds().pipe(map(res => res.value));
+    return this.crmTeamService.getAllFacebookChildsV2().pipe(map(res => res));
   }
 
   loadUser() {
@@ -1557,7 +1597,7 @@ export class AddBillComponent implements OnInit {
         WardCode: ward ? ward.code : null,
         WardName: ward ? ward.name : null
     } as any;
-   
+
     this.setAddress(item)
   }
 

@@ -75,7 +75,9 @@ export class OrderComponent implements OnInit, AfterViewInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date()
-    }
+    },
+    teams: '',
+    liveCampaign: '',
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -547,9 +549,18 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
     if (TDSHelperArray.hasListValue(event.status)) {
       this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
-    }else{
+    } else {
       this.tabNavs = this.lstOftabNavs;
     }
+
+    if(TDSHelperString.hasValueString(event.liveCampaign)) {
+      this.filterObj.liveCampaign = event.liveCampaign;
+    }
+
+    if(TDSHelperString.hasValueString(event.teams)) {
+      this.filterObj.teams = event.teams
+    }
+
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
     this.loadSummaryStatus();

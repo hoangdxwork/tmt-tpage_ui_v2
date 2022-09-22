@@ -17,7 +17,6 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger, eventCollapTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
@@ -32,6 +31,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 
 @Component({
   selector: 'app-conversation-all',
@@ -42,10 +42,6 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
-  itemSize = 100;
-  infinite = new BehaviorSubject<ChatomniConversationItemDto[]>([]);
-  @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
-
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
   @HostBinding("@eventFadeState") eventAnimation = true;
@@ -54,6 +50,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateAdminTransferChatBot') templateAdminTransferChatBot!: TemplateRef<{}>;
   @ViewChild('templateChatbotTranserAdmin') templateChatbotTranserAdmin!: TemplateRef<{}>;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
+
 
   isLoading: boolean = false;
   dataSource$?: Observable<ChatomniConversationDto> ;
@@ -187,7 +184,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       let model = {...this.lstConversation[index]};
                       if(index > 0){
                           this.lstConversation = this.lstConversation.filter(x => x.ConversationId != res.Data.Conversation?.UserId);
-                          this.lstConversation = [...[model], ...(this.lstConversation || [])]
+                          this.lstConversation = [...[model], ...(this.lstConversation || [])];
                       }
                   } else {
                       // // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
@@ -223,7 +220,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(Number(index) >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
-                this.cdRef.detectChanges();
+                this.cdRef.markForCheck();
             }
         }
       }
@@ -393,7 +390,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         if(this.isOpenCollapCheck){
             this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
             this.refreshCheckedStatus();
-
             return;
         }
 
@@ -445,29 +441,28 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+    this.queryObj = {} as any;
+    this.innerText.nativeElement.value = '';
     this.isProcessing = false;
 
     if (this.clickReload >= 5) {
-        this.message.info("Đã kích hoạt cập nhật hội thoại.");
+        this.message.info("Đã kích hoạt cập nhật hội thoại");
         this.clickReload = 0;
 
         if (this.currentTeam) {
           this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res) => {
-                this.message.success('Yêu cầu cập nhật thành công');
-            },
-            error: (error) => {
-                this.message.success('Yêu cầu cập nhật thất bại');
-            }
+              next: (res) => {
+                  this.loadData(this.currentTeam);
+                  this.message.success('Yêu cầu cập nhật thành công');
+              },
+              error: (error) => {
+                  this.message.success('Yêu cầu cập nhật thất bại');
+              }
           });
         }
     } else {
-        this.queryObj = {} as any;
-        this.innerText.nativeElement.value = '';
-
         this.isRefreshing = true;
         this.loadFilterDataSource();
-        this.cdRef.markForCheck();
     }
 
     setTimeout(() => {
@@ -597,49 +592,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       ).subscribe({
         next: (text: string) => {
             this.isFilter = true;
+
             if(text == ''){
               this.isFilter = false;
             }
+
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.queryObj['Keyword'] = value;
             this.loadFilterDataSource();
         }
       })
     }
-  }
-
-  cdkVirtualScroll() {
-    if(this.viewPort.scrolledIndexChange && this.lstConversation) {
-        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap((currIndex: number) => {
-            const end = this.viewPort.getRenderedRange().end;
-            const total = this.viewPort.getDataLength();
-
-            if(end == total && !this.isProcessing) {
-                this.nextBatch();
-            }
-        })).subscribe();
-      }
-
-    setTimeout(() => this.infinite.next(this.lstConversation), 350);
-  }
-
-  nextBatch() {
-    this.isProcessing = true;
-    this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
-
-    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniConversationDto) => {
-          if(res && res.Items){
-              this.lstConversation = [...(res.Items || [])];
-              this.infinite.next(this.lstConversation);
-          }
-
-          this.isProcessing = false;
-      },
-      error: (error) => {
-          this.isProcessing = false;
-      }
-    })
   }
 
   onTabOderOutput(ev: boolean){
@@ -650,12 +613,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isLoading = true;
     this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, this.queryObj).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
-          this.lstConversation = [...res?.Items];
 
+          this.lstConversation = [...res?.Items];
           this.totalConversations = res?.Items.length;
+
           this.isLoading = false;
           this.isRefreshing = false;
-
           this.cdRef.markForCheck();
       },
       error: (error: any) => {

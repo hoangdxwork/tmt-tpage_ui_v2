@@ -1,9 +1,14 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FilterObjSOOrderModel, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
+import { AllFacebookChildTO } from '@app/dto/team/all-facebook-child.dto';
+import { CRMTeamService } from '@app/services/crm-team.service';
+import { map, Observable } from 'rxjs';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
+import { ODataLiveCampaignService } from '@app/services/mock-odata/odata-live-campaign.service';
 
 @Component({
   selector: 'order-filter-options',
@@ -23,27 +28,28 @@ export class FilterOptionsComponent implements OnInit {
   datePicker!: any[] | any;
   lstTags: Array<TDSSafeAny> = [];
   selectTags: Array<TDSSafeAny> = [];
+  selectTeams: TDSSafeAny;
+  selectCampaign: TDSSafeAny;
   listStatus: Array<TDSSafeAny> = [];
+  lstTeams!: Observable<AllFacebookChildTO[]>;
+  lstCampaign!: Observable<LiveCampaignModel[]>;
 
   isActive: boolean = false;
   isVisible: boolean = false;
 
   constructor(
     private cdr : ChangeDetectorRef,
-    private destroy$: TDSDestroyService) {
+    private crmTeamService: CRMTeamService,
+    private destroy$: TDSDestroyService,
+    private odataLiveCampaignService: ODataLiveCampaignService) {
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.lstTeams = this.loadAllFacebookChilds();
+    this.loadCampaign();
+  }
 
   loadSummaryStatus() {
-    // if(this.summaryStatus) {
-    //   this.summaryStatus.map(x => {
-    //     if(x.Index != 1) {
-    //       this.listStatus.push(x);
-    //     }
-    //   })
-    //   this.cdr.detectChanges();
-    // }
     this.listStatus = this.summaryStatus.map(f=> {
       return {
         Name: f.Name,
@@ -52,9 +58,31 @@ export class FilterOptionsComponent implements OnInit {
         IsSelected: this.filterObj? (this.filterObj.status?.includes(f.Name)? true: false ) : false
       }
     });
-    
+
     this.cdr.detectChanges();
   }
+
+  loadAllFacebookChilds() {
+    return this.crmTeamService.getAllFacebookChildsV2().pipe(map(res => res.value));
+  }
+
+  loadCampaign() {
+      this.odataLiveCampaignService.getView('').subscribe({
+          next: (res: any) => {
+              delete res['@odata.context'];
+              this.lstCampaign = res.value;
+          },
+      })
+  }
+
+  onChangeTeams(event: any) {
+    this.filterObj.teams = event;
+  }
+
+  onChangeCampaign(event: any) {
+    this.filterObj.liveCampaign = event;
+  }
+
 
   onChangeDate(event: any[]) {
     this.datePicker = [];
@@ -95,7 +123,7 @@ export class FilterOptionsComponent implements OnInit {
       this.filterObj.dateRange = {
         startDate: this.datePicker[0],
         endDate: this.datePicker[1]
-    }
+      }
     }
 
     this.isActive = true;

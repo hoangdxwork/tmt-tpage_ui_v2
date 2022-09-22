@@ -648,11 +648,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               if(!this.saleOnlineSettings.isDisablePrint) {
                   this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
               }
+
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
-              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'createOrder', data: res});
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'addCode', data: res});
+
               // TODO: cập nhật mã đơn hàng lên tab
               this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
               this.message.success('Tạo đơn hàng thành công');
+
           } else {
 
             if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
@@ -660,16 +663,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.message.success('Cập nhật đơn hàng thành công');
             }
 
-            // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
-            this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
-
             // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
             this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
+
             // TODO: cập nhật mã đơn hàng lên tab
             this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
             this.isUpdated = false;
           }
 
+          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
+          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
@@ -780,7 +783,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.quickOrderModel = {...res};
           this.quickOrderModel.FormAction = formAction;
 
-          if(!this.isEnableCreateOrder && type) {
+          if(!this.isEnableCreateOrder && type) {            
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
           }
 
@@ -802,6 +805,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   this.message.success('Tạo đơn hàng thành công');
               }
 
+              // TODO: cập nhật mã đơn hàng lên tab
+              this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
+              
               // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
               this.chatomniConversationFacade.onSyncConversationInfo$.emit();
           }
@@ -844,17 +850,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.enableInsuranceFee = false;
           this.isEnableCreateOrder = false;
 
-          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng nếu là từ comment bài viết
-          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
-
           // TODO: trường hợp bài viết và all xử lí khác nhau
           if(this.type == 'post') {
               // TODO: nếu là bài viết sau khi thanh toán, sẽ load lại đơn hàng kế tiếp theo postid
               // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
 
               //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
-              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'createFSO', data: this.quickOrderModel});
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'deleteCode', data: this.quickOrderModel});
               this.conversationOrderFacade.hasValueOrderCode$.emit(null);
+
+              // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng nếu là từ comment bài viết
+              this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
+
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
