@@ -11,7 +11,6 @@ import { FacebookReportComponent } from './components/facebook-report/facebook-r
 import { LabelReportComponent } from './components/label-report/label-report.component';
 import { RevenueReportComponent } from './components/revenue-report/revenue-report.component';
 import { ChangingRateReportComponent } from './components/changing-rate-report/changing-rate-report.component';
-import { DailyReportComponent } from './components/daily-report/daily-report.component';
 import { StaffReportComponent } from './components/staff-report/staff-report.component';
 import { ProductReportComponent } from './components/product-report/product-report.component';
 import { ConnectPageReportComponent } from './components/connect-page-report/connect-page-report.component';
@@ -50,7 +49,6 @@ const SERVICES = [
     LabelReportComponent,
     RevenueReportComponent,
     ChangingRateReportComponent,
-    DailyReportComponent,
     StaffReportComponent,
     ProductReportComponent,
     ConnectPageReportComponent,

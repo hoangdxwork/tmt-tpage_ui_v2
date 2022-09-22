@@ -1,27 +1,32 @@
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
-import { InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { format } from 'date-fns';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
-import { Subject, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
   templateUrl: './dashboard-facebook-report.component.html',
-  styleUrls: ['./dashboard-facebook-report.component.scss']
+  providers: [TDSDestroyService]
 })
 
 export class DashboardFacebookReportComponent implements OnInit {
 
-  fbReportOption:TDSSafeAny;
+  fbReportOption: TDSSafeAny;
   chartOption = TDSChartOptions();
-  labelData:TDSSafeAny[] = [];
-  axisData:TDSSafeAny[] = [];
-  seriesData:TDSSafeAny[] = [];
-  colors:Color[] = [];
+  labelData: TDSSafeAny[] = [];
+  axisData: TDSSafeAny[] = [];
+  seriesData: TDSSafeAny[] = [];
+  colors: Color[] = [];
+  checkList = [4,6,7];// list danh sách lấy filter có tối đa 30 ngày
+
+  isLoading: boolean = false;
 
   emptyData = false;
 
@@ -30,58 +35,69 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   dataSummaryPost!: MDBSummaryByPostDTO;
   dataCommentAndMessage: MDBTotalCommentMessageFbDTO[] = [];
-  private destroy$ = new Subject<void>();
 
   constructor(private commonHandler: CommonHandler,
-    private reportFacebookService: ReportFacebookService) {
+    private reportFacebookService: ReportFacebookService,
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService) {
         this.tdsDateRanges = this.commonHandler.tdsDateRanges;
-        this.currentDateRanges = this.commonHandler.currentDateRanges;
+        this.arangeDate(this.commonHandler.currentDateRanges);
   }
 
   ngOnInit(): void {
-    this.loadSummary();
-    this.loadCommentAndMessage();
+    let model = {
+      DateStart: this.currentDateRanges.startDate,
+      DateEnd: this.currentDateRanges.endDate
+    } as InputSummaryTimelineDTO;
+
+    this.loadSummary(model);
+    this.loadCommentAndMessage(model);
   }
 
-  loadSummary() {
-    let model = {} as InputSummaryPostDTO;
-    model.PageId = undefined;
-    model.DateStart = this.currentDateRanges.startDate;
-    model.DateEnd = this.currentDateRanges.endDate;
-
-    this.reportFacebookService.getSummaryPost(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.dataSummaryPost = res;
+  loadSummary(model: InputSummaryTimelineDTO) {
+    this.reportFacebookService.getSummaryPost(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.dataSummaryPost = {...res};
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
     });
   }
 
-  loadCommentAndMessage() {
-    let model = {} as InputSummaryTimelineDTO;
+  loadCommentAndMessage(model: InputSummaryTimelineDTO) {
+    this.isLoading = true;
 
-    model.PageId = undefined;
-    model.DateStart = this.currentDateRanges.startDate;
-    model.DateEnd = this.currentDateRanges.endDate;
+    this.reportFacebookService.getCommentAndMessage(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.dataCommentAndMessage = [...res];
+  
+        if(TDSHelperArray.hasListValue(res)) {
+          let data: MDBTotalCommentMessageFbDTO[] = [];
 
-    this.reportFacebookService.getCommentAndMessage(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.dataCommentAndMessage = res;
-
-      if(TDSHelperArray.hasListValue(res)) {
-        let newArr: any[] = [];
-
-        res.forEach((a: any) => {
-          let find = newArr?.find(x =>  x.Date == x.Date);
-          if(!find) {
-            newArr.push(a);
-          }
-        });
-
-        this.handlerAxisData(newArr);
-        this.handlerSeriesData(newArr);
-        this.loadDataChart();
-      }
-      else {
+          this.dataCommentAndMessage.map(x => {
+            let find = data?.find(a => a?.Date && x.Date && a?.Date == x?.Date);
+            if(!find) {
+              data.push(x);
+            }
+          });
+          
+          this.handlerAxisData(data);
+          this.handlerSeriesData(data);
+          this.loadDataChart();
+          this.isLoading = false;
+        }
+        else {
+          this.emptyData = true;
+          this.isLoading = false;
+        }
+      }, 
+      error:(error) => {
         this.emptyData = true;
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
-    }, error => this.emptyData = true);
+    });
   }
 
   handlerAxisData(data: MDBTotalCommentMessageFbDTO[]) {
@@ -89,17 +105,16 @@ export class DashboardFacebookReportComponent implements OnInit {
   }
 
   handlerSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
-    let arrMessage = data.map(x => x.TotalMessage);
-    let arrComment = data.map(x => x.TotalComment);
+    let lstMessage = data.map(x => x.TotalMessage);
+    let lstComment = data.map(x => x.TotalComment);
 
-    this.seriesData = [{name: 'Hội thoại', data: arrMessage}, { name: 'Bài viết', data: arrComment }];
+    this.seriesData = [{name: 'Hội thoại', data: lstMessage}, { name: 'Bài viết', data: lstComment }];
   }
 
   loadDataChart(){
-    this.labelData = [60000,60000,60000,60000,60000];
     this.colors = ['#2C80F8','#28A745','#F59E0B','#F33240'];
 
-    let chart:TDSBarChartComponent ={
+    let chart: TDSBarChartComponent = {
       color: this.colors,
       legend:{
         show:true,
@@ -120,7 +135,7 @@ export class DashboardFacebookReportComponent implements OnInit {
       tooltip:{
         show:true,
         position:'top',
-        formatter:'<span class="pb-2">{b}/2020</span><br>{c} {a}',
+        formatter:'<span class="pb-2">{b}</span><br>{c} {a}',
         borderColor:'transparent',
         backgroundColor:'rgba(0, 0, 0, 0.8)',
         textStyle:{
@@ -182,7 +197,22 @@ export class DashboardFacebookReportComponent implements OnInit {
     this.buildChartDemo(chart);
   }
 
-  buildChartDemo(chart : TDSBarChartComponent ){
+  buildChartDemo(chart : TDSBarChartComponent){
+    if(this.checkList.includes(this.currentDateRanges.id)){
+      chart.dataZoom = {
+        sliderType:{
+          show: true,
+          type: 'slider',
+          startValue: 0,
+          endValue: 6,
+          zoomLock: true,
+          bottom: 35
+        }
+      }
+
+      chart.grid!.bottom = 100;
+    }
+    // TODO: khởi tạo chart
     this.fbReportOption = this.chartOption.BarChartOption(chart);
     let seriesList = this.fbReportOption.series as any[];
     seriesList.forEach(series => {
@@ -213,15 +243,37 @@ export class DashboardFacebookReportComponent implements OnInit {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
-  onChangeFilter(data: any ){
+  onChangeFilter(data: any){
     this.currentDateRanges = data;
+    let model = {
+      DateStart: this.currentDateRanges.startDate,
+      DateEnd: this.currentDateRanges.endDate
+    } as InputSummaryTimelineDTO;
 
-    this.loadSummary();
-    this.loadCommentAndMessage();
+    this.loadSummary(model);
+    this.loadCommentAndMessage(model);
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  arangeDate(data: any){
+    this.currentDateRanges = {
+      id: data?.id,
+      name: data?.name,
+      startDate: data?.startDate,
+      endDate: data?.endDate
+    } as TDSDateRangeDTO;
+
+    let checkList = [1,2];
+
+    if(data?.startDate && !checkList.includes(this.currentDateRanges?.id)){
+      let setDate = data.startDate.setDate(data.startDate.getDate() + 1);
+      let formatDate = new Date(setDate).setHours(0, 0, 0, 0);
+      this.currentDateRanges.startDate = new Date(formatDate);
+    }
+
+    // if(data?.endDate && this.currentDateRanges?.id == 2){
+    //   let setDate = data.endDate.setDate(data.endDate.getDate() - 1);
+    //   let formatDate = new Date(setDate).setHours(23, 59, 59, 0);
+    //   this.currentDateRanges.endDate = new Date(formatDate);
+    // }
   }
 }
