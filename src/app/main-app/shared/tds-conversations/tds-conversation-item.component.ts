@@ -6,11 +6,10 @@ import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
-import { ChatomniDataItemDto, ChatomniMessageType, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
-import { Facebook } from './../../../lib/dto/facebook.dto';
-import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
-import { finalize, Subject, takeUntil } from "rxjs";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
+import { finalize, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
 import { ActivityDataFacade } from "../../services/facades/activity-data.facade";
@@ -19,7 +18,7 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
@@ -48,6 +47,7 @@ export class TDSConversationItemComponent implements OnInit  {
   @Input() name!: string;
   @Input() dataSource!: ChatomniDataDto;
   @Input() index!: number;
+  @Input() companyCurrents: any;
 
   @HostBinding("@eventReplyComment") eventAnimation = true;
 
@@ -102,7 +102,7 @@ export class TDSConversationItemComponent implements OnInit  {
 
     let value = this.getTextOfContentMessage();
     if (type == 'phone') {
-      let phone = PhoneHelper.getMultiplePhoneFromText(value);
+      let phone = PhoneHelper.getMultiplePhoneFromText(value, this.companyCurrents);
       if (!phone) {
         return this.tdsMessage.error("Không tìm thấy số điện thoại");
       }
@@ -441,7 +441,7 @@ export class TDSConversationItemComponent implements OnInit  {
                 data.ObjectId = model.post_id;
                 data.Data.id = this.dataItem.Data?.id;
               }
-          
+
               this.children = [ ...(this.children || []), data];
 
               //TODO: Đẩy qua tds-conversation

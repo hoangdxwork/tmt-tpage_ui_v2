@@ -38,7 +38,6 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
-import { number } from 'echarts';
 
 @Component({
   selector: 'app-order',
@@ -372,6 +371,12 @@ export class OrderComponent implements OnInit, AfterViewInit {
           ids: ids
         }
       });
+
+      this.modal.afterAllClose.subscribe({
+        next: () => {
+            this.loadData(this.pageSize, this.pageIndex);
+        }
+      })
     }
   }
 
