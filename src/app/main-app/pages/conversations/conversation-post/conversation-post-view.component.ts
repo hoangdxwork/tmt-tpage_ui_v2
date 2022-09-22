@@ -197,12 +197,14 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
         next: (res: any) => {
             // TODO: gán lại data để đẩy vào ngOnChanges CommentFilterAllComponent
             this.data = {...this.data};
+            this.cdRef.detectChanges();
         },
         error: error => {
             this.message.error(`${error?.error?.message}`);
         }
       })
     }
+
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
@@ -321,18 +323,18 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
           defaultOrder: true
         }
       });
-  
+
       modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductDTOV2) => {
         if(TDSHelperObject.hasValue(result)){
           this.defaultProductPost = this.prepareModel(result);
-  
+
           this.facebookPostService.setDefaultProductPost(this.defaultProductPost);
-  
+
           this.cdRef.detectChanges();
         }
       })
     }
-    
+
   }
 
   prepareModel(data: TDSSafeAny){
