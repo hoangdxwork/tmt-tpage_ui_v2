@@ -61,6 +61,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
   @Input() isShowModal: boolean = false;
+  scrolledIndex: number = 0;
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
 
@@ -151,7 +152,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
                 }
 
                 this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
-                this.infinite.next([...this.dataSource.Items]);
+
+                if(this.scrolledIndex <= 2) {
+                    this.infinite.next([...this.dataSource.Items]);
+                }
             }
 
             this.cdRef.detectChanges();
@@ -564,8 +568,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  onIndexChange(index: any){
+  scrolledIndexChange(index: any){
     if(this.dataSource && this.dataSource?.Items?.length > 0 && this.viewPort) {
+        this.scrolledIndex = index;
         this.infinite.next([...this.dataSource.Items]);
     }
   }

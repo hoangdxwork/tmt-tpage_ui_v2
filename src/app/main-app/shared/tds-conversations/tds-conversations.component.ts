@@ -19,7 +19,7 @@ import {
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding, Inject
 } from '@angular/core';
 
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { takeUntil } from 'rxjs/operators';
@@ -104,6 +104,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   visibleDrawerBillDetail: boolean = false;
   order: TDSSafeAny;
+  companyCurrents: TDSSafeAny;
 
   constructor(private modalService: TDSModalService,
     private chatomniMessageService: ChatomniMessageService,
@@ -117,11 +118,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private crmTagService: CRMTagService,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
-    private ngZone: NgZone,
     @Inject(DOCUMENT) private document: Document,
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
-    private partnerService: PartnerService,
     private destroy$: TDSDestroyService,
     private chatomniEventEmiter: ChatomniEventEmiterService,
     private chatomniSendMessageService: ChatomniSendMessageService,
@@ -144,6 +143,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.eventEmitter();
     this.onEventSocket();
     this.yiAutoScroll?.forceScrollDown();
+    this.loadCurrentCompany();
   }
 
   eventEmitter(){
@@ -227,6 +227,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
           default: break;
         }
+      }
+    })
+  }
+
+  loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+          this.companyCurrents = data;
       }
     })
   }

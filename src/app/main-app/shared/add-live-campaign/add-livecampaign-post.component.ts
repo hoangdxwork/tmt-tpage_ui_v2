@@ -5,9 +5,8 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
-import { Message } from 'src/app/lib/consts/message.const';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { Observable, takeUntil } from 'rxjs';
@@ -16,7 +15,7 @@ import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { differenceInCalendarDays } from 'date-fns';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { ProductService } from '@app/services/product.service';
@@ -25,22 +24,25 @@ import { ModalProductTemplateComponent } from '../tpage-add-product/modal-produc
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { SharedService } from '@app/services/shared.service';
-import { Guid } from 'guid-typescript';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
+import { TDSTableComponent } from 'tds-ui/table';
 
 @Component({
   selector: 'add-livecampaign-post',
   templateUrl: './add-livecampaign-post.component.html',
   providers: [TDSDestroyService]
 })
+
 export class AddLiveCampaignPostComponent implements OnInit {
 
   @Input() id?: string;
   @Input() isCopy?: boolean;
-  selectedIndex: number = 0;
 
+  selectedIndex: number = 0;
   _form!: FormGroup;
+
+  @ViewChild('virtualTable', { static: false }) tdsTableComponent?: TDSTableComponent<any>;
 
   lstConfig: any = [
     { text: "Nháp", value: "Draft" },
@@ -320,7 +322,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
           },
           error: (err: any) => {
               this.isLoading = false;
-              this.message.error(err.error.message || 'Đã xảy ra lỗi')
+              this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
           }
       })
     } else {
@@ -351,7 +353,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
                 },
                 error: (err: any) => {
                     this.isLoading = false;
-                    this.message.error(err.error.message || 'Đã xảy ra lỗi');
+                    this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
                 }
               })
           },
@@ -493,7 +495,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
         },
         error: (err: any) => {
             this.isLoading = false;
-            this.message.error(err.error.message || 'Đã xảy ra lỗi')
+            this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
         }
     })
   }
@@ -606,6 +608,14 @@ export class AddLiveCampaignPostComponent implements OnInit {
     if(item && item.Id) {
         this.addProductLiveCampaignDetails(item);
     }
+  }
+
+  scrollToIndex(index: number): void {
+    this.tdsTableComponent?.cdkVirtualScrollViewport?.scrollToIndex(index);
+  }
+
+  trackByIndex(i: any): number {
+    return i;
   }
 
 }

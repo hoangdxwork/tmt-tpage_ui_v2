@@ -171,7 +171,8 @@
 
           <div class="w-full mt-4 rounded-md">
             <div class="w-full">
-              <tds-table class="tds-table-rounded" #detailTable [bordered]="true" [listData]="detailsFormGroups.value" [showPagination]="false" [scroll]="{ y:'400px' }">
+              <tds-table class="tds-table-rounded" #virtualTable [bordered]="true"  [virtualForTrackBy]="trackByIndex"
+                [listData]="detailsFormGroups.value" [showPagination]="false" [scroll]="{ y:'400px' }">
                 <thead class="rounded">
                     <tr>
                         <th width="6%"  class="text-center">STT</th>
