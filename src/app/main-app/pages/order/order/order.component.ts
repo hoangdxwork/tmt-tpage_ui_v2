@@ -772,11 +772,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
               pageIds.push(x.page_id);
           });
 
+          this.isOpenChat = false;
           if (pageIds.length == 0) {
               return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
-
-          this.isOpenChat = false;
 
           this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
             next: (teams: any): any => {
