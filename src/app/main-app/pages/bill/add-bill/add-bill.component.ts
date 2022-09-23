@@ -400,6 +400,8 @@ export class AddBillComponent implements OnInit {
             if (partnerId) {
               this.changePartner(partnerId);
             }
+
+            this.calcTotal();
             this.isLoading = false;
         },
         error:(err) => {
@@ -1283,6 +1285,7 @@ export class AddBillComponent implements OnInit {
         next:(res: TDSSafeAny) => {
             this.isLoading = false;
             this.printerService.printHtml(res);
+            this.router.navigateByUrl(`bill/detail/${id}`);
         },
         error:(error: any) => {
           this.isLoading = false;
@@ -1412,7 +1415,7 @@ export class AddBillComponent implements OnInit {
   calcTotal() {
     let cacl = this.calculateBillFee.fs_calcTotal(this._form, this.saleConfig);
 
-    this.totalQtyLines = cacl.totalAmountLines;
+    this.totalQtyLines = cacl.totalQtyLines;
     this.totalAmountLines = cacl.totalAmountLines;
   }
 
