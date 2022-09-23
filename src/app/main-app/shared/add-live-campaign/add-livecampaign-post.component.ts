@@ -503,7 +503,6 @@ export class AddLiveCampaignPostComponent implements OnInit {
   pushItemToFormArray(item: LiveCampaignProductDTO) {
     let formDetails = this.detailsFormGroups.value as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
-
     if(Number(index) >= 0) {
         index = Number(index);
         this.detailsFormGroups.at(index).patchValue(item);

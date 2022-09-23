@@ -347,24 +347,25 @@ export class EditOrderV2Component implements OnInit {
   }
 
   selectProduct(data: ProductDTOV2){
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMPOId) as number;
-    if (Number(index) < 0){
-        let item = {
-            Factor: data.Factor,
-            Price: data.Price,
-            ProductId: data.Id,
-            Note: data?.Note || null,
-            ProductName: data.Name,
-            ProductNameGet: data.NameGet,
-            ProductCode: data.DefaultCode,
-            Quantity: 1,
-            UOMId: data.UOMId,
-            UOMName: data.UOMName,
-        } as Detail_QuickSaleOnlineOrder;
-
-        this.quickOrderModel.Details.push(item);
-    } else{
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMId) as number;
+    if (Number(index) >= 0){
         this.quickOrderModel.Details[index].Quantity += 1;
+    } else{
+
+      let item = {
+          Factor: data.Factor,
+          Price: data.Price,
+          ProductId: data.Id,
+          Note: data?.Note || null,
+          ProductName: data.Name,
+          ProductNameGet: data.NameGet,
+          ProductCode: data.DefaultCode,
+          Quantity: 1,
+          UOMId: data.UOMId,
+          UOMName: data.UOMName,
+      } as Detail_QuickSaleOnlineOrder;
+
+      this.quickOrderModel.Details.push(item);
     }
 
     this.closeSearchProduct();
