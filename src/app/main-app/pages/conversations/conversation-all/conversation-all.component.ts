@@ -30,8 +30,8 @@ import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/ma
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
+import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
   selector: 'app-conversation-all',
@@ -78,7 +78,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isCheckedAll: boolean = false;
   selectedIndex: number = 0;
 
-  private notificationRef!: TDSNotificationRef;
+  notificationRef!: TDSNotificationRef;
   totalConversations: number = 0;
 
   constructor(private message: TDSMessageService,
@@ -88,7 +88,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     public activatedRoute: ActivatedRoute,
     public router: Router,
     private chatomniConversationService: ChatomniConversationService,
-    private ngZone: NgZone,
     private notification: TDSNotificationService,
     private conversationOrderFacade: ConversationOrderFacade,
     private cdRef : ChangeDetectorRef,
@@ -100,13 +99,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private destroy$: TDSDestroyService,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniEventEmiterService: ChatomniEventEmiterService,
-    private socketService: SocketService,
     private socketOnEventService: SocketOnEventService) {
       super(crmService, activatedRoute, router);
   }
 
   ngOnInit(): void {
-
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (team) => {
@@ -152,47 +149,31 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-
-        switch(res.EventName){
+        switch(res && res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-              if(res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId) {
+              let exist = res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId;
+              if(exist && this.lstConversation && res.Data?.Message) {
 
-                  // TODO: mapping dữ liệu danh sách conversation
-                  let index = this.lstConversation?.findIndex(x => x.ConversationId == res.Data.Conversation?.UserId) as number;
-                  if(Number(index) >- 1) {
+                  switch(this.type) {
+                      case 'message':
+                          let existMessage = res.Data.Message.MessageType == (ChatomniMessageType.FacebookMessage || ChatomniMessageType.TShopMessage);
+                          if(existMessage) {
+                              this.setSocketChatomniOnMessage(res);
+                          }
+                          break;
 
-                      this.lstConversation[index].LatestMessage = {
-                          CreatedTime: res.Data.Message?.CreatedTime,
-                          Message: res.Data.Message?.Message,
-                          MessageType: res.Data.Message?.MessageType,
-                      } as any;
+                      case 'comment':
+                          let existComment = res.Data.Message.MessageType == (ChatomniMessageType.FacebookComment || ChatomniMessageType.TShopComment);
+                          if(existComment) {
+                              this.setSocketChatomniOnMessage(res);
+                          }
+                          break;
 
-                      // TODO: gán lại mess nếu gửi hình
-                      if(res.Data.Message && res.Data.Message.Data && res.Data.Message.Data.attachments && res.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(res.Data.Message.Data.attachments.data[0]?.image_data)){
-                          this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${res.Data.Message.Data.attachments.data.length} hình ảnh` as string;
-                      }
-
-                      this.lstConversation[index].Message = res.Data.Message?.Message;
-
-                      if(!res.Data.Message?.IsOwner){
-                        this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
-                      }
-                      this.lstConversation[index] = {...this.lstConversation[index]};
-
-                      // TODO: Check vị trí ConversationId và add vào đàu tiên
-                      let model = {...this.lstConversation[index]};
-                      if(index > 0){
-                          this.lstConversation = this.lstConversation.filter(x => x.ConversationId != res.Data.Conversation?.UserId);
-                          this.lstConversation = [...[model], ...(this.lstConversation || [])];
-                      }
-                  } else {
-                      // // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
-                      // let itemNewMess = this.chatomniConversationFacade.prepareCreateMessageOnEventSocket(res)
-                      // this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])]
+                      default:
+                          this.setSocketChatomniOnMessage(res);
+                      break;
                   }
-
-                  this.cdRef.detectChanges();
               }
             break;
 
@@ -205,10 +186,47 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             case ChatmoniSocketEventName.chatomniOnReadConversation:
               break;
 
-            default: break;
+            default:
+              break;
         }
       }
     })
+  }
+
+  setSocketChatomniOnMessage(data: SocketEventSubjectDto) {
+    let index = this.lstConversation.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
+    if(Number(index) > -1) {
+
+        this.lstConversation[index].LatestMessage = {
+            CreatedTime: data.Data.Message?.CreatedTime,
+            Message: data.Data.Message?.Message,
+            MessageType: data.Data.Message?.MessageType,
+        } as any;
+
+        // TODO: gán lại mess nếu gửi hình
+        let existAttachment = data.Data.Message && data.Data.Message.Data && data.Data.Message.Data.attachments
+                            && data.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(data.Data.Message.Data.attachments.data[0]?.image_data);
+        if(existAttachment){
+            this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${data.Data.Message.Data.attachments.data.length} hình ảnh` as string;
+        }
+
+        this.lstConversation[index].Message = data.Data.Message?.Message;
+
+        if(!data.Data.Message?.IsOwner){
+          this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+        }
+
+        this.lstConversation[index] = {...this.lstConversation[index]};
+
+        // TODO: Check vị trí ConversationId và add vào đàu tiên
+        let model = {...this.lstConversation[index]};
+        if(index > 0){
+            this.lstConversation = this.lstConversation.filter(x => x.ConversationId != data.Data.Conversation?.UserId);
+            this.lstConversation = [...[model], ...(this.lstConversation || [])];
+        }
+    }
+
+    this.cdRef.detectChanges();
   }
 
   eventEmitter() {
