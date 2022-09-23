@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
+import { compareAsc } from 'date-fns/esm';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
@@ -101,7 +102,26 @@ export class DashboardFacebookReportComponent implements OnInit {
   }
 
   handlerAxisData(data: MDBTotalCommentMessageFbDTO[]) {
-    this.axisData = data.map(value => format(new Date(value.Date), "dd/MM"));
+    this.axisData = [];
+    let arrDate:Array<Date> = [];
+    
+    data.map(value => {
+      if(this.checkList.includes(this.currentDateRanges.id)){
+        let day = format(new Date(value.Date), "dd");
+        
+        if(Number(day) % 3 == 0){
+          arrDate.push(new Date(value.Date));
+        }
+      } else {
+        arrDate.push(new Date(value.Date));
+      }
+    });
+    
+    arrDate.sort((a,b) => {
+      return a.getTime() - b.getTime()
+    });
+
+    this.axisData = arrDate.map(date=> { return format(date, "dd/MM")})
   }
 
   handlerSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
@@ -172,21 +192,24 @@ export class DashboardFacebookReportComponent implements OnInit {
               fontStyle:'normal',
               fontSize:14,
               lineHeight:20,
-              align:'center'
+              align:'center',
+              width: 100,
+              hideOverlap: true,
             }
           }
         ],
         yAxis:[
           {
             axisLabel:{
-              margin:24,
+              margin:12,
               color:'#6B7280',
               fontFamily:'Segoe UI',
               fontWeight:400,
               fontStyle:'normal',
               fontSize:14,
               lineHeight:20,
-              align:'right'
+              align:'right',
+              width:100
             }
           }
         ]
@@ -199,16 +222,16 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   buildChartDemo(chart : TDSBarChartComponent){
     if(this.checkList.includes(this.currentDateRanges.id)){
-      chart.dataZoom = {
-        sliderType:{
-          show: true,
-          type: 'slider',
-          startValue: 0,
-          endValue: 6,
-          zoomLock: true,
-          bottom: 35
-        }
-      }
+      // chart.dataZoom = {
+      //   sliderType:{
+      //     show: true,
+      //     type: 'slider',
+      //     startValue: 0,
+      //     endValue: 6,
+      //     zoomLock: true,
+      //     bottom: 35
+      //   }
+      // }
 
       chart.grid!.bottom = 100;
     }

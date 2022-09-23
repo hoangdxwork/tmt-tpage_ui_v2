@@ -134,14 +134,15 @@ export class DashboardRevenueReportComponent implements OnInit {
         yAxis:[
           {
             axisLabel:{
-              margin:24,
+              margin:12,
               color:'#6B7280',
               fontFamily:'Segoe UI',
               fontWeight:400,
               fontStyle:'normal',
               fontSize:14,
               lineHeight:20,
-              align:'right'
+              align:'right',
+              width: 100
             },
             interval:500,
           }

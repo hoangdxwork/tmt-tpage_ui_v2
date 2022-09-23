@@ -4,12 +4,11 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
-import { takeUntil, finalize } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
@@ -64,7 +63,7 @@ export class DashboardDailyReportComponent implements OnInit {
 
   loadSummaryCurrentDay(pageId?: string) {
     this.isLoading = true;
-    this.reportFacebookService.getSummaryCurrentDay(pageId || '').pipe(takeUntil(this.destroy$)).subscribe({
+    this.reportFacebookService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           if(TDSHelperArray.hasListValue(res)){
             this.lstData = [...res];
@@ -85,7 +84,7 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   loadSummaryOverviewCurrentDay(pageId?: string) {
-    this.reportFacebookService.getSummaryOverviewCurrentDay(pageId || '').subscribe({
+    this.reportFacebookService.getSummaryOverviewCurrentDay().subscribe({
       next:(res) => {
         this.dataOverviewCurrentDay = {...res};
       },
@@ -197,6 +196,7 @@ export class DashboardDailyReportComponent implements OnInit {
               align:'left',
             },
             interval: this.interval,
+            max: this.interval*6,
             splitLine:{
               lineStyle:{
                 color:'#C4C4C4',

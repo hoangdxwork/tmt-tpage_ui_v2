@@ -1,3 +1,6 @@
+import { TDSMessageService } from 'tds-ui/message';
+import { takeUntil } from 'rxjs/operators';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, OnInit } from '@angular/core';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { InputSummaryOverviewDTO, ReportSummaryOverviewResponseDTO,  } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
@@ -5,26 +8,23 @@ import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/comm
 
 @Component({
   selector: 'app-dashboard-overview',
-  templateUrl: './dashboard-overview.component.html'
+  templateUrl: './dashboard-overview.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class DashboardOverviewComponent implements OnInit {
-
-  labelData = [
-    { value: 25,  percent: 20, decrease: false },
-    { value: 140000,  percent: 20 },
-    { value: 25, percent: 20 },
-    { value: 3, percent: 20 }
-  ];
 
   currentDateRanges!: TDSDateRangeDTO;
   tdsDateRanges: TDSDateRangeDTO[] = [];
 
   emptyData = false;
+  isLoading = false;
   dataSummaryOverview!: ReportSummaryOverviewResponseDTO;
 
   constructor(private reportFacebookService: ReportFacebookService,
-    private commonHandler: CommonHandler) {
+    private commonHandler: CommonHandler,
+    private destroy$: TDSDestroyService,
+    private message: TDSMessageService) {
       this.tdsDateRanges = this.commonHandler.tdsDateRanges;
       this.currentDateRanges = this.commonHandler.currentDateRanges;
   }
@@ -39,17 +39,23 @@ export class DashboardOverviewComponent implements OnInit {
     model.PageId = undefined;
     model.DateStart = this.currentDateRanges.startDate;
     model.DateEnd = this.currentDateRanges.endDate;
+    this.isLoading = true;
 
-    this.reportFacebookService.getSummaryOverview(model).subscribe(res => {
-      this.dataSummaryOverview = res;
-    }, error => {
-      this.emptyData = true;
+    this.reportFacebookService.getSummaryOverview(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.dataSummaryOverview = {...res};
+        this.isLoading = false;
+      }, 
+      error:(err) => {
+        this.emptyData = true;
+        this.isLoading = false;
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
     });
   }
 
   onChangeFilter(data:any){
-    this.currentDateRanges = data;
-
+    this.currentDateRanges = {...data};
     this.loadData();
   }
 }
