@@ -328,7 +328,7 @@
                     <span class="col-span-1 w-full font-semibold">Giao hàng thu tiền</span>
                     <div class="col-span-2 w-full">
                       <tds-form-field>
-                        <tds-input-number [min]='0' [step]="1"
+                        <tds-input-number [min]='0' [step]="1000"
                           [formatter]="numberWithCommas"
                           [parser]="parserComas" placeholder="Nhập tiền" formControlName="CashOnDelivery">
                         </tds-input-number>

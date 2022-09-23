@@ -216,7 +216,6 @@ export class AddBillComponent implements OnInit {
             } else {
                 this.router.navigateByUrl('bill/create');
             }
-
         break;
 
         case 'edit':
@@ -294,27 +293,23 @@ export class AddBillComponent implements OnInit {
     this.isLoading = true;
     this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        delete res['@odata.context'];
+          delete res['@odata.context'];
+          let obs = res as FastSaleOrder_DefaultDTOV2;
 
-        if(this.path == 'copy'){
-            // Trường hợp sao chép
-            this.loadCopyData(res);
-        } else {
-            let obs = res as FastSaleOrder_DefaultDTOV2;
+          obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
+          obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
+          obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
 
-            obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
-            obs.DateOrderRed = obs.DateOrderRed ? new Date(obs.DateOrderRed) : null;
-            obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
+          this.updateForm(obs);
+          // TODO: change partner gán thêm các field
+          let partnerId = obs.PartnerId || obs.Partner?.Id;
+          if (partnerId) {
+              this.changePartner(partnerId);
+          }
 
-            this.updateForm(obs);
-            // TODO: change partner gán thêm các field
-            let partnerId = obs.PartnerId || obs.Partner?.Id;
-            if (partnerId) {
-                this.changePartner(partnerId);
-            }
-
-            this.isLoading = false;
-        }
+          this.calcTotal();
+          this._form.controls['CashOnDelivery'].setValue(obs.CashOnDelivery);
+          this.isLoading = false;
       },
       error:(error) => {
         this.message.error(error?.error?.message || 'Tải thông tin hóa đơn đã xảy ra lỗi!');
@@ -342,7 +337,6 @@ export class AddBillComponent implements OnInit {
                   let order = JSON.parse(item) as SaleOnlineOrderGetDetailsDto;
                   data = {...this.prepareDetailsOrdLineHandler.prepareModel(data, order)} as FastSaleOrder_DefaultDTOV2;
               }
-
 
           } else {
               // TODO: xóa cache order F10
@@ -402,6 +396,7 @@ export class AddBillComponent implements OnInit {
             }
 
             this.calcTotal();
+            this._form.controls['CashOnDelivery'].setValue(obs.CashOnDelivery);
             this.isLoading = false;
         },
         error:(err) => {
@@ -519,15 +514,13 @@ export class AddBillComponent implements OnInit {
       // this._form.controls["Ship_Receiver"].reset();
       // this._form.controls['Partner'].setValue(partner);
       this._form.controls['PartnerId'].setValue(partnerId);
-
       let model = this.prepareModel();
 
       return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
         .pipe(map((data: TDSSafeAny) => {
             delete data['@odata.context'];
             return [data, partner];
-        })
-        )
+        }))
     }));
   }
 
