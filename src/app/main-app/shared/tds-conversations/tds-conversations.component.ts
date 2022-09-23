@@ -864,6 +864,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
         this.data.AssignedTo = res;
+
+        //TODO: truyền về conversation-all
+              setTimeout(() => {
+                  this.chatomniEventEmiter.assignedToUser$.emit(this.data.ConversationId);
+              }, 300);
         this.message.success('Thao tác thành công');
         this.isLoadingSelectUser = false;
 

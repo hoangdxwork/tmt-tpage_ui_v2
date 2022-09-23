@@ -290,6 +290,20 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           })
       }
     })
+
+    // TODO Cập nhật đã gán nhân viên
+    this.chatomniEventEmiterService.assignedToUser$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (id: string) => {
+        if(id) {
+          let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
+          if(Number(index) >- 1) {
+              this.lstConversation[index].AssignedTo = true;
+              this.lstConversation[index] = {...this.lstConversation[index]};
+              this.cdRef.detectChanges();
+          }
+        }
+      }
+    })
   }
 
   loadData(team: any) {

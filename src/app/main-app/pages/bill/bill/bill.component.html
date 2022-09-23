@@ -114,7 +114,7 @@
                   </div>
                 </td>
                 <td *ngIf="isHidden('Number')" class="border-r min-w-[160px] max-w-[320px]">
-                  <div class="w-full flex font-semibold text-center pb-2 truncate">
+                  <div class="w-full flex font-semibold text-center pb-2 truncate cursor-pointer" (click)="onView(data)">
                     <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{data.Number || 'N/A'}}</span>
                   </div>
                   <!-- Nhãn -->

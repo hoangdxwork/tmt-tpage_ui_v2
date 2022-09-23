@@ -83,6 +83,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   public columns: any[] = [
     { value: 'Code', name: 'Mã', isChecked: true },
     { value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true },
+    { value: 'LiveCampaignName', name: 'Chiến dịch live', isChecked: false },
     { value: 'Name', name: 'Tên', isChecked: true },
     { value: 'Address', name: 'Địa chỉ', isChecked: false },
     { value: 'TotalAmount', name: 'Tổng tiền', isChecked: true },

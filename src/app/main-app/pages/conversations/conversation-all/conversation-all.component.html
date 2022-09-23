@@ -93,6 +93,7 @@
                           <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
                             <a (click)="changeCurrentConversationItem(item)"
                               class="w-full {{ conversationItem.ConversationId == item.ConversationId? 'cursor-no-drop' : 'cursor-pointer'}}">
+                              <!-- list danh sacsh chet -->
                                 <current-conversation-item-v2
                                     [item]="item" [csid]="item.ConversationId" [type]="type"
                                     [conversationItem]="conversationItem"
