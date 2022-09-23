@@ -4,7 +4,7 @@
             <div class="flex flex-row items-center">
                 <div class="avatar mr-2 relative">
                     <tpage-avatar-facebook [size]="48"
-                        [noSeenMessage]="(type == 'all' && data.CountUnread > 0) || (type == 'message' && data.CountUnread > 0) || (type == 'comment' && data.CountUnread > 0)"
+                        [noAssignedUser]="data.AssignedTo?.UserName ? true : false"
                         [shape]="'circle'" [psid]="data.ConversationId"
                         [token]="team.ChannelToken">
                     </tpage-avatar-facebook>
@@ -44,7 +44,7 @@
                     <label class="text-black text-title-1 font-semibold">{{data.Name}}</label>
                     <div class="flex flex-row">
                         <button class="flex items-center"
-                            color="primary"  trigger="click"  tds-dropdown
+                            color="primary"  trigger="click" tds-dropdown
                             [tdsDropdownMenu]="menu2" [placement]="'bottomRight'">
                             <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.AssignedTo ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
                             <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo?.UserName:''}}</span>
@@ -100,7 +100,7 @@
                 <button *ngIf="!isOpenSearch" type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onOpenSearch()">
                     <i class="tdsi-search-fill"></i>
                 </button>
-                
+
                 <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="refreshRead()">
                     <i [ngClass]="isLoading?'animate-spin':''" class="tdsi-reload-fill"></i>
                 </button>

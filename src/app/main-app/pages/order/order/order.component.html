@@ -102,6 +102,7 @@
               <th [tdsLeft]="true" [width]="'90px'" class="border-l text-center">STT</th>
               <th *ngIf="isHidden('Code')" [tdsLeft]="true" class="border-l min-w-[120px] max-w-[240px]">Mã</th>
               <th *ngIf="isHidden('CRMTeamName')" class="border-l">Kênh kết nối</th>
+              <th *ngIf="isHidden('LiveCampaignName')" class="border-l">Chiến dịch live</th>
               <th *ngIf="isHidden('Name')" class="border-l">Khách hàng</th>
               <th *ngIf="isHidden('Address')" class="border-l">Địa chỉ</th>
               <th *ngIf="isHidden('TotalAmount')" class="border-l text-right">Tổng tiền</th>
@@ -212,17 +213,18 @@
                   </div>
                 </td>
 
+                <!-- Chiến dịch live -->
+                <td *ngIf="isHidden('LiveCampaignName')" class="border-l min-w-[200px] max-w-[400px]">
+                  <div class="w-full flex">
+                    <span class="ml-1 truncate">{{data.LiveCampaignName}}</span>
+                  </div>
+                </td>
+
                 <!-- Tên -->
                 <td *ngIf="isHidden('Name')" class="border-l min-w-[260px] max-w-[500px]">
                   <div class="w-full flex flex-col gap-y-1">
                     <div class="flex items-center">
                       <p class="truncate mr-1">{{data.PartnerName}}</p>
-                      <div tds-button color="secondary" *ngIf="data.PartnerStatus"
-                          class="border border-solid rounded px-2 py-px mr-1" [ngStyle]="(data.PartnerStatus.sS) | buttonStatusColor">
-                          <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
-                            {{ data.PartnerStatus.sT }}
-                          </span>
-                      </div>
                     </div>
                     <div class="flex items-center">
                       <p *ngIf="data.Telephone" class="text-[#929DAA] mr-1">{{data.Telephone}}</p>
@@ -237,6 +239,11 @@
                         </span>
                       </button>
                     </div>
+                    <div *ngIf="data.PartnerStatus" [ngStyle]="{'color': data.PartnerStatus.sS}">
+                          <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
+                            {{ data.PartnerStatus.sT }}
+                          </span>
+                      </div>
                   </div>
                 </td>
 
@@ -246,12 +253,12 @@
                 </td>
 
                 <!-- Tổng tiền -->
-                <td *ngIf="isHidden('TotalAmount')" class="border-l text-right min-w-[140px] max-w-[280px] truncate">
+                <td *ngIf="isHidden('TotalAmount')" class="border-l text-right min-w-[100px] max-w-[200px] truncate">
                   <span>{{data.TotalAmount || 0 | numberCustom | numberCustom }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
-                <td *ngIf="isHidden('TotalQuantity')" class="border-l min-w-[140px] max-w-[280px] truncate text-center">
+                <td *ngIf="isHidden('TotalQuantity')" class="border-l min-w-[100px] max-w-[200px] truncate text-center">
                   <span>{{data.TotalQuantity || 0 | numberCustom | numberCustom }}</span>
                 </td>
 

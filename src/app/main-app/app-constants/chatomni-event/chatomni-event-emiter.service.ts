@@ -11,7 +11,7 @@ export class ChatomniEventEmiterService {
 
     //TODO: tryền gán tag và gỡ tag từ tds-coversation sang conversation-all
     public tag_ConversationEmiter$ = new EventEmitter<ChatomniTagsEventEmitterDto>();
-    
+
     //TODO: tryền tin nhắn cuối sang conversation-all
     public last_Message_ConversationEmiter$ = new EventEmitter<ChatomniLastMessageEventEmitterDto>();
 
@@ -34,6 +34,9 @@ export class ChatomniEventEmiterService {
 
     //TODO: tryền bình luận con sang tds-conversation
     public childCommentConversationEmiter$ = new EventEmitter<ExtrasChildsDto>();
+
+    //TODO: tryền đã gán nhân viên sang conversation-all
+    public assignedToUser$ = new EventEmitter<string>();
 
     constructor() {
     }

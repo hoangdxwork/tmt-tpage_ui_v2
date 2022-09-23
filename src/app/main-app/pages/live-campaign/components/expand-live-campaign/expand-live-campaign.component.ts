@@ -20,6 +20,8 @@ export class ExpandLiveCampaignComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   liveCampaigns!: LiveCampaignDTO;
   facebookPosts: GetAllFacebookPostDTO[] = [];
+  pageSize = 10;
+  pageIndex = 1;
 
   private destroy$ = new Subject<void>();
 

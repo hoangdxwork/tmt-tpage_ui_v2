@@ -16,7 +16,7 @@ export class TpageAvatarFacebookComponent implements OnInit, OnDestroy {
   @Input() token!: TDSSafeAny;
   @Input() size: 'md' | 'lg' | 'sm' | 'xl' | number = 'md';
   @Input() shape:'square' | 'circle' = 'circle';
-  @Input() noSeenMessage: boolean = false;
+  @Input() noAssignedUser: boolean = false;
   @Input() hasAvatar!: string;
 
   url!: string;

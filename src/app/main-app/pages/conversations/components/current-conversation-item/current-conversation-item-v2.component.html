@@ -6,7 +6,7 @@
       <div class="flex gap-3">
         <div class="relative">
             <tpage-avatar-facebook
-              [noSeenMessage]="seenedMessage()"
+              [noAssignedUser]="item.AssignedTo ? true : false"
               [shape]="'circle'" [size]="'lg'" [hasAvatar]="item.Avatar"
               [psid]="item.ConversationId" [token]="team.ChannelToken">
             </tpage-avatar-facebook>
