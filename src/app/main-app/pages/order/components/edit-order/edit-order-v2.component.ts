@@ -597,6 +597,11 @@ export class EditOrderV2Component implements OnInit {
           return;
       }
 
+      if (!TDSHelperString.hasValueString(model.CityCode) || !TDSHelperString.hasValueString(model.DistrictCode)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Tỉnh/Thành phố là bắt buộc');
+          return false;
+      }
+
       //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
       if(!this.isCalculateFeeAship && this.saleModel.Carrier) {
           this.notification.info(`Đối tác ${this.saleModel.Carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng xác nhận lại sau khi thành công');
@@ -684,7 +689,7 @@ export class EditOrderV2Component implements OnInit {
             }
 
             if(res && !res.Message ) {
-              this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
+                this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
             }
 
             if(type && res) {
@@ -693,6 +698,8 @@ export class EditOrderV2Component implements OnInit {
               this.isLoading = false;
               this.modalRef.destroy('onLoadPage');
             }
+
+            this.isCalculateFeeAship = false;
         },
         error: (error: any) => {
             this.isLoading = false;
