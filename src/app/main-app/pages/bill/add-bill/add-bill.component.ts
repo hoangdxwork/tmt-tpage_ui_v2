@@ -1245,6 +1245,7 @@ export class AddBillComponent implements OnInit {
         }
 
         this.isLoading = false;
+        this.isCalculateFeeAship = false;
       },
       error: (error: any) => {
         this.isLoading = false;

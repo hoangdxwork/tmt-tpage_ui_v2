@@ -642,6 +642,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           this.isLoading = false;
           this.quickOrderModel = {...res};
+          this.mappingAddress(this.quickOrderModel);
 
           //TODO: trường hợp tạo lần đầu thì gọi in phiếu
           if(res.IsCreated) {
@@ -725,6 +726,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: any) => {
           delete res['@odata.context'];
           this.quickOrderModel = {...res};
+
+          this.mappingAddress(this.quickOrderModel);
           this.quickOrderModel.FormAction = formAction;
 
           if(!this.isEnableCreateOrder && type == 'print') {
@@ -781,6 +784,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
         if (!TDSHelperString.hasValueString(model.Address)) {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+            return false;
+        }
+
+        if (!TDSHelperString.hasValueString(model.CityCode) || !TDSHelperString.hasValueString(model.DistrictCode)) {
+            this.notification.warning('Không thể tạo hóa đơn', 'Tỉnh/Thành phố là bắt buộc');
             return false;
         }
 
@@ -867,6 +875,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.saleModel = {} as any;
           this.enableInsuranceFee = false;
           this.isEnableCreateOrder = false;
+          this.isCalculateFeeAship = false;
 
           // TODO: trường hợp bài viết và all xử lí khác nhau
           if(this.type == 'post') {
