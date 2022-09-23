@@ -1067,18 +1067,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           padding: '0px'
         },
     });
-
   }
 
   selectProduct(item: DataPouchDBDTO) {
     let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId) as number;
     if(Number(index) < 0) {
-      let data = {...item} as ProductDTOV2;
-
-      let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
-      this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
+        let data = {...item} as ProductDTOV2;
+        let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
+        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
     } else {
-      this.quickOrderModel.Details[index].Quantity += 1;
+        this.quickOrderModel.Details[index].Quantity += 1;
     }
 
     this.calcTotal();
@@ -1246,11 +1244,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   pushItemProduct(data: ProductDTOV2) {
     let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId) as number;
-    if (Number(index) < 0 || !index){
+    if (Number(index) >= 0) {
+        this.quickOrderModel.Details[index].Quantity += 1;
+
+    } else{
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
         this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
-    } else{
-        this.quickOrderModel.Details[index].Quantity += 1;
     }
 
     this.closeSearchProduct();
