@@ -91,6 +91,7 @@ export class EditOrderV2Component implements OnInit {
   visiblePopoverTax: boolean = false;
   visibleDiscountLines: boolean = false;
   visibleShipExtraMoney: boolean = false;
+  isCalculateFeeAship: boolean = false;
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -594,6 +595,14 @@ export class EditOrderV2Component implements OnInit {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
           return;
       }
+
+      //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
+      if(!this.isCalculateFeeAship && this.saleModel.Carrier) {
+          this.notification.info(`Đối tác ${this.saleModel.Carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng xác nhận lại sau khi thành công');
+          let carrier = this.saleModel.Carrier as any;
+          this.calculateFeeAship(carrier);
+          return;
+      }
     }
 
     this.isLoading = true;
@@ -862,6 +871,7 @@ export class EditOrderV2Component implements OnInit {
             }
 
             this.isLoading = false;
+            this.isCalculateFeeAship = true;
             this.cdRef.markForCheck();
         },
         error: (error: any) => {

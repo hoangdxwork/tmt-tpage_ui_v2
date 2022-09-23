@@ -115,6 +115,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   priceValue: number = 0;
   companyCurrents!: CompanyCurrentDTO;
   visibleShipExtraMoney: boolean = false;
+  isCalculateFeeAship: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -709,6 +710,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
           return false;
       }
+
+      //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
+      if(!this.isCalculateFeeAship && this.saleModel.Carrier) {
+          this.notification.info(`Đối tác ${this.saleModel.Carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng thao tác lại sau khi thành công');
+          let carrier = this.saleModel.Carrier as any;
+          this.calculateFeeAship(carrier);
+          return;
+      }
     }
 
     this.isLoading = true;
@@ -754,8 +763,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSave(formAction?: string, type?: string): any {
+
     let model = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
-    debugger;
+
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
     }
@@ -773,6 +783,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
             return false;
         }
+
+        //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
+        if(!this.isCalculateFeeAship && this.saleModel.Carrier) {
+            this.notification.info(`Đối tác ${this.saleModel.Carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng thao tác lại sau khi thành công');
+            let carrier = this.saleModel.Carrier as any;
+            this.calculateFeeAship(carrier);
+            return;
+        }
     }
 
     this.isLoading = true;
@@ -783,7 +801,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.quickOrderModel = {...res};
           this.quickOrderModel.FormAction = formAction;
 
-          if(!this.isEnableCreateOrder && type) {            
+          if(!this.isEnableCreateOrder && type) {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
           }
 
@@ -807,7 +825,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: cập nhật mã đơn hàng lên tab
               this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
-              
+
               // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
               this.chatomniConversationFacade.onSyncConversationInfo$.emit();
           }
@@ -1330,6 +1348,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           this.isLoading = false;
+          this.isCalculateFeeAship = true;
           this.cdRef.detectChanges();
       },
       error: (error: any) => {

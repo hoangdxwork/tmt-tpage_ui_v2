@@ -39,12 +39,10 @@ export class DashboardDailyReportComponent implements OnInit {
   dataOverviewCurrentDay!: MDBSummaryByPostDTO;
   interval: number = 0;
 
-  constructor(
-    private crmTeamService: CRMTeamService,
+  constructor(private crmTeamService: CRMTeamService,
     private reportFacebookService: ReportFacebookService,
     private message: TDSMessageService,
-    private destroy$: TDSDestroyService
-  ) { }
+    private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
     this.loadAxisData();
@@ -77,7 +75,7 @@ export class DashboardDailyReportComponent implements OnInit {
             this.emptyData = true;
             this.isLoading = false;
           }
-        }, 
+        },
         error:(err) => {
           this.emptyData = true;
           this.isLoading = false;
@@ -103,12 +101,12 @@ export class DashboardDailyReportComponent implements OnInit {
 
   loadSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
     let dataMessage: number[] = [];
-    
+
     let lstTotalMessage = data.map(f => f.TotalMessage);
     //TODO: lấy 5 giá trị trên trục y
     let calInterval = Math.max(...lstTotalMessage)/5;
-    this.interval = Math.round(calInterval); 
-    
+    this.interval = Math.round(calInterval);
+
     this.axisData.forEach((hour) => {
       let find = data.find(x => JSON.stringify(x.Hours) === hour);
       dataMessage.push(find?.TotalMessage || 0);

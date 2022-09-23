@@ -16,7 +16,7 @@ import { addDays } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 import { FastSaleOrderDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';

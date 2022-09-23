@@ -151,7 +151,7 @@ export class AddBillComponent implements OnInit {
     return value;
   };
 
-  chatomniEventEmiter: any;
+  isCalculateFeeAship: boolean = false;
 
   constructor(private fb: FormBuilder,
     private router: Router,
@@ -168,6 +168,7 @@ export class AddBillComponent implements OnInit {
     private crmTeamService: CRMTeamService,
     private cdRef: ChangeDetectorRef,
     private modal: TDSModalService,
+    private notification: TDSNotificationService,
     private notificationService: TDSNotificationService,
     private addBillHandler: AddBillHandler,
     private prepareDetailsOrdLineHandler: PrepareDetailsOrderLineHandler,
@@ -1114,6 +1115,14 @@ export class AddBillComponent implements OnInit {
 
   onSave(formAction?: string, print?: string): any {
 
+    //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
+    let carrier = this._form.controls['Carrier'].value;
+    if(!this.isCalculateFeeAship && carrier) {
+        this.notification.info(`Đối tác ${carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng thao tác lại sau khi thành công');
+        this.calculateFeeAship(carrier);
+        return;
+    }
+
     this.updateShipExtras();
     this.updateShipServiceExtras();
     this.updateShipmentDetailsAship();
@@ -1347,15 +1356,14 @@ export class AddBillComponent implements OnInit {
   }
 
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
-
     let model = this.prepareModelFeeV2();
-    this.isLoading = true;
 
+    this.isLoading = true;
     this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             if(res && !res.error) {
 
-                if(!TDSHelperString.isString(res)){
+                if(!TDSHelperString.isString(res)) {
                     this.configsProviderDataSource = [...res.configs];
 
                     this.insuranceInfo = res.data?.InsuranceInfo || null;
@@ -1376,6 +1384,7 @@ export class AddBillComponent implements OnInit {
             }
 
             this.isLoading = false;
+            this.isCalculateFeeAship = true;
         },
         error: (error: any) => {
             this.isLoading = false;
