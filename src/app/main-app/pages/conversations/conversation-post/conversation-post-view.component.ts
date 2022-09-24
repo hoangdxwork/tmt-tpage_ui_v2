@@ -261,7 +261,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
 
   openConfigPost() {
     if (this.team!.Type == 'Facebook') {
-      let date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm', 'en-US');
+      let date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm:ss', 'en-US');
 
       this.modalService.create({
         title: `Cấu hình bài viết - ${date}`,

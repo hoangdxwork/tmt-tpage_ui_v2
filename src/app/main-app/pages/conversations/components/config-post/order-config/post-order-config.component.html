@@ -25,7 +25,7 @@
             <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
                 <div class="text-body-2 font-semibold text-neutral-1-900 font-sans mr-4">Giới hạn số đơn được tạo</div>
                 <div class="flex w-[152px]">
-                      <tds-input-number [(ngModel)]="dataModel.MaxCreateOrder" 
+                      <tds-input-number [(ngModel)]="dataModel.MaxCreateOrder"
                       [formatter]="numberWithCommas" [parser]="parserComas" [min]="0" [max]="1000000" [step]="1" placeholder="0"></tds-input-number>
                 </div>
             </div>
@@ -79,7 +79,7 @@
             <div class="flex items-center" *ngIf="dataModel.IsEnableOrderAuto">
                 <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) : </div>
                 <div class="flex w-40">
-                    <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" 
+                    <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0"
                       [formatter]="numberWithCommas" [parser]="parserComas"
                       [(ngModel)]="dataModel.MinLengthToOrder"></tds-input-number>
                 </div>
@@ -135,8 +135,8 @@
               </div>
 
               <div class="flex justify-end gap-2.5 pt-4">
-                  <button tds-button color="secondary" (click)="onCannelMoreTemplate()" >Hủy bỏ</button>
-                  <button tds-button color="primary" (click)="generateRangeTemplates()" >Tạo mẫu</button>
+                  <button tds-button color="secondary" class="min-w-[100px]" (click)="onCannelMoreTemplate()">Hủy bỏ</button>
+                  <button tds-button color="primary" class="min-w-[100px]" (click)="generateRangeTemplates()">Tạo mẫu</button>
               </div>
           </div>
 
@@ -166,8 +166,8 @@
                   </div>
 
                   <div class="pt-6">
-                      <div class="flex p-2 bg-white rounded-md gap-x-1">
-                          <tds-form-field class="p-3 w-full">
+                      <div class="flex rounded-md gap-x-1">
+                          <tds-form-field class="w-full">
                               <tds-select [ngModel]="(item.Content | stringToStringArray) || []"
                                   (ngModelChange)="selectContent($event, item)" [ngModelOptions]="{standalone: true}"
                                   placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10">
@@ -195,8 +195,8 @@
                     </div>
 
                     <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues && item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
-                      <div class="flex p-2 bg-white rounded-md gap-x-1">
-                        <tds-form-field class="p-3 w-full">
+                      <div class="flex rounded-md gap-x-1">
+                        <tds-form-field class="w-full">
                           <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []"
                               (ngModelChange)="selectContentWithAttributes($event, item)"
                               placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10">

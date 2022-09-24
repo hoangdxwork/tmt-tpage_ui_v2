@@ -30,7 +30,7 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
   checked : boolean = false;
   datePicker: any = [addDays(new Date(), -30), new Date()];
   // lstOfData!: ODataSaleOnline_OrderModel[];
-  pageSize: number = 20;
+  pageSize: number = 10;
   pageIndex: number = 1;
   count: number = 0;
   isLoading: boolean = false;

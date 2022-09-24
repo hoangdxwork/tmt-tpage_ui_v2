@@ -111,6 +111,7 @@ export class OverviewOrderBypartnerComponent implements OnInit {
 
           this.count = res["@odata.count"];
           this.lstOrder = [...res.value];
+          console.log(this.lstOrder);
 
           this.isLoading = false;
         }, err => {

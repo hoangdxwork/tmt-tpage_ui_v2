@@ -70,9 +70,9 @@
               <div class="flex gap-x-4 items-center">
                 <tds-label class="w-1/4">Đặt cọc bắt buộc</tds-label>
                 <tds-form-field class="w-3/4">
-                  <tds-input-number [min]='0' [step]="1000" placeholder="0" formControlName="MaxAmountDepositRequired" 
+                  <tds-input-number [min]='0' [step]="1000" placeholder="0" formControlName="MaxAmountDepositRequired"
                     (ngModelChange)="onChangeDeposit($event)"
-                    [formatter]="numberWithCommas" [parser]="parserComas"> 
+                    [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
               </div>
@@ -101,7 +101,7 @@
                 <div class="flex gap-x-4 items-center">
                   <tds-label class="w-1/4">Đặt cọc tối thiểu</tds-label>
                   <tds-form-field class="w-3/4" [color]="isDepositChange ? 'error' : 'default'">
-                      <tds-input-number [min]="0" [step]="1000" placeholder="0" formControlName="MinAmountDeposit" 
+                      <tds-input-number [min]="0" [step]="1000" placeholder="0" formControlName="MinAmountDeposit"
                         [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                   </tds-form-field>
                 </div>
@@ -178,15 +178,15 @@
             </div>
 
             <div class="w-full flex-auto text-body-2 text-neutral-1-900">
-              <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [listData]="_form.controls['Details'].value" [scroll]="{y:'auto'}">
+              <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [listData]="_form.controls['Details'].value">
                 <thead>
                   <tr>
-                      <th [width]="'64px'">STT</th>
-                      <th [width]="'365px'">Sản phẩm</th>
+                      <th [width]="'64px'" class="text-center">STT</th>
+                      <th [width]="'320px'">Sản phẩm</th>
                       <th [width]="'80px'">Ẩn/ hiện</th>
-                      <th [width]="'163px'">Số lượng</th>
-                      <th [width]="'163px'">Giới hạn trên đơn</th>
-                      <th [width]="'163px'">Giá bán</th>
+                      <th [width]="'120px'">Số lượng</th>
+                      <th [width]="'120px'">Giới hạn trên đơn</th>
+                      <th [width]="'120px'">Giá bán</th>
                       <th [width]="'64px'" class="text-center">
                         <button type="button" tds-button-icon color="secondary" (click)="onDeleteAll()">
                           <span class="flex items-center">
@@ -199,7 +199,7 @@
                 <tbody formArrayName="Details">
                   <tr *ngFor="let detail of detailsForm.controls; let index = index"  [formGroupName]="index">
 
-                    <td> {{ index + 1 }} </td>
+                    <td class="text-center"> {{ index + 1 }} </td>
 
                     <!-- Sản phẩm -->
                     <td>
@@ -216,7 +216,7 @@
 
                           <!-- Tags -->
                           <div class="flex items-center gap-x-1">
-                            <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer" 
+                            <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
                               (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                               [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
@@ -225,7 +225,7 @@
                                   <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                 </div>
                                 <button (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
-                                  [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left" 
+                                  [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                   tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                   color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
                                     <div class="w-5 h-5 relative">
@@ -243,7 +243,7 @@
                                 <div class="w-[304px]">
                                     <tds-form-field>
                                         <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                          [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" 
+                                          [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
                                           [data]="(detail.value.Tags | stringToStringArray)" >
                                         </tds-select>
                                     </tds-form-field>
