@@ -661,11 +661,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           } else {
 
             if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
-              this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
-              this.message.success('Cập nhật đơn hàng thành công');
+                this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
+                this.message.success('Cập nhật đơn hàng thành công');
             }
 
-            // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
+            // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng, dùng ở conversation-post
             this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
 
             // TODO: cập nhật mã đơn hàng lên tab

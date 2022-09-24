@@ -5,11 +5,11 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
-import { Observable, takeUntil } from 'rxjs';
+import { fromEvent, map, Observable, takeUntil, debounceTime } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
@@ -34,7 +34,7 @@ import { TDSTableComponent } from 'tds-ui/table';
   providers: [TDSDestroyService]
 })
 
-export class AddLiveCampaignPostComponent implements OnInit {
+export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
 
   @Input() id?: string;
   @Input() isCopy?: boolean;
@@ -43,6 +43,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
   _form!: FormGroup;
 
   @ViewChild('virtualTable', { static: false }) tdsTableComponent?: TDSTableComponent<any>;
+  @ViewChild('innerText') innerText!: ElementRef;
 
   lstConfig: any = [
     { text: "Nháp", value: "Draft" },
@@ -615,6 +616,19 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
   trackByIndex(i: any): number {
     return i;
+  }
+
+  ngAfterViewInit() {
+    if(this.innerText && this.innerText.nativeElement) {
+      fromEvent(this.innerText.nativeElement, 'keyup').pipe(
+        map((event: any) => { return event.target.value }),
+        debounceTime(750)
+      ).subscribe({
+        next: (text: any) => {
+            text = TDSHelperString.stripSpecialChars(text.toLowerCase().trim());
+        },
+      });
+    }
   }
 
 }
