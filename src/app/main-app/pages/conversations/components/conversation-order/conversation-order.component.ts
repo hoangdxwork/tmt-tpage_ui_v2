@@ -461,9 +461,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   calcTotal() {
     let data = {...this.computeCaclHandler.so_calcTotal((this.saleModel || null), this.quickOrderModel, this.saleConfig)};
 
-    this.quickOrderModel = data.quickOrderModel;
+    this.quickOrderModel = {...data.quickOrderModel};
     if(this.saleModel) {
-       this.saleModel = data.saleModel as FastSaleOrder_DefaultDTOV2;
+       this.saleModel = {...data.saleModel} as FastSaleOrder_DefaultDTOV2;
     }
   }
 

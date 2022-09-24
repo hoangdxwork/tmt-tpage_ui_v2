@@ -79,7 +79,8 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit  {
      */
     scrollToElement(elementID: string, duration: number = 750, container?: any): void {
 
-        const item = document.getElementById(elementID); // the element
+        const item = document.getElementById(elementID) as any; // the element
+
         if (item) {
             const itemPos = item.offsetTop;
             if (container) {
