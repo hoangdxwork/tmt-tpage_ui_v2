@@ -168,7 +168,7 @@
 
           <div class="w-full mt-4 rounded-md">
             <div class="w-full">
-              <tds-table class="tds-table-rounded" #virtualTable [bordered]="true"  [virtualForTrackBy]="trackByIndex"
+              <tds-table class="tds-table-rounded" #virtualTable [bordered]="true" [virtualForTrackBy]="trackByIndex"
                 [listData]="detailsFormGroups.value" [showPagination]="false" [scroll]="{ y:'400px' }">
                 <thead class="rounded">
                     <tr>
@@ -190,7 +190,7 @@
                 </thead>
                 <tbody formArrayName="Details">
                     <tr *ngFor="let detail of detailsFormGroups.controls; let index = index" [formGroupName]="index"
-                        [ngClass]="(isEditDetails[detail.value.Id] && id) ? 'bg-secondary-3' : ''">
+                        [ngClass]="(isEditDetails[detail.value.Id] && id) ? 'bg-[#e8f3ec]' : ''">
 
                         <td > {{ index + 1 }} </td>
 
