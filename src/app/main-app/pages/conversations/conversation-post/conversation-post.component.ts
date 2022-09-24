@@ -193,7 +193,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     //TODO: Check có orderCode thì mở disable tab đơn hàng
     this.conversationOrderFacade.hasValueOrderCode$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (code: any) => {
-        if(TDSHelperString.hasValueString(code)){
+        if(TDSHelperString.hasValueString(code) && !code.includes('#')){
             this.codeOrder = code;
             this.isDisableTabOrder = false;
         }else{

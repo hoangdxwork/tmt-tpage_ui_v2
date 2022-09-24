@@ -1,4 +1,3 @@
-import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from './../../../../dto/conversation/post/comment-order-post.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
@@ -60,7 +59,7 @@ import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni
 import { OdataSaleOnline_Facebook_CommentDto, SaleOnline_Facebook_CommentDto } from '@app/dto/coversation-order/saleonline-facebook-comment.dto';
 import { FacebookCommentService } from '@app/services/facebook-comment.service';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
-import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
@@ -117,7 +116,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   visibleShipExtraMoney: boolean = false;
   isCalculateFeeAship: boolean = false;
 
-  numberWithCommas =(value:TDSSafeAny) =>{
+  numberWithCommas = (value:TDSSafeAny) => {
     if(value != null)
     {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -177,7 +176,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private facebookCommentService: FacebookCommentService,
     private destroy$: TDSDestroyService,
     private chatomniConversationFacade: ChatomniConversationFacade,
-    private chatomniConversationService: ChatomniConversationService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private omniEventEmiter: ChatomniEventEmiterService,
     private socketOnEventService: SocketOnEventService) {
@@ -669,7 +667,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
 
             // TODO: cập nhật mã đơn hàng lên tab
-            this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
+            if(TDSHelperString.hasValueString(res.code) && !res.code.includes('#')){
+              this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
+            }
+            
             this.isUpdated = false;
           }
 

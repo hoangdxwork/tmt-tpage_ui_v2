@@ -5,7 +5,7 @@
     </div>
     <div class="w-2/5 flex flex-col">
       <tds-form-field>
-        <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="false"
+        <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="true"
           [valuePrimitive]="false" [(ngModel)]="carrierForAll" [ngModelOptions]="{standalone: true}" [data]="lstCarriers" (selectChange)="changeCarrierAll()">
         </tds-select>
         <span class="flex items-center text-info-500 text-xs pt-1 absolute">

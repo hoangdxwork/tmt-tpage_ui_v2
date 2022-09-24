@@ -2,6 +2,22 @@
   <div class="flex flex-col h-full">
     <div class="p-4 font-semibold text-xl flex gap-x-3 justify-end">
       <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+        <button tds-button color="info" (click)="approveOrder()">
+          <span class="flex items-center">
+            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Xác nhận bán hàng
+          </span>
+        </button>
+      </tds-spin>
+
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+        <button tds-button color="info" (click)="sendDelivery()">
+          <span class="flex items-center">
+            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Gửi vận đơn
+          </span>
+        </button>
+      </tds-spin>
+
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
         <button tds-button color="info" (click)="print('print')">
           <span class="flex items-center">
             <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In hóa đơn
