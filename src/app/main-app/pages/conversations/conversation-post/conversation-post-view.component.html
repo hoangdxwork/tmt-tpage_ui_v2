@@ -219,7 +219,7 @@
                                         <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearchFilterComment()"
                                         [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}" />
                                     </tds-form-field>  -->
-                                    <span class="comment-count"> {{(data.Data | facebookType).count_comments || 0}} bình luận </span>
+                                    <span class="comment-count" tds-tooltip tooltipTitle="Bình luận đang hiển thị"> {{(data.Data | facebookType).count_comments || 0}} bình luận </span>
                                     <span class="share-count  mr-3"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
                                 </div>
                             </div>
