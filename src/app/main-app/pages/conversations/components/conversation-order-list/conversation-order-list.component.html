@@ -40,9 +40,7 @@
         <div class="flex flex-row items-center justify-between px-4" [ngClass]="isOpenCollapCheck ? '' : 'hidden'">
             <div class="flex flex-auto gap-x-2">
                 <button tds-button color="primary" [loading]="isLoading" (click)="onActive('fastSO')">
-                    <span class="flex items-center">
-                        <i class="tdsi-reload-fill text-lg leading-none mr-2"></i> Tạo nhanh HĐ
-                    </span>
+                    <span class="flex items-center"> Tạo nhanh HĐ </span>
                 </button>
 
                 <button tds-button color="custom" [loading]="isLoading" (click)="onActive('print')"
@@ -99,7 +97,7 @@
                                         <span class="text-error-400 text-caption-2" *ngIf="!order.PrintCount || order.PrintCount == 0">
                                             Chưa in
                                         </span>
-    
+
                                         <span class="text-success-500 text-caption-2" *ngIf="order.PrintCount && order.PrintCount > 0">
                                             Đã in: {{order.PrintCount}}
                                         </span>
@@ -118,15 +116,15 @@
                                     <i class="tdsi-edit-fill text-neutral-1-500"></i>
                                 </span>
                             </button>
-    
+
                             <tds-checkbox [ngClass]="isOpenCollapCheck ? 'flex' : 'hidden'" [checked]="setOfCheckedId.has(order.Id)" (click)="onCheck(order.Id, $event)"></tds-checkbox>
                         </div>
                         </ng-template>
                         <!-- Content  -->
                         <div class="flex flex-auto" *ngIf="lstLine">
-                            <tds-table #tableInCollapse 
-                                [listData]="lstLine[index] || []" 
-                                [loading]="isLoadingLine[index] || false" 
+                            <tds-table #tableInCollapse
+                                [listData]="lstLine[index] || []"
+                                [loading]="isLoadingLine[index] || false"
                                 [loadingIndicator]="loadingTemp"
                                 [showPagination]="false" [tableLayout]="'fixed'">
                                 <thead>
@@ -171,11 +169,11 @@
 
             <!-- phân trang -->
             <div class="flex flex-auto items-end pt-3">
-                <tds-pagination class="w-full" [pageSize]="pageSize" [pageIndex]="pageIndex" [total]="count" 
-                    [pageSizeOptions]="[10, 20, 50, 100]" [showTotal]="rangeTemplate" [showRefresh]="true" 
+                <tds-pagination class="w-full" [pageSize]="pageSize" [pageIndex]="pageIndex" [total]="count"
+                    [pageSizeOptions]="[10, 20, 50, 100]" [showTotal]="rangeTemplate" [showRefresh]="true"
                     (clickRefresh)="refreshData()" (pageSizeChange)="changePageSize($event)" (pageIndexChange)="changePageIndex($event)">
                 </tds-pagination>
-                
+
                 <ng-template #rangeTemplate let-range="range" let-total>
                     {{ range[0] }}-{{ range[1] }} of {{ total }}
                 </ng-template>
