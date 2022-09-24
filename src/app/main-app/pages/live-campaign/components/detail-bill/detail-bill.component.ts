@@ -1,3 +1,5 @@
+import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
+import { TDSModalService } from 'tds-ui/modal';
 import { PrinterService } from './../../../../services/printer.service';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { takeUntil } from 'rxjs';
@@ -7,7 +9,7 @@ import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.servi
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PartnerService } from './../../../../services/partner.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
@@ -85,7 +87,9 @@ export class DetailBillComponent implements OnInit {
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
     private chatomniMessageFacade: ChatomniMessageFacade,
-    private printerService: PrinterService
+    private printerService: PrinterService,
+    private viewContainerRef: ViewContainerRef,
+    private modal: TDSModalService
   ) { }
 
   ngOnInit() {
@@ -319,6 +323,67 @@ export class DetailBillComponent implements OnInit {
             that.printerService.printHtml(res);
         })
       }
+    }
+  }
+
+  sendDelivery() {
+    if (this.isProcessing) {
+      return
+    }
+
+    this.isLoading = true;
+
+    if (this.checkValueEmpty() == 1) {
+      this.modal.create({
+        title: 'Danh sách phù hợp gửi lại mã vận đơn',
+        content: SendDeliveryComponent,
+        size: 'xl',
+        bodyStyle:{
+          'padding':'0'
+        },
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          ids: this.idsModel
+        }
+      });
+
+      this.modal.afterAllClose.subscribe({
+        next:(res) => {
+          if(res != null){
+            this.loadData(this.pageSize, this.pageIndex);
+          }
+          this.isLoading = false;
+        }
+      })
+    }
+  }
+
+  approveOrder() {
+    if (this.isProcessing) {
+      return
+    }
+
+    if (this.checkValueEmpty() == 1) {
+      let that = this;
+      that.isProcessing = true;
+      this.isLoading = true;
+
+      this.modal.success({
+        title: 'Xác nhận bán hàng',
+        content: 'Bạn có muốn xác nhận bán hàng',
+        onOk: () => {
+          that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+            this.isLoading = false;
+            that.message.success('Xác nhận bán hàng thành công!');
+          }, error => {
+            this.isLoading = false;
+            that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
+          })
+        },
+        onCancel: () => { that.isProcessing = false; this.isLoading = false; },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+      });
     }
   }
 

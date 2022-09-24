@@ -79,6 +79,7 @@ export class SendDeliveryComponent implements OnInit, OnDestroy {
                 this.message.error(res.Error);
                 this.lstErrors = res.Errors;
                 this.isLoading = false;
+                this.modal
           } else {
               this.message.success('Thao tác thành công');
               this.fastSaleOrderService.onLoadPage$.emit('onLoadPage');

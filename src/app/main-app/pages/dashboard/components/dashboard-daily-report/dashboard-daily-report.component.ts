@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -140,7 +141,11 @@ export class DashboardDailyReportComponent implements OnInit {
                       '<i class="tdsi-time-fill text-primary-1"></i>'+
                     '</div>'+
                     '<div class="pl-2">'+
-                      '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">Thứ 6, {b}:00 01/11/2022</span><br>'+
+                      '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">' +
+                        formatDate(new Date().toUTCString(), 'EEEE', 'vi-VN')
+                        + ', {b}:00 ' + 
+                        formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
+                        + '</span><br>'+
                       '<div class="flex flex-row items-center justify-between text-white text-caption-2 font-semibold font-sans text-center">'+
                         '<span class="pr-5">5 bình luận</span>'+
                         '<span>{c} {a}</span>'+
