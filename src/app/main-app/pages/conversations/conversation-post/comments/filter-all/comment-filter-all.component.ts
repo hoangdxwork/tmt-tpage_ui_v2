@@ -154,6 +154,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
                 }
 
                 this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
+                this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
 
                 if(this.scrolledIndex <= 2) {
                     this.infinite.next([...this.dataSource.Items]);
@@ -234,6 +235,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
             if(this.dataSource && TDSHelperArray.hasListValue(this.dataSource.Items)) {
                 this.sortChildComment(this.dataSource.Items);
             }
+
+            this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
 
             this.cdkVirtualScroll();
             this.isLoading = false;
@@ -442,6 +445,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.childsComment = [...this.childsComment, ...[data]];
+    this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, order?: any[]) {
@@ -615,6 +619,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
           if(res && TDSHelperArray.hasListValue(res?.Items)) {
               this.dataSource.Items = [...res.Items];
+              this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
 
               // TODO: merge bình luận đã gửi
               this.dataSource.Items = this.mergeUpdatedData(this.dataSource.Items, this.childsComment);
