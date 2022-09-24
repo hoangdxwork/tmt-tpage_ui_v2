@@ -5,9 +5,6 @@ export class PhoneHelper {
   public static getMultiplePhoneFromText(text: string, companyCurrents?: any) {
 
     if(TDSHelperString.hasValueString(text)) {
-      let removeDots = text.toString().replace(/\./g, '');
-      let removeSpace = removeDots.toString().replace(/\s/g, '');
-      let changePrefix = removeSpace.toString().replace(/\+84/g, '0');
 
       let myRe = /(09|03|07|08|05)([\d+]{8})/g;
       if(companyCurrents && companyCurrents.Configs) {
@@ -15,8 +12,12 @@ export class PhoneHelper {
 
           let phoneRegex = config.PhoneRegex;
           phoneRegex = new RegExp(`${phoneRegex}`, 'g');
-          myRe = phoneRegex;
+          // myRe = phoneRegex;
       }
+
+      let removeDots = text.toString().replace(/\./g, '');
+      let removeSpace = removeDots.toString().replace(/\s/g, '');
+      let changePrefix = removeSpace.toString().replace(/\+84/g, '0');
 
       let listPhones = "";
       while (true) {
