@@ -307,7 +307,7 @@
 
                       <tds-form-field class="w-1/2">
                           <tds-label> Số điện thoại</tds-label>
-                          <div tdsAddOnRight tds-tooltip="Kiểm tra số điện thoại"><i class="tdsi-search-fill text-xl leading-none"></i></div>
+                          <div tdsAddOnRight tds-tooltip="Kiểm tra số điện thoại" (click)="checkAddressByPhone()"><i class="tdsi-search-fill text-xl leading-none"></i></div>
                           <input tdsInput placeholder="Nhập số điện thoại" [(ngModel)]="partner.Phone" [ngModelOptions]="{standalone: true}"/>
                       </tds-form-field>
 

@@ -392,6 +392,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   onSaveEdit() {
     let model = this.prepareModel();
     let teamId = this.team.Id;
+    if(!model.Name) {
+      this.message.error('Vui lòng nhập tên khách hàng');
+      return
+    }
 
     this.isLoading = true;
     this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: teamId }).pipe(takeUntil(this.destroy$)).subscribe({
@@ -485,6 +489,23 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       this.cdRef.detectChanges();
     }
   })
+  }
+
+  checkAddressByPhone() {
+    let phone = this.partner.Phone;
+    if (TDSHelperString.hasValueString(phone)) {
+
+      this.commonService.checkAddressByPhone(phone)
+        .pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: any) => {
+              this.message.info('Chưa có dữ liệu');
+            },
+            error: error => {
+              this.message.error(`${error?.error?.message}`)
+            }
+          })
+    }
   }
 
   validateData() {
