@@ -12,7 +12,7 @@
             [noResult]="noResult">
             <thead>
               <tr>
-                <th>STT</th>
+                <th width="64px" class="text-center">STT</th>
                 <th>Sản phẩm</th>
                 <th>Đơn vị tính</th>
                 <th>Số lượng</th>
@@ -24,7 +24,7 @@
             <tbody>
               <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                 <tr>
-                  <td>{{ i + 1 }}</td>
+                  <td class="text-center">{{ i + 1 }}</td>
                   <td>{{ data.ProductNameGet }}</td>
                   <td>{{ data.ProductUOMName }}</td>
                   <td>{{ (data.ProductUOMQty | number) || 0}}</td>

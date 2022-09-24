@@ -10,17 +10,17 @@
     (queryParams)="onQueryParamsChange($event)">
     <thead>
         <tr>
-            <th width="60px">STT</th>
-            <th>Thời gian</th>
-            <th width="50%">Nội dung gửi</th>
+            <th width="60px" class="text-center">STT</th>
+            <th width="20%">Thời gian</th>
+            <th width="30%">Nội dung gửi</th>
             <th>Lý do gửi thất bại</th>
-            <th  width="120px">Trạng thái gửi</th>
+            <th width="120px">Trạng thái gửi</th>
         </tr>
     </thead>
     <tbody>
         <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
             <tr>
-                <td>{{index + 1}}</td>
+                <td class="text-center">{{index | numericalOrder: pageSize: pageIndex}}</td>
                 <td>{{data.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
                 <td>
                     <div showMore [length]="100" [text]="data.Message">
@@ -30,7 +30,7 @@
                     <div showMore [length]="40" [text]="data.ErrorMessage">
                     </div>
                 </td>
-                <td class="text-center fw-6">
+                <td class="text-center">
                     <span class="tdsi-success-fill text-primary-1" tds-tooltip tooltipTitle="Gửi tin nhắn thành công"
                         *ngIf="data.IsSuccess"></span>
                     <span class="tdsi-error-fill text-error-400" *ngIf="!data.IsSuccess" tds-tooltip

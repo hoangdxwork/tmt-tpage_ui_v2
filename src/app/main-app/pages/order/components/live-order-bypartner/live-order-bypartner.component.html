@@ -9,7 +9,7 @@
           <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
         </div>
     </div>
-    <div class="2xl:max-h-[450px] 2xl:h-[450px] xl:max-h-[300px] xl:h-[300px]">
+    <div class="2xl:max-h-[400px] 2xl:h-[400px] xl:max-h-[300px] xl:h-[300px]">
         <tds-table class="w-full h-full tds-table-rounded" [scroll]="{ y:'auto' }" #productTable [bordered]="true"
             [listData]="lstOrder"
             [pageIndex]="pageIndex"
@@ -19,7 +19,7 @@
             (queryParams)="onQueryParamsChange($event)">
             <thead class="rounded">
                 <tr>
-                    <th [width]="'50px'">STT</th>
+                    <th [width]="'50px'" class="text-center">STT</th>
                     <th [width]="'150px'">Sản phẩm</th>
                     <th [width]="'150px'">Kênh kết nối</th>
                     <th [width]="'150px'">Tổng tiền</th>
@@ -30,9 +30,9 @@
                 </tr>
             </thead>
             <tbody>
-                <ng-template ngFor let-data [ngForOf]="productTable.data">
+                <ng-template ngFor let-data [ngForOf]="productTable.data" let-index="index">
                     <tr>
-                        <td>{{ data.Session }}</td>
+                        <td class="text-center">{{ index | numericalOrder: pageSize: pageIndex }}</td>
                         <td>
                           <!-- && data.Code == this.orderId ? 'bg-teal-700' : '' -->
                             <div class="w-full flex">

@@ -104,7 +104,7 @@
               <th *ngIf="isHidden('CRMTeamName')" class="border-l">Kênh kết nối</th>
               <th *ngIf="isHidden('LiveCampaignName')" class="border-l">Chiến dịch live</th>
               <th *ngIf="isHidden('Name')" class="border-l">Khách hàng</th>
-              <th *ngIf="isHidden('Address')" class="border-l">Địa chỉ</th>
+              <th *ngIf="isHidden('Address')" [width]="'260px'" class="border-l">Địa chỉ</th>
               <th *ngIf="isHidden('TotalAmount')" class="border-l text-right">Tổng tiền</th>
               <th *ngIf="isHidden('TotalQuantity')" class="border-l text-center">Tổng SL</th>
               <th *ngIf="isHidden('DateCreated')" class="border-l">Ngày tạo đơn</th>
@@ -248,8 +248,9 @@
                 </td>
 
                 <!-- Địa chỉ -->
-                <td *ngIf="isHidden('Address')" class="border-l min-w-[380px] max-w-[500px]">
-                  <span>{{data.Address}}</span>
+                <td *ngIf="isHidden('Address')" class="border-l">
+                  <span>{{ data.Address | truncateString:80 }}</span>
+                  <!-- <div showMore [text]="(data.Address | bbcodeConvert)"></div> -->
                 </td>
 
                 <!-- Tổng tiền -->
