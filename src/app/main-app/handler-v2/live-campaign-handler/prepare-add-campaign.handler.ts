@@ -22,8 +22,8 @@ export class PrepareAddCampaignHandler {
         model.EndDate = new Date(formValue.EndDate);
         model.Preliminary_TemplateId = formValue.Preliminary_Template?.Id;
         model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_Template?.Id;
-        model.MinAmountDeposit = formValue.MinAmountDeposit;
-        model.MaxAmountDepositRequired = formValue.MaxAmountDepositRequired;
+        model.MinAmountDeposit = Number(formValue.MinAmountDeposit);
+        model.MaxAmountDepositRequired = Number(formValue.MaxAmountDepositRequired);
         model.IsEnableAuto = formValue.IsEnableAuto;
         model.EnableQuantityHandling = formValue.EnableQuantityHandling;
         model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;

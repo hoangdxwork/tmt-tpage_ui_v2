@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { TIDictionary } from './../../../../../lib/dto/dictionary.dto';
 import { CommonService } from './../../../../services/common.service';
@@ -58,7 +59,10 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     tags: [],
     status: [],
     searchText: '',
-    dateRange: null
+    dateRange: {
+      startDate: addDays(new Date(), -30),
+      endDate: new Date(),
+    }
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];

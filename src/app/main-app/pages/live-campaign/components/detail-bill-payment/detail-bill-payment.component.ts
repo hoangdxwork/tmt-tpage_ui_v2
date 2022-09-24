@@ -50,7 +50,10 @@ export class DetailBillPaymentComponent implements OnInit {
     bill: null,
     deliveryType: '',
     searchText: '',
-    dateRange: null
+    dateRange: {
+      startDate: addDays(new Date(), -30),
+      endDate: new Date(),
+    }
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -165,7 +168,10 @@ export class DetailBillPaymentComponent implements OnInit {
       liveCampaignId: this.liveCampaignId,
       deliveryType: '',
       searchText: '',
-      dateRange: null
+      dateRange: {
+        startDate: addDays(new Date(), -30),
+        endDate: new Date(),
+      }
     }
 
     this.loadData(this.pageSize, this.pageIndex);

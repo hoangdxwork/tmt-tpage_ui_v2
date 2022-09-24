@@ -21,10 +21,13 @@ export class BillFilterOptionsComponent implements OnInit {
     bill: null,
     deliveryType: '',
     searchText: '',
-    dateRange: null
+    dateRange: {
+      startDate: addDays(new Date(), -30),
+      endDate: new Date(),
+    }
   }
 
-  datePicker!: any[] | any;
+  datePicker: any[] = [addDays(new Date(), -30), new Date()];
 
   trackingRefs = [
     { text: 'Chưa có mã vận đơn', value: 'noCode' },
@@ -133,7 +136,7 @@ export class BillFilterOptionsComponent implements OnInit {
   onCancel() {
     this.currentStatus = 'all';
     this.currentTracking = '';
-    this.datePicker = null;
+    this.datePicker = [addDays(new Date(), -30), new Date()];
     this.selectTags = [];
     this.modelCarrier = null;
 

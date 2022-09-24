@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
@@ -25,7 +26,7 @@ export class FilterOptionsComponent implements OnInit {
   @Input() filterObj!: FilterObjSOOrderModel;
   @Input() isLiveCamp!: boolean;
 
-  datePicker!: any[] | any;
+  datePicker: any[] = [addDays(new Date(), -30), new Date()];
   lstTags: Array<TDSSafeAny> = [];
   selectTags: Array<TDSSafeAny> = [];
   selectTeams: TDSSafeAny;
@@ -140,14 +141,17 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   onCancel() {
-    this.datePicker = null;
+    this.datePicker = [addDays(new Date(), -30), new Date()];
     this.selectTags = [];
 
     this.filterObj = {
       tags: [],
       status: [],
       searchText: '',
-      dateRange: null
+      dateRange:  {
+        startDate: addDays(new Date(), -30),
+        endDate: new Date(),
+      }
     }
 
     this.isActive = false;
