@@ -67,7 +67,8 @@
                     <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollObjects" is-lock="true"
                         observe-attributes yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                        <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex">
+                        <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex"
+                            [ngClass]="(currentPost && currentPost.ObjectId == item.ObjectId) ? 'cursor-no-drop' : 'cursor-pointer'">
 
                             <div *ngIf="item && currentTeam!.Type == 'Facebook'">
                                 <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)"  [lstOfLiveCampaign]="lstOfLiveCampaign">
