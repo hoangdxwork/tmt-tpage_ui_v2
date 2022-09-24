@@ -297,7 +297,7 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
         LiveCampaign_Id: [null],
         ProductCode: [null],
         ImageUrl: [null],
-        IsActive: true
+        IsActive: [false]
     });
 
     if(x) {
@@ -443,7 +443,7 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
             UOMName: data.UOMName,
             ProductCode: data.DefaultCode,
             ImageUrl: data.ImageUrl,
-            IsActive: data.Active,
+            IsActive: true,
             UsedQuantity: 0
         } as LiveCampaignProductDTO;
 

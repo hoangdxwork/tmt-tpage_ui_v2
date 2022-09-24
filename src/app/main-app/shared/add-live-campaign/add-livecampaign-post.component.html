@@ -173,10 +173,11 @@
                 <thead class="rounded">
                     <tr>
                         <th width="6%"  >STT</th>
-                        <th width="34%">Sản phẩm</th>
-                        <th width="16%" >Số lượng</th>
-                        <th width="16%" >Giới hạn trên đơn</th>
-                        <th width="16%">Giá bán</th>
+                        <th width="32%">Sản phẩm</th>
+                        <th width="10%" >Trạng thái</th>
+                        <th width="13%" >Số lượng</th>
+                        <th width="13%" >Giới hạn trên đơn</th>
+                        <th width="13%">Giá bán</th>
 
                         <th width="13%" class="text-center">
                           <button tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()"  tds-tooltip tooltipTitle="Xóa tất cả">
@@ -259,6 +260,20 @@
                                   </ng-template>
                                 </div>
                               </div>
+                            </div>
+                        </td>
+
+                        <!-- Trạng thái -->
+                        <td>
+                            <div *ngIf="(isEditDetails[detail.value.Id] && id) || !id">
+                                <tds-checkbox [(ngModel)]="detail.value.IsActive" [ngModelOptions]="{standalone: true}"></tds-checkbox>
+                            </div>
+                            <div *ngIf="!isEditDetails[detail.value.Id] && id && detail.value.IsActive" class="text-body-2 text-secondary-1" style="font-style: italic;">
+                                Hoạt động
+                            </div>
+
+                            <div *ngIf="!isEditDetails[detail.value.Id] && id && !detail.value.IsActive" class="text-body-2 text-accent-3" style="font-style: italic;">
+                                Đã tắt
                             </div>
                         </td>
 
