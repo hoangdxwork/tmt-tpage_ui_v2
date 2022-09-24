@@ -39,9 +39,9 @@
               <span class="tdsi-success-line text-success-400" tds-tooltip [tooltipTitle]="getTooltipSuccess(bill.MessageCount)"></span>
             </div>
 
-            <!-- <div class="flex items-center gap-x-1">
-              <span>{{bill.MessageCount}}</span>
-              <span class="tdsi-success-line text-success-400" tds-tooltip [tooltipTitle]="getTooltipSuccess(bill.MessageCount)"></span>
+            <!-- <div class="flex items-center gap-x-1" *ngIf="bill.TotalErrorMessage > 0">
+              <span>{{bill.TotalErrorMessage}}</span>
+              <span class="tdsi-info-line text-error-400" tds-tooltip [tooltipTitle]="bill.ErrorLastMessage"></span>
             </div> -->
           </div>
         </td>

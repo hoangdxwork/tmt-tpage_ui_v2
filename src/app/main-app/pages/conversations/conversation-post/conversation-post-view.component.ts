@@ -23,6 +23,7 @@ import { SaleOnline_OrderService } from '@app/services/sale-online-order.service
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
 import { QuickSaleOnlineOrderModel, Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'conversation-post-view',
@@ -116,6 +117,17 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
             this.data.LiveCampaign =  res.LiveCampaign;
 
             this.data = {...this.data};
+            this.cdRef.detectChanges();
+          }
+      }
+    })
+
+    //TODO: Tổng bình luận bài viết
+    this.postEvent.lengthLstObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (length: any) => {
+          if(length && this.team.Type == CRMTeamType._Facebook && this.data.Data) {
+            (this.data.Data as MDB_Facebook_Mapping_PostDto).count_comments = length;
+
             this.cdRef.detectChanges();
           }
       }

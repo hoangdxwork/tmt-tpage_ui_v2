@@ -78,7 +78,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
       this.cdRef.detectChanges();
     }
 
-    if(changes["postChilds"] && !changes["postChilds"].firstChange) {debugger
+    if(changes["postChilds"] && !changes["postChilds"].firstChange) {
       this.postChilds = [...changes["postChilds"].currentValue];
 
       this.cdRef.detectChanges();
