@@ -133,7 +133,7 @@ export class TDSConversationItemComponent implements OnInit  {
       return this.contentMessage.nativeElement.outerText;
     }
 
-    this.tdsMessage.info("Không thể lấy thông tin");
+    // this.tdsMessage.info("Không thể lấy thông tin");
     return null;
   }
 

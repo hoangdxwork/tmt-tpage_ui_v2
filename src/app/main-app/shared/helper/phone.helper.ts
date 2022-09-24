@@ -6,6 +6,11 @@ export class PhoneHelper {
 
     if(TDSHelperString.hasValueString(text)) {
 
+      let removeDots = text.toString().replace(/\./g, '');
+      let removeSpace = removeDots.toString().replace(/\s/g, '');
+      let changePrefix = removeSpace.toString().replace(/\+84/g, '0');
+
+
       let myRe = /(09|03|07|08|05)([\d+]{8})/g;
       if(companyCurrents && companyCurrents.Configs) {
           let config = JSON.parse(companyCurrents.Configs);
@@ -14,10 +19,6 @@ export class PhoneHelper {
           phoneRegex = new RegExp(`${phoneRegex}`, 'g');
           // myRe = phoneRegex;
       }
-
-      let removeDots = text.toString().replace(/\./g, '');
-      let removeSpace = removeDots.toString().replace(/\s/g, '');
-      let changePrefix = removeSpace.toString().replace(/\+84/g, '0');
 
       let listPhones = "";
       while (true) {
