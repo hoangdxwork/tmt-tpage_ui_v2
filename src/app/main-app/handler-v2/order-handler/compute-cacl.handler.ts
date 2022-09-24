@@ -41,7 +41,7 @@ export class SO_ComputeCaclHandler {
     let totalAmount = 0;
     let totalQuantity = 0;
 
-    quickOrderModel.Details.map((x: Detail_QuickSaleOnlineOrder) => {
+    quickOrderModel.Details?.map((x: Detail_QuickSaleOnlineOrder) => {
         totalAmount += (x.Price * x.Quantity);
         totalQuantity += (x.Quantity);
     });
@@ -73,8 +73,8 @@ export class SO_ComputeCaclHandler {
     }
 
     return {
-        saleModel: saleModel || null,
-        quickOrderModel: quickOrderModel
+        saleModel: {...saleModel } || null,
+        quickOrderModel: {...quickOrderModel}
     };
   }
 
