@@ -307,8 +307,6 @@ export class AddBillComponent implements OnInit {
               this.changePartner(partnerId);
           }
 
-          this.calcTotal();
-          this._form.controls['CashOnDelivery'].setValue(obs.CashOnDelivery);
           this.isLoading = false;
       },
       error:(error) => {
@@ -395,8 +393,6 @@ export class AddBillComponent implements OnInit {
               this.changePartner(partnerId);
             }
 
-            this.calcTotal();
-            this._form.controls['CashOnDelivery'].setValue(obs.CashOnDelivery);
             this.isLoading = false;
         },
         error:(err) => {
@@ -443,6 +439,11 @@ export class AddBillComponent implements OnInit {
     }
 
     this._form.patchValue(this.dataModel);
+
+    this.dataModel.OrderLines?.map((x: any) => {
+        this.totalQtyLines = this.totalQtyLines + x.ProductUOMQty;
+        this.totalAmountLines = this.totalAmountLines + x.PriceTotal;
+    })
 
   }
 
