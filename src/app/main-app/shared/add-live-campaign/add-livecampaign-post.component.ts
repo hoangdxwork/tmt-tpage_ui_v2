@@ -27,6 +27,7 @@ import { SharedService } from '@app/services/shared.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { TDSTableComponent } from 'tds-ui/table';
+import { TDSNotificationService } from 'tds-ui/notification';
 
 @Component({
   selector: 'add-livecampaign-post',
@@ -86,6 +87,7 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
     private liveCampaignService: LiveCampaignService,
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
+    private notificationService: TDSNotificationService,
     private fastSaleOrderLineService: FastSaleOrderLineService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productService: ProductService,
@@ -474,7 +476,6 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
     this.liveCampaignService.updateDetails(id, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.isLoading = false;
-          this.message.success('Cập nhật thành công');
 
           let x = res[0] as LiveCampaignProductDTO;
           x.ProductName = item.ProductName;
@@ -486,10 +487,14 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
           if(Number(index) >= 0) {
               index = Number(index);
               this.detailsFormGroups.at(index).patchValue(x);
+
+              this.notificationService.info(`Cập nhật sản phẩm ${x.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${x.Quantity}</span>`)
           } else {
               formDetails = [...[x], ...formDetails]
               this.detailsFormGroups.clear();
-              this.initFormDetails(formDetails)
+              this.initFormDetails(formDetails);
+
+              this.notificationService.info(`Thêm mới sản phẩm ${x.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${x.Quantity}</span> sản phẩm ${x.ProductName}`)
           }
 
           delete this.isEditDetails[x.Id];
