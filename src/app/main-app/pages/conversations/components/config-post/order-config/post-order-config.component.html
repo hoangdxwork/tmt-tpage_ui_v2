@@ -143,7 +143,7 @@
           <!-- Config Product -->
           <div class="grid grid-cols-2 gap-4" *ngIf="dataModel && dataModel.TextContentToOrders">
               <div *ngFor="let item of dataModel.TextContentToOrders; let i = index" class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
-                  <div *ngIf="item" [ngClass]="!item.IsActive ? 'opacity-50' : ''">
+                  <div *ngIf="item" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
 
                     <div class="flex gap-2.5 items-center">
                       <tds-badge [count]="iconTemplate" (click)="showModalListProduct(item.IsActive ? item : null)">
@@ -201,7 +201,7 @@
                         </tds-checkbox>
                       </div>
 
-                      <div class="pt-3"  *ngIf="item.Product.IsEnableRegexAttributeValues && item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
+                      <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues && item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
                         <div class="flex rounded-md gap-x-1">
                             <tds-form-field class="w-full">
                                 <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []"
@@ -229,7 +229,7 @@
 
                     <!-- Xóa mẫu -->
                     <div class="pt-6">
-                        <button tds-button color="secondary" type="button" (click)="removeItemTemplate(item)" [disabled]="item.IsActive ? false : true"
+                        <button tds-button color="secondary" type="button" (click)="removeItemTemplate(item)"
                             class="rounded-md border border-accent-3 border-solid w-full flex justify-center">
 
                             <span class="flex items-center text-accent-3 text-body-2 font-semibold">
