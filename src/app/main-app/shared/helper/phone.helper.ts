@@ -27,7 +27,7 @@ export class PhoneHelper {
         if(phoneRegex) {
             let exec = phoneRegex.exec(text);
             if(exec && exec[1]) {
-                phone = exec[1];
+                phone = exec[1].trim();
             }
         } else {
             phone = this.setRegexDefault(text);

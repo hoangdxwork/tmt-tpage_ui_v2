@@ -295,7 +295,7 @@ export class AddLiveCampaignComponent implements OnInit {
       Price: [null],
       UOMId: [null],
       UOMName: [null],
-      Quantity: [product?.QtyAvailable || 1],
+      Quantity: [product?.QtyAvailable || 0],
       LimitedQuantity: [0],
       Index: [index],
       Tags: [null],
@@ -424,10 +424,6 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   create(model: any) {
-    if(!model.Name) {
-      this.message.error('Vui lòng nhập tên chiến dịch');
-      return
-    }
 
     this.isLoading = true;
     this.liveCampaignService.create(model).pipe(finalize(() => this.isLoading = false))
@@ -510,15 +506,10 @@ export class AddLiveCampaignComponent implements OnInit {
 
   isCheckValue() {
     let formValue = this._form.value;
-    let details = formValue.Details;
 
-    if(TDSHelperArray.hasListValue(details)) {
-      let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price)) as number;
-
-      if(Number(find) > -1) {
-        this.message.error(Message.LiveCampaign.ErrorNumberDetail);
+    if(!TDSHelperString.hasValueString(formValue.Name)) {
+        this.message.error('Vui lòng nhập tên chiến dịch');
         return 0;
-      }
     }
 
     return 1;
