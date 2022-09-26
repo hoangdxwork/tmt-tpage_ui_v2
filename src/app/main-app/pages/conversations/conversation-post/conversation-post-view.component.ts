@@ -23,6 +23,7 @@ import { SaleOnline_OrderService } from '@app/services/sale-online-order.service
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
 import { QuickSaleOnlineOrderModel, Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'conversation-post-view',
@@ -120,6 +121,17 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
           }
       }
     })
+
+    //TODO: Tổng bình luận bài viết
+    this.postEvent.lengthLstObject$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (length: any) => {
+          if(length && this.team.Type == CRMTeamType._Facebook && this.data.Data) {
+            (this.data.Data as MDB_Facebook_Mapping_PostDto).count_comments = length;
+
+            this.cdRef.detectChanges();
+          }
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -129,7 +141,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   }
 
   onSearchFilterComment() {
-    this.textSearchFilterComment = this.innerText
+    this.textSearchFilterComment = this.innerText;
   }
 
   onChangeFilterComment(event: TDSSafeAny) {
@@ -197,12 +209,14 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
         next: (res: any) => {
             // TODO: gán lại data để đẩy vào ngOnChanges CommentFilterAllComponent
             this.data = {...this.data};
+            this.cdRef.detectChanges();
         },
         error: error => {
             this.message.error(`${error?.error?.message}`);
         }
       })
     }
+
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto) {
@@ -247,7 +261,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
 
   openConfigPost() {
     if (this.team!.Type == 'Facebook') {
-      let date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm', 'en-US');
+      let date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm:ss', 'en-US');
 
       this.modalService.create({
         title: `Cấu hình bài viết - ${date}`,
@@ -321,18 +335,18 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
           defaultOrder: true
         }
       });
-  
+
       modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductDTOV2) => {
         if(TDSHelperObject.hasValue(result)){
           this.defaultProductPost = this.prepareModel(result);
-  
+
           this.facebookPostService.setDefaultProductPost(this.defaultProductPost);
-  
+
           this.cdRef.detectChanges();
         }
       })
     }
-    
+
   }
 
   prepareModel(data: TDSSafeAny){

@@ -18,12 +18,12 @@
           </tds-filter-status-item>
         </ng-template>
       </tds-filter-status>
-      <div class="2xl:max-h-[450px] 2xl:h-[450px] xl:max-h-[300px] xl:h-[300px]">
-        <tds-table class="w-full h-full" #productTable [listData]="lstOrder" [pageIndex]="pageIndex"
+      <div class="xl:max-h-[320px] xl:h-[320px]">
+        <tds-table class="w-full h-full" [scroll]="{ y:'auto' }" #productTable [listData]="lstOrder" [pageIndex]="pageIndex"
           [pageSize]="pageSize" [total]="count" (queryParams)="onQueryParamsChange($event)">
           <thead class="rounded">
             <tr>
-              <th [width]="'48px'">STT</th>
+              <th [width]="'48px'" class="text-center">STT</th>
               <th [width]="'166px'">Số HĐ</th>
               <th [width]="'150px'">Thông tin</th>
               <th [width]="'123px'">Ngày tạo đơn</th>
@@ -35,10 +35,10 @@
             </tr>
           </thead>
           <tbody>
-            <ng-template ngFor let-data [ngForOf]="productTable.data">
+            <ng-template ngFor let-data [ngForOf]="productTable.data" let-index="index">
               <tr>
                 <!-- STT -->
-                <td>1</td>
+                <td class="text-center">{{ index | numericalOrder: pageSize: pageIndex }}</td>
 
                 <!-- Số HĐ -->
                 <td>
@@ -52,8 +52,8 @@
                 <!-- Thông tin -->
                 <td>
                   <div class="w-full flex">
-                    <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                    <span class="ml-1">---</span>
+                    <span *ngIf="data.FacebookName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span class="ml-1 truncate">{{data.FacebookName || "---"}}</span>
                   </div>
                 </td>
 

@@ -44,7 +44,7 @@ export class CreateBillFastComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -130,7 +130,7 @@ export class CreateBillFastComponent implements OnInit {
             });
 
             this.isLoading = false;
-          }, 
+          },
           error:(err) => {
             this.isLoading = false;
             this.message.error(err?.error?.message || 'Có lỗi xảy ra. Không thể thanh toán cho hóa đơn này');
@@ -266,7 +266,7 @@ export class CreateBillFastComponent implements OnInit {
 
   changePrint(str: string, active:boolean) {
     switch(str){
-      case 'isPrint': 
+      case 'isPrint':
         this.isPrint = active;
         this.isPrintShip = false;
         break;
@@ -283,11 +283,9 @@ export class CreateBillFastComponent implements OnInit {
       if(this.isPrint == true) {
         obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
       }
-
+      debugger
       if(this.isPrintShip == true) {
-        obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, {
-          ids: data.Ids
-        })
+        obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${data.Ids}`);
       }
 
       if (obs) {
@@ -295,7 +293,7 @@ export class CreateBillFastComponent implements OnInit {
           next:(res: TDSSafeAny) => {
             this.printerService.printHtml(res);
             this.modalRef.destroy(true);
-          }, 
+          },
           error:(error: TDSSafeAny) => {
             if(error?.error?.message) {
               this.message.error(error?.error?.message);
@@ -357,7 +355,7 @@ export class CreateBillFastComponent implements OnInit {
       is_approve: TDSHelperString.hasValueString(confirm) ? true : false,
       model: this.lstData
     };
-    
+
     this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: CreateBillDefaultErrorDTO) => {
         if (!res.Error) {

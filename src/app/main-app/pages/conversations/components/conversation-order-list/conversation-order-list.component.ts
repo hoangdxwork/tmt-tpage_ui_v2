@@ -1,3 +1,6 @@
+import { FastSaleOrderService } from './../../../../services/fast-sale-order.service';
+import { GetListOrderIdsDTO } from './../../../../dto/saleonlineorder/list-order-ids.dto';
+import { CreateBillFastComponent } from './../../../order/components/create-bill-fast/create-bill-fast.component';
 import { ConversationPostEvent } from './../../../../handler-v2/conversation-post/conversation-post.event';
 import { ConversationOrderDTO } from './../../../../dto/coversation-order/conversation-order.dto';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
@@ -77,8 +80,8 @@ export class ConversationOrderListComponent implements OnInit {
     private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
-    private cdr: ChangeDetectorRef,
-    private excelExportService: ExcelExportService) {
+    private fastSaleOrderService: FastSaleOrderService,
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -89,24 +92,23 @@ export class ConversationOrderListComponent implements OnInit {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
     this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        // đóng tạm thời
-        // this.loadSummaryStatus();
-        this.loadData(this.pageSize, this.pageIndex);
+        setTimeout(() => {
+          this.loadData(this.pageSize, this.pageIndex);
+        }, 1000)
       }
     })
 
     // TODO: load danh sách đơn hàng khi chọn 1 hội thoại objects
     this.chatomniObjectFacade.onChangeListOrderFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (item: ChatomniObjectsItemDto) => {
-        this.currentPost = item;
-        // đóng tạm thời
-        // this.loadSummaryStatus();
-        this.loadData(this.pageSize, this.pageIndex);
+          this.currentPost = item;
+          this.loadData(this.pageSize, this.pageIndex);
       }
     });
   }
 
   loadData(pageSize: number, pageIndex: number) {
+    this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilterByPost(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
@@ -114,12 +116,15 @@ export class ConversationOrderListComponent implements OnInit {
       next:(res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+
           //gán tạm thời
           let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
           this.tabNavs = [...data];
+          this.cdr.detectChanges();
       },
       error:(error) => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.cdr.detectChanges();
       }
     });
   }
@@ -155,8 +160,6 @@ export class ConversationOrderListComponent implements OnInit {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
-    // đóng tạm thời
-    // this.loadSummaryStatus();
   }
 
   changePageSize(pageSize:number){
@@ -174,8 +177,6 @@ export class ConversationOrderListComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = event.value;
-    // đóng tạm thời
-    // this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -212,7 +213,7 @@ export class ConversationOrderListComponent implements OnInit {
                   break;
               }
           });
-          //TODO: load số lượng đơn hàng 
+          //TODO: load số lượng đơn hàng
           // this.conversationPostEvent.getOrderTotal$.emit(total);
 
           this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
@@ -261,8 +262,8 @@ export class ConversationOrderListComponent implements OnInit {
         case 'print':
           this.printMulti();
           break;
-        case 'excel':
-          this.exportExcel();
+        case 'fastSO':
+          this.onCreateQuicklyFS();
           break;
         case 'delete':
           this.deleteMulti();
@@ -332,24 +333,65 @@ export class ConversationOrderListComponent implements OnInit {
     }
   }
 
-  exportExcel() {
-    if (this.isLoading) { 
-      return;
+  onCreateQuicklyFS() {
+    if (this.checkValueEmpty() == 1) {
+      this.isLoading = true;
+      let ids: any[] = [];
+      ids = [...this.setOfCheckedId];
+
+      this.showModalCreateBillFast(ids)
     }
-
-    let ids = [...this.setOfCheckedId];
-    this.isLoading = true;
-
-    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
-      {
-        data: JSON.stringify({}),
-        campaignId: null,
-        postId: this.currentPost.ObjectId,
-        ids: ids,
-      }, `don_hang_online`)
-      .pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe();
   }
+
+  showModalCreateBillFast(ids: string[]) {
+    this.fastSaleOrderService.getListOrderIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if (res) {
+            this.modalService.create({
+                title: 'Tạo hóa đơn nhanh',
+                content: CreateBillFastComponent,
+                centered: true,
+                size: 'xl',
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  lstData: [...res.value] as GetListOrderIdsDTO[]
+                }
+            });
+
+            this.modalService.afterAllClose.subscribe({
+              next:(x: any) =>{
+                this.loadData(this.pageSize,this.pageIndex);
+              }
+            });
+          }
+
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+        }
+      });
+  }
+
+  // exportExcel() {
+  //   if (this.isLoading) { 
+  //     return;
+  //   }
+
+  //   let ids = [...this.setOfCheckedId];
+  //   this.isLoading = true;
+
+  //   this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
+  //     {
+  //       data: JSON.stringify({}),
+  //       campaignId: null,
+  //       postId: this.currentPost.ObjectId,
+  //       ids: ids,
+  //     }, `don_hang_online`)
+  //     .pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+  //     .subscribe();
+  // }
 
   deleteMulti() {
     if(this.isLoading){

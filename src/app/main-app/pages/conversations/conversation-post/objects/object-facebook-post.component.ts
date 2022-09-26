@@ -28,6 +28,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   currentLiveCampaign!: any;
   indClickTag: string = '';
+  selectedId!: string;
 
   constructor(private liveCampaignService: LiveCampaignService,
     private modal: TDSModalService,
@@ -67,6 +68,20 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
         if(this.item && this.item.LiveCampaign) {
           this.currentLiveCampaign = this.item.LiveCampaign as any;
         }
+
+      this.cdRef.detectChanges();
+    }
+
+    if(changes["currentPost"] && !changes["currentPost"].firstChange) {
+      this.currentPost = {...changes["currentPost"].currentValue};
+
+      this.cdRef.detectChanges();
+    }
+
+    if(changes["postChilds"] && !changes["postChilds"].firstChange) {
+      this.postChilds = [...changes["postChilds"].currentValue];
+
+      this.cdRef.detectChanges();
     }
   }
 
@@ -84,6 +99,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   selectPost(item: ChatomniObjectsItemDto) {
+    this.selectedId = item.Id
     this.selectPostItemEvent.emit(item);
   }
 

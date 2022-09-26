@@ -1,63 +1,48 @@
+import { formatDate } from '@angular/common';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
-import { takeUntil, finalize } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'app-dashboard-daily-report',
-  templateUrl: './dashboard-daily-report.component.html'
+  templateUrl: './dashboard-daily-report.component.html',
+  providers: [TDSDestroyService]
 })
 export class DashboardDailyReportComponent implements OnInit {
-  //#region variable
+
   filterList= [
     {id:1, name:'Tuần này'},
     {id:2, name:'Tháng này'}
-  ]
-  currentFilter = this.filterList[0].name;
-  labelData = [
-    {
-      value:300,
-      percent:20,
-      decrease:false
-    },
-    {
-      value:300,
-      percent:20,
-      decrease:true
-    },
-    {
-      value:300,
-      percent:20,
-      decrease:false
-    }
   ];
+  currentFilter = this.filterList[0].name;
   emptyData = false;
 
-  dailyOption:any;
+  dailyOption: TDSSafeAny;
   chartOption = TDSChartOptions();
-  axisData:TDSSafeAny[] = [];
-  seriesData:TDSSafeAny[] = [];
-  colors:Color[] = [];
-  //#endregion
+  axisData: TDSSafeAny[] = [];
+  seriesData: TDSSafeAny[] = [];
+  colors: Color[] = [];
 
   currentTeam!: CRMTeamDTO | null;
-  private destroy$ = new Subject<void>();
   isLoading: boolean = false;
 
-  dataCurrentDate: MDBTotalCommentMessageFbDTO[] = [];
+  lstData: MDBTotalCommentMessageFbDTO[] = [];
   dataOverviewCurrentDay!: MDBSummaryByPostDTO;
+  interval: number = 0;
 
-  constructor(
-    private crmTeamService: CRMTeamService,
-    private reportFacebookService: ReportFacebookService
-  ) { }
+  constructor(private crmTeamService: CRMTeamService,
+    private reportFacebookService: ReportFacebookService,
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
     this.loadAxisData();
@@ -65,27 +50,48 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   loadCurrentTeam() {
-    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.currentTeam = res;
-      this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
-      this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
+    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.currentTeam = res ? {...res} : null;
+        this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
+        this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
+      }
     });
   }
 
-  loadSummaryCurrentDay(pageId: string | undefined) {
+  loadSummaryCurrentDay(pageId?: string) {
     this.isLoading = true;
-    this.reportFacebookService.getSummaryCurrentDay('')
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.dataCurrentDate = res;
-        this.loadSeriesData(res);
-        this.loadDataChart();
-      }, error => this.emptyData = true);
+    this.reportFacebookService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res) => {
+          if(TDSHelperArray.hasListValue(res)){
+            this.lstData = [...res];
+            this.loadSeriesData(res);
+            this.loadDataChart();
+            this.isLoading = false;
+          }else{
+            this.emptyData = true;
+            this.isLoading = false;
+          }
+        },
+        error:(err) => {
+          this.emptyData = true;
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
+        }
+      });
   }
 
-  loadSummaryOverviewCurrentDay(pageId: string | undefined) {
-    this.reportFacebookService.getSummaryOverviewCurrentDay('').subscribe(res => {
-      this.dataOverviewCurrentDay = res;
+  loadSummaryOverviewCurrentDay(pageId?: string) {
+    this.reportFacebookService.getSummaryOverviewCurrentDay().subscribe({
+      next:(res) => {
+        this.dataOverviewCurrentDay = {...res};
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
+      }
     });
   }
 
@@ -96,8 +102,13 @@ export class DashboardDailyReportComponent implements OnInit {
   loadSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
     let dataMessage: number[] = [];
 
-    this.axisData.forEach((axis) => {
-      let find = data.find(x => JSON.stringify(x.Hours) === axis);
+    let lstTotalMessage = data.map(f => f.TotalMessage);
+    //TODO: lấy 5 giá trị trên trục y
+    let calInterval = Math.max(...lstTotalMessage)/5;
+    this.interval = Math.round(calInterval);
+
+    this.axisData.forEach((hour) => {
+      let find = data.find(x => JSON.stringify(x.Hours) === hour);
       dataMessage.push(find?.TotalMessage || 0);
     });
 
@@ -112,7 +123,7 @@ export class DashboardDailyReportComponent implements OnInit {
   loadDataChart(){
     this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
 
-    let chart:TDSLineChartComponent ={
+    let chart:TDSLineChartComponent = {
       color:this.colors,
       tooltip:{
         show:true,
@@ -130,7 +141,11 @@ export class DashboardDailyReportComponent implements OnInit {
                       '<i class="tdsi-time-fill text-primary-1"></i>'+
                     '</div>'+
                     '<div class="pl-2">'+
-                      '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">Thứ 6, {b}:00 01/11/2022</span><br>'+
+                      '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">' +
+                        formatDate(new Date().toUTCString(), 'EEEE', 'vi-VN')
+                        + ', {b}:00 ' + 
+                        formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
+                        + '</span><br>'+
                       '<div class="flex flex-row items-center justify-between text-white text-caption-2 font-semibold font-sans text-center">'+
                         '<span class="pr-5">5 bình luận</span>'+
                         '<span>{c} {a}</span>'+
@@ -185,7 +200,8 @@ export class DashboardDailyReportComponent implements OnInit {
               lineHeight:20,
               align:'left',
             },
-            interval:50,
+            interval: this.interval,
+            max: this.interval*6,
             splitLine:{
               lineStyle:{
                 color:'#C4C4C4',

@@ -1,9 +1,10 @@
+import { AutoOrderConfigDTO } from '@app/dto/configs/post/post-order-config.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
@@ -43,7 +44,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     { id: 'all', name: 'Tất cả bài viết' },
     { id: 'added_video', name: 'Video' },
     { id: 'added_photos', name: 'Hình ảnh' },
-    { id: 'mobile_status_update', name: 'Status' },
+    { id: 'mobile_status_update', name: 'Trạng thái' },
     { id: 'published_story', name: 'Story đã đăng' },
     { id: 'shared_story', name: 'Story đã chia sẻ' }
   ];
@@ -51,8 +52,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   lstSort: any[] = [
     { id: 'ChannelCreatedTime desc', name: 'Ngày tạo mới nhất' },
     { id: 'ChannelCreatedTime asc', name: 'Ngày tạo cũ nhất' },
-    { id: 'ChannelUpdatedTime desc', name: 'Ngày update mới nhất' },
-    { id: 'ChannelUpdatedTime asc', name: 'Ngày update cũ nhất' }
+    { id: 'ChannelUpdatedTime desc', name: 'Ngày cập nhật mới nhất' },
+    { id: 'ChannelUpdatedTime asc', name: 'Ngày cập nhật cũ nhất' }
   ];
 
   syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
@@ -98,7 +99,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
     private facebookCommentService: FacebookCommentService,
-    private objectFacebookPostEvent: ObjectFacebookPostEvent) {
+    private objectFacebookPostEvent: ObjectFacebookPostEvent,
+    private cdRef: ChangeDetectorRef) {
       super(crmService, activatedRoute, router);
   }
 
@@ -191,7 +193,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     //TODO: Check có orderCode thì mở disable tab đơn hàng
     this.conversationOrderFacade.hasValueOrderCode$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (code: any) => {
-        if(TDSHelperString.hasValueString(code)){
+        if(TDSHelperString.hasValueString(code) && !code.includes('#')){
             this.codeOrder = code;
             this.isDisableTabOrder = false;
         }else{
@@ -363,7 +365,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   selectPost(item: ChatomniObjectsItemDto | any): any {
-    if(TDSHelperObject.hasValue(item) && item.Data){
+    if(item.Data && (item.ObjectId != this.currentPost?.ObjectId)){
 
         // TODO: lưu lại Storage item đang active khi click menu khá
         this.setStoragePostId(item.ObjectId);
@@ -374,9 +376,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             case CRMTeamType._Facebook:
 
               let x = item.Data as MDB_Facebook_Mapping_PostDto;
-              if(x.parent_id) {
+              let postChildId = (x.parent_id || item.fbid);
+              if(this.currentTeam!.Id && TDSHelperString.hasValueString(postChildId)) {
 
-                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe({
+                this.facebookPostService.getByPostParent(this.currentTeam!.Id, postChildId).pipe(takeUntil(this.destroy$)).subscribe({
                   next: (res: any) => {
                     if(res && TDSHelperArray.hasListValue(res.Items)) {
                         this.postChilds = [...res.Items];
@@ -556,5 +559,38 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   removeStoragePostId() {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
     localStorage.removeItem(_keyCache);
+  }
+
+  @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {
+    let className = JSON.stringify(e.target.className);
+    if(className.includes('text-copyable')){
+      if (e.target.className.indexOf('text-copyable') >= 0) {
+        let selBox = document.createElement('textarea');
+        selBox.style.position = 'fixed';
+        selBox.style.left = '0';
+        selBox.style.top = '0';
+        selBox.style.opacity = '0';
+        selBox.value = e.target.getAttribute('data-value') || e.target.innerHTML;
+
+        if(selBox.value) {
+          let phoneRegex = /(?:\b|[^0-9])((o|0|84|\+84)(\s?)([2-9]|1[0-9])((\d|o)(\s|\.)?){8})(?:\b|[^0-9])/g;
+
+          let removeDots = selBox.value.toString().replace(/\./g, '');
+          let removeSpace = removeDots.toString().replace(/\s/g, '');
+
+          let exec = phoneRegex.exec(removeSpace);
+          if(exec && exec[1]) {
+              selBox.value = exec[1];
+          }
+        }
+
+        document.body.appendChild(selBox);
+        selBox.focus();
+        selBox.select();
+        document.execCommand('copy');
+        document.body.removeChild(selBox);
+        this.message.info('Đã copy số điện thoại');
+      }
+    }
   }
 }

@@ -1,20 +1,22 @@
-import { finalize } from 'rxjs/operators';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { Color } from 'echarts';
-import { TDSPieChartComponent, TDSChartOptions } from 'tds-report';
+import { TDSPieChartComponent, TDSChartOptions, TruncateString } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { SummaryActivityByStaffDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-staff-report',
-  templateUrl: './dashboard-staff-report.component.html'
+  templateUrl: './dashboard-staff-report.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class DashboardStaffReportComponent implements OnInit {
 
-  //#region variable
   staffOption:TDSSafeAny;
   chartOption = TDSChartOptions();
 
@@ -22,7 +24,6 @@ export class DashboardStaffReportComponent implements OnInit {
   staffsData:TDSSafeAny[] = [];
   emptyData = false;
   totalCountReport = 0;
-  //#endregion
 
   currentDateRanges!: TDSDateRangeDTO;
   tdsDateRanges: TDSDateRangeDTO[] = [];
@@ -31,8 +32,9 @@ export class DashboardStaffReportComponent implements OnInit {
   lstSummaryActivityByStaff: SummaryActivityByStaffDTO[] = [];
 
   constructor(private reportFacebookService: ReportFacebookService,
-    private commonHandler: CommonHandler) {
-
+    private commonHandler: CommonHandler,
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService) {
       this.tdsDateRanges = this.commonHandler.tdsDateRanges;
       this.currentDateRanges = this.commonHandler.currentDateRanges;
   }
@@ -46,18 +48,30 @@ export class DashboardStaffReportComponent implements OnInit {
     let endDate = this.currentDateRanges.endDate.toISOString();
 
     this.isLoading = true;
-    this.reportFacebookService.getSummaryByStaffs(startDate, endDate)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.lstSummaryActivityByStaff = res;
-        this.lstSummaryActivityByStaff.sort((one: any,two: any)=> (one.TotalCount > two.TotalCount ? -1 : 1))
-        this.loadDataChart(this.lstSummaryActivityByStaff);
-      }, error => this.emptyData = true);
+    this.reportFacebookService.getSummaryByStaffs(startDate, endDate).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res) => {
+          if(TDSHelperArray.hasListValue(res)){
+            this.lstSummaryActivityByStaff = [...res];
+            this.lstSummaryActivityByStaff.sort((pre: any, cur: any)=> (pre.TotalCount > cur.TotalCount ? -1 : 1));
+
+            this.loadDataChart(this.lstSummaryActivityByStaff);
+            this.isLoading = false;
+          }else{
+            this.emptyData = true;
+            this.isLoading = false;
+          }
+        }, 
+        error:(err) => {
+          this.emptyData = true;
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+        }
+      });
   }
 
   loadDataChart(data: SummaryActivityByStaffDTO[]){
     this.staffsData = [];
-    this.lstSummaryActivityByStaff.forEach(x=> this.totalCountReport += x.TotalCount)
+    this.lstSummaryActivityByStaff.forEach(x => this.totalCountReport += x.TotalCount);
     this.staffsData = data.map(x => {
       return {
         id: x.StaffId,
@@ -74,32 +88,34 @@ export class DashboardStaffReportComponent implements OnInit {
     }
 
     let chart:TDSPieChartComponent = {
-      color:this.colors,
-      tooltip:{
-        show:true,
-        position:'right',
-        borderColor:'#FFF',
-        formatter:function(params:TDSSafeAny){
-          return '<span class="text-neutral-1-900 text-body-2 font-semibold font-sans">'+params.name+'</span><br>'
-            +'<span class="text-neutral-1-900 text-body-2 font-regular font-sans">Tương tác</span><span class="text-neutral-1-900 pl-4 text-body-2 font-semibold font-sans">'+params.value+' tương tác</span><br>'
-            +'<span class="text-neutral-1-900 text-body-2 font-regular font-sans">Tỉ lệ</span><span class="text-neutral-1-900 pl-14 text-body-2 font-semibold font-sans">'+params.percent+'%</span>'
+      color: this.colors,
+      tooltip: {
+        show: true,
+        position: 'right',
+        borderColor: '#FFF',
+        formatter: function(params:TDSSafeAny) {
+          return '<span class="text-neutral-1-900 text-body-2 font-semibold font-sans">' + params.name + '</span><br>'
+            + '<span class="text-neutral-1-900 text-body-2 font-regular font-sans">Tương tác</span><span class="text-neutral-1-900 pl-4 text-body-2 font-semibold font-sans">' + params.value + ' tương tác</span><br>'
+            + '<span class="text-neutral-1-900 text-body-2 font-regular font-sans">Tỉ lệ</span><span class="text-neutral-1-900 pl-14 text-body-2 font-semibold font-sans">' + params.percent + '%</span>'
         }
       },
-      series:[
+      series: [
         {
-          type:'pie',
-          center:['52%','52%'],
-          clockwise:false,
-          startAngle:90,
-          width:260,
-          height:260,
-          label:{
+          type: 'pie',
+          center: ['52%','52%'],
+          clockwise: false,
+          startAngle: 90,
+          width: 260,
+          height: 260,
+          label: {
             show:true,
             position:'center',
-            padding:[40,35],
+            padding:[42,22],
             backgroundColor:'#F2FCF5',
             borderRadius:999,
-            formatter: '{highlight|{d}%}\n{avatar|}{header|{b}}\n{body| {c} tương tác}',
+            formatter: function (params: TDSSafeAny) {
+              return `{highlight|${ params.percent.toFixed(2) }%}\n{avatar|}{header|${ TruncateString(params.name, 10) }}\n{body| ${ TruncateString(params.value, 8) } tương tác}`;
+            },
             rich:{
               header:{
                 color:'#2C333A',
@@ -108,7 +124,8 @@ export class DashboardStaffReportComponent implements OnInit {
                 lineHeight:24,
                 fontWeigth:600,
                 fontFamily:'Segoe UI',
-                padding:[-14,0,0,12],
+                width: 100,
+                padding:[-14,0,0,12]
               },
               body:{
                 color:'#929DAA',
@@ -116,8 +133,9 @@ export class DashboardStaffReportComponent implements OnInit {
                 fontSize:14,
                 lineHeight:20,
                 fontWeigth:400,
+                width:100,
                 fontFamily:'Segoe UI',
-                padding:[-28,0,0,32],
+                padding:[-28,0,0,32]
               },
               highlight:{
                 color:'#28A745',

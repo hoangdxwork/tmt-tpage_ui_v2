@@ -191,7 +191,7 @@
                                 <div class="name font-semibold pb-1" *ngIf="dataItem.Data">{{ (dataItem.Data | tShopDataMessage).Actor?.Name }} </div>
                             </div>
 
-                            <div class="content-message font-regular" [innerHTML]="dataItem.Message | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
+                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message" #contentMessage></div>
                           </div>
                       </div>
                   </div>

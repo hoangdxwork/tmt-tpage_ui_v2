@@ -178,12 +178,29 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  getAllFacebookChilds(): Observable<ODataAllFacebookChildTO> {
+  getAllFacebookChildsv2(): Observable<ODataAllFacebookChildTO> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAllFacebook?$expand=Childs`,
       method: CoreApiMethodType.get
     }
     return this.apiService.getData<ODataAllFacebookChildTO>(api, null);
+  }
+
+  getAllFacebookChildsV2(): Observable<any> {
+    return this.getAllChannels().pipe(map((teams: any[]) => {
+        let items: any[] = [];
+        if(teams && teams.length > 0) {
+            teams.forEach(x => {
+                if(x.Childs && x.Childs.length > 0) {
+                    x.Childs.forEach((a: any) => {
+                        delete a.Childs;
+                        items.push(a);
+                    });
+                }
+            })
+        }
+        return [...items];
+    }))
   }
 
   getChannelAutoReplyConfig(pageId: string): Observable<AutoReplyConfigDTO> {

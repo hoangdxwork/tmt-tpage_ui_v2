@@ -12,11 +12,11 @@
             </div>
         </ng-template>
         <div class="h-60">
-            <tds-table #rowSelectionTable showPagination showSizeChanger
+            <tds-table #rowSelectionTable showPagination showSizeChanger [(pageSize)]="pageSize" [(pageIndex)]="pageIndex"
                 [listData]="liveCampaigns?.Details || []" [scroll]="{y:'auto'}">
                 <thead>
                     <tr class="bg-neutral-3-50">
-                        <th>STT</th>
+                        <th width="64px" class="text-center">STT</th>
                         <th>Sản phẩm</th>
                         <th>Đơn vị tính</th>
                         <th>Số lượng</th>
@@ -26,7 +26,7 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let data of rowSelectionTable.data; let index = index">
-                      <td>{{ index + 1 }}</td>
+                      <td class="text-center"> {{ index | numericalOrder: pageSize : pageIndex }}</td>
 
                       <!-- Sản phẩm -->
                       <td>{{ data.ProductName }}</td>

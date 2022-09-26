@@ -225,7 +225,7 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
               that.message.error(error.error.message ?? 'Tạo trả hàng thất bại');
           })
       },
-      onCancel: () => { that.isProcessing = false; },
+      onCancel: () => { that.isProcessing = false; this.cdRef.detectChanges();},
       okText: "Xác nhận",
       cancelText: "Đóng",
     });
@@ -246,7 +246,6 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
   }
 
   actionCancel() {
-    console.log(this.isProcessing)
     if (this.isProcessing) {
       return
     }
@@ -269,7 +268,7 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
               that.message.error(error.error.message ?? 'Xác nhận hủy hóa đơn thất bại');
           })
       },
-      onCancel: () => { that.isProcessing = false; },
+      onCancel: () => { that.isProcessing = false; this.cdRef.detectChanges(); },
       okText: "Xác nhận",
       cancelText: "Đóng",
     });

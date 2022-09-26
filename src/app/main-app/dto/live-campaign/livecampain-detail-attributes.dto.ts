@@ -56,6 +56,7 @@
       ProductCode: string;
       ProductTemplateName: string;
       AttributeValues: any[];
+      IsActive: boolean;
   }
 
   export interface LiveCampainGetWithDetailAttributesDto {

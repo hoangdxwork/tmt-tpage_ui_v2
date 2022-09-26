@@ -38,6 +38,11 @@
               <span>{{bill.MessageCount}}</span>
               <span class="tdsi-success-line text-success-400" tds-tooltip [tooltipTitle]="getTooltipSuccess(bill.MessageCount)"></span>
             </div>
+
+            <!-- <div class="flex items-center gap-x-1" *ngIf="bill.TotalErrorMessage > 0">
+              <span>{{bill.TotalErrorMessage}}</span>
+              <span class="tdsi-info-line text-error-400" tds-tooltip [tooltipTitle]="bill.ErrorLastMessage"></span>
+            </div> -->
           </div>
         </td>
         <td>
@@ -47,7 +52,7 @@
                 <i class="tdsi-messenger-fill text-neutral-1-500"></i>
               </span>
             </button>
-            <button tds-button-icon color="secondary" size="sm">
+            <button tds-button-icon color="secondary" size="sm" (click)="openDrawerBillMessage(bill.OrderId)">
               <span class="flex items-center">
                 <i class="tdsi-paper-fill text-neutral-1-500"></i>
               </span>
@@ -57,6 +62,19 @@
       </tr>
     </tbody>
   </tds-table>
+
+  <!-- <drawer-bill-message *ngIf="isOpenDrawerOrderMessage && openMessageByOrderId" [isOpenDrawer]="isOpenDrawerOrderMessage"
+    [liveCampaignId]="liveCampaignId"
+    [orderId]="openMessageByOrderId"
+    (eventClose)="closeDrawerOrderMessage()">
+  </drawer-bill-message> -->
+  <drawer-bill-message *ngIf="isOpenDrawerBillMessage && openMessageByOrderId"
+    [liveCampaignId]="liveCampaignId"
+    [orderId]="openMessageByOrderId"
+    [isOpenDrawer]="isOpenDrawerBillMessage"
+    (eventClose)="closeDrawerBillMessage()">
+  </drawer-bill-message>
+
   <tds-drawer [visible]="isOpenDrawer"
     [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
     [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">

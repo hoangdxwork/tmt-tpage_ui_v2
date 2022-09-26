@@ -38,7 +38,6 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
-import { number } from 'echarts';
 
 @Component({
   selector: 'app-order',
@@ -75,13 +74,16 @@ export class OrderComponent implements OnInit, AfterViewInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date()
-    }
+    },
+    teamId: '',
+    liveCampaignId: '',
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
     { value: 'Code', name: 'Mã', isChecked: true },
     { value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true },
+    { value: 'LiveCampaignName', name: 'Chiến dịch live', isChecked: false },
     { value: 'Name', name: 'Tên', isChecked: true },
     { value: 'Address', name: 'Địa chỉ', isChecked: false },
     { value: 'TotalAmount', name: 'Tổng tiền', isChecked: true },
@@ -370,6 +372,12 @@ export class OrderComponent implements OnInit, AfterViewInit {
           ids: ids
         }
       });
+
+      this.modal.afterAllClose.subscribe({
+        next: () => {
+            this.loadData(this.pageSize, this.pageIndex);
+        }
+      })
     }
   }
 
@@ -547,9 +555,18 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
     if (TDSHelperArray.hasListValue(event.status)) {
       this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
-    }else{
+    } else {
       this.tabNavs = this.lstOftabNavs;
     }
+
+    if(TDSHelperString.hasValueString(event.liveCampaignId)) {
+      this.filterObj.liveCampaignId = event.liveCampaignId;
+    }
+
+    if(TDSHelperString.hasValueString(event.teamId)) {
+      this.filterObj.teamId = event.teamId
+    }
+
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
     this.loadSummaryStatus();

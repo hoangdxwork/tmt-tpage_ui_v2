@@ -19,7 +19,7 @@ import {
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding, Inject
 } from '@angular/core';
 
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { takeUntil } from 'rxjs/operators';
@@ -103,7 +103,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   isAlertChatbot: boolean = true;
 
   visibleDrawerBillDetail: boolean = false;
+  isOpenSearch!: boolean;
+  searchText: string = '';
+  filterObj: TDSSafeAny;
   order: TDSSafeAny;
+  companyCurrents: TDSSafeAny;
 
   constructor(private modalService: TDSModalService,
     private chatomniMessageService: ChatomniMessageService,
@@ -117,11 +121,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private crmTagService: CRMTagService,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
-    private ngZone: NgZone,
     @Inject(DOCUMENT) private document: Document,
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
-    private partnerService: PartnerService,
     private destroy$: TDSDestroyService,
     private chatomniEventEmiter: ChatomniEventEmiterService,
     private chatomniSendMessageService: ChatomniSendMessageService,
@@ -144,11 +146,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.eventEmitter();
     this.onEventSocket();
     this.yiAutoScroll?.forceScrollDown();
+    this.loadCurrentCompany();
   }
 
   eventEmitter(){
     this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny)=>{
+      next: (res: TDSSafeAny) => {
         if(res.UserId == this.data.ConversationId){
             this.dataSource.Items = [...(this.dataSource?.Items || []), ...[res]];
 
@@ -158,11 +161,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
     })
 
-    this.chatomniEventEmiter.childCommentConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.chatomniEventEmiter.childCommentConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ExtrasChildsDto) => {
           if(res && res.Data.id && this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[res.Data.id]){
-            this.dataSource.Extras!.Childs[res.Data.id] = [...this.dataSource.Extras!.Childs[res.Data.id], res];
+              this.dataSource.Extras!.Childs[res.Data.id] = [...this.dataSource.Extras!.Childs[res.Data.id], res];
           }
         }
       }
@@ -174,7 +176,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     // TODO: chek lại phân biệt message  & comment
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-
         switch(res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
@@ -182,7 +183,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
               // TODO: mapping dữ liệu khung chat hiện tại
               let exist = this.data.ConversationId == res.Data.Conversation?.UserId;
-              let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == res.Data.Message?.Id);
+              let index = (this.dataSource?.Items || []).findIndex(x => x.Id == res.Data.Message?.Id);
 
               if(exist && index < 0 && this.dataSource) {
                   let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.data)};
@@ -190,43 +191,46 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
                   switch (this.type) {
 
                     case 'message':
-
-                      if((item.Type == ChatomniMessageType.FacebookMessage || item.Type == ChatomniMessageType.TShopMessage)){
-                        this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
-
-                        this.yiAutoScroll.forceScrollDown();
-                        this.cdRef.detectChanges();
+                      if((item.Type == ChatomniMessageType.FacebookMessage || item.Type == ChatomniMessageType.TShopMessage)) {
+                          this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
                       }
-                    break;
+                      break;
 
                     case 'comment':
-                      if((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)){
-                        this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
-
-                        this.yiAutoScroll.forceScrollDown();
-                        this.cdRef.detectChanges();
+                      if((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)) {
+                          this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
                       }
-                    break;
+                      break;
 
                     default:
-                      this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
-
-                      this.yiAutoScroll.forceScrollDown();
-                      this.cdRef.detectChanges();
-                    break;
+                        this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
+                      break;
                   }
-                }
+
+                  this.yiAutoScroll.forceScrollDown();
+                  this.cdRef.detectChanges();
               }
-          break;
+            }
+            break;
 
           case ChatmoniSocketEventName.chatomniOnUpdate:
-          break;
+            break;
 
           case ChatmoniSocketEventName.onUpdate:
-          break;
+            break;
 
-          default: break;
+          default:
+            break;
         }
+      }
+    })
+  }
+
+  loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+          this.companyCurrents = data;
       }
     })
   }
@@ -248,7 +252,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.isLoading = true;
     }
 
-    this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
+    this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type, this.filterObj);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
           if(res) {
@@ -464,6 +468,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.isProcessing = false;
     this.uploadedImages = [];
     this.tags = [];
+    this.filterObj = null;
   }
 
   nextData() {
@@ -851,6 +856,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
         this.data.AssignedTo = res;
+
+        //TODO: truyền về conversation-all
+              setTimeout(() => {
+                  this.chatomniEventEmiter.assignedToUser$.emit(this.data.ConversationId);
+              }, 300);
         this.message.success('Thao tác thành công');
         this.isLoadingSelectUser = false;
 
@@ -1181,6 +1191,32 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onVisibleDrawer(event: boolean){
     this.visibleDrawerBillDetail = event;
+  }
+
+  onOpenSearch(){
+    this.isOpenSearch = true;
+  }
+
+  onCloseSearch(){
+    this.isOpenSearch = false;
+    this.searchText = '';
+    this.filterObj = null;
+
+    this.loadMessages(this.data)
+  }
+
+  onSearch(event: TDSSafeAny){
+    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
+      this.pageId = this.team.ChannelId;
+
+      let value = TDSHelperString.stripSpecialChars(this.searchText.trim().toLocaleLowerCase());
+      this.filterObj = {
+        Keywords: value
+      }
+      this.dataSource.Items = [];
+
+      this.loadMessages(this.data);
+  }
   }
 
   ngOnDestroy(): void {

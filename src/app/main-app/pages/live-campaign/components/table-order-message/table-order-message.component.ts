@@ -162,9 +162,9 @@ export class TableOrderMessageComponent implements OnInit {
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
           this.currentConversation = { ...model };
-          
+
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }

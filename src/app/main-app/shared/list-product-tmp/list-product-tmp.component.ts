@@ -256,7 +256,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
         next:(res: any) => {
           if(res) {
             let productTmplItems = res[0];
-            
+
             if(res[1]) {
               let cacheObject = res[1];
               this.indexDbStorage = [...cacheObject.cacheDbStorage];
@@ -297,6 +297,13 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   addItem(data: DataPouchDBDTO, index?: number) {
     this.indClick = index as number;
+    // TODO: converse lại data tồn kho
+    if(data.QtyAvailable){
+      data.QtyAvailable = data.QtyAvailable > 0 ? Math.round(data.QtyAvailable) : 0;
+    }
+    if(data.VirtualAvailable){
+      data.VirtualAvailable = data.VirtualAvailable > 0 ? Math.round(data.VirtualAvailable) : 0;
+    }
 
     // TODO: trường hợp thêm sản phẩm vào đơn hàng
     switch(this.type){

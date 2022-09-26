@@ -41,17 +41,13 @@
                 <div class="grid grid-cols-4 gap-x-6 gap-y-4">
 
                   <tds-label class="flex items-center">Điện thoại</tds-label>
-                  <tds-form-field class="col-span-3" [color]="checkPhoneValidate() ? 'default' : 'error'">
+                  <tds-form-field class="col-span-3">
                     <input tdsInput placeholder="Nhập số điện thoại" [ngModel]="quickOrderModel.Telephone" [required]="true" (ngModelChange)="onChangePhone($event)"/>
-                    <tds-error *ngIf="!checkPhoneValidate() || quickOrderModel.Telephone">
-                      {{ quickOrderModel.Telephone ? 'Số điện thoại không hợp lệ' : 'Vui lòng nhập số điện thoại' }}
-                    </tds-error>
                   </tds-form-field>
 
                   <tds-label class="flex items-center">Email</tds-label>
-                  <tds-form-field class="col-span-3" [color]="checkEmailValidate() || !quickOrderModel.Email ? 'default' : 'error'">
+                  <tds-form-field class="col-span-3">
                     <input tdsInput placeholder="Nhập email" [ngModel]="quickOrderModel.Email" [required]="true" (ngModelChange)="onChangeEmail($event)"/>
-                    <tds-error *ngIf="!checkEmailValidate() || !quickOrderModel.Email">Email không hợp lệ</tds-error>
                   </tds-form-field>
 
                   <tds-label class="flex items-start pt-1.5">Địa chỉ</tds-label>
@@ -172,7 +168,7 @@
           </div>
 
           <div class="w-full mt-4 rounded-md h-[300px]" *ngIf="quickOrderModel?.Details">
-            <div class="w-full h-full ">
+            <div class="w-full h-full">
               <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="quickOrderModel?.Details || []"
                 [showPagination]="false" [scroll]="{y:'auto'}">
                 <thead class="rounded">

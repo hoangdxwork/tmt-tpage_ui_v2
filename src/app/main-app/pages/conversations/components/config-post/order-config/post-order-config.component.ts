@@ -481,81 +481,82 @@ export class PostOrderConfigComponent implements OnInit {
 
     this.liveCampaignService.getDetailAndAttributes(id).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: LiveCampainGetWithDetailAttributesDto) => {
+            this.isLoading = false;
 
-          let liveCampaign = res.LiveCampaign || {};
-          let users: ConfigUserDTO[] | null = [];
-          if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
-              this.dataModel.IsEnableAutoAssignUser = true;
-          }
+            let details = res.Details?.filter(x => x.IsActive == true) as LiveCampainGetWithDetailsDto[];
+            if(details?.length == 0) {
+                this.notificationService.info('Tải cấu hình thất bại', 'Chiến dịch không có sản phẩm nào hoạt động');
+                this.cdRef.detectChanges();
+                return;
+            }
 
-          this.dataModel.Users = [...users];
-          if(!TDSHelperArray.hasListValue(res?.Details)) {
-              this.message.info('Chiến dịch live chưa có chi tiết sản phẩm');
-          }
+            let liveCampaign = res.LiveCampaign || {};
+            let users: ConfigUserDTO[] | null = [];
 
-          if(TDSHelperArray.hasListValue(res?.Details)) {
-              this.dataModel.TextContentToOrders = [];
-              let details = res.Details as LiveCampainGetWithDetailsDto[];
+            if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
+                this.dataModel.IsEnableAutoAssignUser = true;
+            }
 
-              details.map((x: LiveCampainGetWithDetailsDto) => {
-                let product: AutoOrderProductDTO = {
-                    ProductId: x.ProductId,
-                    ProductCode: x.ProductCode,
-                    ProductName: x.ProductName,
-                    ProductTemplateName: x.ProductTemplateName,
-                    ProductNameGet: x.ProductNameGet,
-                    Price: x.Price,
-                    UOMId: x.UOMId,
-                    UOMName: x.UOMName,
-                    Quantity: x.Quantity,
-                    QtyLimit: x.LimitedQuantity,
-                    QtyDefault: x.Quantity,
-                    IsEnableRegexQty: liveCampaign && liveCampaign.EnableQuantityHandling ? true : false,
-                    IsEnableRegexAttributeValues: true,
-                    IsEnableOrderMultiple: false,
-                    AttributeValues: [],
-                    DescriptionAttributeValues: [],
-                    Tags: x.Tags
-                } as any;
+            this.dataModel.Users = [...users];
+            this.dataModel.TextContentToOrders = [];
 
-                if(x.AttributeValues && x.AttributeValues.length > 0) {
-                    product.DescriptionAttributeValues = x.AttributeValues.map(x => {
-                        return `${x.NameGet}`;
-                    });
+            details.map((x: LiveCampainGetWithDetailsDto) => {
+              let product: AutoOrderProductDTO = {
+                  ProductId: x.ProductId,
+                  ProductCode: x.ProductCode,
+                  ProductName: x.ProductName,
+                  ProductTemplateName: x.ProductTemplateName,
+                  ProductNameGet: x.ProductNameGet,
+                  Price: x.Price,
+                  UOMId: x.UOMId,
+                  UOMName: x.UOMName,
+                  Quantity: x.Quantity,
+                  QtyLimit: x.LimitedQuantity,
+                  QtyDefault: x.Quantity,
+                  IsEnableRegexQty: liveCampaign && liveCampaign.EnableQuantityHandling ? true : false,
+                  IsEnableRegexAttributeValues: true,
+                  IsEnableOrderMultiple: false,
+                  AttributeValues: [],
+                  DescriptionAttributeValues: [],
+                  Tags: x.Tags
+              } as any;
 
-                    product.AttributeValues = x.AttributeValues.map(x => {
-                      return `${x.Name}`;
-                    })
+              if(x.AttributeValues && x.AttributeValues.length > 0) {
+                  product.DescriptionAttributeValues = x.AttributeValues.map(x => {
+                      return `${x.NameGet}`;
+                  });
 
-                    if(product.AttributeValues && product.AttributeValues.length > 0) {
-                        product.IsEnableRegexAttributeValues = true;
-                    } else {
-                        product.IsEnableRegexAttributeValues = false;
-                    }
-                }
+                  product.AttributeValues = x.AttributeValues.map(x => {
+                    return `${x.Name}`;
+                  })
 
-                let content = product.Tags;
-                let contentWithAttributes = this.getcontentWithAttributesString(product);
-                let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
+                  if(product.AttributeValues && product.AttributeValues.length > 0) {
+                      product.IsEnableRegexAttributeValues = true;
+                  } else {
+                      product.IsEnableRegexAttributeValues = false;
+                  }
+              }
 
-                this.dataModel.TextContentToOrders.push({
-                  Index: idx++,
-                  Content: content || null,
-                  ContentWithAttributes: contentWithAttributes || null,
-                  IsActive: true,
-                  Product: product || null
-                })
+              let content = product.Tags;
+              let contentWithAttributes = this.getcontentWithAttributesString(product);
+              let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
+
+              this.dataModel.TextContentToOrders.push({
+                Index: idx++,
+                Content: content || null,
+                ContentWithAttributes: contentWithAttributes || null,
+                IsActive: true,
+                Product: product || null
               })
+            })
 
-              this.message.info(Message.ConversationPost.LoadConfigSuccess);
-          }
-
-          this.isLoading = false;
-          this.cdRef.detectChanges();
+            this.notificationService.success('Tải cấu hình thành công', `Đã đồng bộ sản phẩm từ chiến dịch ${res.LiveCampaign.Name}`);
+            this.cdRef.detectChanges();
         },
         error:(error) => {
-          this.isLoading = false;
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
         }
       });
   }

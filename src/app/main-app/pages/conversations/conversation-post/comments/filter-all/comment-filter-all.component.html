@@ -1,11 +1,12 @@
 <tds-spin [spinning]="isLoading" class="overflow-hidden flex flex-auto w-full h-full">
-    <div *ngIf="data && dataSource && team" class="overflow-hidden flex flex-col flex-auto w-full h-full gap-y-3" style="padding: 0.75rem 0 0.75rem 0.75rem">
+    <div class="overflow-hidden flex flex-col flex-auto w-full h-full gap-y-3" style="padding: 0.75rem 0 0.75rem 0.75rem">
 
-        <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-3" is-lock="true" id="scrollCommentAll" style="padding-right: 0.75rem"
-          yiAutoScroll lock-y-offset="10" scroll-end="true" observe-attributes (on-change-bottom)="nextData($event)">
+        <ng-container *ngIf="infinite | async; let items">
+          <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full" (scrolledIndexChange)="scrolledIndexChange($event)"
+              [itemSize]="itemSize" [maxBufferPx]="itemSize" [minBufferPx]="itemSize" style="overflow-x: hidden;">
 
-            <div *ngFor="let item of dataSource.Items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
-                <div *ngIf="item" class="flex flex-auto w-full" @eventFadeState>
+              <div *cdkVirtualFor="let item of items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="h-full w-full pr-2">
+                <div *ngIf="item" class="flex flex-auto w-full" style="padding-bottom: 0.75rem">
 
                     <div *ngIf="item.Type == 12">
                         <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
@@ -15,7 +16,6 @@
                     <div *ngIf="item.Type == 91">
                         <tds-avatar [tdsSrc]="(item.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
                     </div>
-
 
                     <div class="ml-2 w-full h-full">
                         <div class="bg-white rounded-2xl px-4 py-3">
@@ -32,18 +32,18 @@
                                     <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
                                         <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                             <div class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
-                                                <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
+                                                <span *ngIf="!order.code.includes('#')">#</span>{{ order.code }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <span class="text-neutral-1-400 text-right text-caption-1">{{item.CreatedTime | date:'dd/MM/yyyy HH:mm aa'}}</span>
+                                <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
                             </div>
 
                             <!-- nội dung bình luận -->
                             <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
-                                <div #contentMessage [innerHTML]="item.Message | formatIconLike | bbcodeConvert | safeHtml "></div>
+                                <div #contentMessage showMore [length]="300" [text]="(item.Message | formatIconLike | bbcodeConvert )"></div>
                                 <!-- <button tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top" (click)="selectNote(i)"
                                     class="rounded-full h-5 w-5 border border-primary-1 text-primary-1 flex justify-center items-center">
                                     <span class="tdsi-plus-fill"></span>
@@ -205,7 +205,7 @@
                         </div>
 
                       <!-- Input trả lời bình luận -->
-                      <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative" *ngIf="item.Data?.is_reply" @eventFadeState>
+                      <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative" *ngIf="item.Data?.is_reply">
                           <div [ngClass]="isReplyingComment ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
                           <div class="flex justify-between gap-2 pb-2">
 
@@ -252,7 +252,7 @@
                       <!-- Trả lời bình luận -->
 
                       <div *ngFor="let data of childsComment; let i= index; trackBy: trackByIndex" class="flex flex-auto w-full">
-                        <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3" @eventFadeState>
+                        <div *ngIf="data && data.ParentId == item.Data?.id" class="flex flex-auto w-full mt-3">
 
                             <tpage-avatar-facebook [shape]="'circle'" [size]="'md'" [psid]="data.UserId" [token]="team.ChannelToken">
                             </tpage-avatar-facebook>
@@ -403,7 +403,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+
+          </cdk-virtual-scroll-viewport>
+        </ng-container>
     </div>
 </tds-spin>
 

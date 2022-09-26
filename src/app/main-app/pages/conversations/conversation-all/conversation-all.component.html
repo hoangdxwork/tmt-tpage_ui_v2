@@ -29,7 +29,7 @@
 
                             <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
                                 [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
-                                <span class="flex items-center ">
+                                <span class="flex items-center">
                                     <i class="tdsi-success-line text-xl leading-5"></i>
                                 </span>
                             </button>
@@ -87,62 +87,33 @@
 
                 <!-- List danh sách chat -->
                 <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
-
                   <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
                       yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
                       <div *ngFor="let item of lstConversation; let i= index ; trackBy: trackByIndex">
                           <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
 
-                            <a (click)="changeCurrentConversationItem(item)"
-                              class="w-full {{ conversationItem.ConversationId == item.ConversationId? 'cursor-no-drop' : 'cursor-pointer'}}">
-                                <current-conversation-item-v2
-                                    [item]="item" [csid]="item.ConversationId" [type]="type"
-                                    [conversationItem]="conversationItem"
-                                    [state]="item.State"
-                                    [team]="currentTeam" [isFastSend]="isFastSend"
-                                    [isOpenCollapCheck]="isOpenCollapCheck"
-                                    [checked]="setOfCheckedId.has(item.ConversationId)"
-                                    (checkedChange)="onItemChecked(item.ConversationId, $event)">
-                                </current-conversation-item-v2>
-                            </a>
+                              <a (click)="changeCurrentConversationItem(item)" class="w-full"
+                                [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
+                                <!-- list danh sách chat -->
+                                  <current-conversation-item-v2
+                                      [item]="item" [csid]="item.ConversationId" [type]="type"
+                                      [conversationItem]="conversationItem"
+                                      [state]="item.State"
+                                      [team]="currentTeam" [isFastSend]="isFastSend"
+                                      [isOpenCollapCheck]="isOpenCollapCheck"
+                                      [checked]="setOfCheckedId.has(item.ConversationId)"
+                                      (checkedChange)="onItemChecked(item.ConversationId, $event)">
+                                  </current-conversation-item-v2>
+                              </a>
                           </div>
                       </div>
-
                       <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
                           <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
                       </div>
                   </div>
-
                   <div class="flex-auto bg-white mt-1"></div>
                 </div>
-
-                <!-- <ng-container *ngIf="infinite | async; let items" class="w-full h-full relative">
-
-                  <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full flex flex-col gap-y-1"
-                      [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize">
-
-                      <div *cdkVirtualFor="let item of items; let i=index; trackBy: trackByIndex" class="w-full h-full">
-                          <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState class="w-full h-full">
-
-                            <a (click)="changeCurrentConversationItem(item)" class="w-full
-                               {{ conversationItem.ConversationId == item.ConversationId? 'cursor-no-drop' : 'cursor-pointer'}}">
-                                <current-conversation-item-v2
-                                    [item]="item" [csid]="item.ConversationId" [type]="type"
-                                    [conversationItem]="conversationItem"
-                                    [state]="item.State"
-                                    [team]="currentTeam" [isFastSend]="isFastSend"
-                                    [isOpenCollapCheck]="isOpenCollapCheck"
-                                    [checked]="setOfCheckedId.has(item.ConversationId)"
-                                    (checkedChange)="onItemChecked(item.ConversationId, $event)">
-
-                                </current-conversation-item-v2>
-                                --- {{i}} {{item.Name}}---
-                            </a>
-                          </div>
-                      </div>
-                  </cdk-virtual-scroll-viewport>
-                </ng-container> -->
 
                 <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
                   <tds-empty [notFoundContent]="contentTpl">
@@ -167,7 +138,7 @@
         <!--Nội dung cuộc hội thoại-->
         <div class="flex 2xl:w-[48%] w-[45%]" *ngIf="conversationItem && currentTeam">
           <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-              <div class="flex w-full flex-col h-full" @eventFadeState>
+              <div class="flex w-full flex-col h-full">
                   <shared-tds-conversations
                       class="flex w-full h-full"
                       [data]="conversationItem"
@@ -212,7 +183,7 @@
                             <div class="flex items-center font-semibold justify-center text-body-2 p-4 relative group cursor-pointer"
                               [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
 
-                                <span class="mr-2 flex items-center">  Đơn hàng
+                                <span class="mr-2 flex items-center"> Đơn hàng
                                     <tds-tag status='primary' class="ml-3" *ngIf="conversationInfo && conversationInfo.Order && conversationInfo.Order.Code"> #{{conversationInfo.Order.Code}} </tds-tag>
                                 </span>
 
@@ -224,7 +195,7 @@
 
                         <div *ngIf="currentTeam && type && conversationInfo">
                             <conversation-order [conversationInfo]="conversationInfo" [team]="currentTeam"
-                              [type]="type"  [syncConversationInfo]="syncConversationInfo"></conversation-order>
+                              [type]="type" [syncConversationInfo]="syncConversationInfo"></conversation-order>
                         </div>
 
                         <div class="w-full h-[calc(100vh-109px)]  flex justify-center items-center" *ngIf="!conversationItem">

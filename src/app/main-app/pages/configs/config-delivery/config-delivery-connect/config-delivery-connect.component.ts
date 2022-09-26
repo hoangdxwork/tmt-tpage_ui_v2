@@ -10,7 +10,10 @@ import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/as
 
 @Component({
   selector: 'config-delivery-connect',
-  templateUrl: './config-delivery-connect.component.html'
+  templateUrl: './config-delivery-connect.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 
 export class ConfigDeliveryConnectComponent implements OnInit {
@@ -41,7 +44,7 @@ export class ConfigDeliveryConnectComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {

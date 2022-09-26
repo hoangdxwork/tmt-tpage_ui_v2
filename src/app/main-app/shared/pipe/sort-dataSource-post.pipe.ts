@@ -13,7 +13,7 @@ export class SortDataSourcePostPipe implements PipeTransform {
   transform(data: ChatomniDataItemDto[]): any {
     let model: ChatomniDataItemDto[] = [];
     data.map(x=>{
-        if(!x.ParentId)
+        if(!x.ParentId && (x.Type == ChatomniMessageType.FacebookComment || x.Type == ChatomniMessageType.TShopComment))
             model = [...model, ...[x]]
     })
 

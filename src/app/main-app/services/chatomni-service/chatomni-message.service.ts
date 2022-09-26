@@ -22,10 +22,22 @@ export class ChatomniMessageService extends BaseSevice  {
       super(apiService)
   }
 
-  get(teamId: number, psid: any, type: string): Observable<ChatomniDataDto> {
+  get(teamId: number, psid: any, type: string, queryObj?: any): Observable<ChatomniDataDto> {
+
+      let queryString = null;
+      if (queryObj) {
+          queryString = Object.keys(queryObj).map(key => {
+              return key + '=' + queryObj[key]
+          }).join('&');
+      }
+
+      let url = `${this._BASE_URL}/${this.baseRestApi}/${teamId}_${psid}/messages?type=${type}`;
+      if (TDSHelperString.hasValueString(queryString)) {
+          url = `${url}&${queryString}`;
+      }
 
       let api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}_${psid}/messages?type=${type}`,
+        url: `${url}`,
         method: CoreApiMethodType.get,
       }
       return this.apiService.getData<ChatomniDataDto>(api, null);
@@ -39,14 +51,14 @@ export class ChatomniMessageService extends BaseSevice  {
     return this.apiService.getData<any>(api, null);
   }
 
-  makeDataSource(teamId: number, psid: any, type: string): Observable<ChatomniDataDto> {
+  makeDataSource(teamId: number, psid: any, type: string, queryObj?: TDSSafeAny): Observable<ChatomniDataDto> {
 
       this.urlNext = '';
       this.omniFacade.dataSource = {};
 
       let id = `${teamId}_${psid}`;
 
-      return this.get(teamId, psid, type).pipe(map((res: ChatomniDataDto) => {
+      return this.get(teamId, psid, type, queryObj).pipe(map((res: ChatomniDataDto) => {
      
           // TODO: load dữ liệu lần đầu tiên
           if(TDSHelperObject.hasValue(res)) {

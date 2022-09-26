@@ -91,6 +91,7 @@ export class EditOrderV2Component implements OnInit {
   visiblePopoverTax: boolean = false;
   visibleDiscountLines: boolean = false;
   visibleShipExtraMoney: boolean = false;
+  isCalculateFeeAship: boolean = false;
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -127,7 +128,6 @@ export class EditOrderV2Component implements OnInit {
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
     private modalRef: TDSModalRef,
-    private fb: FormBuilder,
     private auth: TAuthService,
     private notification: TDSNotificationService,
     private message: TDSMessageService,
@@ -321,14 +321,6 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
-  checkEmailValidate(){
-    if(this.emailRegex){
-      return new RegExp(this.emailRegex).test(this.quickOrderModel.Email);
-    }else{
-      return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(this.quickOrderModel.Email);
-    }
-  }
-
   onChangePhone(data: any){
     this.quickOrderModel.Telephone = data;
     this.quickOrderModel.PartnerPhone = data;
@@ -355,24 +347,25 @@ export class EditOrderV2Component implements OnInit {
   }
 
   selectProduct(data: ProductDTOV2){
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMPOId) as number;
-    if (Number(index) < 0){
-        let item = {
-            Factor: data.Factor,
-            Price: data.Price,
-            ProductId: data.Id,
-            Note: data?.Note || null,
-            ProductName: data.Name,
-            ProductNameGet: data.NameGet,
-            ProductCode: data.DefaultCode,
-            Quantity: 1,
-            UOMId: data.UOMId,
-            UOMName: data.UOMName,
-        } as Detail_QuickSaleOnlineOrder;
-
-        this.quickOrderModel.Details.push(item);
-    } else{
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMId) as number;
+    if (Number(index) >= 0){
         this.quickOrderModel.Details[index].Quantity += 1;
+    } else{
+
+      let item = {
+          Factor: data.Factor,
+          Price: data.Price,
+          ProductId: data.Id,
+          Note: data?.Note || null,
+          ProductName: data.Name,
+          ProductNameGet: data.NameGet,
+          ProductCode: data.DefaultCode,
+          Quantity: 1,
+          UOMId: data.UOMId,
+          UOMName: data.UOMName,
+      } as Detail_QuickSaleOnlineOrder;
+
+      this.quickOrderModel.Details.push(item);
     }
 
     this.closeSearchProduct();
@@ -581,11 +574,6 @@ export class EditOrderV2Component implements OnInit {
       return;
     }
 
-    if (!this.checkEmailValidate() && model.Email) {
-      this.message.error(model.Email ? 'Địa chỉ email không hợp lệ' : 'Vui lòng nhập địa chỉ email');
-      return;
-    }
-
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
         if(this.saleModel) {
@@ -606,6 +594,19 @@ export class EditOrderV2Component implements OnInit {
 
       if (!TDSHelperString.hasValueString(model.Address)) {
           this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+          return;
+      }
+
+      if (!TDSHelperString.hasValueString(model.CityCode) || !TDSHelperString.hasValueString(model.DistrictCode)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Tỉnh/Thành phố là bắt buộc');
+          return false;
+      }
+
+      //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
+      if(!this.isCalculateFeeAship && this.saleModel.Carrier) {
+          this.notification.info(`Đối tác ${this.saleModel.Carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng xác nhận lại sau khi thành công');
+          let carrier = this.saleModel.Carrier as any;
+          this.calculateFeeAship(carrier);
           return;
       }
     }
@@ -688,7 +689,7 @@ export class EditOrderV2Component implements OnInit {
             }
 
             if(res && !res.Message ) {
-              this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
+                this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
             }
 
             if(type && res) {
@@ -697,6 +698,8 @@ export class EditOrderV2Component implements OnInit {
               this.isLoading = false;
               this.modalRef.destroy('onLoadPage');
             }
+
+            this.isCalculateFeeAship = false;
         },
         error: (error: any) => {
             this.isLoading = false;
@@ -876,6 +879,7 @@ export class EditOrderV2Component implements OnInit {
             }
 
             this.isLoading = false;
+            this.isCalculateFeeAship = true;
             this.cdRef.markForCheck();
         },
         error: (error: any) => {
