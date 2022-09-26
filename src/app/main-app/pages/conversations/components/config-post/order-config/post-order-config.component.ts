@@ -365,27 +365,29 @@ export class PostOrderConfigComponent implements OnInit {
     return null;
   }
 
-  showModalListProduct(item: TextContentToOrderDTO) {
-    const modal = this.modalService.create({
-      title: 'Danh sách sản phẩm',
-      content: ModalListProductComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'xl',
-      bodyStyle: {
-        padding: '0px'
-      },
-      componentParams:{
-        isPostConfig: true
-      }
-    });
-
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) =>{
-        if(TDSHelperObject.hasValue(res)) {
-            this.selectProduct(res, item);
+  showModalListProduct(item: TextContentToOrderDTO | null) {
+    if(item) {
+      const modal = this.modalService.create({
+        title: 'Danh sách sản phẩm',
+        content: ModalListProductComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'xl',
+        bodyStyle: {
+          padding: '0px'
+        },
+        componentParams:{
+          isPostConfig: true
         }
-      }
-    });
+      });
+
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) =>{
+          if(TDSHelperObject.hasValue(res)) {
+              this.selectProduct(res, item);
+          }
+        }
+      });
+    }
   }
 
   selectProduct(product: any, item: TextContentToOrderDTO) {
