@@ -7,6 +7,17 @@ export class PhoneHelper {
 
     if(TDSHelperString.hasValueString(text)) {
 
+      let format = text.indexOf('[format') && text.indexOf('[end_format]');
+
+      if(format > 0) {
+        let start =  text.indexOf("value='");
+        let end =  text.indexOf( "']");
+
+        if(start > 0 && end > 0) {
+            text = text.substring(start, end).replace("value='", "").trim();
+        }
+      }
+
       if(companyCurrents && companyCurrents.Configs) {
         let config = JSON.parse(companyCurrents.Configs);
 
