@@ -315,7 +315,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       x.Tags = productTmplItems?.Tags || null;
 
       if(this.inventories && this.inventories[x.Id]) {
-          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Math.round(this.inventories[x.Id].QtyAvailable) : 0;
+          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 0;
       }
     });
 
