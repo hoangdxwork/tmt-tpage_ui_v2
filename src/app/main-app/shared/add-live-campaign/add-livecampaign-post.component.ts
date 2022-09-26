@@ -28,6 +28,7 @@ import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { TDSTableComponent } from 'tds-ui/table';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { StringHelperV2 } from '../helper/string.helper';
 
 @Component({
   selector: 'add-livecampaign-post',
@@ -35,7 +36,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
   providers: [TDSDestroyService]
 })
 
-export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
+export class AddLiveCampaignPostComponent implements OnInit {
 
   @Input() id?: string;
   @Input() isCopy?: boolean;
@@ -44,7 +45,10 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
   _form!: FormGroup;
 
   @ViewChild('virtualTable', { static: false }) tdsTableComponent?: TDSTableComponent<any>;
-  @ViewChild('innerText') innerText!: ElementRef;
+
+  searchValue = '';
+  visible = false;
+  lstDetailForm: any = [];
 
   lstConfig: any = [
     { text: "Nháp", value: "Draft" },
@@ -224,6 +228,8 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
 
     this._form.patchValue(data);
     this.initFormDetails(data.Details);
+
+    this.lstDetailForm = [...data.Details];
   }
 
   //TODO: disable các giá trị ngày không khả dụng
@@ -404,6 +410,9 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
             UsedQuantity: 0,
         } as LiveCampaignProductDTO;
 
+        let tags = this.generateTagDetail(item.ProductName, item.ProductCode, item.Tags);
+        item.Tags = tags.join(',');
+
         if(TDSHelperString.hasValueString(this.id)) {
             this.addProductLiveCampaignDetails(item);
         } else {
@@ -448,6 +457,9 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
             IsActive: true,
             UsedQuantity: 0
         } as LiveCampaignProductDTO;
+
+        let tags = this.generateTagDetail(item.ProductName, item.ProductCode, item.Tags);
+        item.Tags = tags?.join(',');
 
         if(TDSHelperString.hasValueString(this.id)) {
             this.addProductLiveCampaignDetails(item);
@@ -497,6 +509,9 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
               this.notificationService.info(`Thêm mới sản phẩm ${x.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${x.Quantity}</span> sản phẩm ${x.ProductName}`)
           }
 
+          let a = this.detailsFormGroups.value as any[];
+          this.lstDetailForm = [...a];
+
           delete this.isEditDetails[x.Id];
         },
         error: (err: any) => {
@@ -515,8 +530,11 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
     } else {
         formDetails = [...[item], ...formDetails]
         this.detailsFormGroups.clear();
-        this.initFormDetails(formDetails)
+        this.initFormDetails(formDetails);
     }
+
+    let x = this.detailsFormGroups.value as any[];
+    this.lstDetailForm = [...x];
   }
 
   onSave() {
@@ -623,17 +641,59 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
     return i;
   }
 
-  ngAfterViewInit() {
-    if(this.innerText && this.innerText.nativeElement) {
-      fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-        map((event: any) => { return event.target.value }),
-        debounceTime(750)
-      ).subscribe({
-        next: (text: any) => {
-            text = TDSHelperString.stripSpecialChars(text.toLowerCase().trim());
-        },
-      });
+  generateTagDetail(productName: string, code: string, tags: string) {
+    productName = productName.replace(`[${code}]`, "");
+    productName = productName.trim();
+
+    let result: string[] = [];
+
+    let word = StringHelperV2.removeSpecialCharacters(productName);
+    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
+    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
+
+    result.push(word);
+
+    if(!result.includes(wordNoSignCharacters)) {
+      result.push(wordNoSignCharacters);
     }
+
+    if(!result.includes(wordNameNoSpace)) {
+      result.push(wordNameNoSpace);
+    }
+
+    if(TDSHelperString.hasValueString(code) && code) {
+      result.push(code);
+    }
+
+    if(TDSHelperString.hasValueString(tags)){
+        let tagArr = tags.split(',');
+        tagArr.map(x => {
+          if(!result.find(y=> y == x))
+              result.push(x);
+        })
+    }
+
+    return [...result];
+  }
+
+  onReset(): void {
+    this.searchValue = '';
+    this.detailsFormGroups.clear();
+    this.initFormDetails(this.lstDetailForm);
+  }
+
+  onSearch(): void {
+    this.visible = false;
+    let data = this.detailsFormGroups.value;
+
+    let text = TDSHelperString.stripSpecialChars(this.searchValue?.toLocaleLowerCase().trim());
+
+    data = this.lstDetailForm?.filter((item: LiveCampaignProductDTO) => TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase().trim()).indexOf(text) !== -1
+          || TDSHelperString.stripSpecialChars(item.ProductCode?.toLocaleLowerCase().trim()).indexOf(text) !== -1
+          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase().trim()).indexOf(text) !== -1);
+
+    this.detailsFormGroups.clear();
+    this.initFormDetails(data);
   }
 
 }
