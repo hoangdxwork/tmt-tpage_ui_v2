@@ -297,13 +297,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   addItem(data: DataPouchDBDTO, index?: number) {
     this.indClick = index as number;
-    // TODO: converse lại data tồn kho
-    if(data.QtyAvailable){
-      data.QtyAvailable = data.QtyAvailable > 0 ? Math.round(data.QtyAvailable) : 0;
-    }
-    if(data.VirtualAvailable){
-      data.VirtualAvailable = data.VirtualAvailable > 0 ? Math.round(data.VirtualAvailable) : 0;
-    }
 
     // TODO: trường hợp thêm sản phẩm vào đơn hàng
     switch(this.type){
@@ -321,11 +314,9 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     model.map((x: DataPouchDBDTO)=>{
       x.Tags = productTmplItems?.Tags || null;
 
-      if(this.inventories && this.inventories[data.Id]){
-        x.QtyAvailable = this.inventories[data.Id].QtyAvailable || 0;
-        x.VirtualAvailable = this.inventories[data.Id].VirtualAvailable || 0;
+      if(this.inventories && this.inventories[x.Id]) {
+          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Math.round(this.inventories[x.Id].QtyAvailable) : 0;
       }
-      return x;
     });
 
     this.lstVariants = [...model];
@@ -334,7 +325,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   trackByIndex(_: number, data: DataPouchDBDTO): number {
     return data.Id;
   }
-
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["priceListItems"] && !changes["priceListItems"].firstChange) {

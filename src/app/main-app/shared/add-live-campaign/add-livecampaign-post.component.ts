@@ -428,7 +428,7 @@ export class AddLiveCampaignPostComponent implements OnInit, AfterViewInit {
 
     // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
     if(!exist){
-        let qty = Number(this.lstInventory[data.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 0;
+        let qty = Number(this.lstInventory[data.Id]?.QtyAvailable) > 0 ? Math.round(this.lstInventory[data.Id]?.QtyAvailable) : 0;
         let item = {
             Quantity: qty,
             LiveCampaign_Id: this.id || null,
