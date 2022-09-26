@@ -92,12 +92,6 @@ export class CsOrder_PrepareModelHandler {
 
     x.Facebook_Comments = [this.prepareFacebookComment(comment)];
 
-    //TODO: check sdt cấu hình mặc định
-    let config = JSON.parse(companyCurrents.Configs);
-    if(config && config.PhoneRegex) {
-      this.phoneRegex = config.PhoneRegex;
-    }
-
     //TODO: check sản phẩm mặc định
     let product = this.facebookPostService.getDefaultProductPost() as Detail_QuickSaleOnlineOrder;
     x.Details = [];
@@ -117,17 +111,24 @@ export class CsOrder_PrepareModelHandler {
         x.Details.push(item);
     }
 
-    if(this.phoneRegex && comment.Message) {
-      let regex = new RegExp(this.phoneRegex);
-      let exec = regex.exec(comment.Message) as any[];
-      if(exec) {
-          let phone = exec[1].trim();
-          x.Telephone = phone;
-      }
+    //TODO: check sdt cấu hình mặc định
+    let config = JSON.parse(companyCurrents.Configs);
+    if(config && config.PhoneRegex) {
+        let phoneRegex = config.PhoneRegex || null;
+        phoneRegex = new RegExp(`${phoneRegex}`, 'g');
+        this.phoneRegex = phoneRegex;
+    }
+
+    if(TDSHelperString.hasValueString(comment.Data?.message) && !x.Telephone) {
+        let exec = this.phoneRegex.exec(comment.Data.message) as any[];
+        if(exec && exec[1]) {
+            let phone = exec[1].trim();
+            x.Telephone = phone;
+        }
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Message}`;
+        x.Note = `{before}${comment.Data?.message}`;
     }
 
     return {...x};
@@ -136,8 +137,8 @@ export class CsOrder_PrepareModelHandler {
   public prepareFacebookComment(comment: ChatomniDataItemDto) {
     let item = {} as SaleOnline_Order_Facebook_CommentDto;
 
-    item["id"] = comment.Data.id;// ko gán bằng comment.id, lỗi realtime ko có dữ liệu
-    item["message"] = comment.Message;
+    item["id"] = comment.Data?.id;// ko gán bằng comment.id, lỗi realtime ko có dữ liệu
+    item["message"] = comment.Data?.message;
     item["created_time"] = String(comment.CreatedTime);
     item["created_time_converted"] = comment.CreatedTime;
     item["can_hide"] = comment.Data?.can_hide;
