@@ -212,9 +212,19 @@
                             </button>
                           </td>
                         </tr>
+                        <tr>
+                          <div class="p-3">
+                            <button tds-button type="button" color="primary" (click)="showCreateAttributeModal()">
+                                <span class="flex items-center ">
+                                    <i class="tdsi-plus-fill mr-2"></i>Thêm biến thể
+                                </span>
+                            </button>
+                          </div>
+                        </tr>
                       </tbody>
                     </tds-table>
                 </div>
+
             </div>
             <ng-template #tableAttribute>
                 <div class="flex flex-col gap-y-8 justify-center items-center">
@@ -223,14 +233,14 @@
                         <span class="text-neutral-1-400 text-body-2">Chưa có biến thể nào</span>
                     </div>
                 </div>
+                <div class="flex justify-center pt-2">
+                  <button tds-button type="button" color="primary" (click)="showCreateAttributeModal()">
+                      <span class="flex items-center ">
+                          <i class="tdsi-plus-fill mr-2"></i>Thêm biến thể
+                      </span>
+                  </button>
+              </div>
             </ng-template>
-            <div class="flex justify-center pt-2">
-                <button tds-button type="button" color="primary" (click)="showCreateAttributeModal()">
-                    <span class="flex items-center ">
-                        <i class="tdsi-plus-fill mr-2"></i>Thêm biến thể
-                    </span>
-                </button>
-            </div>
         </tds-tab>
     </tds-tabset>
 </tds-spin>

@@ -4,8 +4,7 @@
       <tds-tab title="Thông tin" clsContent="p-4 border-t border-neutral-2-200" >
         <div class="w-full h-full grid grid-cols-2 gap-y-4 gap-x-8">
           <div class="grid grid-cols-3 gap-y-4 gap-x-3">
-
-            <tds-label>Tên chiến dịch</tds-label>
+            <tds-label [tdsRequired]="true">Tên chiến dịch</tds-label>
             <tds-form-field class="col-span-2 w-full">
                 <input tdsInput placeholder="Nhập tên chiến dịch" [required]='true' formControlName="Name" />
                 <tds-error>
@@ -35,12 +34,17 @@
             </tds-form-field>
 
             <tds-label>Mẫu tin chốt đơn</tds-label>
-            <tds-form-field class="col-span-2 w-full">
+            <div class="flex gap-x-2 col-span-2">
+              <tds-form-field class="w-full">
                 <tds-select valueField="Id" textField="Name"
                     placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="ConfirmedOrder_Template"
                     disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                 </tds-select>
-            </tds-form-field>
+              </tds-form-field>
+              <button tds-button-icon type="button" color="secondary">
+                <i class="tdsi-plus-circle-fill text-primary-1"></i>
+              </button>
+            </div>
 
             <tds-label>Mẫu tin dự bị</tds-label>
             <tds-form-field class="col-span-2 w-full">

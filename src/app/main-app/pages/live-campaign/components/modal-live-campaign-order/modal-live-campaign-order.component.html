@@ -46,7 +46,9 @@
 
         <!-- Trạng thái -->
         <td>
-          Chưa có
+          <tds-tag type="outline" [status]="data.State | getColorStatusState">
+            {{data.State | getShowState}}
+          </tds-tag>
         </td>
 
         <!-- Xem chi tiết -->
