@@ -670,7 +670,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             if(TDSHelperString.hasValueString(res.code) && !res.code.includes('#')){
               this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
             }
-            
+
             this.isUpdated = false;
           }
 
@@ -1422,6 +1422,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
+  changeNote(event: any) {
+    if(event && event.target && event.target.value && this.quickOrderModel) {
+        this.quickOrderModel.Note = event.target.value;
+    }
+  }
 
   validateData(){
     this.isEditPartner = false;
