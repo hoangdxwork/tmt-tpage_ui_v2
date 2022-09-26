@@ -48,7 +48,6 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
   searchValue = '';
   visible = false;
-  lstDetailForm: any = [];
 
   lstConfig: any = [
     { text: "Nháp", value: "Draft" },
@@ -228,8 +227,6 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
     this._form.patchValue(data);
     this.initFormDetails(data.Details);
-
-    this.lstDetailForm = [...data.Details];
   }
 
   //TODO: disable các giá trị ngày không khả dụng
@@ -509,9 +506,6 @@ export class AddLiveCampaignPostComponent implements OnInit {
               this.notificationService.info(`Thêm mới sản phẩm ${x.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${x.Quantity}</span> sản phẩm ${x.ProductName}`)
           }
 
-          let a = this.detailsFormGroups.value as any[];
-          this.lstDetailForm = [...a];
-
           delete this.isEditDetails[x.Id];
         },
         error: (err: any) => {
@@ -532,9 +526,6 @@ export class AddLiveCampaignPostComponent implements OnInit {
         this.detailsFormGroups.clear();
         this.initFormDetails(formDetails);
     }
-
-    let x = this.detailsFormGroups.value as any[];
-    this.lstDetailForm = [...x];
   }
 
   onSave() {
@@ -677,23 +668,23 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   onReset(): void {
-    this.searchValue = '';
-    this.detailsFormGroups.clear();
-    this.initFormDetails(this.lstDetailForm);
+    // this.searchValue = '';
+    // this.detailsFormGroups.clear();
+    // this.initFormDetails(this.lstDetailForm);
   }
 
   onSearch(): void {
-    this.visible = false;
-    let data = this.detailsFormGroups.value;
+    // this.visible = false;
+    // let data = this.detailsFormGroups.value;
 
-    let text = TDSHelperString.stripSpecialChars(this.searchValue?.toLocaleLowerCase().trim());
+    // let text = TDSHelperString.stripSpecialChars(this.searchValue?.toLocaleLowerCase().trim());
 
-    data = this.lstDetailForm?.filter((item: LiveCampaignProductDTO) => TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase().trim()).indexOf(text) !== -1
-          || TDSHelperString.stripSpecialChars(item.ProductCode?.toLocaleLowerCase().trim()).indexOf(text) !== -1
-          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase().trim()).indexOf(text) !== -1);
+    // data = this.lstDetailForm.filter((item: LiveCampaignProductDTO) => TDSHelperString.stripSpecialChars(item.ProductName.toLocaleLowerCase().trim()).indexOf(text) !== -1
+    //       || TDSHelperString.stripSpecialChars(item.ProductCode).indexOf(text) !== -1
+    //       || TDSHelperString.stripSpecialChars(item.UOMName.toLocaleLowerCase().trim()).indexOf(text) !== -1);
 
-    this.detailsFormGroups.clear();
-    this.initFormDetails(data);
+    // this.detailsFormGroups.clear();
+    // this.initFormDetails(data);
   }
 
 }
