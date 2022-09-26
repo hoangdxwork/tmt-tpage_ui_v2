@@ -84,7 +84,7 @@ export const Message = {
     ReasonEmpty: 'Hãy nhập lí do.',
     BlockSuccess: 'Chặn thành công.',
     PhoneEmpty: 'Chưa có số điện thoại.',
-    UnReportSuccess: 'Bor chặn thành công.'
+    UnReportSuccess: 'Bỏ chặn thành công.'
   },
   ConnectionChannel: {
     NotFoundUserPage: 'Không tìm thấy kênh kết nối nào',

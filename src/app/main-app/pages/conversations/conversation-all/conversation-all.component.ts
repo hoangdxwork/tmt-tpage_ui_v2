@@ -609,6 +609,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onSubmitFilter(queryObj: QueryFilterConversationDto) {
+    this.totalConversations = 0;
+    this.queryObj = {} as any;
+    
     this.queryObj = queryObj;
     this.loadFilterDataSource();
   }
@@ -651,7 +654,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           this.isLoading = false;
           this.isRefreshing = false;
-          this.cdRef.markForCheck();
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
