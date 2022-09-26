@@ -1,8 +1,10 @@
+import { TDSMessageService } from 'tds-ui/message';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { CRMTagDTO } from './../../../../dto/crm-tag/odata-crmtag.dto';
 import { startOfMonth, endOfMonth, startOfYesterday, endOfYesterday, subDays } from 'date-fns';
 import { ApplicationUserService } from './../../../../services/application-user.service';
 import { CRMTagService } from './../../../../services/crm-tag.service';
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { TDSHelperArray, TDSSafeAny, TDSHelperString, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TDSI18nService, vi_VN } from 'tds-ui/i18n';
 import { QueryFilterConversationDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
@@ -48,12 +50,15 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     private crmTagService: CRMTagService,
     private applicationUserService: ApplicationUserService,
     private destroy$: TDSDestroyService,
-    private i18n: TDSI18nService) {
+    private i18n: TDSI18nService,
+    private chatomniConversationService: ChatomniConversationService,
+    private message: TDSMessageService) {
       this.i18n.setLocale(vi_VN);
   }
 
   ngOnInit(): void {
     this.loadUserActive();
+    this.removeQueryObjConversation();
 
     this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tags: CRMTagDTO[]) => {
@@ -79,10 +84,35 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     if(changes["totalConversations"] && !changes["totalConversations"].firstChange) {
         this.totalConversations = changes["totalConversations"].currentValue as number;
     }
+
+    if(changes["queryObj"] && !changes["queryObj"].firstChange) {
+      this.queryObj = {...changes["queryObj"].currentValue};
+      this.setQueryObjConversation(this.queryObj);
+    }
   }
 
   openDrawerFillter() {
+    this.queryObj = {} as any;
     this.visibleDrawerFillter = true;
+
+    let saveQueryObj = this.getQueryObjConversation()
+    if(saveQueryObj) {
+      this.queryObj = {...saveQueryObj};
+
+      if(saveQueryObj.start && saveQueryObj.end){
+        this.dateTimes[0] = saveQueryObj.start || null;
+        this.dateTimes[1] = saveQueryObj.end || null;
+      } else {
+        this.dateTimes = [];
+      }
+
+      let a = saveQueryObj['user_ids']
+      if(saveQueryObj['user_ids']) {
+       
+        this.queryObj['user_ids'] == saveQueryObj['user_ids'];
+      }
+
+    }
   }
 
   closeDrawerFillter(): void {
@@ -135,6 +165,8 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     this.keyFilterTag = '';
     this.totalConversations = 0;
     this.queryObj = {} as any;
+    this.removeQueryObjConversation();
+
     this.onSubmitFilter.emit(this.queryObj);
     this.closeDrawerFillter()
   }
@@ -150,8 +182,17 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   }
 
   onSubmit(): void {
+    if(!TDSHelperObject.hasValue(this.queryObj)){
+        this.message.error("Vui lòng chọn điều kiện lọc!");
+        return
+    } else if(Object.keys(this.queryObj).length == 0) {
+        this.message.error("Vui lòng chọn điều kiện lọc!");
+        return
+    }
+
     this.isFilter = true;
     this.totalConversations = 0;
+
     this.onSubmitFilter.emit(this.queryObj);
     this.closeDrawerFillter();
   }
@@ -194,6 +235,27 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     } else {
         delete this.queryObj['has_unread'];
     }
+  }
+
+  setQueryObjConversation(queryObj: QueryFilterConversationDto): any {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
+    localStorage.setItem(_keyCache, JSON.stringify(queryObj));
+  }
+
+  getQueryObjConversation(): any {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
+    let item = localStorage.getItem(_keyCache) as any;
+
+    if(item) {
+        return JSON.parse(item);
+    } else {
+        return null;
+    }
+  }
+
+  removeQueryObjConversation() {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
+    localStorage.removeItem(_keyCache);
   }
 
 }

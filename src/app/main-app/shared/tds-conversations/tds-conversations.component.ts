@@ -387,12 +387,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
     };
 
-    this.activityMatchingService.addTemplateMessage(this.data.ConversationId, model)
+    this.activityMatchingService.addTemplateMessageV2(this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
 
-        // that.activityDataFacade.messageServer(res);
-        // that.conversationDataFacade.messageServer(res);
+        this.messageResponseV2(res, {} as any);
 
         that.message.success('Gửi thành công sản phẩm');
        },

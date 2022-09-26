@@ -282,9 +282,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       }
     });
 
-    modal.componentInstance?.onSendProduct.subscribe(res => {
-      if(res){
-          this.onProductSelected(res, item);
+    modal.componentInstance?.onSendProduct.subscribe({
+      next: (res: TDSSafeAny)=>{
+        if(res){
+            this.onProductSelected(res, item);
+            modal.destroy(null);
+        }
       }
     })
   }
@@ -304,17 +307,23 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       }
     };
 
-    // this.activityMatchingService.addTemplateMessage(this.data.psid, model)
-    //   .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.activityMatchingService.addTemplateMessageV2(this.team.ChannelId, model)
+    .pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        item.Data.is_reply = false;
+        this.isReplyingComment = false;
+        this.message.success('Gửi tin thành công');
 
-    //     this.activityDataFacade.messageServer(res);
-    //     this.conversationDataFacade.messageServer(res);
+        this.cdRef.markForCheck();
+      },
+      error: error => {
+        item.Data.is_reply = false;
+        this.isReplyingComment = false;
+        this.message.error(`${error.error?.message}` || 'Gửi sản phẩm thất bại');
 
-    //     this.message.success('Gửi thành công sản phẩm');
-    // }, error => {
-    //     this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi sản phẩm thất bại');
-    // });
-
+        this.cdRef.detectChanges();
+      }
+    });
   }
 
   onQuickReplySelected(event: any, partner?: PartnerTimeStampItemDto) {
