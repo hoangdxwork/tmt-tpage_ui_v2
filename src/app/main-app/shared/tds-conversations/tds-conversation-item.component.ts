@@ -99,42 +99,54 @@ export class TDSConversationItemComponent implements OnInit  {
 
   selectOrder(type: string, index?: number): any {
     let data = { phone: null, address: null, note: null } as any;
-
     let value = this.getTextOfContentMessage();
-    if (type == 'phone') {
-      let phone = PhoneHelper.getMultiplePhoneFromText(value, this.companyCurrents);
-      if (!phone) {
-        return this.tdsMessage.error("Không tìm thấy số điện thoại");
-      }
-      this.tdsMessage.info("Chọn làm số điện thoại thành công");
-      data.phone = phone;
 
-    } else if (type == 'address') {
-      data.address = value;
-      if (value) {
-        this.tdsMessage.info("Chọn làm  địa chỉ thành công");
-      }
+    if(TDSHelperString.hasValueString(value)) {
+        switch(type) {
+            case "phone":
+                let phone = PhoneHelper.getMultiplePhoneFromText(value, this.companyCurrents);
+                if (!phone) {
+                    return this.tdsMessage.error("Không tìm thấy số điện thoại");
+                }
+                this.tdsMessage.info("Chọn làm số điện thoại thành công");
+                data.phone = phone;
+              break;
 
-    } else if (type == 'note') {
-      if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
-        data.note = this.contentMessageChild._results[index].nativeElement.outerText;
-      }
-      else {
-        data.note = value;
-      }
+            case "address":
+                data.address = value;
+                if (value) {
+                  this.tdsMessage.info("Chọn làm  địa chỉ thành công");
+                }
+              break;
+
+            case "note":
+                if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
+                    data.note = this.contentMessageChild._results[index].nativeElement.outerText;
+                } else {
+                    data.note = value;
+                }
+              break;
+        }
+
+        //TODO: load sang tab conversation-order paste lại dữ liệu
+        this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
+    } else {
+        return false;
     }
-
-    //TODO: load sang tab conversation-order paste lại dữ liệu
-    this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
   }
 
-  getTextOfContentMessage() {//TODO: thêm xử lý với tin nhắn phản hồi
-    if (this.contentMessage && this.contentMessage.nativeElement && this.contentMessage.nativeElement.outerText) {
-      return this.contentMessage.nativeElement.outerText;
+  getTextOfContentMessage() {
+    let text: string = '';
+    //TODO: thêm xử lý với tin nhắn phản hồi
+    if (this.contentMessage?.nativeElement?.outerText) {
+        text = this.contentMessage.nativeElement.outerText;
+    } else if(this.contentMessage?.text) {
+        text = this.contentMessage.text;
+    } else {
+        this.tdsMessage.info("Không thể lấy thông tin");
     }
 
-    // this.tdsMessage.info("Không thể lấy thông tin");
-    return null;
+    return text;
   }
 
   loadEmojiMart(event: any) {
@@ -171,15 +183,15 @@ export class TDSConversationItemComponent implements OnInit  {
     this.activityMatchingService.addLikeComment(model)
       .pipe(takeUntil(this.destroy$), finalize (()=>{this.isLiking = false})).subscribe({
         next: (res: any) => {
-        this.tdsMessage.success('Thao tác thành công!');
-        this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
+            this.tdsMessage.success('Thao tác thành công!');
+            this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
 
-        this.cdRef.markForCheck();
+            this.cdRef.markForCheck();
         },
         error: error => {
-        this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
-        this.cdRef.markForCheck();
-      }
+            this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
+            this.cdRef.markForCheck();
+        }
     });
   }
 
@@ -547,23 +559,25 @@ export class TDSConversationItemComponent implements OnInit  {
         value = this.getTextOfContentMessage();
     }
 
-    let modal = this.modalService.create({
-        title: 'Thêm địa chỉ',
-        content: ModalAddAddressV2Component,
-        size: "lg",
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          _street: value
-        }
-      });
+    if(TDSHelperArray.hasListValue(value)) {
+        let modal = this.modalService.create({
+            title: 'Thêm địa chỉ',
+            content: ModalAddAddressV2Component,
+            size: "lg",
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              _street: value
+            }
+          });
 
-    modal.afterClose.subscribe({
-      next: (result: ResultCheckAddressDTO) => {
-        if(result){
-         this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
-        }
-      }
-    })
+        modal.afterClose.subscribe({
+          next: (result: ResultCheckAddressDTO) => {
+            if(result){
+                this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+            }
+          }
+        })
+    }
   }
 
   @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {
@@ -576,6 +590,19 @@ export class TDSConversationItemComponent implements OnInit  {
         selBox.style.top = '0';
         selBox.style.opacity = '0';
         selBox.value = e.target.getAttribute('data-value') || e.target.innerHTML;
+
+        if(selBox.value) {
+          let phoneRegex = /(?:\b|[^0-9])((o|0|84|\+84)(\s?)([2-9]|1[0-9])((\d|o)(\s|\.)?){8})(?:\b|[^0-9])/g;
+
+          let removeDots = selBox.value.toString().replace(/\./g, '');
+          let removeSpace = removeDots.toString().replace(/\s/g, '');
+
+          let exec = phoneRegex.exec(removeSpace);
+          if(exec && exec[1]) {
+              selBox.value = exec[1];
+          }
+        }
+
         document.body.appendChild(selBox);
         selBox.focus();
         selBox.select();

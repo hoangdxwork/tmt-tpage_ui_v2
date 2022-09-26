@@ -4,7 +4,7 @@ import { FacebookCommentService } from 'src/app/main-app/services/facebook-comme
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
@@ -559,5 +559,38 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   removeStoragePostId() {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
     localStorage.removeItem(_keyCache);
+  }
+
+  @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {
+    let className = JSON.stringify(e.target.className);
+    if(className.includes('text-copyable')){
+      if (e.target.className.indexOf('text-copyable') >= 0) {
+        let selBox = document.createElement('textarea');
+        selBox.style.position = 'fixed';
+        selBox.style.left = '0';
+        selBox.style.top = '0';
+        selBox.style.opacity = '0';
+        selBox.value = e.target.getAttribute('data-value') || e.target.innerHTML;
+
+        if(selBox.value) {
+          let phoneRegex = /(?:\b|[^0-9])((o|0|84|\+84)(\s?)([2-9]|1[0-9])((\d|o)(\s|\.)?){8})(?:\b|[^0-9])/g;
+
+          let removeDots = selBox.value.toString().replace(/\./g, '');
+          let removeSpace = removeDots.toString().replace(/\s/g, '');
+
+          let exec = phoneRegex.exec(removeSpace);
+          if(exec && exec[1]) {
+              selBox.value = exec[1];
+          }
+        }
+
+        document.body.appendChild(selBox);
+        selBox.focus();
+        selBox.select();
+        document.execCommand('copy');
+        document.body.removeChild(selBox);
+        this.message.info('Đã copy số điện thoại');
+      }
+    }
   }
 }
