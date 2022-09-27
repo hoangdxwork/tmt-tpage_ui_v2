@@ -645,7 +645,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadFilterDataSource() {
-    this.isLoading = true;
+    // this.isLoading = true;
+    this.isRefreshing = true;
+
     this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, this.queryObj).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
 

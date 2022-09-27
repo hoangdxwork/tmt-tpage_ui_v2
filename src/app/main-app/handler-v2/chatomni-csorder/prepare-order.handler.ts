@@ -1,3 +1,4 @@
+import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { Injectable } from "@angular/core";
@@ -28,6 +29,18 @@ export class CsOrder_PrepareModelHandler {
         x.Id = model.Id;
     }
 
+    switch(team.Type) {
+      case CRMTeamType._Facebook:
+        x.Name = model.Name;
+
+        break;
+
+      case CRMTeamType._TShop:
+        x.Name = model.PartnerName;
+
+        break;
+    }
+
     x.Address = model.Address;
     x.CityCode = model.CityCode;
     x.CityName = model.CityName;
@@ -43,7 +56,6 @@ export class CsOrder_PrepareModelHandler {
     x.Facebook_UserId = model.Facebook_UserId;
     x.Facebook_UserName = model.Facebook_UserName;
 
-    x.Name = model.Name;
     x.Note = model.Note;
     x.PartnerId = model.PartnerId;
     x.PartnerName = model.PartnerName || model.Partner?.Name;

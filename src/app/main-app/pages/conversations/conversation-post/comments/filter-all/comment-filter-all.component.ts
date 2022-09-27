@@ -614,7 +614,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       }
 
       if(this.dataSource && TDSHelperArray.hasListValue(this.dataSource?.Items)) {
-          setTimeout(() => this.infinite.next([...this.dataSource?.Items]), 750);
+          setTimeout(() => this.infinite.next([...(this.dataSource?.Items || [])]), 750);
       }
   }
 
