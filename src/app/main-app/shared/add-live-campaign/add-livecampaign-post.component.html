@@ -167,9 +167,9 @@
           </div>
 
           <div class="w-full mt-4 rounded-md">
-              <div class="w-full">
+              <div class="w-full post-livecampaign">
                   <tds-table class="tds-table-rounded" [bordered]="true" [virtualForTrackBy]="trackByIndex"
-                    [listData]="detailsFormGroups.value" [showPagination]="false" [scroll]="{ y:'75vh' }">
+                    [listData]="detailsFormGroups.value" [scroll]="{ y:'48vh' }" (clickRefresh)="refreshData()">
                     <thead class="rounded">
                         <tr>
                             <th width="6%">STT</th>
@@ -181,8 +181,6 @@
                                       tds-tooltip tooltipTitle="Tìm kiếm sản phẩm trong danh sách">
                                       <span class="tdsi-search-fill text-base" [ngClass]="{'text-primary-1': searchValue.length > 0}"></span>
                                   </tds-filter-trigger>
-
-                                  <span class="tdsi-reload-fill ml-1" *ngIf="searchValue.length > 0" (click)="onReset()" tds-tooltip tooltipTitle="Xóa lọc"></span>
                               </div>
                             </th>
 
@@ -192,7 +190,7 @@
                             <th width="13%">Giá bán</th>
 
                             <th width="13%" class="text-center">
-                              <button tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()"  tds-tooltip tooltipTitle="Xóa tất cả">
+                              <button tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()" tds-tooltip tooltipTitle="Xóa tất cả">
                                   <span class="flex items-center text-neutral-1-500">
                                       <i class="tdsi-trash-fill"></i>
                                   </span>

@@ -1,4 +1,3 @@
-import { Router } from '@angular/router';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
 import { Message } from '../../../lib/consts/message.const';
@@ -17,6 +16,7 @@ import { TDSModalService } from 'tds-ui/modal';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TDSDestroyService]
 })
+
 export class TableDetailReportComponent implements OnInit {
 
     @Input() liveCampaignId!: string;
@@ -25,37 +25,31 @@ export class TableDetailReportComponent implements OnInit {
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
-    // routerCheck!: string;
     lstSearch!: ReportLiveCampaignDetailDTO[];
 
     numberWithCommas =(value:TDSSafeAny) =>{
-        if(value != null)
-        {
-          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-        return value;
-      } ;
+      if(value != null){
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      }
+      return value;
+    }
 
-      parserComas = (value: TDSSafeAny) =>{
-        if(value != null)
-        {
-          return TDSHelperString.replaceAll(value,'.','');
-        }
-        return value;
-      };
+    parserComas = (value: TDSSafeAny) =>{
+      if(value != null){
+        return TDSHelperString.replaceAll(value,'.','');
+      }
+      return value;
+    };
 
     constructor(private message: TDSMessageService,
         private modalService: TDSModalService,
-        // private router: Router,
         private viewContainerRef: ViewContainerRef,
         private destroy$: TDSDestroyService,
         private liveCampaignService: LiveCampaignService,
-        private cdr: ChangeDetectorRef
-    ) { }
+        private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
         this.lstSearch = [...this.lstDetails];
-        // this.routerCheck = this.router.url;
         this.cdr.detectChanges();
     }
 
@@ -63,7 +57,6 @@ export class TableDetailReportComponent implements OnInit {
         if(!lstOrder){
             return
         }
-
         if(lstOrder.length == 0){
             return
         }
@@ -111,28 +104,28 @@ export class TableDetailReportComponent implements OnInit {
     saveChangeQuantity(id: string) {
         this.isLoading = true;
         this.liveCampaignService.updateProductQuantity(id, this.currentQuantity, this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-                next:(res) => {
-                    this.lstDetails.map((item) => {
-                        if (item.Id == id) {
-                            item.Quantity = this.currentQuantity;
-                            item.RemainQuantity = item.Quantity - item.UsedQuantity;
-    
-                            this.message.success(Message.UpdateQuantitySuccess);
-                            this.indClickQuantity = '';
-                        }
-                    })
+          next:(res) => {
+              this.lstDetails.map((item) => {
+                  if (item.Id == id) {
+                      item.Quantity = this.currentQuantity;
+                      item.RemainQuantity = item.Quantity - item.UsedQuantity;
 
-                    this.isLoading = false;
-                    this.cdr.detectChanges();
-                },
-                error:(err) => {
-                    this.isLoading = false;
-                    this.message.error(err?.error?.message || Message.UpdateQuantityFail);
-    
-                    this.indClickQuantity = '';
-                    this.cdr.detectChanges();
-                }
-            })
+                      this.message.success(Message.UpdateQuantitySuccess);
+                      this.indClickQuantity = '';
+                  }
+              })
+
+              this.isLoading = false;
+              this.cdr.detectChanges();
+          },
+          error:(err) => {
+              this.isLoading = false;
+              this.message.error(err?.error?.message || Message.UpdateQuantityFail);
+
+              this.indClickQuantity = '';
+              this.cdr.detectChanges();
+          }
+      })
     }
 
     closeQuantityPopover(): void {
@@ -140,10 +133,10 @@ export class TableDetailReportComponent implements OnInit {
     }
 
     onSearch(event: TDSSafeAny) {
-        if(event && TDSHelperString.hasValueString(event.value)){
-            this.lstSearch = this.lstDetails.filter((item) => (item.ProductName && TDSHelperString.stripSpecialChars(item.ProductName.toLowerCase().trim()).indexOf(TDSHelperString.stripSpecialChars(event.value.toLowerCase().trim())) !== -1))
-        }else{
-            this.lstSearch = [...this.lstDetails];
-        }
+      let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
+      this.lstSearch = this.lstDetails.filter((item) =>
+          TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase()).trim().indexOf(text) !== -1
+          || item.ProductCode?.indexOf(text) !== -1
+          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase()).trim().indexOf(text) !== -1);
     }
 }

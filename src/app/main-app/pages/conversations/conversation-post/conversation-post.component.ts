@@ -365,7 +365,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   selectPost(item: ChatomniObjectsItemDto | any): any {
-    if(item.Data && (item.ObjectId != this.currentPost?.ObjectId)){
+    if(item && item.Data && (item.ObjectId != this.currentPost?.ObjectId)){
 
         // TODO: lưu lại Storage item đang active khi click menu khá
         this.setStoragePostId(item.ObjectId);
