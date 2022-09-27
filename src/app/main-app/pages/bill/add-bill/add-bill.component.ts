@@ -1,3 +1,4 @@
+import { DeliveryCarrierV2Service } from './../../../services/delivery-carrier-v2.service';
 import { Ward, District, City } from './../../../dto/fastsaleorder/register-payment';
 import { SuggestAddressService } from './../../../services/suggest-address.service';
 import { Validators } from '@angular/forms';
@@ -64,7 +65,6 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.handler';
 import { PrepareDetailsOrderLineHandler } from '@app/handler-v2/order-handler/prepare-details-orderLine.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
-import de from 'date-fns/locale/de';
 
 @Component({
   selector: 'app-add-bill',
@@ -187,6 +187,7 @@ export class AddBillComponent implements OnInit {
     private createFormBillHandler: CreateFormBillHandler,
     private applicationUserService: ApplicationUserService,
     private registerPaymentService: AccountRegisterPaymentService,
+    private deliveryCarrierV2Service: DeliveryCarrierV2Service,
     private printerService: PrinterService,
     private accountTaxService: AccountTaxService,
     private viewContainerRef: ViewContainerRef,
@@ -271,6 +272,19 @@ export class AddBillComponent implements OnInit {
     let exits = data?.filter((x: any) => x.text === text)[0];
     if (exits) {
         return exits.value;
+    }
+  }
+
+  loadDelivery(carrierId: any) {
+    if (carrierId) {
+      this.isLoading = true;
+
+      this.deliveryCarrierV2Service.getById(carrierId).pipe(finalize(() => this.isLoading = false)).subscribe(res => {
+          if(res && TDSHelperObject.hasValue(res.Extras)){
+            this._form.controls['Ship_InsuranceFee'].setValue(res.Extras?.InsuranceFee);
+            this.cdRef.detectChanges();
+          }
+        });
     }
   }
 
@@ -470,7 +484,7 @@ export class AddBillComponent implements OnInit {
     this.sharedService.setSaleConfig();
     this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.saleConfig = {...res};
+          this.saleConfig = {...res.SaleSetting};
       }
     })
   }
@@ -479,7 +493,7 @@ export class AddBillComponent implements OnInit {
     this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
-        this.companyCurrents = res;
+        this.companyCurrents = {...res};
 
         if(res.Configs){
           this.phoneRegex = JSON.parse(res.Configs)?.PhoneRegex;
@@ -1185,8 +1199,7 @@ export class AddBillComponent implements OnInit {
             next:(res: any) => {
                 if(model.FormAction == 'SaveAndPrint') {
                     this.loadPrintHtml(model, Number(res.Id), type_print);
-                }
-                else {
+                } else {
                     this.isLoading = false;
                     this.message.success('Tạo mới phiếu bán hàng thành công!');
                     this.router.navigateByUrl(`bill/detail/${res.Id}`);
@@ -1312,7 +1325,7 @@ export class AddBillComponent implements OnInit {
   }
 
   onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
-      if (!this._form.controls['Partner'].value ) {
+      if (!this._form.controls['Partner'].value) {
           this.message.error('Vui lòng chọn khách hàng');
           return;
       }
@@ -1321,8 +1334,9 @@ export class AddBillComponent implements OnInit {
       this.shipExtraServices = [];
       this.insuranceInfo = null;
       this.configsProviderDataSource = [];
+      // TODO: tải thông tin giao hàng, cập nhật giá trị hàng hóa
+      this.loadDelivery(event.Id);
 
-      this._form.controls['Ship_InsuranceFee'].setValue(null);
       this._form.controls['Ship_ServiceId'].setValue(null);
       this._form.controls['Ship_ServiceName'].setValue(null);
       this._form.controls['Ship_Extras'].setValue(null);
@@ -1337,7 +1351,6 @@ export class AddBillComponent implements OnInit {
 
       let deliveryPrice = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
       if (this._form.controls['DeliveryPrice'].value != deliveryPrice) {
-
           this._form.controls['DeliveryPrice'].setValue(Number(deliveryPrice));
           this.coDAmount();
       }

@@ -1,8 +1,8 @@
 <div class="flex flex-col w-full h-[480px]" *ngIf="lstSearch">
     <div class="p-4">
       <tds-form-field class="w-full">
-        <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
-        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+          <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
+          <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
     </div>
 
@@ -10,7 +10,7 @@
         <thead>
             <tr>
                 <th [width]="'6%'">STT</th>
-                <th [width]="'32%'">Sản phẩm</th>
+                <th [width]="'32%'">Sản phẩm ({{lstSearch.length}})</th>
                 <th [width]="'21%'">Đơn hàng</th>
                 <th [width]="'21%'">Số lượng</th>
                 <th [width]="'21%'">Giá bán</th>
