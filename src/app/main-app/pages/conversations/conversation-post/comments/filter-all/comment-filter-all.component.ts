@@ -197,7 +197,15 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
         this.cdRef.detectChanges();
       }
-    })
+    });
+
+    this.postEvent.onRemoveOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        if(res){
+          this.loadCommentsOrderByPost();
+        }
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -208,7 +216,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
         this.data = {...changes["data"].currentValue};
         this.loadData();
         this.loadPartnersByTimestamp();
-        this.loadCommentsOrderByPost()
+        this.loadCommentsOrderByPost();
     }
 
     if (changes["innerText"] && !changes["innerText"].firstChange) {
