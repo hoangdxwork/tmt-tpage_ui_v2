@@ -73,7 +73,7 @@
                                     <span class="text-info-500 font-semibold">#{{ order.Code || 'N/A' }}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-1-400 text-caption-2"> {{ order.DateCreated | date:"HH:mm, dd/MM/yyyy " }} </span>
+                                    <span class="text-neutral-1-400 text-caption-2">{{ order.DateCreated | date:"HH:mm, dd/MM/yyyy" }}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col justify-between">
@@ -126,6 +126,7 @@
                                 [listData]="lstLine[index] || []"
                                 [loading]="isLoadingLine[index] || false"
                                 [loadingIndicator]="loadingTemp"
+                                [noResult]="' '"
                                 [showPagination]="false" [tableLayout]="'fixed'">
                                 <thead>
                                     <tr>

@@ -1,3 +1,4 @@
+import { ConversationOrderFacade } from './../../../../services/facades/conversation-order.facade';
 import { FastSaleOrderService } from './../../../../services/fast-sale-order.service';
 import { GetListOrderIdsDTO } from './../../../../dto/saleonlineorder/list-order-ids.dto';
 import { CreateBillFastComponent } from './../../../order/components/create-bill-fast/create-bill-fast.component';
@@ -77,7 +78,6 @@ export class ConversationOrderListComponent implements OnInit {
     private orderPrintService: OrderPrintService,
     private conversationPostEvent: ConversationPostEvent,
     private modalService: TDSModalService,
-    private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
     private fastSaleOrderService: FastSaleOrderService,
@@ -417,13 +417,13 @@ export class ConversationOrderListComponent implements OnInit {
 
   deleteIds(ids: string[]) {
     this.isLoading = true;
-
+    // let exist
     this.odataSaleOnline_OrderService.removeIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
             this.message.success(Message.DeleteSuccess);
 
             // TODO: đẩy dữ liệu sang conversation-post-view xóa code đơn hàng comments
-            this.facebookPostService.onRemoveOrderComment$.emit(ids);
+            this.conversationPostEvent.onRemoveOrderComment$.emit(true);
 
             this.loadData(this.pageSize, this.pageIndex);
             this.isLoading = false;

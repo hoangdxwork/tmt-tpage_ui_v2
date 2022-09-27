@@ -711,27 +711,29 @@
       </div>
 
       <!-- Danh sách sản phẩm -->
-      <div class="flex gap-x-4 h-full" *ngIf="dataModel && dataModel.State != 'draft'">
-          <div class="w-full h-full">
-              <div class="rounded-xl pt-2 px-3 bg-white flex h-full w-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
-                <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value" [scroll]="{y:'auto'}"
-                  [showPagination]="false">
+      <div class="h-full w-full" *ngIf="dataModel && dataModel.State != 'draft'">
+          <div class="h-full w-full">
+              <div class="rounded-xl pt-2 px-3 bg-white h-full flex flex-auto gap-y-2 text-body-2 text-neutral-1-900">
+                <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value" 
+                    [scroll]="{y:'auto', x:'auto'}" [showPagination]="false" >
                   <thead>
                     <tr>
-                      <th width="10%">STT</th>
-                      <th width="30%">Sản Phẩm</th>
-                      <th width="10%">Số lượng</th>
-                      <th width="10%">Đơn giá</th>
-                      <th width="10%">Giá gần đây</th>
-                      <th width="10%">Giảm giá</th>
-                      <th width="10%" class="truncate">KL(g)</th>
-                      <th width="10%">Thành tiền</th>
+                      <th>STT</th>
+                      <th>Sản Phẩm</th>
+                      <th>Số lượng</th>
+                      <th>Đơn giá</th>
+                      <th *ngIf="saleConfig?.GroupPriceRecent">Giá gần đây</th>
+                      <th *ngIf="saleConfig?.GroupDiscountPerSOLine == 1">Giảm giá</th>
+                      <th *ngIf="saleConfig?.GroupWeightPerSOLine == 1">KL(g)</th>
+                      <th>Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="TableAddBill.data">
                       <tr>
+                        <!-- STT -->
                         <td>{{ i + 1 }}</td>
+                        <!-- Sản phẩm -->
                         <td>
                           <div class="flex flex-col">
                             <span class="font-semibold">{{ data.ProductNameGet }}</span>
@@ -761,9 +763,11 @@
                         <!-- Đơn giá -->
                         <td> {{ data.PriceUnit || 0 | numberCustom }}</td>
                         <!-- Giá gần đây -->
-                        <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td>
+                        <td *ngIf="saleConfig?.GroupPriceRecent" class="text-center">
+                          {{ data.PriceRecent || 0 | numberCustom }}
+                        </td>
                         <!-- Giảm giá -->
-                        <td class="text-center">
+                        <td *ngIf="saleConfig?.GroupDiscountPerSOLine == 1">
                           <span color="secondary">
                             <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
                               {{ data.Discount || 0 | numberCustom }}%
@@ -773,7 +777,9 @@
                             </span>
                           </span>
                         </td>
-                        <td>{{ data.Weight >= 0 ? (data.Weight * 1000) : 0 }}</td>
+                        <!-- Khối lượng -->
+                        <td *ngIf="saleConfig?.GroupWeightPerSOLine == 1">{{ data.Weight >= 0 ? (data.Weight * 1000) : 0 }}</td>
+                        <!-- Thành tiền -->
                         <td>{{ data.PriceTotal || 0 | numberCustom  }}</td>
                       </tr>
                     </ng-template>
@@ -824,8 +830,8 @@
                     <th [width]="'120px'">Số lượng</th>
                     <th [width]="'120px'">Đơn giá</th>
                     <!-- <th [width]="'100px'">Giá gần đây</th> -->
-                    <th [width]="'100px'">Giảm giá</th>
-                    <th [width]="'100px'" class="truncate">KL(g)</th>
+                    <th [width]="'100px'" *ngIf="saleConfig?.GroupDiscountPerSOLine == 1">Giảm giá</th>
+                    <th *ngIf="saleConfig.GroupWeightPerSOLine == 1" [width]="'100px'" class="truncate">KL(g)</th>
                     <th [width]="'100px'">Thành tiền</th>
                     <th [width]="'100px'" [tdsRight]="true">
                       <div class="flex items-center justify-center">
@@ -898,7 +904,7 @@
                     <!-- Giá gần đây -->
                     <!-- <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td> -->
                     <!-- Giảm giá -->
-                    <td class="text-center">
+                    <td *ngIf="saleConfig?.GroupDiscountPerSOLine == 1" class="text-center">
                       <span color="secondary" tds-popover popoverTrigger="click" [popoverContent]="popoverDiscountLines"
                         [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
 
@@ -925,7 +931,7 @@
                         <div class="flex items-center">
                           <button tds-button type="button" style="line-height: 19px;margin-right: 6px"
                             [color]="data.Type == 'percent' ? 'primary' : 'secondary'"
-                            (click)="selectProductType(data,'percent', i)"
+                            (click)="selectProductType(data, 'percent', i)"
                             class="text-neutral-1-900 text-body-2 font-regular">
                             <span class="flex items-center"> % </span>
                           </button>
@@ -937,7 +943,7 @@
                         </div>
                       </ng-template>
                     </td>
-                    <td>{{ (data.Weight >= 0 ? (data.Weight * 1000) : 0) | numberCustom }}</td>
+                    <td *ngIf="saleConfig.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000) : 0) | numberCustom }}</td>
                     <td>{{ (data.PriceTotal || 0) | numberCustom }} đ</td>
                     <td [tdsRight]="true">
                       <div class="flex gap-x-2">
@@ -967,7 +973,7 @@
                             <div><span class="font-regular">Tổng tạm tính</span></div>
                             <div class="col-span-2"><span>{{totalAmountLines | numberCustom  }} đ</span></div>
 
-                            <button tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                            <button *ngIf="saleConfig?.GroupDiscountTotal" tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                               (click)="openPopoverDiscount()" [(popoverVisible)]="visiblePopoverDiscount"
                               [popoverContent]="popoverContentDiscount" [popoverFooter]="popoverFooterDiscount"
                               [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
@@ -976,7 +982,7 @@
                                 Giảm giá
                               </span>
                             </button>
-                            <div class="col-span-2">
+                            <div *ngIf="saleConfig?.GroupDiscountTotal" class="col-span-2 flex items-center">
                               <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value || 0) | numberCustom }} đ</span>
                             </div>
                             <button tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
@@ -988,13 +994,13 @@
                                 Thuế
                               </span>
                             </button>
-                            <div class="col-span-2">
+                            <div class="col-span-2 flex items-center">
                               <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }} đ</span> -
                               <span>{{ _form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0 }}%</span>
                             </div>
 
                             <div><span>Tổng tiền</span></div>
-                            <div class="col-span-2"><span>{{ _form.controls["AmountTotal"].value | numberCustom }} đ</span></div>
+                            <div class="col-span-2 flex items-center"><span>{{ _form.controls["AmountTotal"].value | numberCustom }} đ</span></div>
                           </div>
                         </div>
                       </div>

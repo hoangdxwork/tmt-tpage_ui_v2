@@ -98,7 +98,6 @@ export class ConfigDeliveryUpdateComponent implements OnInit {
           if(res){
             this.dataModel = {...res};
             this.lstExtraProperties = res.ExtraProperties ? JSON.parse(res.ExtraProperties) : [];
-            console.log(this.lstExtraProperties)
             this.updateForm(res);
           }
         });
