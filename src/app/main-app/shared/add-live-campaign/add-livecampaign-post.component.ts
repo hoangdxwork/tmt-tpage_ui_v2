@@ -5,11 +5,11 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
-import { fromEvent, map, Observable, takeUntil, debounceTime } from 'rxjs';
+import { Observable, takeUntil } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';

@@ -1,7 +1,6 @@
 import { ChatmoniSocketEventName } from './../../services/socket-io/soketio-event';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
-import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
@@ -9,7 +8,6 @@ import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../
 import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
-import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CreateTagModalComponent } from '../../pages/configs/components/create-tag-modal/create-tag-modal.component';
 import { ModalListBillComponent } from '../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from '../../pages/conversations/components/modal-list-product/modal-list-product.component';
@@ -28,7 +26,6 @@ import { ActivityMatchingService } from '../../services/conversation/activity-ma
 import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { CRMMatchingService } from '../../services/crm-matching.service';
-import { SignalRConnectionService } from '../../services/signalR/signalR-connection.service';
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -119,7 +116,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private sharedService: SharedService,
     private crmMatchingService: CRMMatchingService,
     private crmTagService: CRMTagService,
-    private sgRConnectionService: SignalRConnectionService,
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
     private cdRef: ChangeDetectorRef,
@@ -173,10 +169,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onEventSocket() {
     // TODO: mapping tin nhắn từ socket-io
-    // TODO: chek lại phân biệt message  & comment
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        switch(res.EventName){
+        switch(res.EventName) {
 
           case ChatmoniSocketEventName.chatomniOnMessage:
             if(res.Data && res.Data.Conversation && this.data){
@@ -389,71 +384,70 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     this.activityMatchingService.addTemplateMessageV2(this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-
-        this.messageResponseV2(res, {} as any);
-
-        that.message.success('Gửi thành công sản phẩm');
-       },
-        error: error=> {
-          this.message.error('Gửi sản phẩm thất bại');
-        }
+          next: (res: any) => {
+              that.message.success('Gửi thành công sản phẩm');
+              this.messageResponseV2(res, {} as any);
+          },
+          error: error=> {
+              this.message.error('Gửi sản phẩm thất bại');
+          }
       })
   }
 
   onProductLastV2() {
-    const modal = this.modalService.create({
-      title: 'Danh sách sản phẩm',
-      content: ModalListProductComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'xl',
-      bodyStyle: {
-        padding: '0px'
-      },
+    this.modalService.create({
+        title: 'Danh sách sản phẩm',
+        content: ModalListProductComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'xl',
+        bodyStyle: {
+            padding: '0px'
+        },
     });
   }
 
   showModalListBill(data: ChatomniConversationItemDto) {
     this.modalService.create({
-      title: 'Phiếu bán hàng',
-      content: ModalListBillComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'xl',
-      componentParams: {
-        page_id: this.pageId,
-        psid: data.ConversationId,
-      }
+        title: 'Phiếu bán hàng',
+        content: ModalListBillComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'xl',
+        componentParams: {
+            page_id: this.pageId,
+            psid: data.ConversationId,
+        }
     });
   }
 
   showModalAddTag() {
     this.isVisbleTag = false
     let modal = this.modalService.create({
-      title: 'Thêm thẻ hội thoại',
-      content: CreateTagModalComponent,
-      viewContainerRef: this.viewContainerRef,
+        title: 'Thêm thẻ hội thoại',
+        content: CreateTagModalComponent,
+        viewContainerRef: this.viewContainerRef,
     });
+
     modal.afterClose.subscribe({
-      next: (result: TDSSafeAny)=>{
-      if(result){
-        this.lstOfTag = [...this.lstOfTag, result];
-        this.tags = [...this.tags, result];
-      }
+      next: (result: TDSSafeAny) => {
+        if(result){
+            this.lstOfTag = [...this.lstOfTag, result];
+            this.tags = [...this.tags, result];
+        }
     }})
   }
 
   callbackTag(ev: boolean) {
     this.isVisbleTag = ev
     if(!ev){
-      this.searchTag();
+        this.searchTag();
     }
   }
 
   loadEmojiMart(event: any) {
     if (TDSHelperString.hasValueString(this.messageModel)) {
-      this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+        this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
     } else {
-      this.messageModel = `${event?.emoji?.native}`;
+        this.messageModel = `${event?.emoji?.native}`;
     }
   }
 
@@ -591,7 +585,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onEnter(event: any) {
-
     if (this.isEnterSend) {
         this.messageSendingToServer();
 
@@ -612,23 +605,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.isLoadingSendMess = true;
-
     let activityFinal = this.dataSource.Items ? this.dataSource.Items[this.dataSource.Items!.length - 1]: null
 
     if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === ChatomniMessageType.FacebookComment || activityFinal?.Type === ChatomniMessageType.TShopComment)) {
         if (this.type === 'all') {
-          //TODO: Trả lời tin nhắn bình luận bằng tin nhắn
-          this.sendPrivateRepliesV2(activityFinal, message);
+            //TODO: Trả lời tin nhắn bình luận bằng tin nhắn
+            this.sendPrivateRepliesV2(activityFinal, message);
         }
 
         else if (this.type === 'comment') {
-          //TODO: Phản hồi bình lần bằng bình luận
-          this.replyComment(activityFinal, message);
+            //TODO: Phản hồi bình lần bằng bình luận
+            this.replyComment(activityFinal, message);
         }
 
     } else {
-      //TODO: trả lời tin nhắn thường
-      this.sendMessageV2(message);
+        //TODO: trả lời tin nhắn thường
+        this.sendMessageV2(message);
     }
   }
 
@@ -661,24 +653,24 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
           // add vào dataSource tại đây
           res["status"] = ChatomniStatus.Done;
-          res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
+          res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop ? 91 : 0);
           res.name = this.team.Name;
 
           let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
 
           if(this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
-            // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
-            this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
-          } else
-          if(activityFinal?.Data?.id) {
-            // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
-            this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
-            this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
+              // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
+              this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
+          }
+          else if(activityFinal?.Data?.id) {
+              // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
+              this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
+              this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
           }
 
+          //TODO: Đẩy qua conversation-all-v2
           let itemLast = {...data};
           let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, res.type);
-          //TODO: Đẩy qua conversation-all-v2
           this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
 
           this.currentImage = null;
@@ -699,13 +691,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   onRetryMessage() {
     this.activityMatchingService.onCopyMessageHasAminRequired$.subscribe({
       next: (message: string) => {
-      if(TDSHelperString.hasValueString(message)) {
-        if (TDSHelperString.hasValueString(this.messageModel)) {
-            this.messageModel = `${this.messageModel}${message}`;
-        } else {
-            this.messageModel = `${message}`;
+        if(TDSHelperString.hasValueString(message)) {
+            if (TDSHelperString.hasValueString(this.messageModel)) {
+                this.messageModel = `${this.messageModel}${message}`;
+            } else {
+                this.messageModel = `${message}`;
+            }
         }
-      }
     }})
   }
 
@@ -727,16 +719,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   sendMessageV2(message: string) {
     const model = this.prepareModelV2(message);
     if(!TDSHelperArray.hasListValue(this.uploadedImages)){
-      model.MessageType = 0;
+        model.MessageType = 0;
     }
 
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ResponseAddMessCommentDtoV2[]) => {
-          this.messageResponseV2(res, model);
+            this.messageResponseV2(res, model);
         },
         error: error => {
-          this.isLoadingSendMess = false;
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
+            this.isLoadingSendMess = false;
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
         }
       }
     );
@@ -744,38 +736,36 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   messageResponseV2(res: any, model: ChatomniSendMessageModelDto) {
     if (TDSHelperArray.hasListValue(res)) {
-      res?.map((x: ResponseAddMessCommentDtoV2, i: number) => {
-        x["Status"] = ChatomniStatus.Done;
 
-        if (TDSHelperArray.hasListValue(model.Attachment) && !x.Message) {
-          x["Attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
-        }
-        let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+      res.map((x: ResponseAddMessCommentDtoV2, i: number) => {
 
-        //TODO: Kiểm tra Id conversation đã được push từ socket thì không push vào nữa
-        let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == data.Id);
-        if(index < 0) {
-          this.dataSource.Items = [...this.dataSource.Items, data];
-        }
-
-        if(i == res.length - 1){
-
-          let itemLast = {...data}
-          if (TDSHelperArray.hasListValue(model.Attachment)) {
-            itemLast.Message = x.Message ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
+          x["Status"] = ChatomniStatus.Done;
+          if (TDSHelperArray.hasListValue(model.Attachment) && !x.Message) {
+              x["Attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
           }
 
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, x.MessageType);
+          //TODO: Kiểm tra Id conversation đã được push từ socket thì không push vào nữa
+          let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+          let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == data.Id);
+
+          if(index < 0) {
+              this.dataSource.Items = [...this.dataSource.Items, ...[data]];
+          }
+
           //TODO: Đẩy qua conversation-all-v2
-          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-        }
+          if(i == res.length - 1){
+              let itemLast = {...data}
+              if (TDSHelperArray.hasListValue(model.Attachment)) {
+                  itemLast.Message = x.Message ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
+              }
+
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, x.MessageType);
+              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+          }
       });
 
       this.cdRef.detectChanges();
     }
-
-    // TODO: Gửi tín hiệu phản hồi
-    this.onSendSucceed(res);
 
     this.currentImage = null;
     delete this.messageModel;
@@ -792,23 +782,23 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     model.RecipientId = activityFinal?.Data?.id || null;
 
     if(TDSHelperArray.hasListValue(this.uploadedImages) && model.Attachment.Data){
-      model.Attachment.Data.Url = this.uploadedImages[0];
+        model.Attachment.Data.Url = this.uploadedImages[0];
     }
 
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-          if(this.uploadedImages.length > 0) {
-            this.message.info('Trả lời tin nhắn bình luận chỉ gửi 1 hình ảnh')
-          }
 
-          this.messageResponseV2(res, model);
+            if(this.uploadedImages.length > 0) {
+                this.message.info('Trả lời tin nhắn bình luận chỉ gửi 1 hình ảnh')
+            }
+
+            this.messageResponseV2(res, model);
         },
         error: error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
-          this.isLoadingSendMess = false;
-
-          this.cdRef.detectChanges();
+            this.isLoadingSendMess = false;
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
+            this.cdRef.detectChanges();
       }
     })
   }
@@ -853,24 +843,23 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.isLoadingSelectUser = true;
     this.activityMatchingService.assignUserToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
       .pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny) => {
-        this.data.AssignedTo = res;
+          next: (res: TDSSafeAny) => {
+              this.data.AssignedTo = res;
 
-        //TODO: truyền về conversation-all
+              //TODO: truyền về conversation-all
               setTimeout(() => {
                   this.chatomniEventEmiter.assignedToUser$.emit(this.data.ConversationId);
               }, 300);
-        this.message.success('Thao tác thành công');
-        this.isLoadingSelectUser = false;
 
-        this.cdRef.detectChanges();
-      },
-      error: err => {
-        this.message.error(err.error? err.error.message: "Thao tác thất bại");
-        this.isLoadingSelectUser = false;
-
-        this.cdRef.detectChanges();
-      }});
+              this.isLoadingSelectUser = false;
+              this.message.success('Thao tác thành công');
+              this.cdRef.detectChanges();
+          },
+          error: err => {
+              this.isLoadingSelectUser = false;
+              this.message.error(err.error? err.error.message: "Thao tác thất bại");
+              this.cdRef.detectChanges();
+          }});
   }
 
   searchUser() {
@@ -902,26 +891,25 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   assignIndexDbTag(item: any) {
     this.activityMatchingService.assignTagToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
       .pipe(takeUntil(this.destroy$)).subscribe({
-      next: ()=> {
-        this.assignTagOnView(item);
-        this.crmTagService.addTagLocalStorage(item.Id);
-      },
-      error: err => {
-        this.message.error(err.error? err.error.message : 'Gắn nhãn thất bại');
-      }
+          next: ()=> {
+              this.assignTagOnView(item);
+              this.crmTagService.addTagLocalStorage(item.Id);
+          },
+          error: err => {
+              this.message.error(err.error? err.error.message : 'Gắn nhãn thất bại');
+          }
     });
   }
 
   removeIndexDbTag(item: any): void {
     this.activityMatchingService.removeTagFromConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-      next: () => {
-        this.removeTagOnView(item);
-      },
-      error: err=>{
-        this.message.error(err.error? err.error.message : 'Xóa nhãn thất bại');
-      }
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: () => {
+            this.removeTagOnView(item);
+        },
+        error: err=>{
+            this.message.error(err.error? err.error.message : 'Xóa nhãn thất bại');
+        }
     });
   }
 
@@ -939,7 +927,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   removeTagOnView(tag: any) {
     this.data.Tags = this.data.Tags || [];
-    let data = this.data.Tags.filter(x => x.Id !== tag.Id)
+    let data = this.data.Tags.filter((x: any) => x.Id !== tag.Id)
     this.data.Tags = [...data];
 
     let model = this.omniMessageFacade.mappinglTagsEmiter(this.data);
@@ -952,20 +940,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   searchTag() {
     let data = this.tags;
     let key = this.keyFilterTag;
+
     if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
-    data = data.filter((x) =>
-      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
-    this.lstOfTag = data
-  }
 
-  onSendSucceed(data: any) {
-    // let dataToBroadcast = {
-    //   user: this.sharedService.userLogged,
-    //   conversation: this.data
-    // };
-    // this.sgRConnectionService.sendMessage('onSentConversation', dataToBroadcast);
+    data = data.filter((x) => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1));
+    this.lstOfTag = [...data];
   }
 
   openPost(item: any, type: any) {
@@ -997,25 +978,24 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     formData.append('id', '0000000000000051');
 
     return this.sharedService.saveImageV2(formData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-      next: (res: any) => {
-        if (Message.Upload.Success) {
-          let x = res[0].urlImageProxy as string;
-          this.currentImage = x;
-          const dataItem = [...this.uploadedImages, x];
-          this.uploadedImages = dataItem;
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if (Message.Upload.Success) {
+            let x = res[0].urlImageProxy as string;
+            this.currentImage = x;
+            const dataItem = [...this.uploadedImages, x];
+            this.uploadedImages = dataItem;
+            this.displayDropZone = false;
+            this.isLoadingImage = false;
+
+            this.cdRef.markForCheck();
+          }
+        },
+        error: error => {
+          this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
           this.displayDropZone = false;
           this.isLoadingImage = false;
-
-          this.cdRef.markForCheck();
         }
-      },
-      error: error => {
-        this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
-        this.displayDropZone = false;
-        this.isLoadingImage = false;
-      }
     });
   }
 
@@ -1111,61 +1091,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   onCloseAlertChatbot(ev: boolean){
     this.isAlertChatbot = false;
   }
-
-  // adminTransferChatbot() {
-  //   let data: OnChatBotSignalRModel = {
-  //     action: 'transfer',
-  //     companyId: 1,
-  //     data: {
-  //       name: this.data.partner_name,
-  //       pageId: this.data.page_id,
-  //       psid: this.data.psid
-  //     },
-  //     enableAlert: true,
-  //     enablePopup: false,
-  //     error: false,
-  //     message: `Admin chuyển hội thoại cho Chatbot`,
-  //     type: TypeOnChatBot.AdminTransferChatBot
-  //   }
-
-  //   this.sgRConnectionService._onChatbotEvent$.emit(data);
-  // }
-
-  // chatbotTransferAdmin() {
-  //   let data: OnChatBotSignalRModel = {
-  //     action: 'transfer',
-  //     companyId: 1,
-  //     data: {
-  //       name: this.data.partner_name,
-  //       pageId: this.data.page_id,
-  //       psid: this.data.psid
-  //     },
-  //     enableAlert: true,
-  //     enablePopup: false,
-  //     error: false,
-  //     message: `Chatbot chuyển hội thoại cho ${this.data.partner_name}`,
-  //     type: TypeOnChatBot.ChatbotTranserAdmin
-  //   }
-
-  //   this.sgRConnectionService._onChatbotEvent$.emit(data);
-  // }
-
-  // newMessage(){
-  //     let data = {
-  //       data:{
-  //         page_id: this.data.page_id,
-  //         psid: this.data.psid,
-  //         message:  'tin nhắn mới',
-  //         last_activity: {
-  //           type: 'all'
-  //         },
-  //         from: {
-  //           id : this.data.psid
-  //         }
-  //       }
-  //     }
-  //     this.sgRConnectionService._onFacebookEvent$.emit(data);
-  // }
 
   ngAfterViewInit() {
   }
