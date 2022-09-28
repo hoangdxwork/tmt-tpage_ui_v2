@@ -65,7 +65,7 @@
                 <div class="w-1/5 text-sm text-neutral-1-400"> {{ item.DateCreated | date : "dd/MM/yyyy HH:mm" }}</div>
 
                 <div class="w-1/5 flex gap-x-6 justify-end items-center text-xl">
-                    <i class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chi tiết'" (click)="showModelOverViewLiveCampaign(item.Id, item.Name)"></i>
+                    <i class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip="Xem chi tiết" (click)="showModelOverViewLiveCampaign(item.Id, item.Name)"></i>
                     <i class="tdsi-share-screen-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Sao chép'" (click)="showModelCopyLiveCampaign(item.Id)"></i>
                     <i class="tdsi-edit-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chỉnh sửa'" (click)="showModelEditLiveCampaign(item.Id)"></i>
                   </div>

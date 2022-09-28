@@ -56,6 +56,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
   lstCarriers!: Array<DeliveryCarrierDTOV2>;
+  deliveryType!: string | null;
 
   public filterObj: FilterObjFastSaleModel = {
     tags: [],
@@ -507,6 +508,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<number>();
+    this.deliveryType = null;
 
     this.filterObj = {
       tags: [],

@@ -148,6 +148,9 @@ export class ListLiveCampaignComponent implements OnInit {
       title: 'Tạo mới chiến dịch',
       content: AddLiveCampaignPostComponent,
       size: "xl",
+      bodyStyle: {
+        padding: '0px',
+      },
       viewContainerRef: this.viewContainerRef,
     });
   }
@@ -162,6 +165,9 @@ export class ListLiveCampaignComponent implements OnInit {
       title: 'Chỉnh sửa chiến dịch',
       content: AddLiveCampaignPostComponent,
       size: "xl",
+      bodyStyle: {
+        padding: '0px',
+      },
       viewContainerRef: this.viewContainerRef,
       componentParams:{
         id: id
@@ -179,6 +185,9 @@ export class ListLiveCampaignComponent implements OnInit {
       title: 'Sao chép chiến dịch',
       content: AddLiveCampaignPostComponent,
       size: "xl",
+      bodyStyle: {
+        padding: '0px',
+      },
       viewContainerRef: this.viewContainerRef,
       componentParams:{
         id: id,

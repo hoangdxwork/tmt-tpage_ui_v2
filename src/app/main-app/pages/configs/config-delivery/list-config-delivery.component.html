@@ -29,18 +29,23 @@
                       <div class="relative">
                         <tds-avatar
                           class="bg-base-white-100 dark:bg-d-base-white-100 justify-self-center text-base-white-500 dark:text-d-base-white-500"
-                          [shape]="'square'" [size]="'xl'" [tdsSrc]="item.UrlLogo">
+                          [shape]="'square'" [size]="90" [tdsSrc]="item.UrlLogo">
                         </tds-avatar>
                       </div>
                       <div class="flex flex-col gap-1">
-                        <div class="flex gap-2 items-center">
-                          <div class="text-title-1 font-sans font-semibold"> {{item.Name}} </div>
+                        <div class="text-title-1 font-sans font-semibold"> {{item.Name}} </div>
+                        <div class="flex gap-x-2 items-center">
+                          <span class="text-caption-2 text-neutral-1-400">Đã kết nối</span>
+                          <span class="text-primary-1 text-caption-2 font-semibold">0</span>
                         </div>
-                        <div class="font-regular font-sans text-xs flex gap-x-2">
+                        <!-- <div *ngIf="deliveryDataSource.length == 0" class="flex gap-x-2 items-center">
+                          <span class="text-caption-2 text-neutral-1-400">Chưa kết nối</span>
+                        </div> -->
+                        <!-- <div class="font-regular font-sans text-xs flex gap-x-2">
                           <p class="text-success-400 font-semibold" *ngIf="item.Description">
                             {{item.Description}}
                           </p>
-                        </div>
+                        </div> -->
                       </div>
                     </div>
                   </ng-template>
