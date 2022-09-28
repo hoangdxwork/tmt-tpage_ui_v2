@@ -477,9 +477,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+
     this.queryObj = {} as any;
     this.innerText.nativeElement.value = '';
     this.isProcessing = false;
+    this.disableNextUrl = false;
 
     if (this.clickReload >= 5) {
         this.message.info("Đã kích hoạt cập nhật hội thoại");
