@@ -1,4 +1,3 @@
-import { ConversationOrderFacade } from './../../../../services/facades/conversation-order.facade';
 import { FastSaleOrderService } from './../../../../services/fast-sale-order.service';
 import { GetListOrderIdsDTO } from './../../../../dto/saleonlineorder/list-order-ids.dto';
 import { CreateBillFastComponent } from './../../../order/components/create-bill-fast/create-bill-fast.component';
@@ -7,7 +6,7 @@ import { ConversationOrderDTO } from './../../../../dto/coversation-order/conver
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, takeUntil, map } from 'rxjs/operators';
-import { ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -16,14 +15,11 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
-import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
-import { FacebookPostService } from '@app/services/facebook-post.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 
 @Component({
   selector: 'conversation-order-list',
@@ -31,7 +27,9 @@ import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-sale
   providers: [TDSDestroyService]
 })
 
-export class ConversationOrderListComponent implements OnInit {
+export class ConversationOrderListComponent implements OnInit, OnChanges {
+
+  @Input() data!: ChatomniObjectsItemDto;
 
   isOpenCollapCheck: boolean = false;
   indeterminate: boolean = false;
@@ -70,8 +68,7 @@ export class ConversationOrderListComponent implements OnInit {
   lstLine: any[] = [];
   count: number = 0;
 
-  constructor(
-    private chatomniObjectFacade: ChatomniObjectFacade,
+  constructor(private chatomniObjectFacade: ChatomniObjectFacade,
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
@@ -85,26 +82,30 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if(this.data && this.data.ObjectId) {
+        this.currentPost = this.data;
+        this.loadData(this.pageSize, this.pageIndex);
+    }
+
     this.eventEmitter();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['data'] && !changes['data'].firstChange) {
+        this.currentPost = changes['data'].currentValue;
+        this.loadData(this.pageSize, this.pageIndex);
+    }
   }
 
   eventEmitter() {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
     this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        setTimeout(() => {
-          this.loadData(this.pageSize, this.pageIndex);
-        }, 1000)
+          if(this.currentPost && this.currentPost.ObjectId) {
+              this.loadData(this.pageSize, this.pageIndex);
+          }
       }
     })
-
-    // TODO: load danh sách đơn hàng khi chọn 1 hội thoại objects
-    this.chatomniObjectFacade.onChangeListOrderFromObjects$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (item: ChatomniObjectsItemDto) => {
-          this.currentPost = item;
-          this.loadData(this.pageSize, this.pageIndex);
-      }
-    });
   }
 
   loadData(pageSize: number, pageIndex: number) {
@@ -360,7 +361,7 @@ export class ConversationOrderListComponent implements OnInit {
 
             this.modalService.afterAllClose.subscribe({
               next:(x: any) =>{
-                this.loadData(this.pageSize,this.pageIndex);
+                  this.loadData(this.pageSize,this.pageIndex);
               }
             });
           }
@@ -373,25 +374,6 @@ export class ConversationOrderListComponent implements OnInit {
         }
       });
   }
-
-  // exportExcel() {
-  //   if (this.isLoading) { 
-  //     return;
-  //   }
-
-  //   let ids = [...this.setOfCheckedId];
-  //   this.isLoading = true;
-
-  //   this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
-  //     {
-  //       data: JSON.stringify({}),
-  //       campaignId: null,
-  //       postId: this.currentPost.ObjectId,
-  //       ids: ids,
-  //     }, `don_hang_online`)
-  //     .pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-  //     .subscribe();
-  // }
 
   deleteMulti() {
     if(this.isLoading){

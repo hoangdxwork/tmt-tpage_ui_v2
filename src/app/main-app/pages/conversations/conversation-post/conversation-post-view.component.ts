@@ -2,12 +2,10 @@ import { ModalProductDefaultComponent } from './../components/modal-product-defa
 import { ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { ModalListProductComponent } from './../components/modal-list-product/modal-list-product.component';
 import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
-import { LiveCampaignService } from './../../../services/live-campaign.service';
-import { LiveCampaignModel } from '../../../dto/live-campaign/odata-live-campaign-model.dto';
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
-import { takeUntil, finalize } from 'rxjs/operators';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { takeUntil, finalize, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
@@ -20,10 +18,10 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
-import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
-import { QuickSaleOnlineOrderModel, Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
+import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
+import { fromEvent } from 'rxjs';
 
 @Component({
   selector: 'conversation-post-view',
@@ -32,10 +30,12 @@ import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostViewComponent implements OnInit, OnChanges {
+export class ConversationPostViewComponent implements OnInit, OnChanges, AfterViewInit {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
+
+  @ViewChild('innerText') innerText!: ElementRef;
 
   orderTotal = 0;
   indClickFilter = 0;
@@ -73,12 +73,10 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
   ];
   currentFilterComment = this.filterOptionsComment[0];
 
-  innerText: string = '';
-  textSearchFilterComment: string = '';
-
   isLoading: boolean = false;
   isProcessing: boolean = false;
   indClickTag: string = '';
+  keyWords: string = '';
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
@@ -138,10 +136,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
     if (changes["data"] && !changes["data"].firstChange) {
         this.data = {...changes["data"].currentValue};
     }
-  }
-
-  onSearchFilterComment() {
-    this.textSearchFilterComment = this.innerText;
   }
 
   onChangeFilterComment(event: TDSSafeAny) {
@@ -346,7 +340,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
         }
       })
     }
-
   }
 
   prepareModel(data: TDSSafeAny){
@@ -363,6 +356,22 @@ export class ConversationPostViewComponent implements OnInit, OnChanges {
       Factor: data?.Factor,
       ImageUrl: data?.ImageUrl
     } as Detail_QuickSaleOnlineOrder;
+  }
+
+  ngAfterViewInit() {
+    if(this.innerText?.nativeElement) {
+      fromEvent(this.innerText?.nativeElement, 'keyup').pipe(
+        map((event: any) => {
+            return event.target.value;
+        }) , debounceTime(750) , distinctUntilChanged()
+
+      ).subscribe({
+        next: (text: string) => {
+            this.keyWords = text;
+            this.cdRef.markForCheck();
+        }
+      })
+    }
   }
 
 }
