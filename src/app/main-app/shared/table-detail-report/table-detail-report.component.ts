@@ -21,6 +21,7 @@ export class TableDetailReportComponent implements OnInit {
 
     @Input() liveCampaignId!: string;
     @Input() lstDetails!: ReportLiveCampaignDetailDTO[];
+    @Input() tableHeight: number = 300;
 
     indClickQuantity: string = '';
     currentQuantity: number = 0;
@@ -49,7 +50,9 @@ export class TableDetailReportComponent implements OnInit {
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
-        this.lstSearch = [...this.lstDetails];
+        if(this.lstDetails){
+            this.lstSearch = [...this.lstDetails];
+        }
         this.cdr.detectChanges();
     }
 
@@ -74,11 +77,11 @@ export class TableDetailReportComponent implements OnInit {
 
     showModalLiveCampaignBill(lstFastSaleOrder: any[]) {
         if(!lstFastSaleOrder){
-            return
+            return;
         }
 
         if(lstFastSaleOrder.length == 0){
-            return
+            return;
         }
 
         this.modalService.create({
