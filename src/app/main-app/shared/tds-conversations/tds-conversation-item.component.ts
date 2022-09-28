@@ -237,7 +237,7 @@ export class TDSConversationItemComponent implements OnInit  {
 
     let model = {
       id: this.team.ChannelId,
-      messageId: this.dataItem.Data.id || this.csid,
+      messageId: this.dataItem.Id || this.csid,
       fetchId: this.dataItem.Data?.id || null
     }
 

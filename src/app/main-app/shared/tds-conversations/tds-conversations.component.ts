@@ -1135,7 +1135,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
       this.pageId = this.team.ChannelId;
 
-      let value = TDSHelperString.stripSpecialChars(this.searchText.trim().toLocaleLowerCase());
+      let value = this.searchText.trim();
       this.filterObj = {
         Keywords: value
       }
