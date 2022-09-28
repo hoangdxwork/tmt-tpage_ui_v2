@@ -1,3 +1,4 @@
+import { EventSummaryService } from './../../../../services/event-summary.service';
 import { formatDate } from '@angular/common';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
@@ -35,11 +36,12 @@ export class DashboardDailyReportComponent implements OnInit {
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
 
-  lstData: MDBTotalCommentMessageFbDTO[] = [];
+  lstData: any[] = [];
   dataOverviewCurrentDay!: MDBSummaryByPostDTO;
   interval: number = 0;
 
   constructor(private crmTeamService: CRMTeamService,
+    private eventSummaryService: EventSummaryService,
     private reportFacebookService: ReportFacebookService,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService) { }
@@ -53,8 +55,8 @@ export class DashboardDailyReportComponent implements OnInit {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
         this.currentTeam = res ? {...res} : null;
-        this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
-        this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
+        this.loadSummaryCurrentDay();
+        this.loadSummaryOverviewCurrentDay();
       },
       error:(err) => {
         this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
@@ -62,12 +64,11 @@ export class DashboardDailyReportComponent implements OnInit {
     });
   }
 
-  loadSummaryCurrentDay(pageId?: string) {
+  loadSummaryCurrentDay() {
     this.isLoading = true;
-    this.reportFacebookService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
+    this.eventSummaryService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           if(TDSHelperArray.hasListValue(res)){
-            this.lstData = [...res];
             this.loadSeriesData(res);
             this.loadDataChart();
             this.isLoading = false;
@@ -84,7 +85,7 @@ export class DashboardDailyReportComponent implements OnInit {
       });
   }
 
-  loadSummaryOverviewCurrentDay(pageId?: string) {
+  loadSummaryOverviewCurrentDay() {
     this.reportFacebookService.getSummaryOverviewCurrentDay().subscribe({
       next:(res) => {
         this.dataOverviewCurrentDay = {...res};
@@ -99,24 +100,38 @@ export class DashboardDailyReportComponent implements OnInit {
     this.axisData = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
   }
 
-  loadSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
-    let dataMessage: number[] = [];
+  loadSeriesData(data: any) {
+    let lstMessages: number[] = [];
+    let lstConversations: number[] = [];
 
-    let lstTotalMessage = data.map(f => f.TotalMessage);
+    let lstTotalMessage = data.Messages.map((f:any) => f.MessageCount + f.CommentCount);
+    let lstTotalConversation = data.Conversations.map((f:any) => f.Count);
     //TODO: lấy 5 giá trị trên trục y
-    let calInterval = Math.max(...lstTotalMessage)/5;
+    let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation)/5;
     this.interval = Math.round(calInterval);
-
+    
     this.axisData.forEach((hour) => {
-      let find = data.find(x => JSON.stringify(x.Hours) === hour);
-      dataMessage.push(find?.TotalMessage || 0);
+      let findMessage = data.Messages.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      if(findMessage){
+        lstMessages.push(findMessage.MessageCount + findMessage.CommentCount);
+      }else{
+        lstMessages.push(0);
+      }
+      
+
+      let findConversation = data.Conversations.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      lstConversations.push(findConversation?.Count || 0);
     });
 
     this.seriesData = [
       {
-        name: 'Tin nhắn',
-        data: dataMessage
-      }
+        name: 'Tin nhắn và bình luận',
+        data: lstMessages
+      },
+      {
+        name: 'hội thoại',
+        data: lstConversations
+      },
     ];
   }
 
@@ -147,7 +162,7 @@ export class DashboardDailyReportComponent implements OnInit {
                         formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
                         + '</span><br>'+
                       '<div class="flex flex-row items-center justify-between text-white text-caption-2 font-semibold font-sans text-center">'+
-                        '<span class="pr-5">5 bình luận</span>'+
+                        '<span class="pr-5">{c1} bình luận</span>'+
                         '<span>{c} {a}</span>'+
                       '</div>'+
                     '</div>'+
@@ -220,7 +235,7 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   buildChartDemo(chart : TDSLineChartComponent ){
-    this.dailyOption = this.chartOption.LineChartOption(chart,true);
+    this.dailyOption = this.chartOption.LineChartOption(chart);
     this.dailyOption.xAxis[0].axisLabel.showMinLabel = true;
   }
 
@@ -262,7 +277,7 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   refreshData() {
-    this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
-    this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
+    this.loadSummaryCurrentDay();
+    this.loadSummaryOverviewCurrentDay();
   }
 }

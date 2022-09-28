@@ -264,6 +264,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
   onLoadProduct(data: TDSSafeAny) {
     // TODO: cập nhật 1 sản phẩm hoặc các biến thể của sản phẩm vào danh sách
+    this.onReset();
     if(TDSHelperArray.isArray(data)) {
         let datas = [...data] as DataPouchDBDTO[];
         datas.forEach(x => {
