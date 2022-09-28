@@ -222,9 +222,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
     if (changes["innerText"] && !changes["innerText"].firstChange) {
         let text = changes["innerText"].currentValue;
-        this.innerText = TDSHelperString.stripSpecialChars(text.trim().toLocaleLowerCase());
         this.filterObj = {
-            Keywords: this.innerText
+            Keywords: text
         }
         this.loadData();
     }
