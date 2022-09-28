@@ -57,7 +57,7 @@ export class FacebookCartComponent implements OnInit {
         this.dataModel = res;
         this.updateForm(res);
         this.isLoading = false;
-      }, 
+      },
       error:(err) => {
         this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
@@ -73,7 +73,6 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsBuyMore"].setValue(false);
       this._form.controls["IsCancelCheckout"].setValue(false);
       this._form.controls["IsUpdate"].setValue(false);
-
     }
   }
 
@@ -84,18 +83,30 @@ export class FacebookCartComponent implements OnInit {
 
     this.generalConfigService.update(name, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        this.isLoading = false;
-        this.message.success('Cập nhật cấu hình giỏ hàng thành công');
+          this.isLoading = false;
+          this.message.success('Cập nhật cấu hình giỏ hàng thành công');
       },
       error: (error: any) => {
-        this.isLoading = false;
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       }
     })
   }
 
   prepareModel() {
     let formModel = this._form.value;
+
+    let exist = this._form.controls["IsUpdatePartnerInfo"].value == false
+        && this._form.controls["IsCheckout"].value == false
+        && this._form.controls["IsUpdateQuantity"].value == false
+        && this._form.controls["IsBuyMore"].value == false
+
+    if(exist) {
+        formModel.IsUpdate = false;
+    } else {
+        formModel.IsUpdate = true;
+    }
+
     let model = {
         IsApplyConfig: formModel.IsApplyConfig as boolean,
         IsUpdatePartnerInfo: formModel.IsUpdatePartnerInfo as boolean,
