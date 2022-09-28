@@ -30,6 +30,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { ItemsRenderDto } from '@app/dto/conversation-all/ag-scroll/ag-scroll-render.dto';
 
 @Component({
   selector: 'app-conversation-all',
@@ -783,19 +784,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onItemsRender(event: ItemsRenderDto) {
     let exits = event && event.items && this.lstConversation && this.lstConversation.length > 0 && !this.disableNextUrl && !this.isProcessing;
     if(exits) {
-        let lastItem = event.items[event.length - 1];
-        let lastCs = this.lstConversation[this.lstConversation.length - 1];
+        let lastItemAg = event.items[event.length - 1];
+        let lastItemCs = this.lstConversation[this.lstConversation.length - 1];
 
-        if(lastItem && lastItem.ConversationId == lastCs.ConversationId) {
+        if(lastItemAg && lastItemCs && lastItemAg.ConversationId == lastItemCs.ConversationId) {
             this.nextData(event);
         }
     }
   }
 }
 
-export interface ItemsRenderDto {
-  endIndex: number;
-  items: any[];
-  length: number;
-  startIndex: number;
-}
