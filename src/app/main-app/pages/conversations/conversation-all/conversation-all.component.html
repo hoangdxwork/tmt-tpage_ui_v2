@@ -135,8 +135,8 @@
                 <ag-virtual-scroll #vs [items]="lstConversation" class="overflow-y-auto tds-custom-scroll relative h-full"
                     (onItemsRender)="onItemsRender($event)" [min-row-height]="80" >
 
-                    <div *ngFor="let item of vs.items" class="!h-auto pb-1">
-                        <div *ngIf="item && conversationItem && currentTeam" >
+                    <div *ngFor="let item of vs.items; let i=index; trackBy: trackByIndex" class="!h-auto pb-1">
+                        <div *ngIf="item && conversationItem && currentTeam">
                             <a (click)="changeCurrentConversationItem(item)" class="w-full"
                                 [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
                                 <current-conversation-item-v2
