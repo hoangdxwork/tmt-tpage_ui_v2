@@ -64,10 +64,10 @@
             <div class="overflow-hidden flex flex-auto" *ngIf="lstObjects && lstObjects.length > 0">
                 <div class="overflow-hidden flex flex-col relative flex-auto pt-1 gap-y-1">
 
-                    <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollObjects" is-lock="true"
-                        observe-attributes yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
+                    <ag-virtual-scroll #vs [items]="lstObjects" class="overflow-y-auto tds-custom-scroll h-full"
+                        [min-row-height]="120" (onItemsRender)="onItemsRender($event)">
 
-                        <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex"
+                        <div *ngFor="let item of vs.items; let i=index; trackBy: trackByIndex" class="!h-auto pb-1"
                             [ngClass]="(currentPost && currentPost.ObjectId == item.ObjectId) ? 'cursor-no-drop' : 'cursor-pointer'">
 
                             <div *ngIf="item && currentTeam!.Type == 'Facebook'">
@@ -80,7 +80,11 @@
                                 </object-tshop-post>
                             </div>
                         </div>
-                    </div>
+
+                        <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
+                            <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                        </div>
+                    </ag-virtual-scroll>
 
                     <div class="bg-white flex-auto"></div>
                 </div>
