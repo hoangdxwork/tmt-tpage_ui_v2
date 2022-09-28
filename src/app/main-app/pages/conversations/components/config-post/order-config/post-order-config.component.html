@@ -257,9 +257,9 @@
           <div class="pt-4 grid grid-cols-2 gap-x-4">
             <tds-form-field>
                 <tds-label>Khách hàng thuộc trạng thái</tds-label>
-                <tds-select valueField="Name" textField="Name" placeholder='Nhập nội dung và nhấn [Enter]' [valuePrimitive]="false"
-                    [data]="(lstTags$ | async) || []" mode="tags" [maxTagCount]="10"
-                    [ngModel]="dataModel.ExcludedStatusNames | convertToCRMTagsList" (ngModelChange)="changeExcludedStatusNames($event)">
+                <tds-select valueField="value" textField="text" placeholder='Nhập nội dung và nhấn [Enter]' [valuePrimitive]="false"
+                    [data]="lstPartnerStatus" mode="tags" [maxTagCount]="10"
+                    [ngModel]="dataModel.ExcludedStatusNames" (ngModelChange)="changeExcludedStatusNames($event)">
                 </tds-select>
             </tds-form-field>
 

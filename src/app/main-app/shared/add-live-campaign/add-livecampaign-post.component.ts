@@ -439,6 +439,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   selectProduct(data: ProductDTOV2){
+
     let formDetails = this.detailsFormGroups.value as any[];
     let exist = formDetails.filter((f:LiveCampaignProductDTO) => f.ProductId == data.Id && f.UOMId == data.UOMId)[0];
 
