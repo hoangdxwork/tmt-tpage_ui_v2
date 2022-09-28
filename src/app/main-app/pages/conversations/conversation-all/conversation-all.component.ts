@@ -68,7 +68,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   queryObj: QueryFilterConversationDto = {} as any;
   isFilter: boolean = false;
 
-  isRefreshing: boolean = false;
   isProcessing:boolean = false;
   disableNextUrl: boolean = false;
   clickReload: number = 0;
@@ -214,6 +213,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
 
         this.lstConversation[index] = {...this.lstConversation[index]};
+        this.lstConversation = [...this.lstConversation];
 
         // TODO: Check vị trí ConversationId và add vào đàu tiên
         let model = {...this.lstConversation[index]};
@@ -235,6 +235,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(Number(index) >- 1) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
+                this.lstConversation = [...this.lstConversation];
+
                 this.cdRef.markForCheck();
             }
         }
@@ -249,6 +251,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(Number(index) >- 1) {
                 this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
                 this.lstConversation[index] = {...this.lstConversation[index]};
+                this.lstConversation = [...this.lstConversation];
+
                 this.cdRef.detectChanges();
             }
         }
@@ -263,6 +267,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(Number(index) >- 1) {
                 this.lstConversation[index].CountUnread = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
+                this.lstConversation = [...this.lstConversation];
+
                 this.cdRef.detectChanges();
             }
         }
@@ -277,6 +283,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(Number(index) >- 1) {
                 this.lstConversation[index].State = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
+                this.lstConversation = [...this.lstConversation];
+
                 this.cdRef.detectChanges();
             }
         }
@@ -314,6 +322,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           if(Number(index) >- 1) {
               this.lstConversation[index].AssignedTo = true;
               this.lstConversation[index] = {...this.lstConversation[index]};
+              this.lstConversation = [...this.lstConversation];
+
               this.cdRef.detectChanges();
           }
         }
@@ -427,7 +437,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
 
     if(item && !TDSHelperString.hasValueString(item.ConversationId)) {
-        console.log(item);
         this.message.error('Conversation with Id NotFound');
         return
     }
@@ -500,7 +509,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           });
         }
     } else {
-        this.isRefreshing = true;
         this.loadFilterDataSource();
     }
 
@@ -520,9 +528,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setSort(){
     this.isSort = !this.isSort;
     if(this.isSort) {
-      this.lstConversation = this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(a.UpdatedTime) - Date.parse(b.UpdatedTime));
+      this.lstConversation = [...this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(a.UpdatedTime) - Date.parse(b.UpdatedTime))];
     } else {
-      this.lstConversation = this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(b.UpdatedTime) - Date.parse(a.UpdatedTime));
+      this.lstConversation = [...this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(b.UpdatedTime) - Date.parse(a.UpdatedTime))];
     }
   }
 
@@ -618,6 +626,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onSubmitFilter(queryObj: QueryFilterConversationDto) {
     this.totalConversations = 0;
     this.queryObj = {} as any;
+    this.disableNextUrl = false;
 
     this.queryObj = queryObj;
     this.loadFilterDataSource();
@@ -634,17 +643,27 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       ).subscribe({
         next: (text: string) => {
             this.isFilter = true;
+            this.disableNextUrl = false;
 
             if(text == ''){
               this.isFilter = false;
             }
 
-            let value = TDSHelperString.stripSpecialChars(text.trim());
+            let value = TDSHelperString.stripSpecialChars(text.trim().toLocaleLowerCase());
             this.queryObj['Keyword'] = value;
             this.loadFilterDataSource();
         }
       })
     }
+
+    // setTimeout(() => {
+    //   const btnElement = (<HTMLElement>this.ElByClassName.nativeElement).querySelector(
+    //     '.items-container'
+    //     );debugger
+    //     if(btnElement){
+    //       btnElement.className = 'items-container flex flex-col';
+    //   }
+    // }, 0);
   }
 
   onTabOderOutput(ev: boolean){
@@ -652,8 +671,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadFilterDataSource() {
-    // this.isLoading = true;
-    this.isRefreshing = true;
+    this.isProcessing = true;
 
     this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, this.queryObj).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
@@ -661,13 +679,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.lstConversation = [...res?.Items];
           this.totalConversations = res?.Items.length;
 
-          this.isLoading = false;
-          this.isRefreshing = false;
+          this.isProcessing = false;
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
-          this.isLoading = false;
-          this.isRefreshing = false;
+          this.isProcessing = false;
           this.message.error(`${error?.error?.message}`);
           this.cdRef.markForCheck();
       }
