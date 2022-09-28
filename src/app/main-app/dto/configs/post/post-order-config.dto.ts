@@ -60,7 +60,7 @@ export interface AutoOrderConfigDTO {
     TeamId: number;
     TextContentToOrders: TextContentToOrderDTO[];
     ExcludedPhones: string[];
-    ExcludedStatusNames: string[];
+    ExcludedStatusNames: any[];
     IsEnableAutoAssignUser: boolean;
     Users: ConfigUserDTO[] | null;
     IsEnableOrderReplyAuto: boolean;

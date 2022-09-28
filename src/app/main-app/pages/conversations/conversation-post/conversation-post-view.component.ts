@@ -367,7 +367,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
 
       ).subscribe({
         next: (text: string) => {
-            this.keyWords = text;
+            this.keyWords = text.trim();
             this.cdRef.markForCheck();
         }
       })

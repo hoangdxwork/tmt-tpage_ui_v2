@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { InputSummaryOverviewDTO, InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO, ReportSummaryOverviewResponseDTO, SummaryActivityByStaffDTO } from "../dto/dashboard/summary-overview.dto";
+import { EventSummaryDTO, InputSummaryOverviewDTO, InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO, ReportSummaryOverviewResponseDTO, SummaryActivityByStaffDTO } from "../dto/dashboard/summary-overview.dto";
 import { BaseSevice } from "./base.service";
 
 @Injectable()
@@ -59,4 +59,14 @@ export class ReportFacebookService extends BaseSevice {
 
     return this.apiService.getData<SummaryActivityByStaffDTO[]>(api, null);
   }
+
+  getEventSummary(data : number): Observable<EventSummaryDTO> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/eventsummary/byday?day=${data}`,
+      method: CoreApiMethodType.get
+    }
+
+    return this.apiService.getData<EventSummaryDTO>(api, null);
+  }
+
 }
