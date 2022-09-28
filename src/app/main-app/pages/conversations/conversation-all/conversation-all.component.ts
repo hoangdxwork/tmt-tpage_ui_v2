@@ -209,7 +209,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index].Message = data.Data.Message?.Message;
 
         if(!data.Data.Message?.IsOwner){
-          this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+            this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
         }
 
         this.lstConversation[index] = {...this.lstConversation[index]};
@@ -414,7 +414,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   changeCurrentConversationItem(item: ChatomniConversationItemDto) {
-    if(item.ConversationId != this.conversationItem.ConversationId) {
+    if(item && TDSHelperString.hasValueString(item.ConversationId) && item.ConversationId != this.conversationItem.ConversationId) {
         if(this.isOpenCollapCheck){
             this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
             this.refreshCheckedStatus();
@@ -423,6 +423,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
         delete this.conversationItem;
         this.setCurrentConversationItem(item);
+    }
+
+    if(item && !TDSHelperString.hasValueString(item.ConversationId)) {
+        console.log(item);
+        this.message.error('Conversation with Id NotFound');
+        return
     }
   }
 
@@ -771,7 +777,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onItemsRender(event: ItemsRenderDto) {
-
     let exits = event && event.items && this.lstConversation && this.lstConversation.length > 0 && !this.disableNextUrl && !this.isProcessing;
     if(exits) {
         let lastItem = event.items[event.length - 1];
