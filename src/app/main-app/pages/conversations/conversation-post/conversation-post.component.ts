@@ -56,7 +56,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     { id: 'ChannelUpdatedTime asc', name: 'Ngày cập nhật cũ nhất' }
   ];
 
-  syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
+  syncConversationInfo!: ChatomniConversationInfoDto | any;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
 
   currentType: any = { id: 'all', name: 'Tất cả bài viết' };
   currentSort: any = {};
@@ -81,6 +81,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   queryObj?: any = { type: "", sort: "", q: "" };
   isRefreshing: boolean = false;
+  isFilter: boolean = false;
+  currentObject?: ChatomniObjectsItemDto;
   partners$!: Observable<any>;
 
   constructor(private facebookPostService: FacebookPostService,
@@ -237,8 +239,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     });
   }
 
-  onchangeType(event: any) {
+  onChangeType(event: any) {
     if(event) {
+      this.isFilter = true;
       this.currentType = this.lstType.find(x => x.id === event.id);
 
       this.queryObj = this.onSetFilterObject();
@@ -349,6 +352,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               }
 
               this.selectPost(currentObject);
+              this.currentObject = currentObject
           }
 
           this.isLoading = false;
@@ -404,6 +408,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.ObjectId}`;
         this.router.navigateByUrl(uriParams);
     }
+
   }
 
   nextData(event: any): any {
@@ -469,6 +474,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       }),
       debounceTime(750),distinctUntilChanged()).subscribe({
         next: (text: string) => {
+            this.isFilter = true;
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.keyFilter = value;
 
@@ -499,9 +505,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   validateData(){
     this.postChilds = [];
     this.lstObjects = [];
+    this.isFilter = false;
 
     delete this.dataSource$;
     delete this.currentPost;
+    delete this.syncConversationInfo;
+    delete this.currentObject;
   }
 
   onChangeTabEvent() {

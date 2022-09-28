@@ -735,6 +735,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   messageResponseV2(res: any, model: ChatomniSendMessageModelDto) {
+    // TODO: trả về res.length == 1 là tin nhắn, res.length > 1 là gửi nhiều hình ảnh hoặc hình và tin nhắn
     if (TDSHelperArray.hasListValue(res)) {
 
       res.map((x: ResponseAddMessCommentDtoV2, i: number) => {
@@ -748,6 +749,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
           let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == data.Id);
 
+          //TODO: Lấy item cuối đẩy qua conversation-all-v2 
           if(index < 0) {
               this.dataSource.Items = [...this.dataSource.Items, ...[data]];
           }

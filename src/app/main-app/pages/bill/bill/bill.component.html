@@ -41,14 +41,14 @@
           <div class="xl:hidden 2xl:flex">
             <tds-form-field>
               <tds-select valueField="Id" textField="Name" class="xl:w-[100px] 2xl:w-[190px] truncate"
-                placeholder="Chọn đối tác" [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
+                placeholder="Chọn đối tác" [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)" [(ngModel)]="deliveryType"
                 disabledField="isActive" [data]="lstCarriers" [allowClear]="true">
               </tds-select>
             </tds-form-field>
           </div>
 
           <tds-form-field class="flex flex-auto xl:w-[150px] 2xl:w-[190px]">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+              <input tdsInput placeholder="Tên, Địa chỉ, SĐT,..." autocomplete="off" #innerText />
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
 

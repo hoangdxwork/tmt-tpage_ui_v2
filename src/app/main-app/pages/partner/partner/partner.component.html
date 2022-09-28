@@ -132,7 +132,7 @@
                                     <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
                                         class="border-l border-r text-center border-neutral-200" [tdsLeft]="true">
                                     </td>
-                                    <td *ngIf="isHidden('DisplayName')" class=" border-r border-neutral-200 min-w-[280px] max-w-[500px]" [tdsLeft]="true">
+                                    <td *ngIf="isHidden('DisplayName')" class=" border-r border-neutral-200 min-w-[220px] max-w-[400px]" [tdsLeft]="true">
                                         <div class="flex flex-col"><span class="w-full truncate">{{data.DisplayName}}</span></div>
                                     </td>
                                     <td *ngIf="isHidden('Phone')" class="border-r border-neutral-200 min-w-[120px] max-w-[240px]">
@@ -144,7 +144,7 @@
                                         </div>
                                     </td>
                                     <td *ngIf="isHidden('Email')" class="border-r border-neutral-200 min-w-[210px] max-w-[400px]">{{ data.Email }}</td>
-                                    <td *ngIf="isHidden('Street')" class="border-r border-neutral-200 min-w-[410px] max-w-[500px]">
+                                    <td *ngIf="isHidden('Street')" class="border-r border-neutral-200 min-w-[280px] max-w-[400px]">
                                         <div class="w-full flex">
                                             <span class="w-full truncate">{{ data.Street }}</span>
                                         </div>
@@ -156,7 +156,7 @@
                                             <span class="ml-1 w-full truncate">{{data.StatusText }}</span>
                                         </div>
                                     </td>
-                                    <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200 min-w-[200px] max-w-[400px]">
+                                    <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200 min-w-[120px] max-w-[240px]">
                                         <div class="flex items-center gap-x-1">
                                             <div class="flex flex-wrap items-center">
                                                 <div *ngFor="let item of data.Tags | prettyjson">
@@ -205,7 +205,7 @@
                                     </td>
                                     <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right min-w-[200px] max-w-[400px] truncate">{{ data.FacebookId }}</td>
                                     <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right min-w-[200px] max-w-[400px] truncate">{{ data.Zalo }}</td>
-                                    <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right min-w-[120px] max-w-[240px]">
+                                    <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right min-w-[100px] max-w-[200px]">
                                       <div class="w-full truncate">
                                         {{ data.Credit || 0 | numberCustom }}
                                       </div>

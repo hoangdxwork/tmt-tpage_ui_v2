@@ -46,6 +46,8 @@ export class ListConfigDeliveryComponent implements OnInit {
         if (res.Success && res.Data) {
           this.providerDataSource = res.Data.Providers;
           this.dataFilter = res.Data.Providers;
+          console.log(this.dataFilter);
+
         } else {
           this.message.error(res.Error?.Message);
         }

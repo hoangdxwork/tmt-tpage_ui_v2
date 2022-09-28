@@ -129,7 +129,7 @@
 
               <div class="row-span-2 flex flex-col gap-y-4 items-center pt-3">
                 <div class="flex justify-between items-center w-full">
-                  <tds-label class="w-1/3">Bật xử lý chốt đơn tự động</tds-label>
+                  <tds-label>Bật xử lý chốt đơn tự động</tds-label>
                   <tds-checkbox formControlName="IsEnableAuto"></tds-checkbox>
                 </div>
                 <div class="flex justify-between items-center w-full">
@@ -170,7 +170,7 @@
             <list-product-tmp [type]="'liveCampaign'" (onLoadProductToLiveCampaign)="onLoadProduct($event)"></list-product-tmp>
         </div>
 
-        <div class="h-full w-2/3">
+        <div class="w-2/3">
           <div class="rounded-xl bg-white h-full flex-col flex">
             <div class="p-3 w-full flex gap-x-2 font-semibold text-base items-center relative">
                     <span class="tdsi-product-fill text-neutral-1-400"></span>
@@ -184,8 +184,8 @@
                 </div>
             </div>
 
-            <div class="w-full flex-auto text-body-2 text-neutral-1-900">
-              <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [listData]="_form.controls['Details'].value">
+            <div class="w-full flex-auto text-body-2 text-neutral-1-900 max-h-[450px]">
+              <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [scroll]="{ y: 'auto' }" [listData]="_form.controls['Details'].value">
                 <thead>
                   <tr>
                       <th [width]="'64px'" class="text-center">STT</th>
@@ -265,7 +265,7 @@
                                     <tds-form-field>
                                         <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
                                           [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
-                                          [data]="(detail.value.Tags | stringToStringArray)" >
+                                          [data]="(detail.value.Tags | stringToStringArray)">
                                         </tds-select>
                                     </tds-form-field>
                                 </div>
