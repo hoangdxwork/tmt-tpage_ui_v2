@@ -167,7 +167,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
           this.isLoadingProduct = false;
       },
       error:(err) =>{
-          this.isLoadingProduct = false
+          this.isLoadingProduct = false;
           this.message.error(err?.error?.message || 'Không thể tải danh sách sản phẩm');
       }
     });
@@ -395,6 +395,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
     modal.afterClose.subscribe((result: any[]) => {
       if(result && result[0]) {
+        this.onReset();
         let x = result[0] as ProductTemplateV2DTO;
 
         let item = {
@@ -439,7 +440,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   selectProduct(data: ProductDTOV2){
-
+    this.onReset();
     let formDetails = this.detailsFormGroups.value as any[];
     let exist = formDetails.filter((f:LiveCampaignProductDTO) => f.ProductId == data.Id && f.UOMId == data.UOMId)[0];
 

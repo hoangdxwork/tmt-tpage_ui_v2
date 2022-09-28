@@ -23,16 +23,6 @@ export class ReportFacebookService extends BaseSevice {
     return this.apiService.getData<ReportSummaryOverviewResponseDTO>(api, data);
   }
 
-  getSummaryCurrentDay(pageId?: any): Observable<MDBTotalCommentMessageFbDTO[]> {
-    pageId = pageId || '';
-    let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/summarycurrentday?pageId=${pageId}`,
-      method: CoreApiMethodType.get
-    }
-
-    return this.apiService.getData<MDBTotalCommentMessageFbDTO[]>(api, null);
-  }
-
   getSummaryOverviewCurrentDay(pageId?: any): Observable<MDBSummaryByPostDTO> {
     pageId = pageId || '';
     let api: CoreAPIDTO = {
