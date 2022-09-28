@@ -78,14 +78,11 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
     // TODO: Cập nhật tin tin nhắn chưa đọc
     this.chatomniEventEmiterService.updateMarkSeenBadge$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       if(res){
-
           let exits = this.item.ConversationId == res.csid && this.team?.ChannelId == res.pageId && this.type == res.type;
           if(exits) {
-            this.item.CountUnread = 0;
+              this.item.CountUnread = 0;
           }
-
           this.cdRef.detectChanges();
-          this.destroy$.complete();
       }
     })
   }
@@ -101,13 +98,17 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
     }
 
     if(changes["item"] && !changes["item"].firstChange) {
+
       this.item = changes["item"].currentValue;
       this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
       this.plusWidthTag = 0;
+
       setTimeout(() => {
-        this.onSetWidthTag();
+          this.onSetWidthTag();
       }, 150);
     }
+
+    this.cdRef.detectChanges();
   }
 
   ngAfterViewInit(): void {
@@ -118,7 +119,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   }
 
   setWithTag(widthItemPlush: number){
-    this.widthTag.forEach(x=> {
+    this.widthTag.forEach(x => {
       if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
         return
       }

@@ -1,15 +1,14 @@
 import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from './../../../services/socket-io/socket-onevent.service';
-import { SocketService } from '@app/services/socket-io/socket.service';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto, QueryFilterConversationDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, fromEvent, Observable, auditTime, tap } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -30,7 +29,6 @@ import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/ma
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
@@ -42,15 +40,12 @@ import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
-  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
-
   @HostBinding("@eventFadeState") eventAnimation = true;
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
   @ViewChild('templateAdminTransferChatBot') templateAdminTransferChatBot!: TemplateRef<{}>;
   @ViewChild('templateChatbotTranserAdmin') templateChatbotTranserAdmin!: TemplateRef<{}>;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
-
 
   isLoading: boolean = false;
   dataSource$?: Observable<ChatomniConversationDto> ;
@@ -74,6 +69,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   isRefreshing: boolean = false;
   isProcessing:boolean = false;
+  disableNextUrl: boolean = false;
   clickReload: number = 0;
   isCheckedAll: boolean = false;
   selectedIndex: number = 0;
@@ -213,7 +209,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index].Message = data.Data.Message?.Message;
 
         if(!data.Data.Message?.IsOwner){
-          this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
+            this.lstConversation[index].CountUnread = (this.lstConversation[index].CountUnread || 0) + 1;
         }
 
         this.lstConversation[index] = {...this.lstConversation[index]};
@@ -418,7 +414,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   changeCurrentConversationItem(item: ChatomniConversationItemDto) {
-    if(item.ConversationId != this.conversationItem.ConversationId) {
+    if(item && TDSHelperString.hasValueString(item.ConversationId) && item.ConversationId != this.conversationItem.ConversationId) {
         if(this.isOpenCollapCheck){
             this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
             this.refreshCheckedStatus();
@@ -427,6 +423,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
         delete this.conversationItem;
         this.setCurrentConversationItem(item);
+    }
+
+    if(item && !TDSHelperString.hasValueString(item.ConversationId)) {
+        console.log(item);
+        this.message.error('Conversation with Id NotFound');
+        return
     }
   }
 
@@ -445,12 +447,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniConversationDto) => {
-          if(res && res.Items){
-            this.lstConversation = [...(res.Items || [])];
-          }
+
+            if(res && res.Items) {
+                this.lstConversation = [...(res.Items || [])];
+            } else {
+                this.disableNextUrl = true;
+            }
 
             this.isProcessing = false;
-            this.yiAutoScroll.scrollToElement('scrollConversation', 750);
         },
         error: (error) => {
             this.isProcessing = false;
@@ -611,7 +615,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onSubmitFilter(queryObj: QueryFilterConversationDto) {
     this.totalConversations = 0;
     this.queryObj = {} as any;
-    
+
     this.queryObj = queryObj;
     this.loadFilterDataSource();
   }
@@ -773,4 +777,23 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
     localStorage.removeItem(_keyCache);
   }
+
+  onItemsRender(event: ItemsRenderDto) {
+    let exits = event && event.items && this.lstConversation && this.lstConversation.length > 0 && !this.disableNextUrl && !this.isProcessing;
+    if(exits) {
+        let lastItem = event.items[event.length - 1];
+        let lastCs = this.lstConversation[this.lstConversation.length - 1];
+
+        if(lastItem && lastItem.ConversationId == lastCs.ConversationId) {
+            this.nextData(event);
+        }
+    }
+  }
+}
+
+export interface ItemsRenderDto {
+  endIndex: number;
+  items: any[];
+  length: number;
+  startIndex: number;
 }

@@ -86,54 +86,76 @@
                 </div>
 
                 <!-- List danh sách chat -->
-                <tds-spin [spinning]="isRefreshing" class="overflow-hidden flex flex-col flex-auto">
-                    <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
-                        <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
-                            yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
-      
-                            <div *ngFor="let item of lstConversation; let i= index ; trackBy: trackByIndex">
-                                <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
-      
-                                    <a (click)="changeCurrentConversationItem(item)" class="w-full"
-                                      [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
-                                      <!-- list danh sách chat -->
-                                        <current-conversation-item-v2
-                                            [item]="item" [csid]="item.ConversationId" [type]="type"
-                                            [conversationItem]="conversationItem"
-                                            [state]="item.State"
-                                            [team]="currentTeam" [isFastSend]="isFastSend"
-                                            [isOpenCollapCheck]="isOpenCollapCheck"
-                                            [checked]="setOfCheckedId.has(item.ConversationId)"
-                                            (checkedChange)="onItemChecked(item.ConversationId, $event)">
-                                        </current-conversation-item-v2>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
-                                <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
-                            </div>
-                        </div>
-                        <div class="flex-auto bg-white mt-1"></div>
-                    </div>
-                    <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
-                    <tds-empty [notFoundContent]="contentTpl">
-                        <ng-template #contentTpl>
-                        <div class="flex flex-col justify-center items-center">
-                            <div>Không tìm thấy hội thoại nào</div>
-                            <div class="w-[300px] text-body-2 font-regular mt-3 text-center">Hãy thử với từ khóa khác: nhập tên khách hàng, nội dung tin nhắn, số điện thoại</div>
-                        </div>
-                        </ng-template>
-                    </tds-empty>
-                    </div>
-    
-                    <div class="flex flex-auto justify-center bg-white" *ngIf="lstConversation.length == 0 && !isFilter && !isLoading">
-                        <div class="flex flex-col items-center pt-16">
-                            <img src="../../../assets/imagesv2/conversation/noDataConversation.svg" alt="">
-                            <span class="text-neutral-1-300">Chưa có hội thoại nào</span>
-                        </div>
-                    </div>
-                </tds-spin>
+                <!-- <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstConversation && lstConversation.length > 0" >
+                  <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
+                      yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
+                      <div *ngFor="let item of lstConversation; let i= index ; trackBy: trackByIndex">
+                          <div *ngIf="item && item.ConversationId && conversationItem && currentTeam" @eventFadeState>
+
+                              <a (click)="changeCurrentConversationItem(item)" class="w-full"
+                                [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
+                                  <current-conversation-item-v2
+                                      [item]="item" [csid]="item.ConversationId" [type]="type"
+                                      [conversationItem]="conversationItem"
+                                      [state]="item.State"
+                                      [team]="currentTeam" [isFastSend]="isFastSend"
+                                      [isOpenCollapCheck]="isOpenCollapCheck"
+                                      [checked]="setOfCheckedId.has(item.ConversationId)"
+                                      (checkedChange)="onItemChecked(item.ConversationId, $event)">
+                                  </current-conversation-item-v2>
+                              </a>
+                          </div>
+                      </div>
+                      <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
+                          <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                      </div>
+                  </div>
+                  <div class="flex-auto bg-white mt-1"></div>
+                </div>
+
+                <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
+                  <tds-empty [notFoundContent]="contentTpl">
+                    <ng-template #contentTpl>
+                      <div class="flex flex-col justify-center items-center">
+                        <div>Không tìm thấy hội thoại nào</div>
+                        <div class="w-[300px] text-body-2 font-regular mt-3 text-center">Hãy thử với từ khóa khác: nhập tên khách hàng, nội dung tin nhắn, số điện thoại</div>
+                      </div>
+                    </ng-template>
+                  </tds-empty>
+                </div>
+
+                <div class="flex flex-auto justify-center bg-white" *ngIf="lstConversation.length == 0 && !isFilter && !isLoading">
+                    <div class="flex flex-col items-center pt-16">
+                        <img src="../../../assets/imagesv2/conversation/noDataConversation.svg" alt="">
+                        <span class="text-neutral-1-300">Chưa có hội thoại nào</span>
+                    </div>
+                </div> -->
+
+                <ag-virtual-scroll #vs [items]="lstConversation" class="overflow-y-auto tds-custom-scroll relative h-full"
+                    (onItemsRender)="onItemsRender($event)" [min-row-height]="80" >
+
+                    <div *ngFor="let item of vs.items" class="!h-auto pb-1">
+                        <div *ngIf="item && conversationItem && currentTeam" >
+                            <a (click)="changeCurrentConversationItem(item)" class="w-full"
+                                [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
+                                <current-conversation-item-v2
+                                    [item]="item" [csid]="item.ConversationId" [type]="type"
+                                    [conversationItem]="conversationItem"
+                                    [state]="item.State"
+                                    [team]="currentTeam" [isFastSend]="isFastSend"
+                                    [isOpenCollapCheck]="isOpenCollapCheck"
+                                    [checked]="setOfCheckedId.has(item.ConversationId)"
+                                    (checkedChange)="onItemChecked(item.ConversationId, $event)">
+                                </current-conversation-item-v2>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
+                        <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                    </div>
+                </ag-virtual-scroll>
             </div>
         </div>
 
