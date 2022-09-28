@@ -1,7 +1,7 @@
 <tds-spin [spinning]="isLoading" class="h-full">
     <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden text-body-2 text-neutral-1-900">
-        <div class="2xl:w-1/5 w-1/4 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
-            <div class="w-full flex flex-col gap-1 px-1">
+        <div class="2xl:w-1/5 w-1/4 px-1 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
+            <div class="w-full flex flex-col gap-1">
                 <div class="bg-white p-2.5 flex flex-col gap-y-4">
 
                     <div class="w-full">
@@ -30,7 +30,7 @@
                         <!-- droupdown filter -->
                         <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
                             <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="onchangeType(item)" class="w-full flex justify-between items-center">
+                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="onChangeType(item)" class="w-full flex justify-between items-center">
                                     {{item.name}}
                                     <span *ngIf="item?.name == currentType?.name" class="tdsi-success-fill text-success-500"></span>
                                 </div>
@@ -62,7 +62,7 @@
             </div>
 
             <div class="overflow-hidden flex flex-auto" *ngIf="lstObjects && lstObjects.length > 0">
-                <div class="overflow-hidden flex flex-col relative flex-auto px-1 pt-1 gap-y-1">
+                <div class="overflow-hidden flex flex-col relative flex-auto pt-1 gap-y-1">
 
                     <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollObjects" is-lock="true"
                         observe-attributes yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
@@ -86,7 +86,16 @@
                 </div>
             </div>
 
-            <div class="flex flex-auto items-center justify-center bg-white mx-1 mt-1" *ngIf="!lstObjects || lstObjects.length == 0">
+            <div class="flex flex-auto justify-center pt-1" *ngIf="(!lstObjects || lstObjects.length == 0) && !isFilter && !isLoading">
+                <div class="flex flex-auto justify-center bg-white">
+                    <div class="flex flex-col items-center pt-16">
+                        <img src="../../../assets/imagesv2/conversation/noDataConversationPost.svg" alt="">
+                        <span class="text-neutral-1-300 pt-11">Chưa có bài viết nào</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-auto items-center justify-center bg-white mt-1" *ngIf="(!lstObjects || lstObjects.length == 0) && isFilter">
                 <tds-empty [notFoundContent]="contentTpl">
                   <ng-template #contentTpl>
                     <div class="flex flex-col flex-auto justify-center items-center px-8">
@@ -101,8 +110,8 @@
         </div>
 
         <!--Chọn bài viết để hiển thị chi tiết-->
-        <div class="w-[50%] flex flex-col h-full overflow-hidden">
-            <div *ngIf="currentPost && currentTeam" class="h-full w-full">
+        <div class="w-[50%] flex flex-col h-full overflow-hidden" *ngIf="currentPost && currentTeam">
+            <div class="h-full w-full">
                 <conversation-post-view [data]="currentPost" [team]="currentTeam"></conversation-post-view>
             </div>
             <div *ngIf="!currentPost" class="h-full w-full flex items-center justify-center">
@@ -111,7 +120,7 @@
         </div>
 
         <!-- Danh sách khách hàng, đơn hàng -->
-        <tds-spin class="w-[30%] h-full flex flex-col" [spinning]="isLoadingTab">
+        <tds-spin class="w-[30%] h-full flex flex-col" [spinning]="isLoadingTab" *ngIf="currentObject">
             <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="selectedIndex" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 
                 <!-- tab Danh sách -->
@@ -155,5 +164,15 @@
                 </tds-tab>
             </tds-tabset>
         </tds-spin>
+
+
+        <!-- chưa có dữ liệu -->
+        <div class="flex-auto flex " *ngIf="!currentPost && !currentObject && !isLoading">
+            <div class="flex-auto flex flex-col justify-center items-center bg-white">
+                <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png" alt="">
+                <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp chăm sóc khách hàng toàn diện cho bán hàng Facebook</span>
+                <span class="text-neutral-1-300 pt-2">Quản lý tập trung các bình luận, tin nhắn từ các kênh Facebook giúp bạn không bỏ sót bất kỳ đơn nào.</span>
+            </div>
+        </div>
     </div>
 </tds-spin>

@@ -58,7 +58,7 @@ export class ModalConfirmPaymentComponent implements OnInit {
   }
 
   updateForm(){
-    this._form.controls.PaymentMethod.setValue("zalopay");
+    this._form.controls.PaymentMethod.setValue(null);
     this._form.controls.CashOnDelivery.setValue(this.data.CashOnDelivery);
   }
 
@@ -77,12 +77,12 @@ export class ModalConfirmPaymentComponent implements OnInit {
   }
 
   onSave() {
-    if(this._form.controls.PaymentMethod.invalid){
-      this.message.warning('Vui lòng chọn Phương thức thanh toán');
+    if(this._form.controls.PaymentMethod.invalid && !TDSHelperString.hasValueString(this._form.controls.PaymentMethod.value)){
+      this.message.error('Vui lòng chọn Phương thức thanh toán');
       return
     }
     if(this._form.controls.CashOnDelivery.invalid){
-      this.message.warning('Vui lòng nhập số tiền thanh toán');
+      this.message.error('Vui lòng nhập số tiền thanh toán');
       return
     }
     var model = this.prepareModel();
