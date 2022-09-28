@@ -714,7 +714,7 @@
       <div class="h-full w-full" *ngIf="dataModel && dataModel.State != 'draft'">
           <div class="h-full w-full">
               <div class="rounded-xl pt-2 px-3 bg-white h-full flex flex-auto gap-y-2 text-body-2 text-neutral-1-900">
-                <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value" 
+                <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value"
                     [scroll]="{y:'auto', x:'auto'}" [showPagination]="false" >
                   <thead>
                     <tr>
@@ -793,15 +793,18 @@
 
                               <div><span class="font-regular">Tổng tạm tính</span></div>
                               <div class="col-span-2"><span>{{ totalAmountLines | numberCustom  }} đ</span></div>
+
                               <div><span>Giảm giá</span></div>
                               <div class="col-span-2">
                                 <span>{{ (_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value) || 0 | numberCustom }} đ</span>
                               </div>
+
                               <div><span>Thuế</span></div>
-                              <div class="col-span-2">
+                              <div class="col-span-2 flex items-center justify-end">
                                 <span>{{ _form.controls["AmountTax"].value || 0 | numberCustom }}đ</span> -
                                 <span>{{ _form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0 }}%</span>
                               </div>
+
                               <div><span>Tổng tiền</span></div>
                               <div class="col-span-2"><span>{{ _form.controls["AmountTotal"].value | numberCustom }}đ</span></div>
                             </div>
@@ -985,6 +988,7 @@
                             <div *ngIf="saleConfig?.GroupDiscountTotal" class="col-span-2 flex items-center">
                               <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value || 0) | numberCustom }} đ</span>
                             </div>
+
                             <button tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                               (click)="openPopoverTax()" [(popoverVisible)]="visiblePopoverTax"
                               [popoverContent]="popoverContentTax" [popoverFooter]="popoverFooterTax"
@@ -994,13 +998,14 @@
                                 Thuế
                               </span>
                             </button>
-                            <div class="col-span-2 flex items-center">
+
+                            <div class="col-span-2 flex items-center justify-end">
                               <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }} đ</span> -
                               <span>{{ _form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0 }}%</span>
                             </div>
 
                             <div><span>Tổng tiền</span></div>
-                            <div class="col-span-2 flex items-center"><span>{{ _form.controls["AmountTotal"].value | numberCustom }} đ</span></div>
+                            <div class="col-span-2"><span>{{ _form.controls["AmountTotal"].value | numberCustom }} đ</span></div>
                           </div>
                         </div>
                       </div>
