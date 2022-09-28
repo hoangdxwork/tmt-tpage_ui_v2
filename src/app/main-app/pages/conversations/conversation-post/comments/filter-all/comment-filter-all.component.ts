@@ -74,6 +74,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   enumActivityStatus = ActivityStatus;
   messageModel!: string;
   isLoading: boolean = false;
+  disableNextUrl: boolean = false;
   currentId: string = '';
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
@@ -220,13 +221,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     if (changes["innerText"] && !changes["innerText"].firstChange) {
-      let text = changes["innerText"].currentValue;
-      this.innerText = TDSHelperString.stripSpecialChars(text.trim().toLocaleLowerCase());
-      this.filterObj = {
-        Keywords: this.innerText
-      }
-
-      this.loadData();
+        let text = changes["innerText"].currentValue;
+        this.innerText = TDSHelperString.stripSpecialChars(text.trim().toLocaleLowerCase());
+        this.filterObj = {
+            Keywords: this.innerText
+        }
+        this.loadData();
     }
   }
 
@@ -614,7 +614,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
             const end = this.viewPort.getRenderedRange().end;
             const total = this.viewPort.getDataLength();
 
-            if(end == total && !this.isLoading) {
+            if(end == total && !this.isLoading && !this.disableNextUrl) {
                 this.nextBatch();
             }
 
@@ -646,6 +646,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
               }
 
               this.infinite.next([...this.dataSource.Items]);
+          } else {
+            this.disableNextUrl = true;
           }
 
           this.isLoading = false;

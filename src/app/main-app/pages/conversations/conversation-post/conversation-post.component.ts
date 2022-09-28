@@ -399,9 +399,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
         this.changeTab(0, true);
 
-        // TODO:
-        this.chatomniObjectFacade.onChangeListOrderFromObjects$.emit(item);
-
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.ObjectId}`;
         this.router.navigateByUrl(uriParams);
