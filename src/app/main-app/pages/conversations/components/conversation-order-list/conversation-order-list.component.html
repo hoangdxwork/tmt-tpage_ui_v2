@@ -11,7 +11,7 @@
             </tds-form-field>
 
             <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
-                [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
+                [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'" [disabled]="disableCheck">
                 <span class="flex items-center ">
                     <i class="tdsi-success-line text-xl leading-5"></i>
                 </span>
@@ -23,7 +23,7 @@
             <tds-filter-status [(ngModel)]='tabIndex' (selectChange)="onSelectChange($event)">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
                 <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-                <ng-template tds-filter-status-template let-active='active'
+                    <ng-template tds-filter-status-template let-active='active'
                         let-count='count' let-name='name' let-value>
                         <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
                             [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">

@@ -69,6 +69,7 @@ export class ConversationOrderListComponent implements OnInit {
   tabNavs: Array<TDSSafeAny> = [];
   lstLine: any[] = [];
   count: number = 0;
+  disableCheck: boolean = false;
 
   constructor(
     private chatomniObjectFacade: ChatomniObjectFacade,
@@ -116,6 +117,10 @@ export class ConversationOrderListComponent implements OnInit {
       next:(res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          
+          if(!TDSHelperArray.hasListValue(this.lstOfData)){
+            this.disableCheck = true;
+          }
 
           //gán tạm thời
           let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
@@ -272,6 +277,11 @@ export class ConversationOrderListComponent implements OnInit {
           this.message.info(Message.EmptyData);
           break;
       }
+    }
+
+    // TODO: trường hợp ko có data thì ẩn
+    if(!TDSHelperArray.hasListValue(this.lstOfData)){
+      this.disableCheck = true;
     }
   }
 
