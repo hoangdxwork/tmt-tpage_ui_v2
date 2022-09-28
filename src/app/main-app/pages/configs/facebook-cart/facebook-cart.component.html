@@ -6,50 +6,43 @@
         <div class="w-full h-full bg-white rounded-xl p-4 mb-4">
           <div class="flex flex-row items-center pb-4">
               <tds-avatar class="bg-primary-1 text-white" icon="tdsi-gear-2-fill"></tds-avatar>
-              <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CẤU HÌNH GIỎ HÀNG</span>
+              <span class="text-neutral-1-900 text-header-1 pl-2.5">CẤU HÌNH GIỎ HÀNG</span>
           </div>
 
-          <!-- Cấu hình thông tin khách hàng-->
           <div class="flex flex-col pb-6">
-              <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình thông tin khách hàng</span>
               <div class="flex flex-row items-center pt-4">
-                  <tds-switch size="md" formControlName="IsUpdatePartnerInfo"></tds-switch>
-                  <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật thông tin khách hàng</span>
+                <tds-switch size="md" formControlName="IsApplyConfig" (ngModelChange)="applyConfig($event)"></tds-switch>
+                <span class="text-neutral-1-900 text-body-2 pl-2 font-semibold">Áp dụng tất cả?</span>
               </div>
-          </div>
 
-          <!-- Cấu hình thanh toán -->
-          <div class="flex flex-col pb-6">
-              <span class="text-neutral-1-900 text-title-1 font-semibold">Cấu hình thanh toán</span>
               <div class="flex flex-row items-center pt-4">
-                  <tds-switch size="md" formControlName="IsCheckout" (ngModelChange)="changeIsCheckout($event)"></tds-switch>
+                <tds-switch size="md" formControlName="IsUpdatePartnerInfo" [disabled]="!_form.value.IsApplyConfig"></tds-switch>
+                <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật thông tin khách hàng</span>
+              </div>
+
+              <div class="flex flex-row items-center pt-4">
+                  <tds-switch size="md" formControlName="IsCheckout" [disabled]="!_form.value.IsApplyConfig"></tds-switch>
                   <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép thanh toán</span>
               </div>
-              <div *ngIf="_form.controls['IsCheckout'].value"  class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4 gap-y-4">
-                  <div class="flex flex-row items-center">
-                      <tds-switch size="md" formControlName="IsUpdateQuantity" (ngModelChange)="changeIsUpdateQuantity($event)"></tds-switch>
-                      <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Cập nhật số lượng</span>
-                  </div>
-                  <div class="flex flex-col" *ngIf="_form.controls['IsUpdateQuantity'].value" style="margin-left: 44px">
-                    <div class="flex flex-row items-center">
-                        <tds-switch size="md" formControlName="IsBuyMore"></tds-switch>
-                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Cho phép mua thêm</span>
-                    </div>
-                  </div>
+
+              <div class="flex flex-row items-center pt-4">
+                <tds-switch size="md" formControlName="IsUpdateQuantity" [disabled]="!_form.value.IsApplyConfig"></tds-switch>
+                <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật số lượng</span>
               </div>
 
               <div class="flex flex-row items-center pt-4">
-                  <tds-switch size="md" formControlName="IsUpdate"></tds-switch>
+                <tds-switch size="md" formControlName="IsBuyMore" [disabled]="!_form.value.IsApplyConfig"></tds-switch>
+                <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép mua thêm</span>
+              </div>
+
+              <div class="flex flex-row items-center pt-4">
+                  <tds-switch size="md" formControlName="IsUpdate" [disabled]="!_form.value.IsApplyConfig"></tds-switch>
                   <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật giỏ hàng</span>
               </div>
-          </div>
 
-          <!-- Cấu hình hủy đơn hàng -->
-          <div class="flex flex-col pb-4">
-              <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình hủy đơn hàng</span>
               <div class="flex flex-row items-center pt-4">
-                  <tds-switch size="md" formControlName="IsCancelCheckout"></tds-switch>
-                  <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép hủy đơn hàng</span>
+                <tds-switch size="md" formControlName="IsCancelCheckout" [disabled]="!_form.value.IsApplyConfig"></tds-switch>
+                <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép hủy đơn hàng</span>
               </div>
           </div>
 

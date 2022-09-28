@@ -129,7 +129,7 @@ export class DashboardDailyReportComponent implements OnInit {
         data: lstMessages
       },
       {
-        name: 'hội thoại',
+        name: 'Hội thoại',
         data: lstConversations
       },
     ];
@@ -161,9 +161,9 @@ export class DashboardDailyReportComponent implements OnInit {
                         + ', {b}:00 ' + 
                         formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
                         + '</span><br>'+
-                      '<div class="flex flex-row items-center justify-between text-white text-caption-2 font-semibold font-sans text-center">'+
-                        '<span class="pr-5">{c1} bình luận</span>'+
+                      '<div class="flex flex-row items-center justify-between gap-x-5 text-white text-caption-2 font-semibold font-sans text-center">'+
                         '<span>{c} {a}</span>'+
+                        '<span>{c1} {a1}</span>'+
                       '</div>'+
                     '</div>'+
                   '</div>',
