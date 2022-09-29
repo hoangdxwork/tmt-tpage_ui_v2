@@ -73,7 +73,6 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsBuyMore"].setValue(false);
       this._form.controls["IsCancelCheckout"].setValue(false);
       this._form.controls["IsUpdate"].setValue(false);
-
     }
   }
 
