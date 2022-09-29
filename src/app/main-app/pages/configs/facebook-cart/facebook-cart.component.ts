@@ -72,21 +72,18 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsUpdateQuantity"].setValue(false);
       this._form.controls["IsBuyMore"].setValue(false);
       this._form.controls["IsCancelCheckout"].setValue(false);
-      this._form.controls["IsUpdate"].setValue(false);
 
       this._form.controls["IsUpdatePartnerInfo"].disable();
       this._form.controls["IsCheckout"].disable();
       this._form.controls["IsUpdateQuantity"].disable();
       this._form.controls["IsBuyMore"].disable();
       this._form.controls["IsCancelCheckout"].disable();
-      this._form.controls["IsUpdate"].disable();
     }else{
       this._form.controls["IsUpdatePartnerInfo"].enable();
       this._form.controls["IsCheckout"].enable();
       this._form.controls["IsUpdateQuantity"].enable();
       this._form.controls["IsBuyMore"].enable();
       this._form.controls["IsCancelCheckout"].enable();
-      this._form.controls["IsUpdate"].enable();
     }
   }
 
