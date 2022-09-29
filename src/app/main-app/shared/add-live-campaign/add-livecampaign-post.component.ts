@@ -329,6 +329,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
               this.message.success('Thao tác thành công');
 
               this.detailsFormGroups.removeAt(index);
+              this.liveCampainDetails = [...this.detailsFormGroups.value];
               delete this.isEditDetails[detail.Id];
           },
           error: (err: any) => {
@@ -338,9 +339,8 @@ export class AddLiveCampaignPostComponent implements OnInit {
       })
     } else {
         this.detailsFormGroups.removeAt(index);
+        this.liveCampainDetails = [...this.detailsFormGroups.value];
     }
-
-    this.liveCampainDetails = [...this.detailsFormGroups.value];
   }
 
   removeAllDetail() {
@@ -446,7 +446,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
     // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
     if(!exist){
-        let qty = Number(this.lstInventory[data.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 0;
+        let qty = Number(this.lstInventory[data.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
         let item = {
             Quantity: qty,
             LiveCampaign_Id: this.id || null,

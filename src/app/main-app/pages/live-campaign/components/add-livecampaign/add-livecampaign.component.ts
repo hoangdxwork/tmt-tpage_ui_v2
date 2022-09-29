@@ -303,7 +303,7 @@ export class AddLiveCampaignComponent implements OnInit {
         Price: [null],
         UOMId: [null],
         UOMName: [null],
-        Quantity: [product?.QtyAvailable || 0],
+        Quantity: [product?.QtyAvailable || 1],
         LimitedQuantity: [0],
         Index: [index],
         Tags: [null],
