@@ -106,7 +106,7 @@ export class ProductTemplateService extends BaseSevice {
 
   getProductUOMLine(id:TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/odata/ProductTemplate(${id})/UOMLines?$expand=UOM,Values`,
+      url: `${this._BASE_URL}/odata/ProductTemplate(${id})/UOMLines?$expand=UOM`,
       method: CoreApiMethodType.get,
     }
 
