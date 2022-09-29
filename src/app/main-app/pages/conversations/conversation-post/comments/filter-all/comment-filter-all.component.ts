@@ -52,6 +52,8 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewInit {
 
   itemSize = 100;
+  maxBufferPx = 400;
+  minBufferPx = 400;
   infinite = new BehaviorSubject<ChatomniDataItemDto[]>([]);
   @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 

@@ -12,7 +12,7 @@
 
           <!-- Tin nhắn văn bản -->
           <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
-              <div class="text-left" showMore [length]="300" [text]="dataItem.Message" #contentMessage></div>
+              <div class="text-left" [innerHtml]="dataItem.Message | jsonPayload | formatIconLike | bbcodeConvert" #contentMessage></div>
           </div>
 
           <!-- Tin nhắn hình ảnh -->
