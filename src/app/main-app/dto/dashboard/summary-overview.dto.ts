@@ -55,9 +55,21 @@ export interface SummaryActivityByStaffDTO {
   TotalCount: number;
 }
 
-export interface EventSummaryDTO {
+export interface Current {
   Conversation: number;
-  FastSaleOrder: number;
   Partner: number;
   SaleOnlineOrder: number;
+  FastSaleOrder: number;
+}
+
+export interface Previous {
+  Conversation: number;
+  Partner: number;
+  SaleOnlineOrder: number;
+  FastSaleOrder: number;
+}
+
+export interface EventSummaryDTO {
+  Current: Current;
+  Previous: Previous;
 }

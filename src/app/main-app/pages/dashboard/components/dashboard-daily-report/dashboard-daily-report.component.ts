@@ -1,3 +1,4 @@
+import { SummaryDailyCurrentDTO, SummaryDailyDTO } from './../../../../dto/dashboard/summary-daily.dto';
 import { EventSummaryService } from './../../../../services/event-summary.service';
 import { formatDate } from '@angular/common';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
@@ -5,7 +6,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -35,15 +36,13 @@ export class DashboardDailyReportComponent implements OnInit {
 
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
-
-  lstData: any[] = [];
-  dataOverviewCurrentDay!: MDBSummaryByPostDTO;
+  data!: SummaryDailyDTO;
   interval: number = 0;
 
   constructor(private crmTeamService: CRMTeamService,
     private eventSummaryService: EventSummaryService,
-    private reportFacebookService: ReportFacebookService,
     private message: TDSMessageService,
+    private cdr: ChangeDetectorRef,
     private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
@@ -56,7 +55,6 @@ export class DashboardDailyReportComponent implements OnInit {
       next:(res) => {
         this.currentTeam = res ? {...res} : null;
         this.loadSummaryCurrentDay();
-        this.loadSummaryOverviewCurrentDay();
       },
       error:(err) => {
         this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
@@ -66,12 +64,16 @@ export class DashboardDailyReportComponent implements OnInit {
 
   loadSummaryCurrentDay() {
     this.isLoading = true;
+
     this.eventSummaryService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res) => {
+        next:(res: SummaryDailyDTO) => {
           if(TDSHelperArray.hasListValue(res)){
+            this.data = {...res};
+            this.loadOverviewData(res);
             this.loadSeriesData(res);
             this.loadDataChart();
             this.isLoading = false;
+            this.cdr.detectChanges();
           }else{
             this.emptyData = true;
             this.isLoading = false;
@@ -85,42 +87,53 @@ export class DashboardDailyReportComponent implements OnInit {
       });
   }
 
-  loadSummaryOverviewCurrentDay() {
-    this.reportFacebookService.getSummaryOverviewCurrentDay().subscribe({
-      next:(res) => {
-        this.dataOverviewCurrentDay = {...res};
-      },
-      error:(err) => {
-        this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
+  loadOverviewData(data:SummaryDailyDTO){
+    if(data && data.Current && data.Previous){
+      let percentMessage = data.Previous.Messages?.MessageTotal ? ((data.Current.Messages?.MessageTotal - data.Previous.Messages?.MessageTotal)/data.Previous.Messages?.MessageTotal) * 100 : (data.Current.Messages?.MessageTotal) * 100;
+      let percentComment = data.Previous.Messages?.CommentTotal ? ((data.Current.Messages?.CommentTotal - data.Previous.Messages?.CommentTotal)/data.Previous.Messages?.CommentTotal) * 100 : (data.Current.Messages?.CommentTotal) * 100;
+      let percentConversation = data.Previous.Conversations?.Total != 0 ? ((data.Current.Conversations?.Total - data.Previous.Conversations?.Total)/data.Previous.Conversations?.Total) * 100 : (data.Current.Conversations?.Total) * 100;
+      this.data.Percent= {
+        Message: percentMessage.toFixed(0),
+        Comment: percentComment.toFixed(0),
+        Conversation: percentConversation.toFixed(0)
+      };
+    }else{
+      this.data.Percent = {
+        Message: 0,
+        Comment: 0,
+        Conversation: 0
       }
-    });
+    }
   }
 
   loadAxisData() {
     this.axisData = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
   }
 
-  loadSeriesData(data: any) {
+  loadSeriesData(data: SummaryDailyDTO) {
     let lstMessages: number[] = [];
     let lstConversations: number[] = [];
 
-    let lstTotalMessage = data.Messages.map((f:any) => f.MessageCount + f.CommentCount);
-    let lstTotalConversation = data.Conversations.map((f:any) => f.Count);
+    let lstTotalMessage = data.Current.Messages?.Data?.map((f:any) => { return f.MessageCount + f.CommentCount }) || [];
+    let lstTotalConversation = data.Current.Conversations?.Data?.map((f:any) => { return f.Count }) || [];
     //TODO: lấy 5 giá trị trên trục y
     let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation)/5;
     this.interval = Math.round(calInterval);
     
     this.axisData.forEach((hour) => {
-      let findMessage = data.Messages.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
       if(findMessage){
         lstMessages.push(findMessage.MessageCount + findMessage.CommentCount);
       }else{
         lstMessages.push(0);
       }
-      
 
-      let findConversation = data.Conversations.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
-      lstConversations.push(findConversation?.Count || 0);
+      let findConversation = data.Current.Conversations?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      if(findConversation){
+        lstConversations.push(findConversation?.Count);
+      }else{
+        lstConversations.push(0);
+      }
     });
 
     this.seriesData = [
@@ -278,6 +291,5 @@ export class DashboardDailyReportComponent implements OnInit {
 
   refreshData() {
     this.loadSummaryCurrentDay();
-    this.loadSummaryOverviewCurrentDay();
   }
 }

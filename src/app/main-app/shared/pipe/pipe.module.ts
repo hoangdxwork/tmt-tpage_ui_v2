@@ -1,3 +1,4 @@
+import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
 import { ConvertToCRMTagsListPipe } from './convert-to-CRMTagList.pipe';
@@ -74,6 +75,7 @@ const cmp =[
   SortDataSourceMessagePipe,
   CheckTagSelectedCommnetPipe,
   LatestMessageTypePipe,
+  ReportOverviewPipe,
   NumericalOrder,
   jsonPayloadPipe,
   GetShowStatePipe,

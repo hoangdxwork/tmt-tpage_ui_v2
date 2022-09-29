@@ -9,14 +9,19 @@
                 </span>
             </button>
         </div>
-        <div class="flex flex-col gap-y-4 items-center">
+        <div class="flex flex-col gap-y-4 items-center" *ngIf="data">
             <div class="flex flex-row items-center justify-center w-full">
                 <div class="flex flex-col justify-center w-full">
                     <span class="text-neutral-1-500  font-regular text-left font-sans py-2 flex items-center">
                         <i class="tdsi-comment-on-fill text-body-1 leading-none mr-2"></i>Hội thoại
                     </span>
                     <div class="flex flex-row items-center">
-                        <span class=" text-heading-4 font-semibold font-sans pr-2">{{dataOverviewCurrentDay?.TotalConversation || 0 | number:'2.0-0'}}</span>
+                        <span class=" text-heading-4 font-semibold font-sans pr-2">{{ data?.Current?.Conversations?.Total || 0 | number:'2.0-0'}}</span>
+                        <tds-tag [status]="data?.Percent?.Conversation  > 0 ? 'primary': 'error'" class="inline-flex cursor-pointer"
+                            type="outline" tds-tooltip="Dữ liệu trước đó: {{data?.Previous?.Conversations?.Total}}">
+                            {{ data?.Percent?.Conversation > 0 ? data?.Percent?.Conversation : -1 * data?.Percent?.Conversation }}%
+                            <span [class]="data?.Percent?.Conversation > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                        </tds-tag>
                     </div>
                 </div>
                 <div class="flex flex-col justify-center w-full">
@@ -24,7 +29,12 @@
                         <i class="tdsi-email-fill text-body-1 leading-none mr-2"></i>Tin nhắn mới
                     </span>
                     <div class="flex flex-row items-center">
-                        <span class=" text-heading-4 font-semibold font-sans pr-2">{{dataOverviewCurrentDay?.TotalMessage || 0 | number:'2.0-0'}}</span>
+                        <span class=" text-heading-4 font-semibold font-sans pr-2">{{data?.Current?.Messages?.MessageTotal || 0 | number:'2.0-0'}}</span>
+                        <tds-tag [status]="data?.Percent?.Message  > 0 ? 'primary': 'error'" class="inline-flex cursor-pointer"
+                            type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Messages?.MessageTotal }}">
+                            {{ data?.Percent?.Message > 0 ? data?.Percent?.Message : -1 * data?.Percent?.Message }}%
+                            <span [class]="data?.Percent?.Message > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                        </tds-tag>
                     </div>
                 </div>
                 <div class="flex flex-col justify-center w-full">
@@ -32,12 +42,17 @@
                         <i class="tdsi-comment-fill text-body-1 leading-none mr-2"></i>Bình luận mới
                     </span>
                     <div class="flex flex-row items-center">
-                        <span class=" text-heading-4 font-semibold font-sans pr-2">{{dataOverviewCurrentDay?.TotalComment || 0 | number:'2.0-0'}}</span>
+                        <span class=" text-heading-4 font-semibold font-sans pr-2">{{data?.Current?.Messages?.CommentTotal || 0 | number:'2.0-0'}}</span>
+                        <tds-tag [status]="data?.Percent?.Comment  > 0 ? 'primary': 'error'" class="inline-flex cursor-pointer"
+                            type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Messages?.CommentTotal }}">
+                            {{ data?.Percent?.Comment > 0 ? data?.Percent?.Comment : -1 * data?.Percent?.Comment }}%
+                            <span [class]="data?.Percent?.Comment > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                        </tds-tag>
                     </div>
                 </div>
             </div>
             <div class="w-full pb-6" *ngIf="!emptyData;else emptyTmp">
-                <div echarts [options]="dailyOption" [size]="['auto',245]"></div>
+                <div echarts [options]="dailyOption" [size]="['auto', 245]"></div>
             </div>
         </div>
     </div>
