@@ -475,6 +475,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
+        this.disableNextUrl = false;
         this.removeStorageConversationId();
 
         let uri = this.router.url.split("?")[0];
@@ -659,7 +660,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // setTimeout(() => {
     //   const btnElement = (<HTMLElement>this.ElByClassName.nativeElement).querySelector(
     //     '.items-container'
-    //     );debugger
+    //     );
     //     if(btnElement){
     //       btnElement.className = 'items-container flex flex-col';
     //   }

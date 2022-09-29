@@ -67,7 +67,7 @@
                     <ag-virtual-scroll #vs [items]="lstObjects" class="overflow-y-auto tds-custom-scroll h-full"
                         [min-row-height]="120" (onItemsRender)="onItemsRender($event)">
 
-                        <div *ngFor="let item of vs.items; let i=index; trackBy: trackByIndex" class="!h-auto pb-1"
+                        <div *ngFor="let item of vs.items; let i=index; trackBy: trackByIndex" class="!h-auto pb-1 !min-h-min"
                             [ngClass]="(currentPost && currentPost.ObjectId == item.ObjectId) ? 'cursor-no-drop' : 'cursor-pointer'">
 
                             <div *ngIf="item && currentTeam!.Type == 'Facebook'">
@@ -159,7 +159,7 @@
                     <ng-template #titleOrder let-active="active">
                         <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                             [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
-                            <span class="mr-2">Đơn hàng <tds-tag *ngIf="codeOrder" status='primary'>#{{codeOrder}}</tds-tag></span>
+                            <span class="mr-2">Đơn hàng <tds-tag *ngIf="codeOrder" status='primary'> <span *ngIf="!codeOrder.includes('#')">#</span>{{codeOrder}}</tds-tag></span>
                         </div>
                     </ng-template>
                     <div *ngIf="currentTeam">

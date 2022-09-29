@@ -157,6 +157,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.lstObjects[index].LiveCampaign = {...res.LiveCampaign} as any;
 
                 this.lstObjects[index] = {...this.lstObjects[index]};
+                this.lstObjects = [...this.lstObjects]
             }
 
             if(this.currentPost && res.Id == this.currentPost?.Id) {
@@ -192,13 +193,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     //TODO: Check có orderCode thì mở disable tab đơn hàng
     this.conversationOrderFacade.hasValueOrderCode$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (code: any) => {
-        if(TDSHelperString.hasValueString(code) && !code.includes('#')){
+        if(TDSHelperString.hasValueString(code)){
             this.codeOrder = code;
             this.isDisableTabOrder = false;
         }else{
           this.codeOrder = '';
           // this.isDisableTabOrder = true;
         }
+
+        this.cdRef.detectChanges();
       }
     })
 
@@ -239,6 +242,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   onChangeType(event: any) {
     if(event) {
       this.isFilter = true;
+      this.disableNextUrl = false;
+
       this.currentType = this.lstType.find(x => x.id === event.id);
 
       this.queryObj = this.onSetFilterObject();
@@ -247,6 +252,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onChangeSort(event: any) {
+    this.disableNextUrl = false;
+
     if(event) {
       if(this.currentSort && event.id == this.currentSort?.id) {
           delete this.currentSort;
@@ -398,6 +405,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
 
         this.changeTab(0, true);
+        this.codeOrder = null;
 
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.ObjectId}`;
@@ -441,6 +449,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
+      this.disableNextUrl = false;
       this.removeStoragePostId();
 
       let uri = this.router.url.split("?")[0];
@@ -475,6 +484,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       debounceTime(750),distinctUntilChanged()).subscribe({
         next: (text: string) => {
             this.isFilter = true;
+            this.disableNextUrl = false;
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.keyFilter = value;
 
@@ -534,7 +544,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.selectedIndex = tabIndex;
     this.isDisableTabPartner = isDisable;
     this.isDisableTabOrder = isDisable;
-    this.codeOrder = null;
   }
 
   loadLiveCampaign(text?: string) {

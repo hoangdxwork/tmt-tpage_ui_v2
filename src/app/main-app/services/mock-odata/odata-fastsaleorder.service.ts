@@ -16,6 +16,7 @@ export interface FilterObjFastSaleModel  {
       startDate: Date,
       endDate: Date
     }
+    shipPaymentStatus: string | null;
 }
 
 @Injectable()
@@ -94,6 +95,11 @@ export class OdataFastSaleOrderService extends BaseSevice {
         dataFilter.filters.push({ field: "TrackingRef", operator: OperatorEnum.eq, value: null })
         dataFilter.logic = "and";
       }
+    }
+
+    if(TDSHelperString.hasValueString(filterObj.shipPaymentStatus)) {
+        dataFilter.filters.push({ field: "ShipPaymentStatus", operator: OperatorEnum.eq, value: filterObj.shipPaymentStatus })
+          dataFilter.logic = "and";
     }
 
     if (TDSHelperArray.hasListValue(filterObj.status)) {
