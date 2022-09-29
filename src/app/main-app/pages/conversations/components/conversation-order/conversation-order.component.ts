@@ -666,7 +666,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
 
             // TODO: cập nhật mã đơn hàng lên tab
-            if(TDSHelperString.hasValueString(res.code) && !res.code.includes('#')){
+            if(TDSHelperString.hasValueString(res.code)){
               this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
             }
 

@@ -231,6 +231,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
   loadData() {
     this.isLoading = true;
+    this.disableNextUrl = false;
     this.infinite.next([]);
 
     this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId, this.filterObj);

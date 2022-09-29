@@ -19,7 +19,7 @@
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI</p>
           <div class="w-full flex flex-wrap items-center gap-x-2 gap-y-2">
             <div *ngFor="let item of status">
-              <tds-tag mode="checkable" (checkedChange)="selectState(item)">
+              <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectState(item)">
                 {{item.Name}} ({{item.Total}})
               </tds-tag>
             </div>
@@ -29,23 +29,23 @@
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">VẬN ĐƠN</p>
           <div class="w-full flex flex-wrap items-center gap-x-2 gap-y-2">
             <div *ngFor="let item of trackingRefs">
-              <tds-tag mode="checkable" (checkedChange)="selectState(item)">
+              <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectState(item)">
                 {{item.text}}
               </tds-tag>
             </div>
           </div>
       </div>
-      <!-- <div class="w-full mb-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">LOẠI ĐỐI TÁC GH</p>
+      <div class="w-full mb-4">
+          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI GH</p>
           <div class="w-full">
             <tds-form-field>
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn loại đối tác'
-                    [(ngModel)]="modelCarrier" [allowClear]="true" [valuePrimitive]="false"
-                    [data]="lstCarriers" (ngModelChange)="onChangeCarrier($event)" >
+              <tds-select valueField="name" textField="name" placeholder='Chọn trạng thái GH'
+                    [(ngModel)]="shipPaymentStatus" [allowClear]="true" [valuePrimitive]="false"
+                    [data]="lstShipPaymentStatus" (ngModelChange)="onChangeShipPaymentStatus($event)" >
                 </tds-select>
             </tds-form-field>
           </div>
-      </div> -->
+      </div>
       <div class="w-full mb-4">
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">THẺ</p>
           <div class="w-full">

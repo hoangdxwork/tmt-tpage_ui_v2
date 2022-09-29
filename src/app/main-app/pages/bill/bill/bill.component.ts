@@ -67,7 +67,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    shipPaymentStatus: null
   }
 
   filterStatus = [
@@ -475,6 +476,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       endDate: event.dateRange.endDate
     }
 
+    this.filterObj.shipPaymentStatus = event.shipPaymentStatus;
+
     if (TDSHelperArray.hasListValue(event.status)) {
       this.tabNavs = this.summaryStatus.filter(f => event.status.includes(f.Name));
     }else{
@@ -519,7 +522,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
-      }
+      },
+      shipPaymentStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
