@@ -46,7 +46,6 @@ export class DashboardDailyReportComponent implements OnInit {
     private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
-    this.loadAxisData();
     this.loadCurrentTeam();
   }
 
@@ -67,16 +66,20 @@ export class DashboardDailyReportComponent implements OnInit {
 
     this.eventSummaryService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: SummaryDailyDTO) => {
-          if(TDSHelperArray.hasListValue(res)){
-            this.data = {...res};
-            this.loadOverviewData(res);
-            this.loadSeriesData(res);
-            this.loadDataChart();
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          }else{
-            this.emptyData = true;
-            this.isLoading = false;
+          if(res && res.Current) {
+              this.data = {...res};
+
+              this.loadOverviewData(res);
+              this.loadAxisData(res);
+              this.loadSeriesData(res);
+              this.loadDataChart();
+
+              this.isLoading = false;
+              this.cdr.detectChanges();
+          } else {
+              this.emptyData = true;
+              this.isLoading = false;
+              this.cdr.detectChanges();
           }
         },
         error:(err) => {
@@ -92,12 +95,13 @@ export class DashboardDailyReportComponent implements OnInit {
       let percentMessage = data.Previous.Messages?.MessageTotal ? ((data.Current.Messages?.MessageTotal - data.Previous.Messages?.MessageTotal)/data.Previous.Messages?.MessageTotal) * 100 : (data.Current.Messages?.MessageTotal) * 100;
       let percentComment = data.Previous.Messages?.CommentTotal ? ((data.Current.Messages?.CommentTotal - data.Previous.Messages?.CommentTotal)/data.Previous.Messages?.CommentTotal) * 100 : (data.Current.Messages?.CommentTotal) * 100;
       let percentConversation = data.Previous.Conversations?.Total != 0 ? ((data.Current.Conversations?.Total - data.Previous.Conversations?.Total)/data.Previous.Conversations?.Total) * 100 : (data.Current.Conversations?.Total) * 100;
+      
       this.data.Percent= {
         Message: percentMessage.toFixed(0),
         Comment: percentComment.toFixed(0),
         Conversation: percentConversation.toFixed(0)
       };
-    }else{
+    } else {
       this.data.Percent = {
         Message: 0,
         Comment: 0,
@@ -106,8 +110,16 @@ export class DashboardDailyReportComponent implements OnInit {
     }
   }
 
-  loadAxisData() {
-    this.axisData = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
+  loadAxisData(data: SummaryDailyDTO) {
+    let messageData = data.Current?.Messages?.Data;
+    let maxTime = messageData[messageData.length - 1]?.Time;
+    let maxHour = new Date(maxTime).getUTCHours();
+    maxHour = Number(maxHour);
+    this.axisData = [];
+
+    for (let i = 1; i <= maxHour; i++) {
+      this.axisData = [...this.axisData, [i]];
+    }
   }
 
   loadSeriesData(data: SummaryDailyDTO) {
@@ -184,9 +196,14 @@ export class DashboardDailyReportComponent implements OnInit {
         backgroundColor:'rgba(0, 0, 0, 0.8)'
       },
       grid:{
-        top:16,
-        right:16,
-        bottom:36
+        top: 16,
+        right: 8,
+        bottom: 70
+      },
+      legend:{
+        show: true,
+        bottom: 0,
+        icon: 'roundRect'
       },
       axis:{
         xAxis:[
