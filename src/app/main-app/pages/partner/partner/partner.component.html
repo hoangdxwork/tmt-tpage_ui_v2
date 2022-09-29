@@ -111,17 +111,17 @@
                                 <th width="42px" [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate"
                                     class="border-x text-center" (checkedChange)="onAllChecked($event)">
                                 </th>
-                                <th *ngIf="isHidden('DisplayName')" [tdsLeft]="true" class="border-r">Tên</th>
-                                <th *ngIf="isHidden('Phone')" class="border-r">Điện thoại</th>
-                                <th *ngIf="isHidden('Email')" class="border-r">Email</th>
-                                <th *ngIf="isHidden('Street')" class="border-r">Địa chỉ</th>
-                                <th *ngIf="isHidden('StatusText')" class="border-r">Trạng thái</th>
-                                <th *ngIf="isHidden('Tag')" class="border-r">Nhãn</th>
-                                <th *ngIf="isHidden('FacebookId')" class="border-r">Facebook</th>
-                                <th *ngIf="isHidden('Zalo')" class="border-r">Zalo</th>
-                                <th *ngIf="isHidden('Credit')" class="text-right border-r">Nợ hiện tại</th>
-                                <th *ngIf="isHidden('Active')" class="text-center border-r">Hiệu lực</th>
-                                <th *ngIf="isHidden('DateCreated')" class="text-center border-r">Ngày tạo</th>
+                                <th width="240px" *ngIf="isHidden('DisplayName')" [tdsLeft]="true" class="border-r">Tên</th>
+                                <th width="120px" *ngIf="isHidden('Phone')" class="border-r">Điện thoại</th>
+                                <th width="180px" *ngIf="isHidden('Email')" class="border-r">Email</th>
+                                <th width="280px" *ngIf="isHidden('Street')" class="border-r">Địa chỉ</th>
+                                <th width="150px" *ngIf="isHidden('StatusText')" class="border-r">Trạng thái</th>
+                                <th width="120px" *ngIf="isHidden('Tag')" class="border-r">Nhãn</th>
+                                <th width="150px" *ngIf="isHidden('FacebookId')" class="border-r">Facebook</th>
+                                <th width="150px" *ngIf="isHidden('Zalo')" class="border-r">Zalo</th>
+                                <th width="100px" *ngIf="isHidden('Credit')" class="text-right border-r">Nợ hiện tại</th>
+                                <th width="120px" *ngIf="isHidden('Active')" class="text-center border-r">Hiệu lực</th>
+                                <th width="150px" *ngIf="isHidden('DateCreated')" class="text-center border-r">Ngày tạo</th>
                                 <th width="140px" class="text-center" [tdsRight]="true">Thao tác</th>
                             </tr>
                         </thead>
@@ -132,35 +132,37 @@
                                     <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
                                         class="border-l border-r text-center border-neutral-200" [tdsLeft]="true">
                                     </td>
-                                    <td *ngIf="isHidden('DisplayName')" class=" border-r border-neutral-200 min-w-[220px] max-w-[400px]" [tdsLeft]="true">
-                                        <div class="flex flex-col"><span class="w-full truncate">{{data.DisplayName}}</span></div>
+                                    <td *ngIf="isHidden('DisplayName')" class="border-r border-neutral-200" [tdsLeft]="true">
+                                        <div>{{data.DisplayName}}</div>
                                     </td>
-                                    <td *ngIf="isHidden('Phone')" class="border-r border-neutral-200 min-w-[120px] max-w-[240px]">
+                                    <td *ngIf="isHidden('Phone')" class="border-r border-neutral-200">
                                         <div class="flex flex-col">
-                                            <span class="w-full truncate">{{data.Phone}}</span>
+                                            <span class="w-full ">{{data.Phone}}</span>
                                             <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
                                                 {{ data.NameNetwork }}
                                             </tds-tag>
                                         </div>
                                     </td>
-                                    <td *ngIf="isHidden('Email')" class="border-r border-neutral-200 min-w-[210px] max-w-[400px]">{{ data.Email }}</td>
-                                    <td *ngIf="isHidden('Street')" class="border-r border-neutral-200 min-w-[280px] max-w-[400px]">
-                                        <div class="w-full flex">
-                                            <span class="w-full truncate">{{ data.Street }}</span>
+                                    <td *ngIf="isHidden('Email')" class="border-r border-neutral-200">{{ data.Email }}</td>
+                                    <td *ngIf="isHidden('Street')" class="border-r border-neutral-200">
+                                        <div class="flex">
+                                          <div class="w-auto flex">
+                                            <span class="">{{ data.Street }}</span>
+                                          </div>
                                         </div>
                                     </td>
-                                    <td *ngIf="isHidden('StatusText')" class="border-r border-neutral-200 min-w-[150px] max-w-[300px]">
+                                    <td *ngIf="isHidden('StatusText')" class="border-r border-neutral-200">
                                         <div class="w-full flex items-center">
                                             <span [ngStyle]="{'color': data.StatusText | partnercolor: partnerStatusReport}"
                                                 class="tdsi-radio-circle-fill"></span>
-                                            <span class="ml-1 w-full truncate">{{data.StatusText }}</span>
+                                            <span class="ml-1 w-full ">{{data.StatusText}}</span>
                                         </div>
                                     </td>
-                                    <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200 min-w-[120px] max-w-[240px]">
+                                    <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200">
                                         <div class="flex items-center gap-x-1">
                                             <div class="flex flex-wrap items-center">
                                                 <div *ngFor="let item of data.Tags | prettyjson">
-                                                    <tds-tag class="truncate mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
+                                                    <tds-tag class=" mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
                                                 </div>
                                                 <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                                                     [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -203,19 +205,19 @@
                                             </ng-template>
                                         </div>
                                     </td>
-                                    <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right min-w-[200px] max-w-[400px] truncate">{{ data.FacebookId }}</td>
-                                    <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right min-w-[200px] max-w-[400px] truncate">{{ data.Zalo }}</td>
-                                    <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right min-w-[100px] max-w-[200px]">
-                                      <div class="w-full truncate">
+                                    <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right">{{ data.FacebookId }}</td>
+                                    <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right">{{ data.Zalo }}</td>
+                                    <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
+                                      <div class="w-full ">
                                         {{ data.Credit || 0 | numberCustom }}
                                       </div>
                                     </td>
-                                    <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200 min-w-[120px] max-w-[240px]">
+                                    <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200">
                                         <div class="w-full">
                                             <span [ngClass]="data.Active ? 'tdsi-success-fill text-success-400' : 'tdsi-error-fill text-error-400'" class="text-xl leading-5"></span>
                                         </div>
                                     </td>
-                                    <td *ngIf="isHidden('DateCreated')" class="border-r border-neutral-200 text-center min-w-[150px] max-w-[300px] truncate">{{ data.DateCreated | date:"dd/MM/yyyy" }}</td>
+                                    <td *ngIf="isHidden('DateCreated')" class="border-r border-neutral-200 text-center">{{ data.DateCreated | date:"dd/MM/yyyy" }}</td>
                                     <td [tdsRight]="true">
                                         <div class="flex gap-x-2">
                                             <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">

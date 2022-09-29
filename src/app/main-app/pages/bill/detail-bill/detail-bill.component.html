@@ -100,10 +100,12 @@
             <div class="w-2/3 flex flex-col gap-y-4">
                 <!-- Thông tin đơn hàng -->
                 <div class="rounded-xl bg-white p-4 flex flex-col">
-                    <div class="mb-7">
-                        <h1 class="text-header-1 font-semibold flex items-center">
+                    <div class="mb-7 text-header-1 font-semibold flex items-center">
+                        <!-- <h1 class="text-header-1 font-semibold flex items-center">
                             <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng: {{ dataModel.Number || 'N/A' }}
-                        </h1>
+                        </h1> -->
+                        <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng:
+                        <div class="text-info-400 font-semibold ml-2">{{ dataModel.Number || 'N/A' }}</div>
                     </div>
                     <div class="grid grid-cols-2 gap-y-4 2xl:gap-x-8 xl:gap-x-6">
                         <div class="flex gap-x-6 items-center">
@@ -477,8 +479,8 @@
                             <div class="w-1/3">
                                 <span>Mã vận đơn</span>
                             </div>
-                            <div class="w-2/3">
-                                <span class="font-semibold text-info-500" *ngIf="dataModel.TrackingRef">{{ dataModel.TrackingRef }}</span>
+                            <div class="w-2/3" (click)="onOpenTrackingUrl(dataModel)">
+                                <span class="font-semibold text-info-500 cursor-pointer" *ngIf="dataModel.TrackingRef">{{ dataModel.TrackingRef }}</span>
                                 <span class="font-semibold" *ngIf="!dataModel.TrackingRef">{{ '---' }}</span>
                             </div>
                         </div>
