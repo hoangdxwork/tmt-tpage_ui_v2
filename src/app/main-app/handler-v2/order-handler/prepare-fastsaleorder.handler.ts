@@ -93,8 +93,24 @@ export class SO_PrepareFastSaleOrderHandler {
 
       saleModel.OrderLines = [];
       quickOrderModel.Details?.map((x: Detail_QuickSaleOnlineOrder) => {
-        let item = {
-            DiscountAmount: 0,
+        if(x.Discount > 0) {
+          let item = {
+            Discount: x.Discount,
+            Discount_Fixed: 0,
+            Note: x.Note,
+            PriceSubTotal: x.Price,
+            PriceUnit: x.Price,
+            ProductId: x.ProductId,
+            ProductUOMId: x.UOMId,
+            ProductUOMQty: x.Quantity,
+            Type: 'percent',
+          } as any;
+
+          saleModel.OrderLines?.push(item);
+
+        } else {
+          let item = {
+            Discount: 0,
             Discount_Fixed: 0,
             Note: x.Note,
             PriceSubTotal: x.Price,
@@ -103,9 +119,10 @@ export class SO_PrepareFastSaleOrderHandler {
             ProductUOMId: x.UOMId,
             ProductUOMQty: x.Quantity,
             Type: 'fixed',
-        } as any;
+          } as any;
 
-        saleModel.OrderLines?.push(item);
+          saleModel.OrderLines?.push(item);
+        }
       })
 
       return saleModel;
