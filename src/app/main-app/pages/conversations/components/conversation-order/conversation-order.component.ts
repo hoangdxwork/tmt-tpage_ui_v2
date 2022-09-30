@@ -1,3 +1,6 @@
+import { UOM } from './../../../../dto/product-template/product-tempalte.dto';
+import { Product } from './../../../../dto/order/so-orderlines.dto';
+import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
@@ -7,7 +10,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil } from 'rxjs';
+import { takeUntil, map } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -177,7 +180,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private chatomniConversationFacade: ChatomniConversationFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private omniEventEmiter: ChatomniEventEmiterService,
-    private socketOnEventService: SocketOnEventService) {
+    private socketOnEventService: SocketOnEventService,
+    private deliveryCarrierV2Service: DeliveryCarrierV2Service) {
   }
 
   ngOnInit(): void {
@@ -543,6 +547,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.coDAmount();
     }
 
+     // TODO: tải thông tin giao hàng, cập nhật giá trị hàng hóa
+     this.loadDelivery(event.Id);
+
     this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
@@ -554,6 +561,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     this.cdRef.detectChanges();
+  }
+
+  loadDelivery(carrierId: any) {
+    if (carrierId) {
+      this.isLoading = true;
+
+      this.deliveryCarrierV2Service.getById(carrierId).pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: res => {
+            if(res && TDSHelperObject.hasValue(res.Extras)){
+              this.saleModel.Ship_InsuranceFee = res.Extras?.InsuranceFee;
+              this.isLoading = false;
+  
+              this.cdRef.detectChanges();
+            }
+          }
+        });
+    }
   }
 
   onEditPartner() {
@@ -812,6 +837,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           next: (res: any) => {
 
               delete res['@odata.context'];
+              res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+                  let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+
+                  if(exist) {
+                    x.Discount = exist.Discount;
+                  }
+              })
+
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
 
@@ -859,6 +892,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           next: (res: any) => {
 
               delete res['@odata.context'];
+              res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+                let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+
+                if(exist) {
+                  x.Discount = exist.Discount;
+                }
+              })
+
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
 
@@ -1091,6 +1132,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       OrderId: this.quickOrderModel.Id,
       ImageUrl: data.ImageUrl,
       Priority: 0,
+      Discount: data.DiscountSale || 0
     } as Detail_QuickSaleOnlineOrder;
 
     // TODO: trường hợp thêm mới từ product-template
