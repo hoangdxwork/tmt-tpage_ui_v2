@@ -444,6 +444,7 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   selectProduct(product: any, item: TextContentToOrderDTO) {
+    this.isLoading = true;
     this.productService.getAttributeValuesById(product.Id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
 
@@ -467,9 +468,11 @@ export class PostOrderConfigComponent implements OnInit {
         }
 
         this.dataModel.TextContentToOrders[idx] = {...this.dataModel.TextContentToOrders[idx]}
+        this.isLoading = false;
         this.cdRef.detectChanges();
       },
       error:(err) => {
+        this.isLoading = false;
         this.message.error(err?.error?.message || Message.ConversationPost.CanNotGetProduct);
       }
     });
@@ -477,14 +480,11 @@ export class PostOrderConfigComponent implements OnInit {
 
   //TODO: chỉ sử dụng khi thêm mẫu sản phẩm
   getContentString(productConfig: AutoOrderProductDTO) {
-    let productName = productConfig.ProductName;
 
-    if(!productName && productConfig.ProductNameGet){
-      productName = productConfig.ProductNameGet.replace(`[${productConfig.ProductCode}]`,``) || '';
-      productName = productConfig.ProductNameGet.trim();
-    }
+    let name = productConfig.ProductNameGet || productConfig.ProductTemplateName;
+    let code = productConfig.ProductCode;
 
-    return this.handleWord(productName, productConfig.ProductCode);
+    return this.handleWord(name, code);
   }
 
   getcontentWithAttributesString(productName: string, code?: string, tags?: string) {
