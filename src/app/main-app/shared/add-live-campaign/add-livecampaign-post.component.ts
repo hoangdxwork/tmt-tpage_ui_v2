@@ -418,7 +418,8 @@ export class AddLiveCampaignPostComponent implements OnInit {
             UsedQuantity: 0,
         } as LiveCampaignProductDTO;
 
-        let tags = this.generateTagDetail(item.ProductName, item.ProductCode, item.Tags);
+        let name = item.ProductNameGet || item.ProductName;
+        let tags = this.generateTagDetail(name, item.ProductCode, item.Tags);
         item.Tags = tags.join(',');
 
         if(TDSHelperString.hasValueString(this.id)) {
@@ -467,7 +468,8 @@ export class AddLiveCampaignPostComponent implements OnInit {
             UsedQuantity: 0
         } as LiveCampaignProductDTO;
 
-        let tags = this.generateTagDetail(item.ProductName, item.ProductCode, item.Tags);
+        let name = item.ProductNameGet || item.ProductName;
+        let tags = this.generateTagDetail(name, item.ProductCode, item.Tags);
         item.Tags = tags?.join(',');
 
         if(TDSHelperString.hasValueString(this.id)) {
@@ -648,10 +650,14 @@ export class AddLiveCampaignPostComponent implements OnInit {
   }
 
   generateTagDetail(productName: string, code: string, tags: string) {
+    let result: string[] = [];
+
+    if(!TDSHelperString.hasValueString(productName)) {
+      return result;
+    }
+
     productName = productName.replace(`[${code}]`, "");
     productName = productName.trim();
-
-    let result: string[] = [];
 
     let word = StringHelperV2.removeSpecialCharacters(productName);
     let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
