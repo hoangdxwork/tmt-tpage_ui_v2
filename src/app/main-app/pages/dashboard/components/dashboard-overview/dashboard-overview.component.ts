@@ -1,3 +1,4 @@
+import { EventSummaryService } from './../../../../services/event-summary.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { takeUntil } from 'rxjs/operators';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -21,7 +22,7 @@ export class DashboardOverviewComponent implements OnInit {
   isLoading = false;
   data!: EventSummaryDTO;
 
-  constructor(private reportFacebookService: ReportFacebookService,
+  constructor(private eventSummaryService: EventSummaryService,
     private commonHandler: CommonHandler,
     private destroy$: TDSDestroyService,
     private message: TDSMessageService) {
@@ -36,7 +37,7 @@ export class DashboardOverviewComponent implements OnInit {
   loadData() {
     this.isLoading = true;
 
-    this.reportFacebookService.getEventSummary(this.currentDateRanges.id).pipe(takeUntil(this.destroy$)).subscribe({
+    this.eventSummaryService.getEventSummary(this.currentDateRanges.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         this.data = { ...res };
         this.isLoading = false;

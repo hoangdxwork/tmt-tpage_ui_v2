@@ -59,14 +59,4 @@ export class ReportFacebookService extends BaseSevice {
 
     return this.apiService.getData<SummaryActivityByStaffDTO[]>(api, null);
   }
-
-  getEventSummary(data : number): Observable<EventSummaryDTO> {
-    let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v2.0/eventsummary/byday?day=${data}`,
-      method: CoreApiMethodType.get
-    }
-
-    return this.apiService.getData<EventSummaryDTO>(api, null);
-  }
-
 }
