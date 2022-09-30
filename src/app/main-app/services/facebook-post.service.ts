@@ -26,7 +26,6 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
   queryObj: any;
 
   public onLoadedPost$: EventEmitter<any> = new EventEmitter();
-  public onRemoveOrderComment$: EventEmitter<any> = new EventEmitter();
 
   private readonly _keyCacheDefaultProductPost = '_keycache_default_product_post';
 

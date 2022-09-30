@@ -78,6 +78,14 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  refreshAttachmentv2(psid: string, data: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/crmactivity/${psid}/refreshattachment`,
+      method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   retryMessage(id: string, page_id: string): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmactivity/${id}/queueretrymessage?page_id=${page_id}`,
@@ -148,6 +156,17 @@ export class ActivityMatchingService extends BaseSevice  {
     }
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addtemplatemessage`,
+      method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  addTemplateMessageV2(psid: string, data: any): Observable<TDSSafeAny> {
+    if(data.to_id) {
+      psid = data.to_id;
+    }
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/crmactivity/${psid}/addtemplatemessage`,
       method: CoreApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);

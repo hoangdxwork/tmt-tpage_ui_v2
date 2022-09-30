@@ -142,6 +142,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  insertFromChannelMessage (data: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromChannelMessage?$expand=Details,User`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, data);
+  }
+
   insertFromPost(data: any, isIncrease: boolean = false): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?IsIncrease=${isIncrease}&$expand=Details,User`,

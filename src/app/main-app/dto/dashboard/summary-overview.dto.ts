@@ -54,3 +54,22 @@ export interface SummaryActivityByStaffDTO {
   StaffName: string;
   TotalCount: number;
 }
+
+export interface Current {
+  Conversation: number;
+  Partner: number;
+  SaleOnlineOrder: number;
+  FastSaleOrder: number;
+}
+
+export interface Previous {
+  Conversation: number;
+  Partner: number;
+  SaleOnlineOrder: number;
+  FastSaleOrder: number;
+}
+
+export interface EventSummaryDTO {
+  Current: Current;
+  Previous: Previous;
+}

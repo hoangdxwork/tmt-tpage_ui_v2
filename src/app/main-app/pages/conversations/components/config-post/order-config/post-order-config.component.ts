@@ -9,7 +9,6 @@ import { takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { CRMTagDTO } from "src/app/main-app/dto/crm-tag/odata-crmtag.dto";
 import { ApplicationUserService } from "src/app/main-app/services/application-user.service";
-import { CRMTagService } from "src/app/main-app/services/crm-tag.service";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
 import { ModalListProductComponent } from "../../modal-list-product/modal-list-product.component";
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
@@ -22,6 +21,7 @@ import * as XLSX from 'xlsx';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampainGetWithDetailAttributesDto, LiveCampainGetWithDetailsDto } from '@app/dto/live-campaign/livecampain-detail-attributes.dto';
+import { CommonService } from '@app/services/common.service';
 
 @Component({
   selector: 'post-order-config',
@@ -45,7 +45,8 @@ export class PostOrderConfigComponent implements OnInit {
   isVisibleRangeGenerate: boolean = false;
   isImmediateApply: boolean = false;
 
-  lstTags$!: Observable<CRMTagDTO[]>;
+  lstTags: CRMTagDTO[] = []
+  lstPartnerStatus: any;
   lstUser$!: Observable<ConfigUserDTO[]>;
 
   numberWithCommas =(value:TDSSafeAny) =>{
@@ -68,7 +69,7 @@ export class PostOrderConfigComponent implements OnInit {
     private cdRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService,
     private facebookPostService: FacebookPostService,
-    private crmTagService: CRMTagService,
+    private commonService: CommonService,
     private applicationUserService: ApplicationUserService,
     private modalRef: TDSModalRef,
     private productService: ProductService,
@@ -80,10 +81,9 @@ export class PostOrderConfigComponent implements OnInit {
   ngOnInit(): void {
     if(this.data && this.data.ObjectId) {
         this.loadData(this.data.ObjectId);
+        this.loadUser();
+        this.loadPartnerStatus();
     }
-
-    this.loadTag();
-    this.loadUser();
   }
 
   validateData() {
@@ -91,8 +91,12 @@ export class PostOrderConfigComponent implements OnInit {
     this.currentLiveCampaign = null as any;
   }
 
-  loadTag() {
-    this.lstTags$ = this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$));
+  loadPartnerStatus() {
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.lstPartnerStatus = [...res];
+        }
+    });
   }
 
   loadUser() {
@@ -114,6 +118,22 @@ export class PostOrderConfigComponent implements OnInit {
 
           if(res.LiveCampaignId && Guid.isGuid(res.LiveCampaignId)) {
               this.loadLiveCampaignById(res.LiveCampaignId);
+          }
+
+          if(this.dataModel.ExcludedStatusNames) {
+              let status: any = [];
+              this.dataModel.ExcludedStatusNames.map((x: any, i: number): any => {
+                  if(x) {
+                    let item = {
+                        text: x,
+                        value: `#${i}`
+                    }
+
+                    status.push(item);
+                  }
+              })
+
+              this.dataModel.ExcludedStatusNames = status;
           }
 
           this.isLoading = false;
@@ -148,10 +168,9 @@ export class PostOrderConfigComponent implements OnInit {
 
   // Khách hàng không thuộc trạng thái
   changeExcludedStatusNames(event: TDSSafeAny[]) {
-    //TODO: lấy danh sách trả về list gồm CRMTag và string
-    this.dataModel.ExcludedStatusNames = event?.map(x => {
-        return x.Name || x as string;
-    }) || [];
+    if(event) {
+       this.dataModel.ExcludedStatusNames = [...event];
+    }
   }
 
   //Bình luận không có nội dung
@@ -365,27 +384,29 @@ export class PostOrderConfigComponent implements OnInit {
     return null;
   }
 
-  showModalListProduct(item: TextContentToOrderDTO) {
-    const modal = this.modalService.create({
-      title: 'Danh sách sản phẩm',
-      content: ModalListProductComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'xl',
-      bodyStyle: {
-        padding: '0px'
-      },
-      componentParams:{
-        isPostConfig: true
-      }
-    });
-
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) =>{
-        if(TDSHelperObject.hasValue(res)) {
-            this.selectProduct(res, item);
+  showModalListProduct(item: TextContentToOrderDTO | null) {
+    if(item) {
+      const modal = this.modalService.create({
+        title: 'Danh sách sản phẩm',
+        content: ModalListProductComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'xl',
+        bodyStyle: {
+          padding: '0px'
+        },
+        componentParams:{
+          isPostConfig: true
         }
-      }
-    });
+      });
+
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) =>{
+          if(TDSHelperObject.hasValue(res)) {
+              this.selectProduct(res, item);
+          }
+        }
+      });
+    }
   }
 
   selectProduct(product: any, item: TextContentToOrderDTO) {
@@ -467,13 +488,13 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadLiveCampaignById(id: string) {
-      this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-            delete res['@odata.context'];
-            this.currentLiveCampaign = {...res};
-            this.cdRef.detectChanges();
-        }
-      })
+    this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          this.currentLiveCampaign = {...res};
+          this.cdRef.detectChanges();
+      }
+    })
   }
 
   loadConfigLiveCampaign(id: string) {
@@ -627,8 +648,17 @@ export class PostOrderConfigComponent implements OnInit {
   prepareModelOrderConfig() {
     let model = {} as any;
 
+    let status: any[] = [];
+    if( this.dataModel.ExcludedStatusNames) {
+      status = this.dataModel.ExcludedStatusNames.map((x: any) => {
+          if((x.text || x)) {
+              return (x.text || x);
+          }
+      });
+    }
+
     model.ExcludedPhones = this.dataModel.ExcludedPhones || [];
-    model.ExcludedStatusNames = this.dataModel.ExcludedStatusNames || [];
+    model.ExcludedStatusNames = status;
     model.IsEnableAutoAssignUser = this.dataModel.IsEnableAutoAssignUser;
     model.IsEnableOrderAuto = this.dataModel.IsEnableOrderAuto;
     model.IsForceOrderWithAllMessage = this.dataModel.IsForceOrderWithAllMessage;
@@ -678,7 +708,12 @@ export class PostOrderConfigComponent implements OnInit {
       let findIndex = model.TextContentToOrders.findIndex(x => !TDSHelperString.hasValueString(x?.Content)) as number;
 
       if(Number(findIndex) >= 0) {
-        this.message.error('Vui lòng nhập đầy đủ nội dung mẫu');
+        let product = model.TextContentToOrders[findIndex].Product;
+        if(product) {
+          this.notificationService.info('Nội dung mẫu còn trống', `${product?.ProductName} dữ liệu không hợp lệ`);
+        } else {
+          this.message.error('Vui lòng nhập nội dung mẫu đầy đủ');
+        }
         return 0;
       }
     }

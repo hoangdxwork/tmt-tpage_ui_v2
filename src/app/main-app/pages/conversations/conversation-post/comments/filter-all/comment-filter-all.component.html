@@ -3,7 +3,7 @@
 
         <ng-container *ngIf="infinite | async; let items">
           <cdk-virtual-scroll-viewport class="overflow-y-auto tds-custom-scroll w-full h-full" (scrolledIndexChange)="scrolledIndexChange($event)"
-              [itemSize]="itemSize" [maxBufferPx]="itemSize" [minBufferPx]="itemSize" style="overflow-x: hidden;">
+              [itemSize]="itemSize" [maxBufferPx]="maxBufferPx" [minBufferPx]="minBufferPx" style="overflow-x: hidden;">
 
               <div *cdkVirtualFor="let item of items | sortDataSourcePost; let i= index; trackBy: trackByIndex" class="h-full w-full pr-2">
                 <div *ngIf="item" class="flex flex-auto w-full" style="padding-bottom: 0.75rem">
@@ -31,7 +31,7 @@
 
                                     <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
                                         <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
-                                            <div class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
+                                            <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
                                                 <span *ngIf="!order.code.includes('#')">#</span>{{ order.code }}
                                             </div>
                                         </div>
@@ -225,10 +225,10 @@
                                   <tds-checkbox [checked]="item.Data.is_private_reply" (change)="isPrivateReply(item)"> Gửi về tin nhắn </tds-checkbox>
 
                                   <div class="icon-send flex flex-row mr-2">
-                                      <!-- <span class="p-1 hover:bg-neutral-3-50 rounded-md" *ngIf="item.Data.is_private_reply" (click)="onProductsbypageFb(item)"
+                                      <span class="p-1 hover:bg-neutral-3-50 rounded-md" *ngIf="item.Data.is_private_reply" (click)="onProductsbypageFb(item)"
                                           product-show-button  tooltipTitle="Sản phẩm" tooltipPlacement="top" tds-tooltip>
                                           <i class="tdsi-product-line text-xl"></i>
-                                      </span> -->
+                                      </span>
 
                                       <span class="p-1  hover:bg-neutral-3-50 rounded-md" container="body" placement="auto"
                                           tds-popover popoverTrigger="click" tooltipTitle="Emoji" tooltipPlacement="top" tds-tooltip

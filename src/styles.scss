@@ -78,3 +78,18 @@ select:-webkit-autofill:focus {
 .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
   width: inherit;
 }
+
+.post-livecampaign tds-pagination ul.items-center {
+  display: none;
+}
+
+tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
+// overflow: hidden;
+//   display: -webkit-box;
+//   -webkit-box-orient: vertical;
+//   -webkit-line-clamp: 2;
+
+  white-space: pre-line;
+  word-break: break-word;
+
+}

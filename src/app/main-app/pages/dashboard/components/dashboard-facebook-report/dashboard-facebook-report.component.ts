@@ -25,7 +25,6 @@ export class DashboardFacebookReportComponent implements OnInit {
   axisData: TDSSafeAny[] = [];
   seriesData: TDSSafeAny[] = [];
   colors: Color[] = [];
-  checkList = [4,6,7];// list danh sách lấy filter có tối đa 30 ngày
 
   isLoading: boolean = false;
 
@@ -106,7 +105,7 @@ export class DashboardFacebookReportComponent implements OnInit {
     let arrDate:Array<Date> = [];
     
     data.map(value => {
-      if(this.checkList.includes(this.currentDateRanges.id)){
+      if(Number(this.currentDateRanges.id) == 30){
         let day = format(new Date(value.Date), "dd");
         
         if(Number(day) % 3 == 0){
@@ -221,7 +220,7 @@ export class DashboardFacebookReportComponent implements OnInit {
   }
 
   buildChartDemo(chart : TDSBarChartComponent){
-    if(this.checkList.includes(this.currentDateRanges.id)){
+    if(Number(this.currentDateRanges.id) == 30){
       // chart.dataZoom = {
       //   sliderType:{
       //     show: true,

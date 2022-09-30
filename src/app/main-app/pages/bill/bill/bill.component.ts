@@ -6,7 +6,7 @@ import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto'
 import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -29,6 +29,7 @@ import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto'
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-bill',
@@ -56,6 +57,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
   lstCarriers!: Array<DeliveryCarrierDTOV2>;
+  deliveryType!: string | null;
 
   public filterObj: FilterObjFastSaleModel = {
     tags: [],
@@ -66,7 +68,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    shipPaymentStatus: null
   }
 
   filterStatus = [
@@ -132,6 +135,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
 
   constructor(private odataFastSaleOrderService: OdataFastSaleOrderService,
+    @Inject(DOCUMENT) private document: Document,
     private tagService: TagService,
     private router: Router,
     private modal: TDSModalService,
@@ -474,6 +478,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       endDate: event.dateRange.endDate
     }
 
+    this.filterObj.shipPaymentStatus = event.shipPaymentStatus;
+
     if (TDSHelperArray.hasListValue(event.status)) {
       this.tabNavs = this.summaryStatus.filter(f => event.status.includes(f.Name));
     }else{
@@ -507,6 +513,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<number>();
+    this.deliveryType = null;
 
     this.filterObj = {
       tags: [],
@@ -517,7 +524,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
-      }
+      },
+      shipPaymentStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -654,6 +662,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       this.filterObj.deliveryType = '';
     }
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  onOpenTrackingUrl(data: FastSaleOrderDTO) {
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
+    }
   }
 
   ngOnDestroy(): void {

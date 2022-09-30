@@ -27,8 +27,8 @@ export class FilterOptionsComponent implements OnInit {
   datePicker: any = [addDays(new Date(), -30), new Date()];
 
   trackingRefs = [
-    { text: 'Chưa có mã vận đơn', value: 'noCode' },
-    { text: 'Đã có mã vận đơn', value: 'isCode' },
+    { text: 'Chưa có mã vận đơn', value: 'noCode', IsSelected: false },
+    { text: 'Đã có mã vận đơn', value: 'isCode', IsSelected: false },
   ];
 
   lstStatus: Array<TDSSafeAny> = [];
@@ -40,8 +40,31 @@ export class FilterOptionsComponent implements OnInit {
     { Name: 'Hủy bỏ', Type: 'cancel', Total: 0, IsSelected: false }
   ];
 
+  lstShipPaymentStatus = [
+    { "code": "0", "name": "Chờ xác nhận" },
+    { "code": "10", "name": "Đã xác nhận" },
+    { "code": "20", "name": "Từ chối đơn hàng" },
+    { "code": "30", "name": "Đã lấy hàng" },
+    { "code": "35", "name": "Đang lấy hàng" },
+    { "code": "40", "name": "Không lấy được hàng" },
+    { "code": "500", "name": "Lưu kho giao hàng" },
+    { "code": "50", "name": "Đang vận chuyển" },
+    { "code": "55", "name": "Đang giao hàng" },
+    { "code": "60", "name": "Giao thành công" },
+    { "code": "70", "name": "Đổi hàng/Trả hàng" },
+    { "code": "550", "name": "Lưu kho hoàn hàng" },
+    { "code": "80", "name": "Không giao được" },
+    { "code": "90", "name": "Đang hoàn trả" },
+    { "code": "100", "name": "Đã hoàn trả" },
+    { "code": "101", "name": "Hoàn trả thất bại" },
+    { "code": "200", "name": "Đã trả tiền" },
+    { "code": "250", "name": "Đã thu tiền" },
+    { "code": "400", "name": "Không xác định" }
+  ]
+  shipPaymentStatus!: string | null;
+
   modelCarrier: TDSSafeAny;
-  selectTags:  Array<TDSSafeAny> = [];
+  selectTags: Array<TDSSafeAny> = [];
   selectRefs!: string | null;
 
   isActive: boolean = false;
@@ -49,7 +72,7 @@ export class FilterOptionsComponent implements OnInit {
 
   constructor(private message: TDSMessageService,
     private fastSaleOrderService: FastSaleOrderService,
-    private cdr : ChangeDetectorRef,
+    private cdr: ChangeDetectorRef,
     private destroy$: TDSDestroyService) {
   }
 
@@ -60,54 +83,60 @@ export class FilterOptionsComponent implements OnInit {
 
   onChangeDate(event: any[]) {
     this.datePicker = [];
-    if(event) {
+    if (event) {
       event.forEach(x => {
-          this.datePicker.push(x);
+        this.datePicker.push(x);
       })
     }
   }
 
   onChangeCarrier(event: any): void {
-    if(!event) {
+    if (!event) {
       this.modelCarrier = null;
     } else {
       var exits = this.lstCarriers.filter(x => x.Id === event.Id)[0];
-      if(exits) {
-          this.modelCarrier = exits;
+      if (exits) {
+        this.modelCarrier = exits;
       }
     }
   }
 
   onChangeTags(event: Array<TDSSafeAny>): void {
     this.selectTags = [];
-    if(event){
+    if (event) {
       event.forEach(x => {
-          this.selectTags.push(x);
+        this.selectTags.push(x);
       })
     }
   }
 
   selectTracking(event: any): void {
-    if(event && event.value == this.selectRefs){
-        this.selectRefs = null;
+    if (event && event.value == this.selectRefs) {
+      this.selectRefs = null;
     } else {
-        this.selectRefs = event?.value;
+      this.selectRefs = event?.value;
     }
 
     this.filterObj.hasTracking = this.selectRefs;
   }
 
   selectState(event: any): void {
-    if(this.filterObj.status.includes(event.Type)) {
-        this.filterObj.status = this.filterObj.status.filter((x: any) => !(x == event.Type));
+    if (this.filterObj.status.includes(event.Type)) {
+      this.filterObj.status = this.filterObj.status.filter((x: any) => !(x == event.Type));
     } else {
-        this.filterObj.status.push(event.Type);
+      this.filterObj.status.push(event.Type);
     }
     this.checkActiveStatus();
   }
 
-  loadSummaryStatus(){
-    if(this.summaryStatus) {
+  onChangeShipPaymentStatus(event: TDSSafeAny){
+    if(event) {
+      this.shipPaymentStatus = event.name;
+    }
+  }
+
+  loadSummaryStatus() {
+    if (this.summaryStatus) {
       this.filterObj.status.forEach(x => {
 
       })
@@ -122,7 +151,13 @@ export class FilterOptionsComponent implements OnInit {
     }
   }
 
+  onRefreshStatus() {
+    this.lstStatus.map(x=> x.IsSelected = false);
+  }
 
+  onRefreshTrackingRefs(){
+    this.trackingRefs.map(x=> x.IsSelected = false);
+  }
 
   onApply() {
     this.filterObj.dateRange = {
@@ -130,23 +165,25 @@ export class FilterOptionsComponent implements OnInit {
       endDate: this.datePicker[1]
     }
 
+    this.filterObj.shipPaymentStatus = this.shipPaymentStatus || null;  
+
     this.isActive = true;
     this.loadSummaryStatus();
     this.onLoadOption.emit(this.filterObj);
     this.closeMenu();
   }
 
-  checkActiveStatus(){
-    this.status.map(stt=>{
-      stt.IsSelected = this.filterObj.status.some(f=>f == stt.Type);
+  checkActiveStatus() {
+    this.status.map(stt => {
+      stt.IsSelected = this.filterObj.status.some(f => f == stt.Type);
     })
   }
 
   checkActive(): boolean {
     let exist = TDSHelperArray.hasListValue(this.filterObj.tags) || TDSHelperArray.hasListValue(this.filterObj.status)
-        || TDSHelperString.hasValueString(this.filterObj.hasTracking) || TDSHelperString.hasValueString(this.filterObj.deliveryType)
+      || TDSHelperString.hasValueString(this.filterObj.hasTracking) || TDSHelperString.hasValueString(this.filterObj.deliveryType)
 
-    if(exist) {
+    if (exist) {
       return true
     } else {
       return false
@@ -156,6 +193,9 @@ export class FilterOptionsComponent implements OnInit {
   onCancel() {
     this.datePicker = [addDays(new Date(), -30), new Date()];
     this.selectTags = [];
+    this.shipPaymentStatus = null;
+    this.onRefreshStatus();
+    this.onRefreshTrackingRefs();
 
     this.filterObj = {
       tags: [],
@@ -166,7 +206,8 @@ export class FilterOptionsComponent implements OnInit {
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
-      }
+      },
+      shipPaymentStatus: null
     }
 
     this.isActive = false;

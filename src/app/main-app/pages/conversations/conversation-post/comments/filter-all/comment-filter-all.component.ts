@@ -52,6 +52,8 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewInit {
 
   itemSize = 100;
+  maxBufferPx = 400;
+  minBufferPx = 400;
   infinite = new BehaviorSubject<ChatomniDataItemDto[]>([]);
   @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
 
@@ -74,6 +76,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   enumActivityStatus = ActivityStatus;
   messageModel!: string;
   isLoading: boolean = false;
+  disableNextUrl: boolean = false;
   currentId: string = '';
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
@@ -197,7 +200,15 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
         this.cdRef.detectChanges();
       }
-    })
+    });
+
+    this.postEvent.onRemoveOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        if(res){
+          this.loadCommentsOrderByPost();
+        }
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -208,22 +219,21 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
         this.data = {...changes["data"].currentValue};
         this.loadData();
         this.loadPartnersByTimestamp();
-        this.loadCommentsOrderByPost()
+        this.loadCommentsOrderByPost();
     }
 
     if (changes["innerText"] && !changes["innerText"].firstChange) {
-      let text = changes["innerText"].currentValue;
-      this.innerText = TDSHelperString.stripSpecialChars(text.trim().toLocaleLowerCase());
-      this.filterObj = {
-        Keywords: this.innerText
-      }
-
-      this.loadData();
+        let text = changes["innerText"].currentValue;
+        this.filterObj = {
+            Keywords: text
+        }
+        this.loadData();
     }
   }
 
   loadData() {
     this.isLoading = true;
+    this.disableNextUrl = false;
     this.infinite.next([]);
 
     this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId, this.filterObj);
@@ -282,9 +292,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       }
     });
 
-    modal.componentInstance?.onSendProduct.subscribe(res => {
-      if(res){
-          this.onProductSelected(res, item);
+    modal.componentInstance?.onSendProduct.subscribe({
+      next: (res: TDSSafeAny)=>{
+        if(res){
+            this.onProductSelected(res, item);
+            modal.destroy(null);
+        }
       }
     })
   }
@@ -304,17 +317,23 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       }
     };
 
-    // this.activityMatchingService.addTemplateMessage(this.data.psid, model)
-    //   .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.activityMatchingService.addTemplateMessageV2(this.team.ChannelId, model)
+    .pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        item.Data.is_reply = false;
+        this.isReplyingComment = false;
+        this.message.success('Gửi tin thành công');
 
-    //     this.activityDataFacade.messageServer(res);
-    //     this.conversationDataFacade.messageServer(res);
+        this.cdRef.markForCheck();
+      },
+      error: error => {
+        item.Data.is_reply = false;
+        this.isReplyingComment = false;
+        this.message.error(`${error.error?.message}` || 'Gửi sản phẩm thất bại');
 
-    //     this.message.success('Gửi thành công sản phẩm');
-    // }, error => {
-    //     this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi sản phẩm thất bại');
-    // });
-
+        this.cdRef.detectChanges();
+      }
+    });
   }
 
   onQuickReplySelected(event: any, partner?: PartnerTimeStampItemDto) {
@@ -597,7 +616,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
             const end = this.viewPort.getRenderedRange().end;
             const total = this.viewPort.getDataLength();
 
-            if(end == total && !this.isLoading) {
+            if(end == total && !this.isLoading && !this.disableNextUrl) {
                 this.nextBatch();
             }
 
@@ -605,7 +624,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       }
 
       if(this.dataSource && TDSHelperArray.hasListValue(this.dataSource?.Items)) {
-          setTimeout(() => this.infinite.next([...this.dataSource?.Items]), 750);
+          setTimeout(() => this.infinite.next([...(this.dataSource?.Items || [])]), 750);
       }
   }
 
@@ -629,6 +648,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
               }
 
               this.infinite.next([...this.dataSource.Items]);
+          } else {
+            this.disableNextUrl = true;
           }
 
           this.isLoading = false;

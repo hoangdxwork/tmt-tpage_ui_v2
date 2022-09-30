@@ -1,3 +1,6 @@
+import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TDSTagModule } from 'tds-ui/tag';
+import { EventSummaryService } from './../../services/event-summary.service';
 import { PipeModule } from './../../shared/pipe/pipe.module';
 import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -39,7 +42,8 @@ import { CommonHandler } from '../../handler-v2/common.handler';
 const SERVICES = [
   ReportFacebookService,
   CRMMatchingService,
-  CommonHandler
+  CommonHandler,
+  EventSummaryService
 ]
 
 @NgModule({
@@ -80,7 +84,9 @@ const SERVICES = [
     TDSTableModule,
     TDSSpinnerModule,
     UploadImageModule,
-    PipeModule
+    PipeModule,
+    TDSTagModule, 
+    TDSToolTipModule
   ],
   providers: [ ...SERVICES]
 })

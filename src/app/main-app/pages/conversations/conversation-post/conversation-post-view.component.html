@@ -147,40 +147,10 @@
                                 </span>
                             </tds-tag>
                         </div>
-
-                             <!--<ng-template #contentAddtag>
-                                <div class="w-[304px]">
-                                    <tds-form-field>
-                                        <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
-                                            [(ngModel)]="currentLiveCampaign" [data]="lstOfLiveCampaign"
-                                            [ngModelOptions]="{standalone: true}"
-                                            [allowClear]="true" [valuePrimitive]="false" [autoClose]="false">
-                                        </tds-select>
-                                    </tds-form-field>
-                                </div>
-                              </ng-template>
-
-                            <ng-template #footerAddTag>
-                                <div class="flex justify-end pt-2">
-                                  <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
-                                    <span class="flex items-center">
-                                      <i class="tdsi-close-fill"></i>
-                                    </span>
-                                  </button>
-                                  <button tds-button-icon type="button" size="sm" color="primary" (click)="updateFacebookByLiveCampaign()">
-                                    <span class="flex items-center">
-                                      <i class="tdsi-tick-fill"></i>
-                                    </span>
-                                  </button>
-                                </div>
-                            </ng-template>
-                        </div> -->
-
                     </div>
                     <div class="post-picture w-1/4 flex justify-end" *ngIf="(data.Data | facebookType).picture">
                         <img [src]="(data.Data | facebookType).picture" class="rounded-xl h-[122px] object-cover" />
                     </div>
-
                 </div>
 
                 <!-- TShop -->
@@ -216,80 +186,12 @@
                                 <div class="flex gap-x-3 flex-auto justify-end items-center">
                                     <!-- <tds-form-field class="flex-auto">
                                         <span tdsPrefix><i class="tdsi-search-fill"></i></span>
-                                        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearchFilterComment()"
-                                        [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}" />
-                                    </tds-form-field>  -->
+                                        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText/>
+                                    </tds-form-field> -->
+
                                     <span class="comment-count" tds-tooltip tooltipTitle="Bình luận đang hiển thị"> {{(data.Data | facebookType).count_comments || 0}} bình luận </span>
                                     <span class="share-count  mr-3"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
                                 </div>
-                            </div>
-                        </ng-container>
-
-                        <!-- lọc người dùng -->
-                        <ng-container *ngSwitchCase="1" class="w-full">
-                            <button *ngIf="!isShowFilterUser; else showFilterUser" tds-button size="sm" color="primary" rounded="!rounded-full" (click)="onShowFilterUser()">
-                                <span class="flex items-center text-caption-1">
-                                    <i class="tdsi-success-line text-[20px] leading-none mr-2"></i>Thao tác
-                                </span>
-                            </button>
-
-                            <ng-template #showFilterUser>
-                                <div class="flex gap-x-3 items-center">
-                                    <tds-checkbox class="pr-2" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
-                                    <button tds-button color="primary" size="sm">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
-                                        </span>
-                                    </button>
-                                    <button tds-button color="info" size="sm">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
-                                        </span>
-                                    </button>
-                                    <button tds-button color="error" size="sm" rounded="!rounded-full" (click)="onShowFilterUser()">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-close-fill text-lg leading-none mr-2"></i>Đóng
-                                        </span>
-                                    </button>
-                                </div>
-                            </ng-template>
-                        </ng-container>
-
-                        <!-- quản lý bình luận -->
-                        <ng-container *ngSwitchCase="2" class="w-full">
-                            <div class="flex gap-x-3 items-center">
-                                <tds-checkbox class="pr-2" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
-                                <button tds-button color="primary" size="sm">
-                                    <span class="flex items-center">
-                                        <i class="tdsi-eye-close-fill text-lg leading-none mr-2"></i>Ẩn
-                                    </span>
-                                </button>
-                                <button tds-button color="primary" size="sm">
-                                    <span class="flex items-center">
-                                        <i class="tdsi-eye-open-fill text-lg leading-none mr-2"></i>Hiện
-                                    </span>
-                                </button>
-                                <button tds-button color="error" size="sm">
-                                    <span class="flex items-center">
-                                        <i class="tdsi-trash-fill text-lg leading-none mr-2"></i>Xóa
-                                    </span>
-                                </button>
-                            </div>
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="3" class="w-full">
-                            <div class="flex w-full gap-x-3" >
-                                <tds-form-field class="2xl:w-[270px] w-auto">
-                                    <span tdsPrefix><i class="tdsi-search-fill"></i></span>
-                                    <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="500" (inputKeyup)="onSearchFilterComment()"
-                                    [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}" />
-                                </tds-form-field>
-                                <tds-form-field class="w-[160px]">
-                                    <tds-select valueField="value" textField="text" placeholder='Chọn thuộc tính'
-                                        [(ngModel)]="currentFilterComment" [valuePrimitive]="false"
-                                        [data]="filterOptionsComment" (ngModelChange)="onChangeFilterComment($event)" >
-                                    </tds-select>
-                                </tds-form-field>
                             </div>
                         </ng-container>
                     </container-element>
@@ -303,14 +205,14 @@
                                 <i class="{{item.icon}} text-xl"></i>
                             </span>
                         </div>
-                        <button *ngIf="currentSort.text == 'Mới nhất'; else cmtOld" class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận mới nhất nhất" (click)="onChangeSort(sortOptions[1])">
+                        <!-- <button *ngIf="currentSort.text == 'Mới nhất'; else cmtOld" class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận mới nhất nhất" (click)="onChangeSort(sortOptions[1])">
                             <i class="tdsi-sort-arrow-up-fill text-xl text-primary-1"></i>
                         </button>
                         <ng-template #cmtOld>
                             <button class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận cũ nhất" (click)="onChangeSort(sortOptions[0])">
                                 <i class="tdsi-sort-arrow-down-fill text-xl text-primary-1"></i>
                             </button>
-                        </ng-template>
+                        </ng-template> -->
                     </div>
                 </div>
             </div>
@@ -320,39 +222,9 @@
             <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
                 <div  class="flex w-full h-full overflow-hidden" *ngIf="data && !isLoading">
                     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
-                        <!-- <post-comment-all
-                            [postId]="data.ObjectId"
-                            [data]="objComment"
-                            [team]="team"
-                            [childs]="childs"
-                            [commentOrders]="commentOrders">
-                        </post-comment-all> -->
-
-                        <comment-filter-all [data]="data" [team]="team" [innerText]="textSearchFilterComment">
+                        <comment-filter-all [data]="data" [team]="team" [innerText]="keyWords">
                         </comment-filter-all>
                     </div>
-
-                    <!-- <div *ngIf="currentFilter.value === 'group'" class="h-full w-full">
-                        <post-comment-group
-                            [postId]="data.ObjectId"
-                            [data]="objComment"
-                            [team]="team"
-                            [childs]="childs"
-                            [commentOrders]="commentOrders"
-                            [isShowFilterUser]="isShowFilterUser">
-                        </post-comment-group>
-                    </div>
-
-                    <div *ngIf="currentFilter.value === 'filter'" class="h-full w-full">
-                        <post-comment-filter
-                            [currentFilterComment]="currentFilterComment"
-                            [textSearchFilterComment]="textSearchFilterComment">
-                        </post-comment-filter>
-                    </div>
-
-                    <div *ngIf="currentFilter.value === 'manage'" class="h-full w-full">
-                        <manage-post-comment></manage-post-comment>
-                    </div> -->
                 </div>
             </tds-spin>
 

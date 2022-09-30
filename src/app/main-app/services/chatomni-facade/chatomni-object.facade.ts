@@ -13,10 +13,7 @@ export class ChatomniObjectFacade extends BaseSevice  {
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
 
-  dataSource: { [id: string] : ChatomniObjectsDto } = {}; //this.objectsDataSource[id]
-
-  // Thay đổi bài objects load danh sách đơn hàng
-  public onChangeListOrderFromObjects$ = new EventEmitter<any>();
+  dataSource: { [id: string] : ChatomniObjectsDto } = {};
 
   // Tạo đơn hàng từ commment, lại danh sách đơn hàng
   public loadListOrderFromCreateOrderComment$ = new EventEmitter<any>();

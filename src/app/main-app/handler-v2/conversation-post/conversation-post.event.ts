@@ -10,4 +10,7 @@ export class ConversationPostEvent{
 
     // TODO: Tổng commet của bài viết lấy theo length api trả về
     public lengthLstObject$: EventEmitter<number> = new EventEmitter();
+
+    // TODO: đẩy dữ liệu sang conversation-post-view xóa code đơn hàng comments
+    public onRemoveOrderComment$: EventEmitter<any> = new EventEmitter();
 }

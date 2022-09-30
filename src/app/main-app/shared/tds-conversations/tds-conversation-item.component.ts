@@ -235,16 +235,27 @@ export class TDSConversationItemComponent implements OnInit  {
       return
     }
 
-    let csid = this.dataItem.Data.id || this.csid;
+    let model = {
+      id: this.team.ChannelId,
+      messageId: this.dataItem.Id || this.csid,
+      fetchId: this.dataItem.Data?.id || null
+    }
+
     this.reloadingImage = true;
-    this.activityMatchingService.refreshAttachment(this.team.ChannelId, csid , item.id).pipe(takeUntil(this.destroy$)).subscribe({
+    this.activityMatchingService.refreshAttachmentv2(this.team.ChannelId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.reloadingImage = false
-            this.tdsMessage.success('Thao tác thành công');
-            this.activityDataFacade.refreshAttachment(res);
-            this.dataItem.Data["is_error_attachment"] = false;
 
-            this.cdRef.markForCheck();
+            this.tdsMessage.success("Thao tác thành công");
+            if (TDSHelperArray.hasListValue(res)) {
+              res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
+                  x["Status"] = ChatomniStatus.Done;
+                  let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+                  this.dataItem  = {...data}
+              });
+            }
+  
+            this.cdRef.detectChanges();
         },
         error: error => {
             this.reloadingImage = false
@@ -268,24 +279,26 @@ export class TDSConversationItemComponent implements OnInit  {
       RecipientId: this.dataItem.Id
     }
 
-    this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-          this.tdsMessage.success("Thao tác thành công");
-          if (TDSHelperArray.hasListValue(res)) {
-            res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-                x["Status"] = ChatomniStatus.Done;
-                let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-                this.dataItem  = {...data}
-            });
-          }
+      this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
+      .pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: (res: any) => {
+            this.tdsMessage.success("Thao tác thành công");
+            if (TDSHelperArray.hasListValue(res)) {
+              res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
+                  x["Status"] = ChatomniStatus.Done;
+                  let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+                  this.dataItem  = {...data}
+              });
+            }
 
-          this.cdRef.detectChanges();
-        },
-        error: error => {
-          this.tdsMessage.error(`${error?.message}` || 'Không thành công');
+            this.cdRef.detectChanges();
+          },
+          error: error => {
+            this.tdsMessage.error(`${error?.message}` || 'Không thành công');
+        }
       }
-    })
+    )
   }
 
   // has_admin_required: copy lại tn đẩy qua input tds-conversation để gửi lại
@@ -311,40 +324,60 @@ export class TDSConversationItemComponent implements OnInit  {
       }
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+    modal.componentInstance?.onSendProduct.subscribe({
+      next: (res: TDSSafeAny)=>{
         if(res){
             this.onProductSelected(res);
+            modal.destroy(null);
         }
       }
-    });
+    })
   }
 
   //chưa có dữ liệu chưa test lại
   onProductSelected(event :any) {
     if(event && event.Id){
       let model = {
-        page_id: this.team.Facebook_PageId,
+        // page_id: this.team.Facebook_PageId,
+        // to_id: this.dataItem.UserId,
+        // comment_id: this.dataItem.Data.id,
+
+        page_id: this.team.ChannelId || this.team.Facebook_PageId,
         to_id: this.dataItem.UserId,
-        comment_id: this.dataItem.Data.id,
-        message: this.message,
 
         product: {
           Id: event.Id,
           Name: event.Name,
           Picture: event.Picture,
-          Price: event.Price
+          Price: event.Price,
         }
       };
 
-      this.activityMatchingService.addTemplateMessage(this.team.ChannelId, model)
+      this.activityMatchingService.addTemplateMessageV2(this.team.ChannelId, model)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-            this.activityDataFacade.messageServer(res);
-            this.conversationDataFacade.messageServer(res);
-
-            this.tdsMessage.success('Gửi thành công sản phẩm');
-            this.cdRef.markForCheck();
+            if(TDSHelperArray.hasListValue(res)){
+              res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
+                x["Status"] = ChatomniStatus.Done;
+  
+              let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+  
+              if(i == res.length - 1){
+                let itemLast = {...data}
+  
+                let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
+                //TODO: Đẩy qua conversation-all-v2
+                this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+              }
+            });
+          }
+  
+          this.messageModel = null;
+          this.isReply = false;
+          this.isReplyingComment = false;
+          this.tdsMessage.success('Gửi sản phẩm thành công');
+  
+          this.cdRef.markForCheck();
           },
           error: error => {
             this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');

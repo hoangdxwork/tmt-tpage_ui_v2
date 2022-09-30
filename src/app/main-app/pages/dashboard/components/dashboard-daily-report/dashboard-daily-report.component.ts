@@ -1,10 +1,12 @@
+import { SummaryDailyCurrentDTO, SummaryDailyDTO } from './../../../../dto/dashboard/summary-daily.dto';
+import { EventSummaryService } from './../../../../services/event-summary.service';
 import { formatDate } from '@angular/common';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -34,18 +36,16 @@ export class DashboardDailyReportComponent implements OnInit {
 
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
-
-  lstData: MDBTotalCommentMessageFbDTO[] = [];
-  dataOverviewCurrentDay!: MDBSummaryByPostDTO;
+  data!: SummaryDailyDTO;
   interval: number = 0;
 
   constructor(private crmTeamService: CRMTeamService,
-    private reportFacebookService: ReportFacebookService,
+    private eventSummaryService: EventSummaryService,
     private message: TDSMessageService,
+    private cdr: ChangeDetectorRef,
     private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
-    this.loadAxisData();
     this.loadCurrentTeam();
   }
 
@@ -53,8 +53,7 @@ export class DashboardDailyReportComponent implements OnInit {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
         this.currentTeam = res ? {...res} : null;
-        this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
-        this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
+        this.loadSummaryCurrentDay();
       },
       error:(err) => {
         this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
@@ -62,18 +61,25 @@ export class DashboardDailyReportComponent implements OnInit {
     });
   }
 
-  loadSummaryCurrentDay(pageId?: string) {
+  loadSummaryCurrentDay() {
     this.isLoading = true;
-    this.reportFacebookService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res) => {
-          if(TDSHelperArray.hasListValue(res)){
-            this.lstData = [...res];
-            this.loadSeriesData(res);
-            this.loadDataChart();
-            this.isLoading = false;
-          }else{
-            this.emptyData = true;
-            this.isLoading = false;
+
+    this.eventSummaryService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: SummaryDailyDTO) => {
+          if(res && res.Current) {
+              this.data = {...res};
+
+              this.loadOverviewData(res);
+              this.loadAxisData(res);
+              this.loadSeriesData(res);
+              this.loadDataChart();
+
+              this.isLoading = false;
+              this.cdr.detectChanges();
+          } else {
+              this.emptyData = true;
+              this.isLoading = false;
+              this.cdr.detectChanges();
           }
         },
         error:(err) => {
@@ -84,143 +90,187 @@ export class DashboardDailyReportComponent implements OnInit {
       });
   }
 
-  loadSummaryOverviewCurrentDay(pageId?: string) {
-    this.reportFacebookService.getSummaryOverviewCurrentDay().subscribe({
-      next:(res) => {
-        this.dataOverviewCurrentDay = {...res};
-      },
-      error:(err) => {
-        this.message.error(err?.error?.message || 'Tải dữ liệu lỗi');
+  loadOverviewData(data:SummaryDailyDTO){
+    if(data && data.Current && data.Previous){
+      let percentMessage = data.Previous.Messages?.MessageTotal ? ((data.Current.Messages?.MessageTotal - data.Previous.Messages?.MessageTotal)/data.Previous.Messages?.MessageTotal) * 100 : (data.Current.Messages?.MessageTotal) * 100;
+      let percentComment = data.Previous.Messages?.CommentTotal ? ((data.Current.Messages?.CommentTotal - data.Previous.Messages?.CommentTotal)/data.Previous.Messages?.CommentTotal) * 100 : (data.Current.Messages?.CommentTotal) * 100;
+      let percentConversation = data.Previous.Conversations?.Total != 0 ? ((data.Current.Conversations?.Total - data.Previous.Conversations?.Total)/data.Previous.Conversations?.Total) * 100 : (data.Current.Conversations?.Total) * 100;
+      
+      this.data.Percent= {
+        Message: percentMessage.toFixed(0),
+        Comment: percentComment.toFixed(0),
+        Conversation: percentConversation.toFixed(0)
+      };
+    } else {
+      this.data.Percent = {
+        Message: 0,
+        Comment: 0,
+        Conversation: 0
       }
-    });
+    }
   }
 
-  loadAxisData() {
-    this.axisData = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
+  loadAxisData(data: SummaryDailyDTO) {
+    let messageData = data.Current?.Messages?.Data;
+    let maxTime = messageData[messageData.length - 1]?.Time;
+    let maxHour = new Date(maxTime).getUTCHours();
+    maxHour = Number(maxHour) + 1;
+    this.axisData = [];
+
+    for (let i = 1; i <= maxHour; i++) {
+      this.axisData = [...this.axisData, [i]];
+    }
   }
 
-  loadSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
-    let dataMessage: number[] = [];
+  loadSeriesData(data: SummaryDailyDTO) {
+    let lstMessages: number[] = [];
+    let lstConversations: number[] = [];
 
-    let lstTotalMessage = data.map(f => f.TotalMessage);
+    let lstTotalMessage = data.Current.Messages?.Data?.map((f:any) => { return f.MessageCount + f.CommentCount }) || [];
+    let lstTotalConversation = data.Current.Conversations?.Data?.map((f:any) => { return f.Count }) || [];
     //TODO: lấy 5 giá trị trên trục y
-    let calInterval = Math.max(...lstTotalMessage)/5;
-    this.interval = Math.round(calInterval);
-
+    let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation) / 5;
+    this.interval = Math.ceil(calInterval);
+    
     this.axisData.forEach((hour) => {
-      let find = data.find(x => JSON.stringify(x.Hours) === hour);
-      dataMessage.push(find?.TotalMessage || 0);
+      let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      if(findMessage){
+        lstMessages.push(findMessage.MessageCount + findMessage.CommentCount);
+      }else{
+        lstMessages.push(0);
+      }
+
+      let findConversation = data.Current.Conversations?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      if(findConversation){
+        lstConversations.push(findConversation?.Count);
+      }else{
+        lstConversations.push(0);
+      }
     });
 
     this.seriesData = [
       {
-        name: 'Tin nhắn',
-        data: dataMessage
-      }
+        name: 'Tin nhắn và bình luận',
+        data: lstMessages
+      },
+      {
+        name: 'Hội thoại',
+        data: lstConversations
+      },
     ];
   }
 
   loadDataChart(){
-    this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
+    if(TDSHelperArray.hasListValue(this.axisData) && TDSHelperArray.hasListValue(this.seriesData)){
+      this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
 
-    let chart:TDSLineChartComponent = {
-      color:this.colors,
-      tooltip:{
-        show:true,
-        position:'top',
-        trigger: 'axis',
-        axisPointer:{
-          type:'line',
-          lineStyle:{
-            color:'#C4C4C4',
-            type:'solid'
-          }
-        },
-        formatter:'<div class="flex flex-row rounded-xl p-2">'+
-                    '<div class="bg-white rounded-full flex items-center justify-center h-[34px] w-[34px]">'+
-                      '<i class="tdsi-time-fill text-primary-1"></i>'+
-                    '</div>'+
-                    '<div class="pl-2">'+
-                      '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">' +
-                        formatDate(new Date().toUTCString(), 'EEEE', 'vi-VN')
-                        + ', {b}:00 ' + 
-                        formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
-                        + '</span><br>'+
-                      '<div class="flex flex-row items-center justify-between text-white text-caption-2 font-semibold font-sans text-center">'+
-                        '<span class="pr-5">5 bình luận</span>'+
-                        '<span>{c} {a}</span>'+
+      let chart:TDSLineChartComponent = {
+        color:this.colors,
+        tooltip:{
+          show:true,
+          position:'top',
+          trigger: 'axis',
+          axisPointer:{
+            type:'line',
+            lineStyle:{
+              color:'#C4C4C4',
+              type:'solid'
+            }
+          },
+          formatter:'<div class="flex flex-row rounded-xl p-2">'+
+                      '<div class="bg-white rounded-full flex items-center justify-center h-[34px] w-[34px]">'+
+                        '<i class="tdsi-time-fill text-primary-1"></i>'+
                       '</div>'+
-                    '</div>'+
-                  '</div>',
-        borderColor:'transparent',
-        backgroundColor:'rgba(0, 0, 0, 0.8)'
-      },
-      grid:{
-        top:16,
-        right:16,
-        bottom:36
-      },
-      axis:{
-        xAxis:[
-          {
-            data: this.axisData,
-            boundaryGap:false,
-            axisTick:{
-              show:false
-            },
-            axisLine:{
-              lineStyle:{
-                color:'#E9EDF2',
-                width:1
-              }
-            },
-            axisLabel:{
-              margin:16,
-              color:'#2C333A',
-              fontFamily:'Segoe UI',
-              fontWeight:400,
-              fontStyle:'normal',
-              fontSize:14,
-              lineHeight:20,
-              interval:1,
-              align:'center',
-              width:17
-            }
-          }
-        ],
-        yAxis:[
-          {
-            axisLabel:{
-              margin:40,
-              color:'#2C333A',
-              fontFamily:'Segoe UI',
-              fontWeight:400,
-              fontStyle:'normal',
-              fontSize:14,
-              lineHeight:20,
-              align:'left',
-            },
-            interval: this.interval,
-            max: this.interval*6,
-            splitLine:{
-              lineStyle:{
-                color:'#C4C4C4',
-                width:1.2,
-                type:[5,5],
-                opacity:0.6
+                      '<div class="pl-2">'+
+                        '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">' +
+                          formatDate(new Date().toUTCString(), 'EEEE', 'vi-VN')
+                          + ', {b}:00 ' + 
+                          formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
+                          + '</span><br>'+
+                        '<div class="flex flex-row items-center justify-between gap-x-5 text-white text-caption-2 font-semibold font-sans text-center">'+
+                          '<span>{c} {a}</span>'+
+                          '<span>{c1} {a1}</span>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>',
+          borderColor:'transparent',
+          backgroundColor:'rgba(0, 0, 0, 0.8)'
+        },
+        grid:{
+          top: 16,
+          right: 8,
+          bottom: 70
+        },
+        legend:{
+          show: true,
+          bottom: 0,
+          icon: 'roundRect'
+        },
+        axis:{
+          xAxis:[
+            {
+              data: this.axisData,
+              boundaryGap:false,
+              axisTick:{
+                show:false
+              },
+              axisLine:{
+                lineStyle:{
+                  color:'#E9EDF2',
+                  width:1
+                }
+              },
+              axisLabel:{
+                margin:16,
+                color:'#2C333A',
+                fontFamily:'Segoe UI',
+                fontWeight:400,
+                fontStyle:'normal',
+                fontSize:14,
+                lineHeight:20,
+                interval:1,
+                align:'center',
+                width:17
               }
             }
-          }
-        ]
-      },
-      series: this.getSeries(this.seriesData)
-    }
+          ],
+          yAxis:[
+            {
+              axisLabel:{
+                margin:40,
+                color:'#2C333A',
+                fontFamily:'Segoe UI',
+                fontWeight:400,
+                fontStyle:'normal',
+                fontSize:14,
+                lineHeight:20,
+                align:'left',
+              },
+              interval: this.interval,
+              max: this.interval*5,
+              splitLine:{
+                lineStyle:{
+                  color:'#C4C4C4',
+                  width:1.2,
+                  type:[5,5],
+                  opacity:0.6
+                }
+              }
+            }
+          ]
+        },
+        series: this.getSeries(this.seriesData)
+      }
+  
+      this.buildChartDemo(chart);
 
-    this.buildChartDemo(chart);
+    } else {
+      this.emptyData = true;
+    }
   }
 
   buildChartDemo(chart : TDSLineChartComponent ){
-    this.dailyOption = this.chartOption.LineChartOption(chart,true);
+    this.dailyOption = this.chartOption.LineChartOption(chart);
     this.dailyOption.xAxis[0].axisLabel.showMinLabel = true;
   }
 
@@ -262,7 +312,6 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   refreshData() {
-    this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
-    this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
+    this.loadSummaryCurrentDay();
   }
 }

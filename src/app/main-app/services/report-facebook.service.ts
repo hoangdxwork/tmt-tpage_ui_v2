@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { InputSummaryOverviewDTO, InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO, ReportSummaryOverviewResponseDTO, SummaryActivityByStaffDTO } from "../dto/dashboard/summary-overview.dto";
+import { EventSummaryDTO, InputSummaryOverviewDTO, InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO, ReportSummaryOverviewResponseDTO, SummaryActivityByStaffDTO } from "../dto/dashboard/summary-overview.dto";
 import { BaseSevice } from "./base.service";
 
 @Injectable()
@@ -21,16 +21,6 @@ export class ReportFacebookService extends BaseSevice {
     }
 
     return this.apiService.getData<ReportSummaryOverviewResponseDTO>(api, data);
-  }
-
-  getSummaryCurrentDay(pageId?: any): Observable<MDBTotalCommentMessageFbDTO[]> {
-    pageId = pageId || '';
-    let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/summarycurrentday?pageId=${pageId}`,
-      method: CoreApiMethodType.get
-    }
-
-    return this.apiService.getData<MDBTotalCommentMessageFbDTO[]>(api, null);
   }
 
   getSummaryOverviewCurrentDay(pageId?: any): Observable<MDBSummaryByPostDTO> {

@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AutoInteractionDTO } from 'src/app/main-app/dto/configs/general-config.dto';
@@ -14,21 +15,22 @@ import { ConfigFacebookCartDTO } from 'src/app/main-app/dto/configs/facebook-car
   }
 })
 
-export class FacebookCartComponent implements OnInit, OnDestroy {
+export class FacebookCartComponent implements OnInit {
 
   _form!: FormGroup;
-  private destroy$ = new Subject<void>();
   isLoading: boolean = false;
   dataModel!: ConfigFacebookCartDTO;
 
   constructor(private fb: FormBuilder,
     private generalConfigService: GeneralConfigService,
-    private message: TDSMessageService) {
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService) {
       this.createForm();
   }
 
   createForm() {
     this._form = this.fb.group({
+      IsApplyConfig: [false],
       IsUpdatePartnerInfo: [false],
       IsCheckout: [false],
       IsUpdateQuantity: [false],
@@ -50,28 +52,38 @@ export class FacebookCartComponent implements OnInit, OnDestroy {
     let name = "ConfigCart";
     this.isLoading  = true;
 
-    this.generalConfigService.getByName(name)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((res: any) => {
-
-          this.dataModel = res;
-          this.updateForm(res);
-
-    }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+    this.generalConfigService.getByName(name).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.dataModel = res;
+        this.updateForm(res);
+        this.isLoading = false;
+      },
+      error:(err) => {
+        this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
     })
   }
 
-  changeIsCheckout(event: any) {
-    if(event == false) {
-      this._form.controls['IsUpdateQuantity'].setValue(false)
-      this._form.controls['IsBuyMore'].setValue(false)
-    }
-  }
+  applyConfig(event:boolean){
+    if(!event){
+      this._form.controls["IsUpdatePartnerInfo"].setValue(false);
+      this._form.controls["IsCheckout"].setValue(false);
+      this._form.controls["IsUpdateQuantity"].setValue(false);
+      this._form.controls["IsBuyMore"].setValue(false);
+      this._form.controls["IsCancelCheckout"].setValue(false);
 
-  changeIsUpdateQuantity(event: any) {
-    if(event == false) {
-      this._form.controls['IsBuyMore'].setValue(false)
+      this._form.controls["IsUpdatePartnerInfo"].disable();
+      this._form.controls["IsCheckout"].disable();
+      this._form.controls["IsUpdateQuantity"].disable();
+      this._form.controls["IsBuyMore"].disable();
+      this._form.controls["IsCancelCheckout"].disable();
+    }else{
+      this._form.controls["IsUpdatePartnerInfo"].enable();
+      this._form.controls["IsCheckout"].enable();
+      this._form.controls["IsUpdateQuantity"].enable();
+      this._form.controls["IsBuyMore"].enable();
+      this._form.controls["IsCancelCheckout"].enable();
     }
   }
 
@@ -80,19 +92,34 @@ export class FacebookCartComponent implements OnInit, OnDestroy {
     let model = this.prepareModel();
     this.isLoading = true;
 
-    this.generalConfigService.update(name, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe({
+    this.generalConfigService.update(name, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        this.message.success('Thao tác thành công');
+          this.isLoading = false;
+          this.message.success('Cập nhật cấu hình giỏ hàng thành công');
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       }
     })
   }
 
   prepareModel() {
     let formModel = this._form.value;
+
+    let exist = this._form.controls["IsUpdatePartnerInfo"].value == false
+        && this._form.controls["IsCheckout"].value == false
+        && this._form.controls["IsUpdateQuantity"].value == false
+        && this._form.controls["IsBuyMore"].value == false
+
+    if(exist) {
+        formModel.IsUpdate = false;
+    } else {
+        formModel.IsUpdate = true;
+    }
+
     let model = {
+        IsApplyConfig: formModel.IsApplyConfig as boolean,
         IsUpdatePartnerInfo: formModel.IsUpdatePartnerInfo as boolean,
         IsCheckout: formModel.IsCheckout as boolean,
         IsUpdateQuantity: formModel.IsUpdateQuantity as boolean,
@@ -103,10 +130,4 @@ export class FacebookCartComponent implements OnInit, OnDestroy {
 
     return model;
   }
-
-  ngOnDestroy(): void {
-      this.destroy$.next();
-      this.destroy$.complete();
-  }
-
 }

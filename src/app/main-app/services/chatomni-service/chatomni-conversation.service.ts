@@ -20,6 +20,7 @@ export class ChatomniConversationService extends BaseSevice {
   urlNext: string | undefined;
 
   _keycache_params_csid = "_params_csid";
+  _keyQueryObj_conversation_all = "_queryObj_conversation_all"
 
   constructor(private apiService: TCommonService,
       private csFacade: ChatomniConversationFacade) {

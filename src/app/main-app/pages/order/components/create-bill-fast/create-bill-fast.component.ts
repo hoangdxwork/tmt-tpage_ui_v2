@@ -283,7 +283,7 @@ export class CreateBillFastComponent implements OnInit {
       if(this.isPrint == true) {
         obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
       }
-      debugger
+      
       if(this.isPrintShip == true) {
         obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${data.Ids}`);
       }

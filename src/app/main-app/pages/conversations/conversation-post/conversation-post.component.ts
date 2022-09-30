@@ -1,10 +1,8 @@
-import { AutoOrderConfigDTO } from '@app/dto/configs/post/post-order-config.dto';
-import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
@@ -21,13 +19,13 @@ import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
+import { ItemsRenderDto } from '@app/dto/conversation-all/ag-scroll/ag-scroll-render.dto';
 
 @Component({
   selector: 'app-conversation-post',
@@ -38,7 +36,6 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 export class ConversationPostComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
   @ViewChild('innerText') innerText!: ElementRef;
-  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
   public lstType: any[] = [
     { id: 'all', name: 'Tất cả bài viết' },
@@ -56,7 +53,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     { id: 'ChannelUpdatedTime asc', name: 'Ngày cập nhật cũ nhất' }
   ];
 
-  syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
+  syncConversationInfo!: ChatomniConversationInfoDto | any;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
 
   currentType: any = { id: 'all', name: 'Tất cả bài viết' };
   currentSort: any = {};
@@ -69,6 +66,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   isLoading: boolean = false;
   isLoadingTab: boolean = false;
   isProcessing: boolean = false;
+  disableNextUrl: boolean = false;
 
   selectedIndex: number = 0;
   isDisableTabPartner: boolean = true;
@@ -81,6 +79,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   queryObj?: any = { type: "", sort: "", q: "" };
   isRefreshing: boolean = false;
+  isFilter: boolean = false;
+  currentObject?: ChatomniObjectsItemDto;
   partners$!: Observable<any>;
 
   constructor(private facebookPostService: FacebookPostService,
@@ -94,13 +94,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniConversationFacade: ChatomniConversationFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
+    private cdRef: ChangeDetectorRef,
     private chatomniObjectFacade: ChatomniObjectFacade,
     private chatomniObjectService: ChatomniObjectService,
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
-    private facebookCommentService: FacebookCommentService,
-    private objectFacebookPostEvent: ObjectFacebookPostEvent,
-    private cdRef: ChangeDetectorRef) {
+    private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
 
@@ -158,6 +157,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.lstObjects[index].LiveCampaign = {...res.LiveCampaign} as any;
 
                 this.lstObjects[index] = {...this.lstObjects[index]};
+                this.lstObjects = [...this.lstObjects]
             }
 
             if(this.currentPost && res.Id == this.currentPost?.Id) {
@@ -193,13 +193,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     //TODO: Check có orderCode thì mở disable tab đơn hàng
     this.conversationOrderFacade.hasValueOrderCode$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (code: any) => {
-        if(TDSHelperString.hasValueString(code) && !code.includes('#')){
+        if(TDSHelperString.hasValueString(code)){
             this.codeOrder = code;
             this.isDisableTabOrder = false;
         }else{
           this.codeOrder = '';
           // this.isDisableTabOrder = true;
         }
+
+        this.cdRef.detectChanges();
       }
     })
 
@@ -237,8 +239,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     });
   }
 
-  onchangeType(event: any) {
+  onChangeType(event: any) {
     if(event) {
+      this.isFilter = true;
+      this.disableNextUrl = false;
+
       this.currentType = this.lstType.find(x => x.id === event.id);
 
       this.queryObj = this.onSetFilterObject();
@@ -247,6 +252,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onChangeSort(event: any) {
+    this.disableNextUrl = false;
+
     if(event) {
       if(this.currentSort && event.id == this.currentSort?.id) {
           delete this.currentSort;
@@ -290,6 +297,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.queryObj = { } as any;
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
+    this.disableNextUrl = false;
 
     this.loadFilterDataSource();
   }
@@ -349,6 +357,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               }
 
               this.selectPost(currentObject);
+              this.currentObject = currentObject
           }
 
           this.isLoading = false;
@@ -365,7 +374,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   selectPost(item: ChatomniObjectsItemDto | any): any {
-    if(item.Data && (item.ObjectId != this.currentPost?.ObjectId)){
+    if(item && item.Data && (item.ObjectId != this.currentPost?.ObjectId)){
 
         // TODO: lưu lại Storage item đang active khi click menu khá
         this.setStoragePostId(item.ObjectId);
@@ -396,38 +405,42 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
 
         this.changeTab(0, true);
-
-        // TODO:
-        this.chatomniObjectFacade.onChangeListOrderFromObjects$.emit(item);
+        this.codeOrder = null;
 
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.ObjectId}`;
         this.router.navigateByUrl(uriParams);
     }
+
   }
 
   nextData(event: any): any {
-    if (this.isProcessing || this.isLoading) {
-        return;
-    }
-
-    this.isProcessing = true;
-
-    this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
-    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-
-      next: (res: ChatomniObjectsDto) => {
-          if(TDSHelperArray.hasListValue(res?.Items)) {
-              this.lstObjects = [...res.Items];
-          }
-
-          this.isProcessing = false;
-          this.yiAutoScroll.scrollToElement('scrollObjects', 750);
-      },
-      error: (error: any) => {
-          this.isProcessing = false;
+    if(event) {
+      if (this.isProcessing || this.isLoading) {
+          return;
       }
-    })
+
+      this.isProcessing = true;
+
+      this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+
+        next: (res: ChatomniObjectsDto) => {
+            if(TDSHelperArray.hasListValue(res?.Items)) {
+                this.lstObjects = [...(res.Items || [])];
+            } else {
+                this.disableNextUrl = true;
+            }
+
+            this.isProcessing = false;
+            this.cdRef.detectChanges();
+        },
+        error: (error: any) => {
+            this.isProcessing = false;
+            this.cdRef.detectChanges();
+        }
+      })
+    }
   }
 
   trackByIndex(_: number, data: any): number {
@@ -436,6 +449,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
+      this.disableNextUrl = false;
       this.removeStoragePostId();
 
       let uri = this.router.url.split("?")[0];
@@ -469,6 +483,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       }),
       debounceTime(750),distinctUntilChanged()).subscribe({
         next: (text: string) => {
+            this.isFilter = true;
+            this.disableNextUrl = false;
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.keyFilter = value;
 
@@ -499,9 +515,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   validateData(){
     this.postChilds = [];
     this.lstObjects = [];
+    this.isFilter = false;
 
     delete this.dataSource$;
     delete this.currentPost;
+    delete this.syncConversationInfo;
+    delete this.currentObject;
   }
 
   onChangeTabEvent() {
@@ -525,7 +544,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.selectedIndex = tabIndex;
     this.isDisableTabPartner = isDisable;
     this.isDisableTabOrder = isDisable;
-    this.codeOrder = null;
   }
 
   loadLiveCampaign(text?: string) {
@@ -559,6 +577,18 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   removeStoragePostId() {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
     localStorage.removeItem(_keyCache);
+  }
+
+  onItemsRender(event: ItemsRenderDto) {
+    let exits = event && event.items && this.lstObjects && this.lstObjects.length > 0 && !this.disableNextUrl && !this.isProcessing;
+    if(exits) {
+        let lastItemAg = event.items[event.length - 1];
+        let lastItemObj = this.lstObjects[this.lstObjects.length - 1];
+
+        if(lastItemAg && lastItemObj && lastItemAg.ObjectId == lastItemObj.ObjectId) {
+            this.nextData(event);
+        }
+    }
   }
 
   @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {

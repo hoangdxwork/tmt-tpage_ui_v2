@@ -1,3 +1,4 @@
+import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
 import { ConvertToCRMTagsListPipe } from './convert-to-CRMTagList.pipe';
@@ -36,6 +37,7 @@ import { jsonPayloadPipe } from './json-payload.pipe';
 import { GetShowStatePipe } from './get-show-state.pipe';
 import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPipe, GetColorStatusTextPipe } from './get-order-status.pipe';
 import { OnSetWidthTagPipe } from './set-width-tagpipe';
+import { GetAvatarCarrier } from './get-avatar-carrier.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -73,6 +75,7 @@ const cmp =[
   SortDataSourceMessagePipe,
   CheckTagSelectedCommnetPipe,
   LatestMessageTypePipe,
+  ReportOverviewPipe,
   NumericalOrder,
   jsonPayloadPipe,
   GetShowStatePipe,
@@ -80,7 +83,8 @@ const cmp =[
   GetColorStatusStatePipe,
   GetColorStatusTextPipe,
   TruncateStringPipe,
-  OnSetWidthTagPipe
+  OnSetWidthTagPipe,
+  GetAvatarCarrier,
 ]
 
 @NgModule({

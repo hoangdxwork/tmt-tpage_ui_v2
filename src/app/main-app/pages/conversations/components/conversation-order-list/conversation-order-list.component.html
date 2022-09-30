@@ -11,7 +11,7 @@
             </tds-form-field>
 
             <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
-                [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
+                [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'" [disabled]="disableCheck">
                 <span class="flex items-center ">
                     <i class="tdsi-success-line text-xl leading-5"></i>
                 </span>
@@ -23,7 +23,7 @@
             <tds-filter-status [(ngModel)]='tabIndex' (selectChange)="onSelectChange($event)">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
                 <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-                <ng-template tds-filter-status-template let-active='active'
+                    <ng-template tds-filter-status-template let-active='active'
                         let-count='count' let-name='name' let-value>
                         <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
                             [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">
@@ -61,7 +61,7 @@
         </div>
         <!-- danh sách đơn hàng -->
         <div class="flex flex-col justify-between w-full h-full pl-4 pb-4 overflow-hidden" *ngIf="lstOfData.length > 0; else noData">
-            <div class="flex flex-col gap-y-4 overflow-auto tds-custom-scroll w-full  pr-2">
+            <div class="flex-auto flex flex-col gap-y-4 overflow-auto tds-custom-scroll w-full  pr-2">
                 <tds-collapse accordion="true" *ngFor="let order of lstOfData; let index = index" class="!rounded-xl">
                     <tds-collapse-panel [header]="headerOrder" [active]="false" (activeChange)="onActiveChange(order, $event, index)" class="!rounded-xl"
                         [extra]="extraTpl1">
@@ -73,7 +73,7 @@
                                     <span class="text-info-500 font-semibold">#{{ order.Code || 'N/A' }}</span>
                                 </div>
                                 <div>
-                                    <span class="text-neutral-1-400 text-caption-2"> {{ order.DateCreated | date:"HH:mm, dd/MM/yyyy " }} </span>
+                                    <span class="text-neutral-1-400 text-caption-2">{{ order.DateCreated | date:"HH:mm, dd/MM/yyyy" }}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col justify-between">
@@ -126,6 +126,7 @@
                                 [listData]="lstLine[index] || []"
                                 [loading]="isLoadingLine[index] || false"
                                 [loadingIndicator]="loadingTemp"
+                                [noResult]="' '"
                                 [showPagination]="false" [tableLayout]="'fixed'">
                                 <thead>
                                     <tr>
@@ -168,7 +169,7 @@
             </div>
 
             <!-- phân trang -->
-            <div class="flex flex-auto items-end pt-3">
+            <div class="flex items-end pt-3">
                 <tds-pagination class="w-full" [pageSize]="pageSize" [pageIndex]="pageIndex" [total]="count"
                     [pageSizeOptions]="[10, 20, 50, 100]" [showTotal]="rangeTemplate" [showRefresh]="true"
                     (clickRefresh)="refreshData()" (pageSizeChange)="changePageSize($event)" (pageIndexChange)="changePageIndex($event)">
