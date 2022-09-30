@@ -114,7 +114,7 @@ export class DashboardDailyReportComponent implements OnInit {
     let messageData = data.Current?.Messages?.Data;
     let maxTime = messageData[messageData.length - 1]?.Time;
     let maxHour = new Date(maxTime).getUTCHours();
-    maxHour = Number(maxHour);
+    maxHour = Number(maxHour) + 1;
     this.axisData = [];
 
     for (let i = 1; i <= maxHour; i++) {
@@ -129,8 +129,8 @@ export class DashboardDailyReportComponent implements OnInit {
     let lstTotalMessage = data.Current.Messages?.Data?.map((f:any) => { return f.MessageCount + f.CommentCount }) || [];
     let lstTotalConversation = data.Current.Conversations?.Data?.map((f:any) => { return f.Count }) || [];
     //TODO: lấy 5 giá trị trên trục y
-    let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation)/5;
-    this.interval = Math.round(calInterval);
+    let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation) / 5;
+    this.interval = Math.ceil(calInterval);
     
     this.axisData.forEach((hour) => {
       let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
@@ -246,7 +246,7 @@ export class DashboardDailyReportComponent implements OnInit {
               align:'left',
             },
             interval: this.interval,
-            max: this.interval*6,
+            max: this.interval*5,
             splitLine:{
               lineStyle:{
                 color:'#C4C4C4',

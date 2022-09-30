@@ -21,10 +21,10 @@
                     </span>
                     <div class="flex flex-col 2xl:pl-6 xl:col-span-2">
                         <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{ data?.Current?.Conversation | numberCustom }}</span>
-                        <tds-tag [status]="onCalcPercent(data, 'Conversation')  > 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
+                        <tds-tag [status]="onCalcPercent(data, 'Conversation') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
                             type="outline" tds-tooltip="Dữ liệu trước đó: {{data?.Previous?.Conversation}}">
-                            {{ onCalcPercent(data, 'Conversation') > 0 ? onCalcPercent(data, 'Conversation').toFixed(0) : (-1*onCalcPercent(data, 'Conversation')).toFixed(0) }}%
-                            <span [class]="onCalcPercent(data, 'Conversation') > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                            {{ onCalcPercent(data, 'Conversation') >= 0 ? onCalcPercent(data, 'Conversation').toFixed(0) : (-1 * onCalcPercent(data, 'Conversation')).toFixed(0) }}%
+                            <span [class]="onCalcPercent(data, 'Conversation') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
                         </tds-tag>
                         <div class="flex flex-row items-center gap-x-2">
                             <span class="text-neutral-1-400 2xl:text-title-1 xl:text-body-2 font-semibold font-sans">Hội thoại</span>
@@ -37,10 +37,10 @@
                     </span>
                     <div class="flex flex-col 2xl:pl-6 xl:col-span-2">
                         <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{ data?.Current?.Partner | numberCustom }}</span>
-                        <tds-tag [status]="onCalcPercent(data, 'Partner')  > 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
+                        <tds-tag [status]="onCalcPercent(data, 'Partner') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
                             type="outline" tds-tooltip="Dữ liệu trước đó: {{data?.Previous?.Partner}}">
-                            {{ onCalcPercent(data, 'Partner') > 0 ? onCalcPercent(data, 'Partner').toFixed(0) : (-1*onCalcPercent(data, 'Partner')).toFixed(0) }}%
-                            <span [class]="onCalcPercent(data, 'Partner') > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                            {{ onCalcPercent(data, 'Partner') >= 0 ? onCalcPercent(data, 'Partner').toFixed(0) : (-1 * onCalcPercent(data, 'Partner')).toFixed(0) }}%
+                            <span [class]="onCalcPercent(data, 'Partner') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
                         </tds-tag>
                         <div class="flex flex-row items-center">
                             <span class="text-neutral-1-400 2xl:text-title-1 xl:text-body-2 font-semibold font-sans">Khách hàng</span>
@@ -53,10 +53,10 @@
                     </span>
                     <div class="flex flex-col 2xl:pl-6 xl:col-span-2">
                         <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{ data?.Current?.FastSaleOrder | numberCustom }}</span>
-                        <tds-tag [status]="onCalcPercent(data, 'FastSaleOrder')  > 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
+                        <tds-tag [status]="onCalcPercent(data, 'FastSaleOrder') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
                             type="outline" tds-tooltip="Dữ liệu trước đó: {{data?.Previous?.FastSaleOrder}}">
-                            {{ onCalcPercent(data, 'FastSaleOrder') > 0 ? onCalcPercent(data, 'FastSaleOrder').toFixed(0) : (-1*onCalcPercent(data, 'FastSaleOrder')).toFixed(0) }}%
-                            <span [class]="onCalcPercent(data, 'FastSaleOrder') > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                            {{ onCalcPercent(data, 'FastSaleOrder') >= 0 ? onCalcPercent(data, 'FastSaleOrder').toFixed(0) : (-1 * onCalcPercent(data, 'FastSaleOrder')).toFixed(0) }}%
+                            <span [class]="onCalcPercent(data, 'FastSaleOrder') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
                         </tds-tag>
                         <div class="flex flex-row items-center">
                             <span class="text-neutral-1-400 2xl:text-title-1 xl:text-body-2 font-semibold font-sans truncate">Phiếu bán hàng</span>
@@ -69,10 +69,10 @@
                     </span>
                     <div class="flex flex-col 2xl:pl-6 xl:col-span-2">
                         <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{ data?.Current?.SaleOnlineOrder | numberCustom }}</span>
-                        <tds-tag [status]="onCalcPercent(data, 'SaleOnlineOrder')  > 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
+                        <tds-tag [status]="onCalcPercent(data, 'SaleOnlineOrder') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
                             type="outline" tds-tooltip="Dữ liệu trước đó: {{data?.Previous?.SaleOnlineOrder}}">
-                            {{ onCalcPercent(data, 'SaleOnlineOrder') > 0 ? onCalcPercent(data, 'SaleOnlineOrder').toFixed(0) : (-1*onCalcPercent(data, 'SaleOnlineOrder')).toFixed(0) }}%
-                            <span [class]="onCalcPercent(data, 'SaleOnlineOrder') > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                            {{ onCalcPercent(data, 'SaleOnlineOrder') >= 0 ? onCalcPercent(data, 'SaleOnlineOrder').toFixed(0) : (-1 * onCalcPercent(data, 'SaleOnlineOrder')).toFixed(0) }}%
+                            <span [class]="onCalcPercent(data, 'SaleOnlineOrder') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
                         </tds-tag>
                         <div class="flex flex-row items-center">
                             <span class="text-neutral-1-400 2xl:text-title-1 xl:text-body-2 font-semibold font-sans">Đơn hàng</span>
