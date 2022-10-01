@@ -239,6 +239,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
 
           if(Number(index) > -1){
+              if(res.DiscountSale > 0) {
+                this.quickOrderModel.Details[index].Discount = res.DiscountSale;
+              }
               this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
               `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
           }
@@ -1352,6 +1355,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   pushItemProduct(data: ProductDTOV2) {
     let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId) as number;
     if (Number(index) >= 0) {
+        if(data.DiscountSale > 0) {
+          this.quickOrderModel.Details[index].Discount = data.DiscountSale;
+        }
         this.quickOrderModel.Details[index].Quantity += 1;
 
     } else{
