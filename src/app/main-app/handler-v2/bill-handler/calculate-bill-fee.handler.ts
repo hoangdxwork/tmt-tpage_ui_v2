@@ -74,7 +74,7 @@ export class CalculateBillFeeHandler {
     let amountDepositSale = _form.controls['SaleOrder'].value ? _form.controls['SaleOrder'].value.AmountDeposit : 0;
     let paymentAmount = amountDepositSale ? (_form.controls['AmountTotal'].value - amountDepositSale) : _form.controls['AmountTotal'].value;
 
-    if (!roleConfigs?.SaleSetting?.GroupAmountPaid) {
+    if (!roleConfigs?.GroupAmountPaid) {
       _form.controls['PaymentAmount'].setValue(paymentAmount);
     }
 

@@ -48,6 +48,7 @@ export class TDSConversationItemComponent implements OnInit  {
   @Input() dataSource!: ChatomniDataDto;
   @Input() index!: number;
   @Input() companyCurrents: any;
+  @Input() searchText!: string;
 
   @HostBinding("@eventReplyComment") eventAnimation = true;
 
