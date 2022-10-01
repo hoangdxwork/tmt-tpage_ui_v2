@@ -191,7 +191,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   setSocketChatomniOnMessage(data: SocketEventSubjectDto) {
     let index = this.lstConversation.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
-    if(Number(index) > -1) {
+    if(Number(index) >= 0) {
 
         this.lstConversation[index].LatestMessage = {
             CreatedTime: data.Data.Message?.CreatedTime,
@@ -201,7 +201,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
         // TODO: gán lại mess nếu gửi hình
         let existAttachment = data.Data.Message && data.Data.Message.Data && data.Data.Message.Data.attachments
-                            && data.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(data.Data.Message.Data.attachments.data[0]?.image_data);
+            && data.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(data.Data.Message.Data.attachments.data[0]?.image_data);
         if(existAttachment){
             this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${data.Data.Message.Data.attachments.data.length} hình ảnh` as string;
         }
@@ -216,11 +216,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation = [...this.lstConversation];
 
         // TODO: Check vị trí ConversationId và add vào đàu tiên
-        let model = {...this.lstConversation[index]};
-        if(index > 0){
-            this.lstConversation = this.lstConversation.filter(x => x.ConversationId != data.Data.Conversation?.UserId);
-            this.lstConversation = [...[model], ...(this.lstConversation || [])];
-        }
+        // let model = {...this.lstConversation[index]};
+        // if(index > 0){
+        //     this.lstConversation = this.lstConversation.filter(x => x.ConversationId != data.Data.Conversation?.UserId);
+        //     this.lstConversation = [...[model], ...(this.lstConversation || [])];
+        // }
     }
 
     this.cdRef.detectChanges();
