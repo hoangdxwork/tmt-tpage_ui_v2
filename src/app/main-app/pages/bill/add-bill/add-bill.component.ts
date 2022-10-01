@@ -509,6 +509,7 @@ export class AddBillComponent implements OnInit {
   selectChangePartner(event: any) {
     if (event && event.Id) {
         this.changePartner(event.Id);
+
     }
   }
 
