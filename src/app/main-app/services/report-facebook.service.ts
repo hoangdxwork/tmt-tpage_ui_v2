@@ -33,15 +33,6 @@ export class ReportFacebookService extends BaseSevice {
     return this.apiService.getData<MDBSummaryByPostDTO>(api, null);
   }
 
-  getSummaryPost(data: InputSummaryPostDTO): Observable<MDBSummaryByPostDTO> {
-    let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/summarypost`,
-      method: CoreApiMethodType.post
-    }
-
-    return this.apiService.getData<MDBSummaryByPostDTO>(api, data);
-  }
-
   getCommentAndMessage(data: InputSummaryTimelineDTO): Observable<MDBTotalCommentMessageFbDTO[]> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/summarytimeline`,

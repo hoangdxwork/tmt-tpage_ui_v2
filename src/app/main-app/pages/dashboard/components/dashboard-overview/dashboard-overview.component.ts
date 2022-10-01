@@ -43,6 +43,8 @@ export class DashboardOverviewComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
+        this.isLoading = false;
+        this.emptyData = true;
         this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     });
