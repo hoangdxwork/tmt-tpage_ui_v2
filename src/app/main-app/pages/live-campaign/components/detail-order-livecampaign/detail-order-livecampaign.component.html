@@ -64,13 +64,13 @@
             <tr [ngClass]="setOfCheckedId.has(order.Id)?'bg-[#F2FCF5]':''">
 
               <!-- Detail -->
-              <td [expand]="expandSet.has(order.Id)" class="text-center border-r"
+              <td [expand]="expandSet.has(order.Id)" class="text-center"
                 (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
               </td>
 
               <!-- Checked -->
               <td [checked]="setOfCheckedId.has(order.Id)" (checkedChange)="onItemChecked(order.Id, $event)"
-                class="text-center border-r" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
+                class="text-center" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
               </td>
 
               <td [tdsLeft]="true"> {{index + 1}} </td>
@@ -117,7 +117,7 @@
               <td> {{order.TotalAmount || 0 | numberCustom}}</td>
 
               <!-- Tổng sản phẩm chờ chốt -->
-              <td> {{order.TotalAmount}}</td>
+              <td> {{order.TotalQuantity}}</td>
 
               <!-- Trạng thái -->
               <td>

@@ -193,9 +193,8 @@
                           <div customFilter class="flex justify-between items-center w-full">
                               <span style="width: 70%"> Sản phẩm </span>
 
-                              <tds-filter-trigger [(visible)]="visible" [active]="searchValue.length > 0" [dropdownMenu]="menu" style="width: 30%; text-align: end;"
-                                  tds-tooltip tooltipTitle="Tìm kiếm sản phẩm trong danh sách">
-                                  <span class="tdsi-search-fill text-base" [ngClass]="{'text-primary-1': searchValue.length > 0}"></span>
+                              <tds-filter-trigger [(visible)]="visible" [active]="searchValue.length > 0" [dropdownMenu]="menu" style="width: 30%; text-align: end;">
+                                  <span class="tdsi-search-fill text-base" [ngClass]="{'text-primary-1': searchValue.length > 0}" tds-tooltip tooltipTitle="Tìm kiếm sản phẩm trong danh sách"></span>
                               </tds-filter-trigger>
                           </div>
                       </th>

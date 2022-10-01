@@ -101,7 +101,12 @@
                     <i class="tdsi-search-fill"></i>
                 </button>
 
-                <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="refreshRead()">
+                <!-- <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="refreshRead()">
+                    <i [ngClass]="isLoading?'animate-spin':''" class="tdsi-reload-fill"></i>
+                </button> -->
+                <button tds-button-flat-icon color="custom" rounded="!rounded-full" tds-tooltip="Refresh"
+                    class="text-neutral-1-400 bg-transparent hover:text-info-500 hover:bg-info-100 focus:text-info-500 focus:bg-info-100 focus:ring-transparent"
+                    (click)="refreshRead()">
                     <i [ngClass]="isLoading?'animate-spin':''" class="tdsi-reload-fill"></i>
                 </button>
             </div>

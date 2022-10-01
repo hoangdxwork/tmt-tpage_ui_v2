@@ -6,7 +6,7 @@ import { Injectable } from "@angular/core";
 @Injectable()
 
 export class PreparePartnerHandler {
-    
+
     public prepareModel(form:FormGroup, data:ChangePartnerPriceListDTO, partner: PartnerDetailDTO, idEdit: any) {
         data.PartnerDisplayName = partner.Name;
         data.PartnerPhone = partner.Phone;
@@ -34,6 +34,10 @@ export class PreparePartnerHandler {
         if (data.Account) {
             form.controls['Account'].setValue(data.Account);
             form.controls['AccountId'].setValue(data.Account.Id);
+        }
+
+        if (partner) {
+          form.controls['Partner'].setValue(partner);
         }
 
         form.controls['PriceList'].setValue(data.PriceList);
