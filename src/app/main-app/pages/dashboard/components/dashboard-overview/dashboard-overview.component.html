@@ -1,19 +1,19 @@
 <div class="bg-white flex flex-col rounded-xl px-4">
-    <tds-spin [spinning]="isLoading">
-        <div class="flex flex-row items-center justify-between py-4">
-            <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Tổng quan</span>
-            <div class="flex flex-row items-center">
-                <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
-                <tds-select valueField="name" textField="name" [ngModel]="currentDateRanges" [border]="false"
-                    [data]="tdsDateRanges" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
-                    (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
-                    <ng-template tds-label-tmp let-item="item">
-                        <span class="text-primary-1 font-semibold">{{item.data.name}}</span>
-                    </ng-template>
-                </tds-select>
-            </div>
+    <div class="flex flex-row items-center justify-between py-4">
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Tổng quan</span>
+        <div class="flex flex-row items-center">
+            <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
+            <tds-select valueField="name" textField="name" [ngModel]="currentDateRanges" [border]="false"
+                [data]="tdsDateRanges" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
+                (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
+                <ng-template tds-label-tmp let-item="item">
+                    <span class="text-primary-1 font-semibold">{{item.data.name}}</span>
+                </ng-template>
+            </tds-select>
         </div>
-        <div *ngIf="!emptyData;else emptyTmp">
+    </div>
+    <div *ngIf="!emptyData;else emptyTmp">
+        <tds-spin [spinning]="isLoading">
             <div class="flex flex-row items-center justify-between py-6">
                 <div class="xl:grid xl:grid-cols-3 xl:gap-4 2xl:flex 2xl:flex-row items-center p-4 w-full">
                     <span class="bg-[#F2EDFF] border border-transparent rounded-2xl p-2">
@@ -22,7 +22,7 @@
                     <div class="flex flex-col 2xl:pl-6 xl:col-span-2">
                         <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{ data?.Current?.Conversation | numberCustom }}</span>
                         <tds-tag [status]="onCalcPercent(data, 'Conversation') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
-                            type="outline" tds-tooltip="Dữ liệu trước đó: {{data?.Previous?.Conversation}}">
+                            type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Conversation }}">
                             {{ onCalcPercent(data, 'Conversation') >= 0 ? onCalcPercent(data, 'Conversation').toFixed(0) : (-1 * onCalcPercent(data, 'Conversation')).toFixed(0) }}%
                             <span [class]="onCalcPercent(data, 'Conversation') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
                         </tds-tag>
@@ -80,8 +80,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </tds-spin>
+        </tds-spin>
+    </div>
 </div>
 <ng-template #emptyTmp>
     <app-dashboard-empty-data></app-dashboard-empty-data>
