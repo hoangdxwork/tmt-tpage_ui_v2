@@ -60,18 +60,20 @@ export class ChatomniConversationFacade extends BaseSevice  {
     return {...item};
   }
 
-  prepareCreateMessageOnEventSocket(socket: SocketEventSubjectDto){
+  prepareNewMessageOnEventSocket(socket: SocketEventSubjectDto){
     let item: ChatomniConversationItemDto = {
       ConversationId: socket.Data.Conversation?.UserId,
       CountUnread: 1,
       HasAddress: false,
       HasPhone: false,
       Id: socket.Data.Conversation?.Id,
+
       LatestMessage: {
         CreatedTime: socket.Data.Message?.CreatedTime,
         Message: socket.Data.Message?.Message,
         MessageType: socket.Data.Message?.MessageType,
       } as TDSSafeAny,
+
       Name:  socket.Data.Conversation?.Name || this.checkUser(socket.Data.Message?.MessageType),
       UpdatedTime: socket.Data.Conversation?.UpdatedTime || socket.Data.Message?.ChannelCreatedTime,
       UserId: socket.Data.Conversation?.UserId
