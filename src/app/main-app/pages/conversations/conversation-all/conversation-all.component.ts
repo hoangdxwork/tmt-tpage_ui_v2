@@ -50,8 +50,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateChatbotTranserAdmin') templateChatbotTranserAdmin!: TemplateRef<{}>;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
-  @ViewChild(VirtualScrollerComponent)
-  private virtualScroller!: VirtualScrollerComponent;
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
   isLoading: boolean = false;
   dataSource$?: Observable<ChatomniConversationDto> ;
@@ -195,9 +194,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   setSocketChatomniOnMessage(data: SocketEventSubjectDto) {
-    let index = this.lstConversation.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
-    if(Number(index) >= 0) {
+    let index = this.lstConversation?.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
 
+    if(Number(index) >= 0) {
         this.lstConversation[index].LatestMessage = {
             CreatedTime: data.Data.Message?.CreatedTime,
             Message: data.Data.Message?.Message,
@@ -221,11 +220,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation = [...this.lstConversation];
 
         // TODO: Check vị trí ConversationId và add vào đàu tiên
-        let model = {...this.lstConversation[index]};
+        const model = {...this.lstConversation[index]};
         if(index > 0){
             this.lstConversation = this.lstConversation.filter(x => x.ConversationId != data.Data.Conversation?.UserId);
             this.lstConversation = [...[model], ...(this.lstConversation || [])];
         }
+
+    } else {
+
+        // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
+        let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data);
+        this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])];
     }
 
     this.cdRef.detectChanges();
@@ -800,22 +805,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     localStorage.removeItem(_keyCache);
   }
 
-  onItemsRender(event: ItemsRenderDto) {
-    let exits = event && event.items && this.lstConversation && this.lstConversation.length > 0 && !this.disableNextUrl && !this.isProcessing;
-    if(exits) {
-        let lastItemAg = event.items[event.length - 1];
-        let lastItemCs = this.lstConversation[this.lstConversation.length - 1];
-
-        if(lastItemAg && lastItemCs && lastItemAg.ConversationId == lastItemCs.ConversationId) {
-            this.nextData(event);
-        }
-    }
-  }
-
   vsEnd(event: NgxVirtualScrollerDto) {
     let exisData = this.lstConversation && this.lstConversation.length > 0 && event;
     if(exisData) {
-        const vsEnd = (this.lstConversation.length - 1) == event.endIndex && this.disableNextUrl as boolean;
+        const vsEnd = Number(this.lstConversation.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
         if(vsEnd) {
             this.nextData(event);
         }
