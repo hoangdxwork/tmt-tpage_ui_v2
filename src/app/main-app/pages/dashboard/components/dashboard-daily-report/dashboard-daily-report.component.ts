@@ -117,7 +117,7 @@ export class DashboardDailyReportComponent implements OnInit {
     maxHour = Number(maxHour) + 1;
     this.axisData = [];
 
-    for (let i = 1; i <= maxHour; i++) {
+    for (let i = 0; i <= maxHour; i++) {
       this.axisData = [...this.axisData, [i]];
     }
   }

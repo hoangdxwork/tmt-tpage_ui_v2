@@ -255,12 +255,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: ChatomniDataItemDto) => {
         if(res) {
             this.validateData();
-
+          
             this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromPost(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
             if(!this.insertFromPostModel.UserId) {
                 this.insertFromPostModel.UserId = this.userInit.Id;
             }
-
+            
             //TODO: thực hiện call API insertfrompost ,ko tạo hóa đơn
             this.insertFromPost(this.insertFromPostModel, res);
 
@@ -761,6 +761,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           this.mappingAddress(this.quickOrderModel);
           this.quickOrderModel.FormAction = formAction;
+          
+          // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
+          if(TDSHelperArray.isArray(this.quickOrderModel.Details)){
+            this.quickOrderModel.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+              let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+
+              if(exist) {
+                x.Discount = exist.Discount;
+              }
+            })
+          }
 
           if(!this.isEnableCreateOrder && type == 'print') {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
@@ -840,13 +851,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           next: (res: any) => {
 
               delete res['@odata.context'];
-              res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+              // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
+              if(TDSHelperArray.isArray(res.Details)){
+                res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
                   let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
 
                   if(exist) {
                     x.Discount = exist.Discount;
                   }
-              })
+                })
+              }
 
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
