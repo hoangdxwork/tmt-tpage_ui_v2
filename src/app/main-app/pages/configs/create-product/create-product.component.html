@@ -457,7 +457,7 @@
                       </tds-select>
                     </td>
                     <td>
-                      <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}" 
+                      <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
                         [formatter]="numberWithCommas" [parser]="parserComas"
                         [min]="0" [step]="1000"
                         class="text-neutral-1-900 text-body-2 font-regular">
@@ -469,17 +469,17 @@
                     <td>
                       <div class="flex flex-row items-center gap-x-1">
                         <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
-                        (click)="showEditVariantsModal(data)">
-                        <span class="flex items-center">
-                          <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
-                        </span>
-                      </button>
-                      <button tds-button-icon color="secondary" type="button" size="sm"
-                        (click)="removeVariants(data)">
-                        <span class="flex items-center">
-                          <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
-                        </span>
-                      </button>
+                          (click)="showEditVariantsModal(data)">
+                          <span class="flex items-center">
+                            <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
+                          </span>
+                        </button>
+                        <button tds-button-icon color="secondary" type="button" size="sm"
+                          (click)="removeVariants(data)">
+                          <span class="flex items-center">
+                            <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
+                          </span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -545,7 +545,7 @@
                     <td>{{ (data.Product.ListPrice || 0) | numberCustom }}đ</td>
                     <td>{{ ((data.Product.ListPrice || 0) * data.Quantity) | numberCustom }}đ</td>
                     <td>
-                      <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                      <button tds-button-icon color="secondary" type="button" size="sm" class="mr-2"
                         (click)="showCreateComboModal(data, i)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>

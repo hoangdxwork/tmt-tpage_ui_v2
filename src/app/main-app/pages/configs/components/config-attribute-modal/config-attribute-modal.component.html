@@ -40,7 +40,7 @@
                             </tds-form-field>
                         </td>
                         <td [width]="'116px'" [align]="'center'">
-                            <button tds-button-flat-icon type="button" size="sm"
+                            <button tds-button-flat-icon type="button" size="sm" tds-tooltip="Xóa"
                                 (click)="deleteAttribute(data.AttributeId)">
                                 <span class="flex items-center">
                                     <i class="tdsi-trash-line text-error-400 text-xl leading-none"></i>
@@ -62,10 +62,10 @@
 </form>
 <!-- footer -->
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="onCancel()">
+    <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">
         Hủy bỏ
     </button>
-    <button tds-button type="submit" color="primary" type="submit" (click)="onSave()">
+    <button tds-button type="submit" color="primary" class="min-w-[100px]" (click)="onSave()">
         Lưu
     </button>
 </div>
