@@ -53,6 +53,13 @@
             <tds-tab title="Cấu hình">
               <tds-spin [spinning]="isLoading">
                 <div class="grid grid-cols-3 gap-4">
+                  <div>
+                    <tds-label>Tên người gửi</tds-label>
+                    <tds-form-field>
+                      <input tdsInput placeholder="Nhập tên người gửi" name="SenderName" formControlName="SenderName" type="text"
+                        class="text-neutral-1-900 text-body-2 font-regular" />
+                    </tds-form-field>
+                  </div>
                   <ng-container *ngFor="let item of data">
                     <div>
                       <div class="font-bold break-all">
@@ -61,6 +68,7 @@
                         </tds-label>
                       </div>
                       <div class="break-all">
+
                         <ng-container *ngIf="item.InputType == 'text'">
                           <tds-form-field *ngIf="item.Type == 'password'">
                             <input tdsInput placeholder="Nhập giá trị" name="DefaultValue"
@@ -77,6 +85,14 @@
                             </button>
                           </div>
                         </ng-container>
+
+                        <ng-container *ngIf="item.InputType == 'number'">
+                          <tds-form-field>
+                            <tds-input-number [(ngModel)]="item.ConfigValue" [ngModelOptions]="{standalone: true}" [min]="0" 
+                              [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                          </tds-form-field>
+                        </ng-container>
+
                         <ng-container *ngIf="item.InputType == 'drop_down'">
                           <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
@@ -85,6 +101,7 @@
                             </tds-select>
                           </tds-form-field>
                         </ng-container>
+
                         <ng-container *ngIf="item.InputType == 'combo_box'">
                           <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
@@ -125,9 +142,18 @@
             </tds-tab>
             <tds-tab title="Giá trị mặc định">
               <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                <div class="grid grid-cols-2 gap-y-4 gap-x-6 items-center">
+                  <tds-label>Phí ship mặc định</tds-label>
+                  <tds-form-field class="w-full">
+                    <tds-input-number formControlName="Config_DefaultFee" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
+                      class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                    <tds-error>
+                      Vui lòng nhập phí ship mặc định
+                    </tds-error>
+                  </tds-form-field>
+
                   <tds-label>Khối lượng mặc định (g)</tds-label>
-                  <tds-form-field class="w-full col-span-2">
+                  <tds-form-field class="w-full">
                     <tds-input-number formControlName="Config_DefaultWeight" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                       class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                     <tds-error>
@@ -136,7 +162,7 @@
                   </tds-form-field>
 
                   <tds-label>Chiều dài (cm)</tds-label>
-                  <tds-form-field class="w-full col-span-2">
+                  <tds-form-field class="w-full">
                     <tds-input-number formControlName="GHN_PackageLength" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                       class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                     <tds-error>
@@ -145,7 +171,7 @@
                   </tds-form-field>
 
                   <tds-label>Chiều rộng (cm)</tds-label>
-                  <tds-form-field class="w-full col-span-2">
+                  <tds-form-field class="w-full">
                     <tds-input-number formControlName="GHN_PackageWidth" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                       class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                     <tds-error>
@@ -154,7 +180,7 @@
                   </tds-form-field>
 
                   <tds-label>Chiều cao (cm)</tds-label>
-                  <tds-form-field class="w-full col-span-2">
+                  <tds-form-field class="w-full">
                     <tds-input-number formControlName="GHN_PackageHeight" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
                       class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                     <tds-error>
@@ -162,6 +188,19 @@
                     </tds-error>
                   </tds-form-field>
 
+                  <tds-label>Giá trị bảo hiểm bằng tổng tiền</tds-label>
+                  <div class="w-full">
+                    <tds-checkbox formControlName="IsInsuranceEqualTotalAmount"></tds-checkbox>
+                  </div>
+
+                  <tds-label>Giá trị bảo hiểm mặc định</tds-label>
+                  <tds-form-field class="w-full">
+                    <tds-input-number formControlName="InsuranceFee" [min]="0" [formatter]="numberWithCommas" [parser]="parserComas"
+                      class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                    <tds-error>
+                      Vui lòng nhập giá trị bảo hiểm mặc định
+                    </tds-error>
+                  </tds-form-field>
                 </div>
               </div>
             </tds-tab>

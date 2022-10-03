@@ -92,23 +92,9 @@ export class SO_PrepareFastSaleOrderHandler {
       } as any;
 
       saleModel.OrderLines = [];
-      quickOrderModel.Details?.map((x: Detail_QuickSaleOnlineOrder) => {
-        if(x.Discount > 0) {
-          let item = {
-            Discount: x.Discount,
-            Discount_Fixed: 0,
-            Note: x.Note,
-            PriceSubTotal: x.Price,
-            PriceUnit: x.Price,
-            ProductId: x.ProductId,
-            ProductUOMId: x.UOMId,
-            ProductUOMQty: x.Quantity,
-            Type: 'percent',
-          } as any;
 
-          saleModel.OrderLines?.push(item);
-
-        } else {
+      if(quickOrderModel.Details) {
+        quickOrderModel.Details.map((x: Detail_QuickSaleOnlineOrder) => {
           let item = {
             Discount: 0,
             Discount_Fixed: 0,
@@ -120,10 +106,15 @@ export class SO_PrepareFastSaleOrderHandler {
             ProductUOMQty: x.Quantity,
             Type: 'fixed',
           } as any;
-
+  
+          if(x.Discount > 0){
+            item.Discount = x.Discount;
+            item.Type = 'percent';
+          }
+  
           saleModel.OrderLines?.push(item);
-        }
-      })
+        })
+      }
 
       return saleModel;
   }
