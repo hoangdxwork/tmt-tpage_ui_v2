@@ -87,9 +87,12 @@
 
                 <!-- List danh sách chat -->
                 <tds-spin [spinning]="isProcessing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full">
-                  <virtual-scroller #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
-                      *ngIf="lstConversation && lstConversation.length > 0"
-                      (vsEnd)="vsEnd($event)" [enableUnequalChildrenSizes]="true">
+                  <virtual-scroller *ngIf="lstConversation && lstConversation.length > 0"
+                      #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
+                      (vsEnd)="vsEnd($event)"
+                      [enableUnequalChildrenSizes]="true"
+                      [scrollAnimationTime]="750"
+                      [scrollThrottlingTime]="300">
 
                       <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1">
                           <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full">
