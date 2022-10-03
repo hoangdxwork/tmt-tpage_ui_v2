@@ -71,6 +71,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   queryObj: QueryFilterConversationDto = {} as any;
   isFilter: boolean = false;
 
+  isLoadingNextdata: boolean = false;
   isProcessing:boolean = false;
   disableNextUrl: boolean = false;
   clickReload: number = 0;
@@ -456,11 +457,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   nextData(event: any): any {
-    if (this.isProcessing) {
-        return false;
-    }
 
-    this.isProcessing = true;
     this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
@@ -471,10 +468,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           } else {
               this.disableNextUrl = true;
           }
-          this.isProcessing = false;
+
+          this.isLoadingNextdata = false;
       },
       error: (error) => {
-          this.isProcessing = false;
+          this.isLoadingNextdata = false;
       }
     })
   }
@@ -494,6 +492,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+
+    this.virtualScroller.refresh();
+    this.virtualScroller.scrollToPosition(0);
 
     this.queryObj = {} as any;
     this.innerText.nativeElement.value = '';
@@ -669,6 +670,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadFilterDataSource() {
+    this.lstConversation = [];
     this.isProcessing = true;
 
     this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, this.queryObj).pipe(takeUntil(this.destroy$)).subscribe({
@@ -800,7 +802,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if(exisData) {
         const vsEnd = Number(this.lstConversation.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
         if(vsEnd) {
-            this.nextData(event);
+
+            if (this.isProcessing || this.isLoadingNextdata) {
+                return;
+            }
+
+            this.isLoadingNextdata = true;
+            setTimeout(() => {
+              this.nextData(event);
+            }, 350);
         }
     }
   }

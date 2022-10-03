@@ -91,8 +91,7 @@
                       #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
                       (vsEnd)="vsEnd($event)"
                       [enableUnequalChildrenSizes]="true"
-                      [scrollAnimationTime]="750"
-                      [scrollThrottlingTime]="300">
+                      [scrollAnimationTime]="750">
 
                       <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1">
                           <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full">
@@ -110,6 +109,12 @@
                               </a>
                           </div>
                       </div>
+
+                      <div *ngIf="isLoadingNextdata || isProcessing" class="p-4 bg-white">
+                        <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                        <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                      </div>
+                     
                       <div class="!flex-auto bg-white !h-auto w-full !min-h-min"></div>
 
                   </virtual-scroller>
