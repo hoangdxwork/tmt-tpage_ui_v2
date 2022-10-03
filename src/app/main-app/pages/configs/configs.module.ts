@@ -114,6 +114,7 @@ import { CreateDefaultProductComponent } from './components/create-default-produ
 import { TDSAlertModule } from 'tds-ui/alert';
 import { QuillModule } from 'ngx-quill';
 import { quillOptions } from 'src/app/app.module';
+import { CreateUnitComponent } from './components/create-unit/create-unit.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -195,6 +196,7 @@ const SERVICES = [
     UpdateInitInventoryComponent,
     DefaultOrderComponent,
     CreateDefaultProductComponent,
+    CreateUnitComponent,
   ],
   imports: [
     CommonModule,

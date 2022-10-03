@@ -188,21 +188,20 @@
           </upload-pictures-wall>
         </tds-tab>
 
-        <tds-tab title="Đơn vị bán hàng">
+        <tds-tab title="Đơn vị bán hàng" *ngIf="id">
           <div class="h-full w-full">
             <div class="rounded-xl border border-neutral-2-200 flex flex-col">
               <div class="w-full px-4 py-2.5 flex justify-between items-center">
                 <span class="text-title-1 font-semibold text-neutral-1-900">Danh sách đơn hàng</span>
-                <button tds-button color="primary">
+                <button tds-button color="primary" (click)="createUOMModal()">
                   <span class="flex items-center">
                     <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Thêm đơn vị
                   </span>
                 </button>
               </div>
               <div class="h-[300px] min-h-[300px] w-full">
-                <tds-table #salesUnitTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstUOM"
-                  [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"
-                  [loading]="isLoading">
+                <tds-table #salesUnitTable [showPagination]="false" [frontPagination]="false" [listData]="lstUOM"
+                  [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading">
                   <thead>
                     <tr>
                       <th width="25%">Đơn vị</th>
@@ -212,19 +211,19 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <ng-template ngFor let-data [ngForOf]="salesUnitTable.data">
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="salesUnitTable.data">
                       <tr>
-                        <td>{{ data.UOM.NameGet }} </td>
-                        <td>{{ data.ListPrice }}</td>
+                        <td>{{ data.UOM.NameGet || data.UOM.Name }} </td>
+                        <td>{{ data.ListPrice | numberCustom }}</td>
                         <td>{{ data.Barcode }}</td>
                         <td>
                           <div class="flex gap-x-2">
-                            <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa">
+                            <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa" (click)="editUOMModal(data, i)">
                               <span class="flex items-center">
                                 <i class="tdsi-edit-fill text-neutral-1-500"></i>
                               </span>
                             </button>
-                            <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa">
+                            <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa" (click)="removeUOM(i)">
                               <span class="flex items-center">
                                 <i class="tdsi-trash-fill text-neutral-1-500"></i>
                               </span>

@@ -1,3 +1,4 @@
+import { UOMLine } from './../../dto/configs/product/config-product-default.dto';
 import { ComboProductDTO } from './../../dto/product/product-combo.dto';
 import { Injectable } from "@angular/core";
 import { WallPicturesDTO } from "../../dto/attachment/wall-pictures.dto";
@@ -8,7 +9,7 @@ import { ConfigAttributeLine, ConfigProductDefaultDTO, ConfigProductVariant } fr
 })
 export class AddProductHandler {
    
-   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines?: ConfigAttributeLine[], listProductVariants?: ConfigProductVariant[], listComboProducts?: ComboProductDTO[]) {
+   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines?: ConfigAttributeLine[], listProductVariants?: ConfigProductVariant[], listComboProducts?: ComboProductDTO[], lstUOM?: any[]) {
 
       dataModel = {...dataModel,...formModel};
       
@@ -23,6 +24,15 @@ export class AddProductHandler {
       
       if(listComboProducts){
          dataModel.ComboProducts = listComboProducts;
+      }
+
+      if(lstUOM){
+         lstUOM.map(x => {
+            if(x.Id <= 0){
+               delete x.Id;
+            }
+         })
+         dataModel.UOMLines = lstUOM;
       }
       
       dataModel.Images = images || [];
