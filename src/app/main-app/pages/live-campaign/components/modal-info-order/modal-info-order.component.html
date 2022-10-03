@@ -3,21 +3,17 @@
     <tds-tabset class="bg-white h-full"
       [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 
-      <tds-tab [title]="'Thông tin chung'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
-        <div class="grid grid-cols-2 gap-x-4 gap-y-4 p-4">
-          <div class="flex gap-x-4 gap-y-2 items-baseline">
+      <tds-tab [title]="'Thông tin chung'" clsContent="border-t p-4 flex border-neutral-2-200 h-full -mt-px">
+        <div class="w-1/2 grid grid-cols-1 gap-y-4">
+          <div class="flex gap-x-4 items-baseline">
             <span class="text-sm font-normal w-1/3">Tên</span>
-            <div class="text-sm font-semibold w-2/3">
-              <span class="text-sm font-semibold w-2/3">{{ data?.Facebook_UserName }}</span>
-              <div class="bg-info-100 rounded h-[24px] w-[120px]">
-
+            <div class="text-sm flex flex-col gap-y-2 font-semibold">
+              <span class="text-sm font-semibold w-2/3">{{ data?.PartnerName }}</span>
+              <div class="bg-info-100 text-base rounded px-2 py-1 flex items-center gap-x-2">
+                <div class="tdsi-facebook-2-fill text-[#1973EC]"></div>
+                <span class="text-caption-2 font-semibold">{{ data?.Facebook_UserName }}</span>
               </div>
             </div>
-          </div>
-
-          <div class="flex gap-x-4 items-baseline">
-            <span class="text-sm font-normal w-1/3">Người bán</span>
-            <span class="text-sm font-semibold w-2/3">{{ data?.User?.Name }}</span>
           </div>
 
           <div class="flex gap-x-4 items-baseline">
@@ -26,18 +22,8 @@
           </div>
 
           <div class="flex gap-x-4 items-baseline">
-            <span class="text-sm font-normal w-1/3">Ghi chú giao hàng</span>
-            <span class="text-sm font-semibold w-2/3">{{ data?.Note }}</span>
-          </div>
-
-          <div class="flex gap-x-4 items-baseline">
             <span class="text-sm font-normal w-1/3">Email</span>
             <span class="text-sm font-semibold w-2/3">{{ data?.Email }}</span>
-          </div>
-
-          <div class="flex gap-x-4 items-baseline">
-            <span class="text-sm font-normal w-1/3">Tổng tiền</span>
-            <span class="text-sm font-semibold w-2/3">{{ data?.TotalAmount || 0 | numberCustom}}</span>
           </div>
 
           <div class="flex gap-x-4 items-baseline">
@@ -45,9 +31,38 @@
             <span class="text-sm font-semibold w-2/3">{{ data?.Address }}</span>
           </div>
         </div>
+        <div class="w-1/2">
+          <div class="grid grid-cols-1 gap-y-4">
+            <div class="flex gap-x-4 items-baseline">
+              <span class="text-sm font-normal w-1/3">Người bán</span>
+              <span class="text-sm font-semibold w-2/3">{{ data?.User?.Name }}</span>
+            </div>
+  
+            <div class="flex gap-x-4 items-baseline">
+              <span class="text-sm font-normal w-1/3">Ghi chú giao hàng</span>
+              <span class="text-sm font-semibold w-2/3">{{ data?.Note }}</span>
+            </div>
+  
+            <div class="flex gap-x-4 items-baseline">
+              <span class="text-sm font-normal w-1/3">Tổng tiền</span>
+              <span class="text-sm font-semibold w-2/3">{{ data?.TotalAmount || 0 | numberCustom}}</span>
+            </div>
+          </div>
+        </div>
       </tds-tab>
-
-      <tds-tab [title]="'Sản phẩm'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+      <!-- Sản phẩm ({{ data?.Details?.length }}) -->
+      <tds-tab [title]="productTitle" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+        <ng-template #productTitle let-active="active">
+          <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+            [ngClass]='{"border-primary-1":active,"border-transparent text-neutral-1-400 hover:border-primary-1":!active}'>
+            <span class="mr-2">Sản phẩm</span>
+            <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+              [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100
+              group-hover:text-white group-hover:bg-primary-1':!active}">
+              {{data?.Details?.length}}
+            </div>
+          </div>
+        </ng-template>
         <div class="w-full flex-auto text-body-2 text-neutral-1-900 h-full h-[216px]">
           <tds-table #table [showSizeChanger]="true" [frontPagination]="false" [listData]="data?.Details || []" [scroll]="{y:'auto'}">
             <thead>
