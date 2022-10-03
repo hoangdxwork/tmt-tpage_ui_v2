@@ -48,7 +48,7 @@ export class ProductTemplateUOMLineService extends BaseSevice {
     let filter = "";
     if (TDSHelperString.hasValueString(keyword)) {
       keyword = TDSHelperString.stripSpecialChars(keyword!.toLocaleLowerCase().trim());
-      filter = `&$filter=(contains(Name,'${keyword}')+or+contains(NameGet,'${keyword}')+or+contains(DefaultCode,'${keyword}'))`;
+      filter = `&$filter=(contains(NameNoSign,'${keyword}')+or+contains(NameGet,'${keyword}')+or+contains(DefaultCode,'${keyword}'))`;
     }
 
     const api: CoreAPIDTO = {
