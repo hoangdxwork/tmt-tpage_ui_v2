@@ -90,6 +90,7 @@
                   <virtual-scroller *ngIf="lstConversation && lstConversation.length > 0"
                       #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
                       (vsEnd)="vsEnd($event)"
+                      (vsStart)="vsStart($event)"
                       [enableUnequalChildrenSizes]="true"
                       [scrollAnimationTime]="750">
 
@@ -114,7 +115,7 @@
                         <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
                         <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
                       </div>
-                     
+
                       <div class="!flex-auto bg-white !h-auto w-full !min-h-min"></div>
 
                   </virtual-scroller>

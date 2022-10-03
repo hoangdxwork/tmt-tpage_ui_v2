@@ -50,6 +50,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
+  startIndex: number = 0;
+  vsSocketImports: ChatomniConversationItemDto[] = [];
 
   isLoading: boolean = false;
   dataSource$?: Observable<ChatomniConversationDto> ;
@@ -149,6 +151,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+
         switch(res && res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
@@ -195,7 +198,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   setSocketChatomniOnMessage(data: SocketEventSubjectDto) {
     let index = this.lstConversation?.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
-
     if(Number(index) >= 0) {
         this.lstConversation[index].LatestMessage = {
             CreatedTime: data.Data.Message?.CreatedTime,
@@ -219,18 +221,23 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index] = {...this.lstConversation[index]};
         this.lstConversation = [...this.lstConversation];
 
-        // TODO: Check vị trí ConversationId và add vào đàu tiên
-        const model = {...this.lstConversation[index]};
-        if(index > 0){
-            this.lstConversation = this.lstConversation.filter(x => x.ConversationId != data.Data.Conversation?.UserId);
-            this.lstConversation = [...[model], ...(this.lstConversation || [])];
-        }
-
     } else {
 
         // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
-        let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data);
-        this.lstConversation = [...[itemNewMess], ...(this.lstConversation || [])];
+        let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data) as ChatomniConversationItemDto;
+        const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
+        if(vsIndex >= 0) {
+            this.vsSocketImports[vsIndex].LatestMessage = {
+                CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                Message: itemNewMess.LatestMessage?.Message,
+                MessageType: itemNewMess.LatestMessage?.MessageType
+            } as any;
+
+            this.vsSocketImports[index] = {...this.vsSocketImports[index]};
+            this.vsSocketImports = [...this.vsSocketImports];
+        } else {
+            this.vsSocketImports = [ ...[itemNewMess], ...this.vsSocketImports];
+        }
     }
 
     this.cdRef.detectChanges();
@@ -809,9 +816,22 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
             this.isLoadingNextdata = true;
             setTimeout(() => {
-              this.nextData(event);
+                this.nextData(event);
             }, 350);
         }
+    }
+  }
+
+
+  vsStart(event: any) {
+    if(event && event.startIndex) {
+      let exist = (event.startIndex < this.startIndex) && this.vsSocketImports && this.vsSocketImports.length > 0;
+      if(exist) {
+          this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
+          this.vsSocketImports = [];
+      }
+
+      this.startIndex = event.startIndex;
     }
   }
 
