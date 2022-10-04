@@ -201,7 +201,7 @@
               </div>
               <div class="h-[300px] min-h-[300px] w-full">
                 <tds-table #salesUnitTable [showPagination]="false" [frontPagination]="false" [listData]="lstUOM"
-                  [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading">
+                  [scroll]="{y:'auto', x: 'auto'}">
                   <thead>
                     <tr>
                       <th width="25%">Đơn vị</th>
@@ -296,23 +296,22 @@
         <tds-tab title="Thông tin khác">
           <div class="grid grid-cols-1 gap-y-4">
             <div class="grid grid-cols-8 gap-x-6">
-              <tds-label>Mô tả sản phẩm</tds-label>
+              <tds-label class="max-w-[143px]">Mô tả sản phẩm</tds-label>
               <tds-form-field class="w-full col-span-7">
                 <textarea tdsInput formControlName="Description" placeholder="Nhập mô tả sản phẩm"></textarea>
               </tds-form-field>
             </div>
 
-            <div class="grid grid-cols-8 gap-x-8">
-              <tds-label>Mô tả trên báo giá bán hàng</tds-label>
+            <div class="grid grid-cols-8 gap-x-6">
+              <tds-label class="max-w-[143px]">Mô tả trên báo giá bán hàng</tds-label>
               <tds-form-field class="w-full col-span-7">
-                <textarea tdsInput formControlName="DescriptionSale"
-                  placeholder="Nhập mô tả trên báo giá bán hàng"></textarea>
+                <textarea tdsInput formControlName="DescriptionSale" placeholder="Nhập mô tả trên báo giá bán hàng"></textarea>
               </tds-form-field>
             </div>
 
             <div class="grid grid-cols-2 gap-x-8 gap-y-4">
               <div class="grid grid-cols-4 gap-y-4 gap-x-6 items-center">
-                <tds-label>Nhà sản xuất</tds-label>
+                <tds-label class="max-w-[143px]">Nhà sản xuất</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà sản xuất'
@@ -327,7 +326,7 @@
                   </button>
                 </div>
 
-                <tds-label>Nhà nhập khẩu</tds-label>
+                <tds-label class="max-w-[143px]">Nhà nhập khẩu</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà nhập khẩu'
@@ -342,7 +341,7 @@
                   </button>
                 </div>
 
-                <tds-label>Nhà phân phối</tds-label>
+                <tds-label class="max-w-[143px]">Nhà phân phối</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà phân phối'
@@ -357,7 +356,7 @@
                   </button>
                 </div>
 
-                <tds-label>Xuất xứ</tds-label>
+                <tds-label class="max-w-[143px]">Xuất xứ</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn xuất xứ'
@@ -372,7 +371,7 @@
                   </button>
                 </div>
 
-                <tds-label>Năm sản xuất</tds-label>
+                <tds-label class="max-w-[143px]">Năm sản xuất</tds-label>
                 <tds-form-field class="w-full col-span-3">
                   <tds-input-number formControlName="YearOfManufacture" [min]="0"
                     class="text-neutral-1-900 text-body-2 font-regular">
@@ -383,18 +382,18 @@
                 </tds-form-field>
               </div>
               <div class="grid grid-cols-4 grid-rows-1 gap-y-4 gap-x-6 items-center">
-                <tds-label>Thành phần</tds-label>
+                <tds-label class="max-w-[143px]">Thành phần</tds-label>
                 <tds-form-field class="w-full col-span-3">
                   <textarea tdsInput formControlName="Element" placeholder="Nhập thành phần"></textarea>
                 </tds-form-field>
 
-                <tds-label>Thông số kỹ thuật</tds-label>
+                <tds-label class="max-w-[143px]">Thông số kỹ thuật</tds-label>
                 <tds-form-field class="w-full col-span-3">
                   <textarea tdsInput formControlName="Specifications"
                     placeholder="Nhập thông số kỹ thuật"></textarea>
                 </tds-form-field>
 
-                <tds-label>Thông tin cảnh báo</tds-label>
+                <tds-label class="max-w-[143px]">Thông tin cảnh báo</tds-label>
                 <tds-form-field class="w-full col-span-3">
                   <textarea tdsInput formControlName="InfoWarning"
                     placeholder="Nhập thông tin cảnh báo"></textarea>
