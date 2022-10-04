@@ -8,6 +8,7 @@ import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/cha
 @Component({
   selector: 'object-tshop-post',
   templateUrl: './object-tshop-post.component.html',
+  styleUrls : ['./object-post.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })

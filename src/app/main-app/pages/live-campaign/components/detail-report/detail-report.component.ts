@@ -22,7 +22,7 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
   dataLiveCampaign!: any;
   height!: number;
   padding: number = 32;
-  gridItems: number = 184; 
+  gridItems: number = 184;
 
   constructor(private liveCampaignService: LiveCampaignService,
     private destroy$: TDSDestroyService,
@@ -50,7 +50,7 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
           this.data = {...res};
           this.isLoading = false;
           this.cdr.markForCheck();
-        }, 
+        },
         error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');
@@ -63,9 +63,11 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           this.dataLiveCampaign = res;
+          console.log(this.dataLiveCampaign);
+
           this.isLoading = false;
           this.cdr.markForCheck();
-        }, 
+        },
         error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');

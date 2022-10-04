@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ProductTemplateService } from '../../../../services/product-template.service';
@@ -10,20 +11,21 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
     selector: 'create-uom-modal',
-    templateUrl: './create-uom-modal.component.html'
+    templateUrl: './create-uom-modal.component.html',
+    providers: [TDSDestroyService]
 })
 export class CreateUOMModalComponent implements OnInit, OnDestroy {
     @Input() type!: string;
 
     addUOMForm!: FormGroup;
-    private destroy$ = new Subject<void>();
     name!: string;
 
     constructor(
         private modal: TDSModalRef,
         private message: TDSMessageService,
         private productTemplate: ProductTemplateService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private destroy$: TDSDestroyService
     ) {
         this.initForm();
     }

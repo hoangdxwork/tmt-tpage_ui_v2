@@ -70,3 +70,18 @@ export class GetColorStatusTextPipe implements PipeTransform {
     }
   }
 }
+
+@Pipe({
+  name: 'getColorShowConfig'
+})
+export class GetColorShowConfigPipe implements PipeTransform {
+
+  transform(status: string ): TDSTagStatusType {
+    switch(status) {
+      case "Nháp":
+        return "secondary";
+      default:
+        return "secondary";
+    }
+  }
+}

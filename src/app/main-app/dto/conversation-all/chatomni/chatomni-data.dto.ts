@@ -111,6 +111,16 @@ export interface Thumbnail {
   Height: number;
   Url: string;
 }
+
+export interface NlpEntityDto {
+  Name: string;
+  Offset: number;
+  Length: number;
+  Value: string;
+  Data?: any;
+  Time: Date;
+}
+
 export interface ChatomniDataItemDto {
   Data: ChatomniFacebookDataDto; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
   Id: string;
@@ -129,6 +139,7 @@ export interface ChatomniDataItemDto {
   ChannelCreatedTime: Date | any;
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
+  NlpEntities?: NlpEntityDto[];
   IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
 }
 

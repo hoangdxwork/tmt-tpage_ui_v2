@@ -185,7 +185,7 @@
                     </ng-template>
                   </div>
 
-                  <div class="flex mt-1 justify-between">
+                  <div class="flex mt-1 justify-between items-center">
                     <div>
                       <div class="flex text-xs text-error-500" *ngIf="!data.PrintCount || data.PrintCount == 0">
                         Chưa in
@@ -296,8 +296,8 @@
                 </td>
 
                 <!-- Thao tác -->
-                <td [tdsRight]="true" class="border-l" >
-                  <div class="flex justify-between">
+                <td [tdsRight]="true" class="border-l">
+                  <div class="flex gap-x-2">
                     <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>

@@ -1,3 +1,4 @@
+import { CreateUnitComponent } from './../components/create-unit/create-unit.component';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { UpdateInitInventoryComponent } from './../components/update-init-inventory/update-init-inventory.component';
 import { StockChangeProductQtyDTO } from './../../../dto/product/stock-change-product-qty.dto';
@@ -18,7 +19,7 @@ import { ProductTemplateUOMLineService } from '../../../services/product-templat
 import { ProductTemplateService } from '../../../services/product-template.service';
 import { CreateCountryModalComponent } from '../components/create-country-modal/create-country-modal.component';
 import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-UOM-modal.component';
-import { takeUntil, finalize, mergeMap, map } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
@@ -65,6 +66,7 @@ export class ConfigAddProductComponent implements OnInit {
   pageSize = 20;
   pageIndex = 1;
   count: number = 1;
+  indexPush: number = -1;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -107,7 +109,6 @@ export class ConfigAddProductComponent implements OnInit {
 
     if (this.id) {
       this.loadData(this.id);
-      this.loadStockChangeProductQty(this.id);
       this.loadProductAttributeLine(this.id);
       this.loadProductUOMLine(this.id);
       this.loadComboProducts(this.id);
@@ -128,10 +129,10 @@ export class ConfigAddProductComponent implements OnInit {
   loadData(id: TDSSafeAny) {
     this.isLoading = true;
 
-    this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe((res: TDSSafeAny) => {
+    this.productTemplateService.getProductTemplateById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
         delete res['@odata.context'];
-        this.dataModel = { ...res };console.log(this.dataModel)
+        this.dataModel = { ...res };
 
         // TODO: lấy danh sách biến thể
         if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
@@ -139,9 +140,19 @@ export class ConfigAddProductComponent implements OnInit {
         }
 
         this.formatProperty(this.dataModel);
-      }, error => {
+
+        // nếu type = 'product' thì lấy thông tin số lượng thực tế của sản phẩm
+        if(this.dataModel?.Type == 'product'){
+          this.loadStockChangeProductQty(this.id);
+        } else {
+          this.isLoading = false;
+        }
+      }, 
+      error: (error) => {
+        this.isLoading = false;
         this.message.error(error?.error?.message || Message.CanNotLoadData);
-      })
+      }
+    })
   }
 
   loadDataIndexDBCache() {
@@ -178,14 +189,16 @@ export class ConfigAddProductComponent implements OnInit {
 
     this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: res => {
-          this.stockChangeProductList = res.value;
+        next: (res) => {
+          this.stockChangeProductList = [...res.value];
           // TODO: số lượng tồn thực tế
           this.stockChangeProductList.forEach(item => {
             this.initInventory += item.NewQuantity;
           });
+          this.isLoading = false;
         },
-        error: err => {
+        error: (err) => {
+          this.isLoading = false;
           this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
         }
       })
@@ -607,6 +620,56 @@ export class ConfigAddProductComponent implements OnInit {
     control.push(this.initImages(data));
   }
 
+  createUOMModal(){
+    const modal = this.modalService.create({
+      title: 'Thêm đơn vị tính',
+      content: CreateUnitComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        lstUOM: this.UOMList
+      }
+    });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      if(res){
+        res.Id = this.indexPush;
+        this.indexPush--;
+        this.lstUOM = [...this.lstUOM,...[res]];
+      }
+    });
+  }
+
+  editUOMModal(data: UOMLine, index: number){
+    const modal = this.modalService.create({
+      title: 'Sửa đơn vị tính',
+      content: CreateUnitComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        lstUOM: this.UOMList,
+        Item: data
+      }
+    });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      if(res){
+        this.lstUOM.map((x,i) => {
+          if(i == index) {
+            x.Barcode = res.Barcode;
+            x.ListPrice = res.ListPrice;
+            x.UOM = res.UOM;
+            x.UOMId = res.UOMId;
+          }
+        })
+      }
+    });
+  }
+
+  removeUOM(index: number){
+    this.lstUOM = [...this.lstUOM.filter((x, i) => i != index)];
+  }
+
   addProductVariants(data: ConfigProductVariant) {
     let control = <FormArray>this._form.controls['ProductVariants'];
     control.push(this.initProductVariants(data));
@@ -615,8 +678,7 @@ export class ConfigAddProductComponent implements OnInit {
   addProduct() {
     let model = this.prepareModel();
     if (model.Name) {
-      this.productTemplateService.insertProductTemplate(model)
-        .pipe(takeUntil(this.destroy$)).subscribe(
+      this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
           {
             next: (res: TDSSafeAny) => {
               this.message.success(Message.InsertSuccess);
@@ -658,7 +720,7 @@ export class ConfigAddProductComponent implements OnInit {
   }
 
   prepareModel() {
-    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants, this.lstProductCombo);
+    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants, this.lstProductCombo, this.lstUOM);
   }
 
   backToMain() {

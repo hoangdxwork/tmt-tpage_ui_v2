@@ -61,4 +61,7 @@ export class TpageSearchUOMComponent implements OnInit {
     this.modalRef.destroy(result);
   }
 
+  addUOM(data: ProductUOMDTO){
+    this.onCancel(data);
+  }
 }

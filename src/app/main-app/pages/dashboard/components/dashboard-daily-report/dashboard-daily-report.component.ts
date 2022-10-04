@@ -117,7 +117,7 @@ export class DashboardDailyReportComponent implements OnInit {
     maxHour = Number(maxHour) + 1;
     this.axisData = [];
 
-    for (let i = 1; i <= maxHour; i++) {
+    for (let i = 0; i <= maxHour; i++) {
       this.axisData = [...this.axisData, [i]];
     }
   }
@@ -130,7 +130,7 @@ export class DashboardDailyReportComponent implements OnInit {
     let lstTotalConversation = data.Current.Conversations?.Data?.map((f:any) => { return f.Count }) || [];
     //TODO: lấy 5 giá trị trên trục y
     let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation) / 5;
-    this.interval = Math.ceil(calInterval);
+    this.interval = Math.ceil(calInterval / 100) * 100;
     
     this.axisData.forEach((hour) => {
       let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
@@ -276,7 +276,7 @@ export class DashboardDailyReportComponent implements OnInit {
 
   getSeries(seriesData:TDSSafeAny[]){
     let list:TDSLineChartDataSeries[] = [];
-    seriesData.forEach(series => {
+    seriesData.forEach((series, i) => {
       list.push(
         {
           name: series.name,
@@ -292,11 +292,16 @@ export class DashboardDailyReportComponent implements OnInit {
               y: 0,
               x2: 0,
               y2: 1,
-              colorStops: [{
-                  offset: 0, color: '#28A745'
-              }, {
-                  offset: 1, color: '#FFF'
-              }],
+              colorStops: [
+                {
+                  offset: 0, 
+                  color: this.colors[i].toString()
+                }, 
+                {
+                  offset: 1, 
+                  color: '#FFF'
+                }
+              ],
               global: false
             }
           },

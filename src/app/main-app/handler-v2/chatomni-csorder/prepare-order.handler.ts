@@ -110,6 +110,7 @@ export class CsOrder_PrepareModelHandler {
 
     if(product && product.ProductId) {
         let item = {
+          Discount: product.Discount,
           ProductId: product.ProductId,
           ProductName: product.ProductName,
           ProductNameGet: product.ProductNameGet,
@@ -205,6 +206,7 @@ export interface InsertFromPostDto {
 }
 
 export interface Detail {
+  Discount: number;
   ProductId: number;
   ProductName: string;
   ProductNameGet: string;

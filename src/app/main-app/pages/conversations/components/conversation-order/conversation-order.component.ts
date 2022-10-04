@@ -1,3 +1,6 @@
+import { UOM } from './../../../../dto/product-template/product-tempalte.dto';
+import { Product } from './../../../../dto/order/so-orderlines.dto';
+import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
@@ -7,7 +10,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil } from 'rxjs';
+import { takeUntil, map } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -177,7 +180,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private chatomniConversationFacade: ChatomniConversationFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private omniEventEmiter: ChatomniEventEmiterService,
-    private socketOnEventService: SocketOnEventService) {
+    private socketOnEventService: SocketOnEventService,
+    private deliveryCarrierV2Service: DeliveryCarrierV2Service) {
   }
 
   ngOnInit(): void {
@@ -235,6 +239,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
 
           if(Number(index) > -1){
+              if(res.DiscountSale > 0) {
+                this.quickOrderModel.Details[index].Discount = res.DiscountSale;
+              }
               this.notification.success(`Đã thêm ${this.quickOrderModel.Details[index].Quantity} / ${res.UOMName} `,
               `${res.NameGet} \n => Tổng tiền: ${this.quickOrderModel.TotalAmount}`)
           }
@@ -543,6 +550,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.coDAmount();
     }
 
+     // TODO: tải thông tin giao hàng, cập nhật giá trị hàng hóa
+     this.loadDelivery(event.Id);
+
     this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
@@ -554,6 +564,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     this.cdRef.detectChanges();
+  }
+
+  loadDelivery(carrierId: any) {
+    if (carrierId) {
+      this.isLoading = true;
+
+      this.deliveryCarrierV2Service.getById(carrierId).pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: res => {
+            if(res && TDSHelperObject.hasValue(res.Extras)){
+              this.saleModel.Ship_InsuranceFee = res.Extras?.InsuranceFee;
+              this.isLoading = false;
+
+              this.cdRef.detectChanges();
+            }
+          }
+        });
+    }
   }
 
   onEditPartner() {
@@ -696,7 +724,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     let model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
-
+    
     let model = Object.assign({}, model1, model2) as any;
     if(formAction) {
         model.FormAction = formAction;
@@ -733,6 +761,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           this.mappingAddress(this.quickOrderModel);
           this.quickOrderModel.FormAction = formAction;
+
+          // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
+          if(TDSHelperArray.isArray(this.quickOrderModel.Details)){
+            this.quickOrderModel.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+              let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+
+              if(exist) {
+                x.Discount = exist.Discount;
+              }
+            })
+          }
 
           if(!this.isEnableCreateOrder && type == 'print') {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
@@ -772,7 +811,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onSave(formAction?: string, type?: string): any {
 
     let model = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
-
+    
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
     }
@@ -812,6 +851,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           next: (res: any) => {
 
               delete res['@odata.context'];
+              // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
+              if(TDSHelperArray.isArray(res.Details)){
+                res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+                  let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+
+                  if(exist) {
+                    x.Discount = exist.Discount;
+                  }
+                })
+              }
+
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
 
@@ -859,6 +909,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           next: (res: any) => {
 
               delete res['@odata.context'];
+              res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+                let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+
+                if(exist) {
+                  x.Discount = exist.Discount;
+                }
+              })
+
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
 
@@ -1091,6 +1149,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       OrderId: this.quickOrderModel.Id,
       ImageUrl: data.ImageUrl,
       Priority: 0,
+      Discount: 0 //data.DiscountSale
     } as Detail_QuickSaleOnlineOrder;
 
     // TODO: trường hợp thêm mới từ product-template
@@ -1310,6 +1369,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   pushItemProduct(data: ProductDTOV2) {
     let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId == data.UOMId) as number;
     if (Number(index) >= 0) {
+        if(data.DiscountSale > 0) {
+          this.quickOrderModel.Details[index].Discount = data.DiscountSale;
+        }
         this.quickOrderModel.Details[index].Quantity += 1;
 
     } else{
@@ -1478,8 +1540,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeNote(event: any) {
-    if(event && event.target && event.target.value && this.quickOrderModel) {
-        this.quickOrderModel.Note = event.target.value;
+    if(event && event.target && this.quickOrderModel) {
+      let value = event.target.value;
+      this.quickOrderModel.Note = value;
     }
   }
 

@@ -216,7 +216,7 @@ export class DetailBillComponent implements OnInit {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.filterObj.searchText = data.value;
-    
+
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -281,9 +281,9 @@ export class DetailBillComponent implements OnInit {
     this.crmMatchingService.getMDBByPSId(pageId, psid)
       .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)    
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
           this.currentConversation = { ...model };
-          
+
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }
@@ -304,6 +304,7 @@ export class DetailBillComponent implements OnInit {
   print(type: string) {
     let that = this;
     if (this.isProcessing) {
+      this.isLoading = false
       return
     }
 
@@ -328,10 +329,9 @@ export class DetailBillComponent implements OnInit {
 
   sendDelivery() {
     if (this.isProcessing) {
+      this.isLoading = false
       return
     }
-
-    this.isLoading = true;
 
     if (this.checkValueEmpty() == 1) {
       this.modal.create({
@@ -360,6 +360,7 @@ export class DetailBillComponent implements OnInit {
 
   approveOrder() {
     if (this.isProcessing) {
+      this.isLoading = false
       return
     }
 
@@ -395,7 +396,6 @@ export class DetailBillComponent implements OnInit {
       this.message.error('Vui lòng chọn tối thiểu một dòng!');
       return 0;
     }
-
     return 1;
   }
 

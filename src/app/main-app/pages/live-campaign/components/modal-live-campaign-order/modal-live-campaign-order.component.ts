@@ -31,6 +31,9 @@ export class ModalLiveCampaignOrderComponent implements OnInit {
     this.modal.create({
       title: 'Thông tin đơn hàng',
       size:'xl',
+      bodyStyle: {
+        padding: '0px'
+      },
       content: ModalInfoOrderComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {

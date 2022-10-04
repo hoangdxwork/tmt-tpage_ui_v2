@@ -32,8 +32,10 @@ export class ModalInfoOrderComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.data = res;
+        this.isLoading = false;
       }, error => {
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        this.isLoading = false;
       });
   }
 

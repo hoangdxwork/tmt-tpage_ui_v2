@@ -95,8 +95,8 @@
                 </button>
               </div>
 
-              <tds-label>Số lượng thực tế:</tds-label>
-              <div class="col-span-2 flex space-x-2">
+              <tds-label *ngIf="dataModel?.Type == 'product'">Số lượng thực tế:</tds-label>
+              <div class="col-span-2 flex space-x-2" *ngIf="dataModel?.Type == 'product'">
                 <tds-form-field class="w-full">
                   <tds-input-number
                     [ngModel]="_form.value.InitInventory || initInventory"
@@ -188,21 +188,20 @@
           </upload-pictures-wall>
         </tds-tab>
 
-        <tds-tab title="Đơn vị bán hàng">
+        <tds-tab title="Đơn vị bán hàng" *ngIf="id">
           <div class="h-full w-full">
             <div class="rounded-xl border border-neutral-2-200 flex flex-col">
               <div class="w-full px-4 py-2.5 flex justify-between items-center">
                 <span class="text-title-1 font-semibold text-neutral-1-900">Danh sách đơn hàng</span>
-                <button tds-button color="primary">
+                <button tds-button color="primary" (click)="createUOMModal()">
                   <span class="flex items-center">
                     <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Thêm đơn vị
                   </span>
                 </button>
               </div>
               <div class="h-[300px] min-h-[300px] w-full">
-                <tds-table #salesUnitTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstUOM"
-                  [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"
-                  [loading]="isLoading">
+                <tds-table #salesUnitTable [showPagination]="false" [frontPagination]="false" [listData]="lstUOM"
+                  [scroll]="{y:'auto', x: 'auto'}">
                   <thead>
                     <tr>
                       <th width="25%">Đơn vị</th>
@@ -212,19 +211,19 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <ng-template ngFor let-data [ngForOf]="salesUnitTable.data">
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="salesUnitTable.data">
                       <tr>
-                        <td>{{ data.UOM.NameGet }} </td>
-                        <td>{{ data.ListPrice }}</td>
+                        <td>{{ data.UOM.NameGet || data.UOM.Name }} </td>
+                        <td>{{ data.ListPrice | numberCustom }}</td>
                         <td>{{ data.Barcode }}</td>
                         <td>
                           <div class="flex gap-x-2">
-                            <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa">
+                            <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa" (click)="editUOMModal(data, i)">
                               <span class="flex items-center">
                                 <i class="tdsi-edit-fill text-neutral-1-500"></i>
                               </span>
                             </button>
-                            <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa">
+                            <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa" (click)="removeUOM(i)">
                               <span class="flex items-center">
                                 <i class="tdsi-trash-fill text-neutral-1-500"></i>
                               </span>
@@ -297,23 +296,22 @@
         <tds-tab title="Thông tin khác">
           <div class="grid grid-cols-1 gap-y-4">
             <div class="grid grid-cols-8 gap-x-6">
-              <tds-label>Mô tả sản phẩm</tds-label>
+              <tds-label class="max-w-[143px]">Mô tả sản phẩm</tds-label>
               <tds-form-field class="w-full col-span-7">
-                <textarea tdsInput formControlName="Description" placeholder="Nhập mô tả sản phẩm"></textarea>
+                <textarea tdsInput formControlName="Description" placeholder="Nhập mô tả sản phẩm" class="resize-none no-scrollbar"></textarea>
               </tds-form-field>
             </div>
 
-            <div class="grid grid-cols-8 gap-x-8">
-              <tds-label>Mô tả trên báo giá bán hàng</tds-label>
+            <div class="grid grid-cols-8 gap-x-6">
+              <tds-label class="max-w-[143px]">Mô tả trên báo giá bán hàng</tds-label>
               <tds-form-field class="w-full col-span-7">
-                <textarea tdsInput formControlName="DescriptionSale"
-                  placeholder="Nhập mô tả trên báo giá bán hàng"></textarea>
+                <textarea tdsInput formControlName="DescriptionSale" placeholder="Nhập mô tả trên báo giá bán hàng" class="resize-none no-scrollbar"></textarea>
               </tds-form-field>
             </div>
 
             <div class="grid grid-cols-2 gap-x-8 gap-y-4">
               <div class="grid grid-cols-4 gap-y-4 gap-x-6 items-center">
-                <tds-label>Nhà sản xuất</tds-label>
+                <tds-label class="max-w-[143px]">Nhà sản xuất</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà sản xuất'
@@ -328,7 +326,7 @@
                   </button>
                 </div>
 
-                <tds-label>Nhà nhập khẩu</tds-label>
+                <tds-label class="max-w-[143px]">Nhà nhập khẩu</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà nhập khẩu'
@@ -343,7 +341,7 @@
                   </button>
                 </div>
 
-                <tds-label>Nhà phân phối</tds-label>
+                <tds-label class="max-w-[143px]">Nhà phân phối</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà phân phối'
@@ -358,7 +356,7 @@
                   </button>
                 </div>
 
-                <tds-label>Xuất xứ</tds-label>
+                <tds-label class="max-w-[143px]">Xuất xứ</tds-label>
                 <div class="flex space-x-2 items-center col-span-3">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn xuất xứ'
@@ -373,7 +371,7 @@
                   </button>
                 </div>
 
-                <tds-label>Năm sản xuất</tds-label>
+                <tds-label class="max-w-[143px]">Năm sản xuất</tds-label>
                 <tds-form-field class="w-full col-span-3">
                   <tds-input-number formControlName="YearOfManufacture" [min]="0"
                     class="text-neutral-1-900 text-body-2 font-regular">
@@ -384,21 +382,19 @@
                 </tds-form-field>
               </div>
               <div class="grid grid-cols-4 grid-rows-1 gap-y-4 gap-x-6 items-center">
-                <tds-label>Thành phần</tds-label>
+                <tds-label class="max-w-[143px]">Thành phần</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <textarea tdsInput formControlName="Element" placeholder="Nhập thành phần"></textarea>
+                  <textarea tdsInput formControlName="Element" placeholder="Nhập thành phần" class="resize-none no-scrollbar"></textarea>
                 </tds-form-field>
 
-                <tds-label>Thông số kỹ thuật</tds-label>
+                <tds-label class="max-w-[143px]">Thông số kỹ thuật</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <textarea tdsInput formControlName="Specifications"
-                    placeholder="Nhập thông số kỹ thuật"></textarea>
+                  <textarea tdsInput formControlName="Specifications" placeholder="Nhập thông số kỹ thuật" class="resize-none no-scrollbar"></textarea>
                 </tds-form-field>
 
-                <tds-label>Thông tin cảnh báo</tds-label>
+                <tds-label class="max-w-[143px]">Thông tin cảnh báo</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <textarea tdsInput formControlName="InfoWarning"
-                    placeholder="Nhập thông tin cảnh báo"></textarea>
+                  <textarea tdsInput formControlName="InfoWarning" placeholder="Nhập thông tin cảnh báo" class="resize-none no-scrollbar"></textarea>
                 </tds-form-field>
               </div>
             </div>
@@ -432,7 +428,7 @@
                   <tr>
                     <th width="6%">STT</th>
                     <th width="24%">Tên</th>
-                    <th width="30%">Mã chốt đơn</th>
+                    <!-- <th width="30%">Mã chốt đơn</th> -->
                     <th width="20%">Giá</th>
                     <th width="10%">Hoạt động</th>
                     <th width="10%">Thao tác</th>
@@ -451,13 +447,13 @@
                         </div>
                       </div>
                     </td>
-                    <td>
+                    <!-- <td>
                       <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [(ngModel)]="data.Tags" [ngModelOptions]="{standalone: true}"
                           [allowClear]="true" [data]="" mode="tags" class="w-full">
                       </tds-select>
-                    </td>
+                    </td> -->
                     <td>
-                      <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}" 
+                      <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
                         [formatter]="numberWithCommas" [parser]="parserComas"
                         [min]="0" [step]="1000"
                         class="text-neutral-1-900 text-body-2 font-regular">
@@ -469,17 +465,17 @@
                     <td>
                       <div class="flex flex-row items-center gap-x-1">
                         <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
-                        (click)="showEditVariantsModal(data)">
-                        <span class="flex items-center">
-                          <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
-                        </span>
-                      </button>
-                      <button tds-button-icon color="secondary" type="button" size="sm"
-                        (click)="removeVariants(data)">
-                        <span class="flex items-center">
-                          <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
-                        </span>
-                      </button>
+                          (click)="showEditVariantsModal(data)">
+                          <span class="flex items-center">
+                            <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
+                          </span>
+                        </button>
+                        <button tds-button-icon color="secondary" type="button" size="sm"
+                          (click)="removeVariants(data)">
+                          <span class="flex items-center">
+                            <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
+                          </span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -545,7 +541,7 @@
                     <td>{{ (data.Product.ListPrice || 0) | numberCustom }}đ</td>
                     <td>{{ ((data.Product.ListPrice || 0) * data.Quantity) | numberCustom }}đ</td>
                     <td>
-                      <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                      <button tds-button-icon color="secondary" type="button" size="sm" class="mr-2"
                         (click)="showCreateComboModal(data, i)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>

@@ -45,10 +45,10 @@ export class ModalProductTemplateComponent implements OnInit {
   lstVariants: Array<ConfigProductVariant> = [];
   productTypeList: Array<TDSSafeAny> = [];
 
-  cacheObject!: KeyCacheIndexDBDTO; 
+  cacheObject!: KeyCacheIndexDBDTO;
 
   minIndex = 0;
-  
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -56,7 +56,7 @@ export class ModalProductTemplateComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -99,7 +99,7 @@ export class ModalProductTemplateComponent implements OnInit {
         this.defaultGet = res;
         this.updateForm(res);
         this.isLoading = false;
-      }, 
+      },
       error:(error) => {
         this.isLoading = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
@@ -211,8 +211,12 @@ export class ModalProductTemplateComponent implements OnInit {
   }
 
   onSave(type?: string) :any {
+    if(this.isLoading) {
+      return;
+    }
+
     let model = this.prepareModel();
-    this.isLoading = true;
+    this.isLoading = true
 
     this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -220,16 +224,16 @@ export class ModalProductTemplateComponent implements OnInit {
           next: (res: any) => {
 
             delete res['@odata.context'];
-    
+
             let product = res as ProductTemplateV2DTO;
             this.message.success('Thêm mới sản phẩm thành công');
-    
+
             // TODO: Trường hợp ở component Phiếu bán hàng
             // Khi gán dữ liệu , lấy field VariantFirstId
-    
+
             this.loadProduct(type, product);
             this.isLoading = false;
-          }, 
+          },
           error: (error) => {
             this.isLoading = false;
             this.message.error(error?.error?.message || Message.InsertFail);
@@ -317,7 +321,7 @@ export class ModalProductTemplateComponent implements OnInit {
         this.message.success(Message.Upload.Success);
         this._form.controls["ImageUrl"].setValue(res[0].urlImageProxy);
         this.cdRef.markForCheck();
-      }, 
+      },
       error:(error) => {
         this.message.error(error?.Message || 'Upload xảy ra lỗi');
       }
