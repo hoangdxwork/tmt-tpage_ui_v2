@@ -255,12 +255,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: ChatomniDataItemDto) => {
         if(res) {
             this.validateData();
-          
+
             this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromPost(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
             if(!this.insertFromPostModel.UserId) {
                 this.insertFromPostModel.UserId = this.userInit.Id;
             }
-            
+
             //TODO: thực hiện call API insertfrompost ,ko tạo hóa đơn
             this.insertFromPost(this.insertFromPostModel, res);
 
@@ -576,7 +576,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             if(res && TDSHelperObject.hasValue(res.Extras)){
               this.saleModel.Ship_InsuranceFee = res.Extras?.InsuranceFee;
               this.isLoading = false;
-  
+
               this.cdRef.detectChanges();
             }
           }
@@ -761,7 +761,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           this.mappingAddress(this.quickOrderModel);
           this.quickOrderModel.FormAction = formAction;
-          
+
           // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
           if(TDSHelperArray.isArray(this.quickOrderModel.Details)){
             this.quickOrderModel.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
@@ -1149,7 +1149,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       OrderId: this.quickOrderModel.Id,
       ImageUrl: data.ImageUrl,
       Priority: 0,
-      Discount: data.DiscountSale || 0
+      Discount: 0 //data.DiscountSale
     } as Detail_QuickSaleOnlineOrder;
 
     // TODO: trường hợp thêm mới từ product-template

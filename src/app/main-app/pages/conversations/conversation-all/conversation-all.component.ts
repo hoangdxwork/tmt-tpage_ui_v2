@@ -50,7 +50,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
-  startIndex: number = 0;
+  vsStartIndex: number = 0;
   vsSocketImports: ChatomniConversationItemDto[] = [];
 
   isLoading: boolean = false;
@@ -222,21 +222,28 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation = [...this.lstConversation];
 
     } else {
-
         // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
         let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data) as ChatomniConversationItemDto;
-        const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
-        if(vsIndex >= 0) {
-            this.vsSocketImports[vsIndex].LatestMessage = {
-                CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
-                Message: itemNewMess.LatestMessage?.Message,
-                MessageType: itemNewMess.LatestMessage?.MessageType
-            } as any;
-
-            this.vsSocketImports[index] = {...this.vsSocketImports[index]};
-            this.vsSocketImports = [...this.vsSocketImports];
+        if(this.vsStartIndex <= 1) {
+            this.lstConversation = [ ...[itemNewMess], ...this.lstConversation];
+            this.lstConversation = [ ...this.lstConversation];
         } else {
-            this.vsSocketImports = [ ...[itemNewMess], ...this.vsSocketImports];
+            const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
+            if(vsIndex >= 0) {
+                this.vsSocketImports[vsIndex].LatestMessage = {
+                    CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                    Message: itemNewMess.LatestMessage?.Message,
+                    MessageType: itemNewMess.LatestMessage?.MessageType
+                } as any;
+
+                this.vsSocketImports[vsIndex].CountUnread = (this.vsSocketImports[vsIndex].CountUnread || 0) + 1;
+                this.vsSocketImports[vsIndex] = {...this.vsSocketImports[vsIndex]};
+
+            } else {
+                this.vsSocketImports = [ ...[itemNewMess], ...this.vsSocketImports];
+            }
+
+            this.vsSocketImports = [...this.vsSocketImports];
         }
     }
 
@@ -822,16 +829,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-
   vsStart(event: any) {
     if(event && event.startIndex) {
-      let exist = (event.startIndex < this.startIndex) && this.vsSocketImports && this.vsSocketImports.length > 0;
+      // TODO: mapping dữ liệu socket ko có trong danh sách
+      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && this.vsSocketImports && this.vsSocketImports.length > 0;
       if(exist) {
           this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
+          this.lstConversation = [...this.lstConversation];
           this.vsSocketImports = [];
       }
 
-      this.startIndex = event.startIndex;
+      this.vsStartIndex = event.startIndex;
     }
   }
 
