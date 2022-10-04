@@ -581,7 +581,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
-    let exits = this.lstObjects && this.lstObjects.length > 0 && event;
+    let exits = this.lstObjects && this.lstObjects.length > 0 && event && event.scrollStartPosition > 0;
     if(exits) {
       const vsEnd = Number(this.lstObjects.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
       if(vsEnd) {

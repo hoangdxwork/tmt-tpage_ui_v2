@@ -90,6 +90,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   currentConversation!: ChatomniConversationItemDto | any;
   commentOrders?: any = {};
   filterObj : TDSSafeAny;
+  lengthDataSource: number = 0;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -157,14 +158,17 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
                 if(this.vsStartIndex <= 1) {
                     this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
                     this.dataSource.Items = [...this.dataSource.Items];
+
+                    this.lengthDataSource = this.dataSource.Items.length;
+                    this.virtualScroller.scrollToPosition(0);
                 } else {
                     this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
                     this.vsSocketImports = [...this.vsSocketImports];
 
-                    this.dataSource.Items.length = this.dataSource.Items.length + 1;
+                    this.lengthDataSource = this.lengthDataSource + 1;
                 }
 
-                this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
+                this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
             }
 
             this.cdRef.detectChanges();
@@ -217,7 +221,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
         delete this.dataSource$;
-        delete this.dataSource;
+        this.dataSource = null;
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -256,7 +260,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
             this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
             this.dataSource.Items = [...this.dataSource.Items];
-
+            this.lengthDataSource = this.dataSource.Items.length;
+            
             this.isLoading = false;
             this.cdRef.markForCheck();
         },
@@ -612,13 +617,16 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
   nextData(event: any) {
     let id = `${this.team.Id}_${this.data.ObjectId}`;
-    this.dataSource$ = this.chatomniCommentService.nextDataSource(id, this.dataSource.Items);
+    let dataSourceItem = (this.dataSource?.Items || []);
+
+    this.dataSource$ = this.chatomniCommentService.nextDataSource(id, dataSourceItem);
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
 
           if(res && res.Items && res.Items.length > 0) {
-              this.dataSource.Items = [...res.Items];
+              this.dataSource.Items = [...(res.Items || [])];
+
               this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
 
               // TODO: merge bình luận đã gửi
@@ -629,6 +637,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
               }
 
               this.dataSource.Items = [...this.dataSource.Items];
+              this.lengthDataSource = this.dataSource.Items.length;
 
           } else {
               this.disableNextUrl = true;// check dk dừng phân trang
@@ -670,11 +679,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   }
 
   mergeUpdatedData(data: ChatomniDataItemDto[], updateData: ChatomniDataItemDto[]){
-    let ids = data?.map(x => { return x.Id });
+    let ids = data?.map(x => { if(x && x.Id) {return x.Id} return });
 
     //TODO: check bình luận mới gán vào data
     updateData?.forEach(f => {
-      if(!ids.includes(f.Id)){
+      if(f && f.Id && !ids.includes(f.Id)){
           data.push(f);
       }
     });
@@ -802,9 +811,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
-    let exisData = this.dataSource && this.dataSource.Items && this.dataSource.Items.length > 0 && event;
+    let exisData = this.dataSource && this.dataSource.Items && this.dataSource.Items.length > 0 && event && event.scrollStartPosition > 0;
     if(exisData) {
-        const vsEnd = Number(this.dataSource.Items.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
+        const vsEnd = Number(this.dataSource.Items.length - ((this.childsComment || []).length) - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
         if(vsEnd) {
 
             if (this.isLoading || this.isLoadingNextdata) {
@@ -830,12 +839,15 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
             setTimeout(() => {
                 this.dataSource.Items = [...this.vsSocketImports, ...this.dataSource.Items];
                 this.dataSource.Items = [...this.dataSource.Items];
+                this.lengthDataSource = this.dataSource.Items.length;
 
+                this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
                 this.vsSocketImports = [];
                 this.isLoadingNextdata = false;
+            
+                this.cdRef.detectChanges();
             }, 350);
 
-            this.cdRef.detectChanges();
         }
 
         this.vsStartIndex = event.startIndex;
