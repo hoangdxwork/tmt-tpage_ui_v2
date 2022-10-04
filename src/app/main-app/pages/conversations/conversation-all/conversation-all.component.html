@@ -102,7 +102,7 @@
                           <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 106px">
                               <a (click)="changeCurrentConversationItem(item)" class="w-full h-full"
                                   [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
-                                  <current-conversation-item-v2 class="h-full"
+                                  <current-conversation-item-v2 class="min-h-[106px] h-full"
                                       [item]="item" [csid]="item.ConversationId" [type]="type"
                                       [conversationItem]="conversationItem"
                                       [state]="item.State"
