@@ -1,3 +1,4 @@
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { UOMLine } from './../../dto/configs/product/config-product-default.dto';
 import { ComboProductDTO } from './../../dto/product/product-combo.dto';
 import { Injectable } from "@angular/core";
@@ -18,6 +19,11 @@ export class AddProductHandler {
       }
 
       if(listProductVariants){
+         listProductVariants.map(x => {
+            if(x.Tags && TDSHelperArray.isArray(x.Tags)){
+               x.Tags = x.Tags.toString();
+            }
+         });
          dataModel.ProductVariants = listProductVariants;
          dataModel.ProductVariantCount = listProductVariants?.length;
       }

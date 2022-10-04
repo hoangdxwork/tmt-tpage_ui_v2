@@ -84,12 +84,20 @@ select:-webkit-autofill:focus {
 }
 
 tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
-// overflow: hidden;
-//   display: -webkit-box;
-//   -webkit-box-orient: vertical;
-//   -webkit-line-clamp: 2;
-
   white-space: pre-line;
   word-break: break-word;
+}
 
+.cs-item div span.see-more {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    max-width: 195px;
+}
+
+.cs-item .whitespace-normal {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 }

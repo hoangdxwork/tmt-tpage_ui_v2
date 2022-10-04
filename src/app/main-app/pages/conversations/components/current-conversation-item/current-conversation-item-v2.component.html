@@ -1,8 +1,8 @@
-<div *ngIf="item" class="text-body-2 text-neutral-1-900 w-full">
-  <div class="w-full relative overflow-hidden " style="white-space: pre-line; word-break: break-word;">
+<div *ngIf="item" class="text-body-2 text-neutral-1-900 w-full h-full">
+  <div class="w-full relative overflow-hidden h-full" style="white-space: pre-line; word-break: break-word;">
     <div [ngClass]="conversationItem && (conversationItem.Id == item.Id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
     <div [ngClass]="conversationItem && (conversationItem.Id == item.Id)?'bg-secondary-3':'bg-white'"
-        class="p-3.5 flex flex-col gap-3 w-full hover:bg-neutral-3-50">
+        class="p-3 flex flex-col gap-3 w-full h-full min-h-[106px] hover:bg-neutral-3-50">
       <div class="flex gap-3">
         <div class="relative">
             <tpage-avatar-facebook
@@ -58,7 +58,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2" >
+                <div class="flex items-center gap-2">
                     <span *ngIf="item.CountUnread > 0">
                         <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread" title="Phản hồi chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
@@ -71,16 +71,16 @@
                 </div>
             </div>
             <div *ngIf="item | latestMessageType: type">
-                <div [ngClass]="seenedMessage() ? 'text-neutral-1-900' : 'text-neutral-1-600'" class="text-body-2 font-regular font-sans cs-item relative"
-                     showMore [length]="23" [text]="(item.LatestMessage?.Message | jsonPayload | formatIconLike | bbcodeConvert)">
+                <div [ngClass]="seenedMessage() ? 'text-neutral-1-900' : 'text-neutral-1-600'" class="cs-item relative"
+                     showMore [length]="25" [text]="(item.LatestMessage?.Message | jsonPayload)">
                 </div>
             </div>
         </div>
       </div>
 
       <!--keyTags thêm trong mục binh luận-->
-      <div class="flex justify-end flex-col gap-2">
-        <div class="flex gap-2 items-center">
+      <div class="flex justify-end flex-col gap-2 min-h-[20px]">
+        <div class="flex gap-2 items-end">
             <div class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden" #currentWidthTag>
                 <div *ngIf="item.Tags" class="flex gap-x-1">
                     <div *ngFor="let tag of item.Tags" #widthTag
@@ -96,7 +96,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <div class="flex gap-1.5 items-center">
                 <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" *ngIf="countHiddenTag > 0" tds-popover
                     [popoverContent]="popoverContentTag"
@@ -105,7 +105,7 @@
                 </div>
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
-                        <div *ngFor="let tag of item.Tags |  slice:displayTag:item.Tags!.length" class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                        <div *ngFor="let tag of item.Tags | slice:displayTag:item.Tags!.length" class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
                             <div [ngStyle]="{'background-color': [tag.ColorClass+'30'] }" class=" rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
                                 <div class="flex items-center">
                                     <span [ngStyle]="{'background-color': [tag.ColorClass] }"

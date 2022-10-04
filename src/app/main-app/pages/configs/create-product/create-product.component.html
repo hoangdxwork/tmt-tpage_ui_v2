@@ -428,7 +428,7 @@
                   <tr>
                     <th width="6%">STT</th>
                     <th width="24%">Tên</th>
-                    <th width="30%">Mã chốt đơn</th>
+                    <!-- <th width="30%">Mã chốt đơn</th> -->
                     <th width="20%">Giá</th>
                     <th width="10%">Hoạt động</th>
                     <th width="10%">Thao tác</th>
@@ -447,11 +447,11 @@
                         </div>
                       </div>
                     </td>
-                    <td>
+                    <!-- <td>
                       <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [(ngModel)]="data.Tags" [ngModelOptions]="{standalone: true}"
                           [allowClear]="true" [data]="" mode="tags" class="w-full">
                       </tds-select>
-                    </td>
+                    </td> -->
                     <td>
                       <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}" 
                         [formatter]="numberWithCommas" [parser]="parserComas"
