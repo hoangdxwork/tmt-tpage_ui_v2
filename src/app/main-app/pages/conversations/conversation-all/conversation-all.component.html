@@ -91,15 +91,20 @@
                       #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
                       (vsEnd)="vsEnd($event)"
                       (vsStart)="vsStart($event)"
+                      [bufferAmount]="8"
                       [enableUnequalChildrenSizes]="true"
-                      [checkResizeInterval]="750"
+                      [checkResizeInterval]="350"
                       [scrollAnimationTime]="750">
 
+                      <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
+                          <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                      </div>
+
                       <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1">
-                          <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full">
-                              <a (click)="changeCurrentConversationItem(item)" class="w-full"
+                          <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 106px">
+                              <a (click)="changeCurrentConversationItem(item)" class="w-full h-full"
                                   [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
-                                  <current-conversation-item-v2
+                                  <current-conversation-item-v2 class="h-full"
                                       [item]="item" [csid]="item.ConversationId" [type]="type"
                                       [conversationItem]="conversationItem"
                                       [state]="item.State"

@@ -1,5 +1,6 @@
 import { ChatomniDataItemDto, ChatomniMessageType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { Pipe, PipeTransform } from '@angular/core';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Pipe({
   name: 'sortDataSourcePost'
@@ -13,7 +14,7 @@ export class SortDataSourcePostPipe implements PipeTransform {
     let model: ChatomniDataItemDto[] = [];
     if(data && data.length > 0) {
       data.map(x => {
-          if(!x.ParentId && (x.Type == ChatomniMessageType.FacebookComment || x.Type == ChatomniMessageType.TShopComment)) {
+          if(x && !TDSHelperString.hasValueString(x.ParentId) && (x.Type == ChatomniMessageType.FacebookComment || x.Type == ChatomniMessageType.TShopComment)) {
               model = [...model, ...[x]]
           }
       })

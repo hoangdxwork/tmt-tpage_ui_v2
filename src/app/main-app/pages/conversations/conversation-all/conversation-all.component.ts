@@ -221,15 +221,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index] = {...this.lstConversation[index]};
         this.lstConversation = [...this.lstConversation];
 
+        console.log(1);
+
     } else {
         // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
         let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data) as ChatomniConversationItemDto;
         if(this.vsStartIndex <= 1) {
             this.lstConversation = [ ...[itemNewMess], ...this.lstConversation];
             this.lstConversation = [ ...this.lstConversation];
+
+            console.log(2);
         } else {
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
-            if(vsIndex >= 0) {
+            if(Number(vsIndex) >= 0) {
                 this.vsSocketImports[vsIndex].LatestMessage = {
                     CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
                     Message: itemNewMess.LatestMessage?.Message,
@@ -244,6 +248,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             }
 
             this.vsSocketImports = [...this.vsSocketImports];
+
+            console.log(3);
         }
     }
 
@@ -471,7 +477,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   nextData(event: any): any {
-
     this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
@@ -479,6 +484,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           if(res && res.Items) {
               this.lstConversation = [...(res.Items || [])];
+              this.lstConversation = [...this.lstConversation];
           } else {
               this.disableNextUrl = true;
           }
@@ -832,11 +838,18 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   vsStart(event: any) {
     if(event && event.startIndex) {
       // TODO: mapping dữ liệu socket ko có trong danh sách
-      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && this.vsSocketImports && this.vsSocketImports.length > 0;
+      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex == (1 || 0)
+        && this.vsSocketImports && this.vsSocketImports.length > 0;
+
       if(exist) {
-          this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
-          this.lstConversation = [...this.lstConversation];
-          this.vsSocketImports = [];
+        this.isLoadingNextdata = true;
+        setTimeout(() => {
+            this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
+            this.lstConversation = [...this.lstConversation];
+
+            this.vsSocketImports = [];
+            this.isLoadingNextdata = false;
+        }, 350)
       }
 
       this.vsStartIndex = event.startIndex;
