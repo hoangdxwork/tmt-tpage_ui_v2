@@ -261,7 +261,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
             this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
             this.dataSource.Items = [...this.dataSource.Items];
             this.lengthDataSource = this.dataSource.Items.length;
-            
+
             this.isLoading = false;
             this.cdRef.markForCheck();
         },
@@ -831,7 +831,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   vsStart(event: any) {
     if(event && event.startIndex) {
         // TODO: mapping dữ liệu socket ko có trong danh sách
-        let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex == (1 || 0)
+        let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
             && this.vsSocketImports && this.vsSocketImports.length > 0;
 
         if(exist) {
@@ -844,7 +844,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
                 this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
                 this.vsSocketImports = [];
                 this.isLoadingNextdata = false;
-            
+
                 this.cdRef.detectChanges();
             }, 350);
 
