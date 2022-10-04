@@ -221,8 +221,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index] = {...this.lstConversation[index]};
         this.lstConversation = [...this.lstConversation];
 
-        console.log(1);
-
     } else {
         // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
         let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data) as ChatomniConversationItemDto;
@@ -230,7 +228,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             this.lstConversation = [ ...[itemNewMess], ...this.lstConversation];
             this.lstConversation = [ ...this.lstConversation];
 
-            console.log(2);
         } else {
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
@@ -248,8 +245,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             }
 
             this.vsSocketImports = [...this.vsSocketImports];
-
-            console.log(3);
         }
     }
 
