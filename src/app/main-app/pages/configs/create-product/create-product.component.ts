@@ -130,8 +130,8 @@ export class ConfigAddProductComponent implements OnInit {
   loadData(id: TDSSafeAny) {
     this.isLoading = true;
 
-    this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe((res: TDSSafeAny) => {
+    this.productTemplateService.getProductTemplateById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
 
@@ -141,9 +141,13 @@ export class ConfigAddProductComponent implements OnInit {
         }
 
         this.formatProperty(this.dataModel);
-      }, error => {
+        this.isLoading = false;
+      }, 
+      error: (error) => {
+        this.isLoading = false;
         this.message.error(error?.error?.message || Message.CanNotLoadData);
-      })
+      }
+    })
   }
 
   loadDataIndexDBCache() {
@@ -172,25 +176,27 @@ export class ConfigAddProductComponent implements OnInit {
   }
 
   loadStockChangeProductQty(id: TDSSafeAny){
-    let data = {
-      model: {
-        ProductTmplId: Number(id)
-      }
-    };
-
-    this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: res => {
-          this.stockChangeProductList = res.value;
-          // TODO: số lượng tồn thực tế
-          this.stockChangeProductList.forEach(item => {
-            this.initInventory += item.NewQuantity;
-          });
-        },
-        error: err => {
-          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+    if(this.dataModel?.Type == 'product'){
+      let data = {
+        model: {
+          ProductTmplId: Number(id)
         }
-      })
+      };
+  
+      this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: res => {
+            this.stockChangeProductList = res.value;
+            // TODO: số lượng tồn thực tế
+            this.stockChangeProductList.forEach(item => {
+              this.initInventory += item.NewQuantity;
+            });
+          },
+          error: err => {
+            this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+          }
+        })
+    }
   }
 
   loadDefault() {

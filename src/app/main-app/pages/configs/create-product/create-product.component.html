@@ -95,8 +95,8 @@
                 </button>
               </div>
 
-              <tds-label>Số lượng thực tế:</tds-label>
-              <div class="col-span-2 flex space-x-2">
+              <tds-label *ngIf="dataModel?.Type == 'product'">Số lượng thực tế:</tds-label>
+              <div class="col-span-2 flex space-x-2" *ngIf="dataModel?.Type == 'product'">
                 <tds-form-field class="w-full">
                   <tds-input-number
                     [ngModel]="_form.value.InitInventory || initInventory"
