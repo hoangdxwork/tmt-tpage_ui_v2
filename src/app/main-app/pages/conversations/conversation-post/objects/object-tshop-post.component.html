@@ -44,9 +44,8 @@
     <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
         <span class="w-full font-semibold truncate">{{ item.Title || '(Không có tiêu đề)' }}</span>
 
-        <span *ngIf="item.Description" class=" text-neutral-1-400">
-            <span>{{item.Description | slice: 0: 50}}</span>
-            <span *ngIf="item.Description.length > 50">...</span>
+        <span *ngIf="item.Description" class=" text-neutral-1-400 line-clamp">
+            <span>{{item.Description}}</span>
         </span>
 
         <div class="flex justify-between items-center">
