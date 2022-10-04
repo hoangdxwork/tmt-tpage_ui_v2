@@ -91,9 +91,7 @@
                       #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
                       (vsEnd)="vsEnd($event)"
                       (vsStart)="vsStart($event)"
-                      [bufferAmount]="8"
                       [enableUnequalChildrenSizes]="true"
-                      [checkResizeInterval]="350"
                       [scrollAnimationTime]="750">
 
                       <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
