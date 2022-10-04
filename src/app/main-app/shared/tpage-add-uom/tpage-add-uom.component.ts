@@ -93,12 +93,14 @@ export class TpageAddUOMComponent implements OnInit, OnDestroy {
   onSave() {
     let model = this.prepareModel();
     
-    this.productUOMService.insert(model).subscribe(res => {
-      this.message.success(Message.ProductUOM.InsertSuccess);
-      this.onCancel(res);
-    },
-    error=>{
-      this.message.error(error?.error?.message || Message.InsertFail);
+    this.productUOMService.insert(model).subscribe({
+      next:(res) => {
+        this.message.success(Message.ProductUOM.InsertSuccess);
+        this.onCancel(res);
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || Message.InsertFail);
+      }
     });
   }
 

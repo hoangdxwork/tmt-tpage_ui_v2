@@ -1,0 +1,44 @@
+<form [formGroup]="_form" autocomplete="off">
+    <div class="grid grid-cols-5 gap-x-3 gap-y-4 items-center">
+        <tds-label>Đơn vị tính</tds-label>
+        <div class="w-full col-span-4 flex items-start justify-between gap-x-2">
+            <tds-form-field class="flex flex-auto">
+                <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị'
+                    formControlName="UOM" [data]="lstUOM || []" [allowClear]="true" [valuePrimitive]="false">
+                </tds-select>
+                <tds-error>
+                    Vui lòng chọn đơn vị tính
+                </tds-error>
+            </tds-form-field>
+            <button tds-button-icon color="primary" (click)="showCreateUOMModal()">
+                <i class="tdsi-success-line"></i>
+            </button>
+            <button tds-button-icon color="secondary" (click)="onSearchUOM()">
+                <i class="tdsi-search-fill"></i>
+            </button>
+        </div>
+
+        <tds-label>Giá bán</tds-label>
+        <tds-form-field class="w-full col-span-4">
+            <tds-input-number formControlName="ListPrice" [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" 
+                [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+            <tds-error>Vui lòng nhập giá bán</tds-error>
+        </tds-form-field>
+
+        <tds-label>Mã vạch</tds-label>
+        <tds-form-field class="w-full col-span-4">
+            <input tdsInput formControlName="Barcode" autocomplete="off" placeholder="Nhập mã vạch" />
+            <tds-error>Vui lòng nhập mã vạch</tds-error>
+        </tds-form-field>
+    </div>
+</form>
+
+<!-- footer -->
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="onCancel()">
+        Đóng
+    </button>
+    <button tds-button type="submit" color="primary" (click)="onSave()">
+        Lưu
+    </button>
+</div>

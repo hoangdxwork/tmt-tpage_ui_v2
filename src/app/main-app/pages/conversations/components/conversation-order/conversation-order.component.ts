@@ -724,7 +724,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     let model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
-
+    
     let model = Object.assign({}, model1, model2) as any;
     if(formAction) {
         model.FormAction = formAction;
@@ -811,7 +811,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onSave(formAction?: string, type?: string): any {
 
     let model = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
-
+    
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
     }
@@ -1540,8 +1540,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   changeNote(event: any) {
-    if(event && event.target && event.target.value && this.quickOrderModel) {
-        this.quickOrderModel.Note = event.target.value;
+    if(event && event.target && this.quickOrderModel) {
+      let value = event.target.value;
+      this.quickOrderModel.Note = value;
     }
   }
 
