@@ -24,14 +24,14 @@
           <thead class="rounded">
             <tr>
               <th [width]="'48px'" class="text-center">STT</th>
-              <th [width]="'166px'">Số HĐ</th>
+              <th [width]="'150px'">Số HĐ</th>
               <th [width]="'150px'">Thông tin</th>
               <th [width]="'123px'">Ngày tạo đơn</th>
               <th [width]="'150px'">Đối tác giao hàng</th>
-              <th [width]="'113px'">Mã vận đơn</th>
+              <th [width]="'120px'">Mã vận đơn</th>
               <th [width]="'113px'" [align]="'right'">Tổng tiền</th>
               <th [width]="'113px'" [align]="'right'">Còn nợ</th>
-              <th [width]="'113px'">Trạng thái</th>
+              <th [width]="'120px'">Trạng thái</th>
             </tr>
           </thead>
           <tbody>
@@ -42,7 +42,7 @@
 
                 <!-- Số HĐ -->
                 <td>
-                  <div class="w-full flex font-semibold text-center pb-2 cursor-pointer"
+                  <div class="w-full flex font-semibold cursor-pointer"
                     (click)="onBillDetail($event, data)">
                     <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{ data.Number || 'N/A' }}</span>
                   </div>

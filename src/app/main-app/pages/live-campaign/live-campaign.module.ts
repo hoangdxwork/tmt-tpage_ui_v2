@@ -93,6 +93,7 @@ import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-co
 import { OrderModule } from '../order/order.module';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { DrawerBillMessageComponent } from './components/drawer-bill-message/drawer-bill-message.component';
+import { TDSBadgeModule } from 'tds-ui/badges';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -192,6 +193,7 @@ const SERVICES = [
     TDSCheckBoxModule,
     TDSAvatarModule,
     TDSTagModule,
+    TDSBadgeModule,
     TDSToolTipModule,
     TDSPopoverModule,
     TDSModalModule,
