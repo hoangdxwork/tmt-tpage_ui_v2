@@ -43,7 +43,7 @@
                     <td class="text-right">{{ item.CashOnDelivery || 0 | numberCustom }} đ</td>
                     <td class="text-right">{{ item.TotalAmount || 0 | numberCustom }} đ</td>
                     <td class="text-center">
-                        <button tds-button-icon color="secondary" (click)="remoteItem(item)">
+                        <button tds-button-icon color="secondary" tds-tooltip="Xóa" (click)="remoteItem(item)">
                             <i class="tdsi-trash-fill text-error-400"></i>
                         </button>
                     </td>
@@ -54,7 +54,7 @@
 </div>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
       <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button type="submit" color="primary" (click)="onSave()">Xác nhận</button>
+      <button tds-button class="min-w-[100px]" type="submit" color="primary" (click)="onSave()">Xác nhận</button>
 </div>
 
 <tds-modal [(visible)]="isVisible" title="Danh sách lỗi" size="lg" (onCancel)="handleCancel()" [okText]="null" [cancelText]="'Đóng'">

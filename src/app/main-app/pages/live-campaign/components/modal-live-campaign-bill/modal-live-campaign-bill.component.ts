@@ -24,7 +24,7 @@ export class ModalLiveCampaignBillComponent implements OnInit {
   showModelInfoOrder(id: number) {
     let returnUrl = `bill/detail/${id}`
     this.router.navigate([returnUrl]);
-    
+
     // this.modal.create({
     //   title: 'Thông tin hóa đơn',
     //   size:'xl',

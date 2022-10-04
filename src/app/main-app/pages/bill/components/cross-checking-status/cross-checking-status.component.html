@@ -59,7 +59,7 @@
                             <th width="232px">Trạng thái</th>
                             <th width="232px">Ghi chú</th>
                             <th width="80px">
-                                <button tds-button-icon color="secondary" (click)="removeAllCrossChecking()">
+                                <button tds-button-icon tds-tooltip="Xóa hết" color="secondary" (click)="removeAllCrossChecking()">
                                     <i class="tdsi-trash-fill text-error-400"></i>
                                 </button>
                             </th>
@@ -106,7 +106,7 @@
                                 </tds-form-field>
                             </td>
                             <td>
-                                <button tds-button-icon color="secondary" (click)="removeCrossChecking(i)">
+                                <button tds-button-icon color="secondary" tds-tooltip="Xóa" (click)="removeCrossChecking(i)">
                                     <i class="tdsi-trash-fill text-error-400"></i>
                                 </button>
                             </td>
