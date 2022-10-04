@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { SummaryDailyDTO } from './../../../../dto/dashboard/summary-daily.dto';
 import { EventSummaryService } from './../../../../services/event-summary.service';
 import { TDSMessageService } from 'tds-ui/message';
@@ -22,6 +23,7 @@ export class DashboardFacebookReportComponent implements OnInit {
   chartOption = TDSChartOptions();
   labelData: TDSSafeAny[] = [];
   axisData: TDSSafeAny[] = [];
+  axisLabel: string[] = [];
   seriesData: TDSSafeAny[] = [];
   colors: Color[] = [];
   xAxisName: string = 'Ngày';
@@ -73,6 +75,7 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   handlerAxisData(data: SummaryDailyDTO) {
     this.axisData = [];
+    this.axisLabel = [];
     let lstDataMesage = data.Current?.Messages?.Data || [];
 
     //TODO: trường hợp hôm nay + hôm qua
@@ -86,6 +89,7 @@ export class DashboardFacebookReportComponent implements OnInit {
       lstDataMesage.map((x)=>{
         if(x.Time){
           this.axisData.push(new Date(x.Time).getUTCHours());
+          this.axisLabel.push(formatDate(x.Time,'HH:mm','vi_VN'));
         }
       })
     } 
@@ -96,6 +100,7 @@ export class DashboardFacebookReportComponent implements OnInit {
       lstDataMesage.map((x) => {
         if(!this.axisData.includes(new Date(x.Time).getUTCDate())){
           this.axisData.push(new Date(x.Time).getUTCDate());
+          this.axisLabel.push(formatDate(x.Time,'dd/MM','vi_VN'));
         }
       })
     }
@@ -204,7 +209,7 @@ export class DashboardFacebookReportComponent implements OnInit {
         axis: {
           xAxis:[
             {
-              data: this.axisData,
+              data: this.axisLabel,
               name: this.xAxisName,
               nameGap: 5,
               nameLocation: 'end',
