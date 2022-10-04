@@ -19,7 +19,7 @@ import { ProductTemplateUOMLineService } from '../../../services/product-templat
 import { ProductTemplateService } from '../../../services/product-template.service';
 import { CreateCountryModalComponent } from '../components/create-country-modal/create-country-modal.component';
 import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-UOM-modal.component';
-import { takeUntil, finalize, mergeMap, map } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
@@ -109,7 +109,6 @@ export class ConfigAddProductComponent implements OnInit {
 
     if (this.id) {
       this.loadData(this.id);
-      this.loadStockChangeProductQty(this.id);
       this.loadProductAttributeLine(this.id);
       this.loadProductUOMLine(this.id);
       this.loadComboProducts(this.id);
@@ -141,7 +140,13 @@ export class ConfigAddProductComponent implements OnInit {
         }
 
         this.formatProperty(this.dataModel);
-        this.isLoading = false;
+
+        // nếu type = 'product' thì lấy thông tin số lượng thực tế của sản phẩm
+        if(this.dataModel?.Type == 'product'){
+          this.loadStockChangeProductQty(this.id);
+        } else {
+          this.isLoading = false;
+        }
       }, 
       error: (error) => {
         this.isLoading = false;
@@ -176,27 +181,27 @@ export class ConfigAddProductComponent implements OnInit {
   }
 
   loadStockChangeProductQty(id: TDSSafeAny){
-    if(this.dataModel?.Type == 'product'){
-      let data = {
-        model: {
-          ProductTmplId: Number(id)
+    let data = {
+      model: {
+        ProductTmplId: Number(id)
+      }
+    };
+
+    this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res) => {
+          this.stockChangeProductList = [...res.value];
+          // TODO: số lượng tồn thực tế
+          this.stockChangeProductList.forEach(item => {
+            this.initInventory += item.NewQuantity;
+          });
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
         }
-      };
-  
-      this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$)).subscribe(
-        {
-          next: res => {
-            this.stockChangeProductList = res.value;
-            // TODO: số lượng tồn thực tế
-            this.stockChangeProductList.forEach(item => {
-              this.initInventory += item.NewQuantity;
-            });
-          },
-          error: err => {
-            this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
-          }
-        })
-    }
+      })
   }
 
   loadDefault() {
