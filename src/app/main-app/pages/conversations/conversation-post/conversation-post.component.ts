@@ -1,3 +1,5 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { NgxVirtualScrollerDto } from './../../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
 import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
@@ -25,7 +27,6 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
-import { ItemsRenderDto } from '@app/dto/conversation-all/ag-scroll/ag-scroll-render.dto';
 
 @Component({
   selector: 'app-conversation-post',
@@ -36,6 +37,8 @@ import { ItemsRenderDto } from '@app/dto/conversation-all/ag-scroll/ag-scroll-re
 export class ConversationPostComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
   @ViewChild('innerText') innerText!: ElementRef;
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
+  isLoadingNextdata: boolean = false;
 
   public lstType: any[] = [
     { id: 'all', name: 'Tất cả bài viết' },
@@ -298,6 +301,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
     this.disableNextUrl = false;
+    this.virtualScroller.refresh();
+    this.virtualScroller.scrollToPosition(0);
 
     this.loadFilterDataSource();
   }
@@ -416,11 +421,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   nextData(event: any): any {
     if(event) {
-      if (this.isProcessing || this.isLoading) {
-          return;
-      }
-
-      this.isProcessing = true;
 
       this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
@@ -432,11 +432,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.disableNextUrl = true;
             }
 
-            this.isProcessing = false;
+            this.isLoadingNextdata = false;
             this.cdRef.detectChanges();
         },
         error: (error: any) => {
-            this.isProcessing = false;
+            this.isLoadingNextdata = false;
             this.cdRef.detectChanges();
         }
       })
@@ -495,6 +495,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   loadFilterDataSource() {
+    this.lstObjects = [];
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
           this.lstObjects  = [...res.Items];
@@ -579,15 +580,21 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     localStorage.removeItem(_keyCache);
   }
 
-  onItemsRender(event: ItemsRenderDto) {
-    let exits = event && event.items && this.lstObjects && this.lstObjects.length > 0 && !this.disableNextUrl && !this.isProcessing;
+  vsEnd(event: NgxVirtualScrollerDto) {
+    let exits = this.lstObjects && this.lstObjects.length > 0 && event;
     if(exits) {
-        let lastItemAg = event.items[event.length - 1];
-        let lastItemObj = this.lstObjects[this.lstObjects.length - 1];
+      const vsEnd = Number(this.lstObjects.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
+      if(vsEnd) {
 
-        if(lastItemAg && lastItemObj && lastItemAg.ObjectId == lastItemObj.ObjectId) {
-            this.nextData(event);
+        if (this.isProcessing || this.isLoadingNextdata) {
+            return;
         }
+
+        this.isLoadingNextdata = true;
+        setTimeout(() => {
+            this.nextData(event);
+        }, 350);
+    }
     }
   }
 

@@ -61,56 +61,65 @@
                 </div>
             </div>
 
-            <div class="overflow-hidden flex flex-auto" *ngIf="lstObjects && lstObjects.length > 0">
-                <div class="overflow-hidden flex flex-col relative flex-auto pt-1 gap-y-1">
+            <tds-spin [spinning]="isProcessing || isRefreshing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full pt-1">
+                <virtual-scroller #scroll *ngIf="lstObjects && lstObjects.length > 0"
+                    [items]="lstObjects" class="tds-custom-scroll w-full h-full"
+                    (vsEnd)="vsEnd($event)"
+                    [enableUnequalChildrenSizes]="true"
+                    [checkResizeInterval]="750">
 
-                    <ag-virtual-scroll #vs [items]="lstObjects" class="overflow-y-auto tds-custom-scroll h-full"
-                        [min-row-height]="120" (onItemsRender)="onItemsRender($event)">
+                    <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1 min-w-[158px]"
+                        [ngClass]="(currentPost && currentPost.ObjectId == item.ObjectId) ? 'cursor-no-drop' : 'cursor-pointer'">
 
-                        <div *ngFor="let item of vs.items; let i=index; trackBy: trackByIndex" class="!h-auto pb-1 !min-h-min"
-                            [ngClass]="(currentPost && currentPost.ObjectId == item.ObjectId) ? 'cursor-no-drop' : 'cursor-pointer'">
-
-                            <div *ngIf="item && currentTeam!.Type == 'Facebook'">
-                                <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)"  [lstOfLiveCampaign]="lstOfLiveCampaign">
-                                </object-facebook-post>
-                            </div>
-
-                            <div *ngIf="item && currentTeam!.Type == 'TShop'">
-                                <object-tshop-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
-                                </object-tshop-post>
-                            </div>
+                        <div *ngIf="item && currentTeam!.Type == 'Facebook'">
+                            <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)"  [lstOfLiveCampaign]="lstOfLiveCampaign">
+                            </object-facebook-post>
                         </div>
 
-                        <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
-                            <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                        <div *ngIf="item && currentTeam!.Type == 'TShop'">
+                            <object-tshop-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
+                            </object-tshop-post>
                         </div>
-                    </ag-virtual-scroll>
+                    </div>
+
+                    <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
+                        <div class="flex gap-x-2">
+                            <tds-skeleton-element tdsType="image" [tdsActive]="true"></tds-skeleton-element>
+                            <tds-skeleton [tdsActive]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                        </div>
+                        <div class="flex gap-x-2">
+                            <tds-skeleton-element tdsType="image" [tdsActive]="true"></tds-skeleton-element>
+                            <tds-skeleton [tdsActive]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                        </div>
+                    </div>
 
                     <div class="bg-white flex-auto"></div>
-                </div>
-            </div>
 
-            <div class="flex flex-auto justify-center pt-1" *ngIf="(!lstObjects || lstObjects.length == 0) && !isFilter && !isLoading">
-                <div class="flex flex-auto justify-center bg-white">
-                    <div class="flex flex-col items-center pt-16">
-                        <img src="../../../assets/imagesv2/conversation/noDataConversationPost.svg" alt="">
-                        <span class="text-neutral-1-300 pt-11">Chưa có bài viết nào</span>
+                </virtual-scroller>
+
+                <div class="flex flex-auto justify-center" *ngIf="(!lstObjects || lstObjects.length == 0) && !isFilter && !isLoading">
+                    <div class="flex flex-auto justify-center bg-white">
+                        <div class="flex flex-col items-center pt-16">
+                            <img src="../../../assets/imagesv2/conversation/noDataConversationPost.svg" alt="">
+                            <span class="text-neutral-1-300 pt-11">Chưa có bài viết nào</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+    
+                <div class="flex flex-auto items-center justify-center bg-white" *ngIf="(!lstObjects || lstObjects.length == 0) && isFilter">
+                    <tds-empty [notFoundContent]="contentTpl">
+                      <ng-template #contentTpl>
+                        <div class="flex flex-col flex-auto justify-center items-center px-8">
+                          <div>Không tìm thấy bài viết nào</div>
+                          <div class="text-body-2 font-regular mt-3 text-center">Hãy thử với từ khóa khác: nhập tên khách hàng, nội dung tin nhắn, số điện thoại</div>
+                        </div>
+                      </ng-template>
+                    </tds-empty>
+    
+                    <div class="bg-white flex-auto"></div>
+                </div>
+            </tds-spin>
 
-            <div class="flex flex-auto items-center justify-center bg-white mt-1" *ngIf="(!lstObjects || lstObjects.length == 0) && isFilter">
-                <tds-empty [notFoundContent]="contentTpl">
-                  <ng-template #contentTpl>
-                    <div class="flex flex-col flex-auto justify-center items-center px-8">
-                      <div>Không tìm thấy bài viết nào</div>
-                      <div class="text-body-2 font-regular mt-3 text-center">Hãy thử với từ khóa khác: nhập tên khách hàng, nội dung tin nhắn, số điện thoại</div>
-                    </div>
-                  </ng-template>
-                </tds-empty>
-
-                <div class="bg-white flex-auto"></div>
-            </div>
         </div>
 
         <!--Chọn bài viết để hiển thị chi tiết-->
