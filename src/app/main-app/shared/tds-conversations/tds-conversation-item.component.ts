@@ -65,7 +65,6 @@ export class TDSConversationItemComponent implements OnInit  {
   listAtts: TDSSafeAny[] = [];
   isShowItemImage: boolean = false;
   imageClick!: number;
-  keyAddress = 'address';
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
@@ -588,24 +587,26 @@ export class TDSConversationItemComponent implements OnInit  {
   showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){ 
     let value: string = '';
 
-    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0].Name == this.keyAddress) { 
-        let data = JSON.parse(nlpEntities[0].Value);
+    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') { 
+        if(nlpEntities[0].Value){
+          let data = JSON.parse(nlpEntities[0].Value);
 
-        if (data && typeof data === "object") {
-
-            let item: ResultCheckAddressDTO = {
-              Address: data.FullAddress || null,
-              CityCode: data.CityCode || null,
-              CityName: data.CityName || null,
-              DistrictCode:  data.DistrictCode || null,
-              DistrictName: data.DistrictName || null,
-              WardCode: data.WardCode || null,
-              WardName: data.WardName || null
-          } as any;
-
-          this.chatomniEventEmiter.selectAddressEmiter$.emit(item);
-          this.tdsMessage.success('Chọn làm địa chỉ thành công');
-          return;
+          if (data && typeof data === "object") {
+  
+              let item: ResultCheckAddressDTO = {
+                Address: data.FullAddress || null,
+                CityCode: data.CityCode || null,
+                CityName: data.CityName || null,
+                DistrictCode:  data.DistrictCode || null,
+                DistrictName: data.DistrictName || null,
+                WardCode: data.WardCode || null,
+                WardName: data.WardName || null
+            } as any;
+  
+            this.chatomniEventEmiter.selectAddressEmiter$.emit(item);
+            this.tdsMessage.success('Chọn làm địa chỉ thành công');
+            return;
+          }
         }
     }
 
