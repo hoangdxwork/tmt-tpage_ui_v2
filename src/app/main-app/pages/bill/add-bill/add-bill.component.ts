@@ -1202,7 +1202,8 @@ export class AddBillComponent implements OnInit {
                 delete res['@odata.context'];
 
                 // TODO: gửi vận đơn
-                let exist = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && (res.State !== 'cancel' || res.State !== 'draft');
+                let exist = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId
+                   && (res.State !== 'cancel' || res.State !== 'draft') && (res.FormAction == 'SaveAndOpen' || res.FormAction == 'SaveAndPrint');
                 if(exist) {
                     this.sendToShipper(res, type_print);
                 } else {
