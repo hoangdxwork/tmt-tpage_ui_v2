@@ -852,6 +852,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.setOfCheckedId = new Set<string>();
   }
 
+  directPage(url: string){
+    this.router.navigateByUrl(url);
+  }
+
   @HostListener('document:keyup', ['$event'])
   handleKeyboardEventCreate(event: KeyboardEvent) {
     if (event.key === 'F9') {
