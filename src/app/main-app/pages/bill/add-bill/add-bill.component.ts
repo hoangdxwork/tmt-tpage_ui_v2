@@ -1194,16 +1194,19 @@ export class AddBillComponent implements OnInit {
                 this.message.error(`${error?.error?.message}` || 'Cập nhật phiếu bán hàng thất bại!');
             }
         })
+
     } else {
         this.isLoading = true;
         this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: any) => {
-                if(model.FormAction == 'SaveAndPrint') {
-                    this.loadPrintHtml(model, Number(res.Id), type_print);
+                delete res['@odata.context'];
+
+                // TODO: gửi vận đơn
+                let exist = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && (res.State !== 'cancel' || res.State !== 'draft');
+                if(exist) {
+                    this.sendToShipper(res, type_print);
                 } else {
-                    this.isLoading = false;
-                    this.message.success('Tạo mới phiếu bán hàng thành công!');
-                    this.router.navigateByUrl(`bill/detail/${res.Id}`);
+                    this.loadDataInsert(res, type_print);
                 }
 
                 // TODO: xóa cache tạo hóa đơn nếu có lưu F10, sao chép
@@ -1215,6 +1218,29 @@ export class AddBillComponent implements OnInit {
             }
         });
     }
+  }
+
+  loadDataInsert(model: FastSaleOrder_DefaultDTOV2, type_print?: string) {
+    if(model.FormAction == 'SaveAndPrint') {
+        this.loadPrintHtml(model, Number(model.Id), type_print);
+    } else {
+        this.isLoading = false;
+        this.message.success('Tạo mới phiếu bán hàng thành công!');
+        this.router.navigateByUrl(`bill/detail/${model.Id}`);
+    }
+  }
+
+  sendToShipper(model: FastSaleOrder_DefaultDTOV2, type_print?: string) {
+    let data = { id: model.Id };
+    this.fastSaleOrderService.getSendToShipper(data).pipe(takeUntil(this.destroy$)).subscribe({
+      next:() => {
+          this.loadDataInsert(model, type_print);
+      },
+      error:(error) => {
+          this.notificationService.error('Lỗi gửi vận đơn', error?.error?.message);
+          this.loadDataInsert(model, type_print);
+      }
+    })
   }
 
   applyPromotion(type: string){

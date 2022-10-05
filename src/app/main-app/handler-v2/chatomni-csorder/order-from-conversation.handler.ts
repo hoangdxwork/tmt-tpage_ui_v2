@@ -59,7 +59,7 @@ export class CsOrder_FromConversationHandler {
       }
       // TODO: trường hợp ko có thì load dữ liệu mặc định từ conversationItem + partner
       else {
-          let x = this.productTemplateUOMLineService.getDefaultProduct() as Detail_QuickSaleOnlineOrder;
+          let x = {...this.productTemplateUOMLineService.getDefaultProduct()} as Detail_QuickSaleOnlineOrder;
           order.Details = [];
 
           if(x && x.ProductId && type != 'post') {
