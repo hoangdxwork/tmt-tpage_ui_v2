@@ -129,7 +129,7 @@ export class DefaultOrderComponent implements OnInit {
     }
     model.ProductId = this.defaultProduct?.ProductId;
 
-    this.isLoading = true;console.log(model)
+    this.isLoading = true;
     this.sharedService.postSaleSetting(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(res) {
