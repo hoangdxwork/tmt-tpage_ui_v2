@@ -24,7 +24,11 @@ export class ProductTemplateUOMLineService extends BaseSevice {
 
   getDefaultProduct(): Detail_QuickSaleOnlineOrder | null {
     let item = localStorage.getItem(this._keyCacheDefaultProduct);
-    return item ? JSON.parse(item) : null;
+    if(item) {
+        let x = JSON.parse(item);
+        return {...x};
+    }
+    return null;
   }
 
   setDefaultProduct(product: Detail_QuickSaleOnlineOrder){
