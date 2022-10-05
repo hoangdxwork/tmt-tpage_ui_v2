@@ -12,6 +12,7 @@ import { ProductDTOV2 } from './../../../dto/product/odata-product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalListProductComponent } from '@app/pages/conversations/components/modal-list-product/modal-list-product.component';
+import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 
 @Component({
   selector: 'app-default-order',
@@ -25,6 +26,9 @@ import { ModalListProductComponent } from '@app/pages/conversations/components/m
 export class DefaultOrderComponent implements OnInit {
 
   defaultProduct?: Detail_QuickSaleOnlineOrder;
+  saleSetting!: SaleSettingConfigDto_V2;
+  isChange: boolean = false;
+  isLoading: boolean = false;
 
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
@@ -35,48 +39,59 @@ export class DefaultOrderComponent implements OnInit {
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
-    this.loadDefaultProduct();
+    this.loadSaleConfig();
   }
 
-  loadDefaultProduct(){
-    let exist = this.productTemplateUOMLineService.getDefaultProduct();
+  loadSaleConfig() {
+    this.isLoading = true;
 
-    if(exist && exist.ProductId){
-        this.defaultProduct = exist;
-    } else {
-        this.sharedService.setSaleConfig();
-        this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).pipe(mergeMap(config => {
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            if(res) {
+              this.saleSetting = {...res};
+              let product = this.productTemplateUOMLineService.getDefaultProduct();
 
-          return new Observable((observable: any): any => {
-              if(config.SaleSetting?.ProductId){
-                  return this.productService.getById(config.SaleSetting.ProductId)
-                    .pipe(map((x: any): any => {
-                        if(x) {
-                            observable.next(x);
-                            observable.complete();
-                        } else {
-                            observable.next();
-                            observable.complete();
-                        }
-                    }))
-              } else{
-                  return of({});
+              let exist = this.saleSetting &&  this.saleSetting.SaleSetting && 
+                  product && product.Id != (this.saleSetting.SaleSetting.ProductId || this.saleSetting.SaleSetting.Product?.Id); 
+
+              if(!exist) {
+                  this.productTemplateUOMLineService.removeCache();
               }
-          })
-        }))
-        .subscribe({
-          next:(product :any) => {
-            if(product && product.Id) {
-                //TODO: Trường hợp có sản phẩm
-                this.defaultProduct = this.prepareModel(product);
-                this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+
+              // TODO: sp da ton tai
+              if(product) {
+                  this.defaultProduct = this.prepareModel(product);
+                  this.isLoading = false;
+                  return;
+              }
+              if(this.saleSetting.SaleSetting.ProductId && this.saleSetting.SaleSetting.Product) {
+                let productId = (this.saleSetting.SaleSetting.ProductId || this.saleSetting.SaleSetting.Product?.Id);
+                this.productService.getById(productId).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: (product: any) => {
+                      if(product && product.Id) {
+
+                          delete product['@odata.context'];
+                          this.defaultProduct = this.prepareModel(product);
+
+                          if(this.defaultProduct) {
+                              this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+                          }
+                      }
+
+                      this.isLoading = false;
+                    },
+                    error: (error) => {
+                      this.isLoading = false;
+                      this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+                    }
+                })
+              }else{
+                this.isLoading = false;
+              }
             }
-          },
-          error:(err) => {
-              this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-          }
-        })
-    }
+        }
+    })
   }
 
   createDefaultProduct(){
@@ -97,8 +112,43 @@ export class DefaultOrderComponent implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductDTOV2) => {
       if(TDSHelperObject.hasValue(result)){
         this.defaultProduct = this.prepareModel(result);
+        this.isChange = true;
+      }
+    })
+  }
 
-        this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+  onSave() {
+    let model = this.saleSetting.SaleSetting as any;
+    if(!this.defaultProduct) {
+      this.message.error('Chưa chọn sản phẩm');
+    }
+    
+    model.Product = {
+      Id: this.defaultProduct?.ProductId,
+      NameGet: this.defaultProduct?.ProductNameGet
+    }
+    model.ProductId = this.defaultProduct?.ProductId;
+
+    this.isLoading = true;console.log(model)
+    this.sharedService.postSaleSetting(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res) {
+            delete res["@odata.context"];
+            this.saleSetting.SaleSetting = {...res};
+            
+            if(this.defaultProduct) {
+                this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
+            }
+
+            this.sharedService.excuteSaleSetting(this.saleSetting.SaleSetting.Id).subscribe();
+            this.message.success('Lưu thành công');
+            this.isChange = false;
+          }
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })
   }
@@ -109,8 +159,8 @@ export class DefaultOrderComponent implements OnInit {
       Quantity: 1,
       Price: data?.ListPrice || data?.Price,
       ProductId: data?.Id,
-      ProductName: data?.Name,
-      ProductNameGet: data?.NameGet,
+      ProductName: data?.Name || data?.ProductName,
+      ProductNameGet: data?.NameGet || data?.ProductNameGet,
       ProductCode: data?.DefaultCode,
       UOMId: data?.UOMId,
       UOMName: data?.UOMName || data?.UOM?.Name,
@@ -120,7 +170,26 @@ export class DefaultOrderComponent implements OnInit {
   }
 
   removeDefaultProduct(){
-    delete this.defaultProduct;
-    this.productTemplateUOMLineService.removeCache();
+    let model = this.saleSetting.SaleSetting;
+    delete model.Product;
+    delete model.ProductId;
+    this.isLoading = false;
+
+    this.sharedService.postSaleSetting(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res) {
+            this.saleSetting.SaleSetting = res;
+            
+            delete this.defaultProduct;
+            this.productTemplateUOMLineService.removeCache();
+            this.sharedService.excuteSaleSetting(this.saleSetting.SaleSetting.Id).subscribe();
+          }
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 }
