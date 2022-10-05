@@ -78,6 +78,8 @@
               <th width="140px" *ngIf="isHidden('DeliveryPrice')" [align]="'right'" class="border-r">Phí giao hàng</th>
               <th width="120px" *ngIf="isHidden('ShowState')" class="border-r">Trạng thái</th>
               <th width="130px" *ngIf="isHidden('ShipPaymentStatus')" class="border-r">Trạng thái GH</th>
+              <th width="120px" *ngIf="isHidden('PrintShipCount')" class="border-r" [align]="'center'">Số lần in ship</th>
+              <th width="120px" *ngIf="isHidden('PrintDeliveryCount')" class="border-r" [align]="'center'">Số lần in HĐ</th>
               <th width="140px" *ngIf="isHidden('ShowShipStatus')" class="border-r">Đối soát GH</th>
               <th width="120px" *ngIf="isHidden('DateCreated')" [align]="'center'" class="border-r">Ngày tạo đơn</th>
               <th width="180px" *ngIf="isHidden('CreateByName')" class="border-r">Người lập</th>
@@ -215,6 +217,16 @@
                 <td *ngIf="isHidden('ShipPaymentStatus')" class="border-r">
                   <div class="w-full">
                     <span class="text-info-400 font-semibold">{{data.ShipPaymentStatus}}</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('PrintShipCount')" class="border-r text-center">
+                  <div class="w-full">
+                    <span>{{data.PrintShipCount || 0 | numberCustom }}</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('PrintDeliveryCount')" class="border-r text-center">
+                  <div class="w-full">
+                    <span>{{data.PrintDeliveryCount || 0 | numberCustom }}</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('ShowShipStatus')" class="border-r">
