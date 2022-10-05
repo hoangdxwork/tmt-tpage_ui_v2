@@ -101,6 +101,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     { value: 'CustomerDeliveryPrice', name: 'Phí ship đối tác', isChecked: false },
     { value: 'DeliveryPrice', name: 'Phí giao hàng', isChecked: false },
     { value: 'ShipPaymentStatus', name: 'Trạng thái GH', isChecked: false },
+    { value: 'PrintShipCount', name: 'Số lần in Ship', isChecked: false },
+    { value: 'PrintDeliveryCount', name: 'Số lần in HĐ', isChecked: false },
     { value: 'ShowShipStatus', name: 'Đối soát GH', isChecked: true },
     { value: 'CreateByName', name: 'Người lập', isChecked: false },
     { value: 'DateCreated', name: 'Ngày tạo đơn', isChecked: true },
