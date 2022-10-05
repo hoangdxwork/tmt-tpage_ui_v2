@@ -291,6 +291,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onOk: () => {
           that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Hủy vận đơn thành công!');
+            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
           }, error => {
             that.message.error(`${error?.error?.message}`);
           })
@@ -391,6 +392,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onOk: () => {
           that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xác nhận bán hàng thành công!');
+            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
           }, error => {
             that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
           })

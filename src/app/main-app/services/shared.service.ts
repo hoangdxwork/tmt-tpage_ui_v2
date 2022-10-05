@@ -181,4 +181,21 @@ export class SharedService extends BaseSevice {
     return this.apiService.getFileUpload(api, data);
   }
 
+  postSaleSetting(data: any) {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/odata/SaleSettings`,
+        method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData(api, data);
+  }
+
+  excuteSaleSetting(id: any){
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/SaleSettings/ODataService.Excute`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData(api, { id: id});
+  }
 }

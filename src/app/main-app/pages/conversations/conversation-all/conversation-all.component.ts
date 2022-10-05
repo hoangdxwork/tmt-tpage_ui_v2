@@ -228,7 +228,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             this.lstConversation = [ ...[itemNewMess], ...this.lstConversation];
             this.lstConversation = [ ...this.lstConversation];
 
-            this.virtualScroller.scrollToPosition(0);
+            if(this.virtualScroller) {
+                this.virtualScroller.scrollToPosition(0);
+            }
+
         } else {
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
@@ -509,8 +512,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onRefresh(event: boolean){
     this.clickReload += 1;
 
-    this.virtualScroller.refresh();
-    this.virtualScroller.scrollToPosition(0);
+    if(this.virtualScroller) {
+        this.virtualScroller.refresh();
+        this.virtualScroller.scrollToPosition(0);
+    }
 
     this.queryObj = {} as any;
     this.innerText.nativeElement.value = '';
@@ -832,9 +837,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   vsStart(event: any) {
-    if(event && event.startIndex) {
+    if(event && Number(event.startIndex) >= 0) {
       // TODO: mapping dữ liệu socket ko có trong danh sách
-      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex == (1 || 0)
+      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex <= 2 
         && this.vsSocketImports && this.vsSocketImports.length > 0;
 
       if(exist) {
@@ -845,6 +850,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
             this.vsSocketImports = [];
             this.isLoadingNextdata = false;
+
+            this.cdRef.detectChanges();
         }, 350)
       }
 

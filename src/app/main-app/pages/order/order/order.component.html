@@ -281,6 +281,12 @@
 
                   <tds-dropdown-menu #menu1="tdsDropdownMenu">
                     <div class="w-[160px]">
+                      <!-- <div class="flex flex-row items-center">
+                        Trạng thái đơn hàng:
+                        <button tds-button-icon color="primary" size="sm" (click)="directPage('')">
+                          <i class="tdsi-download-fill"></i>
+                        </button>
+                      </div> -->
                       <div tds-dropdown-item *ngFor="let status of lstStatusTypeExt" class="flex items-center justify-between"
                         (click)="updateStatusSaleOnline(data, status)">
                         <a> {{ status.Text }} </a>
