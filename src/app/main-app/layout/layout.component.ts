@@ -292,7 +292,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   onPackOfData() {
-    this.router.navigateByUrl(`user/pack-of-data/info`);
+    this.router.navigateByUrl(`user/pack-of-data`);
   }
 
   changeNotiSocketInfo() {

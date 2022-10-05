@@ -13,6 +13,7 @@ import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chato
 @Component({
   selector: 'object-facebook-post',
   templateUrl: './object-facebook-post.component.html',
+  styleUrls : ['./object-post.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })

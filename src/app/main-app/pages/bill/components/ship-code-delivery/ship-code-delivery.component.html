@@ -1,7 +1,7 @@
 <div class="w-full h-full flex flex-col">
     <label class="flex w-full">
         <input type="file" class="form-control hidden" (change)="handleFileInput($event)"/>
-        
+
         <div class="cursor-pointer inline-flex w-full">
             <div class="bg-white rounded-l rounded-bl border border-neutral-2-200 h-[34px] flex items-center px-3 hover:bg-neutral-3-50 active:neutral-3-50">
                 <span class="flex items-center font-semibold">
@@ -18,22 +18,17 @@
         <div *ngFor="let err  of messageError" class="w-full flex flex-col col-span-3 mb-4 mt-1 max-h-[80px] overflow-auto tds-panel-scroll">
             <span class="text-error-400 w-full">{{err}}</span>
         </div>
-        <tds-table  tdsTable class="table table-bordered table-striped">
+        <tds-table tdsTable class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>
-                        Mã hóa đơn
-                    </th>
-                    <th>
-                        Mã vận đơn (excel)
-                    </th>
-                    <th>
+                    <th>Mã hóa đơn</th>
+                    <th>Mã vận đơn (excel)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let item of lstOrder">
-                    <td>{{item.split(';')[0]}}</td>
-                    <td> {{item.split(';')[1]}}</td>
+                    <td>{{ item.split(';')[0] }}</td>
+                    <td>{{ item.split(';')[1] }}</td>
                 </tr>
             </tbody>
         </tds-table>

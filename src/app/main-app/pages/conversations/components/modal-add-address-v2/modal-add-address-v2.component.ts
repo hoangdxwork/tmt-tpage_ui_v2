@@ -32,6 +32,20 @@ export class ModalAddAddressV2Component implements OnInit {
 
   onCancel() {
     if( this.isSelectAddress){
+      if(!this.items){
+        let item: ResultCheckAddressDTO = {
+            Address: this._street,
+            CityCode: this._cities ? this._cities.code :null,
+            CityName: this._cities ? this._cities?.name : null,
+            DistrictCode:  this._districts ? this._districts?.code : null,
+            DistrictName: this._districts ? this._districts?.name : null,
+            WardCode: this._wards ? this._wards?.code : null,
+            WardName: this._wards ? this._wards?.name : null
+        } as any;
+
+        this.modal.destroy(item);
+        return
+      }
       this.modal.destroy(null);
       return
     }

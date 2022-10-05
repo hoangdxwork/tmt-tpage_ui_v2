@@ -120,7 +120,7 @@
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Live ID</span>
-              <span class="font-semibold text-sm">{{ dataLiveCampaign?.Facebook_LiveId }}</span>
+              <span class="font-semibold text-sm">{{ dataLiveCampaign?.Facebook_LiveId || "---" }}</span>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Ngày tạo</span>
@@ -135,7 +135,10 @@
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Trạng thái xác nhận chốt đơn</span>
-              <span class="font-semibold text-sm">{{ dataLiveCampaign?.ShowConfig }}</span>
+              <div class="flex items-center gap-x-2">
+                <tds-badge [status]="dataLiveCampaign?.ShowConfig | getColorShowConfig"></tds-badge>
+                <span class="font-semibold text-sm">{{ dataLiveCampaign?.ShowConfig }}</span>
+              </div>
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Ghi chú</span>
@@ -174,15 +177,15 @@
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Bật số lượng</span>
-                    <tds-checkbox [disabled]="true" [ngModel]="dataLiveCampaign?.EnableQuantityHandling"></tds-checkbox>
+                    <tds-checkbox [ngModel]="dataLiveCampaign?.EnableQuantityHandling"></tds-checkbox>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Tổng hợp đơn hàng trong thời gian ca làm việc</span>
-                    <tds-checkbox [disabled]="true" [ngModel]="dataLiveCampaign?.IsShift"></tds-checkbox>
+                    <tds-checkbox [ngModel]="dataLiveCampaign?.IsShift"></tds-checkbox>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Không cho phép gán nhân viên vào cuộc hội thoại</span>
-                    <tds-checkbox [disabled]="true" [ngModel]="dataLiveCampaign?.IsAssignToUserNotAllowed"></tds-checkbox>
+                    <tds-checkbox [ngModel]="dataLiveCampaign?.IsAssignToUserNotAllowed"></tds-checkbox>
                   </div>
                 </div>
               </tds-collapse-panel>

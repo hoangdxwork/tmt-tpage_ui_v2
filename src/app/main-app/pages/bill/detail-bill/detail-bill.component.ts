@@ -12,7 +12,7 @@ import { PaymentJsonDTO } from 'src/app/main-app/dto/bill/payment-json.dto';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSStatusType } from 'tds-ui/step';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -455,6 +455,13 @@ export class DetailBillComponent implements OnInit{
   onCopy(){
     this.router.navigateByUrl(`bill/copy/${this.id}`);
   }
+
+  onOpenTrackingUrl(data: BillDetailDTO) {
+    if(data && TDSHelperString.hasValueString(data.TrackingRef)) {
+      window.open(data.TrackingRef, '_blank')
+    }
+  }
+
 
   onBack(){
     history.back();

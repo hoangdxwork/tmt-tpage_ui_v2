@@ -47,16 +47,16 @@
           <tr>
             <th [align]="'center'" [width]="'33px'" [tdsLeft]="true"></th>
             <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)" [width]="'42px'" [align]="'center'" [tdsLeft]="true"></th>
-            <th [width]="'60px'" [tdsLeft]="true">STT</th>
-            <th [width]="'170px'" [tdsLeft]="true">Mã đơn hàng</th>
-            <th [width]="'300px'">Tên khách hàng</th>
-            <th [width]="'170px'">Số điện thoại</th>
-            <th [width]="'170px'">Tổng tiền</th>
-            <th [width]="'170px'" class="w-full truncate">Tổng số lượng</th>
-            <th [width]="'170px'">Trạng thái</th>
-            <th [width]="'170px'">Nhân viên</th>
+            <th [width]="'60px'" class="text-center" [tdsLeft]="true">STT</th>
+            <th [width]="'120px'" [tdsLeft]="true">Mã đơn hàng</th>
+            <th [width]="'250px'">Tên khách hàng</th>
+            <th [width]="'150px'">Số điện thoại</th>
+            <th [width]="'150px'" class="text-right">Tổng tiền</th>
+            <th [width]="'120px'" class="w-full text-center">Tổng số lượng</th>
+            <th [width]="'130px'">Trạng thái</th>
+            <th [width]="'120px'">Nhân viên</th>
             <th [width]="'170px'">Thời gian</th>
-            <th [width]="'170px'" [tdsRight]="true">Thao tác</th>
+            <th [width]="'130px'" [tdsRight]="true">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -64,16 +64,16 @@
             <tr [ngClass]="setOfCheckedId.has(order.Id)?'bg-[#F2FCF5]':''">
 
               <!-- Detail -->
-              <td [expand]="expandSet.has(order.Id)" class="text-center border-r"
+              <td [expand]="expandSet.has(order.Id)" class="text-center"
                 (expandChange)="onExpandChange(order.Id, $event)" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
               </td>
 
               <!-- Checked -->
               <td [checked]="setOfCheckedId.has(order.Id)" (checkedChange)="onItemChecked(order.Id, $event)"
-                class="text-center border-r" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
+                class="text-center" [tdsLeft]="true" [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
               </td>
 
-              <td [tdsLeft]="true"> {{index + 1}} </td>
+              <td [tdsLeft]="true" class="text-center"> {{index + 1}} </td>
 
               <!-- Mã đơn hàng -->
               <td [tdsLeft]="true">
@@ -114,10 +114,10 @@
               <td> {{order.Telephone}}</td>
 
               <!-- Tổng tiền -->
-              <td> {{order.TotalAmount || 0 | numberCustom}}</td>
+              <td class="text-right">{{order.TotalAmount || 0 | numberCustom}} đ</td>
 
               <!-- Tổng sản phẩm chờ chốt -->
-              <td> {{order.TotalAmount}}</td>
+              <td class="text-center">{{order.TotalQuantity}}</td>
 
               <!-- Trạng thái -->
               <td>

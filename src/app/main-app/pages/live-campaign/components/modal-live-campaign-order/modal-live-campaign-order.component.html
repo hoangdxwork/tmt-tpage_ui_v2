@@ -1,4 +1,4 @@
-<div class="w-full text-body-2 text-neutral-1-900 h-[473px]">
+<div class="w-full text-body-2 text-neutral-1-900 h-[473px] rounded-md border">
   <tds-table #tableMessage
     [listData]="data"
     [scroll]="{ y:'auto' }"
@@ -8,7 +8,7 @@
     [(pageIndex)]="pageIndex">
     <thead>
       <tr>
-        <th [width]="'5%'">STT</th>
+        <th [width]="'5%'" class="text-center">STT</th>
         <th [width]="'16%'">Khách hàng</th>
         <th [width]="'16%'">Mã đơn hàng</th>
         <th [width]="'16%'">Số lượng sản phẩm</th>
@@ -20,7 +20,7 @@
     <tbody>
       <tr *ngFor="let data of tableMessage.data; let index=index">
         <!-- STT-->
-        <td>
+        <td class="text-center">
           {{index + 1}}
         </td>
 
@@ -63,5 +63,5 @@
 </div>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-  <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Đóng</button>
+  <button tds-button class="min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
 </div>

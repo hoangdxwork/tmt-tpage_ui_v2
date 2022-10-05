@@ -30,7 +30,8 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
-import { ItemsRenderDto } from '@app/dto/conversation-all/ag-scroll/ag-scroll-render.dto';
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
 @Component({
   selector: 'app-conversation-all',
@@ -47,6 +48,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateAdminTransferChatBot') templateAdminTransferChatBot!: TemplateRef<{}>;
   @ViewChild('templateChatbotTranserAdmin') templateChatbotTranserAdmin!: TemplateRef<{}>;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
+
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
+  vsStartIndex: number = 0;
+  vsSocketImports: ChatomniConversationItemDto[] = [];
 
   isLoading: boolean = false;
   dataSource$?: Observable<ChatomniConversationDto> ;
@@ -68,6 +73,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   queryObj: QueryFilterConversationDto = {} as any;
   isFilter: boolean = false;
 
+  isLoadingNextdata: boolean = false;
   isProcessing:boolean = false;
   disableNextUrl: boolean = false;
   clickReload: number = 0;
@@ -86,7 +92,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private chatomniConversationService: ChatomniConversationService,
     private notification: TDSNotificationService,
     private conversationOrderFacade: ConversationOrderFacade,
-    private cdRef : ChangeDetectorRef,
+    private cdRef: ChangeDetectorRef,
     private printerService: PrinterService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
@@ -145,6 +151,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+
         switch(res && res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
@@ -190,9 +197,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   setSocketChatomniOnMessage(data: SocketEventSubjectDto) {
-    let index = this.lstConversation.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
-    if(Number(index) > -1) {
-
+    let index = this.lstConversation?.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
+    if(Number(index) >= 0) {
         this.lstConversation[index].LatestMessage = {
             CreatedTime: data.Data.Message?.CreatedTime,
             Message: data.Data.Message?.Message,
@@ -201,7 +207,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
         // TODO: gán lại mess nếu gửi hình
         let existAttachment = data.Data.Message && data.Data.Message.Data && data.Data.Message.Data.attachments
-                            && data.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(data.Data.Message.Data.attachments.data[0]?.image_data);
+            && data.Data.Message.Data.attachments.data && TDSHelperObject.hasValue(data.Data.Message.Data.attachments.data[0]?.image_data);
         if(existAttachment){
             this.lstConversation[index].LatestMessage!.Message = `Đã gửi ${data.Data.Message.Data.attachments.data.length} hình ảnh` as string;
         }
@@ -215,11 +221,31 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index] = {...this.lstConversation[index]};
         this.lstConversation = [...this.lstConversation];
 
-        // TODO: Check vị trí ConversationId và add vào đàu tiên
-        let model = {...this.lstConversation[index]};
-        if(index > 0){
-            this.lstConversation = this.lstConversation.filter(x => x.ConversationId != data.Data.Conversation?.UserId);
-            this.lstConversation = [...[model], ...(this.lstConversation || [])];
+    } else {
+        // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
+        let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data) as ChatomniConversationItemDto;
+        if(this.vsStartIndex <= 1) {
+            this.lstConversation = [ ...[itemNewMess], ...this.lstConversation];
+            this.lstConversation = [ ...this.lstConversation];
+
+            this.virtualScroller.scrollToPosition(0);
+        } else {
+            const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
+            if(Number(vsIndex) >= 0) {
+                this.vsSocketImports[vsIndex].LatestMessage = {
+                    CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                    Message: itemNewMess.LatestMessage?.Message,
+                    MessageType: itemNewMess.LatestMessage?.MessageType
+                } as any;
+
+                this.vsSocketImports[vsIndex].CountUnread = (this.vsSocketImports[vsIndex].CountUnread || 0) + 1;
+                this.vsSocketImports[vsIndex] = {...this.vsSocketImports[vsIndex]};
+
+            } else {
+                this.vsSocketImports = [ ...[itemNewMess], ...this.vsSocketImports];
+            }
+
+            this.vsSocketImports = [...this.vsSocketImports];
         }
     }
 
@@ -232,7 +258,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: ChatomniTagsEventEmitterDto) => {
         if(res) {
             let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
-            if(Number(index) >- 1) {
+            if(Number(index) >= 0) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.lstConversation = [...this.lstConversation];
@@ -248,7 +274,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: ChatomniLastMessageEventEmitterDto) => {
         if(res) {
             let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
-            if(Number(index) >- 1) {
+            if(Number(index) >= 0) {
                 this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.lstConversation = [...this.lstConversation];
@@ -264,7 +290,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (id: string) => {
         if(id) {
             let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
-            if(Number(index) >- 1) {
+            if(Number(index) >= 0) {
                 this.lstConversation[index].CountUnread = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.lstConversation = [...this.lstConversation];
@@ -280,7 +306,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (id: string) => {
         if(id) {
             let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
-            if(Number(index) >- 1) {
+            if(Number(index) >= 0) {
                 this.lstConversation[index].State = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
                 this.lstConversation = [...this.lstConversation];
@@ -319,7 +345,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (id: string) => {
         if(id) {
           let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
-          if(Number(index) >- 1) {
+          if(Number(index) >= 0) {
               this.lstConversation[index].AssignedTo = true;
               this.lstConversation[index] = {...this.lstConversation[index]};
               this.lstConversation = [...this.lstConversation];
@@ -347,40 +373,40 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     this.isLoading = true;
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ChatomniConversationDto) => {
+      next: (res: ChatomniConversationDto) => {
 
-            if (res && TDSHelperArray.hasListValue(res.Items)) {
-                this.lstConversation = [...res.Items];
+          if (res && TDSHelperArray.hasListValue(res.Items)) {
+              this.lstConversation = [...res.Items];
 
-                let currentOmni: ChatomniConversationItemDto;
-                let params_csid: string;
+              let currentOmni: ChatomniConversationItemDto;
+              let params_csid: string;
 
-                // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
-                params_csid = this.paramsUrl?.csid;
-                if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
-                    params_csid = this.getStorageConversationId();
-                }
+              // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
+              params_csid = this.paramsUrl?.csid;
+              if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
+                  params_csid = this.getStorageConversationId();
+              }
 
-                currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
+              currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
 
-                // TODO: nếu không tồn tại params_csid thì lấy item đầu tiên
-                if(!TDSHelperObject.hasValue(currentOmni) && !TDSHelperString.hasValueString(currentOmni?.ConversationId)) {
-                    currentOmni = this.lstConversation[0];
-                }
+              // TODO: nếu không tồn tại params_csid thì lấy item đầu tiên
+              if(!TDSHelperObject.hasValue(currentOmni) && !TDSHelperString.hasValueString(currentOmni?.ConversationId)) {
+                  currentOmni = this.lstConversation[0];
+              }
 
-                this.setCurrentConversationItem(currentOmni);
+              this.setCurrentConversationItem(currentOmni);
 
-            } else {
-                //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-                this.validateData();
-            }
+          } else {
+              //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
+              this.validateData();
+          }
 
-            this.isLoading = false;
-        },
-        error: (error: any) => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-        }
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
     })
   }
 
@@ -447,30 +473,24 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   nextData(event: any): any {
-    if(event) {
-      if (this.isProcessing) {
-          return false;
+    this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
+
+    this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationDto) => {
+
+          if(res && res.Items) {
+              this.lstConversation = [...(res.Items || [])];
+              this.lstConversation = [...this.lstConversation];
+          } else {
+              this.disableNextUrl = true;
+          }
+
+          this.isLoadingNextdata = false;
+      },
+      error: (error) => {
+          this.isLoadingNextdata = false;
       }
-
-      this.isProcessing = true;
-      this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.lstConversation, this.queryObj);
-
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ChatomniConversationDto) => {
-
-            if(res && res.Items) {
-                this.lstConversation = [...(res.Items || [])];
-            } else {
-                this.disableNextUrl = true;
-            }
-
-            this.isProcessing = false;
-        },
-        error: (error) => {
-            this.isProcessing = false;
-        }
-      })
-    }
+    })
   }
 
   onClickTeam(data: any): any {
@@ -488,6 +508,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+
+    this.virtualScroller.refresh();
+    this.virtualScroller.scrollToPosition(0);
 
     this.queryObj = {} as any;
     this.innerText.nativeElement.value = '';
@@ -656,15 +679,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       })
     }
-
-    // setTimeout(() => {
-    //   const btnElement = (<HTMLElement>this.ElByClassName.nativeElement).querySelector(
-    //     '.items-container'
-    //     );
-    //     if(btnElement){
-    //       btnElement.className = 'items-container flex flex-col';
-    //   }
-    // }, 0);
   }
 
   onTabOderOutput(ev: boolean){
@@ -672,6 +686,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadFilterDataSource() {
+    this.lstConversation = [];
     this.isProcessing = true;
 
     this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, this.queryObj).pipe(takeUntil(this.destroy$)).subscribe({
@@ -798,16 +813,44 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     localStorage.removeItem(_keyCache);
   }
 
-  onItemsRender(event: ItemsRenderDto) {
-    let exits = event && event.items && this.lstConversation && this.lstConversation.length > 0 && !this.disableNextUrl && !this.isProcessing;
-    if(exits) {
-        let lastItemAg = event.items[event.length - 1];
-        let lastItemCs = this.lstConversation[this.lstConversation.length - 1];
+  vsEnd(event: NgxVirtualScrollerDto) {
+    let exisData = this.lstConversation && this.lstConversation.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+        const vsEnd = Number(this.lstConversation.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
+        if(vsEnd) {
 
-        if(lastItemAg && lastItemCs && lastItemAg.ConversationId == lastItemCs.ConversationId) {
-            this.nextData(event);
+            if (this.isProcessing || this.isLoadingNextdata) {
+                return;
+            }
+
+            this.isLoadingNextdata = true;
+            setTimeout(() => {
+                this.nextData(event);
+            }, 350);
         }
     }
   }
+
+  vsStart(event: any) {
+    if(event && event.startIndex) {
+      // TODO: mapping dữ liệu socket ko có trong danh sách
+      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex == (1 || 0)
+        && this.vsSocketImports && this.vsSocketImports.length > 0;
+
+      if(exist) {
+        this.isLoadingNextdata = true;
+        setTimeout(() => {
+            this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
+            this.lstConversation = [...this.lstConversation];
+
+            this.vsSocketImports = [];
+            this.isLoadingNextdata = false;
+        }, 350)
+      }
+
+      this.vsStartIndex = event.startIndex;
+    }
+  }
+
 }
 

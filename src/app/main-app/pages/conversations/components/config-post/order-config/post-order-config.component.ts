@@ -1,3 +1,4 @@
+import { UOM } from './../../../../../dto/product-template/product-tempalte.dto';
 import { Guid } from 'guid-typescript';
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
@@ -22,6 +23,9 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampainGetWithDetailAttributesDto, LiveCampainGetWithDetailsDto } from '@app/dto/live-campaign/livecampain-detail-attributes.dto';
 import { CommonService } from '@app/services/common.service';
+import { GetInventoryDTO } from '@app/dto/product/product.dto';
+import { SharedService } from '@app/services/shared.service';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 
 @Component({
   selector: 'post-order-config',
@@ -44,7 +48,8 @@ export class PostOrderConfigComponent implements OnInit {
   toMoreTemplate: number = 1;
   isVisibleRangeGenerate: boolean = false;
   isImmediateApply: boolean = false;
-
+  lstInventory!: GetInventoryDTO;
+  companyCurrents: any;
   lstTags: CRMTagDTO[] = []
   lstPartnerStatus: any;
   lstUser$!: Observable<ConfigUserDTO[]>;
@@ -75,6 +80,7 @@ export class PostOrderConfigComponent implements OnInit {
     private productService: ProductService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
+    private sharedService: SharedService,
     private notificationService: TDSNotificationService,
     private liveCampaignService: LiveCampaignService) { }
 
@@ -83,7 +89,36 @@ export class PostOrderConfigComponent implements OnInit {
         this.loadData(this.data.ObjectId);
         this.loadUser();
         this.loadPartnerStatus();
+
+        this.loadCurrentCompany();
     }
+  }
+
+  loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+          this.companyCurrents = res;
+          if(this.companyCurrents.DefaultWarehouseId) {
+              this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+          }
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
+    });
+  }
+
+  loadInventoryWarehouseId(warehouseId: number) {
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstInventory = res;
+      },
+      error:(err) => {
+          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+      }
+    });
   }
 
   validateData() {
@@ -207,7 +242,6 @@ export class PostOrderConfigComponent implements OnInit {
 
     return datas;
   }
-
 
   checkInputMatch2(strs: string[]) {
     let datas = strs as any[];
@@ -410,17 +444,20 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   selectProduct(product: any, item: TextContentToOrderDTO) {
+    this.isLoading = true;
     this.productService.getAttributeValuesById(product.Id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
 
-        let defaultProductConfig = {...this.prepareProduct(res)};
-        let content = this.getContentString(defaultProductConfig);
+        let productConfig = {...this.prepareProduct(res)};
+        let content = this.getContentString(productConfig);
 
-        let contentWithAttributes = this.getcontentWithAttributesString(defaultProductConfig) as string;
+        // TODO: Attributes
+        let name = productConfig.ProductTemplateName;
+        let contentWithAttributes = this.getcontentWithAttributesString(name) as string;
 
         let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
         if(idx >= 0) {
-          this.dataModel.TextContentToOrders[idx].Product = defaultProductConfig;
+          this.dataModel.TextContentToOrders[idx].Product = productConfig;
           this.dataModel.TextContentToOrders[idx].ContentWithAttributes = contentWithAttributes || null;
 
           if(item.Content) {
@@ -431,9 +468,11 @@ export class PostOrderConfigComponent implements OnInit {
         }
 
         this.dataModel.TextContentToOrders[idx] = {...this.dataModel.TextContentToOrders[idx]}
+        this.isLoading = false;
         this.cdRef.detectChanges();
       },
       error:(err) => {
+        this.isLoading = false;
         this.message.error(err?.error?.message || Message.ConversationPost.CanNotGetProduct);
       }
     });
@@ -441,18 +480,16 @@ export class PostOrderConfigComponent implements OnInit {
 
   //TODO: chỉ sử dụng khi thêm mẫu sản phẩm
   getContentString(productConfig: AutoOrderProductDTO) {
-    let productName = productConfig.ProductName;
 
-    if(!productName && productConfig.ProductNameGet){
-      productName = productConfig.ProductNameGet.replace(`[${productConfig.ProductCode}]`,``) || '';
-      productName = productConfig.ProductNameGet.trim();
-    }
+    let name = productConfig.ProductNameGet || productConfig.ProductTemplateName;
+    let code = productConfig.ProductCode;
 
-    return this.handleWord(productName, productConfig.ProductCode);
+    return this.handleWord(name, code);
   }
 
-  getcontentWithAttributesString(productConfig: AutoOrderProductDTO) {
-    let attributeValues = this.handleWord(productConfig.ProductTemplateName);
+  getcontentWithAttributesString(productName: string, code?: string, tags?: string) {
+    let attributeValues = this.handleWord(productName, code);
+
     if(attributeValues && attributeValues.length > 0) {
         return attributeValues.join(",");
     } else {
@@ -460,31 +497,38 @@ export class PostOrderConfigComponent implements OnInit {
     }
   }
 
-  handleWord(text: string, code?: string): string[] {
-    let result: string[] = [];
-    if(!TDSHelperString.hasValueString(text)){
-      return [];
+  handleWord(productName: string, code?: string, tags?: string): string[] {
+    const data: string[] = [];
+
+    if(!TDSHelperString.hasValueString(productName)) {
+      return data;
     }
 
-    let word = StringHelperV2.removeSpecialCharacters(text);
+    if(code) {
+      productName = productName.replace(`[${code}]`, "");
+    }
+
+    productName = productName.trim();
+
+    let word = StringHelperV2.removeSpecialCharacters(productName);
     let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
     let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
 
-    result.push(word);
+    data.push(word);
 
-    if(!result.includes(wordNoSignCharacters)) {
-      result.push(wordNoSignCharacters);
+    if(!data.includes(wordNoSignCharacters)) {
+      data.push(wordNoSignCharacters);
     }
 
-    if(!result.includes(wordNameNoSpace)) {
-      result.push(wordNameNoSpace);
+    if(!data.includes(wordNameNoSpace)) {
+      data.push(wordNameNoSpace);
     }
 
     if(TDSHelperString.hasValueString(code) && code) {
-      result.push(code);
+      data.push(code);
     }
 
-    return [...result];
+    return [...data];
   }
 
   loadLiveCampaignById(id: string) {
@@ -522,7 +566,7 @@ export class PostOrderConfigComponent implements OnInit {
             this.dataModel.TextContentToOrders = [];
 
             details.map((x: LiveCampainGetWithDetailsDto) => {
-              let product: AutoOrderProductDTO = {
+              let productConfig: AutoOrderProductDTO = {
                   ProductId: x.ProductId,
                   ProductCode: x.ProductCode,
                   ProductName: x.ProductName,
@@ -543,23 +587,26 @@ export class PostOrderConfigComponent implements OnInit {
               } as any;
 
               if(x.AttributeValues && x.AttributeValues.length > 0) {
-                  product.DescriptionAttributeValues = x.AttributeValues.map(x => {
+                  productConfig.DescriptionAttributeValues = x.AttributeValues.map(x => {
                       return `${x.NameGet}`;
                   });
 
-                  product.AttributeValues = x.AttributeValues.map(x => {
-                    return `${x.Name}`;
+                  productConfig.AttributeValues = x.AttributeValues.map(x => {
+                      return `${x.Name}`;
                   })
 
-                  if(product.AttributeValues && product.AttributeValues.length > 0) {
-                      product.IsEnableRegexAttributeValues = true;
+                  if(productConfig.AttributeValues && productConfig.AttributeValues.length > 0) {
+                      productConfig.IsEnableRegexAttributeValues = true;
                   } else {
-                      product.IsEnableRegexAttributeValues = false;
+                      productConfig.IsEnableRegexAttributeValues = false;
                   }
               }
 
-              let content = product.Tags;
-              let contentWithAttributes = this.getcontentWithAttributesString(product);
+              let content = productConfig.Tags;
+
+              // TODO: Attributes
+              let name = productConfig.ProductTemplateName;
+              let contentWithAttributes = this.getcontentWithAttributesString(name);
               let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
 
               this.dataModel.TextContentToOrders.push({
@@ -567,7 +614,7 @@ export class PostOrderConfigComponent implements OnInit {
                 Content: content || null,
                 ContentWithAttributes: contentWithAttributes || null,
                 IsActive: true,
-                Product: product || null
+                Product: productConfig || null
               })
             })
 
@@ -582,51 +629,56 @@ export class PostOrderConfigComponent implements OnInit {
       });
   }
 
-  prepareProduct(product: any): AutoOrderProductDTO {
-    let result = {} as AutoOrderProductDTO;
+  prepareProduct(model: any) {
+    const data = {} as AutoOrderProductDTO;
 
-    result.ProductId = product.ProductId || product.Id;
-    result.ProductCode = product.ProductCode || product.DefaultCode;
-    result.ProductName = product.ProductName;
-    result.ProductNameGet = product.ProductNameGet;
-    result.ProductTemplateName = product.ProductTemplateName;
-    result.Price = product.Price || product.LstPrice || 0;
-    result.UOMId = product.UOMId;
-    result.UOMName = product.UOMName;
-    result.Quantity = product.Quantity || 0;
-    result.QtyLimit = product.LimitedQuantity || 0;
-    result.QtyDefault = product.Quantity;
+    data.ProductId = model.Id;
+    data.ProductCode = model.DefaultCode || model.Barcode;
+    data.ProductName = model.Name;
+    data.ProductNameGet = model.NameGet;
+    data.ProductTemplateName = model.NameTemplate;
+    data.Price = model.LstPrice || model.PriceVariant|| 0;
+    data.UOMId = model.UOMId;
+    data.UOMName = model.UOMName || model?.UOM?.Name;
 
-    if(product.IsEnableRegexAttributeValues){
-      result.IsEnableRegexAttributeValues = product.IsEnableRegexAttributeValues;
+    data.Quantity = 1;
+    if(this.lstInventory && this.lstInventory[data.ProductId]) {
+        data.Quantity =  Number(this.lstInventory[data.ProductId]?.QtyAvailable) > 0 ? Number(this.lstInventory[data.ProductId]?.QtyAvailable) : 1;
     }
 
-    if(product.IsEnableRegexQty){
-      result.IsEnableRegexQty = product.IsEnableRegexQty;
+    data.QtyLimit = model.LimitedQuantity || 0;
+    data.QtyDefault = model.Quantity;
+
+    if(model.IsEnableRegexAttributeValues) {
+      data.IsEnableRegexAttributeValues = model.IsEnableRegexAttributeValues;
     }
 
-    if(product.IsEnableOrderMultiple){
-      result.IsEnableOrderMultiple = product.IsEnableOrderMultiple;
+    if(model.IsEnableRegexQty) {
+      data.IsEnableRegexQty = model.IsEnableRegexQty;
     }
 
-    result.AttributeValues = [];
-    result.DescriptionAttributeValues = [];
+    if(model.IsEnableOrderMultiple){
+      data.IsEnableOrderMultiple = model.IsEnableOrderMultiple;
+    }
 
-    if(TDSHelperArray.hasListValue(product.AttributeValues)) {
-      product.AttributeValues.forEach((x:any) => {
-        if(x.Name){
-          result.AttributeValues.push(x.Name);
-        }
+    data.DescriptionAttributeValues = [];
+    data.AttributeValues = [];
 
-        if(x.NameGet){
-          result.DescriptionAttributeValues.push(x.NameGet);
-        }
+    if(TDSHelperArray.hasListValue(model.AttributeValues)) {
+      model.AttributeValues.forEach((x:any) => {
+          if(x.Name){
+            data.AttributeValues.push(x.Name);
+          }
+
+          if(x.NameGet){
+            data.DescriptionAttributeValues.push(x.NameGet);
+          }
       });
 
-      result.IsEnableRegexAttributeValues = true;
+      data.IsEnableRegexAttributeValues = true;
     }
 
-    return {...result};
+    return {...data};
   }
 
   prepareUser(data: ConfigUserDTO[] | null) {

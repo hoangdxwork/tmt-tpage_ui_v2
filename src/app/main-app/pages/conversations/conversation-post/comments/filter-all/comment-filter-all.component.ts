@@ -15,8 +15,8 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
-import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, Input, HostBinding, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, AfterViewInit, HostListener } from '@angular/core';
-import { Observable, tap, BehaviorSubject, auditTime } from 'rxjs';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, AfterViewInit, HostListener } from '@angular/core';
+import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -40,7 +40,8 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 
 @Component({
   selector: 'comment-filter-all',
@@ -49,20 +50,19 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewInit {
-
-  itemSize = 100;
-  infinite = new BehaviorSubject<ChatomniDataItemDto[]>([]);
-  @ViewChild(CdkVirtualScrollViewport) viewPort!: CdkVirtualScrollViewport;
+export class CommentFilterAllComponent implements OnInit, OnChanges {
 
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
+
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
+  vsStartIndex: number = 0;
+  vsSocketImports: ChatomniDataItemDto[] = [];
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
   @Input() isShowModal: boolean = false;
   @Input() innerText!: string;
-  scrolledIndex: number = 0;
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
 
@@ -74,6 +74,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   enumActivityStatus = ActivityStatus;
   messageModel!: string;
   isLoading: boolean = false;
+  isLoadingNextdata: boolean = false;
   disableNextUrl: boolean = false;
   currentId: string = '';
   isHiddenComment: any = {};
@@ -89,6 +90,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   currentConversation!: ChatomniConversationItemDto | any;
   commentOrders?: any = {};
   filterObj : TDSSafeAny;
+  lengthDataSource: number = 0;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -117,10 +119,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
 
   ngOnInit() {
     if(this.data && this.team) {
-        this.loadData();
-        this.loadPartnersByTimestamp();
-        this.loadTags();
-        this.loadCommentsOrderByPost()
+      this.loadData();
+      this.loadPartnersByTimestamp();
+      this.loadTags();
+      this.loadCommentsOrderByPost()
     }
 
     this.onEventSocket();
@@ -139,27 +141,34 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onEventSocket(){
-
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+        switch(res.EventName) {
 
-        switch(res.EventName){
           case ChatmoniSocketEventName.chatomniOnMessage:
             let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId;
             if(exist) {
-                let item = { ...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
+                let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
 
-                // TODO: nếu là comment child thì cũng push thẳng xóa ParentId
-                if(item && TDSHelperString.hasValueString(item.ParentId)) {
-                    item.ParentId = null;
+                // TODO: nếu là comment child thì cũng push thẳng xóa parentId
+                if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
+                    itemNewComment.ParentId = null;
                 }
 
-                this.dataSource.Items = [...[item], ...(this.dataSource?.Items || [])];
-                this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
+                if(this.vsStartIndex <= 1) {
+                    this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
+                    this.dataSource.Items = [...this.dataSource.Items];
 
-                if(this.scrolledIndex <= 2) {
-                    this.infinite.next([...this.dataSource.Items]);
+                    this.lengthDataSource = this.dataSource.Items.length;
+                    this.virtualScroller.scrollToPosition(0);
+                } else {
+                    this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
+                    this.vsSocketImports = [...this.vsSocketImports];
+
+                    this.lengthDataSource = this.lengthDataSource + 1;
                 }
+
+                this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
             }
 
             this.cdRef.detectChanges();
@@ -203,7 +212,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     this.postEvent.onRemoveOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
         if(res){
-          this.loadCommentsOrderByPost();
+            this.loadCommentsOrderByPost();
         }
       }
     });
@@ -212,7 +221,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
         delete this.dataSource$;
-        delete this.dataSource;
+        this.dataSource = null;
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -232,7 +241,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   loadData() {
     this.isLoading = true;
     this.disableNextUrl = false;
-    this.infinite.next([]);
+    this.isLoadingNextdata = false;
+
+    if(this.virtualScroller) {
+        this.virtualScroller.refresh();
+        this.virtualScroller.scrollToPosition(0);
+    }
 
     this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId, this.filterObj);
     if(this.dataSource$) {
@@ -245,8 +259,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
             }
 
             this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
+            this.dataSource.Items = [...this.dataSource.Items];
+            this.lengthDataSource = this.dataSource.Items.length;
 
-            this.cdkVirtualScroll();
             this.isLoading = false;
             this.cdRef.markForCheck();
         },
@@ -600,42 +615,18 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  scrolledIndexChange(index: any){
-    if(this.dataSource && this.dataSource?.Items?.length > 0 && this.viewPort) {
-        this.scrolledIndex = index;
-        this.infinite.next([...this.dataSource.Items]);
-    }
-  }
-
-  cdkVirtualScroll() {
-    if(this.viewPort && this.viewPort.scrolledIndexChange && this.dataSource?.Items) {
-        this.viewPort.scrolledIndexChange.pipe(auditTime(350), tap(() => {
-
-            const end = this.viewPort.getRenderedRange().end;
-            const total = this.viewPort.getDataLength();
-
-            if(end == total && !this.isLoading && !this.disableNextUrl) {
-                this.nextBatch();
-            }
-
-        })).pipe(takeUntil(this.destroy$)).subscribe();
-      }
-
-      if(this.dataSource && TDSHelperArray.hasListValue(this.dataSource?.Items)) {
-          setTimeout(() => this.infinite.next([...(this.dataSource?.Items || [])]), 750);
-      }
-  }
-
-  nextBatch() {
-    this.isLoading = true;
+  nextData(event: any) {
     let id = `${this.team.Id}_${this.data.ObjectId}`;
-    this.dataSource$ = this.chatomniCommentService.nextDataSource(id, this.dataSource.Items);
+    let dataSourceItem = (this.dataSource?.Items || []);
+
+    this.dataSource$ = this.chatomniCommentService.nextDataSource(id, dataSourceItem);
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
 
-          if(res && TDSHelperArray.hasListValue(res?.Items)) {
-              this.dataSource.Items = [...res.Items];
+          if(res && res.Items && res.Items.length > 0) {
+              this.dataSource.Items = [...(res.Items || [])];
+
               this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
 
               // TODO: merge bình luận đã gửi
@@ -645,17 +636,19 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
                   this.sortChildComment(this.dataSource.Items);
               }
 
-              this.infinite.next([...this.dataSource.Items]);
+              this.dataSource.Items = [...this.dataSource.Items];
+              this.lengthDataSource = this.dataSource.Items.length;
+
           } else {
-            this.disableNextUrl = true;
+              this.disableNextUrl = true;// check dk dừng phân trang
           }
 
-          this.isLoading = false;
-          this.cdRef.markForCheck();
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
-          this.isLoading = false;
-          this.cdRef.markForCheck();
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -676,7 +669,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
       let model: ChatomniDataItemDto[] = [];
 
       data?.map(x => {
-        if(x.ParentId){
+        if(x && x.ParentId){
             model = [...model, ...[x]];
         }
       });
@@ -686,11 +679,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   mergeUpdatedData(data: ChatomniDataItemDto[], updateData: ChatomniDataItemDto[]){
-    let ids = data?.map(x => { return x.Id });
+    let ids = data?.map(x => { if(x && x.Id) {return x.Id} return });
 
     //TODO: check bình luận mới gán vào data
     updateData?.forEach(f => {
-      if(!ids.includes(f.Id)){
+      if(f && f.Id && !ids.includes(f.Id)){
           data.push(f);
       }
     });
@@ -809,35 +802,55 @@ export class CommentFilterAllComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   removeIndexDbTag(item: any): void {
-    // this.activityMatchingService.removeTagFromConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe({
-    //   next: () => {
-    //     this.removeTagOnView(item);
-    //   },
-    //   error: err=>{
-    //     this.message.error(err.error? err.error.message : 'Xóa nhãn thất bại');
-    //   }
-    // });
   }
 
   assignIndexDbTag(item: any) {
-    // this.activityMatchingService.assignTagToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
-    //   .pipe(takeUntil(this.destroy$)).subscribe({
-    //   next: ()=> {
-    //     this.assignTagOnView(item);
-    //     this.crmTagService.addTagLocalStorage(item.Id);
-    //   },
-    //   error: err => {
-    //     this.message.error(err.error? err.error.message : 'Gắn nhãn thất bại');
-    //   }
-    // });
   }
 
   removeTagOnView(tag: any) {
   }
 
-  ngAfterViewInit() {
-    this.cdkVirtualScroll();
+  vsEnd(event: NgxVirtualScrollerDto) {
+    let exisData = this.dataSource && this.dataSource.Items && this.dataSource.Items.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+        const vsEnd = Number(this.dataSource.Items.length - ((this.childsComment || []).length) - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
+        if(vsEnd) {
+
+            if (this.isLoading || this.isLoadingNextdata) {
+                return;
+            }
+
+            this.isLoadingNextdata = true;
+            setTimeout(() => {
+                this.nextData(event);
+            }, 500);
+        }
+    }
+  }
+
+  vsStart(event: any) {
+    if(event && event.startIndex) {
+        // TODO: mapping dữ liệu socket ko có trong danh sách
+        let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
+            && this.vsSocketImports && this.vsSocketImports.length > 0;
+
+        if(exist) {
+            this.isLoadingNextdata = true;
+            setTimeout(() => {
+                this.dataSource.Items = [...this.vsSocketImports, ...this.dataSource.Items];
+                this.dataSource.Items = [...this.dataSource.Items];
+                this.lengthDataSource = this.dataSource.Items.length;
+
+                this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+                this.vsSocketImports = [];
+                this.isLoadingNextdata = false;
+
+                this.cdRef.detectChanges();
+            }, 350);
+
+        }
+
+        this.vsStartIndex = event.startIndex;
+    }
   }
 }

@@ -114,10 +114,10 @@ export class DashboardDailyReportComponent implements OnInit {
     let messageData = data.Current?.Messages?.Data;
     let maxTime = messageData[messageData.length - 1]?.Time;
     let maxHour = new Date(maxTime).getUTCHours();
-    maxHour = Number(maxHour);
+    maxHour = Number(maxHour) + 1;
     this.axisData = [];
 
-    for (let i = 1; i <= maxHour; i++) {
+    for (let i = 0; i <= maxHour; i++) {
       this.axisData = [...this.axisData, [i]];
     }
   }
@@ -129,8 +129,8 @@ export class DashboardDailyReportComponent implements OnInit {
     let lstTotalMessage = data.Current.Messages?.Data?.map((f:any) => { return f.MessageCount + f.CommentCount }) || [];
     let lstTotalConversation = data.Current.Conversations?.Data?.map((f:any) => { return f.Count }) || [];
     //TODO: lấy 5 giá trị trên trục y
-    let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation)/5;
-    this.interval = Math.round(calInterval);
+    let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation) / 5;
+    this.interval = Math.ceil(calInterval / 100) * 100;
     
     this.axisData.forEach((hour) => {
       let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
@@ -161,107 +161,112 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   loadDataChart(){
-    this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
+    if(TDSHelperArray.hasListValue(this.axisData) && TDSHelperArray.hasListValue(this.seriesData)){
+      this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
 
-    let chart:TDSLineChartComponent = {
-      color:this.colors,
-      tooltip:{
-        show:true,
-        position:'top',
-        trigger: 'axis',
-        axisPointer:{
-          type:'line',
-          lineStyle:{
-            color:'#C4C4C4',
-            type:'solid'
-          }
-        },
-        formatter:'<div class="flex flex-row rounded-xl p-2">'+
-                    '<div class="bg-white rounded-full flex items-center justify-center h-[34px] w-[34px]">'+
-                      '<i class="tdsi-time-fill text-primary-1"></i>'+
-                    '</div>'+
-                    '<div class="pl-2">'+
-                      '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">' +
-                        formatDate(new Date().toUTCString(), 'EEEE', 'vi-VN')
-                        + ', {b}:00 ' + 
-                        formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
-                        + '</span><br>'+
-                      '<div class="flex flex-row items-center justify-between gap-x-5 text-white text-caption-2 font-semibold font-sans text-center">'+
-                        '<span>{c} {a}</span>'+
-                        '<span>{c1} {a1}</span>'+
+      let chart:TDSLineChartComponent = {
+        color:this.colors,
+        tooltip:{
+          show:true,
+          position:'top',
+          trigger: 'axis',
+          axisPointer:{
+            type:'line',
+            lineStyle:{
+              color:'#C4C4C4',
+              type:'solid'
+            }
+          },
+          formatter:'<div class="flex flex-row rounded-xl p-2">'+
+                      '<div class="bg-white rounded-full flex items-center justify-center h-[34px] w-[34px]">'+
+                        '<i class="tdsi-time-fill text-primary-1"></i>'+
                       '</div>'+
-                    '</div>'+
-                  '</div>',
-        borderColor:'transparent',
-        backgroundColor:'rgba(0, 0, 0, 0.8)'
-      },
-      grid:{
-        top: 16,
-        right: 8,
-        bottom: 70
-      },
-      legend:{
-        show: true,
-        bottom: 0,
-        icon: 'roundRect'
-      },
-      axis:{
-        xAxis:[
-          {
-            data: this.axisData,
-            boundaryGap:false,
-            axisTick:{
-              show:false
-            },
-            axisLine:{
-              lineStyle:{
-                color:'#E9EDF2',
-                width:1
-              }
-            },
-            axisLabel:{
-              margin:16,
-              color:'#2C333A',
-              fontFamily:'Segoe UI',
-              fontWeight:400,
-              fontStyle:'normal',
-              fontSize:14,
-              lineHeight:20,
-              interval:1,
-              align:'center',
-              width:17
-            }
-          }
-        ],
-        yAxis:[
-          {
-            axisLabel:{
-              margin:40,
-              color:'#2C333A',
-              fontFamily:'Segoe UI',
-              fontWeight:400,
-              fontStyle:'normal',
-              fontSize:14,
-              lineHeight:20,
-              align:'left',
-            },
-            interval: this.interval,
-            max: this.interval*6,
-            splitLine:{
-              lineStyle:{
-                color:'#C4C4C4',
-                width:1.2,
-                type:[5,5],
-                opacity:0.6
+                      '<div class="pl-2">'+
+                        '<span class="text-neutral-1-500 text-caption-2 font-regular font-sans text-center pb-2">' +
+                          formatDate(new Date().toUTCString(), 'EEEE', 'vi-VN')
+                          + ', {b}:00 ' + 
+                          formatDate(new Date().toUTCString(), 'dd/MM/yyyy', 'vi-VN') 
+                          + '</span><br>'+
+                        '<div class="flex flex-row items-center justify-between gap-x-5 text-white text-caption-2 font-semibold font-sans text-center">'+
+                          '<span>{c} {a}</span>'+
+                          '<span>{c1} {a1}</span>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>',
+          borderColor:'transparent',
+          backgroundColor:'rgba(0, 0, 0, 0.8)'
+        },
+        grid:{
+          top: 16,
+          right: 8,
+          bottom: 70
+        },
+        legend:{
+          show: true,
+          bottom: 0,
+          icon: 'roundRect'
+        },
+        axis:{
+          xAxis:[
+            {
+              data: this.axisData,
+              boundaryGap:false,
+              axisTick:{
+                show:false
+              },
+              axisLine:{
+                lineStyle:{
+                  color:'#E9EDF2',
+                  width:1
+                }
+              },
+              axisLabel:{
+                margin:16,
+                color:'#2C333A',
+                fontFamily:'Segoe UI',
+                fontWeight:400,
+                fontStyle:'normal',
+                fontSize:14,
+                lineHeight:20,
+                interval:1,
+                align:'center',
+                width:17
               }
             }
-          }
-        ]
-      },
-      series: this.getSeries(this.seriesData)
-    }
+          ],
+          yAxis:[
+            {
+              axisLabel:{
+                margin:40,
+                color:'#2C333A',
+                fontFamily:'Segoe UI',
+                fontWeight:400,
+                fontStyle:'normal',
+                fontSize:14,
+                lineHeight:20,
+                align:'left',
+              },
+              interval: this.interval,
+              max: this.interval*5,
+              splitLine:{
+                lineStyle:{
+                  color:'#C4C4C4',
+                  width:1.2,
+                  type:[5,5],
+                  opacity:0.6
+                }
+              }
+            }
+          ]
+        },
+        series: this.getSeries(this.seriesData)
+      }
+  
+      this.buildChartDemo(chart);
 
-    this.buildChartDemo(chart);
+    } else {
+      this.emptyData = true;
+    }
   }
 
   buildChartDemo(chart : TDSLineChartComponent ){
@@ -271,7 +276,7 @@ export class DashboardDailyReportComponent implements OnInit {
 
   getSeries(seriesData:TDSSafeAny[]){
     let list:TDSLineChartDataSeries[] = [];
-    seriesData.forEach(series => {
+    seriesData.forEach((series, i) => {
       list.push(
         {
           name: series.name,
@@ -287,11 +292,16 @@ export class DashboardDailyReportComponent implements OnInit {
               y: 0,
               x2: 0,
               y2: 1,
-              colorStops: [{
-                  offset: 0, color: '#28A745'
-              }, {
-                  offset: 1, color: '#FFF'
-              }],
+              colorStops: [
+                {
+                  offset: 0, 
+                  color: this.colors[i].toString()
+                }, 
+                {
+                  offset: 1, 
+                  color: '#FFF'
+                }
+              ],
               global: false
             }
           },

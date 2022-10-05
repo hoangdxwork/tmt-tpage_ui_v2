@@ -24,7 +24,7 @@
           </thead>
           <tbody>
             <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
-                <tr>
+                <tr class="cursor-pointer" (click)="addUOM(data)">
                     <td> {{ index + 1 }} </td>
                     <td>
                       <p class="text-sm font-semibold">

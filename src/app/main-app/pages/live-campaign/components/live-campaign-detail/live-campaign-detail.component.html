@@ -33,25 +33,27 @@
     </tds-filter-status>
   </div>
 
-  <div class="flex flex-col flex-auto gap-y-4 p-4">
-    <div class="rounded-xl h-full">
-      <div class="h-full" *ngIf="tabCurrent == 0">
-        <detail-report [liveCampaignId]="liveCampaignId"></detail-report>
-      </div>
-      <div class="h-full" *ngIf="tabCurrent == 1">
-        <detail-product [liveCampaignId]="liveCampaignId"></detail-product>
-      </div>
-      <div class="h-full" *ngIf="tabCurrent == 2">
-        <detail-message [liveCampaignId]="liveCampaignId"></detail-message>
-      </div>
-      <div class="h-full" *ngIf="tabCurrent == 3">
-        <detail-order-livecampaign [liveCampaignId]="liveCampaignId"></detail-order-livecampaign>
-      </div>
-      <div class="h-full" *ngIf="tabCurrent == 4">
-        <detail-bill-payment [liveCampaignId]="liveCampaignId"></detail-bill-payment>
-      </div>
-      <div class="h-full" *ngIf="tabCurrent == 5">
-        <detail-bill [liveCampaignId]="liveCampaignId"></detail-bill>
+  <div class="flex flex-col flex-auto overflow-y-scroll tds-custom-scroll">
+    <div class="flex flex-col flex-auto gap-y-4 p-4">
+      <div class="rounded-xl h-full">
+        <div class="h-full" *ngIf="tabCurrent == 0">
+          <detail-report [liveCampaignId]="liveCampaignId"></detail-report>
+        </div>
+        <div class="h-full" *ngIf="tabCurrent == 1">
+          <detail-product [liveCampaignId]="liveCampaignId"></detail-product>
+        </div>
+        <div class="h-full" *ngIf="tabCurrent == 2">
+          <detail-message [liveCampaignId]="liveCampaignId"></detail-message>
+        </div>
+        <div class="h-full" *ngIf="tabCurrent == 3">
+          <detail-order-livecampaign [liveCampaignId]="liveCampaignId"></detail-order-livecampaign>
+        </div>
+        <div class="h-full" *ngIf="tabCurrent == 4">
+          <detail-bill-payment [liveCampaignId]="liveCampaignId"></detail-bill-payment>
+        </div>
+        <div class="h-full" *ngIf="tabCurrent == 5">
+          <detail-bill [liveCampaignId]="liveCampaignId"></detail-bill>
+        </div>
       </div>
     </div>
   </div>

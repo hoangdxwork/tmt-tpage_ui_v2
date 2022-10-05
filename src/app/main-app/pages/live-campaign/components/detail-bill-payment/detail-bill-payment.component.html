@@ -25,9 +25,9 @@
       (queryParams)="onQueryParamsChange($event)">
       <thead>
         <tr>
-          <th [width]="'64px'" [(checked)]="checked" [indeterminate]="indeterminate">
+          <th [width]="'44px'" [(checked)]="checked" [indeterminate]="indeterminate">
           </th>
-          <th [width]="'200px'">STT</th>
+          <th [width]="'57px'">STT</th>
           <th [width]="'200px'">Hình thanh toán</th>
           <th [width]="'200px'">Số HĐ</th>
           <th [width]="'200px'">Khách hàng</th>
@@ -159,7 +159,7 @@
 
             <!-- Thao tác -->
             <td>
-              <div class="flex space-x-2">
+              <div class="flex gap-x-2">
                 <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
                   <span class="flex items-center text-neutral-1-500">
                     <i class="tdsi-edit-fill"></i>

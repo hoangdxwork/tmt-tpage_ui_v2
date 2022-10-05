@@ -130,7 +130,9 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   onChangeShipPaymentStatus(event: TDSSafeAny){
-    this.shipPaymentStatus = event.name;
+    if(event) {
+      this.shipPaymentStatus = event.name;
+    }
   }
 
   loadSummaryStatus() {

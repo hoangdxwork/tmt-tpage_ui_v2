@@ -12,7 +12,7 @@
 
           <!-- Tin nhắn văn bản -->
           <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
-              <div class="text-left" showMore [length]="300" [text]="dataItem.Message" #contentMessage></div>
+              <div class="text-left" [innerHtml]="dataItem.Message | jsonPayload | formatIconLike | bbcodeConvert | highlightSearch : searchText" #contentMessage></div>
           </div>
 
           <!-- Tin nhắn hình ảnh -->
@@ -109,7 +109,7 @@
                       <span class="tdsi-call-fill text-md text-white"></span>
                   </span>
 
-                  <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress()"
+                  <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress(undefined, dataItem.NlpEntities)"
                       class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                       <span class="tdsi-pin-fill text-md text-white"></span>
                   </span>
@@ -209,7 +209,7 @@
                         class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                         <i class="tdsi-call-fill text-md text-white"></i>
                     </span>
-                    <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress()"
+                    <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="showModalSuggestAddress(undefined, dataItem.NlpEntities)"
                         class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
                         <i class="tdsi-pin-fill text-md text-white"></i>
                     </span>

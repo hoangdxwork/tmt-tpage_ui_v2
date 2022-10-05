@@ -59,7 +59,7 @@
                       <tds-form-field>
                           <tds-select valueField="Id" textField="DisplayName" [valuePrimitive]="false"
                             placeholder='Chọn tên khách hàng' formControlName="Partner" (onSearch)="onSearchPartner($event)"
-                            (ngModelChange)="selectChangePartner($event)"
+                            (selectChange)="selectChangePartner($event)"
                             [data]="(lstCustomers | async) || []" [allowClear]="true">
 
                             <ng-template tds-label-tmp let-item="item">
@@ -834,11 +834,11 @@
                     <th [width]="'120px'">Đơn giá</th>
                     <!-- <th [width]="'100px'">Giá gần đây</th> -->
                     <th [width]="'100px'" *ngIf="saleConfig?.GroupDiscountPerSOLine == 1">Giảm giá</th>
-                    <th *ngIf="saleConfig.GroupWeightPerSOLine == 1" [width]="'100px'" class="truncate">KL(g)</th>
+                    <th *ngIf="saleConfig?.GroupWeightPerSOLine == 1" [width]="'100px'" class="truncate">KL(g)</th>
                     <th [width]="'100px'">Thành tiền</th>
                     <th [width]="'100px'" [tdsRight]="true">
-                      <div class="flex items-center justify-center">
-                        <button tds-button-icon color="error" tds-tooltip="Xóa" size="sm" type="button"
+                      <div class="flex items-center justify-end">
+                        <button tds-button-icon color="error" tds-tooltip="Xóa hết" size="sm" type="button"
                           (click)="removeAllOrderLines()">
                           <span class="flex items-center">
                             <i class="tdsi-trash-fill"></i>
@@ -946,17 +946,17 @@
                         </div>
                       </ng-template>
                     </td>
-                    <td *ngIf="saleConfig.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000) : 0) | numberCustom }}</td>
+                    <td *ngIf="saleConfig?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000) : 0) | numberCustom }}</td>
                     <td>{{ (data.PriceTotal || 0) | numberCustom }} đ</td>
                     <td [tdsRight]="true">
-                      <div class="flex gap-x-2">
-                        <button tds-button-icon color="primary" size="sm" type="button"
+                      <div class="flex gap-x-2 justify-end">
+                        <button tds-button-icon color="primary" size="sm" type="button" tds-tooltip="Sao chép"
                           (click)="copyOrderLine(data, i)">
                           <span class="flex items-center">
                             <i class="tdsi-copy-fill"></i>
                           </span>
                         </button>
-                        <button tds-button-icon color="error" size="sm" type="button"
+                        <button tds-button-icon color="error" size="sm" type="button" tds-tooltip="Xóa"
                           (click)="removeOrderLines(data, i)">
                           <span class="flex items-center">
                             <i class="tdsi-trash-fill"></i>

@@ -6,7 +6,7 @@ import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
-import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
 import { finalize, takeUntil } from "rxjs";
@@ -48,6 +48,7 @@ export class TDSConversationItemComponent implements OnInit  {
   @Input() dataSource!: ChatomniDataDto;
   @Input() index!: number;
   @Input() companyCurrents: any;
+  @Input() searchText!: string;
 
   @HostBinding("@eventReplyComment") eventAnimation = true;
 
@@ -583,11 +584,34 @@ export class TDSConversationItemComponent implements OnInit  {
     return model;
   }
 
-  showModalSuggestAddress(index?: number){
+  showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){ 
     let value: string = '';
 
-    if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText) {
-        value = this.contentMessageChild._results[index].nativeElement.outerText;
+    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') { 
+        if(nlpEntities[0].Value){
+          let data = JSON.parse(nlpEntities[0].Value);
+
+          if (data && typeof data === "object") {
+  
+              let item: ResultCheckAddressDTO = {
+                Address: data.FullAddress || null,
+                CityCode: data.CityCode || null,
+                CityName: data.CityName || null,
+                DistrictCode:  data.DistrictCode || null,
+                DistrictName: data.DistrictName || null,
+                WardCode: data.WardCode || null,
+                WardName: data.WardName || null
+            } as any;
+  
+            this.chatomniEventEmiter.selectAddressEmiter$.emit(item);
+            this.tdsMessage.success('Chọn làm địa chỉ thành công');
+            return;
+          }
+        }
+    }
+
+    if (Number(index) >= 0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].text) {
+        value = this.contentMessageChild._results[ Number(index)].text;
     } else {
         value = this.getTextOfContentMessage();
     }

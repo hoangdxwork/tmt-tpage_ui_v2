@@ -144,6 +144,8 @@ import { QuillModule } from 'ngx-quill';
 import { quillOptions } from 'src/app/app.module';
 import { ModalProductDefaultComponent } from './components/modal-product-default/modal-product-default.component';
 import { AgVirtualScrollModule } from 'ag-virtual-scroll';
+import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { TDSSkeletonModule } from 'tds-ui/skeleton';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -300,7 +302,9 @@ const SERVICES = [
     OrderModule,
     TDSPaginationModule,
     QuillModule.forRoot(quillOptions),
-    AgVirtualScrollModule
+    AgVirtualScrollModule,
+    VirtualScrollerModule,
+    TDSSkeletonModule
   ],
   providers: [...SERVICES]
 })

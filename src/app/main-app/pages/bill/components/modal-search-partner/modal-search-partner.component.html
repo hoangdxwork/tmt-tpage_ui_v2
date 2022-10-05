@@ -15,7 +15,7 @@
     <div class="w-full h-[530px] text-body-2 text-neutral-1-900">
         <tds-table #TableListPartner class="h-full"
             showPagination showSizeChanger
-            [scroll]="{y:'auto'}"  [loading]="isLoading"
+            [scroll]="{y:'auto'}" [loading]="isLoading"
             [listData]="lstCustomers">
             <thead>
                   <tr style="width: 100%;">
@@ -27,8 +27,8 @@
             </thead>
             <tbody>
                 <ng-template ngFor let-data [ngForOf]="TableListPartner.data" >
-                    <tr >
-                        <td  class="font-semibold">{{ data.DisplayName || data.Name }}</td>
+                    <tr>
+                        <td class="font-semibold">{{ data.DisplayName || data.Name }}</td>
                         <td>{{ data.Phone }}</td>
                         <td>{{ data.Street }}</td>
                         <td>
@@ -41,6 +41,6 @@
     </div>
 
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Đóng</button>
+        <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
     </div>
 </div>

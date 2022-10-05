@@ -63,8 +63,8 @@
             {{mdbFbPost.attachments.data.[0].title}}
         </tds-label> -->
 
-        <span *ngIf="(item.Data | facebookType)?.message" class=" text-neutral-1-400">{{(item.Data | facebookType)?.message | slice: 0: 50}}
-            <span *ngIf="(item.Data | facebookType)?.message!.length > 50">...</span>
+        <span *ngIf="(item.Data | facebookType)?.message" class=" text-neutral-1-400 line-clamp">
+            {{(item.Data | facebookType)?.message}}
         </span>
 
         <div class="flex gap-x-2 items-center">

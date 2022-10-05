@@ -193,9 +193,13 @@
                                                         {{ item.Price | numberCustom  }}đ
                                                     </span>
 
-                                                    <span class="tdsi-edit-line flex text-base cursor-pointer" tds-popover [popoverVisible]="visibleIndex == index"
+                                                    <span class="tdsi-edit-line flex text-base cursor-pointer mr-1" tds-popover [popoverVisible]="visibleIndex == index"
                                                         popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true" [popoverBackdrop]="true"
                                                         (popoverVisibleChange)="openPopover($event, item.Price, index)">
+                                                    </span>
+
+                                                    <span *ngIf="item.Discount > 0 && isEnableCreateOrder" class="text-caption-1 text-primary-1 flex justify-center items-center font-semibold">
+                                                        <i class="tdsi-tag-fill mr-1"></i> {{item.Discount}}%
                                                     </span>
 
                                                     <ng-template #tmpEditPrice>

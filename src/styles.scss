@@ -75,10 +75,49 @@ select:-webkit-autofill:focus {
   padding: 6px;
 }
 
+.input-quill-editor .ql-mention-list-container {
+  max-height: 300px;
+  overflow: auto;
+  top: 0;
+}
+
+.input-quill-editor .ql-mention-list-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.input-quill-editor .ql-mention-list-container::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px #F8F9FB; 
+  border-radius: 10px;
+}
+
+.input-quill-editor .ql-mention-list-container::-webkit-scrollbar-thumb {
+  background: #CDD3DB; 
+  border-radius: 10px;
+}
+
 .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
   width: inherit;
 }
 
 .post-livecampaign tds-pagination ul.items-center {
   display: none;
+}
+
+tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.cs-item div span.see-more {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    max-width: 195px;
+}
+
+.cs-item .whitespace-normal {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 }

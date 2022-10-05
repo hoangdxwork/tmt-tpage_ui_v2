@@ -383,7 +383,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
-
       let model = {
         ids: [...this.setOfCheckedId]
       }

@@ -201,7 +201,8 @@
                         </tds-checkbox>
                       </div>
 
-                      <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues && item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
+                      <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues &&
+                        item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
                         <div class="flex rounded-md gap-x-1">
                             <tds-form-field class="w-full">
                                 <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []"

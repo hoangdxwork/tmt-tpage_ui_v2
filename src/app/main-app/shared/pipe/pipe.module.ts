@@ -35,9 +35,10 @@ import { LatestMessageTypePipe } from './lastest-message-type.pipe';
 import { NumericalOrder } from './numerical-order.pipe';
 import { jsonPayloadPipe } from './json-payload.pipe';
 import { GetShowStatePipe } from './get-show-state.pipe';
-import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPipe, GetColorStatusTextPipe } from './get-order-status.pipe';
+import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPipe, GetColorStatusTextPipe, GetColorShowConfigPipe } from './get-order-status.pipe';
 import { OnSetWidthTagPipe } from './set-width-tagpipe';
 import { GetAvatarCarrier } from './get-avatar-carrier.pipe';
+import { HighlightSearchPipe } from './highlightSearch.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -85,6 +86,8 @@ const cmp =[
   TruncateStringPipe,
   OnSetWidthTagPipe,
   GetAvatarCarrier,
+  HighlightSearchPipe,
+  GetColorShowConfigPipe
 ]
 
 @NgModule({

@@ -16,6 +16,7 @@ export interface Detail_QuickSaleOnlineOrder {
   LiveCampaign_DetailId?: string | null;
   IsOrderPriority?: boolean;
   QuantityRegex?: any | null;
+  Discount: number;
 }
 
 export interface Partner {
