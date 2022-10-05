@@ -69,7 +69,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   dataSource$!: Observable<ChatomniDataDto> | any;
   dataSource!: ChatomniDataDto | any;
   childs: any = {} // dictionary return ChatomniDataItemDto[]
-  childsComment: ChatomniDataItemDto[] = [];
 
   enumActivityStatus = ActivityStatus;
   messageModel!: string;
@@ -146,7 +145,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
         switch(res.EventName) {
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-            let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId;
+            let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId && this.dataSource;
             if(exist) {
                 let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
 
@@ -253,10 +252,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniDataDto) => {
             this.dataSource = { ...res };
-
-            if(this.dataSource && TDSHelperArray.hasListValue(this.dataSource.Items)) {
-                this.sortChildComment(this.dataSource.Items);
-            }
 
             this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
             this.dataSource.Items = [...this.dataSource.Items];
@@ -476,7 +471,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       data.ObjectId = item.ObjectId;
     }
 
-    this.childsComment = [...this.childsComment, ...[data]];
+    this.dataSource.Items = [...this.dataSource.Items, ...[data]];
     this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
@@ -629,13 +624,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
               this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
 
-              // TODO: merge bình luận đã gửi
-              this.dataSource.Items = this.mergeUpdatedData(this.dataSource.Items, this.childsComment);
-
-              if(TDSHelperArray.hasListValue(this.dataSource.Items)) {
-                  this.sortChildComment(this.dataSource.Items);
-              }
-
               this.dataSource.Items = [...this.dataSource.Items];
               this.lengthDataSource = this.dataSource.Items.length;
 
@@ -665,31 +653,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       }
   }
 
-  sortChildComment(data: ChatomniDataItemDto[]){
-      let model: ChatomniDataItemDto[] = [];
-
-      data?.map(x => {
-        if(x && x.ParentId){
-            model = [...model, ...[x]];
-        }
-      });
-
-      model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
-      this.childsComment = [...model];
-  }
-
-  mergeUpdatedData(data: ChatomniDataItemDto[], updateData: ChatomniDataItemDto[]){
-    let ids = data?.map(x => { if(x && x.Id) {return x.Id} return });
-
-    //TODO: check bình luận mới gán vào data
-    updateData?.forEach(f => {
-      if(f && f.Id && !ids.includes(f.Id)){
-          data.push(f);
-      }
-    });
-
-    return [...data];
-  }
 
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
@@ -813,7 +776,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   vsEnd(event: NgxVirtualScrollerDto) {
     let exisData = this.dataSource && this.dataSource.Items && this.dataSource.Items.length > 0 && event && event.scrollStartPosition > 0;
     if(exisData) {
-        const vsEnd = Number(this.dataSource.Items.length - ((this.childsComment || []).length) - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
+        const vsEnd = Number(this.dataSource.Items.length - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
         if(vsEnd) {
 
             if (this.isLoading || this.isLoadingNextdata) {
@@ -828,8 +791,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     }
   }
 
-  vsStart(event: any) {
-    if(event && event.startIndex) {
+  vsStart(event: NgxVirtualScrollerDto) {
+    if(event && Number(event.startIndex) >= 0) { 
         // TODO: mapping dữ liệu socket ko có trong danh sách
         let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
             && this.vsSocketImports && this.vsSocketImports.length > 0;

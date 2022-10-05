@@ -1,6 +1,7 @@
+import { filter } from 'rxjs/operators';
 import { ChatomniDataItemDto, ChatomniMessageType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { Pipe, PipeTransform } from '@angular/core';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Pipe({
   name: 'sortDataSourcePost'
@@ -10,18 +11,49 @@ export class SortDataSourcePostPipe implements PipeTransform {
 
   constructor(){}
 
-  transform(data: ChatomniDataItemDto[]): any {
+  transform(data: ChatomniDataItemDto[]): any { 
+    let dataChild: ChatomniDataItemDto[] = [];
     let model: ChatomniDataItemDto[] = [];
+
+    if(data && TDSHelperArray.hasListValue(data)) {
+      dataChild = this.sortChildComment(data);
+    }
+
     if(data && data.length > 0) {
       data.map(x => {
           if(x && !TDSHelperString.hasValueString(x.ParentId) && (x.Type == ChatomniMessageType.FacebookComment || x.Type == ChatomniMessageType.TShopComment)) {
               model = [...model, ...[x]]
+              let childitem: ChatomniDataItemDto[] = [];
+
+              dataChild.map(child => { 
+                if(child && child.ParentId == x.Data?.id) {
+                  model = [...model, ...[child]];
+                } else {
+                  childitem = [...childitem, ...[child]];
+                }
+              })
+
+              dataChild = [...childitem];
           }
       })
+      model = [...model, ...dataChild];
     }
 
-    return model;
+    return [...model];
   }
+
+  sortChildComment(data: ChatomniDataItemDto[]){
+    let model: ChatomniDataItemDto[] = [];
+
+    data?.map(x => {
+      if(x && x.ParentId){
+          model = [...model, ...[x]];
+      }
+    });
+
+    model = model.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
+    return [...model];
+}
 }
 
 @Pipe({
