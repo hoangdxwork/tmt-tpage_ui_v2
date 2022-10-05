@@ -34,10 +34,11 @@
                       </div>
                       <div class="flex flex-col gap-1">
                         <div class="text-title-1 font-sans font-semibold"> {{item.Name}} </div>
-                        <div class="flex gap-x-2 items-center">
+                        <div *ngIf="dataItems[item.Type]?.['@odata.count'] > 0" class="flex gap-x-2 items-center">
                           <span class="text-caption-2 text-neutral-1-400">Đã kết nối</span>
-                          <span class="text-primary-1 text-caption-2 font-semibold">0</span>
+                          <span class="text-primary-1 text-caption-2 font-semibold">{{ dataItems[item.Type]?.['@odata.count'] }}</span>
                         </div>
+                        <span *ngIf="dataItems[item.Type]?.['@odata.count'] == 0" class="text-caption-2 text-neutral-1-400">Chưa kết nối</span>
                         <!-- <div *ngIf="deliveryDataSource.length == 0" class="flex gap-x-2 items-center">
                           <span class="text-caption-2 text-neutral-1-400">Chưa kết nối</span>
                         </div> -->
@@ -61,8 +62,8 @@
                     </div>
                   </ng-template>
                   <tds-spin [spinning]="isLoading1">
-                    <div *ngIf="deliveryDataSource" class="flex flex-col divide-y w-full">
-                      <ng-template ngFor let-data let-i="index" [ngForOf]="deliveryDataSource" let-odd='odd'>
+                    <div *ngIf="item.Values" class="flex flex-col divide-y w-full">
+                      <ng-template ngFor let-data let-i="index" [ngForOf]="item.Values" let-odd='odd'>
                         <div class="py-4 pl-4 pr-8 flex items-center">
                           <div class="flex flex-col gap-y-1.5 w-1/2">
                             <div class="font-semibold">{{ data.Name }}</div>
@@ -94,11 +95,19 @@
                           </div>
                         </div>
                       </ng-template>
-                      <!-- <div *ngIf="deliveryDataSource" class="text-caption-2 p-4 text-primary-1 cursor-pointer">
-                        Xem thêm đối tác giao hàng
-                      </div> -->
+                      <!-- phân trang -->
+                      <div class="flex items-end py-3 px-4">
+                        <tds-pagination class="w-full" [pageSize]="pageSize" [showTotal]="rangeTemplate"
+                            [pageIndex]="pageIndex" [total]="dataItems[item.Type]?.['@odata.count']"
+                            (pageIndexChange)="changePageIndex($event, index)">
+                        </tds-pagination>
+
+                        <ng-template #rangeTemplate let-range="range" class="pr-4">
+                          {{ range[0] }}-{{ range[1] }} of {{ dataItems[item.Type]?.['@odata.count'] }}
+                      </ng-template>
+                      </div>
                     </div>
-                    <div *ngIf="deliveryDataSource.length == 0" class="p-4">
+                    <div *ngIf="item.Values?.length == 0">
                       <tds-empty notFoundImage="./assets/imagesv2/Table.svg"
                         [notFoundContent]="contentTpl" [notFoundFooter]="footerTpl">
                         <ng-template #contentTpl>

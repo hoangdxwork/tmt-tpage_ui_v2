@@ -304,7 +304,7 @@ const SERVICES = [
     QuillModule.forRoot(quillOptions),
     AgVirtualScrollModule,
     VirtualScrollerModule,
-    TDSSkeletonModule
+    TDSSkeletonModule,
   ],
   providers: [...SERVICES]
 })
