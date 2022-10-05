@@ -228,7 +228,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             this.lstConversation = [ ...[itemNewMess], ...this.lstConversation];
             this.lstConversation = [ ...this.lstConversation];
 
-            this.virtualScroller.scrollToPosition(0);
+            if(this.virtualScroller) {
+                this.virtualScroller.scrollToPosition(0);
+            }
+
         } else {
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
@@ -509,8 +512,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onRefresh(event: boolean){
     this.clickReload += 1;
 
-    this.virtualScroller.refresh();
-    this.virtualScroller.scrollToPosition(0);
+    if(this.virtualScroller) {
+        this.virtualScroller.refresh();
+        this.virtualScroller.scrollToPosition(0);
+    }
 
     this.queryObj = {} as any;
     this.innerText.nativeElement.value = '';
