@@ -168,7 +168,6 @@ export class DashboardFacebookReportComponent implements OnInit {
           show: true,
           position: 'top',
           formatter: function (params: any[]) {
-            console.log(params)
             let label = `<span class="pb-2">${params[0].axisValue}</span><br>`;
             params.forEach((x) => {
               label += `<div class="flex flex-col items-start">
