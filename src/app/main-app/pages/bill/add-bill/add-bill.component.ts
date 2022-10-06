@@ -1091,7 +1091,7 @@ export class AddBillComponent implements OnInit {
           delete x.AccountId;
         })
       break;
-      
+
       case 'copy':
         model.OrderLines?.map((x: any) => {
             delete x.Account;
@@ -1390,7 +1390,7 @@ export class AddBillComponent implements OnInit {
       this._form.setControl('Ship_ServiceExtras', this.fb.array([]));
 
       // this._form.controls['Carrier'].setValue(event);
-      // this._form.controls['CarrierId'].setValue(event?.Id);
+      this._form.controls['CarrierId'].setValue(event?.Id);
 
       //TODO: Cập nhật giá trị ship mặc định
 
