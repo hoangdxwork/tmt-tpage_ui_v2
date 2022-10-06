@@ -94,6 +94,7 @@ import { OrderModule } from '../order/order.module';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { DrawerBillMessageComponent } from './components/drawer-bill-message/drawer-bill-message.component';
 import { TDSBadgeModule } from 'tds-ui/badges';
+import { EditLiveCampaignComponent } from './components/edit-livecampaign/edit-livecampaign.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -124,7 +125,8 @@ const cmp =[
   DrawerOrderMessageComponent,
   DrawerBillMessageComponent,
   FilterOptionCampaignComponent,
-  ExpandOrderLivecampaignComponent
+  ExpandOrderLivecampaignComponent,
+  EditLiveCampaignComponent
 ]
 
 const SERVICES = [
