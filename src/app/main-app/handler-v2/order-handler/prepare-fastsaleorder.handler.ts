@@ -106,12 +106,12 @@ export class SO_PrepareFastSaleOrderHandler {
             ProductUOMQty: x.Quantity,
             Type: 'fixed',
           } as any;
-  
-          if(x.Discount > 0){
-            item.Discount = x.Discount;
-            item.Type = 'percent';
-          }
-  
+
+          // if(x.Discount > 0){
+          //   item.Discount = x.Discount;
+          //   item.Type = 'percent';
+          // }
+
           saleModel.OrderLines?.push(item);
         })
       }

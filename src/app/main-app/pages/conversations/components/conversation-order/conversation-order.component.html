@@ -198,9 +198,9 @@
                                                         (popoverVisibleChange)="openPopover($event, item.Price, index)">
                                                     </span>
 
-                                                    <span *ngIf="item.Discount > 0 && isEnableCreateOrder" class="text-caption-1 text-primary-1 flex justify-center items-center font-semibold">
+                                                    <!-- <span *ngIf="item.Discount > 0 && isEnableCreateOrder" class="text-caption-1 text-primary-1 flex justify-center items-center font-semibold">
                                                         <i class="tdsi-tag-fill mr-1"></i> {{item.Discount}}%
-                                                    </span>
+                                                    </span> -->
 
                                                     <ng-template #tmpEditPrice>
                                                         <div class="w-[336px] flex flex-col gap-y-4" *ngIf="item">
