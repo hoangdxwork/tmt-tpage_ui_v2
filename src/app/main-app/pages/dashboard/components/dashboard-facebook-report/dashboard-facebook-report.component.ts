@@ -105,18 +105,31 @@ export class DashboardFacebookReportComponent implements OnInit {
     let lstDataMesage = data.Current?.Messages?.Data || [];
     let lstDataConversation = data.Current?.Conversations?.Data || [];
     let lstMessage: number[] = [];
+    let lstComment: number[] = [];
     let lstConversation: number[] = [];
     this.seriesData = [];
 
+    // TODO: tính message data
     this.axisData.map((x) => {
       let find = lstDataMesage.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
       if(find){
-        lstMessage.push(find.CommentCount + find.MessageCount);
+        lstMessage.push(find.MessageCount);
       }else{
         lstMessage.push(0);
       }
     })
 
+    // TODO: tính comment data
+    this.axisData.map((x) => {
+      let find = lstDataMesage.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
+      if(find){
+        lstComment.push(find.CommentCount);
+      }else{
+        lstComment.push(0);
+      }
+    })
+
+    // TODO: tính conversation data
     this.axisData.map((x) => {
       let find = lstDataConversation.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
       if(find){
@@ -126,7 +139,7 @@ export class DashboardFacebookReportComponent implements OnInit {
       }
     })
 
-    this.seriesData = [{name: 'Tin nhắn và bình luận', data: lstMessage}, { name: 'Hội thoại', data: lstConversation }];
+    this.seriesData = [{ name: 'Tin nhắn', data: lstMessage }, { name: 'Bình luận', data: lstComment }, { name: 'Hội thoại', data: lstConversation }];
   }
 
   loadDataChart(){
@@ -154,7 +167,19 @@ export class DashboardFacebookReportComponent implements OnInit {
         tooltip: {
           show: true,
           position: 'top',
-          formatter: `<span class="pb-2">{b}</span><br>{c} {a}`,
+          formatter: function (params: any[]) {
+            console.log(params)
+            let label = `<span class="pb-2">${params[0].axisValue}</span><br>`;
+            params.forEach((x) => {
+              label += `<div class="flex flex-col items-start">
+                          <div class="flex flex-row gap-x-2">
+                            <span>${x.marker}${x.value}</span>
+                            <span>${x.seriesName}</span>
+                          </div>
+                        </div>`
+            })
+            return label;
+          },
           borderColor: 'transparent',
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           textStyle: {
@@ -165,6 +190,10 @@ export class DashboardFacebookReportComponent implements OnInit {
             fontSize: 14,
             lineHeight: 20,
             align: 'center'
+          },
+          trigger: 'axis',
+          axisPointer:{
+            type: 'shadow'
           }
         },
         grid: {
