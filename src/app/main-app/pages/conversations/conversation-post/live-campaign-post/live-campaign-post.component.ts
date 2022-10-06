@@ -17,6 +17,7 @@ import { ObjectFacebookPostEvent } from '@app/handler-v2/conversation-post/objec
 import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { SortEnum } from '@core/enum';
 import { Guid } from 'guid-typescript';
+import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-post/edit-livecampaign-post.component';
 
 @Component({
   selector: 'live-campaign-post',
@@ -138,7 +139,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Chỉnh sửa chiến dịch',
-      content: AddLiveCampaignPostComponent,
+      content: EditLiveCampaignPostComponent,
       size: "xl",
       bodyStyle: {
         padding: '0px',
