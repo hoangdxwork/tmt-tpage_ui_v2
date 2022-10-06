@@ -82,8 +82,7 @@ export class DashboardFacebookReportComponent implements OnInit {
 
     lstDataMesage.map((x) => {
       if(x.Time){
-
-        // TODO: lấy time
+        // TODO: lấy time bằng cách trừ timezone
         let time = new Date(x.Time).getTime() + new Date(x.Time).getTimezoneOffset()*60*1000;
 
         this.axisData = [...this.axisData,...[time]];
