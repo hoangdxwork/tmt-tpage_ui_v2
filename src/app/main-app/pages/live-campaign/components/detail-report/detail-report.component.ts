@@ -63,7 +63,6 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           this.dataLiveCampaign = res;
-          console.log(this.dataLiveCampaign);
 
           this.isLoading = false;
           this.cdr.markForCheck();
