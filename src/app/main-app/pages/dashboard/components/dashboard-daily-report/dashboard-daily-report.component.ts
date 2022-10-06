@@ -122,15 +122,31 @@ export class DashboardDailyReportComponent implements OnInit {
     }
   }
 
+  getYInterval(maxSeriesValue: number){
+    // TODO: lấy 5 khoảng thời gian giữa 2 mốc trục y
+    let interval = this.prepareInterval(maxSeriesValue/5);
+
+    return interval;
+  }
+
+  prepareInterval(interval: number){
+    let i = 10;
+    while((interval/i) > 10) {
+      i *= 10;
+    }
+
+    return Math.ceil(interval / i) * i;
+  }
+
   loadSeriesData(data: SummaryDailyDTO) {
     let lstMessages: number[] = [];
     let lstConversations: number[] = [];
 
     let lstTotalMessage = data.Current.Messages?.Data?.map((f:any) => { return f.MessageCount + f.CommentCount }) || [];
-    let lstTotalConversation = data.Current.Conversations?.Data?.map((f:any) => { return f.Count }) || [];
+    let lstTotalConversation = data.Current.Conversations?.Data?.map((f: any) => { return f.Count }) || [];
     //TODO: lấy 5 giá trị trên trục y
-    let calInterval = Math.max(...lstTotalMessage,...lstTotalConversation) / 5;
-    this.interval = Math.ceil(calInterval / 100) * 100;
+    let maxInterval = Math.max(...lstTotalMessage,...lstTotalConversation);
+    this.interval = this.getYInterval(maxInterval);
     
     this.axisData.forEach((hour) => {
       let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
