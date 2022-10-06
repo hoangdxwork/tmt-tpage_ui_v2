@@ -545,7 +545,9 @@ export class AddBillComponent implements OnInit {
     this.loadChangePartner(partnerId).subscribe({
         next: ([data, partner]) => {
             if (data && partner) {
+
                 this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
+
                 if(Number(this.id) == 0) {
                   this.mappingDataAddress(data);
                 }
@@ -1109,6 +1111,9 @@ export class AddBillComponent implements OnInit {
         Name: model.Team.Name
       }
     }
+
+    // TODO: gán lại sô tiền nợ
+    model.NewCredit = Number(model.OldCredit) + Number(model.AmountTotal) as number;
 
     return {...model};
   }
