@@ -115,6 +115,7 @@ import { TDSAlertModule } from 'tds-ui/alert';
 import { QuillModule } from 'ngx-quill';
 import { quillOptions } from 'src/app/app.module';
 import { CreateUnitComponent } from './components/create-unit/create-unit.component';
+import { TDSPaginationModule } from 'tds-ui/pagination';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -228,6 +229,7 @@ const SERVICES = [
     TDSTagModule,
     TDSDatePickerModule,
     TDSSpinnerModule,
+    TDSPaginationModule,
     TDSTimePickerModule,
     PipeModule,
     TDSFilterStatusModule,

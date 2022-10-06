@@ -749,7 +749,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
           let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == data.Id);
 
-          //TODO: Lấy item cuối đẩy qua conversation-all-v2 
+          //TODO: Lấy item cuối đẩy qua conversation-all-v2
           if(index < 0) {
               this.dataSource.Items = [...this.dataSource.Items, ...[data]];
           }

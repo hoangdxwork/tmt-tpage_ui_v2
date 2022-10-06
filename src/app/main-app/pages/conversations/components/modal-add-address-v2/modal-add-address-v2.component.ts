@@ -54,8 +54,8 @@ export class ModalAddAddressV2Component implements OnInit {
       content: 'Bạn có muốn giữ địa chỉ này',
       onOk: () => this.onSave(),
       onCancel:()=>{ this.modal.destroy(null); },
-      okText:"Có",
-      cancelText:"Không",
+      okText:"Đồng ý",
+      cancelText:"Hủy bỏ",
       confirmViewType: "compact",
     });
   }
