@@ -88,6 +88,8 @@ export class CreateFormBillHandler {
           ConfigsProvider: new FormArray([]),
           InsuranceInfo: [null]
       }),
+      NewCredit: [0],
+      OldCredit: [0],
     })
 
     return _form;

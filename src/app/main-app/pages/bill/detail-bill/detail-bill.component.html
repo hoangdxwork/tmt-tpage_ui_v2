@@ -343,7 +343,7 @@
                                     </div>
                                 </ng-template>
                             </div>
-                            <div class="flex" >
+                            <div class="flex" *ngIf="dataModel.State != ('draft' || 'cancel')">
                                 <span class="w-1/2">Còn nợ</span>
                                 <span class="w-1/2 text-header-1 text-error-400 font-semibold">{{dataModel.Residual || 0 | numberCustom }} đ</span>
                             </div>
