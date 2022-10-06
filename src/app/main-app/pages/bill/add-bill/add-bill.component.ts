@@ -1358,9 +1358,14 @@ export class AddBillComponent implements OnInit {
   }
 
   onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
+      if(!event) {
+        this._form.controls['CarrierId'].setValue(null);
+        return;
+      }
+
       if (!this._form.controls['Partner'].value) {
-          this.message.error('Vui lòng chọn khách hàng');
-          return;
+        this.message.error('Vui lòng chọn khách hàng');
+        return;
       }
 
       this.shipServices = []; // dịch vụ
