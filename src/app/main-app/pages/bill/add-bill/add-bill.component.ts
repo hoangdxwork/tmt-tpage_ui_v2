@@ -65,6 +65,7 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 import { PrepareCopyBill } from '@app/handler-v2/bill-handler/prepare-copy-bill.handler';
 import { PrepareDetailsOrderLineHandler } from '@app/handler-v2/order-handler/prepare-details-orderLine.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 
 @Component({
   selector: 'app-add-bill',
@@ -81,7 +82,7 @@ export class AddBillComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
   dataModel!: FastSaleOrder_DefaultDTOV2;
-  saleConfig!: SaleSettingsDTO;
+  saleConfig!: SaleSettingConfigDto_V2;
   companyCurrents!: CompanyCurrentDTO;
   lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
   lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
@@ -484,7 +485,7 @@ export class AddBillComponent implements OnInit {
     this.sharedService.setSaleConfig();
     this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.saleConfig = {...res.SaleSetting};
+          this.saleConfig = {...res} as SaleSettingConfigDto_V2;
       }
     })
   }
@@ -874,23 +875,22 @@ export class AddBillComponent implements OnInit {
 
   onLoadProductToOrderLines(event: any): any {
 
+    // TODO: check dk trùng biến thể chiến dịch live
+    if(event && event.length > 0) {
+      return
+    }
+
     if (!this._form.controls['Partner'].value) {
       return this.message.error('Vui lòng chọn khách hàng!');
     }
 
-    if(TDSHelperArray.isArray(event)){
-      event.forEach((data:DataPouchDBDTO) => {
-        this.pushProductToOrderlines(data);
-      })
-    } else {
-      let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
-        let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
+    let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
+    let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
 
-        if (exist) {
-            this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
-        } else {
-            this.pushProductToOrderlines(event);
-        }
+    if (exist) {
+        this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
+    } else {
+        this.pushProductToOrderlines(event);
     }
 
   }
@@ -1158,7 +1158,7 @@ export class AddBillComponent implements OnInit {
 
     //TODO ràng buộc COD
     let COD = model.AmountTotal + model.DeliveryPrice - model.AmountDeposit;
-    let exist = this.saleConfig?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
+    let exist = this.saleConfig?.SaleSetting?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
 
     if (exist) {
       this.modal.warning({
@@ -1454,7 +1454,7 @@ export class AddBillComponent implements OnInit {
   }
 
   calcTotal() {
-    let cacl = this.calculateBillFee.fs_calcTotal(this._form, this.saleConfig);
+    let cacl = this.calculateBillFee.fs_calcTotal(this._form, this.saleConfig?.SaleSetting);
 
     this.totalQtyLines = cacl.totalQtyLines;
     this.totalAmountLines = cacl.totalAmountLines;

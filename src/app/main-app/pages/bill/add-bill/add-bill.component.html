@@ -722,9 +722,9 @@
                       <th>Sản Phẩm</th>
                       <th>Số lượng</th>
                       <th>Đơn giá</th>
-                      <th *ngIf="saleConfig?.GroupPriceRecent">Giá gần đây</th>
-                      <th *ngIf="saleConfig?.GroupDiscountPerSOLine == 1">Giảm giá</th>
-                      <th *ngIf="saleConfig?.GroupWeightPerSOLine == 1">KL(g)</th>
+                      <th *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true">Giá gần đây</th>
+                      <th *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">Giảm giá</th>
+                      <th *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">KL(g)</th>
                       <th>Thành tiền</th>
                     </tr>
                   </thead>
@@ -763,11 +763,11 @@
                         <!-- Đơn giá -->
                         <td> {{ data.PriceUnit || 0 | numberCustom }}</td>
                         <!-- Giá gần đây -->
-                        <td *ngIf="saleConfig?.GroupPriceRecent" class="text-center">
+                        <td *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true" class="text-center">
                           {{ data.PriceRecent || 0 | numberCustom }}
                         </td>
                         <!-- Giảm giá -->
-                        <td *ngIf="saleConfig?.GroupDiscountPerSOLine == 1">
+                        <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">
                           <span color="secondary">
                             <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
                               {{ data.Discount || 0 | numberCustom }}%
@@ -778,7 +778,7 @@
                           </span>
                         </td>
                         <!-- Khối lượng -->
-                        <td *ngIf="saleConfig?.GroupWeightPerSOLine == 1">{{ data.Weight >= 0 ? (data.Weight * 1000) : 0 }}</td>
+                        <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ data.Weight >= 0 ? (data.Weight * 1000) : 0 }}</td>
                         <!-- Thành tiền -->
                         <td>{{ data.PriceTotal || 0 | numberCustom  }}</td>
                       </tr>
@@ -833,8 +833,8 @@
                     <th [width]="'120px'">Số lượng</th>
                     <th [width]="'120px'">Đơn giá</th>
                     <!-- <th [width]="'100px'">Giá gần đây</th> -->
-                    <th [width]="'100px'" *ngIf="saleConfig?.GroupDiscountPerSOLine == 1">Giảm giá</th>
-                    <th *ngIf="saleConfig?.GroupWeightPerSOLine == 1" [width]="'100px'" class="truncate">KL(g)</th>
+                    <th [width]="'100px'" *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">Giảm giá</th>
+                    <th *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1" [width]="'100px'" class="truncate">KL(g)</th>
                     <th [width]="'100px'">Thành tiền</th>
                     <th [width]="'100px'" [tdsRight]="true">
                       <div class="flex items-center justify-end">
@@ -907,7 +907,7 @@
                     <!-- Giá gần đây -->
                     <!-- <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td> -->
                     <!-- Giảm giá -->
-                    <td *ngIf="saleConfig?.GroupDiscountPerSOLine == 1" class="text-center">
+                    <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" class="text-center">
                       <span color="secondary" tds-popover popoverTrigger="click" [popoverContent]="popoverDiscountLines"
                         [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
 
@@ -946,7 +946,7 @@
                         </div>
                       </ng-template>
                     </td>
-                    <td *ngIf="saleConfig?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000) : 0) | numberCustom }}</td>
+                    <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000) : 0) | numberCustom }}</td>
                     <td>{{ (data.PriceTotal || 0) | numberCustom }} đ</td>
                     <td [tdsRight]="true">
                       <div class="flex gap-x-2 justify-end">
@@ -976,7 +976,7 @@
                             <div><span class="font-regular">Tổng tạm tính</span></div>
                             <div class="col-span-2"><span>{{totalAmountLines | numberCustom  }} đ</span></div>
 
-                            <button *ngIf="saleConfig?.GroupDiscountTotal" tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                            <button *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                               (click)="openPopoverDiscount()" [(popoverVisible)]="visiblePopoverDiscount"
                               [popoverContent]="popoverContentDiscount" [popoverFooter]="popoverFooterDiscount"
                               [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
@@ -985,7 +985,7 @@
                                 Giảm giá
                               </span>
                             </button>
-                            <div *ngIf="saleConfig?.GroupDiscountTotal" class="col-span-2 flex items-center">
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" class="col-span-2 flex items-center">
                               <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value || 0) | numberCustom }} đ</span>
                             </div>
 
