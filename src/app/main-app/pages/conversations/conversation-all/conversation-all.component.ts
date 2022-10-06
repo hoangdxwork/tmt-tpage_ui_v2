@@ -335,8 +335,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: any) => {
           let teamId = this.currentTeam?.Id as any;
           this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => {
+              next: (data: any) => { 
                   this.syncConversationInfo = {...data};
+
+                  let csid = this.syncConversationInfo.Conversation.ConversationId;
+                  let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
+
+                  if(Number(index) >= 0 && this.syncConversationInfo.Partner) {
+                      this.lstConversation[index].HasPhone = this.syncConversationInfo.Partner.Phone ? true : false;
+                      this.lstConversation[index].HasAddress = this.syncConversationInfo.Partner.Street ? true : false;
+                      this.lstConversation[index] = {...this.lstConversation[index]};
+                      this.lstConversation = [...this.lstConversation];
+                  }
+
                   this.cdRef.markForCheck();
               }
           })
