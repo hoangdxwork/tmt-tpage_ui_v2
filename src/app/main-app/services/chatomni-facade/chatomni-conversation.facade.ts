@@ -64,8 +64,8 @@ export class ChatomniConversationFacade extends BaseSevice  {
     let item: ChatomniConversationItemDto = {
       ConversationId: socket.Data.Conversation?.UserId,
       CountUnread: 1,
-      HasAddress: false,
-      HasPhone: false,
+      HasAddress: socket.Data?.Conversation?.HasAddress,
+      HasPhone: socket.Data?.Conversation?.HasPhone,
       Id: socket.Data.Conversation?.Id,
 
       LatestMessage: {
