@@ -264,7 +264,7 @@ export class EditLiveCampaignComponent implements OnInit {
   }
 
 
-  onLoadProduct(datas: ProductDTOV2[]) { debugger
+  onLoadProduct(datas: ProductDTOV2[]) { 
     // TODO: cập nhật 1 sản phẩm hoặc các biến thể của sản phẩm vào danh sách
     this.onReset();
     if(TDSHelperArray.isArray(datas)) {
@@ -274,7 +274,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.liveCampainDetails = [...this._form.controls["Details"].value];
   }
 
-  addItemProduct(listData: ProductDTOV2[], isVariants?: boolean){ debugger
+  addItemProduct(listData: ProductDTOV2[], isVariants?: boolean){ 
     this.onReset();
 
     let formDetails = this._form.controls['Details'].value as any[];
