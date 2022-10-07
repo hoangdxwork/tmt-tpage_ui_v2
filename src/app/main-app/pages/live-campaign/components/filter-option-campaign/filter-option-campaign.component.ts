@@ -53,6 +53,10 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.lstLiveCampaigns = this.loadLiveCampaign();
+
+    if(this.filterObj && this.filterObj.dateRange) {
+      this.datePicker = [this.filterObj.dateRange.startDate, this.filterObj.dateRange.endDate]
+    }
   }
 
   loadLiveCampaign() {
@@ -95,8 +99,8 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
 
   onApply() {
     this.filterObj.dateRange = {
-      startDate: this.datePicker[0],
-      endDate: this.datePicker[1]
+      startDate: this.datePicker[0] || null,
+      endDate: this.datePicker[1] || null
     }
 
     this.isActive = true;
@@ -104,10 +108,10 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
   }
 
   onCancel() {
-    let startDate = this.currentDateRanges.startDate;
-    let endDate = this.currentDateRanges.endDate;
+    let startDate = addDays(new Date(), -30);
+    let endDate = new Date();
 
-    this.datePicker = [startDate, endDate];
+    this.datePicker = [addDays(new Date(), -30), new Date()];
     this.filterObj.isActive = null;
     this.filterObj.ids = [];
     this.lstSelectLive = [];
@@ -119,6 +123,7 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
 
     this.isActive = false;
     this.onLoadOption.emit(this.filterObj);
+    this.isVisible = false;
   }
 
   closeMenu() {

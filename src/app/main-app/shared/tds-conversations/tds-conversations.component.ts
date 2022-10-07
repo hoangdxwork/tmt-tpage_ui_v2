@@ -57,6 +57,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
+  @ViewChild('viewchildSearchMess') viewchildSearchMess!: ElementRef<any>;
   @HostBinding("@eventFadeState") eventAnimation = true;
   @Input() partner?: any;
 
@@ -1121,6 +1122,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onOpenSearch(){
     this.isOpenSearch = true;
+
+    setTimeout(() => {
+      if(this.viewchildSearchMess)
+        this.viewchildSearchMess.nativeElement.focus();
+      }, 350);
   }
 
   onCloseSearch(){

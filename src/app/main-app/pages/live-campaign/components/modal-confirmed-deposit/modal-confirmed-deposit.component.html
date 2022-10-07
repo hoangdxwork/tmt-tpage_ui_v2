@@ -20,7 +20,7 @@
 
         <div *ngIf="data.IsDeposited">Tiền cọc</div>
         <div *ngIf="data.IsDeposited" class="col-span-2 text-title-1 font-semibold flex space-x-2">
-          <div>90.000đ</div>
+          <div>{{data.AmountDeposit || 0 | numberCustom}}đ</div>
           <div class="flex items-center space-x-1">
             <i class="tdsi-success-line text-base text-success-400"></i>
             <div class="font-semibold text-success-400">Đã xác nhận</div>
@@ -31,7 +31,7 @@
       <div class="w-full mt-3 flex items-end" *ngIf="!data.IsDeposited">
         <tds-form-field class="w-full">
           <tds-label>Xác nhận tiền cọc:</tds-label>
-          <tds-input-number [ngModel]="currentDeposit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas">
+          <tds-input-number [(ngModel)]="currentDeposit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas">
           </tds-input-number>
         </tds-form-field>
 
