@@ -184,10 +184,10 @@
                                     <span> {{(data.Data | facebookType).count_reactions || 0}} </span>
                                 </div>
                                 <div class="flex gap-x-3 flex-auto justify-end items-center">
-                                    <!-- <tds-form-field class="flex-auto">
+                                    <tds-form-field class="flex-auto">
                                         <span tdsPrefix><i class="tdsi-search-fill"></i></span>
                                         <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText/>
-                                    </tds-form-field> -->
+                                    </tds-form-field>
 
                                     <span class="comment-count" tds-tooltip tooltipTitle="Bình luận đang hiển thị"> {{(data.Data | facebookType).count_comments || 0}} bình luận </span>
                                     <span class="share-count  mr-3"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
