@@ -1276,6 +1276,8 @@ export class AddBillComponent implements OnInit {
           let exist = obs && this.typePrint && data.FormAction == 'SaveAndPrint';
           if(exist) {
               this.loadPrintHtml(data);
+          } else {
+              this.router.navigateByUrl(`bill/detail/${this.id}`);
           }
 
           if(obs && data.OrderLines) {
@@ -1322,6 +1324,7 @@ export class AddBillComponent implements OnInit {
       },
       error:(error: any) => {
           this.isLoading = false;
+          this.router.navigateByUrl(`bill/detail/${this.id}`);
       }
     })
   }
