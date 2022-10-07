@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { PartnerStatusDTO, PartnerStatusModalDTO } from '@app/dto/partner/partner-status.dto';
 import { PartnerTimeStampDto } from '@app/dto/partner/partner-timestamp.dto';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
@@ -261,5 +262,41 @@ export class PartnerService extends BaseSevice {
     }
     return this.apiService.getData<any>(api, null);
   }
+
+  getPartnerStatusExtra(): Observable<any> {
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/PartnerStatusExtra`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  insertPartnerStatusExtra(data: PartnerStatusModalDTO): Observable<any> {
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/PartnerStatusExtra`,
+        method: CoreApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
+  deletePartnerStatusExtra(key: number): Observable<any> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/PartnerStatusExtra(${key})`,
+      method: CoreApiMethodType.delete
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  updatePartnerStatusExtra(data: PartnerStatusDTO): Observable<any> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/PartnerStatusExtra(${data.Id})`,
+      method: CoreApiMethodType.put
+    }
+
+    return this.apiService.getData<any>(api, data);
+  }
+
+
 
 }
