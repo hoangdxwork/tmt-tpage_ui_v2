@@ -545,7 +545,7 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   onChangeDeposit(event:any){
-    if(event != this.dataModel.MaxAmountDepositRequired){
+    if(this.dataModel && event != this.dataModel.MaxAmountDepositRequired){
         this.isDepositChange = true;
     } else {
         this.isDepositChange = false;
