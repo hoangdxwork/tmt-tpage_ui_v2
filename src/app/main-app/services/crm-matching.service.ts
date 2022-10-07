@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { ConversationSummaryByTagDTO } from '../dto/conversation/conversation.dto';
 import { InputReasonCannelOrderDTO, MDBFacebookMappingNoteDTO, MDBPhoneReportDTO } from '../dto/partner/partner.dto';
 import { ArrayHelper } from '../shared/helper/array.helper';
 import { BaseSevice } from './base.service';
@@ -122,15 +121,6 @@ export class CRMMatchingService extends BaseSevice {
       method: CoreApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
-  }
-
-  getSummaryByTags(pageId: string, start: string, end: string): Observable<ConversationSummaryByTagDTO[]> {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/summarybytags?PageId=${pageId}&Start=${start}&End=${end}`,
-      method: CoreApiMethodType.get,
-    }
-
-    return this.apiService.getData<ConversationSummaryByTagDTO[]>(api, null);
   }
 
   private setQuery(query?: any) {

@@ -1,114 +1,55 @@
-import { OnDestroy } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
+import { EventSummaryService } from './../../../../services/event-summary.service';
+import { SummaryTagDTO } from './../../../../dto/dashboard/summary-daily.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, OnInit } from '@angular/core';
-import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
-import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { takeUntil } from 'rxjs/operators';
-import { Subject, finalize } from 'rxjs';
-import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { ConversationSummaryByTagDTO } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
-import { CommonHandler } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-tag-report',
-  templateUrl: './dashboard-tag-report.component.html'
+  templateUrl: './dashboard-tag-report.component.html',
+  providers: [TDSDestroyService]
 })
-export class DashboardTagReportComponent implements OnInit, OnDestroy {
-//#region variable
-
-  tableData:Array<TDSSafeAny> = [];
+export class DashboardTagReportComponent implements OnInit {
+  tableData: Array<TDSSafeAny> = [];
   emptyData = false;
   isLoading: boolean = false;
-  //#endregion
-
-  private destroy$ = new Subject<void>();
-  currentTeam!: CRMTeamDTO | null;
-
-  lstDataTagReport: ConversationSummaryByTagDTO[] = [];
+  dataModel: SummaryTagDTO[] = [];
+  currentDateRanges!: TDSDateRangeDTO;
+  tdsDateRanges: TDSDateRangeDTO[] = [];
 
   constructor(private commonHandler: CommonHandler,
-    private crmTeamService: CRMTeamService,
-    private crmMatchingService: CRMMatchingService) { }
+    private eventSummaryService: EventSummaryService,
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService) { 
+      this.tdsDateRanges = this.commonHandler.tdsDateRanges;
+      this.currentDateRanges = this.commonHandler.currentDateRanges;
+    }
 
   ngOnInit(): void {
-    this.loadCurrentTeam();
+    this.loadData();
   }
 
-  loadCurrentTeam() {
-    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.currentTeam = res;
-      this.loadSummaryByTags(this.currentTeam?.ChannelId);
+  loadData() {
+    this.isLoading = true;
+    let day = this.currentDateRanges?.id || 0;
+
+    this.eventSummaryService.getSummaryByTags(day).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+        this.dataModel = [...res];
+        this.isLoading = false;
+      }, 
+      error:(err) => {
+        this.isLoading = false;
+        this.emptyData = true;
+        this.message.error(err?.error?.message || 'Tải dữ liệu nhãn hội thoại bị lỗi');
+      }
     });
   }
 
-  loadSummaryByTags(pageId: string | undefined) {
-    this.isLoading = true
-
-    let startDate = new Date('2000').toISOString();
-    let endDate =  new Date().toISOString();
-
-    this.crmMatchingService.getSummaryByTags(pageId || '', startDate, endDate).pipe(finalize(()=>{this.isLoading = false})).subscribe(res => {
-      this.lstDataTagReport = res;
-    }, error => this.emptyData = true);
-  }
-
-  loadData(){
-    this.tableData = [
-      {
-        id:1,
-        tagName:'Bom hàng',
-        position:1,
-        numberOfTag:60,
-        rateOfAppearance:20,
-        color:'#EB3B5B',
-        decrease:false
-      },
-      {
-        id:2,
-        tagName:'Đang vận chuyển',
-        position:2,
-        numberOfTag:48,
-        rateOfAppearance:20,
-        color:'#2395FF'
-      },
-      {
-        id:3,
-        tagName:'Hoàn thành',
-        position:3,
-        numberOfTag:40,
-        rateOfAppearance:20,
-        color:'#28A745'
-      },
-      {
-        id:4,
-        tagName:'Khách hẹn',
-        position:4,
-        numberOfTag:32,
-        rateOfAppearance:20,
-        color:'#FFC107'
-      },
-      {
-        id:5,
-        tagName:'Khách nguy cơ bom hàng',
-        position:5,
-        numberOfTag:26,
-        rateOfAppearance:20,
-        color:'#FF8900'
-      }
-    ];
-
-    // if(this.tableData.length == 0){
-    //   this.emptyData = true;
-    // }
-  }
-
   onChangeFilter(data:any){
-    this.loadSummaryByTags(this.currentTeam?.ChannelId);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.loadData();
   }
 }

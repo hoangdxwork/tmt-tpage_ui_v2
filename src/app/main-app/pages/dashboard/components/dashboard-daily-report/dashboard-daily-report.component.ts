@@ -8,9 +8,7 @@ import { Color } from 'echarts';
 import { TDSChartOptions, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 

@@ -108,59 +108,50 @@ export class DashboardStaffReportComponent implements OnInit {
           width: 260,
           height: 260,
           label: {
-            show:true,
-            position:'center',
-            padding:[42,22],
-            backgroundColor:'#F2FCF5',
-            borderRadius:999,
+            show: true,
+            position: 'center',
+            padding: [50,34],
+            backgroundColor: '#F2FCF5',
+            borderRadius: 999,
             formatter: function (params: TDSSafeAny) {
-              return `{highlight|${ params.percent.toFixed(2) }%}\n{avatar|}{header|${ TruncateString(params.name, 10) }}\n{body| ${ TruncateString(params.value, 8) } tương tác}`;
+              return `{highlight|${ params.percent.toFixed(2) }%}\n{header|${ TruncateString(params.name, 10) }}\n{body| ${ TruncateString(params.value, 8) } tương tác}`;
             },
-            rich:{
-              header:{
-                color:'#2C333A',
-                fontStyle:'normal',
-                fontSize:16,
-                lineHeight:24,
-                fontWeigth:600,
-                fontFamily:'Segoe UI',
+            rich: {
+              header: {
+                color: '#2C333A',
+                fontStyle: 'normal',
+                fontSize: 16,
+                lineHeight: 24,
+                fontWeigth: 600,
+                fontFamily: 'Segoe UI',
+                width: 100
+              },
+              body: {
+                color: '#929DAA',
+                fontStyle: 'normal',
+                fontSize: 14,
+                lineHeight: 20,
+                fontWeigth: 400,
                 width: 100,
-                padding:[-14,0,0,12]
+                fontFamily: 'Segoe UI'
               },
-              body:{
-                color:'#929DAA',
-                fontStyle:'normal',
-                fontSize:14,
-                lineHeight:20,
-                fontWeigth:400,
-                width:100,
-                fontFamily:'Segoe UI',
-                padding:[-28,0,0,32]
-              },
-              highlight:{
-                color:'#28A745',
-                fontStyle:'normal',
-                fontSize:40,
-                lineHeight:53.2 ,
-                fontWeigth:600,
-                fontFamily:'Segoe UI',
-                align:'center'
-              },
-              avatar:{
-                width:36,
-                height:36,
-                backgroundColor:{
-                  image:'../../../assets/imagesv2/Avatar-user.png'
-                }
+              highlight: {
+                color: '#28A745',
+                fontStyle: 'normal',
+                fontSize: 40,
+                lineHeight: 53.2 ,
+                fontWeigth: 600,
+                fontFamily: 'Segoe UI',
+                align: 'center'
               }
             }
           },
-          emphasis:{
-            scale:false
+          emphasis: {
+            scale: false
           },
-          itemStyle:{
-            borderWidth:2,
-            borderColor:'#fff',
+          itemStyle: {
+            borderWidth: 2,
+            borderColor: '#fff',
           },
           data: this.staffsData
         }
@@ -171,7 +162,7 @@ export class DashboardStaffReportComponent implements OnInit {
   }
 
   buildChartDemo(chart:TDSPieChartComponent){
-    this.staffOption = this.chartOption.DonutChartOption(chart,130,102);
+    this.staffOption = this.chartOption.DonutChartOption(chart, 130, 102);
   }
 
   onChangeFilter(data:any){
