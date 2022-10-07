@@ -98,4 +98,25 @@ export class ODataLiveCampaignService extends BaseSevice {
     return dataFilter;
   }
 
+  public buildFilterReportProduct(filterObj: FilterObjLiveCampaignDTO) {
+
+    let dataFilter: FilterDataRequestDTO = {
+        logic: "and",
+        filters: [],
+    }
+
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
+        dataFilter.filters.push( {
+            filters: [
+              { field: "ProductName", operator: OperatorEnum.contains, value: value },
+              { field: "ProductNameNoSign", operator: OperatorEnum.contains, value: value }
+            ],
+            logic: 'or'
+        })
+    }
+
+    return dataFilter;
+  }
+
 }
