@@ -408,7 +408,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   showModalListBill(data: ChatomniConversationItemDto) {
-    this.modalService.create({
+    let modal= this.modalService.create({
         title: 'Phiếu bán hàng',
         content: ModalListBillComponent,
         viewContainerRef: this.viewContainerRef,
@@ -418,6 +418,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             psid: data.ConversationId,
         }
     });
+
+    modal.afterClose.subscribe({
+        next: (res: TDSSafeAny) => {
+          if(res && res.type == 'img'){
+            this.uploadedImages = [...this.uploadedImages, ...[res.value]];
+
+            this.cdRef.detectChanges();
+          }
+        }
+      }
+    )
   }
 
   showModalAddTag() {
