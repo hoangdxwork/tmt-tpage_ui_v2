@@ -792,7 +792,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   }
 
   vsStart(event: NgxVirtualScrollerDto) {
-    if(event && Number(event.startIndex) >= 0) { 
+    if(event && Number(event.startIndex) >= 0) {
         // TODO: mapping dữ liệu socket ko có trong danh sách
         let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
             && this.vsSocketImports && this.vsSocketImports.length > 0;
