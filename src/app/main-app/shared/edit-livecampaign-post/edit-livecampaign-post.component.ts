@@ -319,10 +319,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
             this.message.success('Thao tác thành công');
 
             this.detailsFormGroups.removeAt(index);
-            this.livecampaignSimpleDetail = [...this.detailsFormGroups.value];
-            delete this.isEditDetails[detail.Id];
 
-            this.onReset();
+            let data = this.livecampaignSimpleDetail.filter((x: any) => x.Id != detail.Id);
+            this.livecampaignSimpleDetail = [...data];
+
+            delete this.isEditDetails[detail.Id];
         },
         error: (err: any) => {
             this.isLoading = false;
