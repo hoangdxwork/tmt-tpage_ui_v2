@@ -21,7 +21,7 @@
         </span>
       </tds-tag>
 
-      <div class="flex gap-x-3">
+      <div *ngIf="currentLiveCampaign?.Id" class="flex gap-x-3">
           <button tds-button color="info" size="md" class="flex items-center" (click)="showModelOverViewLiveCampaign(currentLiveCampaign?.Id, currentLiveCampaign?.Name)">
               <span class="flex items-center gap-x-2">
                 <i class="tdsi-eye-open-fill text-lg"></i> <span>Tổng quan chiến dịch</span>

@@ -1,0 +1,35 @@
+<form class="text-body-2 text-neutral-1-900" [formGroup]="partnerStatus" autocomplete="off" (ngSubmit)="onSubmit()">
+  <div class="flex flex-col w-full">
+      <tds-form-field>
+          <tds-label>Tên trạng thái</tds-label>
+          <input tdsInput type="text" formControlName="name" placeholder="Nhập tên trạng thái" id="name"/>
+          <tds-error *ngIf="hasError('name','required')">Vui lòng nhập tên trạng thái</tds-error>
+          <tds-error *ngIf="hasError('name','maxlength')">Chuỗi tối đa 50 ký tự</tds-error>
+      </tds-form-field>
+
+      <div class="w-full pt-4">
+          <tds-label class="pb-2">Chọn màu</tds-label>
+          <div class="flex flex-wrap w-full gap-x-3.5 gap-y-3">
+              <div *ngFor="let color of palette">
+                  <div class="w-8 h-8 border-2 text-white border-white rounded-full shadow cursor-pointer flex items-center justify-center"
+                      [style.background-color]="color" (click)="onChangeColor(color)">
+                      <span *ngIf="color == partnerStatus.value.code" class="flex items-center">
+                          <i class="tdsi-tick-fill leading-none text-xl"></i>
+                      </span>
+                  </div>
+              </div>
+              <div class="w-8 h-8 border text-neutral-1-500 bg-white border-neutral-2-200 rounded-full cursor-pointer flex items-center justify-center">
+                  <span class="flex items-center">
+                      <i class="tdsi-plus-fill leading-none text-xl"></i>
+                  </span>
+              </div>
+          </div>
+      </div>
+  </div>
+</form>
+
+<!-- footer -->
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="cancel()">Hủy bỏ</button>
+  <button tds-button type="submit" class="min-w-[100px]" color="primary" (click)="save()">Áp dụng</button>
+</div>

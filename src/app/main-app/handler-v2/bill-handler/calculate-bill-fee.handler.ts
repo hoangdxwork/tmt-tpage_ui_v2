@@ -3,12 +3,13 @@ import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { OrderLineV2 } from '../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { FormGroup} from '@angular/forms';
 import { Injectable } from "@angular/core";
+import { SaleSetting_V2 } from '@app/dto/setting/sale-setting-config.dto';
 
 @Injectable()
 
 export class CalculateBillFeeHandler {
 
-  public fs_calcTotal(_form: FormGroup, roleConfigs: SaleSettingsDTO) {
+  public fs_calcTotal(_form: FormGroup, roleConfigs: SaleSetting_V2 | any) {
 
     let totalQty = 0;
     let totalPrice = 0;
@@ -16,14 +17,20 @@ export class CalculateBillFeeHandler {
     let datas = _form.controls['OrderLines'].value as Array<OrderLineV2>;
 
     datas.forEach((x: OrderLineV2) => {
-      x.Discount = x.Discount ? x.Discount : 0;
+        x.Discount = x.Discount ? x.Discount : 0;
 
-      x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
-      x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
+        //TODO: check config giảm giá mỗi dòng
+        if(roleConfigs && !roleConfigs.GroupDiscountPerSOLine) {
+            x.Discount = 0;
+            x.Discount_Fixed = 0;
+        }
 
-      //TODO: tổng số lượng và tổng tiền tạm tính
-      totalQty = totalQty + x.ProductUOMQty;
-      totalPrice = totalPrice + x.PriceTotal;
+        x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
+        x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
+
+        //TODO: tổng số lượng và tổng tiền tạm tính
+        totalQty = totalQty + x.ProductUOMQty;
+        totalPrice = totalPrice + x.PriceTotal;
     });
 
     //TODO: Tính giá trị tổng bao gồm ShipWeight,WeightTotal,DiscountAmount,AmountUntaxed,PaymentAmount,TotalQuantity,AmoutTotal

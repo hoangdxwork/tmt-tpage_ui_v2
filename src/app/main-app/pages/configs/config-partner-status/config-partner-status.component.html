@@ -1,0 +1,53 @@
+<div class="w-full h-full pb-4 px-4">
+  <div class="flex flex-col w-full h-full bg-white rounded-xl">
+    <div class="flex flex-row items-center justify-between px-4 py-3">
+      <div class="flex flex-row items-center">
+        <tds-avatar class="bg-primary-1 text-white" icon="tdsi-user-fill"></tds-avatar>
+        <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">TRẠNG THÁI KHÁCH HÀNG</span>
+      </div>
+      <button tds-button color="primary" (click)="showCreateModal()">
+        <span class="flex items-center">
+          <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+          <span class="text-body-2 font-semibold">Thêm mới</span>
+        </span>
+      </button>
+    </div>
+    <div class="w-full h-full pb-2.5">
+      <tds-table class="text-neutral-1-900 text-body-2" #partnerStatusTable [listData]="lstData"
+        [scroll]="{y:'100%',x:'hidden'}" [showPagination]="false" [frontPagination]="false">
+        <thead>
+          <tr>
+            <th width="15%">STT</th>
+            <th width="30%">Trạng thái</th>
+            <th width="30%">Tên</th>
+            <th width="15%">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-template ngFor let-data let-index="index" [ngForOf]="partnerStatusTable.data">
+            <tr>
+              <td>{{ index + 1 }}</td>
+              <td>
+                <div class="w-16 h-6 rounded-full" [style.background-color]="data.Code"></div>
+              </td>
+              <td>{{ data.Name }}</td>
+              <td>
+                <button tds-button-icon color="secondary" size="sm" class="mr-2" tds-tooltip="Chỉnh sửa"
+                  (click)="showEditModal(data)">
+                  <span class="flex items-center">
+                    <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
+                  </span>
+                </button>
+                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa" (click)="showRemoveStatus(data)">
+                  <span class="flex items-center">
+                    <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
+                  </span>
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </tds-table>
+    </div>
+  </div>
+</div>

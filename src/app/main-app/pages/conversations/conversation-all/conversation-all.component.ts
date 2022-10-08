@@ -221,14 +221,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index] = {...this.lstConversation[index]};
         this.lstConversation = [...this.lstConversation];
 
-    } else {
+    } else if(!this.isFilter){
         // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
         let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data) as ChatomniConversationItemDto;
         if(this.vsStartIndex <= 1) {
             this.lstConversation = [ ...[itemNewMess], ...this.lstConversation];
             this.lstConversation = [ ...this.lstConversation];
 
-            this.virtualScroller.scrollToPosition(0);
+            if(this.virtualScroller) {
+                this.virtualScroller.scrollToPosition(0);
+            }
+
         } else {
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
@@ -332,8 +335,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: any) => {
           let teamId = this.currentTeam?.Id as any;
           this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => {
+              next: (data: any) => { 
                   this.syncConversationInfo = {...data};
+
+                  let csid = this.syncConversationInfo.Conversation.ConversationId;
+                  let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
+
+                  if(Number(index) >= 0 && this.syncConversationInfo.Partner) {
+                      this.lstConversation[index].HasPhone = this.syncConversationInfo.Partner.Phone ? true : false;
+                      this.lstConversation[index].HasAddress = this.syncConversationInfo.Partner.Street ? true : false;
+                      this.lstConversation[index] = {...this.lstConversation[index]};
+                      this.lstConversation = [...this.lstConversation];
+                  }
+
                   this.cdRef.markForCheck();
               }
           })
@@ -509,10 +523,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onRefresh(event: boolean){
     this.clickReload += 1;
 
-    this.virtualScroller.refresh();
-    this.virtualScroller.scrollToPosition(0);
+    if(this.virtualScroller) {
+        this.virtualScroller.refresh();
+        this.virtualScroller.scrollToPosition(0);
+    }
 
     this.queryObj = {} as any;
+    this.isFilter = false;
     this.innerText.nativeElement.value = '';
     this.isProcessing = false;
     this.disableNextUrl = false;
@@ -652,7 +669,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.queryObj = {} as any;
     this.disableNextUrl = false;
 
-    this.queryObj = queryObj;
+    this.queryObj = queryObj; 
+    if(Object.keys(this.queryObj).length > 0){
+      this.isFilter = true;
+    } else {
+      this.isFilter = false;
+    }
+
     this.loadFilterDataSource();
   }
 
@@ -832,9 +855,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   vsStart(event: any) {
-    if(event && event.startIndex) {
+    if(event && Number(event.startIndex) >= 0) {
       // TODO: mapping dữ liệu socket ko có trong danh sách
-      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex == (1 || 0)
+      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex <= 2 
         && this.vsSocketImports && this.vsSocketImports.length > 0;
 
       if(exist) {
@@ -845,6 +868,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
             this.vsSocketImports = [];
             this.isLoadingNextdata = false;
+
+            this.cdRef.detectChanges();
         }, 350)
       }
 

@@ -96,12 +96,16 @@ export class AddBillHandler {
         code: data.Ship_Receiver?.Ward?.code,
         name: data.Ship_Receiver?.Ward?.name
       }
+
+      data.Ship_Receiver.Phone = data.Ship_Receiver.Phone || data.ReceiverPhone;
     }
 
     data.ReceiverDate = data.ReceiverDate || null;
     data.DateOrderRed = data.DateOrderRed || null;
     data.DateInvoice = data.DateInvoice || new Date();
     data.DateCreated = new Date();
+
+    data.Phone = data.Phone || data.ReceiverPhone;
 
     // TODO: trường hợp edit
     if(data.Id && data.Id > 0) {

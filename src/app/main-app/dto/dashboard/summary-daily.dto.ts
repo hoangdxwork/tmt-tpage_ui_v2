@@ -52,3 +52,8 @@ export interface SummaryDailyDTO {
     Previous: SummaryDailyPreviousDTO;
     Percent?: PercentSummaryDTO;
 }
+
+export interface SummaryTagDTO {
+    TagName: string;
+    Count: number;
+}

@@ -4,7 +4,7 @@ export interface AutoInteractionDTO {
   ShippingTemplate: string;
   IsEnableOrder: boolean;
   OrderTemplate: string;
-  IsOrderReplyOnlyOnce: boolean;
+  IsOrderAutoReplyOnlyOnce: boolean;
   IsEnableShopLink: boolean;
   ShopLabel: string;
   ShopLabel2: string;

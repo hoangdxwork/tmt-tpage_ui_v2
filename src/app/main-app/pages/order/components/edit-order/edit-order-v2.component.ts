@@ -313,14 +313,6 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
-  checkPhoneValidate(){
-    if(this.phoneRegex){
-      return new RegExp(this.phoneRegex).test(this.quickOrderModel.Telephone);
-    }else{
-      return /^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g.test(this.quickOrderModel.Telephone);
-    }
-  }
-
   onChangePhone(data: any){
     this.quickOrderModel.Telephone = data;
     this.quickOrderModel.PartnerPhone = data;
@@ -423,6 +415,12 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
+    if(!event && this.saleModel) {
+      this.saleModel.Carrier = null;
+      this.saleModel.CarrierId = null;
+      return;
+    }
+
     this.shipServices = []; // dịch vụ
     this.shipExtraServices = [];
     this.insuranceInfo = null;
@@ -569,11 +567,6 @@ export class EditOrderV2Component implements OnInit {
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
 
-    if (!this.checkPhoneValidate() || !model.Telephone) {
-      this.message.error(model.Telephone ? 'Số điện thoại không hợp lệ' : 'Vui lòng nhập số điện thoại');
-      return;
-    }
-
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
         if(this.saleModel) {
@@ -583,7 +576,7 @@ export class EditOrderV2Component implements OnInit {
 
     if(this.isEnableCreateOrder) {
       if (!TDSHelperArray.hasListValue(model.Details)) {
-          this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
           return;
       }
 

@@ -526,6 +526,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
+    if(!event && this.saleModel) {
+        this.saleModel.Carrier = null;
+        this.saleModel.CarrierId = null;
+        return;
+    }
+
     this.shipServices = []; // dịch vụ
     this.shipExtraServices = [];
     this.insuranceInfo = null;
@@ -570,8 +576,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     if (carrierId) {
       this.isLoading = true;
 
-      this.deliveryCarrierV2Service.getById(carrierId).pipe(takeUntil(this.destroy$)).subscribe(
-        {
+      this.deliveryCarrierV2Service.getById(carrierId).pipe(takeUntil(this.destroy$)).subscribe({
           next: res => {
             if(res && TDSHelperObject.hasValue(res.Extras)){
               this.saleModel.Ship_InsuranceFee = res.Extras?.InsuranceFee;
@@ -694,7 +699,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
 
             // TODO: cập nhật mã đơn hàng lên tab
-            if(TDSHelperString.hasValueString(res.code)){
+            if(TDSHelperString.hasValueString(res.code)) {
               this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
             }
 
@@ -724,7 +729,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     let model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
-    
+
     let model = Object.assign({}, model1, model2) as any;
     if(formAction) {
         model.FormAction = formAction;
@@ -763,15 +768,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.quickOrderModel.FormAction = formAction;
 
           // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
-          if(TDSHelperArray.isArray(this.quickOrderModel.Details)){
-            this.quickOrderModel.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-              let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+          // if(TDSHelperArray.isArray(this.quickOrderModel.Details)){
+          //   this.quickOrderModel.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+          //     let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
 
-              if(exist) {
-                x.Discount = exist.Discount;
-              }
-            })
-          }
+          //     if(exist) {
+          //       x.Discount = exist.Discount;
+          //     }
+          //   })
+          // }
 
           if(!this.isEnableCreateOrder && type == 'print') {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);
@@ -811,7 +816,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onSave(formAction?: string, type?: string): any {
 
     let model = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
-    
+
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
     }
@@ -852,15 +857,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               delete res['@odata.context'];
               // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
-              if(TDSHelperArray.isArray(res.Details)){
-                res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-                  let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+              // if(TDSHelperArray.isArray(res.Details)){
+              //   res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+              //     let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
 
-                  if(exist) {
-                    x.Discount = exist.Discount;
-                  }
-                })
-              }
+              //     if(exist) {
+              //       x.Discount = exist.Discount;
+              //     }
+              //   })
+              // }
 
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
@@ -909,13 +914,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           next: (res: any) => {
 
               delete res['@odata.context'];
-              res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-                let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
+              // res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
+              //   let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
 
-                if(exist) {
-                  x.Discount = exist.Discount;
-                }
-              })
+              //   if(exist) {
+              //     x.Discount = exist.Discount;
+              //   }
+              // })
 
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
@@ -959,7 +964,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         })
       break;
     }
-
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
@@ -1149,7 +1153,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       OrderId: this.quickOrderModel.Id,
       ImageUrl: data.ImageUrl,
       Priority: 0,
-      Discount: 0 //data.DiscountSale
+      // Discount: 0 //data.DiscountSale
     } as Detail_QuickSaleOnlineOrder;
 
     // TODO: trường hợp thêm mới từ product-template

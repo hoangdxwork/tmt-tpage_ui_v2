@@ -26,6 +26,8 @@ import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
 import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
 import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
 import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
+import { ConfigPartnerStatusComponent } from './config-partner-status/config-partner-status.component';
+import { StatusOrderComponent } from './status-order/status-order.component';
 
 const routes: Routes = [
   {
@@ -44,6 +46,10 @@ const routes: Routes = [
       {
         path:'default-order',
         component: DefaultOrderComponent
+      },
+      {
+        path:'status-order',
+        component: StatusOrderComponent
       },
       {
         path:'facebook-cart',
@@ -100,6 +106,10 @@ const routes: Routes = [
       {
         path:'promotions/edit/:id',
         component: ConfigEditPromotionComponent
+      },
+      {
+        path:'partner-status',
+        component: ConfigPartnerStatusComponent,
       },
       {
         path:'users',

@@ -34,7 +34,7 @@
       </tds-spin>
 
       <tds-form-field class="w-[320px]">
-        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" 
+        <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
           [(ngModel)]="filterObj.searchText"
           [tdsInputDebounce]="750"
           (inputKeyup)="onSearch($event)" />
@@ -61,16 +61,17 @@
             <th [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" width="42px"
                 (checkedChange)="onAllChecked($event)" class="border-r"></th>
             <th [width]="'3.5%'">STT</th>
-            <th [width]="'9.6%'">Số hóa đơn</th>
-            <th [width]="'9.6%'">Tên khách hàng</th>
-            <th [width]="'9.6%'">Số điện thoại</th>
-            <th [width]="'9.6%'">Tổng tiền</th>
-            <th [width]="'9.6%'">Đặt cọc</th>
-            <th [width]="'9.6%'">Còn nợ</th>
-            <th [width]="'9.6%'">Trạng thái</th>
-            <th [width]="'9.6%'">Nhân viên</th>
-            <th [width]="'9.6%'">Thời gian</th>
-            <th [width]="'9.6%'">Thao tác</th>
+            <th [width]="'8.7%'">Số hóa đơn</th>
+            <th [width]="'8.7%'">Tên khách hàng</th>
+            <th [width]="'8.7%'">Số điện thoại</th>
+            <th [width]="'8.7%'">Tổng tiền</th>
+            <th [width]="'8.7%'">Đặt cọc</th>
+            <th [width]="'8.7%'">Còn nợ</th>
+            <th [width]="'8.7%'">Trạng thái</th>
+            <th [width]="'8.7%'">Số lần in HĐ</th>
+            <th [width]="'8.7%'">Nhân viên</th>
+            <th [width]="'8.7%'">Thời gian</th>
+            <th [width]="'8.7%'">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -160,6 +161,10 @@
                 <tds-tag [status]="bill.State | getColorStatusState" size="sm" type="outline">{{bill.ShowState}}</tds-tag>
                 <p *ngIf="bill.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán</p>
               </div>
+            </td>
+            <!-- Số lần in ship -->
+            <td>
+              {{bill.PrintDeliveryCount || 0 | numberCustom}}
             </td>
             <!-- Nhân viên -->
             <td>

@@ -301,8 +301,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
     this.disableNextUrl = false;
-    this.virtualScroller.refresh();
-    this.virtualScroller.scrollToPosition(0);
+
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
 
     this.loadFilterDataSource();
   }
