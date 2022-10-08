@@ -1219,7 +1219,7 @@ export class AddBillComponent implements OnInit {
                 this.id = res.Id;
 
                 // TODO: gửi lại vận đơn nếu chưa có mã vận đơn
-                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId
+                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && res.Number
                   && (res.State !== 'cancel' || res.State !== 'draft') && (res.FormAction == 'SaveAndOpen' || res.FormAction == 'SaveAndPrint');
                 if(code) {
                     this.sendToShipper(res);
