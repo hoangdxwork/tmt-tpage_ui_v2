@@ -125,6 +125,10 @@ export class EditOrderV2Component implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
 
+  isEqualAmountInsurance: boolean = false;
+  delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
+  isEnableCalcFee: boolean = false;
+
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
     private modalRef: TDSModalRef,
@@ -209,6 +213,9 @@ export class EditOrderV2Component implements OnInit {
             this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
+
+            this.handleIsEqualAmountInsurance();
+            this.prepareCalcFeeButton();
           }
           this.isLoading = false;
       },
@@ -449,11 +456,14 @@ export class EditOrderV2Component implements OnInit {
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this.saleModel.Ship_Extras = JSON.parse(event.ExtrasText);
+        this.updateInsuranceFeeEqualAmountTotal();
     }
 
     if(event) {
         this.calcFee();
     }
+
+    this.prepareCalcFeeButton();
   }
 
   calcFee() {
@@ -467,6 +477,7 @@ export class EditOrderV2Component implements OnInit {
 
   signAmountTotalToInsuranceFee(): any  {
     this.saleModel.Ship_InsuranceFee = this.saleModel.AmountTotal;
+    this.handleIsEqualAmountInsurance();
     this.onUpdateInsuranceFee();
   }
 
@@ -1010,5 +1021,31 @@ export class EditOrderV2Component implements OnInit {
         }
       }
     })
+  }
+
+  handleIsEqualAmountInsurance() {
+    if(this.saleModel && this.isEnableCreateOrder) {
+      let aship = this.saleModel.ShipmentDetailsAship;
+      let extras = this.saleModel.Ship_Extras as any;
+
+      if (aship && aship.InsuranceInfo && aship.InsuranceInfo.IsInsurance) {
+          if (extras && extras.IsInsuranceEqualTotalAmount) {
+              this.isEqualAmountInsurance = (this.saleModel.AmountTotal || 0) == (this.saleModel.Ship_InsuranceFee || 0);
+          } else {
+              this.isEqualAmountInsurance = (extras?.InsuranceFee || 0) == (this.saleModel.Ship_InsuranceFee || 0);
+          }
+      } else {
+          this.isEqualAmountInsurance = false;
+      }
+    }
+  }
+
+  prepareCalcFeeButton() {
+    let carrier = this.saleModel?.Carrier;
+    if (carrier && !this.delivery_calcfee.includes(carrier.DeliveryType)) {
+        this.isEnableCalcFee = true;
+    } else {
+        this.isEnableCalcFee = false;
+    }
   }
 }
