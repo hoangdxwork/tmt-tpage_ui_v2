@@ -221,6 +221,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     if (changes["data"] && !changes["data"].firstChange) {
         delete this.dataSource$;
         this.dataSource = null;
+        this.filterObj = {};
+        this.innerText = '';
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -228,13 +230,13 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
         this.loadCommentsOrderByPost();
     }
 
-    if (changes["innerText"] && !changes["innerText"].firstChange) {
+    if (changes["innerText"] && !changes["innerText"].firstChange && TDSHelperString.isString(changes["innerText"].currentValue)) {
         let text = changes["innerText"].currentValue;
         this.filterObj = {
             Keywords: text
         }
         this.loadData();
-    }
+    } 
   }
 
   loadData() {
