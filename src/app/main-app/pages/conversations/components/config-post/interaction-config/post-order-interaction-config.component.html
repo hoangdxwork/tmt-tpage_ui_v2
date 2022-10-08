@@ -56,8 +56,8 @@
                         <div [innerHtml]="dataModel.OrderReplyTemplate || '...'" class="whitespace-pre-wrap"></div>
 
                         <div class="flex gap-x-2.5">
-                            <button class="bg-white rounded-md px-2 py-1 font-semibold">Xem giỏ hàng</button>
-                            <button class="bg-white rounded-md px-2 py-1 font-semibold">Đồng ý</button>
+                            <button class="bg-white rounded-md px-2 py-1 font-semibold w-[100px] truncate">{{dataModel.ShopLabel || 'Xem giỏ hàng'}}</button>
+                            <button class="bg-white rounded-md px-2 py-1 font-semibold w-[100px] truncate">{{dataModel.ShopLabel2 || 'Đồng ý'}}</button>
                         </div>
 
                     </div>
