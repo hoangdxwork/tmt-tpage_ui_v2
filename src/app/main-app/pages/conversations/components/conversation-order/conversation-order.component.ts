@@ -1397,8 +1397,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     if(exit) {
         this.quickOrderModel.Details[index].Quantity++;
-        this.coDAmount();
         this.calcTotal();
+        this.coDAmount();
     }
   }
 
@@ -1410,9 +1410,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;
         }
-
-        this.coDAmount();
         this.calcTotal();
+        this.coDAmount();
     }
   }
 
