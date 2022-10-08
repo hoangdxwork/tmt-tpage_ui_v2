@@ -163,7 +163,7 @@
                 <div class="w-full h-full flex flex-col gap-3" *ngIf="lastBill && lastBill.Id">
                     <div class="flex gap-3 items-center">
                         <div *ngIf="lastBill.CarrierName" class="text-body-2 font-semibold font-sans text-neutral-1-900">
-                          <img [src]="lastBill.Type | getAvatarCarrier" alt="">
+                          <!-- <img [src]="lastBill.Type | getAvatarCarrier" alt=""> -->
                           <span>
                             {{ lastBill.CarrierName || 'Chưa có đối tác'}}
                           </span>
