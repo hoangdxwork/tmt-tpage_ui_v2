@@ -1,9 +1,10 @@
 import { EventEmitter, Injectable } from "@angular/core";
-import { OrderStatusModalDTO } from "@app/dto/order/order-status.dto";
+import { FilterObjDTO, OrderStatusDTO, OrderStatusModalDTO } from "@app/dto/order/order-status.dto";
 import { QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
+import { FilterDataRequestDTO } from "@core/dto/dataRequest.dto";
 import { Observable } from "rxjs";
-import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tds-ui/shared/utility";
+import { CoreAPIDTO, CoreApiMethodType, OperatorEnum, TCommonService } from "src/app/lib";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
 import { BaseSevice } from "./base.service";
 
@@ -196,13 +197,31 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  getStatusExtra() {
+  getStatusExtra(params: string) {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/StatusExtra`,
+      url: `${this._BASE_URL}/${this.prefix}/StatusExtra?${params}&$orderby=Id%20desc&$count=true`,
       method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  public buildFilter(filterObj: FilterObjDTO) {
+    let dataFilter: FilterDataRequestDTO = {
+        logic: "and",
+        filters: []
+    }
+
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        dataFilter.filters.push( {
+            filters: [
+              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText }
+            ],
+            logic: 'or'
+        })
+    }
+
+    return dataFilter;
   }
 
   deleteStatusExtra(key: number): Observable<any> {
@@ -218,6 +237,14 @@ export class SaleOnline_OrderService extends BaseSevice {
     let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/StatusExtra`,
         method: CoreApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
+  updateOrderStatusExtra(data: OrderStatusDTO): Observable<any> {
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/StatusExtra(${data.Id})`,
+        method: CoreApiMethodType.put
     }
     return this.apiService.getData<any>(api, data);
   }

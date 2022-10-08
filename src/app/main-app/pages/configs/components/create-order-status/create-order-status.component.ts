@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { orderStatusDTO } from '@app/dto/order/order-status.dto';
+import { OrderStatusDTO } from '@app/dto/order/order-status.dto';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { takeUntil } from 'rxjs';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -13,7 +13,7 @@ import { TDSModalRef } from 'tds-ui/modal';
   providers: [TDSDestroyService],
 })
 export class CreateOrderStatusComponent implements OnInit {
-  @Input() data!: orderStatusDTO;
+  @Input() data!: OrderStatusDTO;
 
   orderStatus!: FormGroup;
   palette: Array<string> = [];
@@ -30,6 +30,11 @@ export class CreateOrderStatusComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    if(this.data?.Default == true) {
+      this.orderStatus.controls['name'].disable();
+    } else {
+      this.orderStatus.controls['name'].enable();
+    }
   }
 
   createForm() {
@@ -62,11 +67,19 @@ export class CreateOrderStatusComponent implements OnInit {
       '#DDE2E9'
     ];
 
-    // this.updateForm(this.data);
+    this.updateForm(this.data);
+  }
+
+  updateForm(data: OrderStatusDTO) {
+    if (data) {
+      this.orderStatus.controls.styleCss.setValue(data.StyleCSS);
+      this.orderStatus.controls.name.setValue(data.Name);
+    }
   }
 
   onSubmit() {
     let modelInsert = this.prepareModelInsert();
+    let modelUpdate = this.prepareModelUpdate();
 
     if (this.orderStatus.value.name == '') {
       this.message.error('Vui lòng nhập tên thẻ!');
@@ -79,16 +92,15 @@ export class CreateOrderStatusComponent implements OnInit {
     }
 
     if (this.data) {
-      return
-      // this.partnerService.updatePartnerStatusExtra(modelUpdate).pipe(takeUntil(this.destroy$)).subscribe(
-      //   (res) => {
-      //     this.message.success('Cập nhật thành công !');
-      //     this.modal.destroy(res);
-      //   },
-      //   (err) => {
-      //     this.message.error('Cập nhật thất bại !');
-      //   }
-      // );
+      this.saleOnlineOrderService.updateOrderStatusExtra(modelUpdate).pipe(takeUntil(this.destroy$)).subscribe(
+        (res) => {
+          this.message.success('Cập nhật thành công !');
+          this.modal.destroy(res);
+        },
+        (err) => {
+          this.message.error('Cập nhật thất bại !');
+        }
+      );
     } else {
       this.saleOnlineOrderService.insertOrderStatusExtra(modelInsert).pipe(takeUntil(this.destroy$)).subscribe(
         (res) => {
@@ -110,6 +122,21 @@ export class CreateOrderStatusComponent implements OnInit {
       StyleCSS: formModel.styleCss ? formModel.styleCss : '' as string,
     }
     return modelInsert
+  }
+
+  prepareModelUpdate() {
+    let formModel = this.orderStatus.value;
+
+    let modelUpdate = {
+      Name: formModel.name ? formModel.name : '' as string,
+      StyleCSS: formModel.styleCss ? formModel.styleCss : '' as string,
+      Id: this.data?.Id,
+      Index: this.data?.Index,
+      Type: this.data?.Type,
+      Default: this.data?.Default,
+      IsNotOrder: this.data?.IsNotOrder
+    }
+    return modelUpdate
   }
 
   onChangeColor(value: string) {

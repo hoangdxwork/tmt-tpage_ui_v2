@@ -1,8 +1,9 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { PartnerStatusDTO, PartnerStatusModalDTO } from '@app/dto/partner/partner-status.dto';
+import { FilterObjDTO, PartnerStatusDTO, PartnerStatusModalDTO } from '@app/dto/partner/partner-status.dto';
 import { PartnerTimeStampDto } from '@app/dto/partner/partner-timestamp.dto';
+import { FilterDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, OperatorEnum, TCommonService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TabPartnerCvsRequestDTO } from '../dto/conversation-partner/partner-conversation-request.dto';
 import { ODataCustomerDTO } from '../dto/partner/customer.dto';
@@ -263,12 +264,30 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  getPartnerStatusExtra(): Observable<any> {
+  getPartnerStatusExtra(params: string): Observable<any> {
     let api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/PartnerStatusExtra`,
+        url: `${this._BASE_URL}/${this.prefix}/PartnerStatusExtra?${params}&$orderby=Id%20desc&$count=true`,
         method: CoreApiMethodType.get
     }
     return this.apiService.getData<any>(api, null);
+  }
+
+  public buildFilter(filterObj: FilterObjDTO) {
+    let dataFilter: FilterDataRequestDTO = {
+        logic: "and",
+        filters: []
+    }
+
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        dataFilter.filters.push( {
+            filters: [
+              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText }
+            ],
+            logic: 'or'
+        })
+    }
+
+    return dataFilter;
   }
 
   insertPartnerStatusExtra(data: PartnerStatusModalDTO): Observable<any> {
