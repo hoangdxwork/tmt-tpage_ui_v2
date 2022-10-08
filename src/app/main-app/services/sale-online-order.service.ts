@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
+import { OrderStatusModalDTO } from "@app/dto/order/order-status.dto";
 import { QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
@@ -193,6 +194,32 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getStatusExtra() {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/StatusExtra`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  deleteStatusExtra(key: number): Observable<any> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/StatusExtra(${key})`,
+      method: CoreApiMethodType.delete
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  insertOrderStatusExtra(data: OrderStatusModalDTO): Observable<any> {
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/StatusExtra`,
+        method: CoreApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
   }
 
 }

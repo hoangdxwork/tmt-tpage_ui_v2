@@ -12,13 +12,13 @@
       <tr>
         <th>Mã đơn hàng</th>
         <th>Tên khách hàng</th>
-        <th>Số lượng sản phẩm</th>
+        <th [width]="'200px'" class="text-center">Số lượng sản phẩm</th>
         <th>Ngày tạo</th>
-        <th>Trạng thái</th>
-        <th>
+        <th [width]="'200px'">Trạng thái</th>
+        <th [width]="'200px'">
           <button tds-button-icon color="secondary" size="sm" (click)="refreshData()">
             <span class="flex items-center">
-              <i class="tdsi-reload-fill"></i>
+              <i class="tdsi-reload-fill text-neutral-1-500"></i>
             </span>
           </button>
         </th>
@@ -28,7 +28,7 @@
       <tr *ngFor="let data of table.data">
         <td>{{ data.OrderCode }}</td>
         <td>{{ data.PartnerName }}</td>
-        <td>{{ data.TotalQuantity }}</td>
+        <td class="text-center">{{ data.TotalQuantity }}</td>
         <td>{{ data.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</td>
         <td>
           <tds-tag [status]="data.Status | getColorStatusText" size="sm" type="outline">{{ data.Status }}</tds-tag>

@@ -3,7 +3,7 @@ import { TDSMenuDTO } from "tds-ui/menu";
 export const ConfigsMenu: Array<TDSMenuDTO> = [
     {
         name: "Cấu hình bán hàng",
-        icon: "tdsi-gear-2-fill",
+        icon: "tdsi-cart-fill",
         link: '/configs',
         listChild: [
             {
@@ -21,6 +21,10 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
             {
                 name: "Đối tác giao hàng",
                 link: '/configs/delivery',
+            },
+            {
+                name: "Cấu hình đơn hàng",
+                link: '/configs/status-order',
             },
         ]
     },
@@ -63,6 +67,11 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         name: "Chương trình khuyến mãi",
         icon: "tdsi-discount-fill",
         link: '/configs/promotions',
+    },
+    {
+        name: "Trạng thái khách hàng",
+        icon: "tdsi-user-fill",
+        link: '/configs/partner-status',
     },
     {
         name: "Người dùng",

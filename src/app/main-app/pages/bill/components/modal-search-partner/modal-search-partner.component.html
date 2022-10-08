@@ -19,21 +19,21 @@
             [listData]="lstCustomers">
             <thead>
                   <tr style="width: 100%;">
-                      <th style="width: 20%;">Tên</th>
-                      <th style="width: 20%;">Điện thoại</th>
-                      <th style="width: 50%;">Địa chỉ</th>
-                      <th style="width: 10%;">Thao tác</th>
+                      <th style="width: 30%;">Tên</th>
+                      <th style="width: 30%;">Điện thoại</th>
+                      <th style="width: 40%;">Địa chỉ</th>
+                      <!-- <th style="width: 10%;">Thao tác</th> -->
                   </tr>
             </thead>
             <tbody>
-                <ng-template ngFor let-data [ngForOf]="TableListPartner.data" >
-                    <tr>
+                <ng-template ngFor let-data [ngForOf]="TableListPartner.data">
+                    <tr (click)="selectCustomer(data)">
                         <td class="font-semibold">{{ data.DisplayName || data.Name }}</td>
                         <td>{{ data.Phone }}</td>
                         <td>{{ data.Street }}</td>
-                        <td>
+                        <!-- <td>
                             <button tds-button color="success" (click)="selectCustomer(data)">Chọn</button>
-                        </td>
+                        </td> -->
                     </tr>
                 </ng-template>
             </tbody>
