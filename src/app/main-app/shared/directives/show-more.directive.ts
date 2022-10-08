@@ -32,8 +32,10 @@ export class ShowMoreDirective implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes["text"] && !changes["text"].firstChange) {
             this.text = changes['text'].currentValue;
-            this.isInnerHTML = this.text.includes('text-copyable' && 'format');
-            this.length = this.isInnerHTML ? (this.length + this.countCharPhoneFomat) : this.length;
+            if(this.text) {
+                this.isInnerHTML = this.text.includes('text-copyable' && 'format');
+                this.length = this.isInnerHTML ? (this.length + this.countCharPhoneFomat) : this.length;
+            }
         }
     }
 
