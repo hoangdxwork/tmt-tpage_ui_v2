@@ -450,20 +450,20 @@ export class AddBillComponent implements OnInit {
       this.dataModel.AmountDeposit = 0;
     }
 
-    if(!this.dataModel.Ship_Receiver?.City?.code){
+    if(this.dataModel.Ship_Receiver?.City && !this.dataModel.Ship_Receiver?.City?.code){
       this.dataModel.Ship_Receiver.City = null as any;
     }
 
-    if(!this.dataModel.Ship_Receiver?.District?.code){
+    if(this.dataModel.Ship_Receiver?.District && !this.dataModel.Ship_Receiver?.District?.code){
       this.dataModel.Ship_Receiver.District = null as any;
     }
 
-    if(!this.dataModel.Ship_Receiver?.Ward?.code){
+    if(this.dataModel.Ship_Receiver?.Ward && !this.dataModel.Ship_Receiver?.Ward?.code){
       this.dataModel.Ship_Receiver.Ward = null as any;
     }
 
-    if(!this.dataModel.Ship_Receiver?.Street){
-      this.dataModel.Ship_Receiver.Street = null as any;
+    if(this.dataModel.Ship_Receiver && !this.dataModel.Ship_Receiver?.Street){
+      this.dataModel.Ship_Receiver.Street = '';
     }
 
     this._form.patchValue(this.dataModel);
