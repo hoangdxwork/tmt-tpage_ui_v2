@@ -255,7 +255,7 @@ export class TDSConversationItemComponent implements OnInit  {
                   this.dataItem  = {...data}
               });
             }
-  
+
             this.cdRef.detectChanges();
         },
         error: error => {
@@ -360,24 +360,24 @@ export class TDSConversationItemComponent implements OnInit  {
             if(TDSHelperArray.hasListValue(res)){
               res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
                 x["Status"] = ChatomniStatus.Done;
-  
+
               let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-  
+
               if(i == res.length - 1){
                 let itemLast = {...data}
-  
+
                 let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
                 //TODO: Đẩy qua conversation-all-v2
                 this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
               }
             });
           }
-  
+
           this.messageModel = null;
           this.isReply = false;
           this.isReplyingComment = false;
           this.tdsMessage.success('Gửi sản phẩm thành công');
-  
+
           this.cdRef.markForCheck();
           },
           error: error => {
@@ -415,7 +415,7 @@ export class TDSConversationItemComponent implements OnInit  {
       this.gallery.map(item => {
         if(item.Data?.attachments){
 
-          item.Data?.attachments.data.map(attachment=>{
+          item.Data?.attachments.data.map((attachment: any) =>{
               if(attachment.mime_type != 'audio/mpeg'){
 
                   let image_url = attachment.image_data?.url ? attachment.image_data?.url : attachment.video_data?.url;
@@ -584,15 +584,15 @@ export class TDSConversationItemComponent implements OnInit  {
     return model;
   }
 
-  showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){ 
+  showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){
     let value: string = '';
 
-    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') { 
+    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') {
         if(nlpEntities[0].Value){
           let data = JSON.parse(nlpEntities[0].Value);
 
           if (data && typeof data === "object") {
-  
+
               let item: ResultCheckAddressDTO = {
                 Address: data.FullAddress || null,
                 CityCode: data.CityCode || null,
@@ -602,7 +602,7 @@ export class TDSConversationItemComponent implements OnInit  {
                 WardCode: data.WardCode || null,
                 WardName: data.WardName || null
             } as any;
-  
+
             this.chatomniEventEmiter.selectAddressEmiter$.emit(item);
             this.tdsMessage.success('Chọn làm địa chỉ thành công');
             return;
