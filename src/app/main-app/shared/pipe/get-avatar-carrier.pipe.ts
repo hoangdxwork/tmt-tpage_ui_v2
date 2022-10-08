@@ -48,7 +48,7 @@ export class GetAvatarCarrier implements PipeTransform {
       case 'OneShip':
         return 'https://statics.tpos.vn/images/beta/220921/162819_product_40537.jpg';
     }
-    return '---';
+    return '';
   }
 }
 

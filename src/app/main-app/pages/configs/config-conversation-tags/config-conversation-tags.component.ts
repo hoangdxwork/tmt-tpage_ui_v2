@@ -34,7 +34,6 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     constructor(
         private modalService: TDSModalService,
         private viewContainerRef: ViewContainerRef,
-        // private configService: TDSConfigService,
         private message: TDSMessageService,
         private odataTagService: OdataCRMTagService,
         private tagService: CRMTagService) { }

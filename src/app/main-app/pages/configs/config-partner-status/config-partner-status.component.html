@@ -5,33 +5,43 @@
         <tds-avatar class="bg-primary-1 text-white" icon="tdsi-user-fill"></tds-avatar>
         <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">TRẠNG THÁI KHÁCH HÀNG</span>
       </div>
-      <button tds-button color="primary" (click)="showCreateModal()">
-        <span class="flex items-center">
-          <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
-          <span class="text-body-2 font-semibold">Thêm mới</span>
-        </span>
-      </button>
+      <div class="flex flex-row items-center justify-end w-1/2">
+        <tds-form-field size='md' class="mr-4 w-1/2">
+          <input tdsInput class="text-neutral-1-900" placeholder="Tìm thẻ hội thoại" autocomplete="off" #filterText />
+          <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+          <span tdsSuffix (click)="onClearAll($event)">
+            <i class="tdsi-close-fill text-neutral-1-500 text-base"
+              *ngIf="filterText.value && filterText.value != ''"></i>
+          </span>
+        </tds-form-field>
+        <button tds-button color="primary" (click)="showCreateModal()">
+          <span class="flex items-center">
+            <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+            <span class="text-body-2 font-semibold">Thêm mới</span>
+          </span>
+        </button>
+      </div>
     </div>
     <div class="w-full h-full pb-2.5">
-      <tds-table class="text-neutral-1-900 text-body-2" #partnerStatusTable [listData]="lstData"
-        [scroll]="{y:'100%',x:'hidden'}" [showPagination]="false" [frontPagination]="false">
+      <tds-table #partnerStatusTable [listData]="lstData" [showSizeChanger]="true" [frontPagination]="false" [loading]="isLoading" [scroll]="{y:'auto'}"
+                [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr>
-            <th width="15%">STT</th>
-            <th width="30%">Trạng thái</th>
-            <th width="30%">Tên</th>
-            <th width="15%">Thao tác</th>
+            <th [width]="'100px'" class="text-center">STT</th>
+            <th>Trạng thái</th>
+            <th>Tên</th>
+            <th [width]="'120px'" [align]="'center'">Thao tác</th>
           </tr>
         </thead>
         <tbody>
           <ng-template ngFor let-data let-index="index" [ngForOf]="partnerStatusTable.data">
             <tr>
-              <td>{{ index + 1 }}</td>
+              <td class="text-center">{{ 1 + index + (pageIndex - 1) * pageSize }}</td>
               <td>
                 <div class="w-16 h-6 rounded-full" [style.background-color]="data.Code"></div>
               </td>
               <td>{{ data.Name }}</td>
-              <td>
+              <td [align]="'center'">
                 <button tds-button-icon color="secondary" size="sm" class="mr-2" tds-tooltip="Chỉnh sửa"
                   (click)="showEditModal(data)">
                   <span class="flex items-center">
