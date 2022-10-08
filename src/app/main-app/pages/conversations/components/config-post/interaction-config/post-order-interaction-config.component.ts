@@ -102,10 +102,6 @@ export class PostOrderInteractionConfigComponent implements OnInit {
       });
   }
 
-  onEditReply(){
-    this.isEditReply = !this.isEditReply;
-  }
-
   prepareModel() {
     return {
         IsEnableOrderReplyAuto: this.dataModel.IsEnableOrderReplyAuto,
