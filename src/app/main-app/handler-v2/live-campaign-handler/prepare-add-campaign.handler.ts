@@ -8,10 +8,10 @@ import { LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simpl
 
 export class PrepareAddCampaignHandler {
 
-    public prepareModel(form: FormGroup) {
+    public prepareModel(form: FormGroup): LiveCampaignModel {
 
         let formValue = form.value;
-        let model = {} as LiveCampaignSimpleDto;
+        let model = {} as LiveCampaignModel;
 
         model.Config = formValue.Config?.value;
         model.Name = formValue.Name;
@@ -38,7 +38,7 @@ export class PrepareAddCampaignHandler {
                   delete x.Id;
               }
 
-              x["Index"] = index;
+              x["Index"] = index + 1;
               x.Tags = x?.Tags.toString();
 
               if(TDSHelperString.hasValueString(formValue.Id)) {
