@@ -443,12 +443,27 @@ export class AddBillComponent implements OnInit {
 
     //TODO: cập nhật địa chỉ
     this.mappingDataAddress(data);
-
     //Load thông tin ship aship
     this.loadConfigProvider(this.dataModel);
 
     if(!this.dataModel.AmountDeposit){
       this.dataModel.AmountDeposit = 0;
+    }
+
+    if(!this.dataModel.Ship_Receiver?.City?.code){
+      this.dataModel.Ship_Receiver.City = null as any;
+    }
+
+    if(!this.dataModel.Ship_Receiver?.District?.code){
+      this.dataModel.Ship_Receiver.District = null as any;
+    }
+
+    if(!this.dataModel.Ship_Receiver?.Ward?.code){
+      this.dataModel.Ship_Receiver.Ward = null as any;
+    }
+
+    if(!this.dataModel.Ship_Receiver?.Street){
+      this.dataModel.Ship_Receiver.Street = null as any;
     }
 
     this._form.patchValue(this.dataModel);
@@ -457,25 +472,24 @@ export class AddBillComponent implements OnInit {
         this.totalQtyLines = this.totalQtyLines + x.ProductUOMQty;
         this.totalAmountLines = this.totalAmountLines + x.PriceTotal;
     })
-
   }
 
   mappingDataAddress(data:TDSSafeAny){
     let result = this.prepareSuggestionsBill.mappingAddress(data);
 
-    this._cities = result?._cities || { code:'', name:'' };
+    this._cities = result?._cities;
     if(this._cities && this._cities.code) {
       this.loadDistricts(this._cities.code);
     }
 
-    this._districts = result?._districts || this._districts;
+    this._districts = result?._districts;
     if(this._districts && this._districts.code) {
       this.loadWards(this._districts.code);
     }
 
-    this._wards = result?._wards || this._wards;
+    this._wards = result?._wards;
 
-    this._street = result?._street || this._street;
+    this._street = result?._street;
     this.innerText = this._street;
   }
 
@@ -484,6 +498,9 @@ export class AddBillComponent implements OnInit {
     this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.saleConfig = {...res} as SaleSettingConfigDto_V2;
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Không thể tải cấu hình');
       }
     })
   }
@@ -1507,7 +1524,11 @@ export class AddBillComponent implements OnInit {
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result) {
+          // TODO: cập nhật địa chỉ mới
           this.setAddress(result);
+          // TODO: cập nhật danh sách select district và ward ở tab thông tin người nhận
+          this.loadDistricts(result.CityCode);
+          this.loadWards(result.DistrictCode);
 
           this.prepareSuggestionsBill.onLoadSuggestion(this._form, result);
           this.innerText = result.Address;

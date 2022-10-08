@@ -8,44 +8,44 @@ import { Injectable } from "@angular/core";
 export class PrepareSuggestionsBillHandler {
 
   public mappingAddress(data: TDSSafeAny) {
-    let cities: any = {};
-    let districts: any = {};
-    let wards: any = {};
+    let cities: any;
+    let districts: any;
+    let wards: any;
     let street: any = '';
 
     if (data && data.Ship_Receiver?.City?.code) {
       cities = {
-        code: data.Ship_Receiver.City.code,
-        name: data.Ship_Receiver.City.name
+        code: data.Ship_Receiver.City.code || null,
+        name: data.Ship_Receiver.City.name || null
       }
     }
     if (data && data.Ship_Receiver?.District?.code) {
       districts = {
-        cityCode: data.Ship_Receiver.City?.code,
-        cityName: data.Ship_Receiver.City?.name,
-        code: data.Ship_Receiver.District.code,
-        name: data.Ship_Receiver.District.name
+        cityCode: data.Ship_Receiver.City?.code || null,
+        cityName: data.Ship_Receiver.City?.name || null,
+        code: data.Ship_Receiver.District.code || null,
+        name: data.Ship_Receiver.District.name || null
       }
     }
     if (data && data.Ship_Receiver?.Ward?.code) {
       wards = {
-        cityCode: data.Ship_Receiver.City?.code,
-        cityName: data.Ship_Receiver.City?.name,
-        districtCode: data.Ship_Receiver.District?.code,
-        districtName: data.Ship_Receiver.District?.name,
-        code: data.Ship_Receiver.Ward.code,
-        name: data.Ship_Receiver.Ward.name
+        cityCode: data.Ship_Receiver.City?.code || null,
+        cityName: data.Ship_Receiver.City?.name || null,
+        districtCode: data.Ship_Receiver.District?.code || null,
+        districtName: data.Ship_Receiver.District?.name || null,
+        code: data.Ship_Receiver.Ward.code || null,
+        name: data.Ship_Receiver.Ward.name || null
       }
     }
     
     if (data && data.Ship_Receiver?.Street) {
-      street = data.Ship_Receiver.Street;
+      street = data.Ship_Receiver.Street || '';
     }
 
     let result = {
-      _cities: cities,
-      _districts: districts,
-      _wards: wards,
+      _cities: cities || null,
+      _districts: districts || null,
+      _wards: wards || null,
       _street: street
     };
 
@@ -58,7 +58,7 @@ export class PrepareSuggestionsBillHandler {
     }
 
     _form.controls['Ship_Receiver'].patchValue({
-        Street: item.Address ? item.Address : null,
+        Street: item.Address ? item.Address : '',
         City: item.CityCode ? { code: item.CityCode, name: item.CityName } : null,
         District: item.DistrictCode ? { code: item.DistrictCode, name: item.DistrictName } : null,
         Ward: item.WardCode ? { code: item.WardCode, name: item.WardName } : null

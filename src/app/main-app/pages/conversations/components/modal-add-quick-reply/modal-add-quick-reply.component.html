@@ -1,25 +1,26 @@
-<form [formGroup]="_form" class="flex flex-col gap-y-4 text-body-2 text-neutral-1-900">
-    <tds-form-field class="w-full">
-        <tds-label>Tên mẫu</tds-label>
-        <input formControlName="subjectHtml" tdsInput placeholder="Nhập tên mẫu" />
-        <tds-error>Vui lòng nhập tên mẫu</tds-error>
-    </tds-form-field>
-    <tds-form-field class="w-full">
-        <tds-label>Phím tắt</tds-label>
-        <input tdsInput placeholder="Nhập phím tắt" />
-    </tds-form-field>
-    <tds-form-field class="w-full">
-        <tds-label>Nội dung</tds-label>
-        <textarea class="resize-none" formControlName="bodyHtml" tdsInput placeholder="Nhập nội dung"></textarea>
-    </tds-form-field>
-    <div class="flex gap-x-5 items-center">
-        <span>Kích hoạt</span>
-        <tds-switch formControlName="active" size="md"></tds-switch>
-    </div>
-    <div class="w-full flex justify-end" >
-        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Hủy</button>
-        <button tds-button type="submit" color="primary" (click)="onSave()">Thêm</button>
-    </div>
-</form>
-<div *tdsModalFooter></div>
-
+<tds-spin [spinning]="isLoading">
+    <form [formGroup]="_form" class="flex flex-col gap-y-4 text-body-2 text-neutral-1-900">
+        <tds-form-field class="w-full">
+            <tds-label>Tên mẫu</tds-label>
+            <input formControlName="subjectHtml" tdsInput placeholder="Nhập tên mẫu" />
+            <tds-error>Vui lòng nhập tên mẫu</tds-error>
+        </tds-form-field>
+        <tds-form-field class="w-full">
+            <tds-label>Phím tắt</tds-label>
+            <input tdsInput placeholder="Nhập phím tắt" />
+        </tds-form-field>
+        <tds-form-field class="w-full">
+            <tds-label>Nội dung</tds-label>
+            <textarea class="resize-none" formControlName="bodyHtml" tdsInput placeholder="Nhập nội dung"></textarea>
+        </tds-form-field>
+        <div class="flex gap-x-5 items-center">
+            <span>Kích hoạt</span>
+            <tds-switch formControlName="active" size="md"></tds-switch>
+        </div>
+        <div class="w-full flex justify-end" >
+            <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Hủy</button>
+            <button tds-button type="submit" color="primary" (click)="onSave()">Thêm</button>
+        </div>
+    </form>
+    <div *tdsModalFooter></div>
+</tds-spin>
