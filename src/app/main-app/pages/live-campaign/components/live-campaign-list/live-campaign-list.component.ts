@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { fromEvent, Observable, pipe, Subject } from 'rxjs';
@@ -32,8 +33,8 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     searchText: '',
     isActive: null,
     dateRange: {
-      startDate: null,
-      endDate: null
+      startDate: addDays(new Date(), -30),
+      endDate: new Date(),
     }
   }
 

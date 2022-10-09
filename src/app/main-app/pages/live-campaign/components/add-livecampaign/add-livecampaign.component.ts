@@ -545,7 +545,7 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   onChangeDeposit(event:any){
-    if(event != this.dataModel.MaxAmountDepositRequired){
+    if(this.dataModel && event != this.dataModel.MaxAmountDepositRequired){
         this.isDepositChange = true;
     } else {
         this.isDepositChange = false;
@@ -568,7 +568,9 @@ export class AddLiveCampaignComponent implements OnInit {
 
     modal.afterClose.subscribe({
       next:(res) => {
-        this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
+        if(res) {
+          this.loadQuickReply();
+        }
       }
     })
   }

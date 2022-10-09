@@ -110,7 +110,7 @@ export class CsOrder_PrepareModelHandler {
 
     if(product && product.ProductId) {
         let item = {
-          Discount: product.Discount,
+          // Discount: product.Discount,
           ProductId: product.ProductId,
           ProductName: product.ProductName,
           ProductNameGet: product.ProductNameGet,

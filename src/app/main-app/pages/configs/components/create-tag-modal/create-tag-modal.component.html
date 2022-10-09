@@ -5,7 +5,7 @@
             <input tdsInput type="text" formControlName="name" placeholder="Nhập tên thẻ" id="name"/>
             <!-- <span tdsPrefix><div class="w-6 py-2 rounded-lg bg-neutral-1-300" [style.background-color]="_form.controls.color.value?_form.controls.color.value:''"></div></span> -->
             <!-- <span tdsSuffix class="text-body-2 text-neutral-1-400">{{_form.controls.name.value.length}}/50</span> -->
-            <tds-error *ngIf="hasError('name','required')"> Vui lòng nhập tên thẻ</tds-error>
+            <tds-error *ngIf="hasError('name','required')">Vui lòng nhập tên thẻ</tds-error>
             <tds-error *ngIf="hasError('name','maxlength')">Chuỗi tối đa 50 ký tự</tds-error>
         </tds-form-field>
 

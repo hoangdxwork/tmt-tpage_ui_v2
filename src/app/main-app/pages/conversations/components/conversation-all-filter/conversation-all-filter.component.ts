@@ -87,6 +87,11 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
 
     if(changes["queryObj"] && !changes["queryObj"].firstChange) {
       this.queryObj = {...changes["queryObj"].currentValue};
+      if(Object.keys(this.queryObj).length > 0){
+        this.isFilter = true;
+      } else {
+        this.isFilter = false;
+      }
       this.setQueryObjConversation(this.queryObj);
     }
   }

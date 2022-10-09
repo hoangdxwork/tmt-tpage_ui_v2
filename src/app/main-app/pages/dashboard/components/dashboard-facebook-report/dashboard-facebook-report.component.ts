@@ -10,6 +10,7 @@ import { MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summ
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
+import { setHours } from 'date-fns';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
@@ -26,8 +27,9 @@ export class DashboardFacebookReportComponent implements OnInit {
   axisLabel: string[] = [];
   seriesData: TDSSafeAny[] = [];
   colors: Color[] = [];
-  xAxisName: string = 'Ngày';
   isLoading: boolean = false;
+  interval: number = 0;
+  barWidth: number = 8;
 
   emptyData = false;
 
@@ -78,88 +80,66 @@ export class DashboardFacebookReportComponent implements OnInit {
     this.axisLabel = [];
     let lstDataMesage = data.Current?.Messages?.Data || [];
 
-    //TODO: trường hợp hôm nay + hôm qua
-    let exist1 = this.currentDateRanges.id == 0 || this.currentDateRanges.id == 1;
-    // TODO: trường hợp 7 ngày + 30 ngày
-    let exist2 = this.currentDateRanges.id == 7|| this.currentDateRanges.id == 30;
-    
-    if(exist1) {
-      this.xAxisName = 'Giờ';
+    lstDataMesage.map((x) => {
+      if(x.Time){
+        // TODO: lấy time bằng cách trừ timezone
+        let time = new Date(x.Time).getTime() + new Date(x.Time).getTimezoneOffset()*60*1000;
 
-      lstDataMesage.map((x)=>{
-        if(x.Time){
-          this.axisData.push(new Date(x.Time).getUTCHours());
-          this.axisLabel.push(formatDate(x.Time,'HH:mm','vi_VN'));
-        }
-      })
-    } 
-    
-    if(exist2){
-      this.xAxisName = 'Ngày';
+        this.axisData = [...this.axisData,...[time]];
+        this.axisLabel = [...this.axisLabel,...[formatDate(time, 'dd/MM HH:mm', 'vi_VN')]];
+      }
+    })
 
-      lstDataMesage.map((x) => {
-        if(!this.axisData.includes(new Date(x.Time).getUTCDate())){
-          this.axisData.push(new Date(x.Time).getUTCDate());
-          this.axisLabel.push(formatDate(x.Time,'dd/MM','vi_VN'));
-        }
-      })
+    if(this.axisLabel.length > 10){
+      // TODO: nếu data ít hơn 10 cột thì hiển thị toàn bộ label trục x, ko thì cách 1 label hiển thị 1 label
+      this.interval = 1;
+      this.barWidth = 8;
+    }else{
+      this.interval = 0;
+      this.barWidth = 15;
     }
+    
   }
 
   handlerSeriesData(data: SummaryDailyDTO) {
     let lstDataMesage = data.Current?.Messages?.Data || [];
     let lstDataConversation = data.Current?.Conversations?.Data || [];
     let lstMessage: number[] = [];
+    let lstComment: number[] = [];
     let lstConversation: number[] = [];
-    //TODO: trường hợp hôm nay + hôm qua
-    let exist1 = this.currentDateRanges.id == 0 || this.currentDateRanges.id == 1;
-    // TODO: trường hợp 7 ngày + 30 ngày
-    let exist2 = this.currentDateRanges.id == 7|| this.currentDateRanges.id == 30;
-    
-    if(exist1) {
-      this.axisData.map((x) => {
-        let find = lstDataMesage.find(f => Number(new Date(f.Time).getUTCHours()) == Number(x));
-        if(find){
-          lstMessage.push(find.CommentCount + find.MessageCount);
-        }else{
-          lstMessage.push(0);
-        }
-      })
+    this.seriesData = [];
 
-      this.axisData.map((x) => {
-        let find = lstDataConversation.find(f => Number(new Date(f.Time).getUTCHours()) == Number(x));
-        if(find){
-          lstConversation.push(find.Count);
-        }else{
-          lstConversation.push(0);
-        }
-      })
-    } 
+    // TODO: tính message data
+    this.axisData.map((x) => {
+      let find = lstDataMesage.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
+      if(find){
+        lstMessage.push(find.MessageCount);
+      }else{
+        lstMessage.push(0);
+      }
+    })
 
-    if(exist2) {
-      this.axisData.map((x) => {
-        let messageCount = 0;
-        let conversationCount = 0;
+    // TODO: tính comment data
+    this.axisData.map((x) => {
+      let find = lstDataMesage.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
+      if(find){
+        lstComment.push(find.CommentCount);
+      }else{
+        lstComment.push(0);
+      }
+    })
 
-        lstDataMesage.map(f=> {
-          if(x == new Date(f.Time).getUTCDate()) {
-            messageCount += (f.CommentCount + f.MessageCount);
-          }
-        });
+    // TODO: tính conversation data
+    this.axisData.map((x) => {
+      let find = lstDataConversation.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
+      if(find){
+        lstConversation.push(find.Count);
+      }else{
+        lstConversation.push(0);
+      }
+    })
 
-        lstMessage.push(messageCount);
-
-        lstDataConversation.map(f=> {
-          if(x == new Date(f.Time).getUTCDate()) {
-            conversationCount += f.Count;
-          }
-        });
-
-        lstConversation.push(conversationCount);
-      })
-    }
-
-    this.seriesData = [{name: 'Tin nhắn và bình luận', data: lstMessage}, { name: 'Hội thoại', data: lstConversation }];
+    this.seriesData = [{ name: 'Tin nhắn', data: lstMessage }, { name: 'Bình luận', data: lstComment }, { name: 'Hội thoại', data: lstConversation }];
   }
 
   loadDataChart(){
@@ -187,7 +167,18 @@ export class DashboardFacebookReportComponent implements OnInit {
         tooltip: {
           show: true,
           position: 'top',
-          formatter: `<span class="pb-2">${this.xAxisName}: {b}</span><br>{c} {a}`,
+          formatter: function (params: any[]) {
+            let label = `<span class="pb-2">${params[0].axisValue}</span><br>`;
+            params.forEach((x) => {
+              label += `<div class="flex flex-col items-start">
+                          <div class="flex flex-row gap-x-2">
+                            <span>${x.marker}${x.value}</span>
+                            <span>${x.seriesName}</span>
+                          </div>
+                        </div>`
+            })
+            return label;
+          },
           borderColor: 'transparent',
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           textStyle: {
@@ -198,19 +189,22 @@ export class DashboardFacebookReportComponent implements OnInit {
             fontSize: 14,
             lineHeight: 20,
             align: 'center'
+          },
+          trigger: 'axis',
+          axisPointer:{
+            type: 'shadow'
           }
         },
         grid: {
           top: 24,
           left: '6%',
           right: 40,
-          bottom: 80
+          bottom: 84
         },
         axis: {
           xAxis:[
             {
               data: this.axisLabel,
-              name: this.xAxisName,
               nameGap: 5,
               nameLocation: 'end',
               axisTick: {
@@ -229,6 +223,10 @@ export class DashboardFacebookReportComponent implements OnInit {
                 lineHeight: 20,
                 align: 'center',
                 width: 100,
+                interval: this.interval,
+                formatter: function (params:any) {
+                  return params.replace(' ', '\n');
+                }
               }
             }
           ],
@@ -262,17 +260,6 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   buildChartDemo(chart : TDSBarChartComponent) {
     if(Number(this.currentDateRanges.id) == 30) {
-      // chart.dataZoom = {
-      //   sliderType:{
-      //     show: true,
-      //     type: 'slider',
-      //     startValue: 0,
-      //     endValue: 6,
-      //     zoomLock: true,
-      //     bottom: 35
-      //   }
-      // }
-
       chart.grid!.bottom = 100;
     }
     // TODO: khởi tạo chart
@@ -293,7 +280,7 @@ export class DashboardFacebookReportComponent implements OnInit {
         {
           name: series.name,
           type:'bar',
-          barWidth: 8,//set độ rộng của các series
+          barWidth: this.barWidth,//set độ rộng của các series
           data: series.data
         }
       );

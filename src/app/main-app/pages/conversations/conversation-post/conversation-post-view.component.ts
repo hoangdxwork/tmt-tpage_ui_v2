@@ -76,7 +76,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   isLoading: boolean = false;
   isProcessing: boolean = false;
   indClickTag: string = '';
-  keyWords: string = '';
+  keyWords: string | TDSSafeAny = '' ;
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
@@ -135,6 +135,9 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
         this.data = {...changes["data"].currentValue};
+        this.innerText.nativeElement.value = '';
+        delete this.keyWords;
+        this.cdRef.detectChanges();
     }
   }
 
@@ -197,6 +200,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
     this.currentSort = this.sortOptions[0];
     this.currentFilter = this.filterOptions[0];
     let teamId = this.team.Id;
+    this.innerText.nativeElement.value = '';
+    delete this.keyWords;
 
     if(teamId && this.data.ObjectId) {
       this.facebookCommentService.fetchComments(teamId, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -363,10 +368,10 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
       fromEvent(this.innerText?.nativeElement, 'keyup').pipe(
         map((event: any) => {
             return event.target.value;
-        }) , debounceTime(750) , distinctUntilChanged()
+        }) , debounceTime(750)
 
       ).subscribe({
-        next: (text: string) => {
+        next: (text: string) => { 
             this.keyWords = text.trim();
             this.cdRef.markForCheck();
         }

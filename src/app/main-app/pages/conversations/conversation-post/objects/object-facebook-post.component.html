@@ -56,8 +56,13 @@
         </div>
     </div>
     <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
-        <span class="w-full font-semibold truncate" *ngIf="item.Title">{{item.Title}}</span>
-        <span *ngIf="!item.Title">(Chưa có tiêu đề)</span>
+        <span class="w-full font-semibold truncate" *ngIf="item.Title || (item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data
+        && (item.Data | facebookType)?.attachments!.data[0].title; else noTitle">
+            {{item.Title || (item.Data | facebookType)?.attachments!.data[0].title}}
+        </span>
+        <ng-template #noTitle>
+            <span *ngIf="!item.Title">(Chưa có tiêu đề)</span>
+        </ng-template>
 
         <!-- <tds-label *ngIf="mdbFbPost.attachments?.data?.[0]?.title" class="text-info-500">
             {{mdbFbPost.attachments.data.[0].title}}

@@ -1,3 +1,4 @@
+import { SummaryTagDTO } from './../dto/dashboard/summary-daily.dto';
 import { EventSummaryDTO } from './../dto/dashboard/summary-overview.dto';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
@@ -39,5 +40,14 @@ export class EventSummaryService extends BaseSevice {
     }
 
     return this.apiService.getData<any>(api, null);
+  }
+
+  getSummaryByTags(day: number): Observable<SummaryTagDTO[]> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/eventsummary/tags/byday?day=${day}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<SummaryTagDTO[]>(api, null);
   }
 }

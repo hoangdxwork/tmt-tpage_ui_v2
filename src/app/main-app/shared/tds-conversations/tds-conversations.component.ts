@@ -57,6 +57,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
+  @ViewChild('viewchildSearchMess') viewchildSearchMess!: ElementRef<any>;
   @HostBinding("@eventFadeState") eventAnimation = true;
   @Input() partner?: any;
 
@@ -407,7 +408,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   showModalListBill(data: ChatomniConversationItemDto) {
-    this.modalService.create({
+    let modal= this.modalService.create({
         title: 'Phiếu bán hàng',
         content: ModalListBillComponent,
         viewContainerRef: this.viewContainerRef,
@@ -417,6 +418,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             psid: data.ConversationId,
         }
     });
+
+    modal.afterClose.subscribe({
+        next: (res: TDSSafeAny) => {
+          if(res && res.type == 'img'){
+            this.uploadedImages = [...this.uploadedImages, ...[res.value]];
+
+            this.cdRef.detectChanges();
+          }
+        }
+      }
+    )
   }
 
   showModalAddTag() {
@@ -749,7 +761,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
           let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == data.Id);
 
-          //TODO: Lấy item cuối đẩy qua conversation-all-v2 
+          //TODO: Lấy item cuối đẩy qua conversation-all-v2
           if(index < 0) {
               this.dataSource.Items = [...this.dataSource.Items, ...[data]];
           }
@@ -1121,10 +1133,18 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onOpenSearch(){
     this.isOpenSearch = true;
+
+    setTimeout(() => {
+      if(this.viewchildSearchMess)
+        this.viewchildSearchMess.nativeElement.focus();
+      }, 350);
   }
 
   onCloseSearch(){
     this.isOpenSearch = false;
+    if(!TDSHelperString.hasValueString(this.searchText) && !TDSHelperString.hasValueString(this.filterObj?.Keywords)){
+      return
+    }
     this.searchText = '';
     this.filterObj = null;
 

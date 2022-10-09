@@ -20,13 +20,13 @@ export class LiveCampaignService extends BaseSevice {
     super(apiService);
   }
 
-  get(): Observable<ODataLiveCampaignModelDTO>{
+  get(): Observable<any>{
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
         method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataLiveCampaignModelDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getById(id: any): Observable<any> {
@@ -38,13 +38,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
 	}
 
-  getDetailById(id: string ): Observable<ODataLiveCampaignDTO> {
+  getDetailById(id: string ): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,Users,Preliminary_Template,ConfirmedOrder_Template`,
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getAvailables(text?: string){
@@ -177,7 +177,7 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  getProduct(liveCampaignId: string, params: string): Observable<any> {
+  reportLiveCampaignProduct(liveCampaignId: string, params: string): Observable<any> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ReportLiveCampaignProduct?key=${liveCampaignId}&${params}&$count=true`,
         method: CoreApiMethodType.get,

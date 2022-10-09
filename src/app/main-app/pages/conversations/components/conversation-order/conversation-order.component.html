@@ -198,9 +198,9 @@
                                                         (popoverVisibleChange)="openPopover($event, item.Price, index)">
                                                     </span>
 
-                                                    <span *ngIf="item.Discount > 0 && isEnableCreateOrder" class="text-caption-1 text-primary-1 flex justify-center items-center font-semibold">
+                                                    <!-- <span *ngIf="item.Discount > 0 && isEnableCreateOrder" class="text-caption-1 text-primary-1 flex justify-center items-center font-semibold">
                                                         <i class="tdsi-tag-fill mr-1"></i> {{item.Discount}}%
-                                                    </span>
+                                                    </span> -->
 
                                                     <ng-template #tmpEditPrice>
                                                         <div class="w-[336px] flex flex-col gap-y-4" *ngIf="item">
@@ -461,7 +461,7 @@
                               </div>
 
                               <div class="px-4 border-l">
-                                  <button *ngIf="!saleModel.TrackingRef" tds-button-icon color="info" size="sm"  (click)="calcFee()" title="Tính lại tiền ship" type="button">
+                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"  (click)="calcFee()" title="Tính lại tiền ship" type="button">
                                       <span class="flex items-center justify-center">
                                           <i class=" tdsi-reload-fill"></i>
                                       </span>

@@ -116,7 +116,7 @@
             <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl px-3 py-[15px]">
                 <div class="flex-auto flex gap-x-2 items-center ">
                     <span class="tdsi-search-fill text-xl leading-none text-neutral-1-500"></span>
-                    <input tdsInput autocomplete="off" [(ngModel)]="searchText" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" [ngModelOptions]="{standalone: true}"
+                    <input tdsInput autocomplete="off" #viewchildSearchMess [(ngModel)]="searchText" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" [ngModelOptions]="{standalone: true}"
                          placeholder="Tìm kiếm tin nhắn" class="resize-none no-scrollbar rounded-xl !text-neutral-1-400 w-full"/>
                 </div>
                 <button type="button" tds-button-flat-icon color="secondary" size="xl" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onCloseSearch()">

@@ -110,7 +110,7 @@
               <th width="155px" *ngIf="isHidden('DateCreated')" class="border-l">Ngày tạo đơn</th>
               <th width="160px" *ngIf="isHidden('StatusText')" class="border-l">Trạng thái</th>
               <th width="126px" *ngIf="isHidden('UserName')" class="border-l">Nhân viên</th>
-              <th width="130px" [tdsRight]="true" class="border-l">Thao tác</th>
+              <th width="131px" [tdsRight]="true" class="border-l">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -303,13 +303,13 @@
 
                 <!-- Thao tác -->
                 <td [tdsRight]="true" class="border-l">
-                  <div class="flex gap-x-2">
-                    <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
+                  <div class="flex">
+                    <button tds-button-icon color="secondary" class="mr-2" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm" (click)="onEdit(data)">
+                    <button tds-button-icon color="secondary" class="mr-2" tds-tooltip="Chỉnh sửa" size="sm" (click)="onEdit(data)">
                       <span class="flex items-center">
                         <i class="tdsi-edit-fill text-neutral-1-500"></i>
                       </span>

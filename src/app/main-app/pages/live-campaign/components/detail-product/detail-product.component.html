@@ -12,8 +12,8 @@
             (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
             <thead>
                 <tr>
-                    <th class="border-r" rowSpan="2" width="32px"></th>
-                    <th class="border-r" rowSpan="2">Tên sản phẩm</th>
+                    <th class="border-r" rowSpan="2" [width]="'32px'"></th>
+                    <th class="border-r" [width]="'20%'" rowSpan="2">Tên sản phẩm</th>
                     <th colSpan="4" class="border-r border-b text-center">Sản phẩm</th>
                     <th colSpan="2" class="border-r border-b text-center">Đơn hàng</th>
                     <th colSpan="2" class="border-r border-b text-center">Hóa đơn</th>
@@ -52,7 +52,7 @@
                                     <button tds-button-icon color="secondary" size="sm"
                                         class="cursor-default text-info-400 bg-transparent border-0 border-transparent focus:ring-0 focus:border-transparent focus:bg-info-100 hover:bg-info-100">
                                         <span class="flex items-center">
-                                            <i class="tdsi-user-line"></i>
+                                            <i class="tdsi-group-2-line"></i>
                                         </span>
                                     </button>
                                 </div>
@@ -68,7 +68,7 @@
                                     <button tds-button-icon color="secondary" size="sm"
                                         class="cursor-default text-info-400 bg-transparent border-0 border-transparent focus:ring-0 focus:border-transparent focus:bg-info-100 hover:bg-info-100">
                                         <span class="flex items-center">
-                                            <i class="tdsi-user-line"></i>
+                                            <i class="tdsi-group-2-line"></i>
                                         </span>
                                     </button>
                                 </div>
@@ -78,9 +78,9 @@
                         <td class="border-r">{{ product.InvoiceQtyCancelCheckOut || 0 | numberCustom }}</td>
                     </tr>
 
-                    <tr [expand]="expandSet.has(product.ProductId)" *ngIf="expandSet.has(product.ProductId)"
-                        class="bg-neutral-3-50">
-                        <div class="w-full bg-white rounded-md">
+                    <tr [expand]="expandSet.has(product.ProductId)" *ngIf="expandSet.has(product.ProductId)">
+                        <div class="bg-neutral-3-50 p-2">
+                          <div class="w-full bg-white rounded-md">
                             <tds-tabset>
                                 <tds-tab title="Đơn hàng chờ chốt" clsContent="p-0">
                                     <ng-template tds-tab>
@@ -119,6 +119,7 @@
                                     </ng-template>
                                 </tds-tab>
                             </tds-tabset>
+                          </div>
                         </div>
                     </tr>
                 </ng-template>

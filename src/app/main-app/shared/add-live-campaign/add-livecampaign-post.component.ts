@@ -16,7 +16,7 @@ import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.ser
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { differenceInCalendarDays } from 'date-fns';
+import { differenceInCalendarDays, isFirstDayOfMonth } from 'date-fns';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
@@ -70,6 +70,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
   isEditDetails: { [id: string] : boolean } = {};
   liveCampainDetails: any = [];
+  isFilter: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
@@ -492,7 +493,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
 
   addProductLiveCampaignDetails(item: LiveCampaignProductDTO) {
     let id = this.id as string;
-    item.Tags = item.Tags.toString();
+    item.Tags = item.Tags?.toString();
     let model = [item];
 
     this.isLoading = true;
@@ -705,12 +706,14 @@ export class AddLiveCampaignPostComponent implements OnInit {
   onReset(): void {
     this.searchValue = '';
     this.visible = false;
+    this.isFilter = false;
     this.detailsFormGroups.clear();
     this.initFormDetails(this.liveCampainDetails);
   }
 
   onSearch(): void {
     this.visible = false;
+    this.isFilter = true;
     let text = TDSHelperString.stripSpecialChars(this.searchValue?.toLocaleLowerCase()).trim();
 
     let data = this.liveCampainDetails.filter((item: LiveCampaignProductDTO) =>

@@ -125,6 +125,10 @@ export class EditOrderV2Component implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
 
+  isEqualAmountInsurance: boolean = false;
+  delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
+  isEnableCalcFee: boolean = false;
+
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
     private modalRef: TDSModalRef,
@@ -209,6 +213,9 @@ export class EditOrderV2Component implements OnInit {
             this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
+
+            this.handleIsEqualAmountInsurance();
+            this.prepareCalcFeeButton();
           }
           this.isLoading = false;
       },
@@ -310,14 +317,6 @@ export class EditOrderV2Component implements OnInit {
 
     if(this.quickOrderModel.Partner){
       this.quickOrderModel.Partner.Name = name;
-    }
-  }
-
-  checkPhoneValidate(){
-    if(this.phoneRegex){
-      return new RegExp(this.phoneRegex).test(this.quickOrderModel.Telephone);
-    }else{
-      return /^((\+[(]?[0-9]{2}[)]?)|0)[0-9]{9}$/g.test(this.quickOrderModel.Telephone);
     }
   }
 
@@ -423,6 +422,12 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
+    if(!event && this.saleModel) {
+      this.saleModel.Carrier = null;
+      this.saleModel.CarrierId = null;
+      return;
+    }
+
     this.shipServices = []; // dịch vụ
     this.shipExtraServices = [];
     this.insuranceInfo = null;
@@ -451,11 +456,14 @@ export class EditOrderV2Component implements OnInit {
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this.saleModel.Ship_Extras = JSON.parse(event.ExtrasText);
+        this.updateInsuranceFeeEqualAmountTotal();
     }
 
     if(event) {
         this.calcFee();
     }
+
+    this.prepareCalcFeeButton();
   }
 
   calcFee() {
@@ -469,6 +477,7 @@ export class EditOrderV2Component implements OnInit {
 
   signAmountTotalToInsuranceFee(): any  {
     this.saleModel.Ship_InsuranceFee = this.saleModel.AmountTotal;
+    this.handleIsEqualAmountInsurance();
     this.onUpdateInsuranceFee();
   }
 
@@ -569,11 +578,6 @@ export class EditOrderV2Component implements OnInit {
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
 
-    if (!this.checkPhoneValidate() || !model.Telephone) {
-      this.message.error(model.Telephone ? 'Số điện thoại không hợp lệ' : 'Vui lòng nhập số điện thoại');
-      return;
-    }
-
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
         if(this.saleModel) {
@@ -583,7 +587,7 @@ export class EditOrderV2Component implements OnInit {
 
     if(this.isEnableCreateOrder) {
       if (!TDSHelperArray.hasListValue(model.Details)) {
-          this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
           return;
       }
 
@@ -1017,5 +1021,31 @@ export class EditOrderV2Component implements OnInit {
         }
       }
     })
+  }
+
+  handleIsEqualAmountInsurance() {
+    if(this.saleModel && this.isEnableCreateOrder) {
+      let aship = this.saleModel.ShipmentDetailsAship;
+      let extras = this.saleModel.Ship_Extras as any;
+
+      if (aship && aship.InsuranceInfo && aship.InsuranceInfo.IsInsurance) {
+          if (extras && extras.IsInsuranceEqualTotalAmount) {
+              this.isEqualAmountInsurance = (this.saleModel.AmountTotal || 0) == (this.saleModel.Ship_InsuranceFee || 0);
+          } else {
+              this.isEqualAmountInsurance = (extras?.InsuranceFee || 0) == (this.saleModel.Ship_InsuranceFee || 0);
+          }
+      } else {
+          this.isEqualAmountInsurance = false;
+      }
+    }
+  }
+
+  prepareCalcFeeButton() {
+    let carrier = this.saleModel?.Carrier;
+    if (carrier && !this.delivery_calcfee.includes(carrier.DeliveryType)) {
+        this.isEnableCalcFee = true;
+    } else {
+        this.isEnableCalcFee = false;
+    }
   }
 }

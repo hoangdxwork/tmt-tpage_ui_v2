@@ -221,7 +221,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.lstConversation[index] = {...this.lstConversation[index]};
         this.lstConversation = [...this.lstConversation];
 
-    } else {
+    } else if(!this.isFilter){
         // TODO: socket message ko có trong danh sách -> push lên giá trị đầu tiên
         let itemNewMess = this.chatomniConversationFacade.prepareNewMessageOnEventSocket(data) as ChatomniConversationItemDto;
         if(this.vsStartIndex <= 1) {
@@ -335,8 +335,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: any) => {
           let teamId = this.currentTeam?.Id as any;
           this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => {
+              next: (data: any) => { 
                   this.syncConversationInfo = {...data};
+
+                  let csid = this.syncConversationInfo.Conversation.ConversationId;
+                  let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
+
+                  if(Number(index) >= 0 && this.syncConversationInfo.Partner) {
+                      this.lstConversation[index].HasPhone = this.syncConversationInfo.Partner.Phone ? true : false;
+                      this.lstConversation[index].HasAddress = this.syncConversationInfo.Partner.Street ? true : false;
+                      this.lstConversation[index] = {...this.lstConversation[index]};
+                      this.lstConversation = [...this.lstConversation];
+                  }
+
                   this.cdRef.markForCheck();
               }
           })
@@ -518,6 +529,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
 
     this.queryObj = {} as any;
+    this.isFilter = false;
     this.innerText.nativeElement.value = '';
     this.isProcessing = false;
     this.disableNextUrl = false;
@@ -657,7 +669,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.queryObj = {} as any;
     this.disableNextUrl = false;
 
-    this.queryObj = queryObj;
+    this.queryObj = queryObj; 
+    if(Object.keys(this.queryObj).length > 0){
+      this.isFilter = true;
+    } else {
+      this.isFilter = false;
+    }
+
     this.loadFilterDataSource();
   }
 

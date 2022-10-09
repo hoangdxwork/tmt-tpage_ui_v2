@@ -100,7 +100,7 @@
               <div class="flex flex-col justify-start gap-y-1 relative">
                 <div class="flex gap-x-4 items-center">
                   <tds-label class="w-1/4">Đặt cọc tối thiểu</tds-label>
-                  <tds-form-field class="w-3/4" [color]="isDepositChange ? 'error' : 'default'">
+                  <tds-form-field class="w-3/4" [color]="isDepositChange && _form.value.MinAmountDeposit == 0 ? 'error' : 'default'">
                       <tds-input-number [min]="0" [step]="1000" placeholder="0" formControlName="MinAmountDeposit"
                         [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                   </tds-form-field>

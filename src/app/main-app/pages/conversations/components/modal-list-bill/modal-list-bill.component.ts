@@ -49,7 +49,7 @@ export class ModalListBillComponent implements OnInit {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private modal: TDSModalRef,
+    private modalRef: TDSModalRef,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
@@ -84,7 +84,7 @@ export class ModalListBillComponent implements OnInit {
   }
 
   cancel(){
-    this.modal.destroy(null)
+    this.modalRef.destroy(null)
   }
 
   showModalDetailBill(data : BillofPartnerDTO){
@@ -209,27 +209,50 @@ export class ModalListBillComponent implements OnInit {
     }
     model.push(item);
 
-    this.fastSaleOrderService.sendPaymentRequest(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoading = false }))
-    .subscribe((res: any) => {
-      if(res[0]) {
-        if(res[0].Status == "Success") {
-          this.message.success("Gửi thành công.");
-          this.modal.destroy(res[0].data);
-        } else {
-          this.message.error(res[0].Message);
+    let modelDestroy = {
+      type: 'sendPayMent',
+      value: '' 
+    }
+
+    this.fastSaleOrderService.sendPaymentRequest(model).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: any) => {
+          if(res[0]) {
+            if(res[0].Status == "Success") {
+              this.message.success("Gửi thành công.");
+              this.modalRef.destroy(res[0].data);
+            } else {
+              this.message.error(res[0].Message);
+            }
+          }
+          this.isLoading = false;
+        }, 
+        error: error => {
+          this.isLoading = false;
+          this.message.error(error.error? error.error.message:'Gửi yêu cầu thất bại');
         }
-      }
-    }, error => {
-      this.message.error(error.error? error.error.message:'Gửi yêu cầu thất bại');
-    })
+      })
   }
 
   onSendImage(data: BillofPartnerDTO){
-    this.fastSaleOrderService.getOrderHtmlToImage(data.Id).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.getOrderImageUrl.emit(res);
-    },err=>{
-      this.message.error(err.error? err.error.message: 'Gửi hình ảnh thất bại')
-    });
+    let modelDestroy = {
+      type: 'img',
+      value: '' 
+    }
+    this.isLoading = true;
+    this.fastSaleOrderService.getOrderHtmlToImage(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: res => {
+          modelDestroy.value = res; 
+          this.isLoading = false;
+
+          this.modalRef.destroy(modelDestroy);
+        },
+        error: err=>{
+          this.isLoading = false;
+          this.message.error(err.error? err.error.message: 'Gửi hình ảnh thất bại')
+        }
+      });
   }
 
   ngOnDestroy(): void {

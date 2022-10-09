@@ -307,7 +307,7 @@
                     </div>
                     <div class="col-span-2">
                       <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.ShipWeight"
+                        <tds-input-number [min]="0" [step]="100" [(ngModel)]="saleModel.ShipWeight"
                           [formatter]="numberWithCommas"
                           [parser]="parserComas"
                           (tdsBlur)="changeShipWeight()"[ngModelOptions]="{standalone: true}">
@@ -448,7 +448,7 @@
                                   </div>
 
                                   <div class="px-4 border-l">
-                                    <button *ngIf="!saleModel.TrackingRef" tds-button-icon color="info" size="sm"
+                                    <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"
                                         (click)="calcFee()" title="Tính lại tiền ship" type="button">
                                         <span class="flex items-center justify-center">
                                             <i class=" tdsi-reload-fill"></i>

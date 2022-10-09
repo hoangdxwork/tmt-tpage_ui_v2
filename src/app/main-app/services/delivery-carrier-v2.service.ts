@@ -110,5 +110,14 @@ export class DeliveryCarrierV2Service extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
+
+  getViewByDeliveryType(type: string, skip : number, top: number): Observable<DeliveryCarrierDTO> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/odata/DeliveryCarrier/OdataService.GetView?%24top=${top}&%24skip=${skip}&%24filter=(Active+eq+true+and+DeliveryType+eq+%27${type}%27)&%24count=true`,
+        method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
 }
 
