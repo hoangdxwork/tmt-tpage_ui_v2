@@ -69,7 +69,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
     },
-    shipPaymentStatus: null
+    shipPaymentStatus: null,
+    liveCampaignId: null,
   }
 
   filterStatus = [
@@ -92,6 +93,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
     { value: 'PartnerDisplayName', name: 'Khách hàng', isChecked: true },
+    { value: 'LiveCampaignName', name: 'Chiến dịch live', isChecked: false },
     { value: 'DateInvoice', name: 'Ngày bán', isChecked: false },
     { value: 'Number', name: 'Số HĐ', isChecked: true },
     { value: 'CashOnDelivery', name: 'Tiền thu hộ', isChecked: false },
@@ -481,6 +483,9 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.filterObj.shipPaymentStatus = event.shipPaymentStatus;
+    if(event.liveCampaignId) {
+      this.filterObj.liveCampaignId = event.liveCampaignId;
+    }
 
     if (TDSHelperArray.hasListValue(event.status)) {
       this.tabNavs = this.summaryStatus.filter(f => event.status.includes(f.Name));
@@ -527,7 +532,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
       },
-      shipPaymentStatus: null
+      shipPaymentStatus: null,
+      liveCampaignId: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);

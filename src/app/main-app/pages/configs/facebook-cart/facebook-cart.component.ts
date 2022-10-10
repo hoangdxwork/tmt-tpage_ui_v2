@@ -28,24 +28,45 @@ export class FacebookCartComponent implements OnInit {
       this.createForm();
   }
 
+  ngOnInit(): void {
+    this.loadData();
+  }
+
   createForm() {
     this._form = this.fb.group({
-      IsApplyConfig: [false],
-      IsUpdatePartnerInfo: [false],
-      IsCheckout: [false],
-      IsUpdateQuantity: [false],
-      IsBuyMore: [false],
-      IsCancelCheckout: [false],
-      IsUpdate: [false],
+      IsApplyConfig: [false],// Bật cho phép áp dụng cấu hình giỏ hàng - Chỉ xem
+
+      IsUpdatePartnerInfo: [false],// Cập nhật thông tin khách hàng
+      IsUpdateQuantity: [false],// Cập nhật số lượng
+      IsCheckout: [false],// Cho phép thanh toán
+      IsBuyMore: [false], // Cho phép mua thêm
+
+      IsUpdate: [false],// Cho phép cập nhật giỏ hàng
+      IsCancelCheckout: [false],// Cho phép hủy thanh toán (xóa đơn hàng)
+
+      IsUpdateNote: [false],// Cập nhật ghi chú
+      IsRemoveProduct: [false],//Cho phép xóa sản phẩm mua được
+      IsRemoveProductInValid: [false],// Cho phép xóa sản phẩm không hợp lệ (Không mua được)
+      IsDisplayInventory: [false],// Cho phép hiện tồn kho
+      IsMergeOrder: [false]// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
     })
   }
 
-  updateForm(data: AutoInteractionDTO) {
+  updateForm(data: ConfigFacebookCartDTO) {
     this._form.patchValue(data);
-  }
 
-  ngOnInit(): void {
-    this.loadData();
+    if(data.IsApplyConfig == true) {
+      this._form.controls["IsUpdatePartnerInfo"].disable();
+      this._form.controls["IsUpdateQuantity"].disable();
+      this._form.controls["IsCheckout"].disable();
+      this._form.controls["IsCancelCheckout"].disable();
+      this._form.controls["IsBuyMore"].disable();
+      this._form.controls["IsUpdateNote"].disable();
+      this._form.controls["IsRemoveProduct"].disable();
+      this._form.controls["IsRemoveProductInValid"].disable();
+      this._form.controls["IsDisplayInventory"].disable();
+      this._form.controls["IsMergeOrder"].disable();
+    }
   }
 
   loadData() {
@@ -65,25 +86,69 @@ export class FacebookCartComponent implements OnInit {
     })
   }
 
-  applyConfig(event:boolean){
-    if(!event){
+  applyConfig(event: boolean){
+    if(event == true) {
       this._form.controls["IsUpdatePartnerInfo"].setValue(false);
-      this._form.controls["IsCheckout"].setValue(false);
-      this._form.controls["IsUpdateQuantity"].setValue(false);
-      this._form.controls["IsBuyMore"].setValue(false);
-      this._form.controls["IsCancelCheckout"].setValue(false);
-
       this._form.controls["IsUpdatePartnerInfo"].disable();
-      this._form.controls["IsCheckout"].disable();
+
+      this._form.controls["IsUpdateQuantity"].setValue(false);
       this._form.controls["IsUpdateQuantity"].disable();
-      this._form.controls["IsBuyMore"].disable();
+
+      this._form.controls["IsCheckout"].setValue(false);
+      this._form.controls["IsCheckout"].disable();
+
+      this._form.controls["IsCancelCheckout"].setValue(false);
       this._form.controls["IsCancelCheckout"].disable();
-    }else{
+
+      this._form.controls["IsBuyMore"].setValue(false);
+      this._form.controls["IsBuyMore"].disable();
+
+      this._form.controls["IsUpdateNote"].setValue(false);
+      this._form.controls["IsUpdateNote"].disable();
+
+      this._form.controls["IsRemoveProduct"].setValue(false);
+      this._form.controls["IsRemoveProduct"].disable();
+
+      this._form.controls["IsRemoveProductInValid"].setValue(false);
+      this._form.controls["IsRemoveProductInValid"].disable();
+
+      this._form.controls["IsDisplayInventory"].setValue(false);
+      this._form.controls["IsDisplayInventory"].disable();
+
+      this._form.controls["IsMergeOrder"].setValue(false);
+      this._form.controls["IsMergeOrder"].disable();
+
+    } else {
+
+      this._form.controls["IsUpdatePartnerInfo"].setValue(true);
       this._form.controls["IsUpdatePartnerInfo"].enable();
-      this._form.controls["IsCheckout"].enable();
+
+      this._form.controls["IsUpdateQuantity"].setValue(true);
       this._form.controls["IsUpdateQuantity"].enable();
-      this._form.controls["IsBuyMore"].enable();
+
+      this._form.controls["IsCheckout"].setValue(true);
+      this._form.controls["IsCheckout"].enable();
+
+      this._form.controls["IsCancelCheckout"].setValue(true);
       this._form.controls["IsCancelCheckout"].enable();
+
+      this._form.controls["IsBuyMore"].setValue(true);
+      this._form.controls["IsBuyMore"].enable();
+
+      this._form.controls["IsUpdateNote"].setValue(true);
+      this._form.controls["IsUpdateNote"].enable();
+
+      this._form.controls["IsRemoveProduct"].setValue(true);
+      this._form.controls["IsRemoveProduct"].enable();
+
+      this._form.controls["IsRemoveProductInValid"].setValue(true);
+      this._form.controls["IsRemoveProductInValid"].enable();
+
+      this._form.controls["IsDisplayInventory"].setValue(true);
+      this._form.controls["IsDisplayInventory"].enable();
+
+      this._form.controls["IsMergeOrder"].setValue(false);
+      this._form.controls["IsMergeOrder"].enable();
     }
   }
 
@@ -120,12 +185,19 @@ export class FacebookCartComponent implements OnInit {
 
     let model = {
         IsApplyConfig: formModel.IsApplyConfig as boolean,
+
         IsUpdatePartnerInfo: formModel.IsUpdatePartnerInfo as boolean,
-        IsCheckout: formModel.IsCheckout as boolean,
         IsUpdateQuantity: formModel.IsUpdateQuantity as boolean,
+        IsCheckout: formModel.IsCheckout as boolean,
         IsBuyMore: formModel.IsBuyMore as boolean,
+
         IsCancelCheckout: formModel.IsCancelCheckout as boolean,
         IsUpdate: formModel.IsUpdate as boolean,
+        IsUpdateNote: formModel.IsUpdateNote as boolean,
+        IsRemoveProduct: formModel.IsRemoveProduct as boolean,
+        IsRemoveProductInValid: formModel.IsRemoveProductInValid as boolean,
+        IsDisplayInventory: formModel.IsDisplayInventory as boolean,
+        IsMergeOrder: formModel.IsMergeOrder as boolean
     } as ConfigFacebookCartDTO
 
     return model;
