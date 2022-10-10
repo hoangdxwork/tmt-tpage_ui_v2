@@ -1,4 +1,4 @@
-export interface orderStatusDTO {
+export interface OrderStatusDTO {
   Id: number;
   Index?: any;
   Name: string;
@@ -13,7 +13,12 @@ export interface OrderStatusModalDTO {
   StyleCSS: string;
 }
 
+export interface FilterObjDTO  {
+  searchText: string,
+}
+
 export interface OdataOrderStatusDTO {
   "@odata.context": string;
-  value: orderStatusDTO[];
+  "@odata.count": number;
+  value: OrderStatusDTO[];
 }

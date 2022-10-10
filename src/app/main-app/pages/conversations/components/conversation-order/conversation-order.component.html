@@ -461,7 +461,7 @@
                               </div>
 
                               <div class="px-4 border-l">
-                                  <button *ngIf="!saleModel.TrackingRef" tds-button-icon color="info" size="sm"  (click)="calcFee()" title="Tính lại tiền ship" type="button">
+                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"  (click)="calcFee()" title="Tính lại tiền ship" type="button">
                                       <span class="flex items-center justify-center">
                                           <i class=" tdsi-reload-fill"></i>
                                       </span>

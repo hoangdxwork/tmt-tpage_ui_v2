@@ -1142,6 +1142,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onCloseSearch(){
     this.isOpenSearch = false;
+    if(!TDSHelperString.hasValueString(this.searchText) && !TDSHelperString.hasValueString(this.filterObj?.Keywords)){
+      return
+    }
     this.searchText = '';
     this.filterObj = null;
 

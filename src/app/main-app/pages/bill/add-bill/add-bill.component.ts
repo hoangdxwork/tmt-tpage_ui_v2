@@ -132,6 +132,9 @@ export class AddBillComponent implements OnInit {
   configsProviderDataSource: Array<AshipGetInfoConfigProviderDto> = [];
   phoneRegex!:string;
   tipLoading: string = 'Loading...';
+  isEqualAmountInsurance: boolean = false;
+  delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
+  isEnableCalcFee: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -271,19 +274,6 @@ export class AddBillComponent implements OnInit {
     let exits = data?.filter((x: any) => x.text === text)[0];
     if (exits) {
         return exits.value;
-    }
-  }
-
-  loadDelivery(carrierId: any) {
-    if (carrierId) {
-      this.isLoading = true;
-
-      this.deliveryCarrierV2Service.getById(carrierId).pipe(finalize(() => this.isLoading = false)).subscribe(res => {
-          if(res && TDSHelperObject.hasValue(res.Extras)){
-            this._form.controls['Ship_InsuranceFee'].setValue(res.Extras?.InsuranceFee);
-            this.cdRef.detectChanges();
-          }
-        });
     }
   }
 
@@ -443,7 +433,6 @@ export class AddBillComponent implements OnInit {
 
     //TODO: cập nhật địa chỉ
     this.mappingDataAddress(data);
-
     //Load thông tin ship aship
     this.loadConfigProvider(this.dataModel);
 
@@ -451,31 +440,48 @@ export class AddBillComponent implements OnInit {
       this.dataModel.AmountDeposit = 0;
     }
 
+    if(this.dataModel.Ship_Receiver?.City && !this.dataModel.Ship_Receiver?.City?.code){
+      this.dataModel.Ship_Receiver.City = null as any;
+    }
+
+    if(this.dataModel.Ship_Receiver?.District && !this.dataModel.Ship_Receiver?.District?.code){
+      this.dataModel.Ship_Receiver.District = null as any;
+    }
+
+    if(this.dataModel.Ship_Receiver?.Ward && !this.dataModel.Ship_Receiver?.Ward?.code){
+      this.dataModel.Ship_Receiver.Ward = null as any;
+    }
+
+    if(this.dataModel.Ship_Receiver && !this.dataModel.Ship_Receiver?.Street){
+      this.dataModel.Ship_Receiver.Street = '';
+    }
+
     this._form.patchValue(this.dataModel);
+    this.handleIsEqualAmountInsurance();
+    this.prepareCalcFeeButton();
 
     this.dataModel.OrderLines?.map((x: any) => {
         this.totalQtyLines = this.totalQtyLines + x.ProductUOMQty;
         this.totalAmountLines = this.totalAmountLines + x.PriceTotal;
     })
-
   }
 
   mappingDataAddress(data:TDSSafeAny){
     let result = this.prepareSuggestionsBill.mappingAddress(data);
 
-    this._cities = result?._cities || { code:'', name:'' };
+    this._cities = result?._cities;
     if(this._cities && this._cities.code) {
       this.loadDistricts(this._cities.code);
     }
 
-    this._districts = result?._districts || this._districts;
+    this._districts = result?._districts;
     if(this._districts && this._districts.code) {
       this.loadWards(this._districts.code);
     }
 
-    this._wards = result?._wards || this._wards;
+    this._wards = result?._wards;
 
-    this._street = result?._street || this._street;
+    this._street = result?._street;
     this.innerText = this._street;
   }
 
@@ -484,6 +490,9 @@ export class AddBillComponent implements OnInit {
     this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.saleConfig = {...res} as SaleSettingConfigDto_V2;
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Không thể tải cấu hình');
       }
     })
   }
@@ -508,7 +517,6 @@ export class AddBillComponent implements OnInit {
   selectChangePartner(event: any) {
     if (event && event.Id) {
         this.changePartner(event.Id);
-
     }
   }
 
@@ -944,21 +952,38 @@ export class AddBillComponent implements OnInit {
   }
 
   updateInsuranceFeeEqualAmountTotal() {
-    if (this._form.controls['Ship_Extras'].value) {
+    let extras = this._form.controls['Ship_Extras'].value;
+    if (extras && this.isEqualAmountInsurance) {
 
-        if(this._form.controls['Ship_Extras'].value?.IsInsuranceEqualTotalAmount) {
-            this._form.controls['Ship_InsuranceFee'].setValue(this._form.controls['TotalAmount'].value)
-        } else {
-            this._form.controls['Ship_InsuranceFee'].setValue(this._form.controls['Ship_Extras'].value?.InsuranceFee || 0)
-        }
+      if(extras.IsInsuranceEqualTotalAmount) {
+          this._form.controls['Ship_InsuranceFee'].setValue(this._form.controls['TotalAmount'].value);
+      } else {
+          this._form.controls['Ship_InsuranceFee'].setValue(extras.InsuranceFee || 0);
+      }
     }
   }
 
   signAmountTotalToInsuranceFee(): any {
-    let x = this._form.controls['AmountTotal'].value;
+    let x = this._form.controls['AmountTotal'].value || 0;
     this._form.controls['Ship_InsuranceFee'].setValue(x);
 
+    this.handleIsEqualAmountInsurance();
     this.onUpdateInsuranceFee();
+  }
+
+  handleIsEqualAmountInsurance() {
+    let aship = this._form.controls['ShipmentDetailsAship'].value;
+    let extras = this._form.controls['Ship_Extras'].value;
+
+    if (aship && aship.InsuranceInfo && aship.InsuranceInfo.IsInsurance) {
+        if (extras && extras.IsInsuranceEqualTotalAmount) {
+            this.isEqualAmountInsurance = (this._form.controls['AmountTotal'].value || 0) == (this._form.controls['Ship_InsuranceFee'].value || 0);
+        } else {
+            this.isEqualAmountInsurance = (extras?.InsuranceFee || 0) == (this._form.controls['Ship_InsuranceFee'].value || 0);
+        }
+    } else {
+        this.isEqualAmountInsurance = false;
+    }
   }
 
   changeExtramoney(value: number){
@@ -1203,12 +1228,17 @@ export class AddBillComponent implements OnInit {
                     this.actionInvoiceOpen(model);
                 } else {
                     this.isLoading = false;
+                    this.isEnableCalcFee = false;
+                    this.isEqualAmountInsurance = false;
+
                     this.message.success('Cập nhật phiếu bán hàng thành công!');
                     this.router.navigateByUrl(`bill/detail/${this.id}`);
                 }
             },
             error:(error) => {
                 this.isLoading = false;
+                this.isEnableCalcFee = false;
+                this.isEqualAmountInsurance = false;
                 this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
             }
         });
@@ -1219,7 +1249,7 @@ export class AddBillComponent implements OnInit {
                 this.id = res.Id;
 
                 // TODO: gửi lại vận đơn nếu chưa có mã vận đơn
-                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId
+                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && res.Number
                   && (res.State !== 'cancel' || res.State !== 'draft') && (res.FormAction == 'SaveAndOpen' || res.FormAction == 'SaveAndPrint');
                 if(code) {
                     this.sendToShipper(res);
@@ -1231,6 +1261,8 @@ export class AddBillComponent implements OnInit {
             },
             error:(error) => {
                 this.isLoading = false;
+                this.isEnableCalcFee = false;
+                this.isEqualAmountInsurance = false;
                 this.removelocalStorage();
                 this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
             }
@@ -1257,6 +1289,9 @@ export class AddBillComponent implements OnInit {
         this.loadPrintHtml(data);
     } else {
         this.isLoading = false;
+        this.isEnableCalcFee = false;
+        this.isEqualAmountInsurance = false;
+
         this.message.success('Tạo mới phiếu bán hàng thành công!');
         this.router.navigateByUrl(`bill/detail/${this.id}`);
     }
@@ -1284,10 +1319,15 @@ export class AddBillComponent implements OnInit {
               this.loadInventoryIds(data);
           }
 
+          this.isEnableCalcFee = false;
+          this.isEqualAmountInsurance = false;
           this.isLoading = false;
       },
       error: (error: any) => {
           this.isLoading = false;
+          this.isEnableCalcFee = false;
+          this.isEqualAmountInsurance = false;
+
           this.message.error(`${error.error.message}` || 'Đã xảy ra lỗi');
       }
     })
@@ -1317,6 +1357,8 @@ export class AddBillComponent implements OnInit {
     obs.pipe(takeUntil(this.destroy$)).subscribe({
       next:(payload: TDSSafeAny) => {
           this.isLoading = false;
+          this.isEnableCalcFee = false;
+          this.isEqualAmountInsurance = false;
           this.typePrint = '';
 
           this.printerService.printHtml(payload);
@@ -1324,6 +1366,9 @@ export class AddBillComponent implements OnInit {
       },
       error:(error: any) => {
           this.isLoading = false;
+          this.isEnableCalcFee = false;
+          this.isEqualAmountInsurance = false;
+
           this.router.navigateByUrl(`bill/detail/${this.id}`);
       }
     })
@@ -1367,9 +1412,6 @@ export class AddBillComponent implements OnInit {
     this.insuranceInfo = null;
     this.configsProviderDataSource = [];
 
-    // TODO: tải thông tin giao hàng, cập nhật giá trị hàng hóa
-    this.loadDelivery(event.Id);
-
     this._form.controls['Ship_ServiceId'].setValue(null);
     this._form.controls['Ship_ServiceName'].setValue(null);
     this._form.controls['Ship_Extras'].setValue(null);
@@ -1389,11 +1431,24 @@ export class AddBillComponent implements OnInit {
     this._form.controls['ShipWeight'].setValue(event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100);
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
+      this.isEqualAmountInsurance = true;
       this._form.controls['Ship_Extras'].setValue(JSON.parse(event.ExtrasText));
+      this.updateInsuranceFeeEqualAmountTotal();
     }
 
     if(event) {
         this.calcFee();
+    }
+
+    this.prepareCalcFeeButton();
+  }
+
+  prepareCalcFeeButton() {
+    let carrier = this._form.controls['Carrier'].value;
+    if (carrier && !this.delivery_calcfee.includes(carrier.DeliveryType)) {
+        this.isEnableCalcFee = true;
+    } else {
+       this.isEnableCalcFee = false;
     }
   }
 
@@ -1507,7 +1562,11 @@ export class AddBillComponent implements OnInit {
     modal.afterClose.subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result) {
+          // TODO: cập nhật địa chỉ mới
           this.setAddress(result);
+          // TODO: cập nhật danh sách select district và ward ở tab thông tin người nhận
+          this.loadDistricts(result.CityCode);
+          this.loadWards(result.DistrictCode);
 
           this.prepareSuggestionsBill.onLoadSuggestion(this._form, result);
           this.innerText = result.Address;

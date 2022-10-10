@@ -9,7 +9,7 @@
         <tds-form-field size='md' class="mr-4 w-1/2">
           <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm trạng thái" autocomplete="off" #filterText />
           <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-          <span tdsSuffix>
+          <span tdsSuffix (click)="onClearAll($event)">
             <i class="tdsi-close-fill text-neutral-1-500 text-base"
               *ngIf="filterText.value && filterText.value != ''"></i>
           </span>
@@ -24,32 +24,34 @@
     </div>
     <div class="flex flex-auto pb-2.5">
       <tds-table #basicTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
-        [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y : 'auto'}"
+        [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto'}"
         (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr class="text-neutral-1-900 text-body-2 font-semibold">
             <th [width]="'80px'" class="text-center">STT</th>
             <th>Style CSS</th>
             <th>Tên</th>
-            <th>Không cho tạo hóa đơn</th>
+            <th [align]="'center'">Không cho tạo hóa đơn</th>
             <th [width]="'120px'" [align]="'center'">Thao tác</th>
           </tr>
         </thead>
         <tbody>
           <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
             <tr class="text-neutral-1-900 text-body-2 font-regular">
-              <td class="text-center">{{ 1 + i }}</td>
+              <td class="text-center">{{ 1 + i + (pageIndex - 1) * pageSize }}</td>
               <td>
+                <!-- <tds-tag [ngStyle]="{'border-color': data.StyleCSS, 'color': data.StyleCSS}" type="outline">{{ data.Name }}</tds-tag> -->
                 <div class="flex flex-auto">
-                  <div class="border rounded" [style.border-color]="data.StyleCSS">
-                    <span class="flex items-center px-2 py-0.5 text-caption-2 font-semibold" [style.color]="data.StyleCSS">
+                  <div class="border rounded bg-opacity-20 bg-neutral-3-50" [style.border-color]="data.StyleCSS">
+                    <span class="flex items-center px-2 py-0.5 text-caption-2 font-semibold"
+                      [style.color]="data.StyleCSS">
                       {{ data.Name }}
                     </span>
                   </div>
                 </div>
               </td>
               <td>{{ data.Name }}</td>
-              <td>
+              <td [align]="'center'">
                 <tds-switch [(ngModel)]="data.IsNotOrder" (ngModelChange)="updateStatus(data)"></tds-switch>
               </td>
               <td [align]="'center'">
@@ -58,7 +60,7 @@
                     <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
                   </span>
                 </button>
-                <button tds-button-icon color="secondary" size="sm" (click)="showRemoveStatus(data)">
+                <button [ngClass]="data.Default==true ? 'hidden' : '' " tds-button-icon color="secondary" size="sm" (click)="showRemoveStatus(data)">
                   <span class="flex items-center">
                     <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
                   </span>

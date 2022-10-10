@@ -67,6 +67,7 @@
               <th width="42px" [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate"
                 (checkedChange)="onAllChecked($event)" class="border-r"></th>
               <th width="240px" [tdsLeft]="true" *ngIf="isHidden('PartnerDisplayName')" class="border-r">Khách hàng</th>
+              <th width="180px" *ngIf="isHidden('LiveCampaignName')" class="border-r">Chiến dịch live</th>
               <th width="180px" *ngIf="isHidden('DateInvoice')" [align]="'center'" class="border-r">Ngày bán</th>
               <th width="160px" *ngIf="isHidden('Number')" class="border-r">Số HĐ</th>
               <th width="160px" *ngIf="isHidden('CarrierName')" class="border-r">Đối tác GH</th>
@@ -110,6 +111,13 @@
                     </div>
                   </div>
                 </td>
+
+                <td *ngIf="isHidden('LiveCampaignName')" class="border-r">
+                  <div class="w-full">
+                    <span>{{data.LiveCampaignName}}</span>
+                  </div>
+                </td>
+
                 <td *ngIf="isHidden('DateInvoice')" [align]="'center'" class="border-r">
                   <div class="w-full">
                     <span>{{data.DateInvoice | yiDateTimeFormat}}</span>

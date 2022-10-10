@@ -568,7 +568,9 @@ export class AddLiveCampaignComponent implements OnInit {
 
     modal.afterClose.subscribe({
       next:(res) => {
-        this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
+        if(res) {
+          this.loadQuickReply();
+        }
       }
     })
   }

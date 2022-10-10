@@ -139,7 +139,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Chỉnh sửa chiến dịch',
-      content: EditLiveCampaignPostComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       bodyStyle: {
         padding: '0px',

@@ -345,7 +345,7 @@
                   <div class="grid grid-cols-3 2xl:gap-x-8 xl:gap-x-4 items-center">
                       <span class="col-span-1 w-full font-semibold">Khối lượng ship (g)</span>
                       <tds-form-field class="col-span-2 w-full">
-                        <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                        <tds-input-number [min]='0' [step]="100" [formatter]="numberWithCommas" [parser]="parserComas"
                             formControlName="ShipWeight" placeholder="Nhập khối lượng" (tdsBlur)="changeShipWeight()">
                         </tds-input-number>
                       </tds-form-field>
@@ -641,7 +641,7 @@
                         </div>
 
                         <div class="px-4 border-l">
-                          <button *ngIf="!_form.controls['TrackingRef'].value" tds-button-icon color="info" size="sm"
+                          <button *ngIf="!_form.controls['TrackingRef'].value && this.isEnableCalcFee" tds-button-icon color="info" size="sm"
                             (click)="calcFee()" tds-tooltip tooltipTitle="Tính lại tiền ship" type="button">
                             <span class="flex items-center justify-center">
                               <i class=" tdsi-reload-fill"></i>

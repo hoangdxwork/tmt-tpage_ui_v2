@@ -12,7 +12,7 @@
             </tds-select>
         </div>
     </div>
-    <div *ngIf="!emptyData;else emptyTmp">
+    <div *ngIf="!emptyData; else emptyTmp">
         <tds-spin [spinning]="isLoading">
             <div class="flex flex-row items-center justify-between py-6">
                 <div class="xl:grid xl:grid-cols-3 xl:gap-4 2xl:flex 2xl:flex-row items-center p-4 w-full">

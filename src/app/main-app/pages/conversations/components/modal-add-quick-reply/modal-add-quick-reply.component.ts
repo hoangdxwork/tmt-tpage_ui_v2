@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { CreateQuickReplyDTO } from './../../../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -11,18 +12,20 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-modal-add-quick-reply',
-  templateUrl: './modal-add-quick-reply.component.html'
+  templateUrl: './modal-add-quick-reply.component.html',
+  providers: [TDSDestroyService]
 })
 export class ModalAddQuickReplyComponent implements OnInit {
   _form!: FormGroup;
   modelDefault!: CreateQuickReplyDTO;
-  destroy$ = new Subject();
+  isLoading: boolean = false;
 
   constructor(
     private modal: TDSModalRef,
     private fb: FormBuilder,
     private quickReplyService: QuickReplyService,
     private message: TDSMessageService,
+    private destroy$: TDSDestroyService
   ) {
     this.createForm();
    }
@@ -31,11 +34,11 @@ export class ModalAddQuickReplyComponent implements OnInit {
     this.modelDefault = {
       SubjectHtml: '',
       BodyHtml: '',
-      Active: false,
+      Active: false
     }
   }
 
-  createForm(){
+  createForm() {
     this._form = this.fb.group({
       active: new FormControl(true),
       bodyHtml: new FormControl(''),
@@ -43,17 +46,19 @@ export class ModalAddQuickReplyComponent implements OnInit {
     })
   }
 
-  cancel(){
-    this.modal.destroy(null)
+  cancel() {
+    this.modal.destroy(null);
   }
 
-  onSave(){
+  onSave() {
     if(this._form.controls.subjectHtml.invalid){
-      this.message.warning('Vui lòng nhập tên mẫu')
-      return
+      this.message.warning('Vui lòng nhập tên mẫu');
+      return;
     }
 
     let model = this.prepareModel();
+    this.isLoading = true;
+
     this.quickReplyService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.message.success('Thêm trả lời nhanh thành công');
@@ -69,8 +74,10 @@ export class ModalAddQuickReplyComponent implements OnInit {
 
         this.quickReplyService.lstDataActive = [];
         this.modal.destroy(res);
+        this.isLoading = false;
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(error.error.message || 'Thêm trả lời nhanh thất bại');
       }
     })
@@ -78,15 +85,19 @@ export class ModalAddQuickReplyComponent implements OnInit {
 
   prepareModel(){
     let formModel = this._form.value;
+
     if(formModel.subjectHtml){
       this.modelDefault.SubjectHtml = formModel.subjectHtml;
     }
+
     if(formModel.bodyHtml) {
       this.modelDefault.BodyHtml = formModel.bodyHtml;
     }
+
     if(formModel.active) {
       this.modelDefault.Active = formModel.active;
     }
-    return this.modelDefault
+
+    return this.modelDefault;
   }
 }
