@@ -483,9 +483,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.filterObj.shipPaymentStatus = event.shipPaymentStatus;
-    if(event.liveCampaignId) {
-      this.filterObj.liveCampaignId = event.liveCampaignId;
-    }
+    this.filterObj.liveCampaignId = event.liveCampaignId;
+
 
     if (TDSHelperArray.hasListValue(event.status)) {
       this.tabNavs = this.summaryStatus.filter(f => event.status.includes(f.Name));

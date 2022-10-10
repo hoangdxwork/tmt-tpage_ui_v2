@@ -523,7 +523,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
-      }
+      },
+      liveCampaignId: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
