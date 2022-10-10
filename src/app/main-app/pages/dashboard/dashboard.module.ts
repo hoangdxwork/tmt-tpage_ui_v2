@@ -10,11 +10,8 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TDSEchartsModule } from 'tds-report';
-import { FacebookReportComponent } from './components/facebook-report/facebook-report.component';
 import { LabelReportComponent } from './components/label-report/label-report.component';
-import { RevenueReportComponent } from './components/revenue-report/revenue-report.component';
 import { ChangingRateReportComponent } from './components/changing-rate-report/changing-rate-report.component';
-import { ProductReportComponent } from './components/product-report/product-report.component';
 import { ConnectPageReportComponent } from './components/connect-page-report/connect-page-report.component';
 import { DashboardOverviewComponent } from './components/dashboard-overview/dashboard-overview.component';
 import { DashboardFacebookReportComponent } from './components/dashboard-facebook-report/dashboard-facebook-report.component';
@@ -48,11 +45,8 @@ const SERVICES = [
 @NgModule({
   declarations: [
     DashboardComponent,
-    FacebookReportComponent,
     LabelReportComponent,
-    RevenueReportComponent,
     ChangingRateReportComponent,
-    ProductReportComponent,
     ConnectPageReportComponent,
     DashboardOverviewComponent,
     DashboardFacebookReportComponent,
