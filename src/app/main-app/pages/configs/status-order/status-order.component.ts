@@ -35,7 +35,7 @@ export class StatusOrderComponent implements OnInit {
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
-    this.loadData(this.pageSize, this.pageIndex);
+    // this.loadData(this.pageSize, this.pageIndex);
   }
 
   ngAfterViewInit(): void {
@@ -116,7 +116,9 @@ export class StatusOrderComponent implements OnInit {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      this.loadData(this.pageSize, this.pageIndex);
+      if(result) {
+        this.loadData(this.pageSize, this.pageIndex);
+      }
     });
   }
 
