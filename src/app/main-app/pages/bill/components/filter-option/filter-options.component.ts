@@ -2,12 +2,15 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { TabNavsDTO } from "@app/services/mock-odata/odata-saleonlineorder.service";
 import { addDays } from "date-fns";
-import { Subject, takeUntil } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { FilterObjFastSaleModel } from "src/app/main-app/services/mock-odata/odata-fastsaleorder.service";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { ODataLiveCampaignService } from '@app/services/mock-odata/odata-live-campaign.service';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
 
 @Component({
   selector: 'filter-options',
@@ -69,16 +72,17 @@ export class FilterOptionsComponent implements OnInit {
 
   isActive: boolean = false;
   isVisible: boolean = false;
+  lstCampaign!: LiveCampaignModel[];
+  selectCampaign: TDSSafeAny;
 
-  constructor(private message: TDSMessageService,
-    private fastSaleOrderService: FastSaleOrderService,
-    private cdr: ChangeDetectorRef,
+  constructor(private liveCampaignService: LiveCampaignService,
     private destroy$: TDSDestroyService) {
   }
 
   ngOnInit() {
     // this.loadSummaryStatus();
     this.checkActiveStatus();
+    this.loadLiveCampaign();
   }
 
   onChangeDate(event: any[]) {
@@ -88,6 +92,15 @@ export class FilterOptionsComponent implements OnInit {
         this.datePicker.push(x);
       })
     }
+  }
+
+  loadLiveCampaign(text?: string) {
+    this.liveCampaignService.getAvailables(text).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          this.lstCampaign = [...res.value];
+      },
+    })
   }
 
   onChangeCarrier(event: any): void {
@@ -140,14 +153,6 @@ export class FilterOptionsComponent implements OnInit {
       this.filterObj.status.forEach(x => {
 
       })
-      // this.lstStatus = this.summaryStatus.map((x) => {
-      //   return {
-      //     Name: x.Name,
-      //     Index: x.Index,
-      //     Total: x.Total,
-      //     isSelected: false
-      //   }
-      // })
     }
   }
 
@@ -159,13 +164,26 @@ export class FilterOptionsComponent implements OnInit {
     this.trackingRefs.map(x=> x.IsSelected = false);
   }
 
+  onChangeLiveCampaign(event: any) {
+    this.filterObj.liveCampaignId = event;
+  }
+
+  onSearchLiveCampaign(event: any) {
+    let text = '';
+    if (TDSHelperString.hasValueString(event)) {
+        text = event;
+        text = TDSHelperString.stripSpecialChars(text.toLocaleLowerCase()).trim();
+    }
+    this.loadLiveCampaign(text);
+  }
+
   onApply() {
     this.filterObj.dateRange = {
       startDate: this.datePicker[0],
       endDate: this.datePicker[1]
     }
 
-    this.filterObj.shipPaymentStatus = this.shipPaymentStatus || null;  
+    this.filterObj.shipPaymentStatus = this.shipPaymentStatus || null;
 
     this.isActive = true;
     this.loadSummaryStatus();
@@ -194,6 +212,7 @@ export class FilterOptionsComponent implements OnInit {
     this.datePicker = [addDays(new Date(), -30), new Date()];
     this.selectTags = [];
     this.shipPaymentStatus = null;
+    this.selectCampaign = null;
     this.onRefreshStatus();
     this.onRefreshTrackingRefs();
 
@@ -207,7 +226,8 @@ export class FilterOptionsComponent implements OnInit {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
       },
-      shipPaymentStatus: null
+      shipPaymentStatus: null,
+      liveCampaignId: null
     }
 
     this.isActive = false;

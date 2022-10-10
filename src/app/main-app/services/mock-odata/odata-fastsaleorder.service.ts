@@ -1,5 +1,6 @@
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
+import { Guid } from 'guid-typescript';
 import { Observable } from 'rxjs';
 import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -7,16 +8,17 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utili
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjFastSaleModel  {
-    tags: string[],
-    status: string[],
-    hasTracking: string | null,
-    deliveryType: '',
-    searchText: '',
+    tags: string[];
+    status: string[];
+    hasTracking: string | null;
+    deliveryType: '';
+    searchText: '';
     dateRange: {
       startDate: Date,
       endDate: Date
-    }
+    };
     shipPaymentStatus: string | null;
+    liveCampaignId: string | any,
 }
 
 @Injectable()
@@ -100,6 +102,15 @@ export class OdataFastSaleOrderService extends BaseSevice {
     if(TDSHelperString.hasValueString(filterObj.shipPaymentStatus)) {
         dataFilter.filters.push({ field: "ShipPaymentStatus", operator: OperatorEnum.eq, value: filterObj.shipPaymentStatus })
           dataFilter.logic = "and";
+    }
+
+    if (filterObj && filterObj?.liveCampaignId) {
+      dataFilter.filters.push({
+          filters: [
+            { field: "LiveCampaignId", operator: OperatorEnum.eq, value: Guid.parse(filterObj.liveCampaignId) },
+          ],
+          logic: 'and'
+      })
     }
 
     if (TDSHelperArray.hasListValue(filterObj.status)) {
