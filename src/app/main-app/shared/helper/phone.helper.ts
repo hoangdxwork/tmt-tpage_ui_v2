@@ -37,6 +37,8 @@ export class PhoneHelper {
       }
     }
 
+    phone = phone?.toString().replace(/\./g, '');
+    phone = phone?.toString().replace(/\s/g, '');
     return phone;
   }
 
