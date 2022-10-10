@@ -40,6 +40,7 @@ export class DashboardTagReportComponent implements OnInit {
       next:(res) => {
         this.dataModel = [...res];
         this.isLoading = false;
+        this.emptyData = false;
       }, 
       error:(err) => {
         this.isLoading = false;

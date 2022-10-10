@@ -24,7 +24,7 @@ export class DashboardStaffReportComponent implements OnInit {
   staffsData:TDSSafeAny[] = [];
   emptyData = false;
   totalCountReport = 0;
-
+  
   currentDateRanges!: TDSDateRangeDTO;
   tdsDateRanges: TDSDateRangeDTO[] = [];
 
@@ -56,6 +56,7 @@ export class DashboardStaffReportComponent implements OnInit {
 
             this.loadDataChart(this.lstSummaryActivityByStaff);
             this.isLoading = false;
+            this.emptyData = false;
           }else{
             this.emptyData = true;
             this.isLoading = false;
@@ -72,6 +73,7 @@ export class DashboardStaffReportComponent implements OnInit {
   loadDataChart(data: SummaryActivityByStaffDTO[]){
     this.staffsData = [];
     this.lstSummaryActivityByStaff.forEach(x => this.totalCountReport += x.TotalCount);
+
     this.staffsData = data.map(x => {
       return {
         id: x.StaffId,
@@ -110,7 +112,7 @@ export class DashboardStaffReportComponent implements OnInit {
           label: {
             show: true,
             position: 'center',
-            padding: [50,34],
+            padding: [50, 0],
             backgroundColor: '#F2FCF5',
             borderRadius: 999,
             formatter: function (params: TDSSafeAny) {
@@ -123,8 +125,9 @@ export class DashboardStaffReportComponent implements OnInit {
                 fontSize: 16,
                 lineHeight: 24,
                 fontWeigth: 600,
+                align: 'center',
                 fontFamily: 'Segoe UI',
-                width: 100
+                width: 196
               },
               body: {
                 color: '#929DAA',
@@ -132,7 +135,8 @@ export class DashboardStaffReportComponent implements OnInit {
                 fontSize: 14,
                 lineHeight: 20,
                 fontWeigth: 400,
-                width: 100,
+                width: 196,
+                align: 'center',
                 fontFamily: 'Segoe UI'
               },
               highlight: {
@@ -142,7 +146,8 @@ export class DashboardStaffReportComponent implements OnInit {
                 lineHeight: 53.2 ,
                 fontWeigth: 600,
                 fontFamily: 'Segoe UI',
-                align: 'center'
+                align: 'center',
+                width: 196
               }
             }
           },

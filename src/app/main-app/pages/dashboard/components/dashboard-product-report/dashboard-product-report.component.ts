@@ -1,12 +1,11 @@
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent } from 'tds-report';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-product-report',
-  templateUrl: './dashboard-product-report.component.html',
-  styleUrls: ['./dashboard-product-report.component.scss']
+  templateUrl: './dashboard-product-report.component.html'
 })
 export class DashboardProductReportComponent implements OnInit {
   //#region variable
