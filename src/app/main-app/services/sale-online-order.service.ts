@@ -199,7 +199,7 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   getStatusExtra(params: string) {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/StatusExtra?${params}&$orderby=Default%20desc&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/StatusExtra?${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
