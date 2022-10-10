@@ -161,6 +161,8 @@ export class FilterOptionsComponent implements OnInit {
   onCancel() {
     this.datePicker = [addDays(new Date(), -30), new Date()];
     this.selectTags = [];
+    this.selectTeams = null;
+    this.selectCampaign = null;
 
     this.filterObj = {
       tags: [],
@@ -171,7 +173,7 @@ export class FilterOptionsComponent implements OnInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-    }
+    };
 
     this.isActive = false;
     this.checkActiveStatus();
