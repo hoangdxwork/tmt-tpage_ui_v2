@@ -69,7 +69,7 @@ export class THelperDataRequest {
             result += `${this._filter}=(${this.convertFilterToString(filter!)})`;
         }
 
-        if (TDSHelperObject.hasValue(sorting)) {
+        if (TDSHelperArray.hasListValue(sorting)) {
             if (result.length > 0) {
                 result += '&'
             }
@@ -89,12 +89,14 @@ export class THelperDataRequest {
             }
             return `(${this.convertFilterToString(f as FilterDataRequestDTO)})`;
         }).join(`%20${filter.logic}%20`)
+
         return str;
     }
 
     private static p_convertFilterItemToString(filter: FilterItemDataRequestDTO) {
         let str = '';
         let value = filter.value;
+
         if (typeof value === 'string') {
             value = encodeURIComponent(value);
             if(filter.operator === OperatorEnum.contains) {
@@ -102,10 +104,9 @@ export class THelperDataRequest {
             } else {
                 str = `${filter.field}%20${filter.operator}%20'${value}'`
             }
-        }
-        else if(value instanceof Date) {
-          let date =format(value, "yyyy-MM-dd'T'HH:mm:ss'%2B'00:00");
-          str=`${filter.field}%20${filter.operator}%20${date}`
+        } else if(value instanceof Date) {
+            let date = format(value, "yyyy-MM-dd'T'HH:mm:ss'%2B'00:00");
+            str=`${filter.field}%20${filter.operator}%20${date}`
         }
         else {
             //field~gte~10
@@ -115,11 +116,18 @@ export class THelperDataRequest {
     }
 
     static convertSortToString(sorts: Array<SortDataRequestDTO>) {
-        return sorts.map(
-            s => {
-                return `${s.field} ${s.dir}`
-            }
-        ).join('%20')
+        let subSort: string = '';
+        if(sorts && sorts.length > 0) {
+            subSort = sorts.map((s: SortDataRequestDTO) => {
+                if(sorts[sorts.length - 1].field == s.field) {//check phần tử cuối
+                    return `${s.field} ${s.dir}`;
+                } else {
+                    return `${s.field} ${s.dir}%2C`;
+                }
+            }).join('%20');
+        }
+
+        return subSort;
     }
 
 }

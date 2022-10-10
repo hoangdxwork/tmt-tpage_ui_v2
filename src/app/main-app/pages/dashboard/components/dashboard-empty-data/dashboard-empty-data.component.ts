@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-empty-data',
-  templateUrl: './dashboard-empty-data.component.html',
-  styleUrls: ['./dashboard-empty-data.component.scss']
+  templateUrl: './dashboard-empty-data.component.html'
 })
 export class DashboardEmptyDataComponent implements OnInit {
 

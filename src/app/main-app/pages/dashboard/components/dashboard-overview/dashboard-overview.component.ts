@@ -41,6 +41,7 @@ export class DashboardOverviewComponent implements OnInit {
       next: (res) => {
         this.data = { ...res };
         this.isLoading = false;
+        this.emptyData = false;
       },
       error: (err) => {
         this.isLoading = false;
@@ -63,16 +64,28 @@ export class DashboardOverviewComponent implements OnInit {
    
     switch(type) {
       case 'Conversation':
+        if(data?.Previous?.Conversation && data?.Current?.Conversation) {
             percent = data.Previous.Conversation != 0 ? ((data.Current.Conversation - data.Previous.Conversation)/ data.Previous.Conversation) * 100 : data.Current.Conversation*100;
+        }
+
         break;
       case 'Partner':
+        if(data?.Previous?.Partner && data?.Current?.Partner) {
             percent = data.Previous.Partner != 0 ? ((data.Current.Partner - data.Previous.Partner)/ data.Previous.Partner) * 100 : data.Current.Partner*100;
+        }
+
         break;
       case 'FastSaleOrder':
+        if(data?.Previous?.FastSaleOrder && data?.Current?.FastSaleOrder) {
             percent = data.Previous.FastSaleOrder != 0 ? ((data.Current.FastSaleOrder - data.Previous.FastSaleOrder)/ data.Previous.FastSaleOrder) * 100 : data.Current.FastSaleOrder*100;
+        }
+            
         break;
       case 'SaleOnlineOrder':
+        if(data?.Previous?.SaleOnlineOrder && data?.Current?.SaleOnlineOrder) {
             percent = data.Previous.SaleOnlineOrder != 0 ? ((data.Current.SaleOnlineOrder - data.Previous.SaleOnlineOrder)/ data.Previous.SaleOnlineOrder) * 100 : data.Current.SaleOnlineOrder*100;
+        }
+        
         break;
     }
 
