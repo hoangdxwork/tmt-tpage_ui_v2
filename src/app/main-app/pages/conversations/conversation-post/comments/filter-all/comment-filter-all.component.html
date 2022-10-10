@@ -65,7 +65,8 @@
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">
-                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item, commentOrders[item.Data?.from!.id])">Tạo đơn hàng</button>
+                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm"
+                                  (click)="onInsertFromPost(item, commentOrders[item.Data?.from?.id])">Tạo đơn hàng</button>
 
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                   tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
@@ -253,7 +254,7 @@
                             </div>
                         </div>
                     </div>
-                   
+
                   </div>
               </div>
           </div>
