@@ -62,7 +62,8 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    liveCampaignId: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
@@ -197,7 +198,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
 
                 tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
             });
-           
+
             tabs.sort((a, b) => a.Index - b.Index);
 
             this.tabNavs = [...tabs];
@@ -218,7 +219,8 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate,
-      } : null
+      } : null,
+      liveCampaignId: null,
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -231,7 +233,8 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
       tags: [],
       status: [],
       searchText: '',
-      dateRange: {} as any
+      dateRange: {} as any,
+      liveCampaignId: null,
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -398,11 +401,11 @@ export class DetailOrderLiveCampaignComponent implements OnInit, AfterViewInit {
           if (res) {
             let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
             this.currentConversation = { ...model };
-  
+
             this.psid = res.psid;
             this.isOpenDrawer = true;
           }
-        }, 
+        },
         error:(error) => {
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
         }

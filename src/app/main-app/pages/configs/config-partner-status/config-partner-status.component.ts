@@ -20,7 +20,7 @@ export class ConfigPartnerStatusComponent implements OnInit {
 
   lstData!: PartnerStatusDTO[];
 
-  pageSize = 10;
+  pageSize = 20;
   pageIndex = 1;
   isLoading = false;
   count: number = 1;

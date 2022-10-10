@@ -19,7 +19,7 @@ export class StatusOrderComponent implements OnInit {
   @ViewChild('filterText') filterText!: ElementRef;
   private destroy$ = new Subject<void>();
 
-  pageSize = 10;
+  pageSize = 20;
   pageIndex = 1;
   isLoading = false;
   count: number = 1;
