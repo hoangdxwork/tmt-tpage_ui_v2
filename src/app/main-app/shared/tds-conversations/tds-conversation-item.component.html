@@ -125,7 +125,7 @@
 
       <!-- Đang gửi -->
       <span *ngIf="dataItem.Status == 0" class="chat-by mr-2">
-          <span class="tdsi-send-fill"></span> Đang gửi...
+          <span class="tdsi-send-fill"></span> Đang gửi... <span *ngIf="dataItem.CreatedBy"> bởi <span class="text-info-500">{{dataItem.CreatedBy?.Name}}</span></span>
       </span>
 
       <!-- Người gửi -->
