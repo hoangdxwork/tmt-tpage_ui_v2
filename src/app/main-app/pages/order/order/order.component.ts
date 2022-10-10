@@ -559,13 +559,9 @@ export class OrderComponent implements OnInit, AfterViewInit {
       this.tabNavs = this.lstOftabNavs;
     }
 
-    if(TDSHelperString.hasValueString(event.liveCampaignId)) {
-      this.filterObj.liveCampaignId = event.liveCampaignId;
-    }
+    this.filterObj.liveCampaignId = event.liveCampaignId ? event.liveCampaignId : null;
 
-    if(TDSHelperString.hasValueString(event.teamId)) {
-      this.filterObj.teamId = event.teamId
-    }
+    this.filterObj.teamId = event.teamId ? event.teamId : null;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);

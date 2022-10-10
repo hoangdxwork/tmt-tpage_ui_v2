@@ -22,12 +22,12 @@
         </button>
       </div>
     </div>
-    <div class="flex flex-auto pb-2.5">
+    <div class="flex flex-auto pb-2.5 text-body-2">
       <tds-table #basicTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
         [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto'}"
         (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>
-          <tr class="text-neutral-1-900 text-body-2 font-semibold">
+          <tr class="text-neutral-1-900 font-semibold">
             <th [width]="'80px'" class="text-center">STT</th>
             <th>Style CSS</th>
             <th>Tên</th>
@@ -37,7 +37,7 @@
         </thead>
         <tbody>
           <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
-            <tr class="text-neutral-1-900 text-body-2 font-regular">
+            <tr class="text-neutral-1-900 font-regular">
               <td class="text-center">{{ 1 + i + (pageIndex - 1) * pageSize }}</td>
               <td>
                 <!-- <tds-tag [ngStyle]="{'border-color': data.StyleCSS, 'color': data.StyleCSS}" type="outline">{{ data.Name }}</tds-tag> -->
