@@ -44,7 +44,7 @@ export class THelperDataRequest {
         return result;
     }
 
-    public static convertDataRequestToString(pageSize: number, pageIndex: number, filter?: FilterDataRequestDTO, sorting?: Array<SortDataRequestDTO>): string {debugger
+    public static convertDataRequestToString(pageSize: number, pageIndex: number, filter?: FilterDataRequestDTO, sorting?: Array<SortDataRequestDTO>): string {
 
         let result = '';
         let maxResultCount: number = pageSize;
@@ -117,17 +117,14 @@ export class THelperDataRequest {
 
     static convertSortToString(sorts: Array<SortDataRequestDTO>) {
         let subSort: string = '';
-        if(sorts && sorts.length == 1) {
-            subSort = `${sorts[0].field} ${sorts[0].dir}`;
-        }
-        if(sorts && sorts.length > 1) {
-          subSort = sorts.map((s: SortDataRequestDTO) => {
-            if(sorts[sorts.length - 1].field == s.field) {//check phần tử cuối
-              return `${s.field} ${s.dir}`;
-            } else {
-              return `${s.field} ${s.dir}%2C`;
-            }
-          }).join('%20');
+        if(sorts && sorts.length > 0) {
+            subSort = sorts.map((s: SortDataRequestDTO) => {
+                if(sorts[sorts.length - 1].field == s.field) {//check phần tử cuối
+                    return `${s.field} ${s.dir}`;
+                } else {
+                    return `${s.field} ${s.dir}%2C`;
+                }
+            }).join('%20');
         }
 
         return subSort;
