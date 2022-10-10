@@ -16,7 +16,9 @@ import { CreateOrderStatusComponent } from '../components/create-order-status/cr
   templateUrl: './status-order.component.html',
 })
 export class StatusOrderComponent implements OnInit {
+
   @ViewChild('filterText') filterText!: ElementRef;
+
   private destroy$ = new Subject<void>();
 
   pageSize = 10;
@@ -27,6 +29,17 @@ export class StatusOrderComponent implements OnInit {
   public filterObj: any = {
     searchText: ''
   }
+
+  sort: Array<SortDataRequestDTO> = [
+    {
+      field: "Default",
+      dir: SortEnum.desc,
+    },
+    {
+      field: "Id",
+      dir: SortEnum.desc,
+    }
+  ];
 
   constructor(
     private modalService: TDSModalService,
@@ -53,7 +66,7 @@ export class StatusOrderComponent implements OnInit {
           filters = this.saleOnlineOrderService.buildFilter(this.filterObj);
         }
 
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
         return this.getViewData(params);
       })
     ).subscribe((res: OdataOrderStatusDTO) => {
@@ -62,12 +75,12 @@ export class StatusOrderComponent implements OnInit {
     });
   }
 
-  loadData(pageSize: number, pageIndex: number, filters?: FilterDataRequestDTO, sort?: SortDataRequestDTO[]) {
+  loadData(pageSize: number, pageIndex: number, filters?: FilterDataRequestDTO) {
     if (TDSHelperString.hasValueString(this.filterObj.searchText)) {
       filters = this.saleOnlineOrderService.buildFilter(this.filterObj);
     }
 
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, sort);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.getViewData(params).subscribe((res: OdataOrderStatusDTO) => {
       this.count = res['@odata.count'] as number;
