@@ -287,9 +287,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
           if (this.noteData.items[index]?.id === id) {
               this.noteData.items.splice(index, 1);
+              this.message.success('Xóa ghi chú thành công');
           }
 
-          this.message.success('Xóa ghi chú thành công');
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
