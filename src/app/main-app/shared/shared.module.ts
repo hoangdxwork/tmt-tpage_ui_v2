@@ -64,6 +64,7 @@ import { DirectivesModule } from './directives/directives.module';
 import { SuggestAddressV2Component } from './suggest-address-v2/suggest-address-v2.component';
 import { TDSAlertModule } from 'tds-ui/alert';
 import { EditLiveCampaignPostComponent } from './edit-livecampaign-post/edit-livecampaign-post.component';
+import { AddLivecampaignPostV2Component } from './add-livecampaign-postv2/add-livecampaign-postv2.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -90,7 +91,8 @@ const cmp =[
   NotificationEventSocketComponent,
   ShowAttachmentComponent,
   DrawerDetailBillComponent,
-  EditLiveCampaignPostComponent
+  EditLiveCampaignPostComponent,
+  AddLivecampaignPostV2Component
 ]
 
 const SERVICES = [
