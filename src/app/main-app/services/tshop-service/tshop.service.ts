@@ -35,7 +35,7 @@ export class TShopService  {
   }
 
   getAuthentication(fragment: string) {
-    let hostname = this.document.location.origin;
+    let hostname = location.href.replace("/" + location.hash, "");;
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
   }
 
