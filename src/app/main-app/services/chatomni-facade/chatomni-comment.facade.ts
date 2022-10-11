@@ -22,7 +22,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
   baseRestApi: string = "rest/v2.0/chatomni";
 
   private readonly partner$ = new ReplaySubject<any>();
-  private readonly _keyCachePartnerDict = "_partnersByTimestamp";
+  private readonly _keyCachePartnerDict = "_partnerByTimestamps";
 
   dataSource: { [id: string] : ChatomniDataDto } = {}; //this.postDataSource[id]
   partnerDict: {[teamId: number] : PartnerTimeStampDto} = {};
@@ -32,7 +32,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
     private message: TDSMessageService,
     private crmTeamService: CRMTeamService,
     private partnerService: PartnerService) {
-    super(apiService)
+    super(apiService);
   }
 
   setData(id: string, value: ChatomniDataDto | null) {
