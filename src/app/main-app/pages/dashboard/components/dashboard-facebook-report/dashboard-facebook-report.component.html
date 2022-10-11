@@ -49,7 +49,7 @@
                                 {{(data?.Current?.Messages?.MessageTotal || 0)|numberCustom}}
                             </span>
                             <tds-tag [status]="onCalcPercent(data, 'Messages') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
-                                type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Messages?.CommentTotal }}">
+                                type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Messages?.MessageTotal }}">
                                 {{ onCalcPercent(data, 'Messages') >= 0 ? onCalcPercent(data, 'Messages').toFixed(0) : (-1 * onCalcPercent(data, 'Messages')).toFixed(0) }}%
                                 <span [class]="onCalcPercent(data, 'Messages') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
                             </tds-tag>
