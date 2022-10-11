@@ -296,16 +296,22 @@
                     <!-- Tổng số lượng và tổng tiền -->
                     <div class="w-ful h-full p-3 pb-4" *ngIf="isEnableCreateOrder && saleModel">
                         <div class="bg-neutral-2-50 rounded-xl grid 2xl:grid-cols-6 xl:grid-cols-3 gap-y-4 gap-x-3 p-4 items-center">
+
                             <label>Tổng</label>
                             <span class="col-span-2 text-right">{{ quickOrderModel.TotalAmount || 0 | numberCustom }}</span>
+
                             <label class="font-semibold">Tổng tiền</label>
                             <span class="text-header-1 font-semibold col-span-2 text-right">{{ saleModel.AmountTotal | numberCustom }}</span>
-                            <label>Giảm giá</label>
-                            <div class="bg-white col-span-2 inline-flex rounded border border-neutral-2-200 pl-3">
+
+                            <label *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal">Giảm giá</label>
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" class="bg-white col-span-2 inline-flex rounded border border-neutral-2-200 pl-3">
                                 <span class="flex flex-auto items-center h-8">{{saleModel.DecreaseAmount + saleModel.DiscountAmount || 0 | numberCustom}}</span>
-                                <span class="flex items-center justify-center h-8 w-8" tds-popover popoverTrigger="click" [popoverContent]="tmpDiscount" [popoverAutoClose]="true" [popoverBackdrop]="true">
+
+                                <span class="flex items-center justify-center h-8 w-8"
+                                    tds-popover popoverTrigger="click" [popoverContent]="tmpDiscount" [popoverAutoClose]="true" [popoverBackdrop]="true">
                                     <i class="tdsi-discount-fill text-primary-1 hover:opacity-70 text-xl cursor-pointer"></i>
                                 </span>
+
                                 <ng-template #tmpDiscount>
                                     <div class="flex flex-col gap-y-2">
                                         <div class="flex items-center">
@@ -338,19 +344,23 @@
                                     </div>
                                 </ng-template>
                             </div>
+
                             <label>Tiền cọc</label>
                             <tds-form-field class="col-span-2">
                                 <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas"
                                     (ngModelChange)="changeAmountDeposit($event)" [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                             </tds-form-field>
-                            <label>Thuế</label>
-                            <div class="bg-white col-span-2 inline-flex rounded border border-neutral-2-200 pl-3">
+
+                            <label *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax">Thuế</label>
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax" class="bg-white col-span-2 inline-flex rounded border border-neutral-2-200 pl-3">
                                 <span class="flex flex-auto items-center h-8">{{ saleModel.Tax?.Amount || 0 | numberCustom }}</span>
-                                <span class="flex items-center justify-center h-8 w-8">
+
+                                <span  class="flex items-center justify-center h-8 w-8">
                                     <i class="tdsi-revenue-fill text-primary-1 hover:opacity-70 text-xl cursor-pointer" (click)="showModalTax()"></i>
                                 </span>
                             </div>
+
                             <label>Thanh toán</label>
                             <tds-form-field class="col-span-2">
                                 <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [required]='true' [formatter]="numberWithCommas" [parser]="parserComas"

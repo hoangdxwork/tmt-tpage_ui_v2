@@ -54,7 +54,7 @@
                     </span>
                   </div>
                   <tds-dropdown-menu #menu="tdsDropdownMenu">
-                    <div class="w-full">
+                    <div class="w-full max-h-[300px] overflow-y-auto tds-panel-scroll">
                       <div tds-dropdown-item *ngFor="let status of lstPartnerStatus" (click)="selectStatus(status)">
                         <a [ngStyle]="{'color': status.value }"> {{ status.text }} </a>
                       </div>

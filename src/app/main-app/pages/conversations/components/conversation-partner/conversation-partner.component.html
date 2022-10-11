@@ -39,7 +39,7 @@
                           </div>
 
                           <tds-dropdown-menu #menu="tdsDropdownMenu">
-                              <div class="w-full">
+                              <div class="w-full max-h-[300px] overflow-y-auto tds-panel-scroll">
                                   <div tds-dropdown-item *ngFor="let x of lstPartnerStatus" (click)="selectStatus(x)">
                                       <a [ngStyle]="{'color': x.value }"> {{ x.text }} </a>
                                   </div>

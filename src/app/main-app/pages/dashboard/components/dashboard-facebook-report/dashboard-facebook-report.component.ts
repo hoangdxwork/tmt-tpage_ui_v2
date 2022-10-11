@@ -58,6 +58,7 @@ export class DashboardFacebookReportComponent implements OnInit {
       next:(res:SummaryDailyDTO) => {
         if(res && res?.Current){
           this.data = {...res};
+          console.log(this.data)
           this.handlerAxisData(res);
           this.handlerSeriesData(res);
           this.loadDataChart();
@@ -233,9 +234,6 @@ export class DashboardFacebookReportComponent implements OnInit {
           ],
           yAxis: [
             {
-              splitLine:{
-                
-              },
               axisLabel: {
                 margin: 12,
                 color: '#6B7280',
@@ -303,7 +301,7 @@ export class DashboardFacebookReportComponent implements OnInit {
    
     switch(type) {
       case 'Conversations':
-            if(data?.Previous?.Conversations?.Total && data?.Current?.Conversations?.Total) {
+            if(data?.Previous?.Conversations && data?.Current?.Conversations) {
               percent = data.Previous.Conversations.Total != 0 ? ((data.Current.Conversations.Total - data.Previous.Conversations.Total)/ data.Previous.Conversations.Total) * 100 : data.Current.Conversations.Total*100;
             } else {
               percent = 0;
@@ -311,7 +309,7 @@ export class DashboardFacebookReportComponent implements OnInit {
             
         break;
       case 'Messages':
-        if(data?.Previous?.Messages?.MessageTotal && data?.Current?.Messages?.MessageTotal) {
+        if(data?.Previous?.Messages && data?.Current?.Messages) {
           percent = data.Previous.Messages.MessageTotal != 0 ? ((data.Current.Messages.MessageTotal - data.Previous.Messages.MessageTotal)/ data.Previous.Messages.MessageTotal) * 100 : data.Current.Messages.MessageTotal*100;
         } else {
           percent = 0;
@@ -319,7 +317,7 @@ export class DashboardFacebookReportComponent implements OnInit {
             
         break;
       case 'Comments':
-        if(data?.Previous?.Messages?.CommentTotal && data?.Current?.Messages?.CommentTotal) {
+        if(data?.Previous?.Messages && data?.Current?.Messages) {
           percent = data.Previous.Messages.CommentTotal != 0 ? ((data.Current.Messages.CommentTotal - data.Previous.Messages.CommentTotal)/ data.Previous.Messages.CommentTotal) * 100 : data.Current.Messages.CommentTotal*100;
         } else {
           percent = 0;

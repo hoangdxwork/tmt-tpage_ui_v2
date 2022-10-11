@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { SaleSettingConfigDto_V2 } from "@app/dto/setting/sale-setting-config.dto";
 import { FastSaleOrder_DefaultDTOV2 } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { InitSaleDTO } from "src/app/main-app/dto/setting/setting-sale-online.dto";
@@ -37,7 +38,7 @@ export class SO_ComputeCaclHandler {
     };
   }
 
-  public so_calcTotal(saleModel: FastSaleOrder_DefaultDTOV2 | null, quickOrderModel: QuickSaleOnlineOrderModel, saleConfig: InitSaleDTO) {
+  public so_calcTotal(saleModel: FastSaleOrder_DefaultDTOV2 | null, quickOrderModel: QuickSaleOnlineOrderModel, saleConfig: SaleSettingConfigDto_V2) {
     let totalAmount = 0;
     let totalQuantity = 0;
 

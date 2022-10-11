@@ -18,7 +18,7 @@ export interface FilterObjSOOrderModel {
     endDate: Date
   } | any,
   liveCampaignId: string | any,
-  teamId?: string,
+  teamId?: string | any,
 }
 
 export interface TabNavsDTO {

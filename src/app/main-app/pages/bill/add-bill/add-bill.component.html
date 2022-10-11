@@ -806,7 +806,9 @@
                               </div>
 
                               <div><span>Tổng tiền</span></div>
-                              <div class="col-span-2"><span>{{ _form.controls["AmountTotal"].value | numberCustom }}đ</span></div>
+                              <div class="col-span-2"><span>
+                                {{ _form.controls["AmountTotal"].value | numberCustom }}đ</span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -976,20 +978,24 @@
                             <div><span class="font-regular">Tổng tạm tính</span></div>
                             <div class="col-span-2"><span>{{totalAmountLines | numberCustom  }} đ</span></div>
 
-                            <button *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                            <!-- Giảm giá -->
+                            <button *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal"
+                              tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                               (click)="openPopoverDiscount()" [(popoverVisible)]="visiblePopoverDiscount"
                               [popoverContent]="popoverContentDiscount" [popoverFooter]="popoverFooterDiscount"
                               [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
-                              <span class="flex items-center justify-center">
-                                <i class="tdsi-revenue-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>
-                                Giảm giá
-                              </span>
+                                <span class="flex items-center justify-center">
+                                  <i class="tdsi-revenue-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>
+                                  Giảm giá
+                                </span>
                             </button>
                             <div *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" class="col-span-2 flex items-center">
                               <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value || 0) | numberCustom }} đ</span>
                             </div>
 
-                            <button tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                            <!-- Thuế -->
+                            <button *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax"
+                              tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                               (click)="openPopoverTax()" [(popoverVisible)]="visiblePopoverTax"
                               [popoverContent]="popoverContentTax" [popoverFooter]="popoverFooterTax"
                               [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
@@ -999,13 +1005,15 @@
                               </span>
                             </button>
 
-                            <div class="col-span-2 flex items-center justify-end">
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax" class="col-span-2 flex items-center justify-end">
                               <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }} đ</span> -
                               <span>{{ _form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0 }}%</span>
                             </div>
 
-                            <div><span>Tổng tiền</span></div>
-                            <div class="col-span-2"><span>{{ _form.controls["AmountTotal"].value | numberCustom }} đ</span></div>
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax || saleConfig?.SaleSetting?.GroupDiscountTotal"><span>Tổng tiền</span></div>
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax || saleConfig?.SaleSetting?.GroupDiscountTotal" class="col-span-2">
+                              <span> {{ _form.controls["AmountTotal"].value | numberCustom }} đ</span>
+                            </div>
                           </div>
                         </div>
                       </div>

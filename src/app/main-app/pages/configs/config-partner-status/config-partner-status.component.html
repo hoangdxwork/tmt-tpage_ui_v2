@@ -22,7 +22,7 @@
         </button>
       </div>
     </div>
-    <div class="w-full h-full pb-2.5">
+    <div class="w-full h-full pb-2.5 text-body-2">
       <tds-table #partnerStatusTable [listData]="lstData" [showSizeChanger]="true" [frontPagination]="false" [loading]="isLoading" [scroll]="{y:'auto'}"
                 [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>

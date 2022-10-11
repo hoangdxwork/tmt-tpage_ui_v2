@@ -55,7 +55,7 @@
                 <tds-select
                     valueField="Id" textField="Name"
                     placeholder='Chọn chiến dịch' [(ngModel)]="selectCampaign"
-                    (ngModelChange)="onChangeLiveCampaign($event)"
+                    (selectChange)="onChangeLiveCampaign($event)"
                     (onSearch)="onSearchLiveCampaign($event)"
                     [data]="lstCampaign" [allowClear]="true">
                 </tds-select>

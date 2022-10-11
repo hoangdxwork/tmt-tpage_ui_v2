@@ -249,4 +249,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  orderPartnerbyLivecampaign(liveCampaignId: string): Observable<any> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/orderpartnerbylivecampaign?liveCampaignId=${liveCampaignId}`,
+        method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
 }

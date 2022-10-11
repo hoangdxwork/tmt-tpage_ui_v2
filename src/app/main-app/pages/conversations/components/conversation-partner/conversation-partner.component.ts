@@ -289,9 +289,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     this.conversationService.getNotes(page_id, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          if(res) {
-              this.noteData.items = [...this.noteData.items, ...res.Items];
-          }
+          this.noteData.items = [...this.noteData.items, ...res?.Items];
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load ghi chú khách hàng đã xảy ra lỗi');
@@ -300,13 +298,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   removeNote(id: any, index: number) {
+    if(!id)  return;
+
     this.conversationService.deleteNote(id).pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
-          if (this.noteData.items[index].id === id) {
+          if (this.noteData.items[index]?.id === id) {
               this.noteData.items.splice(index, 1);
+              this.message.success('Xóa ghi chú thành công');
           }
-          this.message.success('Xóa ghi chú thành công');
+
           this.cdRef.detectChanges();
       },
       error: (error: any) => {

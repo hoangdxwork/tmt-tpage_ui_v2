@@ -228,7 +228,7 @@ export class FilterOptionsComponent implements OnInit {
       },
       shipPaymentStatus: null,
       liveCampaignId: null
-    }
+    };
 
     this.isActive = false;
     this.checkActiveStatus();

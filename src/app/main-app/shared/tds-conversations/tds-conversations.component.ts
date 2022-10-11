@@ -990,7 +990,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     const formData = new FormData();
     formData.append('files', item.file as any, item.file.name);
     formData.append('id', '0000000000000051');
-
+    
     return this.sharedService.saveImageV2(formData)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
@@ -1039,7 +1039,39 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.messageModel = text;
   }
 
-  @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {
+  onPaste(e: any) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(this.isLoadingImage){
+      return;
+    }
+
+    const file = e.clipboardData?.files[0] as File;
+    
+    if(file.type.indexOf('image') === 0) {
+      this.isLoadingImage = true;
+      let fileName= file.name.replace('image', file.lastModified.toString());
+
+      const formData = new FormData();
+      formData.append('files', file, fileName);
+      formData.append('id', '0000000000000051');
+
+      this.sharedService.saveImageV2(formData).subscribe((res: any) => {
+        if(res && res[0]) {
+          this.uploadedImages = [...this.uploadedImages,...[res[0]?.urlImageProxy]];
+          this.isLoadingImage = false;
+          this.cdRef.detectChanges();
+        } else {
+          this.isLoadingImage = false;
+          this.message.error('Lỗi tải ảnh');
+          this.cdRef.detectChanges();
+        }
+      });
+    }
+  }
+
+  @HostListener('window:dragover', ['$event']) 
+  onDragOver(evt: TDSSafeAny) {
     this.displayDropZone = true;
     evt.preventDefault();
     evt.stopImmediatePropagation();
