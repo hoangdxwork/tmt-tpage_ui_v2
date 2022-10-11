@@ -42,6 +42,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
 
 @Component({
   selector: 'comment-filter-all',
@@ -103,6 +104,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     private facebookCommentService: FacebookCommentService,
     private chatomniCommentService: ChatomniCommentService,
     private chatomniCommentFacade: ChatomniCommentFacade,
+    private liveCampaignService: LiveCampaignService,
     public crmService: CRMTeamService,
     private postEvent: ConversationPostEvent,
     private notification: TDSNotificationService,
@@ -121,19 +123,32 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       this.loadData();
       this.loadPartnersByTimestamp();
       this.loadTags();
-      this.loadCommentsOrderByPost()
+      this.loadCommentsOrderByPost();
+      // this.loadOrderPartnerbylLivecampaign();
     }
 
     this.onEventSocket();
     this.eventEmitter();
   }
 
+  loadOrderPartnerbylLivecampaign() {
+    if(this.data && this.data.LiveCampaignId) {
+      let id = this.data.LiveCampaignId as string;
+      this.liveCampaignService.orderPartnerbyLivecampaign(id).pipe(takeUntil(this.destroy$))
+        .subscribe({
+            next: (response: any) => {
+
+            }
+        })
+    }
+  }
+
   loadPartnersByTimestamp() {
     this.partnerDict = {};
-    this.chatomniCommentFacade.getPartnerTimeStamp(this.team.Id);
-    this.chatomniCommentFacade.partnerDict().pipe(takeUntil(this.destroy$)).subscribe({
+    this.chatomniCommentFacade.loadPartnerTimestampByCache();
+    this.chatomniCommentFacade.partnerTimeStamp().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.partnerDict = res;
+          this.partnerDict = res.Data;
           this.cdRef.markForCheck();
       }
     })
@@ -228,6 +243,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
         this.loadData();
         this.loadPartnersByTimestamp();
         this.loadCommentsOrderByPost();
+        // this.loadOrderPartnerbylLivecampaign();
     }
 
     if (changes["innerText"] && !changes["innerText"].firstChange && TDSHelperString.isString(changes["innerText"].currentValue)) {
@@ -236,7 +252,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
             Keywords: text
         }
         this.loadData();
-    } 
+    }
   }
 
   loadData() {
@@ -794,7 +810,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   }
 
   vsStart(event: NgxVirtualScrollerDto) {
-    if(event && Number(event.startIndex) >= 0) { 
+    if(event && Number(event.startIndex) >= 0) {
         // TODO: mapping dữ liệu socket ko có trong danh sách
         let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
             && this.vsSocketImports && this.vsSocketImports.length > 0;

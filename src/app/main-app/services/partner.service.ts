@@ -233,10 +233,16 @@ export class PartnerService extends BaseSevice {
   }
 
   getPartnersByTimestamp(teamId: any, timestamp: any): Observable<PartnerTimeStampDto> {
+    let url = `${this._BASE_URL}/${this.baseRestApi}/getfacebookdictionarybytimestamp?teamId=${teamId}`;
+    if(timestamp) {
+        url += `&timestamp=${timestamp}`;
+    }
+
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/getfacebookdictionarybytimestamp?teamId=${teamId}&timestamp=${timestamp}`,
+        url: url,
         method: CoreApiMethodType.get,
     }
+
     return this.apiService.getData<PartnerTimeStampDto>(api, null);
   }
 
