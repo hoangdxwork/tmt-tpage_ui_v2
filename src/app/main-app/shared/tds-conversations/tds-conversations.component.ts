@@ -1040,6 +1040,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onPaste(e: any) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
     if(this.isLoadingImage){
       return;
     }
@@ -1066,9 +1068,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
       });
     }
-    
-    e.preventDefault();
-    e.stopImmediatePropagation();
   }
 
   @HostListener('window:dragover', ['$event']) 
