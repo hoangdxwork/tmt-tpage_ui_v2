@@ -14,65 +14,85 @@
           </button>
       </div>
 
-      <tds-tag *ngIf="currentLiveCampaign" status="bg-base-orange-50 text-base-orange-500">
-        <span class="flex items-center py-0.5 cursor-pointer max-w-[450px]">
-            <span class="text-body-2 font-regular flex-auto truncate mr-2">{{ currentLiveCampaign.Name }}</span>
-            <span class="text-neutral-1-400 font-regular text-sm w-fit">{{ currentLiveCampaign.DateCreated | date : "dd/MM/yyyy HH:mm" }}</span>
-        </span>
+      <tds-tag *ngIf="currentLiveCampaign" status="bg-base-orange-50 text-base-orange-500 inline-flex"
+          style="border: 1px solid #f3deba; width: fit-content; border-radius: 5px;">
+          <span class="flex items-center py-0.5 cursor-pointer max-w-[450px]" >
+              <span class="text-body-2 font-regular flex-auto truncate mr-2">{{ currentLiveCampaign.Name }}</span>
+              <span class="text-neutral-1-400 font-regular text-sm w-fit">{{currentLiveCampaign.DateCreated | date : "dd/MM/yyyy HH:mm"}}</span>
+          </span>
       </tds-tag>
 
       <div *ngIf="currentLiveCampaign?.Id" class="flex gap-x-3">
           <button tds-button color="info" size="md" class="flex items-center"
               (click)="showModelOverViewLiveCampaign(currentLiveCampaign?.Id, currentLiveCampaign?.Name)">
               <span class="flex items-center gap-x-2">
-                <i class="tdsi-eye-open-fill text-lg"></i> <span>Tổng quan chiến dịch</span>
+                 <span class="tdsi-eye-open-fill text-lg"></span>
+                 <span>Tổng quan chiến dịch</span>
               </span>
           </button>
 
           <button tds-button-icon color="primary" (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)" tds-tooltip tooltipTitle="Chỉnh sửa chiến dịch">
-            <i class="tdsi-edit-fill"></i>
+              <span class="tdsi-edit-fill"></span>
           </button>
 
           <button tds-button-icon color="error" (click)="removeLiveCampaign()" tds-tooltip tooltipTitle="Bỏ chọn chiến dịch">
-            <i class="tdsi-close-fill"></i>
+              <span class="tdsi-close-fill"></span>
           </button>
 
-          <!-- <button tds-button-icon color="primary" size="md" class="flex items-center"
-              tds-tooltip tooltipTitle="Chỉnh sửa chiến dịch" (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)">
-              <span class="flex items-center gap-x-2">
-                  <i class="tdsi-edit-fill text-lg"></i>
-              </span>
-          </button> -->
-
-          <!-- <button *ngIf="currentLiveCampaign" tds-button-icon color="error" size="md" class="flex items-center"
-              tds-tooltip tooltipTitle="Bỏ chọn chiến dịch" (click)="removeLiveCampaign()">
-              <span class="flex items-center gap-x-2">
-                  <i class="tdsi-close-fill text-lg"></i>
-              </span>
-          </button> -->
       </div>
 
-      <div class="pr-2 h-[calc(100vh-500px)] overflow-auto tds-custom-scroll">
+      <!-- <div class="pr-2 h-[calc(100vh-500px)] overflow-auto tds-custom-scroll">
           <div class="flex flex-col gap-y-2">
               <div *ngFor="let item of lstOfData" class="border border-solid rounded-xl p-4 w-full h-full flex gap-x-2 cursor-pointer
-                hover:border-primary-1 hover:bg-primary-3" (click)="onSelectItem(item)"
+                  hover:border-primary-1 hover:bg-primary-3" (click)="onSelectItem(item)"
                 [ngClass]="item.Id == currentLiveCampaign?.Id  ? 'border-primary-1 bg-primary-3' : 'border-neutral-3-300'">
 
                 <div class="w-3/5 text-sm">
-                  <p class="font-semibold">{{ item.Name }}</p>
-                  <!-- <p *ngIf="item.Facebook_UserName" class="mt-2" style="font-style: italic">Page: {{item.Facebook_UserName}}</p> -->
+                    <p class="font-semibold">{{item.Name}}</p>
                 </div>
 
-                <div class="w-1/5 text-sm text-neutral-1-400"> {{ item.DateCreated | date : "dd/MM/yyyy HH:mm" }}</div>
+                <div class="w-1/5 text-sm text-neutral-1-400"> {{item.DateCreated | date : "dd/MM/yyyy HH:mm"}}</div>
 
                 <div class="w-1/5 flex gap-x-6 justify-end items-center text-xl">
-                    <i class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip="Xem chi tiết" (click)="showModelOverViewLiveCampaign(item.Id, item.Name)"></i>
-                    <i class="tdsi-share-screen-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Sao chép'" (click)="showModelCopyLiveCampaign(item.Id)"></i>
-                    <i class="tdsi-edit-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chỉnh sửa'" (click)="showModelEditLiveCampaign(item.Id)"></i>
+                    <span class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip="Xem chi tiết" (click)="showModelOverViewLiveCampaign(item.Id, item.Name)"></span>
+                    <span class="tdsi-share-screen-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Sao chép'" (click)="showModelCopyLiveCampaign(item.Id)"></span>
+                    <span class="tdsi-edit-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chỉnh sửa'" (click)="showModelEditLiveCampaign(item.Id)"></span>
                   </div>
               </div>
           </div>
+      </div> -->
+
+      <div class="pr-2 h-[calc(100vh-500px)] overflow-auto tds-custom-scroll">
+        <virtual-scroller *ngIf="lstOfData && lstOfData.length > 0"
+            #scroll [items]="lstOfData" class="tds-custom-scroll w-full h-full"
+            (vsEnd)="vsEnd($event)"
+            [enableUnequalChildrenSizes]="true"
+            [scrollAnimationTime]="750">
+
+              <div *ngFor="let item of scroll.viewPortItems; trackBy: trackByIndex" (click)="onSelectItem(item)"
+                  class="border border-solid rounded-xl p-4 mb-2 mr-2 w-full flex gap-x-2 cursor-pointer hover:border-primary-1 hover:bg-primary-3 h-[54px]"
+                  [ngClass]="item.Id == currentLiveCampaign?.Id  ? 'border-primary-1 bg-primary-3' : 'border-neutral-3-300'">
+
+                  <div class="w-3/5 text-sm">
+                      <p class="font-semibold">{{item.Name}}</p>
+                  </div>
+
+                  <div class="w-1/5 text-sm text-neutral-1-400"> {{item.DateCreated | date : "dd/MM/yyyy HH:mm"}}</div>
+
+                  <div class="w-1/5 flex gap-x-6 justify-end items-center text-xl">
+                      <span (click)="showModelOverViewLiveCampaign(item.Id, item.Name)" class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip="Xem chi tiết" ></span>
+                      <span (click)="showModelCopyLiveCampaign(item.Id)" class="tdsi-share-screen-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Sao chép'" ></span>
+                      <span (click)="showModelEditLiveCampaign(item.Id)" class="tdsi-edit-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chỉnh sửa'" ></span>
+                  </div>
+              </div>
+
+              <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
+                  <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+              </div>
+
+          </virtual-scroller>
       </div>
+
   </div>
 
   <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
