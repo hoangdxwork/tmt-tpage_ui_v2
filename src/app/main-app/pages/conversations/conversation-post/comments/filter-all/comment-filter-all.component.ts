@@ -731,8 +731,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     return null;
   }
 
-  onChangeShowMore(){
-    this.isShowAllNumber = !this.isShowAllNumber;
+  onChangeShowMore(value: boolean){
+    this.isShowAllNumber = value;
   }
 
   loadTags() {

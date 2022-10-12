@@ -68,11 +68,11 @@
                                                     </span>
                                                 </div>
 
-                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore()">
+                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
                                                     ...Xem thêm
                                                 </div>
 
-                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore()">
+                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
                                                     ...Thu gọn
                                                 </div>
                                             </div>
