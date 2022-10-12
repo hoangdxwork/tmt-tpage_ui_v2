@@ -1,4 +1,3 @@
-import { InvoiceListPipe } from './invoice-type.pipe';
 import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
@@ -90,7 +89,6 @@ const cmp =[
   GetAvatarCarrier,
   HighlightSearchPipe,
   GetColorShowConfigPipe,
-  InvoiceListPipe,
   SimpleSearchPipe
 ]
 
