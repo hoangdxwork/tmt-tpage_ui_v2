@@ -74,6 +74,7 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+
   getDetailAndAttributes(id: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getwithdetailandattributes`,

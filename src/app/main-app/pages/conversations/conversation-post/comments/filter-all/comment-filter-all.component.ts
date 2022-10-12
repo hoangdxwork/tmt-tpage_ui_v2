@@ -43,6 +43,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 
 @Component({
   selector: 'comment-filter-all',
@@ -66,6 +67,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   @Input() innerText!: string;
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
+  invoiceDict: {[key: number]: OrderPartnerByLivecampaignDto[]} = {} as any;
 
   dataSource$!: Observable<ChatomniDataDto> | any;
   dataSource!: ChatomniDataDto | any;
@@ -80,6 +82,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
   isOpenDrawer: boolean = false;
+  isShowAllNumber: boolean = false;
 
   lstOfTag: TDSSafeAny[] = [];
   tags: TDSSafeAny[] = [];
@@ -121,10 +124,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   ngOnInit() {
     if(this.data && this.team) {
       this.loadData();
-      this.loadPartnersByTimestamp();
+      this.loadPartnersByTimestamp(this.team);
       this.loadTags();
       this.loadCommentsOrderByPost();
-      // this.loadOrderPartnerbylLivecampaign();
+      this.loadOrderPartnerbylLivecampaign();
     }
 
     this.onEventSocket();
@@ -136,18 +139,21 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       let id = this.data.LiveCampaignId as string;
       this.liveCampaignService.orderPartnerbyLivecampaign(id).pipe(takeUntil(this.destroy$))
         .subscribe({
-            next: (response: any) => {
-
+            next: (res: any) => {
+              if(res && Object.keys(res).length > 0){
+                this.invoiceDict = res;
+                this.cdRef.markForCheck();
+              }
             }
         })
     }
   }
 
-  loadPartnersByTimestamp() {
+  loadPartnersByTimestamp(team: CRMTeamDTO) {
     this.partnerDict = {};
-    this.chatomniCommentFacade.loadPartnerTimestampByCache();
+    this.chatomniCommentFacade.loadPartnerTimestampByCache(team);
     this.chatomniCommentFacade.partnerTimeStamp().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: any) => {debugger
           this.partnerDict = res.Data;
           this.cdRef.markForCheck();
       }
@@ -241,9 +247,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
-        this.loadPartnersByTimestamp();
+        this.loadPartnersByTimestamp(this.team);
         this.loadCommentsOrderByPost();
-        // this.loadOrderPartnerbylLivecampaign();
+        this.loadOrderPartnerbylLivecampaign();
     }
 
     if (changes["innerText"] && !changes["innerText"].firstChange && TDSHelperString.isString(changes["innerText"].currentValue)) {
@@ -676,7 +682,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       }
   }
 
-
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
         this.loadMDBByPSId(this.team.ChannelId, data.UserId);
@@ -729,6 +734,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
     this.message.info("Không thể lấy thông tin");
     return null;
+  }
+
+  onChangeShowMore(value: boolean){
+    this.isShowAllNumber = value;
   }
 
   loadTags() {

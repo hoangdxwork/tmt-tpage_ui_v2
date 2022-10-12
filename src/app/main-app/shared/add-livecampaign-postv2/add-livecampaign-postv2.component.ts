@@ -434,7 +434,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
           simpleDetail = [...simpleDetail, ...[exist]];
       }
     })
-
+    
     if(simpleDetail && simpleDetail.length > 0){
         this.pushItemToFormArray(simpleDetail, isVariants)
     }

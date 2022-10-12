@@ -107,7 +107,6 @@ export class ChatomniCommentService extends BaseSevice  {
               exist.Items = [ ...exist.Items, ...res.Items ];
             }
 
-            exist.Items = [ ...exist.Items, ...res.Items ];
             exist.Paging = { ...res.Paging };
 
             // TODO nếu trùng urlNext thì xóa không cho load

@@ -1,0 +1,36 @@
+<tds-table #partnerStatusTable [listData]="lstData" [showSizeChanger]="true" [frontPagination]="false"
+  [loading]="isLoading" [scroll]="{y:'auto'}" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
+  (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+  <thead>
+    <tr>
+      <th [width]="'80px'" class="text-center">STT</th>
+      <th>Trạng thái</th>
+      <th>Tên</th>
+      <th [width]="'120px'" [align]="'center'">Thao tác</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template ngFor let-data let-index="index" [ngForOf]="partnerStatusTable.data">
+      <tr>
+        <td class="text-center">{{ 1 + index + (pageIndex - 1) * pageSize }}</td>
+        <td>
+          <div class="w-16 h-6 rounded-full" [style.background-color]="data.Code"></div>
+        </td>
+        <td>{{ data.Name }}</td>
+        <td [align]="'center'">
+          <button tds-button-icon color="secondary" size="sm" class="mr-2" tds-tooltip="Chỉnh sửa"
+            (click)="showEditModal(data)">
+            <span class="flex items-center">
+              <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
+            </span>
+          </button>
+          <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa" (click)="showRemoveStatus(data)">
+            <span class="flex items-center">
+              <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
+            </span>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </tbody>
+</tds-table>
