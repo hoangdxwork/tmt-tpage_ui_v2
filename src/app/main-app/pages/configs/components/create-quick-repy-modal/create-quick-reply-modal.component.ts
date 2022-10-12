@@ -98,7 +98,6 @@ export class CreateQuickReplyModalComponent implements OnInit {
   messageStructurePart: number = 1;
 
   selectedIndex = 0;
-  check : boolean = false;
   imageURL = '';
   currentItem: any;
 

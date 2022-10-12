@@ -21,17 +21,38 @@
                             <img src="../../../assets/imagesv2/dashboard/conversation-icon.svg">
                         </div>
                         <div class="flex flex-col xl:col-span-2">
-                            <span class="text-heading-3 font-semibold text-secondary-1 truncate">{{(data?.Current?.Conversations?.Total || 0)|numberCustom}}</span>
+                            <span class="text-heading-3 font-semibold text-secondary-1 max-w-[150px] truncate cursor-pointer" tds-tooltip="{{(data?.Current?.Conversations?.Total || 0)|numberCustom}}">
+                                {{(data?.Current?.Conversations?.Total || 0)|numberCustom}}
+                            </span>
+                            <tds-tag [status]="onCalcPercent(data, 'Conversations') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
+                                type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Conversations?.Total }}">
+                                {{ onCalcPercent(data, 'Conversations') >= 0 ? onCalcPercent(data, 'Conversations').toFixed(0) : (-1 * onCalcPercent(data, 'Conversations')).toFixed(0) }}%
+                                <span [class]="onCalcPercent(data, 'Conversations') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                            </tds-tag>
                             <span class="text-title-1 text-neutral-1-400 font-semibold truncate">Hội thoại</span>
                         </div>
                     </div>
                     <div class="pl-6 flex gap-x-6 items-center">
                         <div class="flex flex-col">
-                            <span class="font-semibold text-neutral-1-800">{{(data?.Current?.Messages?.CommentTotal || 0)|numberCustom}}</span>
+                            <span class="font-semibold text-neutral-1-800 max-w-[150px] truncate cursor-pointer" tds-tooltip="{{(data?.Current?.Messages?.CommentTotal || 0)|numberCustom}}">
+                                {{(data?.Current?.Messages?.CommentTotal || 0)|numberCustom}}
+                            </span>
+                            <tds-tag [status]="onCalcPercent(data, 'Comments') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
+                                type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Messages?.CommentTotal }}">
+                                {{ onCalcPercent(data, 'Comments') >= 0 ? onCalcPercent(data, 'Comments').toFixed(0) : (-1 * onCalcPercent(data, 'Comments')).toFixed(0) }}%
+                                <span [class]="onCalcPercent(data, 'Comments') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                            </tds-tag>
                             <span class="text-neutral-1-400">Bình luận</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="font-semibold text-neutral-1-800">{{(data?.Current?.Messages?.MessageTotal || 0)|numberCustom}}</span>
+                            <span class="font-semibold text-neutral-1-800 max-w-[150px] truncate cursor-pointer" tds-tooltip="{{(data?.Current?.Messages?.MessageTotal || 0)|numberCustom}}">
+                                {{(data?.Current?.Messages?.MessageTotal || 0)|numberCustom}}
+                            </span>
+                            <tds-tag [status]="onCalcPercent(data, 'Messages') >= 0 ? 'primary': 'error'" class="inline-flex pb-1 cursor-pointer"
+                                type="outline" tds-tooltip="Dữ liệu trước đó: {{ data?.Previous?.Messages?.MessageTotal }}">
+                                {{ onCalcPercent(data, 'Messages') >= 0 ? onCalcPercent(data, 'Messages').toFixed(0) : (-1 * onCalcPercent(data, 'Messages')).toFixed(0) }}%
+                                <span [class]="onCalcPercent(data, 'Messages') >= 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></span>
+                            </tds-tag>
                             <span class="text-neutral-1-400">Tin nhắn</span>
                         </div>
                     </div>

@@ -51,6 +51,7 @@ import { Router } from '@angular/router';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 
 @Component({
   selector: 'edit-order-v2',
@@ -121,7 +122,7 @@ export class EditOrderV2Component implements OnInit {
   lstInventory!: GetInventoryDTO;
   lstUser!: Array<ApplicationUserDTO>;
   stateReports!: PartnerStatusDTO[];
-  saleConfig!: InitSaleDTO;
+  saleConfig!: SaleSettingConfigDto_V2;
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
 

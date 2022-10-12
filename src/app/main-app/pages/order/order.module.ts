@@ -84,6 +84,7 @@ import { ConvertCustomersComponent } from './components/convert-customers/conver
 import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -118,6 +119,7 @@ const SERVICES = [
   CsOrder_SuggestionHandler,
   ChatomniMessageService,
   ChatomniMessageFacade,
+  LiveCampaignService,
   ActivityMatchingService,
   ConversationService,
   SO_PrepareFastSaleOrderHandler,

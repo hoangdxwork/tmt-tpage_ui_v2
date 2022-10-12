@@ -73,6 +73,7 @@ export class DashboardDailyReportComponent implements OnInit {
               this.loadDataChart();
 
               this.isLoading = false;
+              this.emptyData = false;
               this.cdr.detectChanges();
           } else {
               this.emptyData = true;
@@ -89,9 +90,9 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   loadOverviewData(data:SummaryDailyDTO){
-    if(data && data.Current && data.Previous){
-      let percentMessage = data.Previous.Messages?.MessageTotal ? ((data.Current.Messages?.MessageTotal - data.Previous.Messages?.MessageTotal)/data.Previous.Messages?.MessageTotal) * 100 : (data.Current.Messages?.MessageTotal) * 100;
-      let percentComment = data.Previous.Messages?.CommentTotal ? ((data.Current.Messages?.CommentTotal - data.Previous.Messages?.CommentTotal)/data.Previous.Messages?.CommentTotal) * 100 : (data.Current.Messages?.CommentTotal) * 100;
+    if(data && data?.Current && data?.Previous){
+      let percentMessage = data.Previous.Messages?.MessageTotal != 0 ? ((data.Current.Messages?.MessageTotal - data.Previous.Messages?.MessageTotal)/data.Previous.Messages?.MessageTotal) * 100 : (data.Current.Messages?.MessageTotal) * 100;
+      let percentComment = data.Previous.Messages?.CommentTotal != 0 ? ((data.Current.Messages?.CommentTotal - data.Previous.Messages?.CommentTotal)/data.Previous.Messages?.CommentTotal) * 100 : (data.Current.Messages?.CommentTotal) * 100;
       let percentConversation = data.Previous.Conversations?.Total != 0 ? ((data.Current.Conversations?.Total - data.Previous.Conversations?.Total)/data.Previous.Conversations?.Total) * 100 : (data.Current.Conversations?.Total) * 100;
       
       this.data.Percent= {

@@ -11,12 +11,6 @@ export class BBcodeConvertPipe implements PipeTransform {
 
   transform(code: string) : any {
 
-    // if(typeof code === 'string') {
-    //   if (/^[\[|\{](\s|.*|\w)*[\]|\}]$/.test(code)) {
-    //       code = JSON.parse(code);
-    //   }
-    // }
-
     const r = (f: (code: string) => string) => {
         code = this.run(f, code) as any;
     }

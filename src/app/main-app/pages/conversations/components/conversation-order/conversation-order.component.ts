@@ -70,6 +70,7 @@ import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-obj
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { CRMTeamService } from '@app/services/crm-team.service';
+import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -97,7 +98,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   users!: Array<ApplicationUserDTO>;
   lstCarrier!: DeliveryCarrierDTOV2[];
 
-  saleConfig!: InitSaleDTO;
+  saleConfig!: SaleSettingConfigDto_V2;
 
   visibleIndex: number = -1;
   keyFilterUser: string = '';

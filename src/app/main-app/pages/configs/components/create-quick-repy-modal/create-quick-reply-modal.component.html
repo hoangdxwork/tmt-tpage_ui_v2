@@ -3,9 +3,9 @@
     <div class="flex flex-row items-center mb-6">
         <span class="text-neutral-1-900 text-body-2 font-semibold w-32">Trạng thái</span>
         <div class="flex flex-row items-center gap-x-2">
-            <tds-switch formControlName="active" [(ngModel)]="check"></tds-switch>
-            <span *ngIf="check == false" class="text-body-2">Không hiển thị</span>
-            <span *ngIf="check == true" class="text-body-2">Hiển thị</span>
+            <tds-switch formControlName="active"></tds-switch>
+            <span *ngIf="formQuickReply.controls?.active?.value == false" class="text-body-2">Không hiển thị</span>
+            <span *ngIf="formQuickReply.controls?.active?.value == true" class="text-body-2">Hiển thị</span>
         </div>
     </div>
     <div autocomplete="off">

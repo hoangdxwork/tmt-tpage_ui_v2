@@ -98,7 +98,7 @@ export class CreateOrderStatusComponent implements OnInit {
           this.modal.destroy(res);
         },
         (err) => {
-          this.message.error('Cập nhật thất bại !');
+          this.message.error(err.error.message || 'Cập nhật thất bại !');
         }
       );
     } else {
@@ -108,7 +108,7 @@ export class CreateOrderStatusComponent implements OnInit {
           this.modal.destroy(res)
         },
         (err) => {
-          this.message.error('Thêm thất bại !');
+          this.message.error(err.error.message || 'Thêm thất bại !');
         }
       );
     }

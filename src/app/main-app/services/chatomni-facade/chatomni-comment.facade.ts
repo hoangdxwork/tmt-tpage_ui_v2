@@ -1,13 +1,17 @@
 import { ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { Injectable } from "@angular/core";
-import { ReplaySubject, shareReplay, Subject } from "rxjs";
-import { TCommonService } from "src/app/lib";
+import { BehaviorSubject, ReplaySubject } from "rxjs";
+import { TCommonService, THelperCacheService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { PartnerService } from '../partner.service';
-import { PartnerTimeStampDto, PartnerTimeStampItemDto } from '@app/dto/partner/partner-timestamp.dto';
+import { PartnerTimeStampDto } from '@app/dto/partner/partner-timestamp.dto';
+import { CRMTeamService } from '../crm-team.service';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Injectable()
 
@@ -18,13 +22,17 @@ export class ChatomniCommentFacade extends BaseSevice  {
   baseRestApi: string = "rest/v2.0/chatomni";
 
   private readonly partner$ = new ReplaySubject<any>();
+  private readonly _keyCachePartnerDict = "_partnerByTimestamps";
 
-  dataSource: { [id: string] : ChatomniDataDto } = {}; //this.postDataSource[id]
-  partner: { [teamId: number] : PartnerTimeStampItemDto } = {};
+  dataSource: { [id: string] : ChatomniDataDto } = {};
+  partnerDict: {[teamId: number] : PartnerTimeStampDto} = {};
 
   constructor(private apiService: TCommonService,
+    public cacheApi: THelperCacheService,
+    private message: TDSMessageService,
+    private crmTeamService: CRMTeamService,
     private partnerService: PartnerService) {
-    super(apiService)
+    super(apiService);
   }
 
   setData(id: string, value: ChatomniDataDto | null) {
@@ -76,38 +84,63 @@ export class ChatomniCommentFacade extends BaseSevice  {
     return  {...model};
   }
 
-  getPartnerTimeStamp(teamId: number) {
-    let exist = this.partner![teamId] as any;
+  loadPartnerTimestampByCache(team: CRMTeamDTO){
+    if(!team) return;
 
-    if(exist && Object.keys(exist).length > 0) {
-        this.partner$.next(exist);
-    } else {
-        this.loadPartnersByTimestamp(teamId);
-    }
+    let _key = `${this._keyCachePartnerDict}[${team.Id}]`;
+
+    this.cacheApi.getItem(_key).subscribe((data) => {
+      if(TDSHelperString.hasValueString(data)) {
+
+          let cache = JSON.parse(data['value']) as TDSSafeAny;
+          let cacheDB = cache['value'] as PartnerTimeStampDto;
+          this.partnerDict[team.Id] = {...cacheDB};
+
+          if(cacheDB && Number(cacheDB.Last) > 0) {
+              this.loadPartnersByTimestamp(team.Id, cacheDB.Last);
+          } else {
+              this.partner$.next(cacheDB.Data);
+          }
+      } else {
+          this.loadPartnersByTimestamp(team.Id);
+      }
+    });
   }
 
   loadPartnersByTimestamp(teamId: number, timestamp?: number) {
+    let _key = `${this._keyCachePartnerDict}[${teamId}]`;
 
-    this.partnerService.getPartnersByTimestamp(teamId, timestamp).subscribe((res: PartnerTimeStampDto): any => {
-      if(res) {
-        this.partner[teamId] = {...(this.partner[teamId] || {}), ...(res.Data || {})};
+    this.partnerService.getPartnersByTimestamp(teamId, timestamp).subscribe({
+      next: (obs: PartnerTimeStampDto) => {
 
-        // TODO: trường hợp có last thì dừng call api
-        if(Number(res.Last)) {
-            this.partner$.next(this.partner[teamId]);
+          this.partnerDict[teamId] = {
+              Next: obs.Next,
+              Last: obs.Last,
+              Data: Object.assign((this.partnerDict[teamId]?.Data || {}), (obs.Data || {}))
+          };
 
-        } else if(Number(res.Next) != timestamp) {
+          // TODO: trường hợp response có last thì dừng call api
+          if(obs && Number(obs.Last)) {
+              this.cacheApi.setItem(_key, this.partnerDict[teamId]);
+              this.partner$.next(this.partnerDict[teamId]);
+              return;
+          }
 
-            this.loadPartnersByTimestamp(teamId, res.Next);
+          if(obs && obs.Next && Number(obs.Next) != timestamp) {
+              this.loadPartnersByTimestamp(teamId, obs.Next);
+              return;
+          }
 
-        } else {
-            this.partner$.next(this.partner[teamId]);
-        }
+          this.cacheApi.setItem(_key, this.partnerDict[teamId]);
+          this.partner$.next(this.partnerDict[teamId]);
+      },
+      error: (error: any) => {
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       }
-    }, shareReplay({ bufferSize: 1, refCount: true}));
+    });
   }
 
-  partnerDict() {
+  partnerTimeStamp() {
     return this.partner$.asObservable();
   }
 

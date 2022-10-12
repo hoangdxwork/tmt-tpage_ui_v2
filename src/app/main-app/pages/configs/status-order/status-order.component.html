@@ -1,4 +1,4 @@
-<div class="w-full h-full pb-4 px-4">
+<!-- <div class="w-full h-full pb-4 px-4">
   <div class="flex flex-col w-full h-full bg-white rounded-xl">
     <div class="flex flex-row items-center justify-between px-4 py-3">
       <div class="flex flex-row items-center">
@@ -22,12 +22,12 @@
         </button>
       </div>
     </div>
-    <div class="flex flex-auto pb-2.5">
+    <div class="flex flex-auto pb-2.5 text-body-2">
       <tds-table #basicTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
         [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto'}"
         (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>
-          <tr class="text-neutral-1-900 text-body-2 font-semibold">
+          <tr class="text-neutral-1-900 font-semibold">
             <th [width]="'80px'" class="text-center">STT</th>
             <th>Style CSS</th>
             <th>Tên</th>
@@ -37,12 +37,11 @@
         </thead>
         <tbody>
           <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
-            <tr class="text-neutral-1-900 text-body-2 font-regular">
+            <tr class="text-neutral-1-900 font-regular">
               <td class="text-center">{{ 1 + i + (pageIndex - 1) * pageSize }}</td>
               <td>
-                <!-- <tds-tag [ngStyle]="{'border-color': data.StyleCSS, 'color': data.StyleCSS}" type="outline">{{ data.Name }}</tds-tag> -->
                 <div class="flex flex-auto">
-                  <div class="border rounded bg-opacity-20 bg-neutral-3-50" [style.border-color]="data.StyleCSS">
+                  <div class="border rounded" [ngStyle]="{'background-color': [data.StyleCSS+'50'], 'border-color': data.StyleCSS}">
                     <span class="flex items-center px-2 py-0.5 text-caption-2 font-semibold"
                       [style.color]="data.StyleCSS">
                       {{ data.Name }}
@@ -60,7 +59,8 @@
                     <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
                   </span>
                 </button>
-                <button [ngClass]="data.Default==true ? 'hidden' : '' " tds-button-icon color="secondary" size="sm" (click)="showRemoveStatus(data)">
+                <button [ngClass]="data.Default==true ? 'hidden' : '' " tds-button-icon color="secondary" size="sm"
+                  (click)="showRemoveStatus(data)">
                   <span class="flex items-center">
                     <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
                   </span>
@@ -70,6 +70,112 @@
           </ng-template>
         </tbody>
       </tds-table>
+    </div>
+  </div>
+</div> -->
+
+
+<div class="h-full pb-4 px-4">
+  <div class="flex flex-col w-full h-full bg-white rounded-xl">
+    <div class="flex flex-row items-center justify-between px-4 py-3">
+      <div class="flex flex-row items-center">
+        <tds-avatar class="bg-primary-1 text-white" icon="tdsi-gear-1-fill"></tds-avatar>
+        <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CẤU HÌNH TRẠNG THÁI</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col flex-auto text-body-2">
+      <tds-tabset class="bg-white rounded-xl h-full pt-1" [(selectedIndex)]="selectedIndex" (selectChange)="onSelectChange()"
+        [tabBarExtraContent]="extraTemplate" [clsTab]="'flex'">
+        <tds-tab [title]="titleItem1" clsContent="w-full h-full pt-4 pb-2.5 -mt-px">
+          <ng-template #titleItem1 let-active="active">
+            <div class="flex items-center font-semibold cursor-pointer text-body-2 px-4 py-1.5 relative mx-4 group"
+              [ngClass]='{"text-white bg-primary-1 rounded-2xl":active,"text-neutral-1-600 dark:text-d-neutral-1-600 hover:text-white hover:bg-primary-1 hover:rounded-2xl":!active}'>
+              <span class="flex items-center">Trạng thái đơn hàng</span>
+            </div>
+          </ng-template>
+
+          <tds-table #orderStatusTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
+            [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
+            [scroll]="{y:'auto'}" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+            <thead>
+              <tr class="text-neutral-1-900 font-semibold">
+                <th [width]="'80px'" class="text-center">STT</th>
+                <th>Style CSS</th>
+                <th>Tên</th>
+                <th [align]="'center'">Không cho tạo hóa đơn</th>
+                <th [width]="'120px'" [align]="'center'">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-template ngFor let-order let-i="index" [ngForOf]="orderStatusTable.data">
+                <tr class="text-neutral-1-900 font-regular">
+                  <td class="text-center">{{ 1 + i + (pageIndex - 1) * pageSize }}</td>
+                  <td>
+                    <div class="flex flex-auto">
+                      <div class="border rounded"
+                        [ngStyle]="{'background-color': [order.StyleCSS+'50'], 'border-color': order.StyleCSS}">
+                        <span class="flex items-center px-2 py-0.5 text-caption-2 font-semibold"
+                          [style.color]="order.StyleCSS">
+                          {{ order.Name }}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ order.Name }}</td>
+                  <td [align]="'center'">
+                    <tds-switch [(ngModel)]="order.IsNotOrder" (ngModelChange)="updateStatus(order)"></tds-switch>
+                  </td>
+                  <td [align]="'center'">
+                    <button tds-button-icon color="secondary" size="sm" class="mr-2" (click)="showEditModal(order)">
+                      <span class="flex items-center">
+                        <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
+                      </span>
+                    </button>
+                    <button [ngClass]="order.Default==true ? 'hidden' : '' " tds-button-icon color="secondary" size="sm"
+                      (click)="showRemoveStatus(order)">
+                      <span class="flex items-center">
+                        <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </tds-table>
+        </tds-tab>
+        <tds-tab [title]="titleItem2" clsContent="w-full h-full pt-4 pb-2.5 -mt-px">
+          <ng-template #titleItem2 let-active="active">
+            <div class="flex items-center font-semibold cursor-pointer text-body-2 px-4 py-1.5 relative group"
+              [ngClass]='{"text-white bg-primary-1 rounded-2xl":active,"text-neutral-1-600 dark:text-d-neutral-1-600 hover:text-white hover:bg-primary-1 hover:rounded-2xl":!active}'>
+              <span class="flex items-center">Trạng thái khách hàng</span>
+            </div>
+          </ng-template>
+          <partner-status></partner-status>
+        </tds-tab>
+      </tds-tabset>
+      <ng-template #extraTemplate>
+        <div class="px-4">
+          <div class="flex flex-row items-center justify-end">
+            <div>
+              <tds-form-field size='md' class="mr-4 w-[300px]">
+                <input tdsInput placeholder="Tìm kiếm trạng thái" autocomplete="off"
+                  [(ngModel)]="innerText" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
+                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                <span tdsSuffix (click)="onClearAll($event)">
+                  <i class="tdsi-close-fill text-neutral-1-500 text-base" *ngIf="filterObj.value && filterObj.value != ''"></i>
+                </span>
+              </tds-form-field>
+            </div>
+            <button tds-button color="primary" (click)="showCreateModal()">
+              <span class="flex items-center">
+                <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                <span class="text-body-2 font-semibold">Thêm mới</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

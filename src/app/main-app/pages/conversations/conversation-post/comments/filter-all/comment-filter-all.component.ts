@@ -42,6 +42,8 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 
 @Component({
   selector: 'comment-filter-all',
@@ -65,6 +67,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   @Input() innerText!: string;
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
+  invoiceDict: {[key: number]: OrderPartnerByLivecampaignDto[]} = {} as any;
 
   dataSource$!: Observable<ChatomniDataDto> | any;
   dataSource!: ChatomniDataDto | any;
@@ -79,6 +82,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
   isOpenDrawer: boolean = false;
+  isShowAllNumber: boolean = false;
 
   lstOfTag: TDSSafeAny[] = [];
   tags: TDSSafeAny[] = [];
@@ -103,6 +107,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     private facebookCommentService: FacebookCommentService,
     private chatomniCommentService: ChatomniCommentService,
     private chatomniCommentFacade: ChatomniCommentFacade,
+    private liveCampaignService: LiveCampaignService,
     public crmService: CRMTeamService,
     private postEvent: ConversationPostEvent,
     private notification: TDSNotificationService,
@@ -119,21 +124,37 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   ngOnInit() {
     if(this.data && this.team) {
       this.loadData();
-      this.loadPartnersByTimestamp();
+      this.loadPartnersByTimestamp(this.team);
       this.loadTags();
-      this.loadCommentsOrderByPost()
+      this.loadCommentsOrderByPost();
+      this.loadOrderPartnerbylLivecampaign();
     }
 
     this.onEventSocket();
     this.eventEmitter();
   }
 
-  loadPartnersByTimestamp() {
+  loadOrderPartnerbylLivecampaign() {
+    if(this.data && this.data.LiveCampaignId) {
+      let id = this.data.LiveCampaignId as string;
+      this.liveCampaignService.orderPartnerbyLivecampaign(id).pipe(takeUntil(this.destroy$))
+        .subscribe({
+            next: (res: any) => {
+              if(res && Object.keys(res).length > 0){
+                this.invoiceDict = res;
+                this.cdRef.markForCheck();
+              }
+            }
+        })
+    }
+  }
+
+  loadPartnersByTimestamp(team: CRMTeamDTO) {
     this.partnerDict = {};
-    this.chatomniCommentFacade.getPartnerTimeStamp(this.team.Id);
-    this.chatomniCommentFacade.partnerDict().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.partnerDict = res;
+    this.chatomniCommentFacade.loadPartnerTimestampByCache(team);
+    this.chatomniCommentFacade.partnerTimeStamp().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {debugger
+          this.partnerDict = res.Data;
           this.cdRef.markForCheck();
       }
     })
@@ -226,8 +247,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
-        this.loadPartnersByTimestamp();
+        this.loadPartnersByTimestamp(this.team);
         this.loadCommentsOrderByPost();
+        this.loadOrderPartnerbylLivecampaign();
     }
 
     if (changes["innerText"] && !changes["innerText"].firstChange && TDSHelperString.isString(changes["innerText"].currentValue)) {
@@ -236,7 +258,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
             Keywords: text
         }
         this.loadData();
-    } 
+    }
   }
 
   loadData() {
@@ -655,7 +677,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       }
   }
 
-
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
         this.loadMDBByPSId(this.team.ChannelId, data.UserId);
@@ -708,6 +729,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
     this.message.info("Không thể lấy thông tin");
     return null;
+  }
+
+  onChangeShowMore(value: boolean){
+    this.isShowAllNumber = value;
   }
 
   loadTags() {
@@ -794,7 +819,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   }
 
   vsStart(event: NgxVirtualScrollerDto) {
-    if(event && Number(event.startIndex) >= 0) { 
+    if(event && Number(event.startIndex) >= 0) {
         // TODO: mapping dữ liệu socket ko có trong danh sách
         let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
             && this.vsSocketImports && this.vsSocketImports.length > 0;

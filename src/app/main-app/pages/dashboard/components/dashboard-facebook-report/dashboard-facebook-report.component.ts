@@ -61,6 +61,7 @@ export class DashboardFacebookReportComponent implements OnInit {
           this.handlerAxisData(res);
           this.handlerSeriesData(res);
           this.loadDataChart();
+          this.emptyData = false;
         } else {
           this.emptyData = true;
         }
@@ -232,9 +233,6 @@ export class DashboardFacebookReportComponent implements OnInit {
           ],
           yAxis: [
             {
-              splitLine:{
-                
-              },
               axisLabel: {
                 margin: 12,
                 color: '#6B7280',
@@ -292,5 +290,41 @@ export class DashboardFacebookReportComponent implements OnInit {
     this.currentDateRanges = data;
 
     this.loadData();
+  }
+
+  onCalcPercent(data: SummaryDailyDTO, type: string) {
+    let percent: number = 0;
+    if(!data) {
+      return percent;
+    }
+   
+    switch(type) {
+      case 'Conversations':
+            if(data?.Previous?.Conversations && data?.Current?.Conversations) {
+              percent = data.Previous.Conversations.Total != 0 ? ((data.Current.Conversations.Total - data.Previous.Conversations.Total)/ data.Previous.Conversations.Total) * 100 : data.Current.Conversations.Total*100;
+            } else {
+              percent = 0;
+            }
+            
+        break;
+      case 'Messages':
+        if(data?.Previous?.Messages && data?.Current?.Messages) {
+          percent = data.Previous.Messages.MessageTotal != 0 ? ((data.Current.Messages.MessageTotal - data.Previous.Messages.MessageTotal)/ data.Previous.Messages.MessageTotal) * 100 : data.Current.Messages.MessageTotal*100;
+        } else {
+          percent = 0;
+        }
+            
+        break;
+      case 'Comments':
+        if(data?.Previous?.Messages && data?.Current?.Messages) {
+          percent = data.Previous.Messages.CommentTotal != 0 ? ((data.Current.Messages.CommentTotal - data.Previous.Messages.CommentTotal)/ data.Previous.Messages.CommentTotal) * 100 : data.Current.Messages.CommentTotal*100;
+        } else {
+          percent = 0;
+        }
+            
+        break;
+    }
+
+    return percent;
   }
 }
