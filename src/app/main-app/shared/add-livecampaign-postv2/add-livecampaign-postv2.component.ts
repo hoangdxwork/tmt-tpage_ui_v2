@@ -372,7 +372,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
         let tags = this.generateTagDetail(name, item.ProductCode, item.Tags);
         item.Tags = tags.join(',');
 
-        this.pushItemToFormArray(item);
+        this.pushItemToFormArray([item]);
       }
     })
   }
@@ -396,6 +396,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   addItemProduct(listData: ProductDTOV2[], isVariants?: boolean){
     let formDetails = this.detailsFormGroups.value as any[];
+    let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
     listData.forEach((x:ProductDTOV2) => {
       let exist = formDetails.filter((f:LiveCampaignProductDTO) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
@@ -427,12 +428,16 @@ export class AddLivecampaignPostV2Component implements OnInit {
           let tags = this.generateTagDetail(name, item.ProductCode, item.Tags);
           item.Tags = tags?.join(',');
 
-          this.pushItemToFormArray(item);
+          simpleDetail = [...simpleDetail, ...[item]];
       } else {
           exist.Quantity += 1;
-          this.pushItemToFormArray(exist);
+          simpleDetail = [...simpleDetail, ...[exist]];
       }
     })
+    
+    if(simpleDetail && simpleDetail.length > 0){
+        this.pushItemToFormArray(simpleDetail, isVariants)
+    }
   }
 
   getAllVariants(){
@@ -447,17 +452,41 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.closeSearchProduct();;
   }
 
-  pushItemToFormArray(item: LiveCampaignProductDTO) {
+  pushItemToFormArray(items: LiveCampaignProductDTO[], isVariants?: boolean) {
     let formDetails = this.detailsFormGroups.value as any[];
-      let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
-      if(Number(index) >= 0) {
-          index = Number(index);
-          this.detailsFormGroups.at(index).patchValue(item);
-      } else {
-          formDetails = [...[item], ...formDetails]
-          this.detailsFormGroups.clear();
-          this.initFormDetails(formDetails);
+    let countNew = 0;
+    let countEdit = 0;
+
+    items.forEach((item: LiveCampaignProductDTO) => {
+        let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+        if(Number(index) >= 0) {
+            index = Number(index);
+            this.detailsFormGroups.at(index).patchValue(item);
+            countEdit +=1;
+
+            if(!isVariants){
+              this.notificationService.info(`Cập nhật sản phẩm ${item.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${item.Quantity}</span>`)
+            }
+        } else {
+            formDetails = [...[item], ...formDetails]
+            this.detailsFormGroups.clear();
+            this.initFormDetails(formDetails);
+            countNew +=1;
+
+            if(!isVariants){
+              this.notificationService.info(`Thêm sản phẩm ${item.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${item.Quantity}</span> sản phẩm ${item.ProductName}`)
+            }
+        }
+    })
+
+    if(isVariants) {
+      if(countNew > 0) {
+        this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm ${countNew} sản phẩm vào danh sách`);
       }
+      if(countEdit > 0) {
+          this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật ${countEdit} sản phẩm trong danh sách`);
+      }
+    }
     
     this.liveCampainDetails = [...this.detailsFormGroups.value];
   }
@@ -573,6 +602,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   onSearch(): void {
+    this.liveCampainDetails = [...this.detailsFormGroups.value];
+
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 
@@ -608,6 +639,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   onOpenSearchvalue(){
+    this.liveCampainDetails = [...this.detailsFormGroups.value];
+
     this.visible = true;
   }
 
