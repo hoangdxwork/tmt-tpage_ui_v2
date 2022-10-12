@@ -66,6 +66,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   isEditDetails: { [id: string] : boolean } = {};
   livecampaignSimpleDetail: any = [];
+  innerTextValue: string = '';
 
   indClick: number = -1;
   lstVariants:  ProductDTOV2[] = [];
@@ -219,6 +220,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   updateForm(data: any) {
+    if(data) {
+      data.StartDate = new Date(data.StartDate);
+      data.EndDate = new Date(data.EndDate);
+    }
     this._form.patchValue(data);
     this._form.controls['Id'].setValue(this.id);
 
@@ -694,25 +699,18 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   onReset(): void {
     this.searchValue = '';
+    this.innerTextValue = '';
     this.visible = false;
     this.detailsFormGroups.clear();
     this.initFormDetails(this.livecampaignSimpleDetail);
   }
 
   onSearch(): void {
-    if(!TDSHelperString.hasValueString(this.searchValue)) {
-        return;
-    }
+    this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+  }
 
-    this.visible = false;
-    let text = TDSHelperString.stripSpecialChars(this.searchValue?.toLocaleLowerCase()).trim();
-
-    let data = this.livecampaignSimpleDetail.filter((item: any) =>
-      TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase()).trim().indexOf(text) !== -1
-      || item.ProductCode?.indexOf(text) !== -1);
-
-    this.detailsFormGroups.clear();
-    this.initFormDetails(data);
+  onOpenSearchvalue(){
+    this.visible = true;
   }
 
 }
