@@ -124,7 +124,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   ngOnInit() {
     if(this.data && this.team) {
       this.loadData();
-      this.loadPartnersByTimestamp();
+      this.loadPartnersByTimestamp(this.team);
       this.loadTags();
       this.loadCommentsOrderByPost();
       this.loadOrderPartnerbylLivecampaign();
@@ -149,11 +149,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     }
   }
 
-  loadPartnersByTimestamp() {
+  loadPartnersByTimestamp(team: CRMTeamDTO) {
     this.partnerDict = {};
-    this.chatomniCommentFacade.loadPartnerTimestampByCache();
+    this.chatomniCommentFacade.loadPartnerTimestampByCache(team);
     this.chatomniCommentFacade.partnerTimeStamp().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: any) => {debugger
           this.partnerDict = res.Data;
           this.cdRef.markForCheck();
       }
@@ -247,7 +247,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
-        this.loadPartnersByTimestamp();
+        this.loadPartnersByTimestamp(this.team);
         this.loadCommentsOrderByPost();
         this.loadOrderPartnerbylLivecampaign();
     }
