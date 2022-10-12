@@ -737,15 +737,18 @@ export class AddBillComponent implements OnInit {
 
     if (TDSHelperArray.hasListValue(datas)) {
       datas[index].User = event;
-      datas[index].UserId = event.Id;
+      datas[index].UserId = event?.Id;
     }
 
     let formArray = this._form.controls["OrderLines"] as FormArray;
     formArray.at(index).patchValue(datas[index]);
+
+    this.dataModel.OrderLines = [...formArray.value];
+
     this.calcTotal();
   }
 
-  changeProductDiscountType(event: any, item: any, typeDiscount: string, i: number) {
+  changeProductDiscountType(event: any, typeDiscount: string, i: number) {
     // let datas = this._form.controls['OrderLines'].value;
 
     // if (TDSHelperArray.hasListValue(datas)) {
@@ -759,16 +762,18 @@ export class AddBillComponent implements OnInit {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-      datas[i].typeDiscount = event;
+      datas[i][`${typeDiscount}`] = event;
     }
 
     let formArray = this._form.controls["OrderLines"] as FormArray;
     formArray.at(i).patchValue(datas[i]);
 
+    this.dataModel.OrderLines = [...formArray.value];
+
     this.calcTotal();
   }
 
-  selectProductType(item: any, type: string, i: number) {
+  selectProductType(type: string, i: number) {
     // let datas = this._form.controls['OrderLines'].value;
     // if (TDSHelperArray.hasListValue(datas)) {
 
@@ -791,6 +796,8 @@ export class AddBillComponent implements OnInit {
 
     let formArray = this._form.controls["OrderLines"] as FormArray;
     formArray.at(i).patchValue(datas[i]);
+
+    this.dataModel.OrderLines = [...formArray.value];
 
     this.calcTotal();
   }
@@ -1106,6 +1113,7 @@ export class AddBillComponent implements OnInit {
   }
 
   prepareModel(): any {
+    // console.log(this.dataModel)
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại
