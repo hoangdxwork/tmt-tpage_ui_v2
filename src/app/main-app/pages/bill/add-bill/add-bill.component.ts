@@ -732,47 +732,65 @@ export class AddBillComponent implements OnInit {
     }
   }
 
-  onAddUserOrderLines(event: any, item: OrderLineV2, index: number): void {
+  onAddUserOrderLines(event: any, index: number): void {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-      datas.map((x: OrderLineV2, i: number) => {
-        if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
-            x.User = event;
-            x.UserId = event.Id;
-        }
-      });
+      datas[index].User = event;
+      datas[index].UserId = event.Id;
     }
 
+    let formArray = this._form.controls["OrderLines"] as FormArray;
+    formArray.at(index).patchValue(datas[index]);
     this.calcTotal();
   }
 
   changeProductDiscountType(event: any, item: any, typeDiscount: string, i: number) {
+    // let datas = this._form.controls['OrderLines'].value;
+
+    // if (TDSHelperArray.hasListValue(datas)) {
+    //     datas.map((x: any, index: number) => {
+    //         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+    //             x[`${typeDiscount}`] = event;
+    //         }
+    //     });
+    // }
+
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-        datas.map((x: any, index: number) => {
-            if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
-                x[`${typeDiscount}`] = event;
-            }
-        });
+      datas[i].typeDiscount = event;
     }
+
+    let formArray = this._form.controls["OrderLines"] as FormArray;
+    formArray.at(i).patchValue(datas[i]);
 
     this.calcTotal();
   }
 
   selectProductType(item: any, type: string, i: number) {
-    let datas = this._form.controls['OrderLines'].value;
-    if (TDSHelperArray.hasListValue(datas)) {
+    // let datas = this._form.controls['OrderLines'].value;
+    // if (TDSHelperArray.hasListValue(datas)) {
 
-      datas.map((x: any, index: number) => {
-        if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
-          x.Type = type;
-          x.Discount = 0;
-          x.Discount_Fixed = 0;
-        }
-      });
+    //   datas.map((x: any, index: number) => {
+    //     if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+    //       x.Type = type;
+    //       x.Discount = 0;
+    //       x.Discount_Fixed = 0;
+    //     }
+    //   });
+    // }
+
+    let datas = this._form.controls['OrderLines'].value;
+
+    if (TDSHelperArray.hasListValue(datas)) {
+      datas[i].Type = type;
+      datas[i].Discount = 0;
+      datas[i].Discount_Fixed = 0;
     }
+
+    let formArray = this._form.controls["OrderLines"] as FormArray;
+    formArray.at(i).patchValue(datas[i]);
 
     this.calcTotal();
   }
