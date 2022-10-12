@@ -197,10 +197,25 @@
                             <th width="6%">STT</th>
                             <th width="32%">
                               <div customFilter class="flex justify-between items-center w-full">
-                                  <span style="width: 70%"> Sản phẩm </span>
-                                  <tds-filter-trigger [(visible)]="visible" [active]="searchValue.length > 0" [dropdownMenu]="menu" style="width: 30%; text-align: end;">
-                                      <span class="tdsi-search-fill text-base" [ngClass]="{'text-primary-1': searchValue.length > 0}"  tds-tooltip tooltipTitle="Tìm kiếm sản phẩm trong danh sách"></span>
-                                  </tds-filter-trigger>
+
+                                  <span class="w-1/4 py-2"> Sản phẩm </span>
+                                    <div class="flex-auto flex justify-end">
+                                      <button *ngIf="!visible; else menu" style="width: 30%; text-align: end;" (click)="onOpenSearchvalue()">
+                                        <span class="tdsi-search-fill p-1 rounded text-neutral-1-500 text-xl leading-none relative" 
+                                          tds-tooltip tooltipTitle="Tìm kiếm sản phẩm trong danh sách">
+                                        </span>
+                                      </button>
+                                    </div>
+
+                                    <ng-template #menu>
+                                      <div class="flex-auto">
+                                          <tds-form-field class="w-full">
+                                              <input type="text" tdsInput placeholder="Nhập tên, mã code..." [tdsInputDebounce]="500" (inputKeyup)="onSearch()"
+                                                autocomplete="off" [(ngModel)]="innerTextValue" [ngModelOptions]="{standalone: true}"/>                                      
+                                              <span tdsSuffix (click)="onReset()"><i class="tdsi-close-fill"></i></span>
+                                          </tds-form-field>
+                                      </div>
+                                  </ng-template>
                               </div>
                             </th>
 
@@ -219,7 +234,7 @@
                         </tr>
                     </thead>
                     <tbody formArrayName="Details">
-                        <tr *ngFor="let detail of detailsFormGroups.controls; let index = index" [formGroupName]="index"
+                        <tr *ngFor="let detail of detailsFormGroups.controls | simpleSearch : 'value.ProductName,value.ProductCode' : searchValue; let index = index" [formGroupName]="index"
                             [ngClass]="(isEditDetails[detail.value.Id] && id) ? 'bg-[#e8f3ec]' : ''">
 
                             <td > {{ index + 1 }} </td>
