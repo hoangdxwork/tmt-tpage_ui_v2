@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { FacebookService } from './../../../services/facebook.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FacebookUser } from './../../../../lib/dto/facebook.dto';
@@ -131,41 +132,19 @@ export class FacebookComponent extends TpageBaseComponent implements OnInit, Aft
 
   ngOnInit(): void {
     this.loadListTeam(false);
-    // this.crmTeamService.onChangeTeam().pipe(takeUntil(this._destroy$)).subscribe(
-    //   {
-    //     next: (res) => {
-    //       this.currentTeam = res;
-    //   }
-    // });
-
     this.getTShopAuthentication();
-
-    this.loadQueryParamMap().pipe(takeUntil(this._destroy$)).subscribe({
-      next: ([team, params]: any) => {
-        if (this.paramsUrl?.access_token) {
-          this.loadUserTShop(this.paramsUrl.access_token);
-        }
-      }});
 
     this.tShopService.onChangeUser().pipe(takeUntil(this._destroy$)).subscribe({
       next: (res => {
         this.userTShopLogin = res;
         this.sortByTShopLogin(res?.Id);
-        console.log(res);
       })
     });
   }
 
   getTShopAuthentication() {
-    let fragment = 'facebook';
+    let fragment = 'facebook/tshop-login';
     this.tShopAuthentication = this.tShopService.getAuthentication(fragment);
-  }
-
-  loadUserTShop(accessToken: string) {
-    this.crmService.getTShopUser(accessToken).subscribe((res: TUserDto) => {
-      this.tShopService.setCurrentToken(accessToken);
-      this.tShopService.onUpdateUser(res);
-    });
   }
 
   facebookSignIn(): void {
@@ -188,6 +167,21 @@ export class FacebookComponent extends TpageBaseComponent implements OnInit, Aft
         }
       }
     )
+  }
+
+  tShopSignIn()
+  {
+    let windowSize = {
+      width: 600,
+      height: 700,
+    };
+
+    let windowLocation = {
+      left: (window.screen.width/2) - (windowSize.width / 2),
+      top: (window.screen.height/2) - (windowSize.height / 2) - 50
+    };
+
+    window.open(this.tShopAuthentication, "", 'width=' + windowSize.width + ', height=' + windowSize.height + ', left=' + windowLocation.left + ', top=' + windowLocation.top);
   }
 
   facebookSignOut() {
@@ -421,6 +415,8 @@ export class FacebookComponent extends TpageBaseComponent implements OnInit, Aft
     if (exits) {
       this.data.splice(this.data.indexOf(exits), 1);
       this.data.unshift(exits);
+
+      exits.OwnerToken = this.tShopService.getCurrentToken() || exits.OwnerToken;
 
       this.onChangeCollapse(exits.Id, true);
       this.isUserTShopConnectChannel = true;

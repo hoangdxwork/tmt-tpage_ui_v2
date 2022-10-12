@@ -268,8 +268,8 @@
                 Kết nối tài khoản LiveApp của bạn để đồng bộ
                 tin nhắn, bình luận, bài viết về TPage
               </span>
-              <a href="{{tShopAuthentication}}" class="text-neutral-1-400 w-full">
-                  <button size="xl" class="flex py-[9px] px-[17px] bg-accent-4 rounded-md justify-center w-full">
+              <!-- <a href="{{tShopAuthentication}}" target="ne" class="text-neutral-1-400 w-full"> -->
+                  <button size="xl" class="flex py-[9px] px-[17px] bg-accent-4 rounded-md justify-center w-full" (click)="tShopSignIn()">
                       <span class="flex items-center text-white text-sm gap-x-2">
                         <!-- <span class="w-[16px] h-[16px] block">
                           <img src="../../../assets/imagesv2/tshop/liveapp.svg">
@@ -277,7 +277,7 @@
                         <span class="font-semibold text-sm">Kết nối với TShop</span>
                       </span>
                   </button>
-              </a>
+              <!-- </a> -->
           </div>
 
           <ng-template #userLoggedTShop>
