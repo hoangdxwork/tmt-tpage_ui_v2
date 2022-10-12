@@ -8,15 +8,15 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { CreatePartnerStatusComponent } from '../components/create-partner-status/create-partner-status.component';
+import { CreatePartnerStatusComponent } from '../create-partner-status/create-partner-status.component';
 
 @Component({
-  selector: 'config-partner-status',
-  templateUrl: './config-partner-status.component.html',
+  selector: 'partner-status',
+  templateUrl: './partner-status.component.html',
 })
-export class ConfigPartnerStatusComponent implements OnInit, OnChanges {
-  @Input() onLoadData!: boolean;
-  @ViewChild('filterText') filterText!: ElementRef;
+export class PartnerStatusComponent implements OnInit {
+  // @Input() onLoadData!: boolean;
+  @Input() filterText!: string;
   private destroy$ = new Subject<void>();
 
   lstData!: PartnerStatusDTO[];
@@ -35,37 +35,43 @@ export class ConfigPartnerStatusComponent implements OnInit, OnChanges {
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
   ) { }
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes["onLoadData"] && !changes["onLoadData"].firstChange) {
-      this.loadData(this.pageSize, this.pageIndex);
-    }
-  }
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (changes["onLoadData"] && !changes["onLoadData"].firstChange) {
+  //     this.loadData(this.pageSize, this.pageIndex);
+  //   }
+  // }
 
   ngOnInit(): void {
     // this.loadData(this.pageSize, this.pageIndex);
   }
 
   ngAfterViewInit(): void {
-    fromEvent(this.filterText.nativeElement, 'keyup').pipe(
-      map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      // distinctUntilChanged(),
-      // TODO: switchMap xử lý trường hợp sub in sub
-      switchMap((text: string) => {
-        this.pageIndex = 1;
-        this.filterObj.searchText = text;
+    // fromEvent(this.filterText, 'keyup').pipe(
+    //   map((event: any) => { return event.target.value }),
+    //   debounceTime(750),
+    //   // distinctUntilChanged(),
+    //   // TODO: switchMap xử lý trường hợp sub in sub
+    //   switchMap((text: string) => {
+    //
+    // });
+  }
 
-        let filters;
-        if (TDSHelperString.hasValueString(this.filterObj.searchText)) {
-          filters = this.partnerService.buildFilter(this.filterObj);
-        }
+  onSearch(text: string) {
+    this.pageIndex = 1;
+    this.filterObj.searchText = text;
 
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
-        return this.getViewData(params);
-      })
-    ).subscribe((res: ODataPartnerStartusDTO) => {
+    let filters;
+    if (TDSHelperString.hasValueString(text)) {
+      this.filterObj.searchText = text.toLocaleLowerCase().trim();
+      filters = this.partnerService.buildFilter(this.filterObj);
+    }
+
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+    this.getViewData(params).subscribe((res: ODataPartnerStartusDTO) => {
       this.count = res['@odata.count'] as number;
       this.lstData = res.value;
+    }, err => {
+      this.message.error('Tải dữ liệu thất bại!');
     });
   }
 
@@ -107,7 +113,7 @@ export class ConfigPartnerStatusComponent implements OnInit, OnChanges {
             if (this.lstData.length <= 1) {
               this.pageIndex = 1;
               this.filterObj.searchText = '';
-              this.filterText.nativeElement.value = '';
+              this.filterText = '';
               this.loadData(this.pageSize, this.pageIndex);
             }
             this.loadData(this.pageSize, this.pageIndex);
@@ -133,9 +139,10 @@ export class ConfigPartnerStatusComponent implements OnInit, OnChanges {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
+      debugger
       if (TDSHelperObject.hasValue(result)) {
         this.pageIndex = 1;
-        this.filterText.nativeElement.value = '';
+        this.filterText = '';
         this.filterObj.searchText = '';
         this.loadData(this.pageSize, this.pageIndex);
       }
@@ -167,7 +174,7 @@ export class ConfigPartnerStatusComponent implements OnInit, OnChanges {
   refreshData() {
     this.pageIndex = 1;
     this.filterObj.searchText = '';
-    this.filterText.nativeElement.value = '';
+    this.filterText = '';
     this.loadData(this.pageSize, this.pageIndex);
   }
 

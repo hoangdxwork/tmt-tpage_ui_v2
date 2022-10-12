@@ -1,5 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { FilterObjDTO, OdataOrderStatusDTO, OrderStatusDTO } from '@app/dto/order/order-status.dto';
+import { ODataPartnerStartusDTO } from '@app/dto/partner/partner-status.dto';
+import { PartnerService } from '@app/services/partner.service';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { FilterDataRequestDTO, SortDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { SortEnum } from '@core/enum';
@@ -7,9 +9,11 @@ import { THelperDataRequest } from '@core/services/helper-data.service';
 import { debounceTime, finalize, fromEvent, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { CreateOrderStatusComponent } from '../components/create-order-status/create-order-status.component';
+import { CreatePartnerStatusComponent } from '../components/create-partner-status/create-partner-status.component';
+import { PartnerStatusComponent } from '../components/partner-status/partner-status.component';
 
 @Component({
   selector: 'app-status-order',
@@ -17,7 +21,7 @@ import { CreateOrderStatusComponent } from '../components/create-order-status/cr
 })
 export class StatusOrderComponent implements OnInit {
 
-  @ViewChild('filterText') filterText!: ElementRef;
+  @ViewChild(PartnerStatusComponent) PartnerStatusComponent!: PartnerStatusComponent
 
   private destroy$ = new Subject<void>();
 
@@ -25,6 +29,9 @@ export class StatusOrderComponent implements OnInit {
   pageIndex = 1;
   isLoading = false;
   count: number = 1;
+  selectedIndex = 0;
+  innerText: string = '';
+  textSearchFilterComment: string = '';
   lstOfData!: OrderStatusDTO[];
   public filterObj: any = {
     searchText: ''
@@ -41,6 +48,8 @@ export class StatusOrderComponent implements OnInit {
     }
   ];
 
+  onLoadData: boolean = false
+
   constructor(
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
@@ -51,28 +60,57 @@ export class StatusOrderComponent implements OnInit {
     // this.loadData(this.pageSize, this.pageIndex);
   }
 
-  ngAfterViewInit(): void {
-    fromEvent(this.filterText.nativeElement, 'keyup').pipe(
-      map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      // distinctUntilChanged(),
-      // TODO: switchMap xử lý trường hợp sub in sub
-      switchMap((text: string) => {
-        this.pageIndex = 1;
-        this.filterObj.searchText = text;
+  // ngAfterViewInit(): void {
+  //   fromEvent(this.filterText.nativeElement, 'keyup').pipe(
+  //     map((event: any) => { return event.target.value }),
+  //     debounceTime(750),
+  //     // distinctUntilChanged(),
+  //     // TODO: switchMap xử lý trường hợp sub in sub
+  //     switchMap((text: string) => {
+  //       this.pageIndex = 1;
+  //       this.filterObj.searchText = text;
 
-        let filters;
-        if (TDSHelperString.hasValueString(this.filterObj.searchText)) {
+  //       let filters;
+  //       if (TDSHelperString.hasValueString(this.filterObj.searchText)) {
+  //         filters = this.saleOnlineOrderService.buildFilter(this.filterObj);
+  //       }
+
+  //       let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
+  //       return this.getViewData(params);
+  //     })
+  //   ).subscribe((res: OdataOrderStatusDTO) => {
+  //     this.count = res['@odata.count'] as number;
+  //     this.lstOfData = res.value;
+  //   });
+  // }
+
+  onSearch(data: TDSSafeAny) {
+    this.pageIndex = 1;
+    let filters;
+
+    switch (this.selectedIndex) {
+      case 0:
+        if (TDSHelperString.hasValueString(this.innerText)) {
+          this.filterObj.searchText = this.innerText.toLocaleLowerCase().trim();
           filters = this.saleOnlineOrderService.buildFilter(this.filterObj);
         }
 
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
-        return this.getViewData(params);
-      })
-    ).subscribe((res: OdataOrderStatusDTO) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = res.value;
-    });
+        let orderparams = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
+
+        this.getViewData(orderparams).subscribe({
+          next: (res: any) => {
+            this.count = res['@odata.count'] as number;
+            this.lstOfData = res.value;
+          },
+          error: (error: any) => {
+            this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+          }
+        })
+        break;
+      case 1:
+        this.PartnerStatusComponent.onSearch(this.innerText);
+        break;
+    }
   }
 
   loadData(pageSize: number, pageIndex: number, filters?: FilterDataRequestDTO) {
@@ -129,13 +167,24 @@ export class StatusOrderComponent implements OnInit {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if(result) {
+      if (result) {
         this.loadData(this.pageSize, this.pageIndex);
       }
     });
   }
 
   showCreateModal() {
+    switch (this.selectedIndex) {
+      case 0:
+        this.showCreateOrderModal()
+        break;
+      case 1:
+        this.PartnerStatusComponent.showCreateModal();
+        break;
+    }
+  }
+
+  showCreateOrderModal() {
     const modal = this.modalService.create({
       title: 'Thêm mới trạng thái đơn hàng',
       content: CreateOrderStatusComponent,
@@ -145,7 +194,6 @@ export class StatusOrderComponent implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
         this.pageIndex = 1;
-        this.filterText.nativeElement.value = '';
         this.filterObj.searchText = '';
         this.loadData(this.pageSize, this.pageIndex);
       }
@@ -164,7 +212,6 @@ export class StatusOrderComponent implements OnInit {
             if (this.lstOfData.length <= 1) {
               this.pageIndex = 1;
               this.filterObj.searchText = '';
-              this.filterText.nativeElement.value = '';
               this.loadData(this.pageSize, this.pageIndex);
             }
             this.loadData(this.pageSize, this.pageIndex);
@@ -190,12 +237,24 @@ export class StatusOrderComponent implements OnInit {
   refreshData() {
     this.pageIndex = 1;
     this.filterObj.searchText = '';
-    this.filterText.nativeElement.value = '';
     this.loadData(this.pageSize, this.pageIndex);
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.loadData(params.pageSize, params.pageIndex);
+  }
+
+  onSelectChange() {debugger
+    switch (this.selectedIndex) {
+      case 0:
+          this.innerText = '';
+          this.refreshData();
+        break;
+      case 1:
+          this.innerText = '';
+          this.PartnerStatusComponent.refreshData();
+        break;
+    }
   }
 
 }
