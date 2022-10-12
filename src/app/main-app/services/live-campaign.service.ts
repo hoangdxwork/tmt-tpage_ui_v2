@@ -60,6 +60,20 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  getAvailablesV2(offset: number, limit: number, text?: string){
+    let url = `ODataService.GetAvailables?%24orderby=DateCreated+desc&%24skip=${offset}&%24top=${limit}&$count=true`;
+    if(TDSHelperString.hasValueString(text)) {
+        url = `${url}&%24filter=((contains(Name%2C'${text}')+or+contains(Facebook_UserName%2C'${text}')))`;
+    }
+
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/${url}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
   getDetailAndAttributes(id: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getwithdetailandattributes`,
