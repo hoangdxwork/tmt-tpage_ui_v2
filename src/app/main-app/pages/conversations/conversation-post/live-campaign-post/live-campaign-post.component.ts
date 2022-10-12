@@ -115,6 +115,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   onSearch(event: TDSSafeAny) {
     this.innerText = event?.value;
+    this.pageIndex = 1;
     if(TDSHelperString.hasValueString(this.innerText)) {
         this.innerText = TDSHelperString.stripSpecialChars(this.innerText.toLocaleLowerCase()).trim();
     }
@@ -141,6 +142,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
             this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
 
             this.innerText = '';
+            this.pageIndex = 1;
             this.loadData();
         }
       }
