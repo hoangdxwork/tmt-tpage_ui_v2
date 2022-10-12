@@ -18,6 +18,7 @@ import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { SortEnum } from '@core/enum';
 import { Guid } from 'guid-typescript';
 import { AddLivecampaignPostV2Component } from '@app/shared/add-livecampaign-postv2/add-livecampaign-postv2.component';
+import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-post/edit-livecampaign-post.component';
 
 @Component({
   selector: 'live-campaign-post',
@@ -125,7 +126,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
   showModelCreateLiveCampaign() {
     const modal = this.modal.create({
       title: 'Tạo mới chiến dịch',
-      content: AddLiveCampaignPostComponent,
+      content: AddLivecampaignPostV2Component,
       size: "xl",
       bodyStyle: {
         padding: '0px',
@@ -157,7 +158,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Chỉnh sửa chiến dịch',
-      content: AddLiveCampaignPostComponent,
+      content: EditLiveCampaignPostComponent,
       size: "xl",
       bodyStyle: {
         padding: '0px',
@@ -229,7 +230,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Sao chép chiến dịch',
-      content: AddLiveCampaignPostComponent,
+      content: AddLivecampaignPostV2Component,
       size: "xl",
       bodyStyle: {
         padding: '0px',
