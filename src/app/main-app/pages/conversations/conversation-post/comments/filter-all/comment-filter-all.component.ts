@@ -82,6 +82,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   isHiddenComment: any = {};
   isReplyingComment: boolean = false;
   isOpenDrawer: boolean = false;
+  isShowAllNumber: boolean = false;
 
   lstOfTag: TDSSafeAny[] = [];
   tags: TDSSafeAny[] = [];
@@ -676,7 +677,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       }
   }
 
-
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
         this.loadMDBByPSId(this.team.ChannelId, data.UserId);
@@ -729,6 +729,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
     this.message.info("Không thể lấy thông tin");
     return null;
+  }
+
+  onChangeShowMore(value: boolean){
+    this.isShowAllNumber = value;
   }
 
   loadTags() {
