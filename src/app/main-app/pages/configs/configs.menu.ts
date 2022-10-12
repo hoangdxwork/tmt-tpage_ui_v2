@@ -7,11 +7,11 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         link: '/configs',
         listChild: [
             {
-                name: "Cấu hình chốt đơn",
+                name: "Cấu hình tin nhắn",
                 link: '/configs/sale-order',
             },
             {
-                name: "Cấu hình tạo đơn",
+                name: "Cấu hình chốt đơn",
                 link: '/configs/default-order',
             },
             {
@@ -23,7 +23,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
                 link: '/configs/delivery',
             },
             {
-                name: "Cấu hình đơn hàng",
+                name: "Cấu hình trạng thái",
                 link: '/configs/status-order',
             },
         ]
@@ -68,11 +68,11 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-discount-fill",
         link: '/configs/promotions',
     },
-    {
-        name: "Trạng thái khách hàng",
-        icon: "tdsi-user-fill",
-        link: '/configs/partner-status',
-    },
+    // {
+    //     name: "Trạng thái khách hàng",
+    //     icon: "tdsi-user-fill",
+    //     link: '/configs/partner-status',
+    // },
     {
         name: "Người dùng",
         icon: "tdsi-group-people-fill",

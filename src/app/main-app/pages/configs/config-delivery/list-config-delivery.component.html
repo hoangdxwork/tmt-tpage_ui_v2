@@ -52,12 +52,15 @@
                   </ng-template>
                   <!-- Header Icon -->
                   <ng-template #icon>
-                    <div class="flex gap-4 items-center">
+                    <div class="flex gap-2 items-center">
                       <button tds-button color="primary" [routerLink]="['/configs/delivery/connect']"
                         [queryParams]="{type: item.Type}">
                         <span class="flex items-center">
                           <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
                         </span>
+                      </button>
+                      <button tds-button-icon color="secondary">
+                        <i class="tdsi-download-fill text-neutral-1-500"></i>
                       </button>
                     </div>
                   </ng-template>
