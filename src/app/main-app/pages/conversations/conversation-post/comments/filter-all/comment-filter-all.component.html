@@ -44,13 +44,13 @@
                                   </div>
 
                                   <!-- Mã hóa đơn -->
-                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
+                                  <!-- <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
                                         <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold">
                                             {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
                                         </span>
 
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" 
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1"
                                             class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
                                             tds-popover
                                             [popoverContent]="invContent"
@@ -78,7 +78,7 @@
                                             </div>
                                         </ng-template>
                                     </div>
-                                  </div>
+                                  </div> -->
                               </div>
 
                               <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
