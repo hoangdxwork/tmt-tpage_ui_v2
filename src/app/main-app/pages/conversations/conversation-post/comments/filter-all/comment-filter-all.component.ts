@@ -168,7 +168,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
           case ChatmoniSocketEventName.chatomniOnMessage:
             let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId && this.dataSource;
             if(exist) {
-                let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
+                let itemNewComment = { ...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
 
                 // TODO: nếu là comment child thì cũng push thẳng xóa parentId
                 if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
@@ -210,7 +210,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   eventEmitter() {
     this.conversationOrderFacade.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
-        switch(res?.type){
+        switch(res?.type) {
 
           case 'deleteCode':
             if(this.data.LiveCampaignId) {
@@ -276,7 +276,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniDataDto) => {
             this.dataSource = { ...res };
-
+          
             this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
             this.dataSource.Items = [...this.dataSource.Items];
             this.lengthDataSource = this.dataSource.Items.length;
@@ -499,12 +499,15 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
-  loadPartnerTab(item: ChatomniDataItemDto, order?: any[]) {
+  loadPartnerTab(item: ChatomniDataItemDto, commentOrder?: any) {
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
         return;
     }
+
+    let orderCode = commentOrder?.[psid]?.[0]?.code || '';
+    let orderId = commentOrder?.[psid]?.[0]?.id || '';
 
     // TODO: gán sự kiện loading cho tab
     this.postEvent.spinLoadingTab$.emit(true);
@@ -521,10 +524,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
 
               // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
-              if(order && TDSHelperString.hasValueString(order[0]?.code)){
+              if(orderCode && TDSHelperString.hasValueString(orderCode)){
                   // Truyền sang coversation-post
-                  this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order[0].id, comment: item} );
-                  this.conversationOrderFacade.hasValueOrderCode$.emit(order[0]?.code);
+                  this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
+                  this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
               }
           }
         },
@@ -566,12 +569,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     })
   }
 
-  onInsertFromPost(item: ChatomniDataItemDto, order?: any[]) {
+  onInsertFromPost(item: ChatomniDataItemDto, commentOrder: any) {
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
         return;
     }
+
+    let orderCode = commentOrder[psid]?.[0]?.code;
 
     // TODO: gán sự kiện loading cho tab
     this.postEvent.spinLoadingTab$.emit(true);
@@ -588,7 +593,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
 
             // Truyền sang coversation-post
-            this.conversationOrderFacade.hasValueOrderCode$.emit(order?.[0]?.code);
+            this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
         }
       },

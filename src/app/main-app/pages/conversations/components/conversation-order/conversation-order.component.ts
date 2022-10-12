@@ -1,5 +1,4 @@
-import { UOM } from './../../../../dto/product-template/product-tempalte.dto';
-import { Product } from './../../../../dto/order/so-orderlines.dto';
+
 import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
@@ -261,21 +260,41 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(res) {
             this.validateData();
 
-            this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromPost(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
-            if(!this.insertFromPostModel.UserId) {
-                this.insertFromPostModel.UserId = this.userInit.Id;
+            this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+            let type = this.team?.Type;
+
+            switch(type) {
+                case CRMTeamType._Facebook:
+
+                    this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromPost(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
+                    if(!this.insertFromPostModel.UserId) {
+                        this.insertFromPostModel.UserId = this.userInit.Id;
+                    }
+
+                    //TODO: thực hiện call API insertfrompost ,ko tạo hóa đơn
+                    this.insertFromPost(this.insertFromPostModel, res);
+
+                    this.facebookCommentService.saleOnline_Facebook_Comment(res.UserId, res.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+                      next: (comments: OdataSaleOnline_Facebook_CommentDto) => {
+                          if(comments && comments.value) {
+                              this.so_FacebookComments = [...comments.value];
+                          }
+                      }
+                    });
+                  break;
+
+                case CRMTeamType._TShop:
+
+                    this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromChannelComment(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
+                    if(!this.insertFromPostModel.UserId) {
+                        this.insertFromPostModel.UserId = this.userInit.Id;
+                    }
+
+                    //TODO: thực hiện call API insertfrompost ,ko tạo hóa đơn
+                    this.insertFromChannelComment(this.insertFromPostModel, res);
+                  break;
             }
-
-            //TODO: thực hiện call API insertfrompost ,ko tạo hóa đơn
-            this.insertFromPost(this.insertFromPostModel, res);
-
-            this.facebookCommentService.saleOnline_Facebook_Comment(res.UserId, res.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (comments: OdataSaleOnline_Facebook_CommentDto) => {
-                  if(comments && comments.value) {
-                      this.so_FacebookComments = [...comments.value];
-                  }
-              }
-            });
+            this.cdRef.detectChanges();
         }
       }
     })
@@ -768,6 +787,147 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           //     }
           //   })
           // }
+
+          if(!this.isEnableCreateOrder && type == 'print') {
+              this.orderPrintService.printId(res.Id, this.quickOrderModel);
+          }
+
+          if(this.isEnableCreateOrder) {
+              let fs_model = {} as FastSaleOrder_DefaultDTOV2;
+              fs_model = {...this.prepareCsFastSaleOrder(this.quickOrderModel)};
+
+              // call api tạo hóa đơn
+              fs_model.SaleOnlineIds = [res.Id];
+              fs_model.PartnerId = res.PartnerId;
+              this.createFastSaleOrder(fs_model, type);
+
+          } else {
+              this.isLoading = false;
+              this.message.success('Cập nhật đơn hàng thành công');
+
+              // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
+              this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
+
+              // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
+              this.isUpdated = false;
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(res.Facebook_ASUserId);
+          }
+
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
+      }
+    })
+  }
+
+  insertFromChannelComment(model: InsertFromPostDto, comment: ChatomniDataItemDto) {
+    this.isLoading = true;
+    this.saleOnline_OrderService.insertFromChannelComment(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: any) => {
+          delete res['@odata.context'];
+
+          // TODO: gán sự kiện loading cho tab conversation-post
+          this.postEvent.spinLoadingTab$.emit(false);
+
+          this.isLoading = false;
+          this.quickOrderModel = {...res};
+          this.mappingAddress(this.quickOrderModel);
+
+          //TODO: trường hợp tạo lần đầu thì gọi in phiếu
+          if(res.IsCreated) {
+
+              if(!this.saleOnlineSettings.isDisablePrint) {
+                  this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
+              }
+
+              //TODO: truyền thông tin đơn hàng vừa tạo về comment-filter-all
+              this.conversationOrderFacade.onChangeCommentsOrderByPost$.emit({type: 'addCode', data: res});
+
+              // TODO: cập nhật mã đơn hàng lên tab
+              this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
+              this.message.success('Tạo đơn hàng thành công');
+
+          } else {
+
+            if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
+                this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
+                this.message.success('Cập nhật đơn hàng thành công');
+            }
+
+            // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng, dùng ở conversation-post
+            this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
+
+            // TODO: cập nhật mã đơn hàng lên tab
+            if(TDSHelperString.hasValueString(res.code)) {
+              this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
+            }
+
+            this.isUpdated = false;
+          }
+
+          // TODO: đẩy sự kiện qua conversation-order-list cập nhật lại danh sách đơn hàng
+          this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.emit(true);
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+
+          // TODO: gán sự kiện loading cho tab conversation-post
+          this.postEvent.spinLoadingTab$.emit(false);
+
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
+      }
+    })
+  }
+
+  onInsertFromChannelComment(formAction?: string, type?: string): any {
+    let model1 = this.insertFromPostModel;
+    if(!TDSHelperObject.hasValue(this.team) && !this.team?.Id) {
+        this.team = this.crmTeamService.getCurrentTeam() as any;
+    }
+
+    let model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
+
+    let model = Object.assign({}, model1, model2) as any;
+    if(formAction) {
+        model.FormAction = formAction;
+    }
+
+    if(this.isEnableCreateOrder) {
+      if (!TDSHelperArray.hasListValue(model.Details)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
+          return false;
+      }
+      if (!TDSHelperString.hasValueString(model.Telephone)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
+          return false;
+      }
+      if (!TDSHelperString.hasValueString(model.Address)) {
+          this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
+          return false;
+      }
+
+      //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
+      if(!this.isCalculateFeeAship && this.saleModel.Carrier) {
+          this.notification.info(`Đối tác ${this.saleModel.Carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng thao tác lại sau khi thành công');
+          let carrier = this.saleModel.Carrier as any;
+          this.calculateFeeAship(carrier);
+          return;
+      }
+    }
+
+    this.isLoading = true;
+    this.saleOnline_OrderService.insertFromChannelComment(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          this.quickOrderModel = {...res};
+
+          this.mappingAddress(this.quickOrderModel);
+          this.quickOrderModel.FormAction = formAction;
 
           if(!this.isEnableCreateOrder && type == 'print') {
               this.orderPrintService.printId(res.Id, this.quickOrderModel);

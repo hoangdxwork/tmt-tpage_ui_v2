@@ -135,5 +135,9 @@ export const Message = {
   Inventory: {
     CanNotLoadData: 'Không thể tải danh sách kho',
     CanNotLoadInfo: 'Không thể tải thông tin kho'
+  },
+  TShop: {
+    LoginSuccess: 'Đăng nhập thành công.',
+    LoginFail: 'Đăng nhập thất bại.',
   }
 }
