@@ -261,7 +261,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.validateData();
 
             this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
-            let type = this.team.Type;
+            let type = this.team?.Type;
 
             switch(type) {
                 case CRMTeamType._Facebook:
@@ -294,6 +294,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                     this.insertFromChannelComment(this.insertFromPostModel, res);
                   break;
             }
+            this.cdRef.detectChanges();
         }
       }
     })

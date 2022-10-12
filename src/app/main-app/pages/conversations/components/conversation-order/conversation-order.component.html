@@ -614,7 +614,7 @@
           </div>
 
           <!-- Button Footer conversation post-->
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' && team.Type == 'TShop'">
+          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' && team?.Type == 'TShop'">
             <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromChannelComment()">Lưu</button>
 
             <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromChannelComment('SaveAndPrint', 'print')">
@@ -628,7 +628,7 @@
             </button>
           </div>
 
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' && team.Type == 'Facebook'">
+          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' && team?.Type == 'Facebook'">
             <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost()">Lưu</button>
 
             <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost('SaveAndPrint', 'print')">
