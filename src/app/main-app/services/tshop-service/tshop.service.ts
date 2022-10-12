@@ -1,8 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
+import { Message } from '@core/consts/message.const';
 import { TUserDto } from '@core/dto/tshop.dto';
 import { ReplaySubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +17,23 @@ export class TShopService  {
   private readonly currentUser$ = new ReplaySubject<TUserDto | undefined>(1);
 
   constructor(
-    @Inject(DOCUMENT) private document: Document) {
+    private message: TDSMessageService
+  ) {
+      this.eventLogin();
+  }
+
+  eventLogin()
+  {
+    window.addEventListener("message", (event: MessageEvent<any>) => {
+      let data = JSON.parse(event.data);
+
+      this.message.success(Message.TShop.LoginSuccess);
+
+      if(data?.access_token && data?.user) {
+        this.setCurrentToken(data?.access_token);
+        this.onUpdateUser(data?.user);
+      }
+    });
   }
 
   getCurrentToken(): string | undefined {
