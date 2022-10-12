@@ -431,8 +431,6 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   addItemProduct(listData: ProductDTOV2[], isVariants?: boolean){
-    this.onReset();
-
     let formDetails = this.detailsFormGroups.value as any[];
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
@@ -474,7 +472,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     })
 
     if(simpleDetail && simpleDetail.length > 0){
-        this.addProductLiveCampaignDetails(simpleDetail);
+        this.addProductLiveCampaignDetails(simpleDetail, isVariants);   
     }
   }
 
@@ -521,8 +519,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.closeSearchProduct();
   }
 
-  addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[]) {
+  addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[], isVariants?: boolean) {
     let id = this.id as string;
+    let countNew = 0;
+    let countEdit = 0;
 
     items.map(x => {
       if(x && x.Tags) {
@@ -545,20 +545,34 @@ export class EditLiveCampaignPostComponent implements OnInit {
               if(Number(index) >= 0) {
                   index = Number(index);
                   this.detailsFormGroups.at(index).patchValue(x);
+                  countNew +=1;
 
-                  this.notificationService.info(`Cập nhật sản phẩm ${x.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${x.Quantity}</span>`)
+                  if(!isVariants){
+                      this.notificationService.info(`Cập nhật sản phẩm ${x.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${x.Quantity}</span>`)
+                  }
               } else {
                   formDetails = [...[x], ...formDetails]
                   this.detailsFormGroups.clear();
+                  countEdit +=1;
 
                   this.initFormDetails(formDetails);
-                  this.notificationService.info(`Thêm mới sản phẩm ${x.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${x.Quantity}</span> sản phẩm ${x.ProductName}`)
+                  if(!isVariants){
+                      this.notificationService.info(`Thêm mới sản phẩm ${x.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${x.Quantity}</span> sản phẩm ${x.ProductName}`)
+                  }
               }
 
               delete this.isEditDetails[x.Id];
           })
 
           this.livecampaignSimpleDetail = [...this.detailsFormGroups.value];
+          if(isVariants) {
+            if(countNew > 0) {
+              this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm thành công ${countNew} sản phẩm vào danh sách`);
+            }
+            if(countEdit > 0) {
+                this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật thành công ${countEdit} sản phẩm trong danh sách`);
+            }
+          }
         },
         error: (err: any) => {
             this.isLoading = false;
