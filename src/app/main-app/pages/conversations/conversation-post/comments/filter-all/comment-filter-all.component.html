@@ -44,24 +44,9 @@
 
                                   <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
-                                        <div class="flex gap-x-1 items-center">
-                                            <div [innerHTML]="invoiceDict[partnerDict[item.UserId].i] | invoiceList:0:2"></div>
-                                        </div>
-                                        
-                                        <div *ngIf="invoiceDict[partnerDict[item.UserId].i]?.length - 1 > 2"
-                                            tds-popover
-                                            [popoverContent]="popoverInvoice"
-                                            popoverPlacement="top"
-                                            popoverTrigger="click" 
-                                            class="w-[22px] h-[22px] bg-neutral-3-100 rounded border border-neutral-1-300 flex items-center justify-center cursor-pointer hover:bg-primary-1 hover:text-white hover:border-white">
-                                            <i class="tdsi-plus-fill"></i>
-                                        </div>
-
-                                        <ng-template #popoverInvoice>
-                                            <div class="flex gap-x-2 flex-wrap max-w-[500px]">
-                                                <div [innerHTML]="invoiceDict[partnerDict[item.UserId].i] | invoiceList:3"></div>
-                                            </div>
-                                        </ng-template>
+                                        <span *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]">
+                                            {{inv.Number}}
+                                        </span>
                                     </div>
                                   </div>
                               </div>
@@ -276,7 +261,7 @@
                             </div>
                         </div>
                     </div>
-                   
+
                   </div>
               </div>
           </div>

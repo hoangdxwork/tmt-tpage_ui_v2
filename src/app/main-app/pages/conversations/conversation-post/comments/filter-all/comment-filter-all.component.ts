@@ -43,6 +43,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 
 @Component({
   selector: 'comment-filter-all',
@@ -66,7 +67,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   @Input() innerText!: string;
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
-  invoiceDict: {[key: number]: any} = {} as any;
+  invoiceDict: {[key: number]: OrderPartnerByLivecampaignDto[]} = {} as any;
 
   dataSource$!: Observable<ChatomniDataDto> | any;
   dataSource!: ChatomniDataDto | any;
