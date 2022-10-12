@@ -1,7 +1,7 @@
 import { ChatomniDataDto, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { Injectable } from "@angular/core";
-import { ReplaySubject } from "rxjs";
+import { BehaviorSubject, ReplaySubject } from "rxjs";
 import { TCommonService, THelperCacheService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
@@ -24,7 +24,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
   private readonly partner$ = new ReplaySubject<any>();
   private readonly _keyCachePartnerDict = "_partnerByTimestamps";
 
-  dataSource: { [id: string] : ChatomniDataDto } = {}; //this.postDataSource[id]
+  dataSource: { [id: string] : ChatomniDataDto } = {};
   partnerDict: {[teamId: number] : PartnerTimeStampDto} = {};
 
   constructor(private apiService: TCommonService,
@@ -84,8 +84,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
     return  {...model};
   }
 
-  loadPartnerTimestampByCache(){
-    let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+  loadPartnerTimestampByCache(team: CRMTeamDTO){
     if(!team) return;
 
     let _key = `${this._keyCachePartnerDict}[${team.Id}]`;

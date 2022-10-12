@@ -120,6 +120,7 @@ import { ConfigPartnerStatusComponent } from './config-partner-status/config-par
 import { CreatePartnerStatusComponent } from './components/create-partner-status/create-partner-status.component';
 import { StatusOrderComponent } from './status-order/status-order.component';
 import { CreateOrderStatusComponent } from './components/create-order-status/create-order-status.component';
+import { PartnerStatusComponent } from './components/partner-status/partner-status.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -206,6 +207,7 @@ const SERVICES = [
     CreatePartnerStatusComponent,
     StatusOrderComponent,
     CreateOrderStatusComponent,
+    PartnerStatusComponent,
   ],
   imports: [
     CommonModule,

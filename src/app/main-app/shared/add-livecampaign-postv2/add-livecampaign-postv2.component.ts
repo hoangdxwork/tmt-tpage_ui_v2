@@ -69,8 +69,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
   indClickTag: number = -1;
   modelTags: Array<string> = [];
 
+  innerTextValue: string = '';
   liveCampainDetails: any = [];
-  isFilter: boolean = false;
 
   indClick: number = -1;
   lstVariants:  ProductDTOV2[] = [];
@@ -395,7 +395,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   addItemProduct(listData: ProductDTOV2[], isVariants?: boolean){
-    this.onReset();
     let formDetails = this.detailsFormGroups.value as any[];
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
@@ -435,9 +434,9 @@ export class AddLivecampaignPostV2Component implements OnInit {
           simpleDetail = [...simpleDetail, ...[exist]];
       }
     })
-
+    
     if(simpleDetail && simpleDetail.length > 0){
-      this.pushItemToFormArray(simpleDetail);
+        this.pushItemToFormArray(simpleDetail, isVariants)
     }
   }
 
@@ -453,19 +452,41 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.closeSearchProduct();;
   }
 
-  pushItemToFormArray(items: LiveCampaignProductDTO[]) {
-    items.forEach((item:LiveCampaignProductDTO) => {
-      let formDetails = this.detailsFormGroups.value as any[];
-      let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
-      if(Number(index) >= 0) {
-          index = Number(index);
-          this.detailsFormGroups.at(index).patchValue(item);
-      } else {
-          formDetails = [...[item], ...formDetails]
-          this.detailsFormGroups.clear();
-          this.initFormDetails(formDetails);
-      }
+  pushItemToFormArray(items: LiveCampaignProductDTO[], isVariants?: boolean) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let countNew = 0;
+    let countEdit = 0;
+
+    items.forEach((item: LiveCampaignProductDTO) => {
+        let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+        if(Number(index) >= 0) {
+            index = Number(index);
+            this.detailsFormGroups.at(index).patchValue(item);
+            countEdit +=1;
+
+            if(!isVariants){
+              this.notificationService.info(`Cập nhật sản phẩm ${item.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${item.Quantity}</span>`)
+            }
+        } else {
+            formDetails = [...[item], ...formDetails]
+            this.detailsFormGroups.clear();
+            this.initFormDetails(formDetails);
+            countNew +=1;
+
+            if(!isVariants){
+              this.notificationService.info(`Thêm sản phẩm ${item.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${item.Quantity}</span> sản phẩm ${item.ProductName}`)
+            }
+        }
     })
+
+    if(isVariants) {
+      if(countNew > 0) {
+        this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm ${countNew} sản phẩm vào danh sách`);
+      }
+      if(countEdit > 0) {
+          this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật ${countEdit} sản phẩm trong danh sách`);
+      }
+    }
     
     this.liveCampainDetails = [...this.detailsFormGroups.value];
   }
@@ -574,24 +595,16 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   onReset(): void {
     this.searchValue = '';
+    this.innerTextValue = '';
     this.visible = false;
-    this.isFilter = false;
     this.detailsFormGroups.clear();
     this.initFormDetails(this.liveCampainDetails);
   }
 
   onSearch(): void {
-    this.visible = false;
-    this.isFilter = true;
-    let text = TDSHelperString.stripSpecialChars(this.searchValue?.toLocaleLowerCase()).trim();
+    this.liveCampainDetails = [...this.detailsFormGroups.value];
 
-    let data = this.liveCampainDetails.filter((item: LiveCampaignProductDTO) =>
-          TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase()).trim().indexOf(text) !== -1
-          || item.ProductCode?.indexOf(text) !== -1
-          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase()).trim().indexOf(text) !== -1);
-
-    this.detailsFormGroups.clear();
-    this.initFormDetails(data);
+    this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 
   loadProductAttributeLine(id: TDSSafeAny, uomId: number) {
@@ -623,6 +636,12 @@ export class AddLivecampaignPostV2Component implements OnInit {
     if(!ev) {
       this.indClick = -1;
     }
+  }
+
+  onOpenSearchvalue(){
+    this.liveCampainDetails = [...this.detailsFormGroups.value];
+
+    this.visible = true;
   }
 
 }
