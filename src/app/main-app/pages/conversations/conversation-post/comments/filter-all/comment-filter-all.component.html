@@ -44,7 +44,7 @@
                                   </div>
 
                                   <!-- Mã hóa đơn -->
-                                  <!-- <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
+                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
                                         <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold">
                                             {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
@@ -63,7 +63,7 @@
                                             <div class="flex flex-wrap min-w-[200px] max-w-[400px]">
                                                 <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
                                                     <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)">
-                                                        <span class="text-primary-1 font-semibold">{{ inv.Number || 'N/A' }}</span>
+                                                        <span class="text-primary-1 font-semibold" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
                                                         <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
                                                     </span>
                                                 </div>
@@ -78,7 +78,7 @@
                                             </div>
                                         </ng-template>
                                     </div>
-                                  </div> -->
+                                  </div>
                               </div>
 
                               <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
