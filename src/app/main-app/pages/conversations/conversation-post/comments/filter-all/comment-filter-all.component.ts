@@ -66,6 +66,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   @Input() innerText!: string;
 
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
+  invoiceDict: {[key: number]: any} = {} as any;
 
   dataSource$!: Observable<ChatomniDataDto> | any;
   dataSource!: ChatomniDataDto | any;
@@ -124,7 +125,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       this.loadPartnersByTimestamp();
       this.loadTags();
       this.loadCommentsOrderByPost();
-      // this.loadOrderPartnerbylLivecampaign();
+      this.loadOrderPartnerbylLivecampaign();
     }
 
     this.onEventSocket();
@@ -136,8 +137,11 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       let id = this.data.LiveCampaignId as string;
       this.liveCampaignService.orderPartnerbyLivecampaign(id).pipe(takeUntil(this.destroy$))
         .subscribe({
-            next: (response: any) => {
-
+            next: (res: any) => {
+              if(res && Object.keys(res).length > 0){
+                this.invoiceDict = res;
+                this.cdRef.markForCheck();
+              }
             }
         })
     }
@@ -243,7 +247,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
         this.loadData();
         this.loadPartnersByTimestamp();
         this.loadCommentsOrderByPost();
-        // this.loadOrderPartnerbylLivecampaign();
+        this.loadOrderPartnerbylLivecampaign();
     }
 
     if (changes["innerText"] && !changes["innerText"].firstChange && TDSHelperString.isString(changes["innerText"].currentValue)) {

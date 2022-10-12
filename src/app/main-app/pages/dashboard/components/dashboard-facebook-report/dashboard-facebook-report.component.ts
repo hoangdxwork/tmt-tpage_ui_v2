@@ -58,7 +58,6 @@ export class DashboardFacebookReportComponent implements OnInit {
       next:(res:SummaryDailyDTO) => {
         if(res && res?.Current){
           this.data = {...res};
-          console.log(this.data)
           this.handlerAxisData(res);
           this.handlerSeriesData(res);
           this.loadDataChart();

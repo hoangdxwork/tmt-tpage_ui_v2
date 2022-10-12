@@ -20,19 +20,19 @@
                     </div>
 
                     <div class="flex flex-row items-center gap-x-2">
-                        <button tds-button-flat color="secondary" (click)="onSave()" *ngIf="isChange">
+                        <button tds-button-flat color="secondary" [classList]="'hover:!bg-primary-1 hover:text-white'" (click)="onSave()" *ngIf="isChange">
                             <span class="flex items-center">
                               <i class="tdsi-save-fill text-xl leading-5 mr-2"></i>Lưu
                             </span>
                         </button>
                         <div class="border border-neutral-2-200 h-[16.5px]" *ngIf="isChange"></div>
-                        <button tds-button-flat color="secondary" (click)="createDefaultProduct()">
+                        <button tds-button-flat color="secondary" [classList]="'hover:!bg-info-500 hover:text-white'" (click)="createDefaultProduct()">
                             <span class="flex items-center">
                               <i class="tdsi-in-out-fill text-xl leading-5 mr-2"></i>Thay đổi
                             </span>
                         </button>
                         <div class="border border-neutral-2-200 h-[16.5px]"></div>
-                        <button tds-button-flat color="secondary" (click)="removeDefaultProduct()">
+                        <button tds-button-flat color="secondary" [classList]="'hover:!bg-error-400 hover:text-white'" (click)="removeDefaultProduct()">
                             <span class="flex items-center">
                               <i class="tdsi-trash-fill text-xl leading-5 mr-2"></i>Xóa
                             </span>
