@@ -60,12 +60,20 @@
                                         </span>
 
                                         <ng-template #invContent>
-                                            <div class="flex gap-x-2 flex-wrap max-w-[500px]">
-                                                <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]">
-                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id">
-                                                        <span class="text-primary-1 font-semibold">{{inv.Number || 'N/A'}}</span>
+                                            <div class="flex flex-wrap min-w-[200px] max-w-[400px]">
+                                                <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
+                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)">
+                                                        <span class="text-primary-1 font-semibold">{{ inv.Number || 'N/A' }}</span>
                                                         <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
                                                     </span>
+                                                </div>
+
+                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore()">
+                                                    ...Xem thêm
+                                                </div>
+
+                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore()">
+                                                    ...Thu gọn
                                                 </div>
                                             </div>
                                         </ng-template>
