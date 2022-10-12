@@ -416,6 +416,8 @@ export class FacebookComponent extends TpageBaseComponent implements OnInit, Aft
       this.data.splice(this.data.indexOf(exits), 1);
       this.data.unshift(exits);
 
+      exits.OwnerToken = this.tShopService.getCurrentToken() || exits.OwnerToken;
+
       this.onChangeCollapse(exits.Id, true);
       this.isUserTShopConnectChannel = true;
     }
