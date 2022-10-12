@@ -23,23 +23,46 @@
                   </div>
 
                   <div class="ml-2 w-full h-full">
-                      <div class="bg-white rounded-2xl px-4 py-3 min-h-[110px]">
+                      <div class="bg-white rounded-2xl px-4 py-3">
                           <div class="flex items-center justify-between">
-                              <div class="flex gap-x-2">
-                                  <div *ngIf="item.Type == 12">
-                                      <label class="font-semibold" *ngIf="item.Data && item.Data?.from">{{ item.Data.from.name }} </label>
+                              <div class="flex gap-x-2 items-center">
+                                  <div *ngIf="item.Type == 12 && item.Data && item.Data?.from" class="min-w-[50px] max-w-[220px] truncate">
+                                      <span class="font-semibold" tds-tooltip="{{item.Data.from.name}}">{{ item.Data.from.name }}</span>
                                   </div>
 
-                                  <div *ngIf="item.Type == 91">
-                                      <label class="font-semibold" *ngIf="item.Data">{{ (item.Data | tShopDataMessage).Actor?.Name }} </label>
+                                  <div *ngIf="item.Type == 91 && item.Data" class="min-w-[50px] max-w-[220px] truncate">
+                                      <span class="font-semibold" tds-tooltip="{{(item.Data | tShopDataMessage).Actor?.Name}}">{{ (item.Data | tShopDataMessage).Actor?.Name }}</span>
                                   </div>
 
-                                  <div *ngIf="commentOrders && item?.Data?.from" class="flex flex-row items-center">
+                                  <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
                                       <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                           <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
                                               <span *ngIf="!order.code.includes('#')">#</span>{{ order.code }}
                                           </div>
                                       </div>
+                                  </div>
+
+                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
+                                    <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
+                                        <div class="flex gap-x-1 items-center">
+                                            <div [innerHTML]="invoiceDict[partnerDict[item.UserId].i] | invoiceList:0:2"></div>
+                                        </div>
+                                        
+                                        <div *ngIf="invoiceDict[partnerDict[item.UserId].i]?.length - 1 > 2"
+                                            tds-popover
+                                            [popoverContent]="popoverInvoice"
+                                            popoverPlacement="top"
+                                            popoverTrigger="click" 
+                                            class="w-[22px] h-[22px] bg-neutral-3-100 rounded border border-neutral-1-300 flex items-center justify-center cursor-pointer hover:bg-primary-1 hover:text-white hover:border-white">
+                                            <i class="tdsi-plus-fill"></i>
+                                        </div>
+
+                                        <ng-template #popoverInvoice>
+                                            <div class="flex gap-x-2 flex-wrap max-w-[500px]">
+                                                <div [innerHTML]="invoiceDict[partnerDict[item.UserId].i] | invoiceList:3"></div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
                                   </div>
                               </div>
 
