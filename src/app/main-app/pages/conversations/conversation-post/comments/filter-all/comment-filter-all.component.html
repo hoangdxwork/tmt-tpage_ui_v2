@@ -34,6 +34,7 @@
                                       <span class="font-semibold" tds-tooltip="{{(item.Data | tShopDataMessage).Actor?.Name}}">{{ (item.Data | tShopDataMessage).Actor?.Name }}</span>
                                   </div>
 
+                                  <!-- Mã đơn hàng -->
                                   <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
                                       <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                           <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
@@ -42,11 +43,32 @@
                                       </div>
                                   </div>
 
+                                  <!-- Mã hóa đơn -->
                                   <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
-                                        <span *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]">
-                                            {{inv.Number}}
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold">
+                                            {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
                                         </span>
+
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" 
+                                            class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
+                                            tds-popover
+                                            [popoverContent]="invContent"
+                                            popoverTrigger="click"
+                                            [popoverBackdrop]="true">
+                                            +{{invoiceDict[partnerDict[item.UserId].i].length - 1}}
+                                        </span>
+
+                                        <ng-template #invContent>
+                                            <div class="flex gap-x-2 flex-wrap max-w-[500px]">
+                                                <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]">
+                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id">
+                                                        <span class="text-primary-1 font-semibold">{{inv.Number || 'N/A'}}</span>
+                                                        <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </ng-template>
                                     </div>
                                   </div>
                               </div>
@@ -148,9 +170,10 @@
                                           </div>
 
                                           <div class="flex gap-1.5 items-center"  *ngIf="partnerDict[item.UserId].t.length > 3">
-                                              <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" tds-popover
+                                              <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer" tds-popover
                                                   [popoverContent]="popoverContentTag"
-                                                  popoverPlacement="topRight">
+                                                  popoverPlacement="topRight"
+                                                  [popoverBackdrop]="true">
                                                   +{{partnerDict[item.UserId].t.length - 3}}
                                               </div>
 
