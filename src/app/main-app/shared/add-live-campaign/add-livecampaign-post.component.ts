@@ -178,7 +178,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
     this.productService.setInventoryWarehouseId(warehouseId);
     this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.lstInventory = {...res};
+          this.lstInventory = res;
       },
       error:(err) => {
           this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
@@ -190,7 +190,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
     this.sharedService.setCurrentCompany();
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
-          this.companyCurrents = {...res};
+          this.companyCurrents = res;
           if(this.companyCurrents.DefaultWarehouseId) {
               this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
           }
