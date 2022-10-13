@@ -56,9 +56,9 @@ export class ProductTemplateUOMLineService extends BaseSevice {
     }
 
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?$skip=${skip}&$top=${top}&$orderby=Name asc${filter}&$count=true`,
-      method: CoreApiMethodType.get,
-  }
-  return this.apiService.getData<ODataProductDTO>(api, null);
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}?$skip=${skip}&$top=${top}&$orderby=Name asc${filter}&$count=true`,
+        method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
   }
 }

@@ -33,10 +33,13 @@ export class ApplicationUserService extends BaseSevice {
         this._lstUserActive$.next(this.lstUserActive);
     } else {
         this.apiUserActive().subscribe({
-          next: (res: any) => {
-              this.lstUserActive = [...res.value];
-              this._lstUserActive$.next(res.value);
-          }
+            next: (res: any) => {
+                this.lstUserActive = [...res.value];
+                this._lstUserActive$.next(res.value);
+            },
+            error: (err: any) => {
+                this._lstUserActive$.next(err);
+            }
         });
     }
   }
@@ -44,8 +47,8 @@ export class ApplicationUserService extends BaseSevice {
   apiUserActive() {
     let filter ='$filter=(Active%20eq%20true)&$count=true';
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?${filter}`,
-      method: CoreApiMethodType.get,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}?${filter}`,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataApplicationUserDTO>(api, null);

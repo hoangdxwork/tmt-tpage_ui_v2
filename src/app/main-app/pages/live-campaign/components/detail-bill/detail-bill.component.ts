@@ -1,3 +1,4 @@
+import { TDSNotificationService } from 'tds-ui/notification';
 import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
 import { TDSModalService } from 'tds-ui/modal';
 import { PrinterService } from './../../../../services/printer.service';
@@ -13,16 +14,15 @@ import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
-import { FastSaleOrderDTO, FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderModelDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { finalize } from 'rxjs/operators';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Router } from '@angular/router';
-import { TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperObject, TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
@@ -89,7 +89,8 @@ export class DetailBillComponent implements OnInit {
     private chatomniMessageFacade: ChatomniMessageFacade,
     private printerService: PrinterService,
     private viewContainerRef: ViewContainerRef,
-    private modal: TDSModalService
+    private modal: TDSModalService,
+    private notification: TDSNotificationService
   ) { }
 
   ngOnInit() {
@@ -360,7 +361,7 @@ export class DetailBillComponent implements OnInit {
 
   approveOrder() {
     if (this.isProcessing) {
-      this.isLoading = false
+      this.isLoading = false;
       return
     }
 
@@ -373,15 +374,33 @@ export class DetailBillComponent implements OnInit {
         title: 'Xác nhận bán hàng',
         content: 'Bạn có muốn xác nhận bán hàng',
         onOk: () => {
-          that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-            this.isLoading = false;
-            that.message.success('Xác nhận bán hàng thành công!');
-          }, error => {
-            this.isLoading = false;
-            that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
+          that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+            
+              if(res && TDSHelperString.hasValueString(res.Error) && res.Errors && !TDSHelperArray.hasListValue(res.Errors)){
+                that.notification.error('Thông báo', res.Error);
+              } else {
+                // danh sách lỗi
+              }
+  
+              if(res.Success) {
+                that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
+              }
+              
+              that.isProcessing = false;
+              this.isLoading = false;
+            }, 
+            error:error => {
+              this.isLoading = false;
+              that.isProcessing = false;
+              that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
+            }
           })
         },
-        onCancel: () => { that.isProcessing = false; this.isLoading = false; },
+        onCancel: () => { 
+          that.isProcessing = false; 
+          this.isLoading = false; 
+        },
         okText: "Xác nhận",
         cancelText: "Đóng",
       });

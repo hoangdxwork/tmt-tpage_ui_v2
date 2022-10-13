@@ -68,7 +68,7 @@
 
                             <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
                               <div class="flex flex-col gap-y-2.5">
-                                  <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{item.DisplayName || item.Name}}</span>
+                                  <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{ item.DisplayName || item.Name }}</span>
                                   <div class="flex gap-x-1">
                                     <div *ngIf="item.Street"
                                       class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md">
@@ -95,7 +95,7 @@
                                   </span>
                               </button>
                               <tds-dropdown-menu #menu1="tdsDropdownMenu">
-                                  <div class="w-full">
+                                  <div class="w-full min-w-[100px] overflow-auto max-h-[300px] tds-panel-scroll">
                                       <div tds-dropdown-item *ngFor="let item of lstPartnerStatus" (click)="selectStatus(item)">
                                           <a [ngStyle]="{'color': item.value }"> {{ item.text }} </a>
                                       </div>
@@ -910,14 +910,15 @@
                     <!-- <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td> -->
                     <!-- Giảm giá -->
                     <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" class="text-center">
-                      <span color="secondary" tds-popover popoverTrigger="click" [popoverContent]="popoverDiscountLines"
-                        [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
+                      <span color="secondary" tds-popover popoverTrigger="click" [popoverContent]="popoverDiscountLines" [popoverAutoClose]="false"
+                        [popoverBackdrop]="true" popoverPlacement="left" [popoverVisible]="idDiscount == i" (popoverVisibleChange)="openDiscountPopover(i)">
 
                         <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
-                          {{data.Discount || 0 | numberCustom  }} %
+                          {{ data.Discount || 0 | numberCustom }} %
                         </span>
+
                         <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'fixed'">
-                          {{data.Discount_Fixed || 0 | numberCustom  }} đ
+                          {{ data.Discount_Fixed || 0 | numberCustom }} đ
                         </span>
                       </span>
                       <!-- popover giảm giá mỗi dòng -->
@@ -925,23 +926,23 @@
                         <div class="mb-2">
                           <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100" [formatter]="numberWithCommas" [parser]="parserComas"
                             *ngIf="data.Type === 'percent'"
-                            (ngModelChange)="changeProductDiscountType($event, 'Discount', i)"
+                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount', i)"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
                           <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" *ngIf="data.Type === 'fixed'" [formatter]="numberWithCommas" [parser]="parserComas"
-                            (ngModelChange)="changeProductDiscountType($event, 'Discount_Fixed', i)"
+                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount_Fixed', i)"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
                         </div>
                         <div class="flex items-center">
                           <button tds-button type="button" style="line-height: 19px;margin-right: 6px"
                             [color]="data.Type == 'percent' ? 'primary' : 'secondary'"
-                            (click)="selectProductType('percent', i)"
+                            (click)="selectProductType(data, 'percent', i, $event)"
                             class="text-neutral-1-900 text-body-2 font-regular">
                             <span class="flex items-center"> % </span>
                           </button>
                           <button tds-button type="button" [color]="data.Type == 'fixed' ? 'primary' : 'secondary'"
-                            (click)="selectProductType('fixed', i)"
+                            (click)="selectProductType(data, 'fixed', i, $event)"
                             class="text-neutral-1-900 text-body-2 font-regular">
                             <span class="flex items-center"> VNĐ </span>
                           </button>

@@ -39,7 +39,7 @@ import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPip
 import { OnSetWidthTagPipe } from './set-width-tagpipe';
 import { GetAvatarCarrier } from './get-avatar-carrier.pipe';
 import { HighlightSearchPipe } from './highlightSearch.pipe';
-import { SimpleSearchPipe } from './simple-search.pipe';
+import { SimpleSearchPipe, SimpleSearchV2Pipe } from './simple-search.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -89,7 +89,8 @@ const cmp =[
   GetAvatarCarrier,
   HighlightSearchPipe,
   GetColorShowConfigPipe,
-  SimpleSearchPipe
+  SimpleSearchPipe,
+  SimpleSearchV2Pipe
 ]
 
 @NgModule({
