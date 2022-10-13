@@ -65,6 +65,8 @@ import { SuggestAddressV2Component } from './suggest-address-v2/suggest-address-
 import { TDSAlertModule } from 'tds-ui/alert';
 import { EditLiveCampaignPostComponent } from './edit-livecampaign-post/edit-livecampaign-post.component';
 import { AddLivecampaignPostV2Component } from './add-livecampaign-postv2/add-livecampaign-postv2.component';
+import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { TDSSkeletonModule } from 'tds-ui/skeleton';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -145,7 +147,9 @@ const SERVICES = [
     TDSEmptyModule,
     TDSAlertModule,
     TDSDrawerModule,
-    TDSButtonSpitModule
+    TDSButtonSpitModule,
+    TDSSkeletonModule,
+    VirtualScrollerModule
   ],
   exports:[
    ...cmp
