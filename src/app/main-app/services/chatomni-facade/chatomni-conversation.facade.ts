@@ -74,8 +74,8 @@ export class ChatomniConversationFacade extends BaseSevice  {
         MessageType: socket.Data.Message?.MessageType,
       } as TDSSafeAny,
 
-      Name:  socket.Data.Conversation?.Name || this.checkUser(socket.Data.Message?.MessageType),
-      UpdatedTime: socket.Data.Conversation?.UpdatedTime || socket.Data.Message?.ChannelCreatedTime,
+      Name: socket.Data.Conversation?.Name || this.checkUser(socket.Data.Message?.MessageType),
+      UpdatedTime: socket.Data.Message?.CreatedTime,
       UserId: socket.Data.Conversation?.UserId
     } as TDSSafeAny
 
