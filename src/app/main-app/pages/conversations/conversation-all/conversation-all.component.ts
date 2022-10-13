@@ -1,3 +1,5 @@
+import { SortEnum } from './../../../../lib/enum/sort.enum';
+import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
 import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from './../../../services/socket-io/socket-onevent.service';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
@@ -71,6 +73,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setOfCheckedId = new Set<string>();
 
   queryObj: QueryFilterConversationDto = {} as any;
+  sort: Array<SortDataRequestDTO> = [{
+    field: "UpdatedTime",
+    dir: SortEnum.asc,
+  }];
   isFilter: boolean = false;
 
   isLoadingNextdata: boolean = false;
@@ -236,9 +242,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
                 this.vsSocketImports[vsIndex].LatestMessage = {
-                    CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
-                    Message: itemNewMess.LatestMessage?.Message,
-                    MessageType: itemNewMess.LatestMessage?.MessageType
+                  CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                  Message: itemNewMess.LatestMessage?.Message,
+                  MessageType: itemNewMess.LatestMessage?.MessageType
                 } as any;
 
                 this.vsSocketImports[vsIndex].CountUnread = (this.vsSocketImports[vsIndex].CountUnread || 0) + 1;
@@ -248,6 +254,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.vsSocketImports = [ ...[itemNewMess], ...this.vsSocketImports];
             }
 
+            this.vsSocketImports = this.vsSocketImports.sort((a, b) => Date.parse(a.UpdatedTime) - Date.parse(b.UpdatedTime));
             this.vsSocketImports = [...this.vsSocketImports];
         }
     }
@@ -335,7 +342,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: any) => {
           let teamId = this.currentTeam?.Id as any;
           this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => { 
+              next: (data: any) => {
                   this.syncConversationInfo = {...data};
 
                   let csid = this.syncConversationInfo.Conversation.ConversationId;
@@ -529,6 +536,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
 
     this.queryObj = {} as any;
+    this.isSort = false;
     this.isFilter = false;
     this.innerText.nativeElement.value = '';
     this.isProcessing = false;
@@ -569,10 +577,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setSort(){
     this.isSort = !this.isSort;
     if(this.isSort) {
-      this.lstConversation = [...this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(a.UpdatedTime) - Date.parse(b.UpdatedTime))];
+        this.queryObj.sort = this.sort;
     } else {
-      this.lstConversation = [...this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(b.UpdatedTime) - Date.parse(a.UpdatedTime))];
+        delete this.queryObj.sort;
     }
+
+    this.disableNextUrl = false;
+    this.loadFilterDataSource();
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -669,11 +680,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.queryObj = {} as any;
     this.disableNextUrl = false;
 
-    this.queryObj = queryObj; 
+    this.queryObj = queryObj;
     if(Object.keys(this.queryObj).length > 0){
       this.isFilter = true;
     } else {
       this.isFilter = false;
+    }
+
+    if(this.isSort) {
+      this.queryObj.sort = this.sort;
     }
 
     this.loadFilterDataSource();
@@ -857,7 +872,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   vsStart(event: any) {
     if(event && Number(event.startIndex) >= 0) {
       // TODO: mapping dữ liệu socket ko có trong danh sách
-      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex <= 2 
+      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex <= 2
         && this.vsSocketImports && this.vsSocketImports.length > 0;
 
       if(exist) {

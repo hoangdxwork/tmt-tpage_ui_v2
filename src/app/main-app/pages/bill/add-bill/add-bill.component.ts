@@ -121,6 +121,7 @@ export class AddBillComponent implements OnInit {
   extraMoney: number = 0;
   insuranceFee: number = 0;
   indClickTag = -1;
+  idDiscount = -1;
 
   shipServices: CalculateFeeServiceResponseDto[] = [];
   shipExtraServices: ShipServiceExtra[] = [];
@@ -194,7 +195,8 @@ export class AddBillComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
     private suggestService: SuggestAddressService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private notification: TDSNotificationService) {
       this.createForm();
       this.loadCurrentCompany();
   }
@@ -664,6 +666,11 @@ export class AddBillComponent implements OnInit {
     }
   }
 
+  openDiscountPopover(i: number){
+
+    this.idDiscount = i;
+  }
+
   openTrackingOrderGHN() {
     let key = this.dataModel.TrackingRef;
     this.fastSaleOrderService.getTokenTrackingOrderGHN({ key: key }).subscribe({
@@ -737,60 +744,70 @@ export class AddBillComponent implements OnInit {
 
     if (TDSHelperArray.hasListValue(datas)) {
       datas[index].User = event;
-      datas[index].UserId = event.Id;
+      datas[index].UserId = event?.Id;
     }
 
     let formArray = this._form.controls["OrderLines"] as FormArray;
     formArray.at(index).patchValue(datas[index]);
-    this.calcTotal();
-  }
 
-  changeProductDiscountType(event: any, item: any, typeDiscount: string, i: number) {
-    // let datas = this._form.controls['OrderLines'].value;
-
-    // if (TDSHelperArray.hasListValue(datas)) {
-    //     datas.map((x: any, index: number) => {
-    //         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
-    //             x[`${typeDiscount}`] = event;
-    //         }
-    //     });
-    // }
-
-    let datas = this._form.controls['OrderLines'].value;
-
-    if (TDSHelperArray.hasListValue(datas)) {
-      datas[i].typeDiscount = event;
-    }
-
-    let formArray = this._form.controls["OrderLines"] as FormArray;
-    formArray.at(i).patchValue(datas[i]);
+    this.dataModel.OrderLines = [...formArray.value];
 
     this.calcTotal();
   }
 
-  selectProductType(item: any, type: string, i: number) {
-    // let datas = this._form.controls['OrderLines'].value;
-    // if (TDSHelperArray.hasListValue(datas)) {
-
-    //   datas.map((x: any, index: number) => {
-    //     if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
-    //       x.Type = type;
-    //       x.Discount = 0;
-    //       x.Discount_Fixed = 0;
-    //     }
-    //   });
-    // }
-
+  changeProductDiscountType(item: OrderLineV2 ,event: any, typeDiscount: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-      datas[i].Type = type;
-      datas[i].Discount = 0;
-      datas[i].Discount_Fixed = 0;
+        datas.map((x: any, index: number) => {
+            if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+                x[`${typeDiscount}`] = event;
+            }
+        });
     }
 
-    let formArray = this._form.controls["OrderLines"] as FormArray;
-    formArray.at(i).patchValue(datas[i]);
+    // let datas = this._form.controls['OrderLines'].value;
+
+    // if (TDSHelperArray.hasListValue(datas)) {
+    //   datas[i][`${typeDiscount}`] = event;
+    // }
+
+    // let formArray = this._form.controls["OrderLines"] as FormArray;
+    // formArray.at(i).patchValue(datas[i]);
+
+    this.dataModel.OrderLines = [...datas];
+
+    this.calcTotal();
+  }
+
+  selectProductType(item:OrderLineV2, type: string, i: number, e:MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    let datas = this._form.controls['OrderLines'].value;
+    if (TDSHelperArray.hasListValue(datas)) {
+
+      datas.map((x: any, index: number) => {
+        if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+          x.Type = type;
+          x.Discount = 0;
+          x.Discount_Fixed = 0;
+        }
+      });
+    }
+
+    // let datas = this._form.controls['OrderLines'].value;
+
+    // if (TDSHelperArray.hasListValue(datas)) {
+    //   datas[i].Type = type;
+    //   datas[i].Discount = 0;
+    //   datas[i].Discount_Fixed = 0;
+    // }
+
+    // let formArray = this._form.controls["OrderLines"] as FormArray;
+    // formArray.at(i).patchValue(datas[i]);
+
+    this.dataModel.OrderLines = [...datas];
 
     this.calcTotal();
   }
@@ -1106,6 +1123,7 @@ export class AddBillComponent implements OnInit {
   }
 
   prepareModel(): any {
+    // console.log(this.dataModel)
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại
@@ -1242,6 +1260,10 @@ export class AddBillComponent implements OnInit {
         this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
                 let x = model.FormAction == 'SaveAndOpen' || model.FormAction == 'SaveAndPrint';
+
+                let warehouseId = res.WarehouseId;
+                this.loadInventoryByIds(warehouseId, [res.Id]);
+
                 if(x) {
                     this.actionInvoiceOpen(model);
                 } else {
@@ -1266,8 +1288,12 @@ export class AddBillComponent implements OnInit {
                 delete res['@odata.context'];
                 this.id = res.Id;
 
+                if(res?.Error && res?.Error.Message) {
+                    this.notification.error(res.Error.Message, res.Error?.Errors[0]?.Message);
+                }
+
                 // TODO: gửi lại vận đơn nếu chưa có mã vận đơn
-                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && res.Number
+                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && res.Number && !res?.Error
                   && (res.State !== 'cancel' || res.State !== 'draft') && (res.FormAction == 'SaveAndOpen' || res.FormAction == 'SaveAndPrint');
                 if(code) {
                     this.sendToShipper(res);
@@ -1275,6 +1301,8 @@ export class AddBillComponent implements OnInit {
                     this.loadOpenAndPrint(res);
                 }
 
+                let warehouseId = res.WarehouseId;
+                this.loadInventoryByIds(warehouseId, [res.Id]);
                 this.removelocalStorage();
             },
             error:(error) => {
@@ -1320,10 +1348,14 @@ export class AddBillComponent implements OnInit {
     this.fastSaleOrderService.actionInvoiceOpen(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
 
-          if(obs && TDSHelperString.hasValueString(obs.Error)) {
-              this.message.warning(obs.Error);
+          if(obs && TDSHelperString.hasValueString(obs.Error) && obs.Errors && obs.Errors.length == 0) {
+              this.notification.error('Thông báo', obs.Error);
           } else {
-              this.message.success('Xác nhận hóa đơn thành công!');
+            // xuất danh sách lỗi
+          }
+
+          if(obs.Success){
+            this.notification.success('Thông báo', 'Xác nhận hóa đơn thành công!');
           }
 
           let exist = obs && this.typePrint && data.FormAction == 'SaveAndPrint';
@@ -1785,6 +1817,15 @@ export class AddBillComponent implements OnInit {
 
     const key2 = this.fastSaleOrderService._keyCacheCopyInvoice;
     localStorage.removeItem(key2);
+  }
+
+  loadInventoryByIds(warehouseId: number, ids: any) {
+    this.commonService.getInventoryByIds(warehouseId, ids).subscribe({
+        next: () => {},
+        error: (error: any) => {
+            this.message.error(error?.error?.message || 'Lỗi cập nhật tồn kho');
+        }
+    });
   }
 
 }

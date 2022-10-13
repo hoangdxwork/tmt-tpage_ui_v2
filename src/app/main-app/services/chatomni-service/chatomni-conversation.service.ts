@@ -1,3 +1,6 @@
+import { THelperDataRequest } from './../../../lib/services/helper-data.service';
+import { SortEnum } from './../../../lib/enum/sort.enum';
+import { SortDataRequestDTO } from './../../../lib/dto/dataRequest.dto';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { Injectable } from "@angular/core";
 import { map, Observable, shareReplay, mergeMap } from "rxjs";
@@ -32,6 +35,9 @@ export class ChatomniConversationService extends BaseSevice {
     let queryString = null;
     if (queryObj) {
       queryString = Object.keys(queryObj).map(key => {
+        if (key == 'sort') {
+          return key + '=' + `${THelperDataRequest.convertSortToString(queryObj.sort!)}`
+        }
         return key + '=' + queryObj[key]
       }).join('&');
     }

@@ -209,7 +209,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
               this.isLoading = false;
               delete res['@odata.context'];
 
-              this.dataModel = res;
+              this.dataModel = {...res};
               this.updateForm(res);
           },
           error:(err) => {
