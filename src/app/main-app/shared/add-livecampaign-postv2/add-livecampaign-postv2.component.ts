@@ -1,3 +1,4 @@
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { LiveCampaignSimpleDetail } from './../../dto/live-campaign/livecampaign-simple.dto';
 import { ProductTemplateService } from './../../services/product-template.service';
 import { LiveCampaignDTO } from './../../dto/live-campaign/odata-live-campaign.dto';
@@ -7,7 +8,7 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -73,6 +74,10 @@ export class AddLivecampaignPostV2Component implements OnInit {
   indClick: number = -1;
   lstVariants:  ProductDTOV2[] = [];
   isLoadingSelect: boolean = false;
+  isLoadingNextdata: boolean = false;
+  countUOMLine: number = 0;
+  pageSize = 20;
+  pageIndex = 1;
 
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
@@ -103,6 +108,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
+    private cdRef: ChangeDetectorRef,
     private productTemplateService: ProductTemplateService) {
       this.createForm();
    }
@@ -164,11 +170,10 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   loadProduct(textSearch: string) {
     this.isLoadingProduct = true;
-    let top = 20;
-    let skip = 0;
 
-    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: ODataProductDTOV2) => {
+          this.countUOMLine = res['@odata.count'] as number;
           this.lstProduct = [...res.value];
           this.isLoadingProduct = false;
       },
@@ -384,6 +389,11 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   onSearchProduct(event: any) {
+    if(!this.textSearchProduct) {
+      return;
+    }
+
+    this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
@@ -642,8 +652,40 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   onOpenSearchvalue(){
     this.liveCampainDetails = [...this.detailsFormGroups.value];
-
     this.visible = true;
   }
 
+  vsEndUOMLine(event: NgxVirtualScrollerDto) {
+    if(this.isLoadingProduct || this.isLoadingNextdata) {
+        return;
+    }
+
+    let exisData = this.lstProduct && this.lstProduct.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+      const vsEnd = Number(this.lstProduct.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 && Number(this.lstProduct.length) < this.countUOMLine;
+      if(vsEnd) {
+          this.nextDataUOMLine();
+      }
+    }
+  }
+
+  nextDataUOMLine() {
+    this.isLoadingNextdata = true;
+    this.pageIndex += 1;
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, this.textSearchProduct).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && res.value) {
+            this.lstProduct = [...this.lstProduct, ...res.value];
+          }
+
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoadingNextdata = false;
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.detectChanges();
+      }
+    })
+  }
 }
