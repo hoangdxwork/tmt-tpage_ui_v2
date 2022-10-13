@@ -12,7 +12,7 @@ import { PaymentJsonDTO } from 'src/app/main-app/dto/bill/payment-json.dto';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSStatusType } from 'tds-ui/step';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -367,8 +367,15 @@ export class DetailBillComponent implements OnInit{
           next:(res: any) => {
 
             if(res) {
-                if(res.Error) that.message.error(res.Error);
-                if(res.Success) that.message.success('Xác nhận bán hàng thành công!');
+                if(res && TDSHelperString.hasValueString(res.Error) && res.Errors && !TDSHelperArray.hasListValue(res.Errors)){
+                  that.notificationService.error('Thông báo', res.Error);
+                } else {
+                  // danh sách lỗi
+                }
+
+                if(res.Success){
+                  that.notificationService.success('Thông báo', 'Xác nhận bán hàng thành công!');
+                }
 
                 let obs!: Observable<any>;
 

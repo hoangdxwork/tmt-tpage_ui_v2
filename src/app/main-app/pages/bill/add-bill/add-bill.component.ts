@@ -121,6 +121,7 @@ export class AddBillComponent implements OnInit {
   extraMoney: number = 0;
   insuranceFee: number = 0;
   indClickTag = -1;
+  idDiscount = -1;
 
   shipServices: CalculateFeeServiceResponseDto[] = [];
   shipExtraServices: ShipServiceExtra[] = [];
@@ -194,7 +195,8 @@ export class AddBillComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
     private suggestService: SuggestAddressService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private notification: TDSNotificationService) {
       this.createForm();
       this.loadCurrentCompany();
   }
@@ -664,6 +666,11 @@ export class AddBillComponent implements OnInit {
     }
   }
 
+  openDiscountPopover(i: number){
+    
+    this.idDiscount = i;
+  }
+
   openTrackingOrderGHN() {
     let key = this.dataModel.TrackingRef;
     this.fastSaleOrderService.getTokenTrackingOrderGHN({ key: key }).subscribe({
@@ -748,56 +755,59 @@ export class AddBillComponent implements OnInit {
     this.calcTotal();
   }
 
-  changeProductDiscountType(event: any, typeDiscount: string, i: number) {
-    // let datas = this._form.controls['OrderLines'].value;
-
-    // if (TDSHelperArray.hasListValue(datas)) {
-    //     datas.map((x: any, index: number) => {
-    //         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
-    //             x[`${typeDiscount}`] = event;
-    //         }
-    //     });
-    // }
-
+  changeProductDiscountType(item: OrderLineV2 ,event: any, typeDiscount: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-      datas[i][`${typeDiscount}`] = event;
+        datas.map((x: any, index: number) => {
+            if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+                x[`${typeDiscount}`] = event;
+            }
+        });
     }
 
-    let formArray = this._form.controls["OrderLines"] as FormArray;
-    formArray.at(i).patchValue(datas[i]);
+    // let datas = this._form.controls['OrderLines'].value;
 
-    this.dataModel.OrderLines = [...formArray.value];
+    // if (TDSHelperArray.hasListValue(datas)) {
+    //   datas[i][`${typeDiscount}`] = event;
+    // }
+
+    // let formArray = this._form.controls["OrderLines"] as FormArray;
+    // formArray.at(i).patchValue(datas[i]);
+
+    this.dataModel.OrderLines = [...datas];
 
     this.calcTotal();
   }
 
-  selectProductType(type: string, i: number) {
-    // let datas = this._form.controls['OrderLines'].value;
-    // if (TDSHelperArray.hasListValue(datas)) {
-
-    //   datas.map((x: any, index: number) => {
-    //     if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
-    //       x.Type = type;
-    //       x.Discount = 0;
-    //       x.Discount_Fixed = 0;
-    //     }
-    //   });
-    // }
+  selectProductType(item:OrderLineV2, type: string, i: number, e:MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
 
     let datas = this._form.controls['OrderLines'].value;
-
     if (TDSHelperArray.hasListValue(datas)) {
-      datas[i].Type = type;
-      datas[i].Discount = 0;
-      datas[i].Discount_Fixed = 0;
+
+      datas.map((x: any, index: number) => {
+        if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+          x.Type = type;
+          x.Discount = 0;
+          x.Discount_Fixed = 0;
+        }
+      });
     }
 
-    let formArray = this._form.controls["OrderLines"] as FormArray;
-    formArray.at(i).patchValue(datas[i]);
+    // let datas = this._form.controls['OrderLines'].value;
 
-    this.dataModel.OrderLines = [...formArray.value];
+    // if (TDSHelperArray.hasListValue(datas)) {
+    //   datas[i].Type = type;
+    //   datas[i].Discount = 0;
+    //   datas[i].Discount_Fixed = 0;
+    // }
+
+    // let formArray = this._form.controls["OrderLines"] as FormArray;
+    // formArray.at(i).patchValue(datas[i]);
+
+    this.dataModel.OrderLines = [...datas];
 
     this.calcTotal();
   }
@@ -1328,10 +1338,14 @@ export class AddBillComponent implements OnInit {
     this.fastSaleOrderService.actionInvoiceOpen(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
 
-          if(obs && TDSHelperString.hasValueString(obs.Error)) {
-              this.message.warning(obs.Error);
+          if(obs && TDSHelperString.hasValueString(obs.Error) && obs.Errors && obs.Errors.length == 0) {
+              this.notification.error('Thông báo', obs.Error);
           } else {
-              this.message.success('Xác nhận hóa đơn thành công!');
+            // xuất danh sách lỗi
+          }
+
+          if(obs.Success){
+            this.notification.success('Thông báo', 'Xác nhận hóa đơn thành công!');
           }
 
           let exist = obs && this.typePrint && data.FormAction == 'SaveAndPrint';
