@@ -236,9 +236,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
                 this.vsSocketImports[vsIndex].LatestMessage = {
-                    CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
-                    Message: itemNewMess.LatestMessage?.Message,
-                    MessageType: itemNewMess.LatestMessage?.MessageType
+                  CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                  Message: itemNewMess.LatestMessage?.Message,
+                  MessageType: itemNewMess.LatestMessage?.MessageType
                 } as any;
 
                 this.vsSocketImports[vsIndex].CountUnread = (this.vsSocketImports[vsIndex].CountUnread || 0) + 1;
@@ -248,6 +248,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 this.vsSocketImports = [ ...[itemNewMess], ...this.vsSocketImports];
             }
 
+            this.vsSocketImports = this.vsSocketImports.sort((a, b) => Date.parse(a.UpdatedTime) - Date.parse(b.UpdatedTime));
             this.vsSocketImports = [...this.vsSocketImports];
         }
     }
@@ -335,7 +336,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (res: any) => {
           let teamId = this.currentTeam?.Id as any;
           this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => { 
+              next: (data: any) => {
                   this.syncConversationInfo = {...data};
 
                   let csid = this.syncConversationInfo.Conversation.ConversationId;
@@ -669,7 +670,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.queryObj = {} as any;
     this.disableNextUrl = false;
 
-    this.queryObj = queryObj; 
+    this.queryObj = queryObj;
     if(Object.keys(this.queryObj).length > 0){
       this.isFilter = true;
     } else {
@@ -857,7 +858,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   vsStart(event: any) {
     if(event && Number(event.startIndex) >= 0) {
       // TODO: mapping dữ liệu socket ko có trong danh sách
-      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex <= 2 
+      let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1 && event.startIndex <= 2
         && this.vsSocketImports && this.vsSocketImports.length > 0;
 
       if(exist) {
