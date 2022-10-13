@@ -562,7 +562,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
                   countNew +=1;
 
                   if(!isVariants){
-                      this.notificationService.info(`Cập nhật sản phẩm ${x.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${x.Quantity}</span>`)
+                      this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
                   }
               } else {
                   formDetails = [...[x], ...formDetails];
@@ -571,7 +571,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
                   this.initFormDetails(formDetails);
                   if(!isVariants){
-                      this.notificationService.info(`Thêm mới sản phẩm ${x.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${x.Quantity}</span> sản phẩm ${x.ProductName}`)
+                      this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
                   }
               }
 
@@ -582,11 +582,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
           if(isVariants) {
               if(countNew > 0) {
-                this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm thành công ${countNew} sản phẩm vào danh sách`);
+                this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm thành công <span class="font-semibold text-secondary-1">${countNew}</span> sản phẩm vào danh sách`);
               }
 
               if(countEdit > 0) {
-                  this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật thành công ${countEdit} sản phẩm trong danh sách`);
+                  this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật thành công <span class="font-semibold text-secondary-1">${countEdit}</span> sản phẩm trong danh sách`);
               }
           }
         },

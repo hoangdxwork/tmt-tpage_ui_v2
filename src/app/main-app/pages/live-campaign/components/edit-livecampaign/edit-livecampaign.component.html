@@ -214,7 +214,7 @@
                   </tr>
                 </thead>
                 <tbody formArrayName="Details">
-                  <tr *ngFor="let detail of detailsForm.controls; let index = index"  [formGroupName]="index" [ngClass]="detail?.value.Id ? '' : 'bg-primary-3'">
+                  <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="index" [ngClass]="detail?.value.Id ? '' : 'bg-primary-3'">
 
                     <td class="text-center"> {{ index + 1 }} </td>
 

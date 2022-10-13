@@ -87,6 +87,7 @@ export interface QueryFilterConversationDto {
   has_unread?: boolean;
   not_address?: boolean;
   not_phone?: boolean;
-  state?: StateChatbot
+  state?: StateChatbot;
+  sort?: any[];
 }
 

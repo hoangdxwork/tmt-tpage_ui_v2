@@ -28,13 +28,13 @@ import { FormArray } from '@angular/forms';
 @Pipe({  name: 'simpleSearchV2' })
   export class SimpleSearchV2Pipe implements PipeTransform {
 
-  public transform(value: any, term: string) {
+  public transform(datas: any, term: string) {
 
-      if (!TDSHelperString.hasValueString(term)) return value;
+      if (!TDSHelperString.hasValueString(term)) return datas;
 
       term = TDSHelperString.stripSpecialChars(term.toLocaleLowerCase()).trim();
 
-      let data = value?.filter((x: any) => (x.value && x.value.ProductCode && x.value.ProductCode.indexOf(term) !== -1)
+      let data = datas?.filter((x: any) => (x.value && x.value.ProductCode && x.value.ProductCode.indexOf(term) !== -1)
         || (x.value && x.value.ProductName && TDSHelperString.stripSpecialChars(x.value.ProductName.toLocaleLowerCase()).trim().indexOf(term) !== -1)
         || (x.value && x.value.ProductNameGet && TDSHelperString.stripSpecialChars(x.value.ProductNameGet.toLocaleLowerCase()).trim().indexOf(term) !== -1));
 
