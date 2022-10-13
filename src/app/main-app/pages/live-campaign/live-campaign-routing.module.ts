@@ -1,3 +1,5 @@
+import { AddLiveCampaignV2Component } from './components/add-livecampaign-v2/add-livecampaign-v2.component';
+import { EditLiveCampaignComponent } from './components/edit-livecampaign/edit-livecampaign.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddLiveCampaignComponent } from './components/add-livecampaign/add-livecampaign.component';
@@ -11,15 +13,15 @@ const routes: Routes = [
   },
   {
     path: 'create',
-    component: AddLiveCampaignComponent
+    component: AddLiveCampaignV2Component
   },
   {
     path: 'edit/:id',
-    component: AddLiveCampaignComponent
+    component: EditLiveCampaignComponent
   },
   {
     path: 'copy/:id',
-    component: AddLiveCampaignComponent
+    component: AddLiveCampaignV2Component
   },
   {
     path: 'detail/:id',

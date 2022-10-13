@@ -213,6 +213,13 @@ export class AddLivecampaignPostV2Component implements OnInit {
           next: (res) => {
               this.isLoading = false;
               delete res['@odata.context'];
+              
+              if(res.StartDate) {
+                  res.StartDate = new Date(res.StartDate)
+              }
+              if(res.EndDate) {
+                  res.EndDate = new Date(res.EndDate)
+              }
 
               this.dataModel = res;
               this.updateForm(res);
@@ -285,14 +292,13 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.indClickTag = -1;
   }
 
-  initFormDetails(details: any[]) {
+  initFormDetails(details: LiveCampaignProductDTO[]) {
     details?.forEach(x => {
-        const control = <FormArray>this._form.controls['Details'];
-        control.push(this.initDetail(x));
+        this.detailsFormGroups.push(this.initDetail(x));
     });
   }
 
-  initDetail(x?: LiveCampaignProductDTO) {
+  initDetail(x: LiveCampaignProductDTO | null) {
     let item = this.fb.group({
         Id: [null],
         Index: [null],

@@ -219,6 +219,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
       next: (res) => {
           delete res['@odata.context'];
 
+          if(res.StartDate) {
+            res.StartDate = new Date(res.StartDate)
+          }
+          if(res.EndDate) {
+              res.EndDate = new Date(res.EndDate)
+          }
+
           this.dataModel = res;
           this.updateForm(res);
           this.isLoading = false;
@@ -231,10 +238,6 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   updateForm(data: any) {
-    if(data) {
-      data.StartDate = new Date(data.StartDate);
-      data.EndDate = new Date(data.EndDate);
-    }
     this._form.patchValue(data);
     this._form.controls['Id'].setValue(this.id);
 

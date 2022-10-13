@@ -65,6 +65,7 @@ import { SuggestAddressV2Component } from './suggest-address-v2/suggest-address-
 import { TDSAlertModule } from 'tds-ui/alert';
 import { EditLiveCampaignPostComponent } from './edit-livecampaign-post/edit-livecampaign-post.component';
 import { AddLivecampaignPostV2Component } from './add-livecampaign-postv2/add-livecampaign-postv2.component';
+import { ListProductTmpV2Component } from './list-product-tmp-v2/list-product-tmp-v2.component';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
 
@@ -94,7 +95,8 @@ const cmp =[
   ShowAttachmentComponent,
   DrawerDetailBillComponent,
   EditLiveCampaignPostComponent,
-  AddLivecampaignPostV2Component
+  AddLivecampaignPostV2Component,
+  ListProductTmpV2Component
 ]
 
 const SERVICES = [
