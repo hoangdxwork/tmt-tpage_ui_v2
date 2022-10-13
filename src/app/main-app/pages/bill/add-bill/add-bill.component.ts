@@ -667,7 +667,7 @@ export class AddBillComponent implements OnInit {
   }
 
   openDiscountPopover(i: number){
-    
+
     this.idDiscount = i;
   }
 
@@ -1260,6 +1260,10 @@ export class AddBillComponent implements OnInit {
         this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
                 let x = model.FormAction == 'SaveAndOpen' || model.FormAction == 'SaveAndPrint';
+
+                let warehouseId = res.WarehouseId;
+                this.loadInventoryByIds(warehouseId, [res.Id]);
+
                 if(x) {
                     this.actionInvoiceOpen(model);
                 } else {
@@ -1284,8 +1288,12 @@ export class AddBillComponent implements OnInit {
                 delete res['@odata.context'];
                 this.id = res.Id;
 
+                if(res?.Error && res?.Error.Message) {
+                    this.notification.error(res.Error.Message, res.Error?.Errors[0]?.Message);
+                }
+
                 // TODO: gửi lại vận đơn nếu chưa có mã vận đơn
-                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && res.Number
+                let code = res && !TDSHelperString.hasValueString(res.TrackingRef) && res.CarrierId && res.Number && !res?.Error
                   && (res.State !== 'cancel' || res.State !== 'draft') && (res.FormAction == 'SaveAndOpen' || res.FormAction == 'SaveAndPrint');
                 if(code) {
                     this.sendToShipper(res);
@@ -1293,6 +1301,8 @@ export class AddBillComponent implements OnInit {
                     this.loadOpenAndPrint(res);
                 }
 
+                let warehouseId = res.WarehouseId;
+                this.loadInventoryByIds(warehouseId, [res.Id]);
                 this.removelocalStorage();
             },
             error:(error) => {
@@ -1807,6 +1817,15 @@ export class AddBillComponent implements OnInit {
 
     const key2 = this.fastSaleOrderService._keyCacheCopyInvoice;
     localStorage.removeItem(key2);
+  }
+
+  loadInventoryByIds(warehouseId: number, ids: any) {
+    this.commonService.getInventoryByIds(warehouseId, ids).subscribe({
+        next: () => {},
+        error: (error: any) => {
+            this.message.error(error?.error?.message || 'Lỗi cập nhật tồn kho');
+        }
+    });
   }
 
 }
