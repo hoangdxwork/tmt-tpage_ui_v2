@@ -13,15 +13,15 @@ const routes: Routes = [
   },
   {
     path: 'create',
-    component: AddLiveCampaignV2Component
+    component: AddLiveCampaignComponent
   },
   {
     path: 'edit/:id',
-    component: EditLiveCampaignComponent
+    component: AddLiveCampaignComponent
   },
   {
     path: 'copy/:id',
-    component: AddLiveCampaignV2Component
+    component: AddLiveCampaignComponent
   },
   {
     path: 'detail/:id',

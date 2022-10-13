@@ -25,10 +25,9 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { LiveCampaignProductDTO, LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { CRMTeamService } from '@app/services/crm-team.service';
-import { CRMTeamDTO } from '@app/dto/team/team.dto';
 
 @Component({
-  selector: 'add-livecampaign',
+  selector: 'add-livecampaign-v2',
   templateUrl: './add-livecampaign-v2.component.html',
   providers: [TDSDestroyService]
 })
@@ -346,7 +345,7 @@ export class AddLiveCampaignV2Component implements OnInit {
           simpleDetail = [...simpleDetail, ...[exist]];
       }
     })
-    
+
     if(simpleDetail && simpleDetail.length > 0){
         this.pushItemToFormArray(simpleDetail, model.isVariants)
     }
@@ -387,7 +386,7 @@ export class AddLiveCampaignV2Component implements OnInit {
           this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật <span class="font-semibold text-secondary-1">${countEdit}</span> sản phẩm trong danh sách`);
       }
     }
-    
+
     this.liveCampainDetails = [...this.detailsFormGroups.value];
   }
 

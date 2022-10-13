@@ -1,13 +1,11 @@
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Pipe, PipeTransform } from '@angular/core';
 import * as lodash from 'lodash';
-import { LiveCampaignSimpleDetail } from '@app/dto/live-campaign/livecampaign-simple.dto';
-import { FormArray } from '@angular/forms';
 
 @Pipe({   name: 'simpleSearch' })
   export class SimpleSearchPipe implements PipeTransform {
 
-  public transform(value: TDSSafeAny[] , keys: string, term: string) {debugger
+  public transform(value: TDSSafeAny[] , keys: string, term: string) {
 
     if (!TDSHelperString.hasValueString(term)) return value;
 

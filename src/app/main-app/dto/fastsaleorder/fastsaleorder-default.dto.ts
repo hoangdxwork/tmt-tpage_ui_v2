@@ -680,9 +680,15 @@ export interface FastSaleOrder_DefaultDTOV2 {
     IsDeposited?: any;
     Source?: any;
     FormAction?: any;
-    Error?: any;
+    Error?: Error;
     HistoryDeliveryDetails?: any[];
     OutstandingInfo?: any;
+}
+
+export interface Error {
+  Code: string;
+  Message: string;
+  Errors: any[];
 }
 
 export interface OrderSendShipDTO {
