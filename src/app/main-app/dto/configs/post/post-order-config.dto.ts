@@ -69,6 +69,7 @@ export interface AutoOrderConfigDTO {
     ShopLabel: string;
     ShopLabel2: string;
     IsOrderAutoReplyOnlyOnce: boolean;
+    IsOrderCreateOnlyOnce: boolean;//Chỉ tạo đơn 1 lần khi khách cmt trùng mã. Lấy số lượng lớn nhất cho các lần cmt trùng mã
 }
 
 export interface AutoHiddenConfigDTO {

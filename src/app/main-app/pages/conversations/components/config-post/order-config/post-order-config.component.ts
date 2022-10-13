@@ -723,6 +723,7 @@ export class PostOrderConfigComponent implements OnInit {
     model.MinLengthToOrder = this.dataModel.MinLengthToOrder;
     model.TextContentToExcludeOrder = this.dataModel.TextContentToExcludeOrder;
     model.TextContentToOrders = this.dataModel.TextContentToOrders;
+    model.IsOrderCreateOnlyOnce = this.dataModel.IsOrderCreateOnlyOnce || false;
     model.Users = this.prepareUser(this.dataModel.Users);
 
     if(model.Users == null){
