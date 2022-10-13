@@ -1,3 +1,5 @@
+import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSNotificationService } from 'tds-ui/notification';
 import { ModalManualUpdateDeliveryComponent } from './../modal-manual-update-delivery/modal-manual-update-delivery.component';
 import { ModalUpdateDeliveryFromExcelComponent } from './../modal-update-delivery-from-excel/modal-update-delivery-from-excel.component';
 import { ShipCodeDeliveryComponent } from './../ship-code-delivery/ship-code-delivery.component';
@@ -48,6 +50,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     private modal: TDSModalService,
     private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService,
+    private notification: TDSNotificationService,
     private viewContainerRef: ViewContainerRef,
     private excelExportService: ExcelExportService,
     private printerService: PrinterService,
@@ -390,14 +393,28 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Xác nhận bán hàng',
         content: 'Bạn có muốn xác nhận bán hàng',
         onOk: () => {
-          that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-            that.message.success('Xác nhận bán hàng thành công!');
-            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
-          }, error => {
-            that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
+          that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+              if(res && TDSHelperString.hasValueString(res.Error) && res.Errors && !TDSHelperArray.hasListValue(res.Errors)){
+                that.notification.error('Thông báo', res.Error);
+              } else {
+                // danh sách lỗi
+              }
+
+              if(res.Success) {
+                that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
+              }
+              
+              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              that.isProcessing = false;
+            }, 
+            error:err => {
+              that.isProcessing = false;
+              that.message.error(`${err?.error?.message}` || 'Xác nhận bán hàng thất bại');
+            }
           })
         },
-        onCancel: () => { that.isProcessing = false; },
+        onCancel: () => { that.isProcessing = false },
         okText: "Xác nhận",
         cancelText: "Đóng",
       });
