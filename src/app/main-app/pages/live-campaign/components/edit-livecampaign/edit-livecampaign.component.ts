@@ -343,13 +343,13 @@ export class EditLiveCampaignComponent implements OnInit {
                 index = Number(index);
                 this.detailsFormGroups.at(index).patchValue(x);
   
-                this.notificationService.info(`Cập nhật sản phẩm ${x.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${x.Quantity}</span>`)
+                this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
             } else {
                 formDetails = [...[x], ...formDetails]
                 this.detailsFormGroups.clear();
                 this.initFormDetails(formDetails);
   
-                this.notificationService.info(`Thêm mới sản phẩm ${x.ProductName}`, `Đã thêm thành công <span class="font-semibold text-secondary-1">${x.Quantity}</span> sản phẩm ${x.ProductName}`)
+                this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
             }
   
             delete this.isEditDetails[x.Id];

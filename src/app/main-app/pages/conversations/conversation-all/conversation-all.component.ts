@@ -1,3 +1,5 @@
+import { SortEnum } from './../../../../lib/enum/sort.enum';
+import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
 import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from './../../../services/socket-io/socket-onevent.service';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
@@ -71,6 +73,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setOfCheckedId = new Set<string>();
 
   queryObj: QueryFilterConversationDto = {} as any;
+  sort: Array<SortDataRequestDTO> = [{
+    field: "UpdatedTime",
+    dir: SortEnum.asc,
+  }];
   isFilter: boolean = false;
 
   isLoadingNextdata: boolean = false;
@@ -530,6 +536,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
 
     this.queryObj = {} as any;
+    this.isSort = false;
     this.isFilter = false;
     this.innerText.nativeElement.value = '';
     this.isProcessing = false;
@@ -570,10 +577,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   setSort(){
     this.isSort = !this.isSort;
     if(this.isSort) {
-      this.lstConversation = [...this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(a.UpdatedTime) - Date.parse(b.UpdatedTime))];
+        this.queryObj.sort = this.sort;
     } else {
-      this.lstConversation = [...this.lstConversation?.sort((a: ChatomniConversationItemDto, b: ChatomniConversationItemDto) => Date.parse(b.UpdatedTime) - Date.parse(a.UpdatedTime))];
+        delete this.queryObj.sort;
     }
+
+    this.disableNextUrl = false;
+    this.loadFilterDataSource();
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -675,6 +685,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.isFilter = true;
     } else {
       this.isFilter = false;
+    }
+
+    if(this.isSort) {
+      this.queryObj.sort = this.sort;
     }
 
     this.loadFilterDataSource();
