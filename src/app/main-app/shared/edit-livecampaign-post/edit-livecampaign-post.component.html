@@ -140,12 +140,12 @@
                             <div *ngFor="let item of scroll.viewPortItems; let index = index;"
                                 (click)="selectProduct(item, index)" tds-popover popoverTrigger="click"
                                 [popoverVisible]="index == indClick" [popoverBackdrop]="true"
-                                [popoverPlacement]="['topLeft', 'leftTop']" class=" w-full block h-[56px]"
+                                [popoverPlacement]="['topLeft', 'leftTop']" class="w-full block h-[56px]"
                                 [popoverContent]="contentTemplate" [popoverAutoClose]="true">
 
-                                <div class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer  rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
+                                <div class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
                                   <div>
-                                      <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom  }}đ </span>
+                                      <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom }}đ </span>
                                   </div>
 
                                   <div *ngIf="lstInventory && lstInventory[item.Id]">
@@ -166,7 +166,7 @@
                                             Chọn tất cả
                                         </button>
 
-                                        <button *ngIf="lstVariants && lstVariants.length == 1" tds-button color="secondary" size="sm" (click)="getCurrentVariant(item)" type="button">
+                                        <button tds-button color="secondary" size="sm" (click)="getCurrentVariant(item)" type="button">
                                             Chọn hiện tại
                                         </button>
                                       </div>

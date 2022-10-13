@@ -359,31 +359,31 @@
                         </h1>
                     </div>
                     <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Người bán</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.User?.Name || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.User?.Name || '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Seri</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.Seri || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.Seri || '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Ngày hóa đơn</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ (dataModel.DateInvoice | date:"dd/MM/yyyy HH:mm") || '---'}}</span>
+                                <span class="font-semibold">{{ (dataModel.DateInvoice | date:"dd/MM/yyyy HH:mm") || '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Trạng thái</span>
                             </div>
@@ -391,28 +391,29 @@
                                 <span class="font-semibold">{{ dataModel.State | getShowState}}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Ngày hóa đơn đỏ</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ (dataModel.DateOrderRed | date:"dd/MM/yyyy HH:mm") || '---'}}</span>
+                                <span class="font-semibold">{{ (dataModel.DateOrderRed | date:"dd/MM/yyyy HH:mm") || '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
-                            <div class="w-1/3">
-                                <span>Ghi chú đơn hàng</span>
-                            </div>
-                            <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.Comment || '---' }}</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Số hóa đơn đỏ</span>
                             </div>
                             <div class="w-2/3">
                                 <span class="font-semibold">{{ dataModel.NumberOrder || '---' }}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6">
+                            <div class="w-1/3">
+                                <span>Ghi chú đơn hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <div *ngIf="dataModel.Comment" class="font-semibold break-words" showMore [text]="dataModel.Comment" [length]="50"></div>
+                                <span *ngIf="!dataModel.Comment">---</span>
                             </div>
                         </div>
                     </div>
@@ -427,7 +428,7 @@
                         </h1>
                     </div>
                     <div class="grid grid-cols-1 gap-y-4 gap-x-8">
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Đối tác giao hàng</span>
                             </div>
@@ -435,7 +436,7 @@
                                 <span class="font-semibold">{{ dataModel.Carrier?.Name || '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Giao hàng thu tiền</span>
                             </div>
@@ -443,7 +444,7 @@
                                 <span class="font-semibold">{{ (dataModel.CashOnDelivery || 0) | numberCustom }} đ</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Đối soát GH</span>
                             </div>
@@ -451,7 +452,7 @@
                                 <span class="font-semibold">{{ dataModel.ShowShipStatus || '---'}}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Phí giao hàng</span>
                             </div>
@@ -459,7 +460,7 @@
                                 <span class="font-semibold">{{ (dataModel.DeliveryPrice || 0) | numberCustom }} đ</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Khối lượng ship (g)</span>
                             </div>
@@ -467,7 +468,7 @@
                                 <span class="font-semibold">{{ (dataModel.ShipWeight || 0) | numberCustom }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Tiền cọc</span>
                             </div>
@@ -475,7 +476,7 @@
                                 <span class="font-semibold">{{ (dataModel.AmountDeposit || 0) | numberCustom }} đ</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Mã vận đơn</span>
                             </div>
@@ -484,7 +485,7 @@
                                 <span class="font-semibold" *ngIf="!dataModel.TrackingRef">{{ '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Trạng thái vận đơn</span>
                             </div>
@@ -492,13 +493,13 @@
                                 <span class="font-semibold">{{ dataModel.ShipPaymentStatus || '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 ">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Ghi chú giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="italic" *ngIf="dataModel.DeliveryNote">{{ dataModel.DeliveryNote }}</span>
-                                <span *ngIf="!dataModel.DeliveryNote">{{ '---' }}</span>
+                                <div class="italic" *ngIf="dataModel.DeliveryNote" showMore [text]="dataModel.DeliveryNote" [length]="50"></div>
+                                <span *ngIf="!dataModel.DeliveryNote">---</span>
                             </div>
                         </div>
                         <!-- Thông tin nâng cao -->
@@ -543,7 +544,7 @@
                         </h1>
                     </div>
                     <div class="grid grid-cols-1 gap-y-4 gap-x-8">
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Tên người nhận</span>
                             </div>
@@ -551,7 +552,7 @@
                                 <span class="font-semibold">{{ dataModel.ReceiverName || '---' }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Điện thoại</span>
                             </div>
@@ -567,7 +568,7 @@
                                 <span class="font-semibold">{{dataModel.ReceiverDate | date:"dd-MM-yyyy HH:mm"}}</span>
                             </div>
                         </div> -->
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Địa chỉ giao hàng</span>
                             </div>
@@ -575,12 +576,13 @@
                                 <span class="font-semibold">{{ dataModel.ReceiverAddress || '---'}}</span>
                             </div>
                         </div>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Ghi chú</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.ReceiverNote || '---'}}</span>
+                                <div *ngIf="dataModel.ReceiverNote" class="font-semibold" showMore [text]="dataModel.ReceiverNote" [length]="50"></div>
+                                <span *ngIf="!dataModel.ReceiverNote">---</span>
                             </div>
                         </div>
                     </div>

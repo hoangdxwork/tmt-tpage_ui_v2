@@ -1,7 +1,6 @@
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
-import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
@@ -18,7 +17,6 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utili
 import { differenceInCalendarDays } from 'date-fns';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { ProductService } from '@app/services/product.service';
-import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalProductTemplateComponent } from '../tpage-add-product/modal-product-template.component';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
@@ -431,6 +429,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         return;
     }
 
+    this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
