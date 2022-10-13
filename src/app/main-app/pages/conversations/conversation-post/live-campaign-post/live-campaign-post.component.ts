@@ -126,7 +126,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
   showModelCreateLiveCampaign() {
     const modal = this.modal.create({
       title: 'Tạo mới chiến dịch',
-      content: AddLivecampaignPostV2Component,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       bodyStyle: {
         padding: '0px',
@@ -158,7 +158,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Chỉnh sửa chiến dịch',
-      content: EditLiveCampaignPostComponent,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       bodyStyle: {
         padding: '0px',
@@ -230,7 +230,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     const modal = this.modal.create({
       title: 'Sao chép chiến dịch',
-      content: AddLivecampaignPostV2Component,
+      content: AddLiveCampaignPostComponent,
       size: "xl",
       bodyStyle: {
         padding: '0px',
