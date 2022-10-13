@@ -276,7 +276,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniDataDto) => {
             this.dataSource = { ...res };
-          
+
             this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
             this.dataSource.Items = [...this.dataSource.Items];
             this.lengthDataSource = this.dataSource.Items.length;
@@ -684,20 +684,20 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
-        this.loadMDBByPSId(this.team.ChannelId, data.UserId);
+        this.loadMDBByPSId(this.team.Id, data.UserId);
     }
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     delete this.currentConversation;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-            this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+            this.currentConversation = { ...res };
 
             this.isOpenDrawer = true;
             this.cdRef.detectChanges();
