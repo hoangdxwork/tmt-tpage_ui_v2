@@ -197,7 +197,7 @@ export class FacebookCartComponent implements OnInit {
         IsRemoveProduct: formModel.IsRemoveProduct as boolean,
         IsRemoveProductInValid: formModel.IsRemoveProductInValid as boolean,
         IsDisplayInventory: formModel.IsDisplayInventory as boolean,
-        IsMergeOrder: formModel.IsMergeOrder as boolean
+        // IsMergeOrder: formModel.IsMergeOrder as boolean
     } as ConfigFacebookCartDTO
 
     return model;
