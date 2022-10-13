@@ -7,7 +7,7 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -18,7 +18,7 @@ import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.ser
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { differenceInCalendarDays, isFirstDayOfMonth } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampaignProductDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
@@ -28,7 +28,6 @@ import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { SharedService } from '@app/services/shared.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
-import { TDSTableComponent } from 'tds-ui/table';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
@@ -37,6 +36,7 @@ import { Message } from '@core/consts/message.const';
   selector: 'app-add-livecampaign-postv2',
   templateUrl: './add-livecampaign-postv2.component.html',
 })
+
 export class AddLivecampaignPostV2Component implements OnInit {
 
   @Input() id?: string;
@@ -44,8 +44,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   selectedIndex: number = 0;
   _form!: FormGroup;
-
-  @ViewChild('virtualTable', { static: false }) tdsTableComponent?: TDSTableComponent<any>;
 
   searchValue = '';
   visible = false;
@@ -59,7 +57,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
   dataModel!: LiveCampaignDTO;
   lstUser: ApplicationUserDTO[] = [];
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
-  lstProductSearch: ProductDTOV2[] = [];
+  lstProduct: ProductDTOV2[] = [];
   lstInventory!: GetInventoryDTO;
   textSearchProduct!: string;
   isLoading: boolean = false;
@@ -76,7 +74,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
   lstVariants:  ProductDTOV2[] = [];
   isLoadingSelect: boolean = false;
 
-  numberWithCommas =(value:TDSSafeAny) =>{
+  numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -98,7 +96,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private notificationService: TDSNotificationService,
-    private fastSaleOrderLineService: FastSaleOrderLineService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productService: ProductService,
     private sharedService: SharedService,
@@ -115,8 +112,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   ngOnInit(): void {
-    if(this.id && TDSHelperString.hasValueString(this.id)) {
-      this.loadData(this.id);
+    if(this.id) {
+        this.loadData(this.id);
     }
 
     this.loadUser();
@@ -152,7 +149,10 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.applicationUserService.setUserActive();
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.lstUser = [...res];
+          this.lstUser = [...res];
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     })
   }
@@ -164,12 +164,12 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   loadProduct(textSearch: string) {
     this.isLoadingProduct = true;
-    let top = 30;
+    let top = 20;
     let skip = 0;
 
     this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: ODataProductDTOV2) => {
-          this.lstProductSearch = [...res.value];
+          this.lstProduct = [...res.value];
           this.isLoadingProduct = false;
       },
       error:(err) =>{
@@ -434,7 +434,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
           simpleDetail = [...simpleDetail, ...[exist]];
       }
     })
-    
+
     if(simpleDetail && simpleDetail.length > 0){
         this.pushItemToFormArray(simpleDetail, isVariants)
     }
@@ -487,7 +487,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
           this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật ${countEdit} sản phẩm trong danh sách`);
       }
     }
-    
+
     this.liveCampainDetails = [...this.detailsFormGroups.value];
   }
 
@@ -537,10 +537,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   onCannel(data?: any) {
     this.modalRef.destroy(data);
-  }
-
-  scrollToIndex(index: number): void {
-    this.tdsTableComponent?.cdkVirtualScrollViewport?.scrollToIndex(index);
   }
 
   trackByIndex(i: any): number {

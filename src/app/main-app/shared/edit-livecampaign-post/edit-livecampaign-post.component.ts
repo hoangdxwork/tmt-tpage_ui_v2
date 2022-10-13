@@ -5,7 +5,7 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -29,6 +29,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
 @Component({
   selector: 'edit-livecampaign-post',
@@ -54,7 +55,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   dataModel!: LiveCampaignSimpleDto;
   lstUser: ApplicationUserDTO[] = [];
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
-  lstProductSearch: ProductDTOV2[] = [];
+  lstProduct: ProductDTOV2[] = [];
   lstInventory!: GetInventoryDTO;
   textSearchProduct!: string;
   isLoading: boolean = false;
@@ -71,6 +72,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
   indClick: number = -1;
   lstVariants:  ProductDTOV2[] = [];
   isLoadingSelect: boolean = false;
+  countUOMLine: number = 0;
+  pageSize = 20;
+  pageIndex = 1;
+  isLoadingNextdata: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
@@ -90,6 +95,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
     private fb: FormBuilder,
+    private cdRef: ChangeDetectorRef,
     private liveCampaignService: LiveCampaignService,
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
@@ -148,6 +154,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.lstUser = [...res];
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     })
   }
@@ -159,17 +168,19 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   loadProduct(textSearch: string) {
     this.isLoadingProduct = true;
-    let top = 30;
-    let skip = 0;
 
-    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: ODataProductDTOV2) => {
-          this.lstProductSearch = [...res.value];
+          this.countUOMLine = res['@odata.count'] as number;
+          this.lstProduct = [...res.value];
+
           this.isLoadingProduct = false;
+          this.cdRef.detectChanges();
       },
       error:(err) =>{
           this.isLoadingProduct = false;
           this.message.error(err?.error?.message || 'Không thể tải danh sách sản phẩm');
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -472,7 +483,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     })
 
     if(simpleDetail && simpleDetail.length > 0){
-        this.addProductLiveCampaignDetails(simpleDetail, isVariants);   
+        this.addProductLiveCampaignDetails(simpleDetail, isVariants);
     }
   }
 
@@ -551,7 +562,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
                       this.notificationService.info(`Cập nhật sản phẩm ${x.ProductName}`, `Số lượng hiện tại là <span class="font-semibold text-secondary-1">${x.Quantity}</span>`)
                   }
               } else {
-                  formDetails = [...[x], ...formDetails]
+                  formDetails = [...[x], ...formDetails];
                   this.detailsFormGroups.clear();
                   countEdit +=1;
 
@@ -565,13 +576,15 @@ export class EditLiveCampaignPostComponent implements OnInit {
           })
 
           this.livecampaignSimpleDetail = [...this.detailsFormGroups.value];
+
           if(isVariants) {
-            if(countNew > 0) {
-              this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm thành công ${countNew} sản phẩm vào danh sách`);
-            }
-            if(countEdit > 0) {
-                this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật thành công ${countEdit} sản phẩm trong danh sách`);
-            }
+              if(countNew > 0) {
+                this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm thành công ${countNew} sản phẩm vào danh sách`);
+              }
+
+              if(countEdit > 0) {
+                  this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật thành công ${countEdit} sản phẩm trong danh sách`);
+              }
           }
         },
         error: (err: any) => {
@@ -725,6 +738,40 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   onOpenSearchvalue(){
     this.visible = true;
+  }
+
+  vsEndUOMLine(event: NgxVirtualScrollerDto) {
+    if(this.isLoadingProduct || this.isLoadingNextdata) {
+        return;
+    }
+
+    let exisData = this.lstProduct && this.lstProduct.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+      const vsEnd = Number(this.lstProduct.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 && Number(this.lstProduct.length) < this.countUOMLine;
+      if(vsEnd) {
+          this.nextDataUOMLine();
+      }
+    }
+  }
+
+  nextDataUOMLine() {
+    this.isLoadingNextdata = true;
+    this.pageIndex += 1;
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, this.textSearchProduct).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && res.value) {
+            this.lstProduct = [...this.lstProduct, ...res.value];
+          }
+
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoadingNextdata = false;
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
 }
