@@ -38,7 +38,7 @@
                     <tds-form-field class="w-full">
                         <tds-label>Không phản hồi nếu bình luận chứa nội dung:</tds-label>
 
-                        <tds-select placeholder='Nhập nội dung và bấm chọn' mode="tags" [maxTagCount]="10"
+                        <tds-select placeholder='Nhập nội dung và bấm chọn' mode="tags" [maxTagCount]="10" [backdrop]="true"
                           [(ngModel)]="lstCommentNotAutoReply" (ngModelChange)="changeCommentNotAutoReply($event)">
                         </tds-select>
                     </tds-form-field>
