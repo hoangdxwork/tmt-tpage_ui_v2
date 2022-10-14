@@ -109,7 +109,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   saleModel!: FastSaleOrder_DefaultDTOV2;
   enableInsuranceFee: boolean = false;
   userInit!: UserInitDTO;
-  lstProductSearch: ProductDTOV2[] = [{} as any];
+  lstProductSearch: ProductDTOV2[] = [];
 
   //TODO: dữ liệu aship v2
   shipExtraServices: ShipServiceExtra[] = [];
@@ -1348,7 +1348,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   loadProduct(textSearch: string) {
-    this.isLoadingProduct = false;
+    this.isLoadingProduct = true;
 
     this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataProductDTOV2) => {

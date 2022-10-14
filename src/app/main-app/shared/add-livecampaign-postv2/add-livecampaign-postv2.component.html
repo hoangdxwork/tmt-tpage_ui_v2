@@ -41,6 +41,11 @@
                       disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                   </tds-select>
                 </tds-form-field>
+                <div class="w-[34px]">
+                  <button type="button" tds-button-icon color="secondary" (click)="showModalAddQuickReply()">
+                    <i class="tdsi-plus-circle-fill text-primary-1"></i>
+                  </button>
+                </div>
               </div>
 
               <tds-label>Mẫu tin dự bị</tds-label>
@@ -174,9 +179,9 @@
 
                         </ng-template>
                     </div>
-                    <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
-                        <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
-                    </div>
+                    <div *ngIf="isLoadingNextdata" class="px-2 bg-white">
+                      <tds-skeleton [tdsActive]="true" [tdsTitle]="false" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
+                  </div>
 
                   </virtual-scroller>
 
