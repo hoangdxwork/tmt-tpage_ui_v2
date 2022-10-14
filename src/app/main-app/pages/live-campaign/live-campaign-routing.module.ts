@@ -1,3 +1,5 @@
+import { AddLiveCampaignV2Component } from './components/add-livecampaign-v2/add-livecampaign-v2.component';
+import { EditLiveCampaignComponent } from './components/edit-livecampaign/edit-livecampaign.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddLiveCampaignComponent } from './components/add-livecampaign/add-livecampaign.component';

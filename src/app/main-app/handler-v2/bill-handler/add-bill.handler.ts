@@ -110,13 +110,13 @@ export class AddBillHandler {
     // TODO: trường hợp edit
     if(data.Id && data.Id > 0) {
       data.OrderLines?.map((x: OrderLineV2) => {
-        if (x.Id <= 0) {
+        if (x.Id < 0) {
           x.Id = 0;
         }
         x.OrderId = data.Id;
         x.PartnerId = data.PartnerId;
         x.CompanyId = data.CompanyId;
-        x.UserId = data.UserId;
+        x.UserId = x.UserId || data.UserId;
         x.User = x.User || data.User;
       })
     }
@@ -141,7 +141,8 @@ export class AddBillHandler {
             ProductUOMId: x.ProductUOMId,
             ProductUOMQty: x.ProductUOMQty,
             Type: x.Type || 'percent',
-            User: data.User,
+            User: x.User || data.User,
+            UserId: x.UserId || data.UserId,
             Weight: x.Weight,
             WeightTotal: x.WeightTotal,
         } as any;

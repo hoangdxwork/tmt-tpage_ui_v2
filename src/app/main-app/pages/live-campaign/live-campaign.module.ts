@@ -1,3 +1,4 @@
+import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { DirectivesModule } from './../../shared/directives/directives.module';
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
@@ -95,6 +96,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { DrawerBillMessageComponent } from './components/drawer-bill-message/drawer-bill-message.component';
 import { TDSBadgeModule } from 'tds-ui/badges';
 import { EditLiveCampaignComponent } from './components/edit-livecampaign/edit-livecampaign.component';
+import { AddLiveCampaignV2Component } from './components/add-livecampaign-v2/add-livecampaign-v2.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -126,7 +128,8 @@ const cmp =[
   DrawerBillMessageComponent,
   FilterOptionCampaignComponent,
   ExpandOrderLivecampaignComponent,
-  EditLiveCampaignComponent
+  EditLiveCampaignComponent,
+  AddLiveCampaignV2Component
 ]
 
 const SERVICES = [
@@ -160,12 +163,13 @@ const SERVICES = [
   ActivityMatchingService,
   ConversationService,
   ChatomniCommentFacade,
-  ChatomniConversationFacade
+  ChatomniConversationFacade,
+  PrepareAddCampaignHandler
 ]
 
 @NgModule({
   declarations: [
-    ...cmp,
+    ...cmp
   ],
   imports: [
     CommonModule,
@@ -205,6 +209,7 @@ const SERVICES = [
     TDSConversationsModule,
     OrderModule,
     DirectivesModule,
+    
   ],
   providers: [
     ...SERVICES

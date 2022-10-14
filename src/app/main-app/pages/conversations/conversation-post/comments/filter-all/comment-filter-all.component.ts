@@ -153,7 +153,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     this.partnerDict = {};
     this.chatomniCommentFacade.loadPartnerTimestampByCache(team);
     this.chatomniCommentFacade.partnerTimeStamp().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {debugger
+      next: (res: any) => {
           this.partnerDict = res.Data;
           this.cdRef.markForCheck();
       }

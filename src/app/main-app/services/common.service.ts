@@ -70,7 +70,7 @@ export class CommonService extends BaseSevice {
 
   getInventoryByIds(warehouseId: number, ids: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v1.0/product/getinventorybyids?WarehouseId=${warehouseId}&ProductIds=${ids}`,
+      url: `${this._BASE_URL}/rest/v1.0/product/getinventorybyids?warehouseId=${warehouseId}&productIds=${ids}`,
       method: CoreApiMethodType.get,
     }
 
