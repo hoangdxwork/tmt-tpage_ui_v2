@@ -12,7 +12,7 @@
 
                     <tds-form-field *ngIf="dataModel.AssignOnPhone">
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnPhone"
-                            [data]="(lstTags$ | async) || []" [allowClear]="true" >
+                            [data]="(lstTags$ | async) || []" [allowClear]="true" [backdrop]="true">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -25,7 +25,7 @@
 
                     <tds-form-field *ngIf="dataModel.AssignOnBillDraft">
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnBillDraft"
-                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                            [data]="(lstTags$ | async) || []" [allowClear]="true" [backdrop]="true">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -38,7 +38,7 @@
 
                     <tds-form-field *ngIf="dataModel.AssignOnOrder">
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnOrder"
-                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                            [data]="(lstTags$ | async) || []" [allowClear]="true" [backdrop]="true">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -51,7 +51,7 @@
 
                     <tds-form-field *ngIf="dataModel.AssignOnBillPrintShip">
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnBillPrintShip"
-                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                            [data]="(lstTags$ | async) || []" [allowClear]="true" [backdrop]="true">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -64,7 +64,7 @@
 
                     <tds-form-field *ngIf="dataModel.AssignOnBillPrint">
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" [(ngModel)]="dataModel.TagOnBillPrint"
-                            [data]="(lstTags$ | async) || []" [allowClear]="true">
+                            [data]="(lstTags$ | async) || []" [allowClear]="true" [backdrop]="true">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -89,13 +89,13 @@
               <div class="flex gap-x-4" *ngFor="let item of lstTagOnPattern; let i =index">
                 <tds-form-field class="w-full">
                   <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [(ngModel)]="item.CrmTag"
-                      [data]="(lstTags$ | async) || []" [valuePrimitive]="false"
+                      [data]="(lstTags$ | async) || []" [valuePrimitive]="false" [backdrop]="true"
                       [allowClear]="true">
                   </tds-select>
                 </tds-form-field>
 
                 <tds-form-field class="w-full">
-                    <tds-select [ngModel]="item.CrmKey" placeholder='Chọn từ khóa' mode="tags" (ngModelChange)="changeTagOnPattern($event, i)">
+                    <tds-select [ngModel]="item.CrmKey" placeholder='Chọn từ khóa' mode="tags" [backdrop]="true" (ngModelChange)="changeTagOnPattern($event, i)">
                     </tds-select>
                 </tds-form-field>
 

@@ -23,7 +23,7 @@
                   <tds-form-field class="mt-1">
                       <tds-label>Ẩn nếu bình luận chứa nội dung bất kỳ:</tds-label>
                       
-                      <tds-select [ngModel]="lstContentOfCommentForAutoHide" placeholder='Nhập nội dung và nhấn [Enter]'
+                      <tds-select [ngModel]="lstContentOfCommentForAutoHide" placeholder='Nhập nội dung và nhấn [Enter]' [backdrop]="true"
                           mode="tags" [maxTagCount]="20" (ngModelChange)="changeContentOfCommentForAutoHide($event)">
                       </tds-select>
                   </tds-form-field>
