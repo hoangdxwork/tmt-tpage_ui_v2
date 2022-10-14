@@ -132,7 +132,7 @@ export class DuplicateUserComponent implements OnInit {
       title: 'Confirm',
       content: 'Bạn có xác nhận chuyển đổi?',
       onOk: () => this.onSave(),
-      onCancel: () => { console.log('cancel') },
+      onCancel: () => {},
       okText: "OK",
       cancelText: "Cancel",
       confirmViewType: "compact",

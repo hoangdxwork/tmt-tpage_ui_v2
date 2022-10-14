@@ -33,12 +33,11 @@ export class DrawerBillMessageComponent implements OnInit {
 
   loadData(liveCampaignId: string, orderId: string, skip: number, take: number) {
     this.isLoading = true;
-    console.log(orderId)
     this.commonService.getHistoryMessageSentFSOrderDetail(liveCampaignId, orderId, skip, take)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstData = res?.Datas;
-        this.count = res?.Total || 0;console.log(res)
+        this.count = res?.Total || 0;
       }, error => {
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });

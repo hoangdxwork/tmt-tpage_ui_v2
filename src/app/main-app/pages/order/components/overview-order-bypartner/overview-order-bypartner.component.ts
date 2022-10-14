@@ -108,11 +108,8 @@ export class OverviewOrderBypartnerComponent implements OnInit {
           return this.getView(pageSize, pageIndex);
 
         })).subscribe((res: any) => {
-
           this.count = res["@odata.count"];
           this.lstOrder = [...res.value];
-          console.log(this.lstOrder);
-
           this.isLoading = false;
         }, err => {
           this.isLoading = false;
