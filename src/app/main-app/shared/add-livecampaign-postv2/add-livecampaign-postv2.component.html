@@ -41,9 +41,6 @@
                       disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                   </tds-select>
                 </tds-form-field>
-                <button tds-button-icon type="button" color="secondary">
-                  <i class="tdsi-plus-circle-fill text-primary-1"></i>
-                </button>
               </div>
 
               <tds-label>Mẫu tin dự bị</tds-label>
@@ -132,7 +129,7 @@
                         <i (click)="closeSearchProduct()" class="text-neutral-1-500 tdsi-close-fill"></i>
                       </span>
                   </tds-form-field>
-                  
+
                   <virtual-scroller *ngIf="textSearchProduct && lstProduct && lstProduct.length > 0; else noDataProduct"
                     #scroll [items]="lstProduct"
                     (vsEnd)="vsEndUOMLine($event)"
@@ -238,12 +235,6 @@
                                 <button tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()" tds-tooltip tooltipTitle="Xóa tất cả"  type="button">
                                     <span class="flex items-center text-neutral-1-500">
                                         <i class="tdsi-trash-fill"></i>
-                                    </span>
-                                </button>
-
-                                <button type="button" class="ml-1" tds-button-icon color="secondary" size="sm" (click)="refreshData()" tds-tooltip tooltipTitle="Reload">
-                                    <span class="flex items-center text-neutral-1-500">
-                                        <i class="tdsi-loading-fill"></i>
                                     </span>
                                 </button>
                               </th>

@@ -122,12 +122,13 @@ export class ChatomniConversationService extends BaseSevice {
           res.Items.forEach((x: ChatomniConversationItemDto) => {
             let idx = lstConversation.findIndex(a => a.ConversationId == x.ConversationId);
 
-            if(idx > -1) {
+            if(idx >= 0) {
 
                 let item = {...lstConversation[idx]};
                 lstConversation[idx] = {...x};
 
                 lstConversation[idx].LatestMessage = {...item.LatestMessage} as any;
+                lstConversation[idx].UpdatedTime = item.UpdatedTime;
                 res.Items = res.Items.filter(y => x.ConversationId != y.ConversationId);
             }
           });
