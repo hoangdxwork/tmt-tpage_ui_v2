@@ -46,13 +46,14 @@
                                   <!-- Mã hóa đơn -->
                                   <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold">
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
                                             {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
                                         </span>
 
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1"
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" (click)="onPopoverVisible(item.Id)"
                                             class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
                                             tds-popover
+                                            [popoverVisible]="idPopoverVisible == item.Id"
                                             [popoverContent]="invContent"
                                             popoverTrigger="click"
                                             [popoverBackdrop]="true">
@@ -60,10 +61,10 @@
                                         </span>
 
                                         <ng-template #invContent>
-                                            <div class="flex flex-wrap min-w-[200px] max-w-[400px]">
+                                            <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
                                                 <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
-                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)">
-                                                        <span class="text-primary-1 font-semibold" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
+                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)" (click)="onOpenDrawerBillDetail(inv)">
+                                                        <span class="text-primary-1 font-semibold cursor-pointer" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
                                                         <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
                                                     </span>
                                                 </div>
@@ -304,6 +305,8 @@
 
     </virtual-scroller>
 </tds-spin>
+
+<drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order" (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
 
 <tds-drawer [visible]="isOpenDrawer"
     [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
