@@ -1,9 +1,9 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { ODataPartnerStartusDTO, PartnerStatusDTO } from '@app/dto/partner/partner-status.dto';
 import { PartnerService } from '@app/services/partner.service';
 import { FilterDataRequestDTO, SortDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { THelperDataRequest } from '@core/services/helper-data.service';
-import { debounceTime, finalize, fromEvent, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { finalize, Observable, Subject, takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
@@ -15,7 +15,6 @@ import { CreatePartnerStatusComponent } from '../create-partner-status/create-pa
   templateUrl: './partner-status.component.html',
 })
 export class PartnerStatusComponent implements OnInit {
-  // @Input() onLoadData!: boolean;
   @Input() filterText!: string;
   private destroy$ = new Subject<void>();
 
@@ -35,25 +34,11 @@ export class PartnerStatusComponent implements OnInit {
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
   ) { }
-  // ngOnChanges(changes: SimpleChanges): void {
-  //   if (changes["onLoadData"] && !changes["onLoadData"].firstChange) {
-  //     this.loadData(this.pageSize, this.pageIndex);
-  //   }
-  // }
 
   ngOnInit(): void {
-    // this.loadData(this.pageSize, this.pageIndex);
   }
 
   ngAfterViewInit(): void {
-    // fromEvent(this.filterText, 'keyup').pipe(
-    //   map((event: any) => { return event.target.value }),
-    //   debounceTime(750),
-    //   // distinctUntilChanged(),
-    //   // TODO: switchMap xử lý trường hợp sub in sub
-    //   switchMap((text: string) => {
-    //
-    // });
   }
 
   onSearch(text: string) {
@@ -139,7 +124,6 @@ export class PartnerStatusComponent implements OnInit {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      debugger
       if (TDSHelperObject.hasValue(result)) {
         this.pageIndex = 1;
         this.filterText = '';

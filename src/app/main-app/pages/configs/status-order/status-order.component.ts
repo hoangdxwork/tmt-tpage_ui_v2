@@ -1,18 +1,15 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { FilterObjDTO, OdataOrderStatusDTO, OrderStatusDTO } from '@app/dto/order/order-status.dto';
-import { ODataPartnerStartusDTO } from '@app/dto/partner/partner-status.dto';
-import { PartnerService } from '@app/services/partner.service';
+import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { OdataOrderStatusDTO, OrderStatusDTO } from '@app/dto/order/order-status.dto';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { FilterDataRequestDTO, SortDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { SortEnum } from '@core/enum';
 import { THelperDataRequest } from '@core/services/helper-data.service';
-import { debounceTime, finalize, fromEvent, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { finalize, Observable, Subject, takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { CreateOrderStatusComponent } from '../components/create-order-status/create-order-status.component';
-import { CreatePartnerStatusComponent } from '../components/create-partner-status/create-partner-status.component';
 import { PartnerStatusComponent } from '../components/partner-status/partner-status.component';
 
 @Component({
@@ -57,32 +54,7 @@ export class StatusOrderComponent implements OnInit {
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
-    // this.loadData(this.pageSize, this.pageIndex);
   }
-
-  // ngAfterViewInit(): void {
-  //   fromEvent(this.filterText.nativeElement, 'keyup').pipe(
-  //     map((event: any) => { return event.target.value }),
-  //     debounceTime(750),
-  //     // distinctUntilChanged(),
-  //     // TODO: switchMap xử lý trường hợp sub in sub
-  //     switchMap((text: string) => {
-  //       this.pageIndex = 1;
-  //       this.filterObj.searchText = text;
-
-  //       let filters;
-  //       if (TDSHelperString.hasValueString(this.filterObj.searchText)) {
-  //         filters = this.saleOnlineOrderService.buildFilter(this.filterObj);
-  //       }
-
-  //       let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
-  //       return this.getViewData(params);
-  //     })
-  //   ).subscribe((res: OdataOrderStatusDTO) => {
-  //     this.count = res['@odata.count'] as number;
-  //     this.lstOfData = res.value;
-  //   });
-  // }
 
   onSearch(data: TDSSafeAny) {
     this.pageIndex = 1;
@@ -244,15 +216,15 @@ export class StatusOrderComponent implements OnInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  onSelectChange() {debugger
+  onSelectChange() {
     switch (this.selectedIndex) {
       case 0:
-          this.innerText = '';
-          this.refreshData();
+        this.innerText = '';
+        this.refreshData();
         break;
       case 1:
-          this.innerText = '';
-          this.PartnerStatusComponent.refreshData();
+        this.innerText = '';
+        this.PartnerStatusComponent.refreshData();
         break;
     }
   }
