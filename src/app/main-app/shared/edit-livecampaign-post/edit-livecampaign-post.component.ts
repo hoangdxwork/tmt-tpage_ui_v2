@@ -558,19 +558,19 @@ export class EditLiveCampaignPostComponent implements OnInit {
               if(Number(index) >= 0) {
                   index = Number(index);
                   this.detailsFormGroups.at(index).patchValue(x);
-                  countNew +=1;
+                  countEdit +=1;
 
                   if(!isVariants){
-                      this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
+                      this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
                   }
               } else {
                   formDetails = [...[x], ...formDetails];
                   this.detailsFormGroups.clear();
-                  countEdit +=1;
+                  countNew +=1;
 
                   this.initFormDetails(formDetails);
                   if(!isVariants){
-                      this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
+                      this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
                   }
               }
 
@@ -581,11 +581,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
           if(isVariants) {
               if(countNew > 0) {
-                this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm thành công <span class="font-semibold text-secondary-1">${countNew}</span> sản phẩm vào danh sách`);
+                this.notificationService.info(`Thêm sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${items[0].ProductName}</span></span><span> Số lượng thêm: <span class="font-semibold text-secondary-1">${countNew}</span></span></div>`);
               }
 
               if(countEdit > 0) {
-                  this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật thành công <span class="font-semibold text-secondary-1">${countEdit}</span> sản phẩm trong danh sách`);
+                  this.notificationService.info(`Cập nhật sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${items[0].ProductName}</span></span><span> Số lượng cập nhật: <span class="font-semibold text-secondary-1">${countEdit}</span></span></div>`);
               }
           }
         },
@@ -718,6 +718,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   refreshData() {
     this.visible = false;
     this.searchValue = '';
+    this.innerTextValue = '';
     this.dataModel = null as any;
 
     this.detailsFormGroups.clear();
