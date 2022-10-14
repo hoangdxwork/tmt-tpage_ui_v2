@@ -85,6 +85,7 @@ import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -124,7 +125,8 @@ const SERVICES = [
   ConversationService,
   SO_PrepareFastSaleOrderHandler,
   ChatomniCommentFacade,
-  ChatomniConversationFacade
+  ChatomniConversationFacade,
+  ChatomniConversationService
 ]
 
 @NgModule({

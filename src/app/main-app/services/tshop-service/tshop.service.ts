@@ -1,3 +1,4 @@
+import { TDSHelperObject } from 'tds-ui/shared/utility';
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Message } from '@core/consts/message.const';
@@ -25,13 +26,16 @@ export class TShopService  {
   eventLogin()
   {
     window.addEventListener("message", (event: MessageEvent<any>) => {
-      let data = JSON.parse(event.data);
+      if(TDSHelperObject.hasValue(event?.data))
+      {
+        let data = JSON.parse(event.data);
 
-      this.message.success(Message.TShop.LoginSuccess);
+        this.message.success(Message.TShop.LoginSuccess);
 
-      if(data?.access_token && data?.user) {
-        this.setCurrentToken(data?.access_token);
-        this.onUpdateUser(data?.user);
+        if(data?.access_token && data?.user) {
+          this.setCurrentToken(data?.access_token);
+          this.onUpdateUser(data?.user);
+        }
       }
     });
   }

@@ -62,6 +62,15 @@ export class ChatomniConversationService extends BaseSevice {
     return this.apiService.getData<ChatomniConversationDto>(api, null);
   }
 
+  getById(channelId: number, csid: string): Observable<ChatomniConversationItemDto>
+  {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/conversation/${channelId}_${csid}`,
+        method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<ChatomniConversationItemDto>(api, null);
+  }
+
   makeDataSource(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
 
     this.urlNext = '';
