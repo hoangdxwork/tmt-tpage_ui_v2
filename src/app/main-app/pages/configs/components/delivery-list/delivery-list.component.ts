@@ -23,7 +23,7 @@ export class DeliveryListComponent implements OnInit {
   public lstType: any[] = [
     { id: 'all', name: 'Tất cả' },
     { id: 'active', name: 'Có hiệu lực' },
-    { id: 'expire', name: 'Hêt hiệu lực' },
+    { id: 'expire', name: 'Hết hiệu lực' },
   ];
   currentType: any = { id: 'all', name: 'Tất cả' };
 
