@@ -180,7 +180,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
                     this.dataSource.Items = [...this.dataSource.Items];
 
                     this.lengthDataSource = this.dataSource.Items.length;
-                    this.virtualScroller.scrollToPosition(0);
+                    
+                    if(this.virtualScroller) {
+                      this.virtualScroller.scrollToPosition(0);
+                    }
                 } else {
                     this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
                     this.vsSocketImports = [...this.vsSocketImports];

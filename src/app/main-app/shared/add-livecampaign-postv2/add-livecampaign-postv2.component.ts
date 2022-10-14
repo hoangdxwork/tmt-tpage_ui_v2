@@ -1,3 +1,4 @@
+import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { LiveCampaignSimpleDetail } from './../../dto/live-campaign/livecampaign-simple.dto';
 import { ProductTemplateService } from './../../services/product-template.service';
@@ -653,6 +654,23 @@ export class AddLivecampaignPostV2Component implements OnInit {
   onOpenSearchvalue(){
     this.liveCampainDetails = [...this.detailsFormGroups.value];
     this.visible = true;
+  }
+
+  showModalAddQuickReply() {
+    let modal = this.modal.create({
+        title: 'Thêm mới trả lời nhanh',
+        content: ModalAddQuickReplyComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'md'
+    });
+
+    modal.afterClose.subscribe({
+      next:(res) => {
+        if(res) {
+          this.loadQuickReply();
+        }
+      }
+    })
   }
 
   vsEndUOMLine(event: NgxVirtualScrollerDto) {
