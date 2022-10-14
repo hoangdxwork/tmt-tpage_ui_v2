@@ -476,7 +476,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.isShowFormInfo = event;
   }
 
-  onBack() {debugger
+  onBack() {
     if(Object.keys(this.isEditDetails).length > 0) {
       this.modalService.info({
         title: 'Thao tác chưa được lưu',
