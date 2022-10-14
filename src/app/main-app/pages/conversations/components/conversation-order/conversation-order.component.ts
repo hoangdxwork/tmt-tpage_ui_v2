@@ -71,6 +71,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -125,6 +126,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   isEqualAmountInsurance: boolean = false;
   delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
   isEnableCalcFee: boolean = false;
+
+  indClick: number = -1;
+  lstVariants:  ProductDTOV2[] = [];
+  isLoadingSelect: boolean = false;
+  countUOMLine: number = 0;
+  pageSize = 20;
+  pageIndex = 1;
+  isLoadingNextdata: boolean = false;
 
   numberWithCommas = (value:TDSSafeAny) => {
     if(value != null){
@@ -1203,6 +1212,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.quickOrderModel.Details[index].Quantity += 1;
     }
 
+    this.closeSearchProduct();
     this.calcTotal();
     this.coDAmount();
   }
@@ -1328,18 +1338,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSearchProduct(event: any) {
+    if(!this.textSearchProduct) {
+      return;
+    }
+
+    this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
 
   loadProduct(textSearch: string) {
-
-    let top = 20;
-    let skip = 0;
-
     this.isLoadingProduct = false;
-    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
+
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataProductDTOV2) => {
+        this.countUOMLine = res['@odata.count'] as number;
         this.lstProductSearch = [...res.value];
         this.isLoadingProduct = false;
         this.cdRef.detectChanges();
@@ -1582,5 +1595,39 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     } else {
         this.isEnableCalcFee = false;
     }
+  }
+
+  vsEndUOMLine(event: NgxVirtualScrollerDto) {
+    if(this.isLoadingProduct || this.isLoadingNextdata) {
+        return;
+    }
+
+    let exisData = this.lstProductSearch && this.lstProductSearch.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+      const vsEnd = Number(this.lstProductSearch.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 && Number(this.lstProductSearch.length) < this.countUOMLine;
+      if(vsEnd) {
+          this.nextDataUOMLine();
+      }
+    }
+  }
+
+  nextDataUOMLine() {
+    this.isLoadingNextdata = true;
+    this.pageIndex += 1;
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, this.textSearchProduct).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && res.value) {
+            this.lstProductSearch = [...this.lstProductSearch, ...res.value];
+          }
+
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoadingNextdata = false;
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.detectChanges();
+      }
+    })
   }
 }
