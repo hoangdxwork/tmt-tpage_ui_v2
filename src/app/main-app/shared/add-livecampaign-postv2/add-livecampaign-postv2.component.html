@@ -50,6 +50,9 @@
                       disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                   </tds-select>
               </tds-form-field>
+              <button tds-button-icon type="button" color="secondary">
+                <i class="tdsi-plus-circle-fill text-primary-1"></i>
+              </button>
             </div>
 
             <div class="grid grid-cols-3 gap-y-4 gap-x-3">
@@ -82,10 +85,41 @@
                 <tds-form-field [color]="isDepositChange ? 'error' : 'default'">
                   <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" placeholder="0" formControlName="MinAmountDeposit"
                     [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
-                </tds-form-field>
-                <span *ngIf="isDepositChange" class="text-error-400 text-caption-1">
-                  *Nếu tiền đặt cọc bắt buộc nhỏ hơn tổng tiền giỏ hàng thì trường này là bắt buộc
-                </span>
+            </tds-form-field>
+
+            <tds-label>Ngày bắt đầu</tds-label>
+            <tds-form-field class="col-span-2 w-full">
+                  <tds-date-picker placeholder="Chọn ngày bắt đầu" showTime formControlName="StartDate" [disabledDate]="disabledDate">
+                  </tds-date-picker>
+            </tds-form-field>
+
+            <tds-label>Ngày kết thúc</tds-label>
+            <tds-form-field class="col-span-2 w-full">
+                  <tds-date-picker placeholder="Chọn ngày kết thúc" showTime formControlName="EndDate" [disabledDate]="disabledDate">
+                  </tds-date-picker>
+            </tds-form-field>
+
+            <tds-label>Đặt cọc bắt buộc</tds-label>
+            <tds-form-field class="col-span-2 w-full">
+                  <tds-input-number [min]="0" [step]="1000" placeholder="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
+                    [formatter]="numberWithCommas" [parser]="parserComas" (ngModelChange)="onChangeDeposit($event)"></tds-input-number>
+            </tds-form-field>
+
+            <tds-label>Đặt cọc tối thiểu</tds-label>
+            <div class="flex flex-col gap-y-1 w-full col-span-2">
+              <tds-form-field [color]="isDepositChange ? 'error' : 'default'">
+                <tds-input-number [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular" placeholder="0" formControlName="MinAmountDeposit"
+                  [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+              </tds-form-field>
+              <span *ngIf="isDepositChange" class="text-error-400 text-caption-1">
+                *Nếu tiền đặt cọc bắt buộc nhỏ hơn tổng tiền giỏ hàng thì trường này là bắt buộc
+              </span>
+            </div>
+
+            <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">
+              <div class="flex justify-between gap-x-3">
+                <tds-label>Bật xử lý chốt đơn tự động</tds-label>
+                <tds-checkbox formControlName="IsEnableAuto"></tds-checkbox>
               </div>
 
               <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">
@@ -113,6 +147,7 @@
               </div>
 
             </div>
+
           </div>
         </tds-tab>
         <tds-tab title="Sản phẩm ({{ detailsFormGroups.value?.length || 0 }})" clsContent="p-4 border-t border-neutral-2-200">
@@ -186,7 +221,7 @@
                             <tds-empty></tds-empty>
                         </tds-spin>
                       </div>
-                  </ng-template>
+                  </tds-spin>
                 </div>
 
                 <button tds-button color="primary" size="md" (click)="createProduct()"  type="button">

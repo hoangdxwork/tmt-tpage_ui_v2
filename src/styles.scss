@@ -16,6 +16,9 @@
 @import "./assets/scss/notification.scss";
 @import "./assets/scss/emojiMart.scss";
 
+@import "../node_modules/tds-editor/assets/tdsskin.scss";
+@import "../node_modules/tds-editor/assets/tdscontent.scss";
+
 body {
     overflow: hidden;
     height: 100vh;

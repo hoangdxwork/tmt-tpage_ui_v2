@@ -137,7 +137,7 @@
           </div>
 
           <!-- Phiếu bán hàng -->
-          <div class="pt-1" *ngIf="!isEditPartner && lastBill && lastBill.Id">
+          <div class="pt-1" *ngIf="!isEditPartner && lastInvoice && lastInvoice.Id">
             <tds-collapse [expandIconPosition]="'right'" class="bg-white" style="border: 0; border-radius: 0">
               <tds-collapse-panel [header]="headerSalesDetails" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
 
@@ -147,12 +147,12 @@
                         <div class="flex flex-col gap-1">
                             <div class="text-neutral-1-400 font-regular text-body-2 font-sans">Phiếu bán hàng gần nhất</div>
 
-                            <div class="flex gap-2 items-center" *ngIf="lastBill">
+                            <div class="flex gap-2 items-center" *ngIf="lastInvoice">
 
-                                <drawer-detail-bill [isBillNearest]="true" [bill]="lastBill"></drawer-detail-bill>
+                                <drawer-detail-bill [isBillNearest]="true" [bill]="lastInvoice"></drawer-detail-bill>
 
-                                <tds-tag status='primary' class="w-full truncate" type="outline" [status]="lastBill.ShowState | getColorStatusShowState">
-                                  {{ lastBill.ShowState }}
+                                <tds-tag status='primary' class="w-full truncate" type="outline" [status]="lastInvoice.ShowState | getColorStatusShowState">
+                                  {{ lastInvoice.ShowState }}
                                 </tds-tag>
 
                             </div>
@@ -160,36 +160,36 @@
                     </div>
                 </ng-template>
 
-                <div class="w-full h-full flex flex-col gap-3" *ngIf="lastBill && lastBill.Id">
+                <div class="w-full h-full flex flex-col gap-3" *ngIf="lastInvoice && lastInvoice.Id">
                     <div class="flex gap-3 items-center">
-                        <div *ngIf="lastBill.CarrierName" class="text-body-2 font-semibold font-sans text-neutral-1-900">
-                          <!-- <img [src]="lastBill.Type | getAvatarCarrier" alt=""> -->
+                        <div *ngIf="lastInvoice.CarrierName" class="text-body-2 font-semibold font-sans text-neutral-1-900">
+                          <img [src]="lastInvoice.Type | getAvatarCarrier" alt="">
                           <span>
-                            {{ lastBill.CarrierName || 'Chưa có đối tác'}}
+                            {{ lastInvoice.CarrierName || 'Chưa có đối tác'}}
                           </span>
                         </div>
 
-                        <div *ngIf="!lastBill.CarrierName" class="text-body-2 italic font-regular font-sans text-neutral-1-900">
+                        <div *ngIf="!lastInvoice.CarrierName" class="text-body-2 italic font-regular font-sans text-neutral-1-900">
                           (Chưa có đối tác)</div>
 
                         <div class="text-body-2 font-regular font-sans text-neutral-1-900">
-                          [ {{ lastBill.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastBill.TrackingRef"> - {{ lastBill.TrackingRef }}</span>]
+                          [ {{ lastInvoice.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastInvoice.TrackingRef"> - {{ lastInvoice.TrackingRef }}</span>]
                         </div>
 
                     </div>
 
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                        Tổng tiền: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.AmountTotal | numberCustom }} đ ({{ lastBill.PaymentJournalName }})</span>
+                        Tổng tiền: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastInvoice.AmountTotal | numberCustom }} đ ({{ lastInvoice.PaymentJournalName }})</span>
                     </div>
 
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                        Ngày tạo: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
+                        Ngày tạo: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastInvoice.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
                     </div>
 
                     <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                        {{ lastBill.Phone }} - {{ lastBill.Address }} </div>
+                        {{ lastInvoice.Phone }} - {{ lastInvoice.Address }} </div>
 
-                    <div class="text-caption-1 font-semibold font-sans text-accent-3" [innerHtml]="lastBill.DeliveryNote | bbcodeConvert"></div>
+                    <div class="text-caption-1 font-semibold font-sans text-accent-3" [innerHtml]="lastInvoice.DeliveryNote | bbcodeConvert"></div>
                 </div>
               </tds-collapse-panel>
             </tds-collapse>
@@ -206,11 +206,11 @@
                     </div>
                 </ng-template>
 
-                <div class="w-full h-full" *ngIf="lstBill">
-                    <div class="w-full">
+                <div class="w-full h-full">
+                    <div class="w-full" *ngIf="stateInvoices">
                       <tds-filter-status [ngModel]='tab_Bill' [ngModelOptions]="{standalone: true}" class="gap-2 flex flex-wrap">
-                          <tds-filter-status-item *ngFor="let item of lstBill; let index = index"
-                              [name]='item.Value[0].ShowState' [value]='index' [count]='item.Total' (click)="onChangeTabBill(index)">
+                          <tds-filter-status-item *ngFor="let item of stateInvoices; let index = index"
+                              [name]='item.Name' [value]='index' [count]='item.Total' (click)="onChangeTabBill(index, item)">
 
                               <ng-template tds-filter-status-template let-active='active' let-count='count' let-name='name' let-value>
 
@@ -226,8 +226,8 @@
                       </tds-filter-status>
                   </div>
 
-                  <div class="pt-4 flex flex-col gap-2 w-full" *ngIf="lstBill">
-                      <tds-collapse *ngFor="let item of lstBill[tab_Bill]?.Value; let index = index" class="!rounded-xl">
+                  <div class="pt-4 flex flex-col gap-2 w-full" *ngIf="lstInvoice">
+                      <tds-collapse *ngFor="let item of lstInvoice; let index = index" class="!rounded-xl">
                           <tds-collapse-panel [header]="headerBill" [active]="false" [disabled]="false" class="!rounded-xl">
                               <ng-template #headerBill>
                                   <div class="grid grid-cols-3 gap-x-6 w-full" *ngIf="item">
