@@ -355,8 +355,8 @@ export class ListProductTmpV2Component implements OnInit {
 
   selectProduct(data: ProductDTOV2, index?: number){
     let uomId: number = data.UOMId;
-    if(index) {
-        this.indClick = index;
+    if(Number(index) >= 0) {
+        this.indClick = Number(index);
     }
     
     this.loadProductAttributeLine(data.ProductTmplId, uomId);
@@ -382,6 +382,7 @@ export class ListProductTmpV2Component implements OnInit {
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
           this.isLoadingSelect = false;
+          this.indClick = -1;
         }
       }
     )
