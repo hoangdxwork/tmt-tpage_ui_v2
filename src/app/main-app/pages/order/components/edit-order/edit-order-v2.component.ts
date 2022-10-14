@@ -52,6 +52,7 @@ import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/pr
 import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
 @Component({
   selector: 'edit-order-v2',
@@ -101,6 +102,14 @@ export class EditOrderV2Component implements OnInit {
   innerText: string = '';
 
   selectedIndex: number = 0;
+
+  indClick: number = -1;
+  lstVariants:  ProductDTOV2[] = [];
+  isLoadingSelect: boolean = false;
+  countUOMLine: number = 0;
+  pageSize = 20;
+  pageIndex = 1;
+  isLoadingNextdata: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -304,6 +313,11 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onSearchProduct(event: any) {
+    if(!this.textSearchProduct) {
+      return;
+    }
+
+    this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
@@ -769,12 +783,11 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadProduct(textSearch: string) {
-    let top = 20;
-    let skip = 0;
     this.isLoadingProduct = true;
-
-    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
+    
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataProductDTOV2) => {
+        this.countUOMLine = res['@odata.count'] as number;
         this.lstProductSearch = [...res.value];
         this.isLoadingProduct = false
       },
@@ -1048,5 +1061,39 @@ export class EditOrderV2Component implements OnInit {
     } else {
         this.isEnableCalcFee = false;
     }
+  }
+
+  vsEndUOMLine(event: NgxVirtualScrollerDto) {
+    if(this.isLoadingProduct || this.isLoadingNextdata) {
+        return;
+    }
+
+    let exisData = this.lstProductSearch && this.lstProductSearch.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+      const vsEnd = Number(this.lstProductSearch.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 && Number(this.lstProductSearch.length) < this.countUOMLine;
+      if(vsEnd) {
+          this.nextDataUOMLine();
+      }
+    }
+  }
+
+  nextDataUOMLine() {
+    this.isLoadingNextdata = true;
+    this.pageIndex += 1;
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, this.textSearchProduct).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && res.value) {
+            this.lstProductSearch = [...this.lstProductSearch, ...res.value];
+          }
+
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoadingNextdata = false;
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.detectChanges();
+      }
+    })
   }
 }
