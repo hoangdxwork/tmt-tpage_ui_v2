@@ -135,35 +135,39 @@
                                     </span>
                                 </tds-form-field>
 
-                                <virtual-scroller *ngIf="textSearchProduct && lstProductSearch && lstProductSearch.length > 0; else noDataProduct"
-                                    #scroll [items]="lstProductSearch"
-                                    (vsEnd)="vsEndUOMLine($event)"
-                                    [enableUnequalChildrenSizes]="true"
-                                    [scrollAnimationTime]="750"
-                                    class="absolute left-0 right-0 -bottom-2 top-full p-2 h-[300px] text-caption-1 overflow-hidden overflow-y-auto tds-panel-scroll z-10 bg-white flex flex-col gap-y-2 shadow-md">
-        
-                                    <div *ngFor="let item of scroll.viewPortItems; let index = index;"
-                                        (click)="selectProduct(item)" class="w-full block h-[56px]">
-        
-                                        <div *ngIf="item" class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
-                                          <div>
-                                              <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom }}đ </span>
-                                          </div>
-        
-                                          <div *ngIf="lstInventory && lstInventory[item.Id]">
-                                              <span class="text-neutral-1-400">Tồn kho: </span>
-                                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
-        
-                                              <span class="text-neutral-1-400">Tồn dự báo: </span>
-                                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div *ngIf="isLoadingNextdata" class="px-2 bg-white">
-                                        <tds-skeleton [tdsActive]="true" [tdsTitle]="false" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                                    </div>
-        
-                                </virtual-scroller>
+                                <div *ngIf="textSearchProduct && lstProductSearch && lstProductSearch.length > 0; else noDataProduct" class="absolute left-0 right-0 -bottom-2 top-full h-[300px] z-10 bg-white shadow-md">
+                                    <tds-spin [spinning]="isLoadingProduct" class="flex h-full overflow-hidden">
+                                        <virtual-scroller
+                                            #scroll [items]="lstProductSearch"
+                                            (vsEnd)="vsEndUOMLine($event)"
+                                            [enableUnequalChildrenSizes]="true"
+                                            [scrollAnimationTime]="750"
+                                            class="h-full p-2 text-caption-1 overflow-hidden overflow-y-auto tds-panel-scroll bg-white flex flex-col gap-y-2 shadow-md">
+                
+                                            <div *ngFor="let item of scroll.viewPortItems; let index = index;"
+                                                (click)="selectProduct(item)" class="w-full block h-[56px]">
+                
+                                                <div *ngIf="item" class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
+                                                <div>
+                                                    <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom }}đ </span>
+                                                </div>
+                
+                                                <div *ngIf="lstInventory && lstInventory[item.Id]">
+                                                    <span class="text-neutral-1-400">Tồn kho: </span>
+                                                    <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
+                
+                                                    <span class="text-neutral-1-400">Tồn dự báo: </span>
+                                                    <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="isLoadingNextdata" class="px-2 bg-white">
+                                                <tds-skeleton [tdsActive]="true" [tdsTitle]="false" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
+                                            </div>
+                
+                                        </virtual-scroller> 
+                                    </tds-spin>
+                                </div>
 
                                 <ng-template #noDataProduct>
                                     <div *ngIf="textSearchProduct" class="absolute left-0 right-0 -bottom-2 top-full h-44 overflow-hidden z-10 bg-white shadow-md">

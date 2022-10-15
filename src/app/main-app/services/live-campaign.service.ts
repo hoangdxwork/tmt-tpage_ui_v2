@@ -272,4 +272,17 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  //TODO: mẫu add product
+  urlSampleProductLiveCampaign(): any {
+    let url = `${this._BASE_URL}/Content/files/live_campaign/mau_import_san_pham_live_campaign.xlsx`;
+    return url;
+  }
+
+  importProductLivecampaign(data: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this.baseRestApi}/importproductlivecampaign`,
+      method: CoreApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
 }

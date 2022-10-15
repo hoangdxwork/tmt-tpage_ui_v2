@@ -1,3 +1,4 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
@@ -5,7 +6,7 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { DeliveryCarrierDTOV2 } from '../../../../dto/delivery-carrier.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef, ViewChild } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -62,6 +63,7 @@ import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-
 
 export class EditOrderV2Component implements OnInit {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() dataItem!: QuickSaleOnlineOrderModel;
 
   _form!: FormGroup;
@@ -315,6 +317,11 @@ export class EditOrderV2Component implements OnInit {
   onSearchProduct(event: any) {
     if(!this.textSearchProduct) {
       return;
+    }
+
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
     }
 
     this.pageIndex = 1;

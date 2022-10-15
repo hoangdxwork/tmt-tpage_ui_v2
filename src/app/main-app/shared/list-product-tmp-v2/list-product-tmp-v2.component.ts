@@ -376,7 +376,10 @@ export class ListProductTmpV2Component implements OnInit {
           this.lstVariantsV2 = [...res.value];
           this.lstVariantsV2.map((x: ProductDTOV2) => {
             x.UOMId = uomId;
-          })
+          });
+
+          this.lstVariantsV2 = this.lstVariantsV2.filter((x: ProductDTOV2) => x.Active);
+
           this.isLoadingSelect = false;
         },
         error: error => {
