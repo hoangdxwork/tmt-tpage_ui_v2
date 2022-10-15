@@ -1,3 +1,4 @@
+import { ImportProductLivecampaignComponent } from './../import-product-livecampaign/import-product-livecampaign.component';
 import { PrepareAddCampaignHandler } from './../../../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { GetInventoryDTO } from './../../../../dto/product/product.dto';
@@ -634,4 +635,12 @@ export class AddLiveCampaignV2Component implements OnInit {
     this.visible = true;
   }
 
+  showModalSelectFileProduct() {
+    this.modalService.create({
+      title: 'Chọn sản phẩm từ file',
+      size:'xl',
+      content: ImportProductLivecampaignComponent,
+      viewContainerRef: this.viewContainerRef
+    });
+  }
 }

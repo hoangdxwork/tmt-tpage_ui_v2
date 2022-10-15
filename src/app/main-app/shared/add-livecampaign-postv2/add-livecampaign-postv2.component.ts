@@ -1,3 +1,4 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { LiveCampaignSimpleDetail } from './../../dto/live-campaign/livecampaign-simple.dto';
@@ -9,7 +10,7 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -41,6 +42,7 @@ import { Message } from '@core/consts/message.const';
 
 export class AddLivecampaignPostV2Component implements OnInit {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() id?: string;
   @Input() isCopy?: boolean;
 
@@ -394,6 +396,11 @@ export class AddLivecampaignPostV2Component implements OnInit {
       return;
     }
 
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
+
     this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
@@ -634,6 +641,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
             this.lstVariants?.map((x: ProductDTOV2) => {
                 x.UOMId = uomId;
             })
+
+            this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
 
             this.isLoadingSelect = false;
         },
