@@ -31,6 +31,7 @@
             </div>
         </div>
     </div>
+
     <div class="w-1/2 h-full flex justify-center items-center relative">
         <div class="w-2/5 bg-white flex relative">
             <div *ngIf="isLoading"
@@ -56,20 +57,22 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="flex justify-center mb-10">
                     <span class="text-heading-3 font-semibold pt-2.5">Đăng nhập tài khoản</span>
                 </div>
-                <form [formGroup]="loginForm" action="" (ngSubmit)="onSubmit()">
+
+                <form *ngIf="!isConfirmAccount" [formGroup]="loginForm" action="" (ngSubmit)="onSubmit()">
                     <tds-label class="mb-2">Tài Khoản</tds-label>
-                    <tds-form-field tds-form-field-container [color]="'dark'"
-                        class="bg-neutral-3-50 rounded">
-                        <input class="" tdsInput autocomplete="off" formControlName="userName"
-                            placeholder="Nhập tài khoản" />
+                    <tds-form-field tds-form-field-container [color]="'dark'" class="bg-neutral-3-50 rounded">
+                        <input class="" tdsInput autocomplete="off" formControlName="userName" placeholder="Nhập tài khoản"/>
                     </tds-form-field>
+
                     <div class="flex justify-between mb-2 mt-4">
                         <tds-label >Mật khẩu</tds-label>
                         <a (click)="forgotPassword()" class="text-neutral-1-500 text-caption-2 font-regular" style="cursor: pointer;">Quên mật khẩu</a>
                     </div>
+
                     <tds-form-field class=" bg-neutral-3-50  rounded" [color]="'dark'">
                         <input tdsInput autocomplete="off" (change)="onChangeInputPass()" formControlName="password" [type]="isShowPass?'text':'password'"
                             placeholder="Nhập mật khẩu" />
@@ -77,8 +80,22 @@
                             <i class="text-neutral-1-600 bg-neutral-3-50 tdsi-eye-close-fill"></i>
                         </span>
                     </tds-form-field>
+
                     <button class="mt-8 w-full" tds-button (click)="onSubmit()">Đăng nhập</button>
                 </form>
+
+                <div *ngIf="isConfirmAccount && newToken && oldToken">
+                    <div class="bg-warning-200 p-3 border border-error-400 rounded-md">
+                        Bạn đã đăng nhập vào tài khoản <span class="font-semibold text-header-2 text-error-400">{{ oldToken.userName }}</span>.<br/>
+                        Bạn có muốn tiếp tục đăng nhập lại với tài khoản <span class="font-semibold text-header-2 text-error-400">{{ newToken.userName }}</span>?
+                    </div>
+
+                    <div class="flex flex-row gap-x-3">
+                        <button class="mt-8 w-full" tds-button color="secondary" (click)="onCancel()">Hủy</button>
+                        <button class="mt-8 w-full" tds-button color="primary" (click)="continueLogin()">Tiếp tục</button>
+                    </div>
+                </div>
+
                 <div class="flex gap-x-2 justify-center text-body-2 mt-16">
                     <span class="font-regular text-neutral-1-600">T-Page @ 2022 TMT.</span>
                 </div>

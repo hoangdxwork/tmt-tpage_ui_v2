@@ -45,9 +45,26 @@ export class TAuthService {
 
         return that.apiService.connect<TTokenDTO>(CoreApiMethodType.post, `${this._BASE_URL}` + environment.apiAccount.signInPassword, data,
             this.apiService.getHeaderJSon(false, false), false)
-            .pipe(
-                this.afterRequestToken()
-            );
+            .pipe(map((res)=>{
+                if(res) {
+                    let old_token = this.getAccessToken();
+
+                    if(!old_token || old_token?.userName === res.userName) {
+                        this.apiService.resetData();
+                        this.setCacheToken(res);
+                        this.setAccessToken(res);
+                        this.updateIsLogin((TDSHelperObject.hasValue(res) && TDSHelperString.hasValueString(res.access_token)));
+
+                        return { userName: '' } as TTokenDTO;
+                    } else {
+
+                        return res;
+                    }
+                } else {
+                    this.clearToken();
+                    return null;
+                }
+            }));
 
     }
 

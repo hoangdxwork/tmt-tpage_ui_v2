@@ -4,5 +4,4 @@ export interface TTokenDTO {
     token_type: string;
     refresh_token: string;
     userName:string;
-   
 }
