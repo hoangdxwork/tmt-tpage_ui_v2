@@ -389,7 +389,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     this.fastSaleOrderService.setDefaultV2({ model: model });
     this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {debugger
+      next: (res: any) => {
           if(res) {
             delete res['@odata.context'];
             res.DateInvoice = new Date();
