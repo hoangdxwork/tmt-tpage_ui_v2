@@ -687,6 +687,12 @@ export class EditOrderV2Component implements OnInit {
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
     let model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(fs_model, this.quickOrderModel)};
 
+    // TODO check cấu hình ghi chú in
+    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    if(!printNote) {
+      model.Comment = '';
+    }
+
     this.fastSaleOrderService.saveV2(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: CreateFastSaleOrderDTO) => {
             // TODO: Tạo hóa đơn thành công
@@ -784,7 +790,7 @@ export class EditOrderV2Component implements OnInit {
 
   loadProduct(textSearch: string) {
     this.isLoadingProduct = true;
-    
+
     this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataProductDTOV2) => {
         this.countUOMLine = res['@odata.count'] as number;

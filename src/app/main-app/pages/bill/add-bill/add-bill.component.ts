@@ -1222,6 +1222,12 @@ export class AddBillComponent implements OnInit {
 
     let model = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
 
+    // TODO: check cấu hình in ghi chú
+    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    if(!printNote) {
+      model.Comment = '';
+    }
+
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
     }
