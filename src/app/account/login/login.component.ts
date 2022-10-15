@@ -1,3 +1,4 @@
+import { TTokenDTO } from './../../lib/dto/token.dto';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -23,6 +24,9 @@ export class LoginComponent implements OnInit {
   isSubmit: boolean = false;
   isLoading: boolean = false;
   isShowPass: boolean = false;
+  isConfirmAccount: boolean = false;
+  newToken!: TTokenDTO;
+  oldToken!:TTokenDTO;
 
   constructor(private formBuilder: FormBuilder,
     private router: Router,
@@ -68,7 +72,7 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     let that = this;
     if (this.loginForm.invalid || this.isSubmit) {
-      return
+      return;
     }
 
     this.isSubmit = true;
@@ -76,13 +80,27 @@ export class LoginComponent implements OnInit {
     const { userName, password } = this.loginForm.value;
 
     this.authen.signInPassword(userName, password).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data: any) => {
-        setTimeout(() => {
+      next: (res: any) => {
+        if(res) {
+          if(res?.userName != '') {
+            // TODO: trường hợp tên đăng nhập khác với tên đăng nhập hiện tại trong cache => hỏi trước khi đăng nhập
+            this.newToken = {...res};
+            this.oldToken = this.authen.getAccessToken();
+            this.isConfirmAccount = true;
             this.isSubmit = false;
             this.isLoading = false;
-        }, 100);
 
-        that.router.navigate([that.returnUrl]);
+          } else {
+            // TODO: trường hợp tên đăng nhập giống với tên đăng nhập hiện tại trong cache => route vào trang dashboard
+
+            setTimeout(() => {
+              this.isSubmit = false;
+              this.isLoading = false;
+            }, 100);
+
+            that.router.navigate([that.returnUrl]);
+          }
+        }
       },
       error: (error: any) => {
           this.isSubmit = false;
@@ -90,6 +108,17 @@ export class LoginComponent implements OnInit {
           this.message.error("Tài khoản hoặc mật khẩu không đúng");
       }
     });
+  }
+
+  continueLogin(){
+    this.authen.clearToken();
+    this.authen.setCacheToken(this.newToken);
+    this.router.navigate([this.returnUrl]);
+  }
+
+  onCancel(){
+    this.authen.clearToken();
+    this.isConfirmAccount = false;
   }
 
   showPass(){
