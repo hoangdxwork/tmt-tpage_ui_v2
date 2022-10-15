@@ -1,0 +1,123 @@
+<div #WidthTable class="h-full text-body-2 text-neutral-1-900 pb-2">
+  <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstDeletedOrder"
+  [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
+  (clickRefresh)="refreshData()">
+  <thead>
+    <tr>
+      <th [align]="'center'" [width]="'33px'" [tdsLeft]="true"></th>
+      <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)"
+        [width]="'42px'" [align]="'center'" [tdsLeft]="true"></th>
+      <th [width]="'60px'" class="text-center" [tdsLeft]="true">STT</th>
+      <th [width]="'120px'" [tdsLeft]="true">Mã đơn hàng</th>
+      <th [width]="'250px'">Tên khách hàng</th>
+      <!-- <th [width]="'150px'">Số điện thoại</th> -->
+      <!-- <th [width]="'150px'" class="text-right">Tổng tiền</th> -->
+      <th [width]="'120px'" class="w-full text-center">Tổng số lượng</th>
+      <!-- <th [width]="'130px'">Trạng thái</th> -->
+      <!-- <th [width]="'120px'">Nhân viên</th> -->
+      <th [width]="'170px'">Thời gian</th>
+      <th [width]="'130px'" [tdsRight]="true">Thao tác</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template ngFor let-order [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
+      <tr [ngClass]="setOfCheckedId.has(order.OrderId)?'bg-[#F2FCF5]':''">
+
+        <!-- Detail -->
+        <td [expand]="expandSet.has(order.OrderId)" class="text-center"
+          (expandChange)="onExpandChange(order.OrderId, $event)" [tdsLeft]="true"
+          [style]="setOfCheckedId.has(order.OrderId) ? 'background-color:#F2FCF5' : '' ">
+        </td>
+
+        <!-- Checked -->
+        <td [checked]="setOfCheckedId.has(order.OrderId)" (checkedChange)="onItemChecked(order.OrderId, $event)"
+          class="text-center" [tdsLeft]="true"
+          [style]="setOfCheckedId.has(order.OrderId) ? 'background-color:#F2FCF5' : '' ">
+        </td>
+
+        <td [tdsLeft]="true" class="text-center"> {{index + 1}} </td>
+
+        <!-- Mã đơn hàng -->
+        <td [tdsLeft]="true">{{ order.Code }}</td>
+
+        <!-- Tên khách hàng -->
+        <td>
+          <div class="w-full flex flex-col gap-y-1">
+            <p class="truncate max-w-[200px]">{{order.PartnerName}}</p>
+            <!-- <div class="flex items-center">
+              <p *ngIf="order.Telephone" class="text-[#929DAA] mr-1">{{order.Telephone}}</p>
+              <div tds-button color="secondary" *ngIf="order.PartnerStatus"
+                class="border border-solid rounded px-2 py-px mr-1"
+                [ngStyle]="(order.PartnerStatus.sS) | buttonStatusColor">
+                <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
+                  {{ order.PartnerStatus.sT }}
+                </span>
+              </div>
+              <button *ngIf="order.Address" class="bg-orange-500 rounded p-[3px]" tds-tooltip
+                tooltipTitle="{{ order.Address }}">
+                <span class="flex items-center justify-center text-white">
+                  <i class="tdsi-pin-fill"></i>
+                </span>
+              </button>
+            </div> -->
+          </div>
+        </td>
+
+        <!-- Số điện thoại -->
+        <!-- <td> {{order.Telephone}}</td> -->
+
+        <!-- Tổng tiền -->
+        <!-- <td class="text-right">{{order.TotalAmount || 0 | numberCustom}} đ</td> -->
+
+        <!-- Tổng sản phẩm chờ chốt -->
+        <td class="text-center">{{order.TotalQuantity}}</td>
+
+        <!-- Trạng thái -->
+        <!-- <td>
+          <tds-tag [status]="order.StatusText | getColorStatusText" type="outline">
+            {{ order.StatusText }}
+          </tds-tag>
+        </td> -->
+
+        <!-- Nhân viên -->
+        <!-- <td>{{order.UserName}}</td> -->
+
+        <!-- Thời gian -->
+        <td>{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
+
+        <!-- Thao tác -->
+        <td [tdsRight]="true">
+          <div class="flex gap-x-2">
+            <button tds-button-icon color="secondary" size="sm">
+              <span class="flex items-center">
+                <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+              </span>
+            </button>
+
+            <button tds-button-icon color="secondary" size="sm">
+              <span class="flex items-center text-neutral-1-500">
+                <i class="tdsi-edit-fill"></i>
+              </span>
+            </button>
+
+            <button tds-button-icon color="secondary" size="sm">
+              <span class="flex items-center text-neutral-1-500">
+                <i class="tdsi-trash-fill"></i>
+              </span>
+            </button>
+          </div>
+        </td>
+      </tr>
+
+      <!-- <tr [expand]="expandSet.has(order.OrderId)" class="border-b border-neutral-2-100 text-neutral-1-900 w-full">
+        <div #expandOrderLivecampaign
+          [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
+          <expand-order-livecampaign class="w-full p-3 block" *ngIf="expandSet.has(order.OrderId)" [dataOrder]="order">
+          </expand-order-livecampaign>
+        </div>
+      </tr> -->
+
+    </ng-template>
+  </tbody>
+</tds-table>
+</div>
