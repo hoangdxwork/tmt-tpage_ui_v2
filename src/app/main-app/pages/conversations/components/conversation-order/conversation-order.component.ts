@@ -389,7 +389,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     this.fastSaleOrderService.setDefaultV2({ model: model });
     this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: any) => {debugger
           if(res) {
             delete res['@odata.context'];
             res.DateInvoice = new Date();
@@ -461,7 +461,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.isEnableCreateOrder = event.checked;
     this.visibleIndex = -1;
 
-    if(event.checked == true && !this.saleModel) {
+    if(event.checked == true) {
         this.loadSaleModel();
     }
   }
@@ -1356,7 +1356,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       this.virtualScroller.refresh();
       this.virtualScroller.scrollToPosition(0);
     }
-    
+
     this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
