@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DeletedOrderDTO } from '@app/dto/order/order-deletedHistories.dto';
+import { DeletedOrderDetail, DeletedOrderDTO } from '@app/dto/order/order-deletedHistories.dto';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { finalize } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
@@ -21,8 +21,6 @@ export class TableDeletedOrderComponent implements OnInit {
   indeterminate = false;
   setOfCheckedId = new Set<string>();
   expandSet = new Set<string>();
-  marginLeftCollapse: number = 0;
-  widthCollapse: number = 0;
 
   lstDeletedOrder!: DeletedOrderDTO[]
 
@@ -40,7 +38,7 @@ export class TableDeletedOrderComponent implements OnInit {
     this.saleOnline_OrderService.getOrderDeteledHistories(liveCampaignId, skip, take)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
-        this.lstDeletedOrder = [...res.Orders];
+        this.lstDeletedOrder = res.Orders;
       }, error => {
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });

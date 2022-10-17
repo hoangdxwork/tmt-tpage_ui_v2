@@ -101,12 +101,9 @@ export class TableAllOrderComponent implements OnInit {
     private chatomniMessageFacade: ChatomniMessageFacade,
     private destroy$: TDSDestroyService,
     private resizeObserver: TDSResizeObserver,
-    private commonService: CommonService,
-    private tagService: TagService) { }
+    private commonService: CommonService,) { }
 
   ngOnInit(): void {
-    this.loadTags();
-    this.loadSummaryStatus();
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -174,36 +171,6 @@ export class TableAllOrderComponent implements OnInit {
     });
   }
 
-  loadSummaryStatus() {
-    let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange?.startDate,
-      DateEnd: this.filterObj.dateRange?.endDate,
-      SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
-    }
-
-
-    this.isTabNavs = true;
-    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
-      finalize(() => this.isTabNavs = false)).subscribe({
-        next: (res: Array<TDSSafeAny>) => {
-          let tabs: TabNavsDTO[] = [];
-          let total = 0;
-
-          res?.map((x: TDSSafeAny, index: number) => {
-            total += x.Total;
-            index = index + 2;
-
-            tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
-          });
-
-          tabs.sort((a, b) => a.Index - b.Index);
-
-          this.tabNavs = [...tabs];
-          this.summaryStatus = this.tabNavs;
-        }
-      });
-  }
 
   onLoadOption(event: any): void {
     this.tabIndex = 1;
@@ -306,6 +273,8 @@ export class TableAllOrderComponent implements OnInit {
   }
 
   onSearch(data: TDSSafeAny) {
+    console.log(data);
+
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.filterObj.searchText = data.value;
@@ -324,12 +293,6 @@ export class TableAllOrderComponent implements OnInit {
     });
   }
 
-  loadTags() {
-    let type = "saleonline";
-    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
-      this.lstDataTag = [...res.value];
-    });
-  }
 
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;

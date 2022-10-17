@@ -16,31 +16,37 @@
   <ng-template #extraTemplate>
     <div *ngIf="currentTab == 0">
       <div class="font-semibold text-xl flex gap-x-2">
-        <button type="button" tds-button color="primary">
-          <span class="flex items-center">
-            <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo nhanh HĐ
-          </span>
-        </button>
+        <div class="font-semibold text-xl flex gap-x-3 justify-end">
+          <button type="button" (click)="onCreateQuicklyFS()" tds-button color="primary">
+            <span class="flex items-center">
+              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo nhanh HĐ
+            </span>
+          </button>
 
-        <button type="button" tds-button color="info" tds-tooltip
-          tooltipTitle="In danh sách khách hàng">
-          <span class="flex items-center">
-            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In danh sách
-          </span>
-        </button>
+          <button type="button" (click)="printCustomer()" tds-button color="info" tds-tooltip
+            tooltipTitle="In danh sách khách hàng">
+            <span class="flex items-center">
+              <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In danh sách
+            </span>
+          </button>
 
-        <button type="button" tds-button color="info" tds-tooltip
-          tooltipTitle="In phiếu đơn hàng">
-          <span class="flex items-center">
-            <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu
-          </span>
-        </button>
+          <button type="button" (click)="printMultiOrder()" tds-button color="info" tds-tooltip
+            tooltipTitle="In phiếu đơn hàng">
+            <span class="flex items-center">
+              <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu
+            </span>
+          </button>
 
-        <tds-form-field class="w-[320px]">
-          <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
-            [tdsInputDebounce]="750" />
-          <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-        </tds-form-field>
+          <tds-form-field class="w-[320px]">
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="innerText"
+            [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+          </tds-form-field>
+
+          <order-filter-options (onLoadOption)="onLoadOption($event)" [summaryStatus]="summaryStatus"
+            [filterObj]="filterObj" [lstDataTag]="lstDataTag" [isLiveCamp]="true">
+          </order-filter-options>
+        </div>
       </div>
     </div>
   </ng-template>
