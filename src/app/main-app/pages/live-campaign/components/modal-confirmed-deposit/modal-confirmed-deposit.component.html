@@ -15,17 +15,18 @@
         <div>Tổng tiền:</div>
         <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | numberCustom}}đ</div>
 
-        <div>Tiền thu hộ:</div>
-        <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | numberCustom}}đ</div>
-
-        <div *ngIf="data.IsDeposited">Tiền cọc</div>
-        <div *ngIf="data.IsDeposited" class="col-span-2 text-title-1 font-semibold flex space-x-2">
+        <div>Tiền cọc</div>
+        <div class="col-span-2 text-title-1 font-semibold flex space-x-2">
           <div>{{data.AmountDeposit || 0 | numberCustom}}đ</div>
-          <div class="flex items-center space-x-1">
+          <div *ngIf="data.IsDeposited" class="flex items-center space-x-1">
             <i class="tdsi-success-line text-base text-success-400"></i>
             <div class="font-semibold text-success-400">Đã xác nhận</div>
           </div>
         </div>
+
+        <div>Tiền thu hộ:</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | numberCustom}}đ</div>
+        
       </div>
 
       <div class="w-full mt-3 flex items-end" *ngIf="!data.IsDeposited">
@@ -44,8 +45,8 @@
 
     </div>
     <div class="flex justify-center">
-      <div class="h-[350px] w-2/3 rounded-xl bg-neutral-3-50 border">
-        <!-- <img src="{{data?.IRAttachmentUrl}}" alt=""> -->
+      <div class="h-[350px] w-2/3 rounded-xl bg-neutral-3-50 border overflow-hidden">
+        <img class="object-cover" [src]="data?.IRAttachmentUrl" alt="">
       </div>
     </div>
   </div>

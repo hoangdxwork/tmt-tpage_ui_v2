@@ -373,13 +373,17 @@ export class ListProductTmpV2Component implements OnInit {
     this.productTemplateService.getProductVariants(id).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res) => {
-          this.lstVariantsV2 = [...res.value];
+          this.lstVariantsV2 = [...(res.value || [])];
           this.lstVariantsV2.map((x: ProductDTOV2) => {
             x.UOMId = uomId;
           });
 
           this.lstVariantsV2 = this.lstVariantsV2.filter((x: ProductDTOV2) => x.Active);
 
+          if(this.lstVariantsV2.length == 0) {
+            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+            this.indClick = -1;
+          }
           this.isLoadingSelect = false;
         },
         error: error => {

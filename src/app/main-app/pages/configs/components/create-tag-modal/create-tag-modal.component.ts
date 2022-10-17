@@ -99,8 +99,15 @@ export class CreateTagModalComponent implements OnInit {
         let model = this.prepareModel();
 
         if (this._form.invalid) {
-            this.message.error('Vui lòng nhập tên thẻ! ');
-            return
+            if(!this._form.controls.name?.value){
+                this.message.error('Vui lòng nhập tên thẻ! ');
+                return
+            }
+
+            if(!this._form.controls.color?.value){
+                this.message.error('Vui lòng chọn màu! ');
+                return
+            }
         }
 
         if (this.Id) {
