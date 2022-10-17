@@ -590,8 +590,7 @@
 
                       <tds-form-field class="w-3/4">
                         <tds-select valueField="ServiceId" textField="ServiceName"
-                          (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
-                          [valuePrimitive]="false" formControlName="Ship_ServiceId"
+                          (selectChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ' formControlName="Ship_ServiceId"
                           [data]="shipServices" [allowClear]="false">
 
                           <ng-template tds-label-tmp let-item="item"> {{ item.data.ServiceName }}

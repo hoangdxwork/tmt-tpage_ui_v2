@@ -493,8 +493,13 @@ export class EditOrderV2Component implements OnInit {
     this.calculateFeeAship(model);
   }
 
-  onSelectShipServiceId(event: any) {
-    this.selectShipServiceV2(event)
+  onSelectShipServiceId (serviceId: string) {
+    if(serviceId) {
+        let exist = this.shipServices.filter((x: any) => x.ServiceId === serviceId)[0];
+        if(exist) {
+          this.selectShipServiceV2(exist)
+        }
+    }
   }
 
   signAmountTotalToInsuranceFee(): any  {
@@ -896,11 +901,15 @@ export class EditOrderV2Component implements OnInit {
                   this.shipServices = res.data?.Services || [];
 
                   if(TDSHelperArray.hasListValue(this.shipServices)) {
-
-                      let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                      this.selectShipServiceV2(x);
-
-                      this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      let x = this.shipServices.filter((x: any) => x.ServiceId === model.ServiceId)[0];
+                      if(x) {
+                          this.selectShipServiceV2(x);
+                          this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      }else {
+                        let item = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                        this.selectShipServiceV2(item);
+                        this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(item.TotalFee), 'en-US', '1.0-0')} đ`);
+                      }
                   }
                 }
             }

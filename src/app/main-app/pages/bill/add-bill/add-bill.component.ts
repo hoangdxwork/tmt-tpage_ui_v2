@@ -623,9 +623,9 @@ export class AddBillComponent implements OnInit {
     this.calculateFeeAship(model);
   }
 
-  onSelectShipServiceId(event: CalculateFeeServiceResponseDto) {
-    if(event && event?.ServiceId) {
-      let exist = this.shipServices.filter((x: any) => x.ServiceId === event?.ServiceId)[0];
+  onSelectShipServiceId(serviceId: string) {
+    if(serviceId) {
+      let exist = this.shipServices.filter((x: any) => x.ServiceId === serviceId)[0];
       if(exist) {
           this.selectShipServiceV2(exist);
       }
@@ -1519,14 +1519,18 @@ export class AddBillComponent implements OnInit {
                     this.configsProviderDataSource = [...res.configs];
 
                     this.insuranceInfo = res.data?.InsuranceInfo || null;
-                    this.shipServices = res.data?.Services || [];
+                    this.shipServices = [...(res.data?.Services || [])];
 
                     if(TDSHelperArray.hasListValue(this.shipServices)) {
-
-                        let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                        this.selectShipServiceV2(x);
-
-                        this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      let x = this.shipServices.filter((x: any) => x.ServiceId === model.ServiceId)[0];
+                      if(x) {
+                          this.selectShipServiceV2(x);
+                          this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      } else {
+                          let item = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                          this.selectShipServiceV2(item);
+                          this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(item.TotalFee), 'en-US', '1.0-0')} đ`);
+                      }
                     }
                 }
             }
@@ -1543,6 +1547,7 @@ export class AddBillComponent implements OnInit {
             this.message.error(error.error.message || error.error.error_description);
         }
     })
+
   }
 
   directPage(path: string) {
