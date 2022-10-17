@@ -549,23 +549,26 @@ export class AddBillComponent implements OnInit {
     this.isLoading = true;
 
     this.loadChangePartner(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
-        next: ([data, partner]) => {
-            if (data && partner) {
-
-                this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
-
-                if(Number(this.id) == 0) {
-                  this.mappingDataAddress(data);
-                }
+      next: ([data, partner]) => {
+          if (data && partner) {
+            this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
+            if(Number(this.id) == 0 || !this.id) {
+              this.mappingDataAddress(data);
             }
+          }
+
+          let path = this.route.snapshot.url[0]?.path;
+          // if(path != 'edit') {
             this.calcTotal();
             this.coDAmount();
-            this.isLoading = false;
-        },
-        error: (error: any) => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Thay đổi khách hàng đã xảy ra lỗi!');
-        }
+          // }
+
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Thay đổi khách hàng đã xảy ra lỗi!');
+      }
     })
   }
 
