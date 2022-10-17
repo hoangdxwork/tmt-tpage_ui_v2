@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
+import { paramsOrderDeteledHistoriesDTO } from "@app/dto/order/order-order-deleted.dto";
 import { FilterObjDTO, OrderStatusDTO, OrderStatusModalDTO } from "@app/dto/order/order-status.dto";
 import { QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { FilterDataRequestDTO } from "@core/dto/dataRequest.dto";
@@ -247,6 +248,14 @@ export class SaleOnline_OrderService extends BaseSevice {
         method: CoreApiMethodType.put
     }
     return this.apiService.getData<any>(api, data);
+  }
+
+  getOrderDeteledHistories(model: paramsOrderDeteledHistoriesDTO): Observable<any> {
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/getorderdeteledhistories?liveCampaignId=${model.liveCampaignId}&skip=${model.skip}&take=${model.take}`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
   }
 
 }

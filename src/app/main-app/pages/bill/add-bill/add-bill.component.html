@@ -580,8 +580,7 @@
                   <div class="grid grid-col-4 gap-y-4">
 
                     <!-- không có dịch vụ -->
-                    <div class="w-full"
-                      *ngIf="shipServices && shipServices.length == 0 && shipExtraServices && shipExtraServices.length == 0">
+                    <div class="w-full" *ngIf="shipServices && shipServices.length == 0 && shipExtraServices && shipExtraServices.length == 0">
                       <span class="text-body-2 italic">Chưa có dịch vụ nào</span>
                     </div>
 
@@ -618,6 +617,7 @@
                           </button>
                       </div>
                     </div>
+
                     <ng-container *ngFor="let item of configsProviderDataSource">
                       <div class="col-span-3 flex flex-row items-center" *ngIf="!item.IsHidden">
                         <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
@@ -651,6 +651,7 @@
                       </div>
 
                     </div>
+                    
                     <!-- ship extras service -->
                     <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="col-span-3">
                       <div class="grid grid-cols-3 gap-y-4 gap-x-6">

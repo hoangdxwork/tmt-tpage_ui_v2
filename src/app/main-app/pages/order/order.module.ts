@@ -85,6 +85,9 @@ import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { TDSSkeletonModule } from 'tds-ui/skeleton';
+import { ModalOrderDeletedComponent } from './components/modal-order-deleted/modal-order-deleted.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -145,7 +148,8 @@ const SERVICES = [
     LiveOrderByPartnerComponent,
     OverviewOrderBypartnerComponent,
     EditOrderV2Component,
-    ConvertCustomersComponent
+    ConvertCustomersComponent,
+    ModalOrderDeletedComponent
   ],
   imports: [
     CommonModule,
@@ -178,7 +182,9 @@ const SERVICES = [
     TDSConversationsModule,
     TDSNotificationModule,
     DirectivesModule,
-    TDSEmptyModule
+    TDSEmptyModule,
+    VirtualScrollerModule,
+    TDSSkeletonModule
   ],
   exports: [
     EditOrderV2Component,

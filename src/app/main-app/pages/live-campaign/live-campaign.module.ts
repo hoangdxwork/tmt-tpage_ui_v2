@@ -97,6 +97,7 @@ import { DrawerBillMessageComponent } from './components/drawer-bill-message/dra
 import { TDSBadgeModule } from 'tds-ui/badges';
 import { EditLiveCampaignComponent } from './components/edit-livecampaign/edit-livecampaign.component';
 import { AddLiveCampaignV2Component } from './components/add-livecampaign-v2/add-livecampaign-v2.component';
+import { ImportProductLivecampaignComponent } from './components/import-product-livecampaign/import-product-livecampaign.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -129,7 +130,8 @@ const cmp =[
   FilterOptionCampaignComponent,
   ExpandOrderLivecampaignComponent,
   EditLiveCampaignComponent,
-  AddLiveCampaignV2Component
+  AddLiveCampaignV2Component,
+  ImportProductLivecampaignComponent
 ]
 
 const SERVICES = [

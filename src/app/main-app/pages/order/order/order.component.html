@@ -215,8 +215,12 @@
 
                 <!-- Chiến dịch live -->
                 <td *ngIf="isHidden('LiveCampaignName')" class="border-l">
-                  <div class="w-full flex">
+                  <div class="w-full flex justify-between items-center gx-2">
                     <span class="ml-1 ">{{data.LiveCampaignName}}</span>
+                    <div *ngIf="data.LiveCampaignId" tds-tooltip tooltipTitle="Đơn hàng đã hủy" (click)="showModalCancelOrder(data.LiveCampaignId)"
+                      class="hover:text-error-400 text-neutral-1-400 cursor-pointer gap-x-1 flex items-center">
+                      <i class="tdsi-bag-fill text-base"></i>
+                    </div>
                   </div>
                 </td>
 

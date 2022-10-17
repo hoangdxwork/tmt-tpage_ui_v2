@@ -116,11 +116,11 @@ import { QuillModule } from 'ngx-quill';
 import { quillOptions } from 'src/app/app.module';
 import { CreateUnitComponent } from './components/create-unit/create-unit.component';
 import { TDSPaginationModule } from 'tds-ui/pagination';
-import { ConfigPartnerStatusComponent } from './config-partner-status/config-partner-status.component';
 import { CreatePartnerStatusComponent } from './components/create-partner-status/create-partner-status.component';
 import { StatusOrderComponent } from './status-order/status-order.component';
 import { CreateOrderStatusComponent } from './components/create-order-status/create-order-status.component';
 import { PartnerStatusComponent } from './components/partner-status/partner-status.component';
+import { DeliveryListComponent } from './components/delivery-list/delivery-list.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -203,11 +203,11 @@ const SERVICES = [
     DefaultOrderComponent,
     CreateDefaultProductComponent,
     CreateUnitComponent,
-    ConfigPartnerStatusComponent,
     CreatePartnerStatusComponent,
     StatusOrderComponent,
     CreateOrderStatusComponent,
     PartnerStatusComponent,
+    DeliveryListComponent,
   ],
   imports: [
     CommonModule,
