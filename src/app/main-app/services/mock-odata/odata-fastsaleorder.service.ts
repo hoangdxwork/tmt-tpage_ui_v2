@@ -35,7 +35,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
 
   getView(params: string, filterObj: FilterObjFastSaleModel): Observable<TDSSafeAny>{
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&deliveryType=${filterObj.deliveryType}&${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&delivery_type=${filterObj.deliveryType}&${params}&$count=true`,
         method: CoreApiMethodType.get,
     }
     return this.apiService.getData<any>(api, null);

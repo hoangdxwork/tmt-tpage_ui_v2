@@ -8,8 +8,8 @@
       </tds-form-field>
 
       <div class="w-full pt-4">
-          <tds-label class="pb-2">Chọn màu</tds-label>
-          <div class="flex flex-wrap w-full gap-x-3.5 gap-y-3">
+        <tds-label>Chọn màu</tds-label>
+        <div class="flex flex-wrap w-full gap-x-3.5 gap-y-3 mt-2">
               <div *ngFor="let color of palette">
                   <div class="w-8 h-8 border-2 text-white border-white rounded-full shadow cursor-pointer flex items-center justify-center"
                       [style.background-color]="color" (click)="onChangeColor(color)">
