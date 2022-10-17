@@ -87,6 +87,7 @@ import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-co
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
+import { ModalOrderDeletedComponent } from './components/modal-order-deleted/modal-order-deleted.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -147,7 +148,8 @@ const SERVICES = [
     LiveOrderByPartnerComponent,
     OverviewOrderBypartnerComponent,
     EditOrderV2Component,
-    ConvertCustomersComponent
+    ConvertCustomersComponent,
+    ModalOrderDeletedComponent
   ],
   imports: [
     CommonModule,

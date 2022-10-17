@@ -13,6 +13,11 @@
         </div>
 
         <div class="flex gap-x-2">
+            <!-- <button tds-button color="secondary" type="button" (click)="showModalSelectFileProduct()">
+              <span class="flex items-center">
+                <i class="tdsi-upload-fill text-lg leading-none text-neutral-1-500 mr-2"></i>Chọn sản phẩm từ file
+              </span>
+            </button> -->
             <button tds-button class="w-[100px]" color="primary" type="button" (click)="onSave()">Lưu lại</button>
             <button tds-button class="w-[100px]" color="secondary" type="button" (click)="onBack()">Hủy bỏ</button>
         </div>
@@ -177,7 +182,7 @@
                           <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
                       </span>
                   <div class="absolute" style="right: 24px" *ngIf="searchValue.length > 0">
-                      <button tds-button-icon color="secondary" tds-tooltip tooltipTitle="Tải lại" (click)="onReset()" style="border: 0">
+                      <button tds-button-icon color="secondary" tds-tooltip tooltipTitle="Tải lại" type="button" (click)="onReset()" style="border: 0">
                           <i class="tdsi-reload-fill"></i>
                       </button>
                   </div>
@@ -283,12 +288,12 @@
 
                               <ng-template #footerAddTag>
                                   <div class="flex justify-end pt-2">
-                                      <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onCloseTag()">
+                                      <button tds-button-icon color="secondary" type="button" class="mr-2" size="sm" (click)="onCloseTag()">
                                           <span class="flex items-center">
                                               <i class="tdsi-close-fill"></i>
                                           </span>
                                       </button>
-                                      <button tds-button-icon size="sm" color="primary" (click)="onSaveTag(index)">
+                                      <button tds-button-icon size="sm" type="button" color="primary" (click)="onSaveTag(index)">
                                           <span class="flex items-center">
                                               <i class="tdsi-checkbox-check-fill"></i>
                                           </span>
@@ -334,7 +339,7 @@
 
                       <!-- Thao tác -->
                       <td class="text-center">
-                        <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail)" tds-tooltip tooltipTitle="Xóa sản phẩm">
+                        <button tds-button-icon color="secondary" size="sm" type="button" (click)="removeDetail(index, detail)" tds-tooltip tooltipTitle="Xóa sản phẩm">
                             <span class="flex items-center">
                                 <i class="tdsi-trash-fill text-neutral-1-500"></i>
                             </span>

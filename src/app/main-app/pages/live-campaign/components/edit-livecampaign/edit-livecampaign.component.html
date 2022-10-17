@@ -178,7 +178,7 @@
                         <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
                     </span>
                 <div class="absolute" style="right: 24px" *ngIf="searchValue.length > 0">
-                    <button tds-button-icon color="secondary" tds-tooltip tooltipTitle="Tải lại" (click)="onReset()" style="border: 0">
+                    <button tds-button-icon color="secondary" tds-tooltip tooltipTitle="Tải lại" type="button" (click)="onReset()" style="border: 0">
                         <i class="tdsi-reload-fill"></i>
                     </button>
                 </div>
@@ -293,12 +293,12 @@
 
                             <ng-template #footerAddTag>
                                 <div class="flex justify-end pt-2">
-                                    <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onCloseTag()">
+                                    <button tds-button-icon color="secondary" type="button" class="mr-2" size="sm" (click)="onCloseTag()">
                                         <span class="flex items-center">
                                             <i class="tdsi-close-fill"></i>
                                         </span>
                                     </button>
-                                    <button tds-button-icon size="sm" color="primary" (click)="onSaveTag(index)">
+                                    <button tds-button-icon size="sm" color="primary" type="button" (click)="onSaveTag(index)">
                                         <span class="flex items-center">
                                             <i class="tdsi-checkbox-check-fill"></i>
                                         </span>
@@ -364,21 +364,21 @@
                     <!-- Thao tác -->
                     <td class="text-center">
                       <div class="flex gap-x-1">
-                        <button *ngIf="!isEditDetails[detail.value.Id]" tds-button-icon color="info" size="sm" class="ml-1 mr-1"
+                        <button *ngIf="!isEditDetails[detail.value.Id]" tds-button-icon color="info" type="button" size="sm" class="ml-1 mr-1"
                             tds-tooltip tooltipTitle="Chỉnh sửa" (click)="onEditDetails(detail.value)" type="button">
                             <span class="flex items-center">
                                 <i class="tdsi-edit-2-fill"></i>
                             </span>
                         </button>
 
-                        <button *ngIf="isEditDetails[detail.value.Id]" tds-button-icon color="success" size="sm" class="ml-1 mr-1"
+                        <button *ngIf="isEditDetails[detail.value.Id]" tds-button-icon color="success" type="button" size="sm" class="ml-1 mr-1"
                             tds-tooltip tooltipTitle="Áp dụng" (click)="onSaveDetails(detail.value)" type="button">
                             <span class="flex items-center">
                                 <i class="tdsi-checkbox-check-fill"></i>
                             </span>
                         </button>
 
-                        <button tds-button-icon color="red" size="sm" class="ml-1 mr-1" type="button"
+                        <button tds-button-icon color="red" type="button" size="sm" class="ml-1 mr-1" type="button"
                             tds-tooltip tooltipTitle="Xóa" (click)="removeDetail(index, detail.value)" >
                             <span class="flex items-center">
                                 <i class="tdsi-trash-fill"></i>

@@ -35,7 +35,7 @@ export class TableDeletedOrderComponent implements OnInit {
 
   loadDeletedOrder(liveCampaignId: string, skip: number, take: number) {
     this.isLoading = true;
-    this.saleOnline_OrderService.getOrderDeteledHistories(liveCampaignId, skip, take)
+    this.saleOnline_OrderService.getOrderDeteledHistoriesV1(liveCampaignId, skip, take)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstDeletedOrder = res.Orders;

@@ -1,3 +1,4 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { UOM } from './../../../../dto/product-template/product-tempalte.dto';
 import { Product } from './../../../../dto/order/so-orderlines.dto';
 import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
@@ -9,7 +10,7 @@ import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/ch
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef, ViewChild } from '@angular/core';
 import { takeUntil, map } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
@@ -82,6 +83,7 @@ import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-
 
 export class ConversationOrderComponent implements OnInit, OnChanges {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() syncConversationInfo!: ChatomniConversationInfoDto;
   @Input() team!: CRMTeamDTO;
@@ -109,7 +111,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   saleModel!: FastSaleOrder_DefaultDTOV2;
   enableInsuranceFee: boolean = false;
   userInit!: UserInitDTO;
-  lstProductSearch: ProductDTOV2[] = [{} as any];
+  lstProductSearch: ProductDTOV2[] = [];
 
   //TODO: dữ liệu aship v2
   shipExtraServices: ShipServiceExtra[] = [];
@@ -459,7 +461,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.isEnableCreateOrder = event.checked;
     this.visibleIndex = -1;
 
-    if(event.checked == true && !this.saleModel) {
+    if(event.checked == true) {
         this.loadSaleModel();
     }
   }
@@ -967,6 +969,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
+
+    // TODO check cấu hình ghi chú in
+    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    if(!printNote) {
+      fs_model.Comment = '';
+    }
+
     this.fastSaleOrderService.saveV2(fs_model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
@@ -1049,6 +1058,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.updateShipmentDetailsAship();
 
     fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
+
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = model.FormAction;
 
@@ -1342,13 +1352,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       return;
     }
 
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
+
     this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
 
   loadProduct(textSearch: string) {
-    this.isLoadingProduct = false;
+    this.isLoadingProduct = true;
 
     this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataProductDTOV2) => {

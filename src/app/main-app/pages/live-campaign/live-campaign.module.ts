@@ -99,6 +99,7 @@ import { EditLiveCampaignComponent } from './components/edit-livecampaign/edit-l
 import { AddLiveCampaignV2Component } from './components/add-livecampaign-v2/add-livecampaign-v2.component';
 import { TableAllOrderComponent } from './components/table-all-order/table-all-order.component';
 import { TableDeletedOrderComponent } from './components/table-deleted-order/table-deleted-order.component';
+import { ImportProductLivecampaignComponent } from './components/import-product-livecampaign/import-product-livecampaign.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -131,7 +132,8 @@ const cmp =[
   FilterOptionCampaignComponent,
   ExpandOrderLivecampaignComponent,
   EditLiveCampaignComponent,
-  AddLiveCampaignV2Component
+  AddLiveCampaignV2Component,
+  ImportProductLivecampaignComponent
 ]
 
 const SERVICES = [
@@ -213,7 +215,7 @@ const SERVICES = [
     TDSConversationsModule,
     OrderModule,
     DirectivesModule,
-    
+
   ],
   providers: [
     ...SERVICES

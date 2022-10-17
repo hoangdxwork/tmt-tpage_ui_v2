@@ -288,6 +288,11 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
   setCheck(){
     this.isOpenCollapCheck = !this.isOpenCollapCheck;
+    if(!this.isOpenCollapCheck) {
+      this.setOfCheckedId = new Set<string>();
+      this.checked = false;
+      this.indeterminate = false;
+    }
   }
 
   onAllChecked(value: TDSSafeAny): void {

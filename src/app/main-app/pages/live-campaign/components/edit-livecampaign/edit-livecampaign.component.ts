@@ -476,7 +476,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.isShowFormInfo = event;
   }
 
-  onBack() {debugger
+  onBack() {
     if(Object.keys(this.isEditDetails).length > 0) {
       this.modalService.info({
         title: 'Thao tác chưa được lưu',
@@ -537,7 +537,23 @@ export class EditLiveCampaignComponent implements OnInit {
       next: (res: any) => {
           this.isLoading = false;
           this.message.success('Cập nhật chiến dịch live thành công');
-          this.router.navigateByUrl(`/live-campaign/detail/${model.Id}`);
+          
+          if(Object.keys(this.isEditDetails).length > 0) {
+            this.modalService.info({
+              title: 'Thao tác chưa được lưu',
+              content: 'Xác nhận đóng và không lưu dữ liệu',
+              onOk: () => {
+                this.router.navigateByUrl(`/live-campaign/detail/${model.Id}`);
+                return;
+              },
+              onCancel:() => { return; },
+              okText: "Đóng",
+              cancelText: "Hủy bỏ"
+          });
+          } else {
+            this.router.navigateByUrl(`/live-campaign/detail/${model.Id}`);
+          }
+          
       },
       error: (error: any) => {
           this.isLoading = false;

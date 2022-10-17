@@ -1,3 +1,5 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
@@ -37,6 +39,7 @@ import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-
 
 export class EditLiveCampaignPostComponent implements OnInit {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   _form!: FormGroup;
   @Input() id?: string;
 
@@ -151,7 +154,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.applicationUserService.setUserActive();
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
+        if(res && TDSHelperArray.isArray(res)) {
           this.lstUser = [...res];
+        }
       },
       error: (err: any) => {
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
@@ -432,6 +437,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
         return;
     }
 
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
+
     this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
@@ -508,7 +518,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
             this.lstVariants = [...res.value];
             this.lstVariants?.map((x: ProductDTOV2) => {
                 x.UOMId = uomId;
-            })
+            });
+
+            this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
 
             this.isLoadingSelect = false;
         },
@@ -530,6 +542,23 @@ export class EditLiveCampaignPostComponent implements OnInit {
     let simpleDetail= [data];
     this.addItemProduct(simpleDetail)
     this.closeSearchProduct();
+  }
+
+  showModalAddQuickReply() {
+    let modal = this.modal.create({
+        title: 'Thêm mới trả lời nhanh',
+        content: ModalAddQuickReplyComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'md'
+    });
+
+    modal.afterClose.subscribe({
+      next:(res) => {
+        if(res) {
+          this.loadQuickReply();
+        }
+      }
+    })
   }
 
   addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[], isVariants?: boolean) {

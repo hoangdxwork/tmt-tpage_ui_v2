@@ -1,0 +1,85 @@
+<div class="w-full h-[calc(65vh)] flex">
+    <tds-table class="w-full h-full text-body-2 text-neutral-1-900" #basicTable [listData]="listOfData"
+    showSizeChanger
+    [(pageSize)]="pageSize"
+    [(pageIndex)]="pageIndex"
+    [frontPagination]="false"
+    [loading]="isLoading"
+    [total]="total"
+    [scroll]="{y:'auto'}"
+    (queryParams)="onQueryParamsChange($event)">
+    <thead>
+        <tr>
+            <th width="44px" [align]="'center'" [tdsLeft]="true"></th>
+            <th width="60px" class="text-center">STT</th>
+            <th width="20%">Tên khách hàng</th>
+            <th width="120px">Mã đơn hàng</th>
+            <th width="50%">Địa chỉ</th>
+            <th width="120px" class="text-center">Tổng SL</th>
+            <th width="120px" class="text-right">Tổng tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
+            <tr>
+                <td [expand]="expandSet.has(data.OrderId)" class="text-center"
+                    (expandChange)="onExpandChange(data.OrderId, $event)" [tdsLeft]="true">
+                </td>
+                <td class="text-center">{{index | numericalOrder: pageSize: pageIndex}}</td>
+                <td>{{data.PartnerName}}</td>
+                <td>
+                    <span class="text-info-400 font-semibold">{{data.Code}}</span>
+                </td>
+                <td>
+                    {{data.Address}}
+                </td>
+                <td class="text-center">
+                    {{data.TotalQuantity}}
+                </td>
+                <td class="text-right">
+                    {{data.Total|| 0 | numberCustom | numberCustom }} đ
+                </td>
+            </tr>
+            <tr [expand]="expandSet.has(data.OrderId)" class=" text-neutral-1-900 bg-light-50 w-full">
+                <div class="w-full rounded-md h-[240px] p-2" >
+                    <div class="w-full h-full pb-2.5 text-body-2">
+                      <tds-table #basicTable [listData]="data.Details" [showPagination]="false" [scroll]="{y:'auto'}">
+                        <thead class="rounded">
+                            <tr>
+                                <th width="7%">STT</th>
+                                <th width="27%">Sản phẩm</th>
+                                <th width="27%">Đơn vị tính</th>
+                                <th width="27%">Số lượng</th>
+                                <th width="27%">Đơn giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <ng-template ngFor let-item [ngForOf]="basicTable.data" let-index="index">
+                              <tr>
+                                  <td> {{ index + 1 }} </td>
+                                  <td>
+                                    {{item.ProductName}}
+                                  </td>
+                                  <td>
+                                    {{item.UOMName}}
+                                  </td>
+                                  <td>
+                                    {{item.Quantity}}
+                                  </td>
+                                  <td>
+                                    {{item.Price || 0 | numberCustom | numberCustom }} đ
+                                  </td>
+                              </tr>
+                          </ng-template>
+                      </tbody>
+                      </tds-table>
+                    </div>
+                  </div>
+            </tr>
+        </ng-template>
+    </tbody>
+</tds-table>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="onCancel()">Hủy</button>
+</div>
+</div>

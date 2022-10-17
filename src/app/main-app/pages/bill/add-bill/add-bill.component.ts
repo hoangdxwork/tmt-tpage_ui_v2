@@ -28,7 +28,7 @@ import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, map, mergeMap, takeUntil } from 'rxjs/operators';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, pipe } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -535,10 +535,6 @@ export class AddBillComponent implements OnInit {
   loadChangePartner(partnerId: any): Observable<any> {
     return this.partnerService.getById(partnerId).pipe(mergeMap((partner: TDSSafeAny) => {
       delete partner['@odata.context'];
-
-      // this._form.controls["Ship_Receiver"].reset();
-      // this._form.controls['Partner'].setValue(partner);
-      this._form.controls['PartnerId'].setValue(partnerId);
       let model = this.prepareModel();
 
       return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
@@ -551,22 +547,28 @@ export class AddBillComponent implements OnInit {
 
   changePartner(partnerId: any) {
     this.isLoading = true;
-    this.loadChangePartner(partnerId).subscribe({
-        next: ([data, partner]) => {
-            if (data && partner) {
 
-                this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
-
-                if(Number(this.id) == 0) {
-                  this.mappingDataAddress(data);
-                }
+    this.loadChangePartner(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: ([data, partner]) => {
+          if (data && partner) {
+            this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
+            if(Number(this.id) == 0 || !this.id) {
+              this.mappingDataAddress(data);
             }
-            this.isLoading = false
-        },
-        error: (error: any) => {
-            this.isLoading = false
-            this.message.error(`${error?.error?.message}` || 'Thay đổi khách hàng đã xảy ra lỗi!');
-        }
+          }
+
+          let path = this.route.snapshot.url[0]?.path;
+          // if(path != 'edit') {
+            this.calcTotal();
+            this.coDAmount();
+          // }
+
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` || 'Thay đổi khách hàng đã xảy ra lỗi!');
+      }
     })
   }
 
@@ -991,7 +993,7 @@ export class AddBillComponent implements OnInit {
     if (extras && this.isEqualAmountInsurance) {
 
       if(extras.IsInsuranceEqualTotalAmount) {
-          this._form.controls['Ship_InsuranceFee'].setValue(this._form.controls['TotalAmount'].value);
+          this._form.controls['Ship_InsuranceFee'].setValue(this._form.controls['TotalAmount']?.value);
       } else {
           this._form.controls['Ship_InsuranceFee'].setValue(extras.InsuranceFee || 0);
       }
@@ -1222,6 +1224,12 @@ export class AddBillComponent implements OnInit {
     this.updateShipmentDetailsAship();
 
     let model = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
+
+    // TODO: check cấu hình in ghi chú
+    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    if(!printNote) {
+      model.Comment = '';
+    }
 
     if(TDSHelperString.hasValueString(formAction)) {
         model.FormAction = formAction;
