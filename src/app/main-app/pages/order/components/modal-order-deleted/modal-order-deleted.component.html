@@ -13,6 +13,7 @@
             <th width="44px" [align]="'center'" [tdsLeft]="true"></th>
             <th width="60px" class="text-center">STT</th>
             <th width="20%">Tên khách hàng</th>
+            <th width="120px">Mã đơn hàng</th>
             <th width="50%">Địa chỉ</th>
             <th width="120px" class="text-center">Tổng SL</th>
             <th width="120px" class="text-right">Tổng tiền</th>
@@ -26,6 +27,9 @@
                 </td>
                 <td class="text-center">{{index | numericalOrder: pageSize: pageIndex}}</td>
                 <td>{{data.PartnerName}}</td>
+                <td>
+                    <span class="text-info-400 font-semibold">{{data.Code}}</span>
+                </td>
                 <td>
                     {{data.Address}}
                 </td>
@@ -63,7 +67,7 @@
                                     {{item.Quantity}}
                                   </td>
                                   <td>
-                                    {{item.Price}}
+                                    {{item.Price || 0 | numberCustom | numberCustom }} đ
                                   </td>
                               </tr>
                           </ng-template>
