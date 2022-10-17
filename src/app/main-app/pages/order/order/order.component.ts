@@ -286,7 +286,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
             tabs.sort((a, b) => a.Index - b.Index);
 
             this.tabNavs = [...tabs];
-            this.lstOftabNavs = this.tabNavs;
+            this.lstOftabNavs = this.tabNavs.filter(x => Number(x.Index) > 1);
         }
       });
   }

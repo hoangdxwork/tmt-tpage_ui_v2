@@ -25,33 +25,33 @@
       (queryParams)="onQueryParamsChange($event)">
       <thead>
         <tr>
-          <th [width]="'44px'" [(checked)]="checked" [indeterminate]="indeterminate">
+          <th [tdsLeft]="true" [width]="'44px'" [(checked)]="checked" [indeterminate]="indeterminate">
           </th>
-          <th [width]="'57px'">STT</th>
-          <th [width]="'200px'">Hình thanh toán</th>
-          <th [width]="'200px'">Số HĐ</th>
+          <th [tdsLeft]="true" [width]="'57px'">STT</th>
+          <th [tdsLeft]="true" [width]="'200px'">Hình thanh toán</th>
+          <th [tdsLeft]="true" [width]="'200px'">Số HĐ</th>
           <th [width]="'200px'">Khách hàng</th>
-          <th [width]="'200px'">Tiền cọc</th>
-          <th [width]="'200px'">Còn nợ</th>
-          <th [width]="'200px'">Tổng tiền</th>
-          <th [width]="'200px'">Tiền thu hộ</th>
+          <th [width]="'200px'" [align]="'right'">Tiền cọc</th>
+          <th [width]="'200px'" [align]="'right'">Còn nợ</th>
+          <th [width]="'200px'" [align]="'right'">Tổng tiền</th>
+          <th [width]="'200px'" [align]="'right'">Tiền thu hộ</th>
           <th [width]="'200px'">Trạng thái</th>
           <th [width]="'200px'">Nhân viên</th>
           <th [width]="'200px'">Ngày cập nhật</th>
-          <th [width]="'200px'">Thao tác</th>
+          <th [tdsRight]="true" [width]="'220px'">Thao tác</th>
         </tr>
       </thead>
       <tbody>
         <ng-template ngFor let-data [ngForOf]="table.data" let-index="index">
           <tr>
-            <td [checked]="setOfCheckedId.has(data.Id)"></td>
+            <td [tdsLeft]="true" [checked]="setOfCheckedId.has(data.Id)"></td>
 
-            <td>
+            <td [tdsLeft]="true">
               {{index + 1}}
             </td>
 
             <!-- Hình thanh toán -->
-            <td>
+            <td [tdsLeft]="true">
               <div class="w-[154px] h-[104px] image-payment relative">
                 <img src="{{ data.IRAttachmentUrl }}" class="rounded-lg min-w-[154px] max-w-[154px] min-h-[104px] max-h-[104px] object-cover"/>
                 <div class="w-full h-full inset-0 absolute bg-white/[0.9] rounded-lg items-center justify-center flex hidden show-img-payment">
@@ -63,7 +63,7 @@
             </td>
 
             <!-- Số HĐ -->
-            <td>
+            <td [tdsLeft]="true">
               <div class="flex flex-col gap-y-2">
                 <div>
                   <span *ngIf="!data.IsDeposited" class="text-xs text-error-400">Chưa xác nhận cọc</span>
@@ -132,16 +132,16 @@
             </td>
 
             <!-- Tiền cọc -->
-            <td>{{ data.AmountDeposit || 0 | numberCustom }}</td>
+            <td [align]="'right'">{{ data.AmountDeposit || 0 | numberCustom }} đ</td>
 
             <!-- Còn nợ -->
-            <td>{{ data.Residual || 0 | numberCustom }}</td>
+            <td [align]="'right'">{{ data.Residual || 0 | numberCustom }} đ</td>
 
             <!-- Tổng tiền -->
-            <td>{{ data.AmountTotal || 0 | numberCustom }}</td>
+            <td [align]="'right'">{{ data.AmountTotal || 0 | numberCustom }} đ</td>
 
             <!-- Tiền thu hộ -->
-            <td>{{ data.CashOnDelivery || 0 | numberCustom }}</td>
+            <td [align]="'right'">{{ data.CashOnDelivery || 0 | numberCustom }} đ</td>
 
             <!-- Trạng thái -->
             <td>
@@ -158,7 +158,7 @@
             <td>{{ data.DateCreated | date:"dd/MM/yyyy" }}</td>
 
             <!-- Thao tác -->
-            <td>
+            <td [tdsRight]="true">
               <div class="flex gap-x-2">
                 <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
                   <span class="flex items-center text-neutral-1-500">

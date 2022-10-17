@@ -105,7 +105,7 @@
               <th width="200px" *ngIf="isHidden('LiveCampaignName')" class="border-l">Chiến dịch live</th>
               <th width="260px" *ngIf="isHidden('Name')" class="border-l">Khách hàng</th>
               <th width="260px" *ngIf="isHidden('Address')" class="border-l">Địa chỉ</th>
-              <th width="100px" *ngIf="isHidden('TotalAmount')" class="border-l text-right">Tổng tiền</th>
+              <th width="140px" *ngIf="isHidden('TotalAmount')" class="border-l text-right">Tổng tiền</th>
               <th width="100px" *ngIf="isHidden('TotalQuantity')" class="border-l text-center">Tổng SL</th>
               <th width="155px" *ngIf="isHidden('DateCreated')" class="border-l">Ngày tạo đơn</th>
               <th width="160px" *ngIf="isHidden('StatusText')" class="border-l">Trạng thái</th>
@@ -284,7 +284,7 @@
                   </tds-tag>
 
                   <tds-dropdown-menu #menu1="tdsDropdownMenu">
-                    <div class="w-[160px]">
+                    <div class="w-[160px] max-h-[300px] overflow-y-auto tds-panel-scroll">
                       <!-- <div class="flex flex-row items-center">
                         Trạng thái đơn hàng:
                         <button tds-button-icon color="primary" size="sm" (click)="directPage('')">
