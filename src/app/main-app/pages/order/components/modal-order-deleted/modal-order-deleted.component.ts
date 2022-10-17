@@ -25,7 +25,7 @@ export class ModalOrderDeletedComponent implements OnInit {
   pageIndex: number = 1;
 
   expandSet = new Set<string>();
-  
+
   constructor(private modalRef: TDSModalRef,
     private saleOnlineOrderService: SaleOnline_OrderService,
     private destroy$: TDSDestroyService,

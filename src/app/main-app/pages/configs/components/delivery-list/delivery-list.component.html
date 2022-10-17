@@ -41,7 +41,7 @@
         </button>
 
         <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
-          <div class="w-[225px] py-2">
+          <div class="w-[180px] py-2">
             <div tds-dropdown-item *ngFor="let item of lstType" (click)="onChangeType(item)"
               class="w-full flex justify-between items-center"> {{item.name}}
               <span *ngIf="item?.name == currentType?.name" class="tdsi-success-fill text-success-500"></span>

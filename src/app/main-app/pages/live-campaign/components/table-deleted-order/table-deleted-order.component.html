@@ -1,0 +1,95 @@
+<div #WidthTable class="h-full text-body-2 text-neutral-1-900 pb-2">
+  <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstDeletedOrder"
+    [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
+    (clickRefresh)="refreshData()">
+    <thead>
+      <tr>
+        <th [align]="'center'" [width]="'33px'" [tdsLeft]="true"></th>
+        <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)"
+          [width]="'42px'" [align]="'center'" [tdsLeft]="true"></th>
+        <th [width]="'60px'" class="text-center">STT</th>
+        <th [width]="'120px'">Mã</th>
+        <th [width]="'120px'">Mã khách hàng</th>
+        <th [width]="'150px'">Tên khách hàng</th>
+        <th [width]="'250px'">Địa chỉ</th>
+        <th [width]="'150px'">Ngày tạo</th>
+        <th [width]="'100px'" class="w-full text-center">Tổng số lượng</th>
+        <th [width]="'100px'" class="w-full text-right">Tổng tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-order [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
+        <tr [ngClass]="setOfCheckedId.has(order.OrderId)?'bg-[#F2FCF5]':''">
+
+          <!-- Detail -->
+          <td [expand]="expandSet.has(order.OrderId)" class="text-center"
+            (expandChange)="onExpandChange(order.OrderId, $event)" [tdsLeft]="true"
+            [style]="setOfCheckedId.has(order.OrderId) ? 'background-color:#F2FCF5' : '' ">
+          </td>
+
+          <!-- Checked -->
+          <td [checked]="setOfCheckedId.has(order.OrderId)" (checkedChange)="onItemChecked(order.OrderId, $event)"
+            class="text-center" [tdsLeft]="true"
+            [style]="setOfCheckedId.has(order.OrderId) ? 'background-color:#F2FCF5' : '' ">
+          </td>
+
+          <!-- STT -->
+          <td [tdsLeft]="true" class="text-center"> {{index + 1}} </td>
+
+          <!-- Mã -->
+          <td [tdsLeft]="true">{{ order.Code }}</td>
+
+          <!-- Mã khách hàng -->
+          <td [tdsLeft]="true">{{ order.PartnerId }}</td>
+
+          <!-- Tên khách hàng -->
+          <td>
+            <p class="truncate max-w-[200px]">{{order.PartnerName}}</p>
+          </td>
+
+          <!-- Địa chỉ -->
+          <td>{{ order.Address }}</td>
+
+          <!-- Ngày tạo -->
+          <td>{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
+
+          <!-- Tổng số lượng -->
+          <td class="text-center">{{ order.TotalQuantity }}</td>
+
+          <!-- Tổng tiền -->
+          <td class="text-right">{{ order.Total }}</td>
+        </tr>
+
+        <tr [expand]="expandSet.has(order.OrderId)" class="text-neutral-1-900 text-body-2">
+           <div class="p-3 block w-full">
+            <tds-table #basicTable [listData]="order.Details" [showPagination]="false" [scroll]="{ y:'200px' }">
+              <thead>
+                <tr>
+                  <th width="60px">STT</th>
+                  <th width="180px">Mã sản phẩm</th>
+                  <th width="180px">Tên sản phẩm</th>
+                  <th width="180px">Giá</th>
+                  <th width="180px">Số lượng</th>
+                  <th width="180px">Đơn vị</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-template ngFor let-detail [ngForOf]="basicTable.data" let-index="index">
+                  <tr>
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ detail.ProductId }}</td>
+                    <td>{{ detail.ProductName }}</td>
+                    <td>{{ detail.Price }}</td>
+                    <td>{{ detail.Quantity }}</td>
+                    <td>{{ detail.UOMName }}</td>
+                  </tr>
+                </ng-template>
+              </tbody>
+            </tds-table>
+           </div>
+          <!-- </div> -->
+        </tr>
+      </ng-template>
+    </tbody>
+  </tds-table>
+</div>
