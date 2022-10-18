@@ -125,10 +125,10 @@
                     <ng-template #contentTemplate>
                         <tds-spin [spinning]="isLoadingSelect" class="flex flex-col gap-y-2">
                             <div class="text-body-2 font-semibold">
-                              Bạn có muốn chọn tất cả {{lstVariantsV2.length}} biến thể cùng với sản phẩm này.
+                              Bạn có muốn chọn tất cả {{lstVariants.length}} biến thể cùng với sản phẩm này.
                             </div>
                             <div class="flex items-center justify-end gap-x-2 pt-4">
-                              <button *ngIf="lstVariantsV2.length > 1" tds-button size="sm" (click)="getAllVariantsv2()" type="button">
+                              <button *ngIf="lstVariants.length > 1" tds-button size="sm" (click)="getAllVariantsv2()" type="button">
                                   Chọn tất cả
                               </button>
                               <button tds-button color="secondary" size="sm" (click)="getCurrentVariantv2(data)" type="button">

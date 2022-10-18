@@ -1,3 +1,4 @@
+import { TDSImageModule } from 'tds-ui/image';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { DirectivesModule } from './../../shared/directives/directives.module';
 import { ConversationService } from './../../services/conversation/conversation.service';
@@ -215,7 +216,7 @@ const SERVICES = [
     TDSConversationsModule,
     OrderModule,
     DirectivesModule,
-
+    TDSImageModule
   ],
   providers: [
     ...SERVICES
