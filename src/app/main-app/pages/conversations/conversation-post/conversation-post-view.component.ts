@@ -63,7 +63,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   filterExcel: any[] = [
     { value: "excel", text: "Tải file excel" },
     { value: "excel_phone", text: "Tải file excel có SĐT" },
-    { value: "excel_phone_distinct", text: "Tải file excel lờc trùng SĐT" },
+    { value: "excel_phone_distinct", text: "Tải file excel lọc trùng SĐT" },
   ];
 
   filterOptionsComment: any[] = [

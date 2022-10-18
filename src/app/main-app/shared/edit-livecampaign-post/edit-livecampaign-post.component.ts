@@ -806,4 +806,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
     })
   }
 
+  onPopoverVisibleChange(ev: boolean) {
+    if(!ev) {
+      this.indClick = -1;
+    }
+  }
+
 }
