@@ -79,7 +79,6 @@ export class ConfigUsersOperationComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstUsers = res.value;
-        console.log(this.lstUsers);
 
         this.loadCRMTeamUser();
       });

@@ -677,7 +677,7 @@ export class EditOrderV2Component implements OnInit {
           } else {
               this.isLoading = false;
               this.message.success('Cập nhật đơn hàng thành công');
-              this.modalRef.destroy(null);
+              this.modalRef.destroy('onLoadPage');
           }
       },
       error: (error: any) => {
@@ -694,6 +694,7 @@ export class EditOrderV2Component implements OnInit {
         }, 5 * 1000)
       }
     });
+
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {

@@ -273,8 +273,6 @@ export class TableAllOrderComponent implements OnInit {
   }
 
   onSearch(data: TDSSafeAny) {
-    console.log(data);
-
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.filterObj.searchText = data.value;

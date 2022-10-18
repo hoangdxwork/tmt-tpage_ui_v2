@@ -1,33 +1,36 @@
-<div class="tdsi-message-template-line text-neutral-1-400 leading-none text-xl cursor-pointer"
-tds-popover [(popoverVisible)]="isVisibleReply" (popoverVisibleChange)="changeVisible($event)"
-popoverTrigger="click" popoverPlacement="bottom"
-[popoverContent]="contentTemplate"></div>
+<button tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:ring-0 hover:bg-neutral-3-50"
+  type="button" tds-popover [(popoverVisible)]="isVisibleReply" (popoverVisibleChange)="changeVisible($event)"
+  popoverTrigger="click" popoverPlacement="bottom" [popoverContent]="contentTemplate">
+  <i class="tdsi-message-template-line text-neutral-1-400 text-xl leading-none"></i>
+</button>
+
 <ng-template #contentTemplate>
-    <div class="w-[336px] max-h-[500px] overflow-hidden flex flex-col gap-y-4 p-1">
-        <div class="flex justify-between">
-            <div class="">
-                <span class="text-title-1 font-semibold">Trả lời nhanh</span>
-            </div>
-            <div>
-                <button tds-button color="secondary" (click)="showModalAddQuickReply()">
-                    <span class="flex items-center text-primary-1">
-                        <i class="tdsi-plus-fill text-lg leading-none mr-2"></i>Thêm mới
-                    </span>
-                </button>
-            </div>
-        </div>
-        <div class="w-full">
-            <tds-form-field class="w-full">
-                <input tdsInput placeholder="Tìm kiếm tin nhắn" autocomplete="off" [(ngModel)]="keyFilterMail" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchMail()"/>
-                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                </tds-form-field>
-        </div>
-        <div class="flex flex-col divide-y divide-neutral-2-300 border-y border-neutral-2-300 divide-dotted border-dotted overflow-y-auto tds-custom-scroll">
-            <div *ngFor="let item of quickReplies" (click)="setTextquickReply(item)" class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50 text-body-2">
-                <span class="font-semibold">{{item.Name}}</span>
-                <div showMore [length]="50" [text]="item.BodyPlain | replacePartner: partner"></div>
-            </div>
-        </div>
-        <div *ngIf="quickReplies.length == 0">Không có tên mẫu cần tìm</div>
+  <div class="w-[336px] max-h-[500px] overflow-hidden flex flex-col gap-y-4 p-1">
+    <div class="flex justify-between">
+      <div class="">
+        <span class="text-title-1 font-semibold">Trả lời nhanh</span>
+      </div>
+      <div>
+        <button tds-button color="secondary" (click)="showModalAddQuickReply()">
+          <span class="flex items-center text-primary-1">
+            <i class="tdsi-plus-fill text-lg leading-none mr-2"></i>Thêm mới
+          </span>
+        </button>
+      </div>
     </div>
+    <div class="w-full">
+      <tds-form-field class="w-full">
+        <input tdsInput placeholder="Tìm kiếm tin nhắn" autocomplete="off" [(ngModel)]="keyFilterMail"
+          [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchMail()" />
+        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
+    </div>
+    <div class="flex flex-col divide-y divide-neutral-2-300 border-y border-neutral-2-300 divide-dotted border-dotted overflow-y-auto tds-custom-scroll">
+      <div *ngFor="let item of quickReplies" (click)="setTextquickReply(item)" class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50 text-body-2">
+        <span class="font-semibold">{{item.Name}}</span>
+        <div showMore [length]="50" [text]="item.BodyPlain | replacePartner: partner"></div>
+      </div>
+    </div>
+    <div *ngIf="quickReplies.length == 0">Không có tên mẫu cần tìm</div>
+  </div>
 </ng-template>
