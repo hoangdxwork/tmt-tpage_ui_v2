@@ -212,7 +212,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.loadCurrentCompany();
     this.loadCarrier();
 
-    this.onSelectOrderFromMessage();
     this.eventEmitter();
     this.onEventSocket();
   }
@@ -248,6 +247,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   eventEmitter(){
+    // Chọn làm số điện thoại, địa chỉ
+    this.onSelectOrderFromMessage();
+
     // TODO: thêm mới sản phẩm
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
@@ -365,20 +367,66 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onSelectOrderFromMessage() {
     this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (obs: any) => {
 
-          if(res && TDSHelperString.hasValueString(res.phone) ) {
-              this.quickOrderModel.Telephone = res.phone;
-          }
-          if(res && TDSHelperString.hasValueString(res.address)) {
-              this.quickOrderModel.Address = res.address;
-          }
-          if(res && TDSHelperString.hasValueString(res.note)) {
-              let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + res.note : res.note);
-              this.quickOrderModel.Note = text;
+          switch (obs.type) {
+            case 'phone':
+                this.quickOrderModel.Telephone = obs.value;
+            break;
+
+            case 'address':
+                this.quickOrderModel.Address = obs.value;
+            break;
+
+            case 'note':
+                let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + obs.value : obs.value);
+                this.quickOrderModel.Note = text;
+            break;
           }
 
-          this.cdRef.detectChanges();
+          // TODO: trường hợp không có đơn hàng
+          let id = this.quickOrderModel.Id as string;
+          if(!id) {
+              this.cdRef.detectChanges();
+              return;
+          }
+
+          this.isLoading = true;
+          this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                delete res['@odata.context'];
+                let model = {...res} as QuickSaleOnlineOrderModel;
+
+                switch (obs.type) {
+                  case 'phone':
+                      model.Telephone = this.quickOrderModel.Telephone;
+                  break;
+                  case 'address':
+                      model.Address = this.quickOrderModel.Address;
+                  break;
+                  case 'note':
+                      model.Note = this.quickOrderModel.Note;
+                  break;
+                }
+
+                this.saleOnline_OrderService.update(res.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: (order: any) => {
+                        this.isLoading = false;
+                        this.cdRef.detectChanges();
+                    },
+                    error: error => {
+                        this.isLoading = false;
+                        this.message.error(error?.error?.message);
+                        this.cdRef.detectChanges();
+                    }
+                })
+            },
+            error: error => {
+                this.isLoading = false;
+                this.message.error(error?.error?.message);
+                this.cdRef.detectChanges();
+            }
+          })
       }
     })
   }
@@ -1654,5 +1702,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.cdRef.detectChanges();
       }
     })
+  }
+
+  notiOrderFromMessage(type: string) {
+    switch (type) {
+      case 'phone':
+        this.message.info('Chọn làm số điện thoại thành công');
+      break;
+      case 'address':
+        this.message.info('Chọn làm địa chỉ thành công');
+      break;
+      case 'note':
+        this.message.info('Chọn làm ghi chú thành công');
+      break;
+    }
   }
 }
