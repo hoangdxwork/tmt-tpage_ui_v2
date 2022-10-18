@@ -1,3 +1,4 @@
+import { NgxVirtualScrollerDto } from './../../../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
@@ -78,7 +79,7 @@ export class ModalListBillComponent implements OnInit {
     this.partnerService.checkInfo(model).pipe(takeUntil(this.destroy$)).subscribe((res) => {
       if (res.Data && res.Data["Id"]) {
         this.partnerId = res.Data["Id"];
-        this.nextData(null);
+        this.nextData();
       }
     });
   }
@@ -105,7 +106,7 @@ export class ModalListBillComponent implements OnInit {
     });
   }
 
-  nextData(event: TDSSafeAny) {
+  nextData() {
     let model = {
       Page: this.pageCurrent,
       Limit: 10,
@@ -119,7 +120,7 @@ export class ModalListBillComponent implements OnInit {
     .subscribe((res: fastSaleOrderBillofPartnerDTO) => {
       res.Items.forEach((item: BillofPartnerDTO) => {
         item.PaymentMethod = this.paymentMethodOptions[0] ? this.paymentMethodOptions[0].Text : '';
-        this.datas.push(item);
+        this.datas = [ ...(this.datas || []), ...[item]];
       });
       this.lstBillofPartner = [...this.datas];
       this.lstBillDeafault = [...this.datas];
@@ -253,6 +254,25 @@ export class ModalListBillComponent implements OnInit {
           this.message.error(err.error? err.error.message: 'Gửi hình ảnh thất bại')
         }
       });
+  }
+
+  vsEnd(event: NgxVirtualScrollerDto) {
+    if(this.isLoading) {
+      return;
+  }
+
+  let exisData = this.lstBillofPartner && this.lstBillofPartner.length > 0 && event && event.scrollStartPosition > 0;
+  if(exisData) {
+    const vsEnd = Number(this.lstBillofPartner.length - 1) == Number(event.endIndex) && this.pageCurrent >= 1;
+    if(vsEnd) {
+        this.nextData();
+    }
+  }
+  }
+
+  
+  trackByIndex(_: number, data: any): number {
+    return data.Id;
   }
 
   ngOnDestroy(): void {

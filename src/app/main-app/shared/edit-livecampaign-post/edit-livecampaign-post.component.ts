@@ -296,8 +296,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   initFormDetails(details: any[]) {
     details?.forEach(x => {
-        const control = <FormArray>this._form.controls['Details'];
-        control.push(this.initDetail(x));
+        this.detailsFormGroups.push(this.initDetail(x));
     });
   }
 
@@ -580,6 +579,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           res.map((x: LiveCampaignSimpleDetail, idx: number) => {
               x.ProductName = items[idx].ProductName;
               x.ProductNameGet = items[idx].ProductNameGet;
+              x.ImageUrl = items[idx].ImageUrl;
 
               let formDetails = this.detailsFormGroups.value as any[];
               let index = formDetails.findIndex(f => f.Id == x.Id && f.ProductId == x.ProductId);
