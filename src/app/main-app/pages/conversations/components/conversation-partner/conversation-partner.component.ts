@@ -68,6 +68,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   partner!: ConversationPartnerDto;
   conversationItem!: ChatomniConversationItemDto; // dữ liệu nhận từ conversation-all
   visibleDrawerBillDetail: boolean = false;
+  tempPartner!: ConversationPartnerDto | any; // biến tạm khi thay đổi thông tin khách hàng nhưng không bấm lưu
 
   constructor(private message: TDSMessageService,
     private conversationService: ConversationService,
@@ -242,6 +243,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             next: (res: any) => {
                 this.isLoading = false;
                 this.notiOrderFromMessage(obs.type);
+                if(this.isEditPartner) {
+                  this.tempPartner = {...this.partner}
+                }
                 this.cdRef.detectChanges();
             },
             error: (error: any) => {
@@ -437,10 +441,18 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   onEditPartner() {
     this.isEditPartner = !this.isEditPartner;
+
+    if(this.partner){
+      this.tempPartner = {...this.partner};
+    }
   }
 
   onCancelEdit() {
     this.isEditPartner = false;
+
+    if(this.tempPartner) {
+      this.partner = {...this.tempPartner};
+    }
   }
 
   onSaveEdit() {
@@ -464,6 +476,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
           this.isEditPartner = false;
           this.isLoading = false
+          delete this.tempPartner;
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
@@ -589,6 +602,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this._districts as any) = null;
     (this._wards as any) = null;
     (this._street as any) = null;
+    delete this.tempPartner; 
   }
 
 }

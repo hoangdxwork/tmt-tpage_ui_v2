@@ -330,6 +330,14 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  checkPrermissionPartner() {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/common/CheckPermission?function=App.Catalog.Partner.Customer.Excel`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, null);
+  }
 
 
 }

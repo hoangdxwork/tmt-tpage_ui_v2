@@ -15,8 +15,8 @@ export class ChatomniObjectFacade extends BaseSevice  {
 
   dataSource: { [id: string] : ChatomniObjectsDto } = {};
 
-  // Tạo đơn hàng từ commment, lại danh sách đơn hàng
-  public loadListOrderFromCreateOrderComment$ = new EventEmitter<any>();
+  //ds mẫ đơn hàng comment-filter-all
+  public onLoadCommentOrderByPost$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

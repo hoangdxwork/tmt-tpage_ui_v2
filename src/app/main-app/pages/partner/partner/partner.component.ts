@@ -34,6 +34,7 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { DOCUMENT } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
   selector: 'app-partner',
@@ -153,7 +154,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadGridConfig();
     this.loadPartnerStatusReport();
     this.loadBirtdays();
-    this.configService.set('message',{ pauseOnHover: true });
+    this.configService.set('message', { pauseOnHover: true });
 
     this.team = this.crmTeamService.getCurrentTeam() as any;
   }
@@ -162,12 +163,12 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     const key = this.partnerService._keyCacheGrid;
     this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
-          if (res && res.value) {
-            let jsColumns = JSON.parse(res.value) as any;
-            this.hiddenColumns = jsColumns.value.columnConfig;
-          } else {
-            this.hiddenColumns = this.columns;
-          }
+        if (res && res.value) {
+          let jsColumns = JSON.parse(res.value) as any;
+          this.hiddenColumns = jsColumns.value.columnConfig;
+        } else {
+          this.hiddenColumns = this.columns;
+        }
       }
     })
   }
@@ -178,11 +179,11 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.getViewData(params).subscribe({
       next: (res: ODataPartnerDTO) => {
-          this.count = res['@odata.count'] as number;
-          this.lstOfData = [...res.value];
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = [...res.value];
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` ||  'Đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       }
     });
   }
@@ -198,7 +199,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     let type = "partner";
     this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataTagsPartnerDTO) => {
-          this.lstDataTag = [...res.value];
+        this.lstDataTag = [...res.value];
       }
     })
   }
@@ -210,11 +211,11 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.partnerStatusReport = [...res.item];
 
           res.item?.forEach(x => {
-              this.lstStatus.push({
-                  Name: x.StatusText,
-                  Total: x.Count,
-                  IsSelected: false
-              });
+            this.lstStatus.push({
+              Name: x.StatusText,
+              Total: x.Count,
+              IsSelected: false
+            });
           });
         }
       },
@@ -277,20 +278,20 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (res: TDSSafeAny) => {
         if (res && res.PartnerId) {
 
-            let exits = this.lstOfData?.filter(x => x.Id == id)[0] as TDSSafeAny;
-            if (exits) {
-                exits.Tags = JSON.stringify(tags);
-            }
+          let exits = this.lstOfData?.filter(x => x.Id == id)[0] as TDSSafeAny;
+          if (exits) {
+            exits.Tags = JSON.stringify(tags);
+          }
 
-            this.indClickTag = -1;
-            this.modelTags = [];
+          this.indClickTag = -1;
+          this.modelTags = [];
 
-            this.message.success(Message.Tag.UpdateSuccess);
+          this.message.success(Message.Tag.UpdateSuccess);
         }
       },
       error: (error: any) => {
-          this.indClickTag = -1;
-          this.message.error(error?.error?.message || Message.Tag.UpdateFail);
+        this.indClickTag = -1;
+        this.message.error(error?.error?.message || Message.Tag.UpdateFail);
       }
     });
   }
@@ -307,11 +308,11 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.getViewData(params).subscribe({
       next: (res: any) => {
-          this.count = res['@odata.count'] as number;
-          this.lstOfData = [...res.value];
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = [...res.value];
       },
       error: (error: any) => {
-          this.message.error(error?.error?.message ||'Tải dữ liệu phiếu bán hàng thất bại!');
+        this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
       }
     });
   }
@@ -324,7 +325,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hiddenColumns = event;
     if (event && event.length > 0) {
       const gridConfig = {
-          columnConfig: event
+        columnConfig: event
       };
 
       const key = this.partnerService._keyCacheGrid;
@@ -349,26 +350,34 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   exportExcel() {
-    if (this.isProcessing) { return }
-    let state = {
-      skip: 0,
-      take: 20,
-      filter: {
-        filters: [
-          { field: "Customer", operator: OperatorEnum.eq, value: true },
-          { field: "Active", operator: OperatorEnum.eq, value: true },
-        ],
-        logic: "and",
-      }
-    };
+    if (this.checkValueEmpty() == 1) {
+      if (this.isProcessing) { return }
+      let state = {
+        Filter: {
+          logic: "and",
+          filters: [
+            { field: "Customer", operator: OperatorEnum.eq, value: true },
+            { field: "Active", operator: OperatorEnum.eq, value: true },
+          ],
+        }
+      };
 
-    let data = { customer: true, data: JSON.stringify(state) }
+      let data = { customer: true, data: JSON.stringify(state), ids: this.idsModel }
 
-    let that = this;
+      // let that = this;
 
-    this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh')
-      .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
-      .subscribe();
+      this.partnerService.checkPrermissionPartner().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.excelExportService.exportPost('/Partner/ExportFile',data, 'customer_list')
+            .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$))
+            .subscribe();
+        }
+      })
+
+      // this.excelExportService.exportPost('/Partner/ExportFile', { data: data }, 'customer_list')
+      //   .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$))
+      //   .subscribe();
+    }
   }
 
   setActive(type: string) {
@@ -380,11 +389,11 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.partnerService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: TDSSafeAny) => {
-                this.message.success('Đã mở hiệu lực thành công!');
-                this.loadData(this.pageSize, this.pageIndex);
+              this.message.success('Đã mở hiệu lực thành công!');
+              this.loadData(this.pageSize, this.pageIndex);
             },
             error: (error: any) => {
-                this.message.error('Mở hiệu lực thất bại!');
+              this.message.error('Mở hiệu lực thất bại!');
             }
           })
           break;
@@ -394,11 +403,11 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.partnerService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: TDSSafeAny) => {
-                this.message.success('Đóng hiệu lực thành công!');
-                this.loadData(this.pageSize, this.pageIndex);
+              this.message.success('Đóng hiệu lực thành công!');
+              this.loadData(this.pageSize, this.pageIndex);
             },
             error: (error: any) => {
-                this.message.error('Đóng hiệu lực thất bại!');
+              this.message.error('Đóng hiệu lực thất bại!');
             }
           })
           break;
@@ -432,12 +441,12 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
       onOk: () => {
         this.partnerService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: TDSSafeAny) => {
-              this.message.success('Xóa thành công!')
-              this.loadData(this.pageSize, this.pageIndex);
+            this.message.success('Xóa thành công!')
+            this.loadData(this.pageSize, this.pageIndex);
           },
           error: (error: any) => {
-              this.message.error(`${error.error.message}`)
-              this.loadData(this.pageSize, this.pageIndex);
+            this.message.error(`${error.error.message}`)
+            this.loadData(this.pageSize, this.pageIndex);
           }
         })
       },
@@ -464,7 +473,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     modal.afterClose.subscribe({
       next: result => {
         if (TDSHelperObject.hasValue(result)) {
-            this.loadData(this.pageSize, this.pageIndex);
+          this.loadData(this.pageSize, this.pageIndex);
         }
       }
     });
@@ -506,12 +515,12 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
       onOk: () => {
         that.partnerService.resetLoyaltyPoint({ ids: ids }).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {
-              that.message.success('Thao tác thành công!');
-              that.isProcessing = false;
+            that.message.success('Thao tác thành công!');
+            that.isProcessing = false;
           },
           error: (error: any) => {
-              that.message.error(`${error?.error?.message}`);
-              that.isProcessing = false;
+            that.message.error(`${error?.error?.message}`);
+            that.isProcessing = false;
           }
         })
       },
@@ -587,45 +596,45 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any): any => {
 
-          let pageIds: any = [];
-          res?.map((x: any) => {
-              pageIds.push(x.page_id);
-          });
+        let pageIds: any = [];
+        res?.map((x: any) => {
+          pageIds.push(x.page_id);
+        });
 
-          if (pageIds.length == 0) {
+        if (pageIds.length == 0) {
+          return this.message.error('Không có kênh kết nối với khách hàng này.');
+        }
+
+        this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (teams: any): any => {
+            if (teams?.length == 0) {
               return this.message.error('Không có kênh kết nối với khách hàng này.');
-          }
+            }
 
-          this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (teams: any): any => {
-                if (teams?.length == 0) {
-                  return this.message.error('Không có kênh kết nối với khách hàng này.');
-                }
+            this.mappingTeams = [];
+            let pageDic = {} as any;
 
-                this.mappingTeams = [];
-                let pageDic = {} as any;
+            teams?.map((x: any) => {
+              let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
 
-                teams?.map((x: any) => {
-                  let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
-
-                  if (exist && !pageDic[exist.page_id]) {
-                      pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
-                      this.mappingTeams.push({
-                          psid: exist.psid,
-                          team: x
-                      });
-                  }
+              if (exist && !pageDic[exist.page_id]) {
+                pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                this.mappingTeams.push({
+                  psid: exist.psid,
+                  team: x
                 });
-
-                if (this.mappingTeams.length > 0) {
-                    this.currentMappingTeam = this.mappingTeams[0];
-                    this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
-                }
               }
-          });
+            });
+
+            if (this.mappingTeams.length > 0) {
+              this.currentMappingTeam = this.mappingTeams[0];
+              this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
+            }
+          }
+        });
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
   }
@@ -638,15 +647,15 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: MDBByPSIdDTO) => {
         if (res) {
-            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-            this.currentConversation = { ...model };
+          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+          this.currentConversation = { ...model };
 
-            this.psid = res.psid;
-            this.isOpenDrawer = true;
+          this.psid = res.psid;
+          this.isOpenDrawer = true;
         }
       },
       error: (error: any) => {
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       }
     })
   }
