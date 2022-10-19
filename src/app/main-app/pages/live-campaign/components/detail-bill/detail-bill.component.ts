@@ -376,20 +376,21 @@ export class DetailBillComponent implements OnInit {
         onOk: () => {
           that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: TDSSafeAny) => {
-            
+
               if(res && TDSHelperString.hasValueString(res.Error) && res.Errors && !TDSHelperArray.hasListValue(res.Errors)){
                 that.notification.error('Thông báo', res.Error);
               } else {
                 // danh sách lỗi
               }
-  
+
               if(res.Success) {
                 that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
+                this.loadData(this.pageSize, this.pageIndex);
               }
-              
+
               that.isProcessing = false;
               this.isLoading = false;
-            }, 
+            },
             error:error => {
               this.isLoading = false;
               that.isProcessing = false;
@@ -397,9 +398,9 @@ export class DetailBillComponent implements OnInit {
             }
           })
         },
-        onCancel: () => { 
-          that.isProcessing = false; 
-          this.isLoading = false; 
+        onCancel: () => {
+          that.isProcessing = false;
+          this.isLoading = false;
         },
         okText: "Xác nhận",
         cancelText: "Đóng",
