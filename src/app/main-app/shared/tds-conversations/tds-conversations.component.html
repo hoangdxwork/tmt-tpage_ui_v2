@@ -47,7 +47,7 @@
                             color="primary"  trigger="click" tds-dropdown
                             [tdsDropdownMenu]="menu2" [placement]="'bottomRight'">
                             <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.AssignedTo ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
-                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo?.UserName:''}}</span>
+                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo?.Name:''}}</span>
                             <i class="tdsi-arrow-down-line"></i>
                         </button>
                         <tds-dropdown-menu #menu2="tdsDropdownMenu">
