@@ -58,10 +58,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   lstPartnerStatus!: Array<PartnerStatusDTO>;
   innerNote!: string;
-  lastBill!: Conversation_LastBillDto;
-  lstBill: GroupBy_ConversationBillDto[] = [];
+  lastInvoice!: Conversation_LastBillDto;
+  stateInvoices: GroupBy_ConversationBillDto[] = [];
   totalBill: number = 0;
 
+  lstInvoice: Conversation_LastBillDto[] = [];
   tab_Bill?: any = null;
   isEditPartner: boolean = false;
   partner!: ConversationPartnerDto;
@@ -162,15 +163,32 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     if(conversationInfo.Bill && conversationInfo.Bill.LastBill) {
-        this.lastBill = {...conversationInfo.Bill.LastBill}
+        this.lastInvoice = {...conversationInfo.Bill.LastBill}
     }
 
     if(conversationInfo.Bill && conversationInfo.Bill.Data) {
         this.totalBill = 0;
-        this.lstBill = [...conversationInfo.Bill.Data];
-        this.lstBill.map(x => {
-          this.totalBill = this.totalBill + x.Total;
+
+        this.stateInvoices = [...conversationInfo.Bill.Data];
+        this.stateInvoices.map(x => this.totalBill = this.totalBill + x.Total);
+
+        this.stateInvoices.map(x => {
+          switch(x.Type) {
+              case 'open':
+                x.Name = 'Đã xác nhận';
+                break;
+              case 'paid':
+                x.Name = 'Đã thanh toán';
+                break;
+              case 'cancel':
+                x.Name = 'Hủy bỏ';
+                break;
+              case 'draft':
+                x.Name = 'Nháp';
+                break;
+          }
         })
+        this.stateInvoices = [...this.stateInvoices];
     }
 
     if(conversationInfo.Revenue) {
@@ -318,12 +336,28 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     })
   }
 
-  onChangeTabBill(event: any) {
-    if(this.tab_Bill == event) {
-      this.tab_Bill = null;
-    } else {
+  onChangeTabBill(event: any, item: GroupBy_ConversationBillDto) {
       this.tab_Bill = event;
-    }
+      this.lstInvoice = [];
+
+      let partnerId = this.partner.Id;
+      let state = item.Type;
+
+      if(partnerId && state) {
+        this.isLoading = true;
+        this.partnerService.getInvoice(partnerId, state).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.lstInvoice =  [...res];
+                this.isLoading = false;
+                this.cdRef.detectChanges();
+            },
+            error: (error: any) => {
+                this.isLoading = false;
+                this.message.error(`${error?.error?.message}`);
+                this.cdRef.detectChanges();
+            }
+        })
+      }
   }
 
   selectStatus(event: PartnerStatusDTO) {
@@ -547,8 +581,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.conversationInfo = null;
     (this.partner as any) = null;
     (this.revenue as any) = null;
-    (this.lastBill as any) = null;
-    (this.lstBill as any) = null;
+    (this.lastInvoice as any) = null;
+    (this.stateInvoices as any) = null;
+    this.lstInvoice = [];
     this.totalBill = 0;
     (this._cities as any) = null;
     (this._districts as any) = null;

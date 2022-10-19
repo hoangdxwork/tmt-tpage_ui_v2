@@ -25,6 +25,7 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSBadgeModule } from 'tds-ui/badges';
 import { TDSAvatarModule } from 'tds-ui/avatar';
 import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TShopLoginComponent } from './components/tshop-login/tshop-login.component';
 
 const SERVICES = [
   FacebookGraphService,
@@ -34,7 +35,8 @@ const SERVICES = [
 @NgModule({
   declarations: [
     FacebookComponent,
-    AddPageComponent
+    AddPageComponent,
+    TShopLoginComponent
   ],
   imports: [
     CommonModule,
