@@ -41,7 +41,7 @@
 <tds-dropdown-menu #dropdownTeam="tdsDropdownMenu">
     <ng-container *ngIf="parentIsHeaderCpm; else dropDownconversation">
         <div class="overflow-hidden overflow-y-auto tds-panel-scroll">
-            <div class="w-[337px]">
+            <div class="w-[337px] max-h-[500px] overflow-y-auto tds-panel-scroll">
                 <ng-container *ngIf="data$ | async as data">
                     <tds-collapse [expandIconPosition]="'right'" [bordered]="false">
                         <ng-template ngFor let-item [ngForOf]="data" let-i="index">

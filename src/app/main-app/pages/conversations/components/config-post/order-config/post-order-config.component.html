@@ -27,16 +27,16 @@
 
             <div class="flex gap-x-2 items-center">
                 <tds-switch size="md" [(ngModel)]="isImmediateApply" [ngModelOptions]="{standalone: true}"></tds-switch>
-                <div class="text-body-2">Áp dụng ngay cho những bình luận đã có?</div>
+                <div class="text-body-2 font-semibold text-info-500">Áp dụng ngay cho những bình luận đã có?</div>
             </div>
 
-            <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
+            <!-- <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
                 <div class="text-body-2 font-semibold text-neutral-1-900 font-sans mr-4">Giới hạn số đơn được tạo</div>
                 <div class="flex w-[152px]">
                       <tds-input-number [(ngModel)]="dataModel.MaxCreateOrder" [ngModelOptions]="{standalone: true}"
                       [formatter]="numberWithCommas" [parser]="parserComas" [min]="0" [max]="1000000" [step]="1" placeholder="0"></tds-input-number>
                 </div>
-            </div>
+            </div> -->
           </div>
       </div>
 
