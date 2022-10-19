@@ -371,6 +371,8 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.excelExportService.exportPost('/Partner/ExportFile',data, 'customer_list')
             .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$))
             .subscribe();
+        }, error: error => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       })
 
