@@ -191,7 +191,8 @@
                                 <div class="name font-semibold pb-1" *ngIf="dataItem.Data">{{ (dataItem.Data | tShopDataMessage).Actor?.Name }} </div>
                             </div>
 
-                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message" #contentMessage></div>
+                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
+                            <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert" #contentMessage></div>
                           </div>
                       </div>
                   </div>
@@ -320,7 +321,8 @@
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
                                   <div class="border-activety-comment" *ngIf="child.Message">
                                       <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
-                                      <div class="content-message font-regular" #contentMessageChild showMore [length]="300" [text]="child.Message"></div>
+                                      <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
+                                      <div class="hidden" [innerHtml]="child.Message | bbcodeConvert" #contentMessageChild></div>
                                   </div>
                               </div>
                           </div>

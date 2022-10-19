@@ -1,3 +1,4 @@
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from './../../dto/suggest-address/suggest-address.dto';
 import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -119,8 +120,8 @@ export class TDSConversationItemComponent implements OnInit  {
               break;
 
             case "note":
-                if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
-                  model.value = this.contentMessageChild._results[index].nativeElement.outerText;
+                if (Number(index) >=0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].nativeElement && this.contentMessageChild._results[Number(index)].nativeElement.outerText){
+                  model.value = this.contentMessageChild._results[Number(index)].nativeElement.outerText;
                 } else {
                   model.value = value;
                 }
@@ -585,34 +586,45 @@ export class TDSConversationItemComponent implements OnInit  {
 
   showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){
     let value: string = '';
+    if (Number(index) >= 0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].text) {
+      value = this.contentMessageChild._results[ Number(index)].text;
+    } else {
+        value = this.getTextOfContentMessage();
+    }
 
     if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') {
         if(nlpEntities[0].Value){
           let data = JSON.parse(nlpEntities[0].Value);
 
           if (data && typeof data === "object") {
+            let _cities = {code: data.CityCode || null, name: data.CityName || null} as SuggestCitiesDTO;
+            let _districts = {code: data.DistrictCode || null, name: data.DistrictName || null} as SuggestDistrictsDTO;
+            let _wards = {code: data.WardCode || null, name: data.WardName || null} as SuggestWardsDTO;
 
-              let item: ResultCheckAddressDTO = {
-                Address: data.FullAddress || null,
-                CityCode: data.CityCode || null,
-                CityName: data.CityName || null,
-                DistrictCode:  data.DistrictCode || null,
-                DistrictName: data.DistrictName || null,
-                WardCode: data.WardCode || null,
-                WardName: data.WardName || null
-            } as any;
-
-            this.chatomniEventEmiter.selectAddressEmiter$.emit(item);
-            this.tdsMessage.success('Chọn làm địa chỉ thành công');
+              let modal = this.modalService.create({
+                title: 'Thêm địa chỉ',
+                content: ModalAddAddressV2Component,
+                size: "lg",
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  isSelectAddress: true,
+                  _street: value,
+                  _cities: _cities,
+                  _districts: _districts,
+                  _wards: _wards,
+                }
+              });
+    
+            modal.afterClose.subscribe({
+              next: (result: ResultCheckAddressDTO) => {
+                if(result){
+                    this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+                }
+              }
+            })
             return;
           }
         }
-    }
-
-    if (Number(index) >= 0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].text) {
-        value = this.contentMessageChild._results[ Number(index)].text;
-    } else {
-        value = this.getTextOfContentMessage();
     }
 
     if(TDSHelperArray.hasListValue(value)) {
