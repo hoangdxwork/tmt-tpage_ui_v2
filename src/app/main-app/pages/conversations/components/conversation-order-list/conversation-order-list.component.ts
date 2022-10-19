@@ -84,8 +84,8 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if(this.data && this.data.ObjectId) {
-        this.currentPost = this.data;
-        this.loadData(this.pageSize, this.pageIndex);
+      this.currentPost = this.data;
+      this.loadData(this.pageSize, this.pageIndex);
     }
 
     this.eventEmitter();
@@ -100,11 +100,11 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
   eventEmitter() {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
-    this.chatomniObjectFacade.loadListOrderFromCreateOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
-          if(this.currentPost && this.currentPost.ObjectId) {
-              this.loadData(this.pageSize, this.pageIndex);
-          }
+    this.chatomniObjectFacade.onLoadCommentOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(this.currentPost && this.currentPost.ObjectId) {
+            this.loadData(this.pageSize, this.pageIndex);
+        }
       }
     })
   }
@@ -118,14 +118,15 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
       next:(res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
-          
-          if(!TDSHelperArray.hasListValue(this.lstOfData)){
-            this.disableCheck = true;
-          }
 
           //gán tạm thời
           let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
           this.tabNavs = [...data];
+
+          this.setOfCheckedId = new Set<string>();
+          this.checked = false;
+          this.indeterminate = false;
+
           this.cdr.detectChanges();
       },
       error:(error) => {
@@ -417,13 +418,15 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     // let exist
     this.odataSaleOnline_OrderService.removeIds({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
+            this.isLoading = false;
             this.message.success(Message.DeleteSuccess);
 
-            // TODO: đẩy dữ liệu sang conversation-post-view xóa code đơn hàng comments
-            this.conversationPostEvent.onRemoveOrderComment$.emit(true);
+            // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
+            this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
 
-            this.loadData(this.pageSize, this.pageIndex);
-            this.isLoading = false;
+            this.setOfCheckedId = new Set<string>();
+            this.checked = false;
+            this.indeterminate = false;
         },
         error:(error) => {
             this.isLoading = false;
@@ -456,7 +459,8 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
                 modal.afterClose?.subscribe({
                   next: (obs: any) => {
-                    this.loadData(this.pageSize, this.pageIndex);
+                      // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
+                      this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
                   },
                 })
               }

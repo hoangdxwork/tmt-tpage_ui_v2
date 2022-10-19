@@ -44,6 +44,7 @@ import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
+import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 
 @Component({
   selector: 'comment-filter-all',
@@ -115,6 +116,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     private postEvent: ConversationPostEvent,
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
+    private chatomniObjectFacade: ChatomniObjectFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private socketOnEventService: SocketOnEventService,
     private chatomniConversationFacade: ChatomniConversationFacade,
@@ -183,7 +185,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
                     this.dataSource.Items = [...this.dataSource.Items];
 
                     this.lengthDataSource = this.dataSource.Items.length;
-                    
+
                     if(this.virtualScroller) {
                       this.virtualScroller.scrollToPosition(0);
                     }
@@ -214,34 +216,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   }
 
   eventEmitter() {
-    this.conversationOrderFacade.onChangeCommentsOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
+    // TODO: tạo đơn hàng, phiếu bán hàng ở conversation-order
+    this.chatomniObjectFacade.onLoadCommentOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
-        switch(res?.type){
-
-          case 'deleteCode':
-            if(this.data.LiveCampaignId) {
-                delete this.commentOrders[res.data?.Facebook_ASUserId];
-            }
-            break;
-
-          case 'addCode':
-            this.loadCommentsOrderByPost();
-            break;
-
-          default: break;
-        }
-
-        this.cdRef.detectChanges();
+        setTimeout(() => {
+          this.loadCommentsOrderByPost();
+        }, 350);
       }
-    });
-
-    this.postEvent.onRemoveOrderComment$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
-        if(res){
-            this.loadCommentsOrderByPost();
-        }
-      }
-    });
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {

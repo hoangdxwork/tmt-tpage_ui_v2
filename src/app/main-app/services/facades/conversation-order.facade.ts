@@ -53,9 +53,6 @@ export class ConversationOrderFacade extends BaseSevice  {
   // TODO:click code đơn hàng từ bài viết
   public loadOrderFromCommentPost$ = new EventEmitter<any>();
 
-  //TODO: output thông tin đơn hàng từ comment-filter-all sang conversation-order
-  public onChangeCommentsOrderByPost$ = new EventEmitter<any>();
-
   // TODO: output có thông tin đơn hàng khi bấn thông tin khách hàng để Disable tab đơn hàng
   public hasValueOrderCode$ = new EventEmitter<any>();
 
