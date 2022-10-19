@@ -546,6 +546,7 @@ export class EditOrderV2Component implements OnInit {
         this.calcTotal();
         this.coDAmount();
     }
+
   }
 
   onChangeQuantity(value: number, index: number) {
@@ -601,8 +602,13 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onSave(formAction?: string, type?: string): any {
-
     let model = this.quickOrderModel;
+    model.Details?.map(x => {
+      if(x.Quantity == null) {
+          x.Quantity = 0;
+      }
+    })
+
     let id = this.quickOrderModel.Id as string;
 
     if(TDSHelperString.hasValueString(formAction)) {
@@ -688,10 +694,6 @@ export class EditOrderV2Component implements OnInit {
         }else{
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
         }
-
-        setTimeout(() => {
-            this.modalRef.destroy(null);
-        }, 5 * 1000)
       }
     });
 
