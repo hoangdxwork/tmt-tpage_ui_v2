@@ -1,3 +1,5 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { LiveCampaignSimpleDetail } from './../../dto/live-campaign/livecampaign-simple.dto';
 import { ProductTemplateService } from './../../services/product-template.service';
@@ -8,7 +10,7 @@ import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -40,6 +42,7 @@ import { Message } from '@core/consts/message.const';
 
 export class AddLivecampaignPostV2Component implements OnInit {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() id?: string;
   @Input() isCopy?: boolean;
 
@@ -393,6 +396,11 @@ export class AddLivecampaignPostV2Component implements OnInit {
       return;
     }
 
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
+
     this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
@@ -481,7 +489,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
             countEdit +=1;
 
             if(!isVariants){
-              this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${item.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
+              this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${item.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
             }
         } else {
             formDetails = [...[item], ...formDetails]
@@ -490,17 +498,17 @@ export class AddLivecampaignPostV2Component implements OnInit {
             countNew +=1;
 
             if(!isVariants){
-              this.notificationService.info(`Thêm sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${item.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
+              this.notificationService.info(`Thêm sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${item.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
             }
         }
     })
 
     if(isVariants) {
       if(countNew > 0) {
-        this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm <span class="font-semibold text-secondary-1">${countNew}</span> sản phẩm vào danh sách`);
+        this.notificationService.info(`Thêm sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${items[0].ProductName}</span></span><span> Số lượng thêm: <span class="font-semibold text-secondary-1">${countNew}</span></span></div>`);
       }
       if(countEdit > 0) {
-          this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật <span class="font-semibold text-secondary-1">${countEdit}</span> sản phẩm trong danh sách`);
+          this.notificationService.info(`Cập nhật sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${items[0].ProductName}</span></span><span> Số lượng cập nhật: <span class="font-semibold text-secondary-1">${countEdit}</span></span></div>`);
       }
     }
 
@@ -634,6 +642,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
                 x.UOMId = uomId;
             })
 
+            this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
+
             this.isLoadingSelect = false;
         },
         error: error => {
@@ -653,6 +663,23 @@ export class AddLivecampaignPostV2Component implements OnInit {
   onOpenSearchvalue(){
     this.liveCampainDetails = [...this.detailsFormGroups.value];
     this.visible = true;
+  }
+
+  showModalAddQuickReply() {
+    let modal = this.modal.create({
+        title: 'Thêm mới trả lời nhanh',
+        content: ModalAddQuickReplyComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'md'
+    });
+
+    modal.afterClose.subscribe({
+      next:(res) => {
+        if(res) {
+          this.loadQuickReply();
+        }
+      }
+    })
   }
 
   vsEndUOMLine(event: NgxVirtualScrollerDto) {

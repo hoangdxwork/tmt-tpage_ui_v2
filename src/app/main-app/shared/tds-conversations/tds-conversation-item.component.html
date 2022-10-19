@@ -280,26 +280,26 @@
 
               <!-- Check Private Reply -->
               <div class="quick-message gap-5">
-                  <div class="check gap-5 flex justify-between">
+                  <div class="check gap-5 flex justify-between items-center">
+                      <tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">Gửi về tin nhắn</tds-checkbox>
                       <div class="icon-send flex flex-row mr-2 gap-x-2 items-center">
-                        <a class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none cursor-pointer p-2 hover:bg-neutral-3-50 rounded-md"
-                            type="button" tds-tooltip tooltipTitle="Cảm xúc"
-                            tds-popover popoverTrigger="click"
-                            [popoverContent]="infoEmojiMart"
-                            [popoverAutoClose]="true"
-                            [popoverBackdrop]="true"
-                            popoverPlacement="top">
-                            <ng-template #infoEmojiMart>
-                              <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
-                            </ng-template>
-                        </a>
-                        <div class="text-neutral-1-400 cursor-pointer p-2 rounded-md tdsi-product-line text-xl leading-none hover:bg-neutral-3-50" *ngIf="isPrivateReply"
-                             (click)="onProductsbypageFb()" tds-tooltip tooltipTitle="Sản phẩm">
-                        </div>
-                        <quick-reply-button class="p-2 rounded-md hover:bg-neutral-3-50" tds-tooltip tooltipTitle="Tin nhắn nhanh"
-                            (onQuickReplySelected)="onQuickReplySelected($event)" [partner]="partner"></quick-reply-button>
+                          <button tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:ring-0 hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Cảm xúc"
+                              tds-popover popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
+                              [popoverBackdrop]="true" popoverPlacement="top">
+                            <i class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none"></i>
+                          </button>
+                          <ng-template #infoEmojiMart>
+                            <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+                          </ng-template>
+
+                          <button *ngIf="isPrivateReply" (click)="onProductsbypageFb()" tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:ring-0 hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Sản phẩm">
+                            <i class="tdsi-product-line text-neutral-1-400 text-xl leading-none"></i>
+                          </button>
+
+                          <quick-reply-button tds-tooltip tooltipTitle="Tin nhắn nhanh"
+                            (onQuickReplySelected)="onQuickReplySelected($event)" [partner]="partner">
+                          </quick-reply-button>
                       </div>
-                      <tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">  Gửi về tin nhắn </tds-checkbox>
                   </div>
               </div>
           </div>

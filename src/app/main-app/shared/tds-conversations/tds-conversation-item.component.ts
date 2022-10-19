@@ -99,38 +99,37 @@ export class TDSConversationItemComponent implements OnInit  {
   }
 
   selectOrder(type: string, index?: number): any {
-    let data = { phone: null, address: null, note: null } as any;
+    let model = { type: '', value: '' } as any;
     let value = this.getTextOfContentMessage();
 
     if(TDSHelperString.hasValueString(value)) {
         switch(type) {
             case "phone":
-                let phone = PhoneHelper.getMultiplePhoneFromText(value, this.companyCurrents);
-                if (!phone) {
-                    return this.tdsMessage.error("Không tìm thấy số điện thoại");
-                }
-                this.tdsMessage.info("Chọn làm số điện thoại thành công");
-                data.phone = phone;
+              let phone = PhoneHelper.getMultiplePhoneFromText(value, this.companyCurrents);
+              if (!phone) {
+                  return this.tdsMessage.error("Không tìm thấy số điện thoại");
+              }
+              model.value = phone;
+              model.type = 'phone';
               break;
 
             case "address":
-                data.address = value;
-                if (value) {
-                  this.tdsMessage.info("Chọn làm  địa chỉ thành công");
-                }
+              model.value = value;
+              model.type = 'address';
               break;
 
             case "note":
                 if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
-                    data.note = this.contentMessageChild._results[index].nativeElement.outerText;
+                  model.value = this.contentMessageChild._results[index].nativeElement.outerText;
                 } else {
-                    data.note = value;
+                  model.value = value;
                 }
+                model.type = 'note';
               break;
         }
 
         //TODO: load sang tab conversation-order paste lại dữ liệu
-        this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
+        this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
     } else {
         return false;
     }

@@ -35,9 +35,8 @@ export class ListProductTmpV2Component implements OnInit {
   @Output() onLoadProductToLiveCampaign: EventEmitter<any> = new EventEmitter<any>();
 
   lstOfData!: DataPouchDBDTO[];
-  lstVariants: DataPouchDBDTO[] = [];
 
-  lstVariantsV2: ProductDTOV2[] = [];
+  lstVariants: ProductDTOV2[] = [];
 
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
@@ -305,13 +304,17 @@ export class ListProductTmpV2Component implements OnInit {
 
     model.map((x: DataPouchDBDTO)=>{
       x.Tags = productTmplItems?.Tags || null;
-
+      
       if(this.inventories && this.inventories[x.Id]) {
           x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
       }
     });
 
-    this.lstVariants = [...model];
+    this.lstVariants = [...model] as ProductDTOV2[];
+
+    this.lstVariants.map(x=> {
+      x.PriceVariant = x.Price;
+    })
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -355,8 +358,8 @@ export class ListProductTmpV2Component implements OnInit {
 
   selectProduct(data: ProductDTOV2, index?: number){
     let uomId: number = data.UOMId;
-    if(index) {
-        this.indClick = index;
+    if(Number(index) >= 0) {
+        this.indClick = Number(index);
     }
     
     this.loadProductAttributeLine(data.ProductTmplId, uomId);
@@ -368,20 +371,28 @@ export class ListProductTmpV2Component implements OnInit {
     }
 
     this.isLoadingSelect = true;
-    this.lstVariantsV2 = [];
+    this.lstVariants = [];
 
     this.productTemplateService.getProductVariants(id).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res) => {
-          this.lstVariantsV2 = [...res.value];
-          this.lstVariantsV2.map((x: ProductDTOV2) => {
+          this.lstVariants = [...(res.value || [])];
+          this.lstVariants.map((x: ProductDTOV2) => {
             x.UOMId = uomId;
-          })
+          });
+
+          this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
+
+          if(this.lstVariants.length == 0) {
+            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+            this.indClick = -1;
+          }
           this.isLoadingSelect = false;
         },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
           this.isLoadingSelect = false;
+          this.indClick = -1;
         }
       }
     )
@@ -395,7 +406,7 @@ export class ListProductTmpV2Component implements OnInit {
         break;
       case 'liveCampaign':
         let model = {
-          value: [...this.lstVariantsV2],
+          value: [...this.lstVariants],
           isVariants: true
         }
         this.onLoadProductToLiveCampaign.emit(model);

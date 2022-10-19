@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-y-4 text-body-2 max-h-[calc(65vh)] overflow-hidden p-1">
+<div class="flex flex-col gap-y-4 text-body-2 h-[calc(65vh)] overflow-hidden p-1">
     <div class="flex gap-x-2.5">
         <tds-form-field class="w-full">
             <input tdsInput class="text-neutral-1-600" placeholder="Tìm kiếm" autocomplete="off"
@@ -20,32 +20,38 @@
             </div>
         </tds-dropdown-menu>
     </div>
-    <div class="w-full max-h-full overflow-y-auto tds-custom-scroll" id="myScroll" is-lock="true" observe-attributes
-    yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
-        <tds-table #basicTable [listData]="lstBillofPartner" [loading]="isLoading" [showPagination]="false" [pageSize]="lstBillofPartner.length">
+       
+    <div class="flex flex-col flex-auto">
+        <tds-table class="!h-auto" #basicTable [listData]="lstBillofPartner" [showPagination]="false" [pageSize]="lstBillofPartner.length">
             <thead>
                 <tr>
-                    <th>Mã phiếu</th>
-                    <th>Ngày tạo</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th>Thông tin</th>
-                    <th>Thanh toán</th>
-                    <th>Thao tác</th>
+                    <th width="154px">Mã phiếu</th>
+                    <th width="154px">Ngày tạo</th>
+                    <th width="154px">Tổng tiền</th>
+                    <th width="154px">Trạng thái</th>
+                    <th width="154px">Thông tin</th>
+                    <th width="154px">Thanh toán</th>
+                    <th class="text-center">Thao tác</th>
                 </tr>
             </thead>
-            <tbody>
-                <ng-template ngFor let-data [ngForOf]="basicTable.data" let-i="index">
-                    <tr>
-                        <td>
-                            <span class="text-accent-9 ">{{data.Number}}</span>
-                        </td>
-                        <td>{{data.DateCreated | date:'dd/MM/yyyy'}}</td>
-                        <td>{{data.AmountTotal || 0 | numberCustom }} đ</td>
-                        <td>
+        </tds-table>
+        <tds-spin [spinning]="isLoading" class="flex flex-col overflow-hidden overflow-y-auto w-full h-full">
+    
+            <virtual-scroller *ngIf="lstBillofPartner && lstBillofPartner.length > 0; else noData"
+                #scroll [items]="lstBillofPartner" class="tds-custom-scroll w-full h-full"
+                (vsEnd)="vsEnd($event)"
+                [enableUnequalChildrenSizes]="true"
+                [scrollAnimationTime]="750">
+                    <div *ngFor="let data of scroll.viewPortItems; let i = index" class="p-2 flex items-center border-b border-b-neutral-3-100 hover:bg-neutral-3-50">
+                        <div class="w-[154px] p-2">
+                            <span class="text-accent-9">{{data.Number}}</span>
+                        </div>
+                        <div class="w-[154px] p-2">{{data.DateCreated | date:'dd/MM/yyyy'}}</div>
+                        <div class="w-[154px] p-2">{{data.AmountTotal || 0 | numberCustom }} đ</div>
+                        <div class="w-[154px] p-2">
                             <tds-tag [status]='data.ShowState | getColorStatusShowState'>{{data.ShowState}}</tds-tag>
-                        </td>
-                        <td>
+                        </div>
+                        <div class="w-[154px] p-2">
                             <div>
                                 <button tds-flat-button color="secondary" rounded="!rounded-full" (click)="showModalDetailBill(data)">
                                     <span class="flex items-center text-info-500">
@@ -53,9 +59,9 @@
                                     </span>
                                 </button>
                             </div>
-                        </td>
-
-                        <td>
+                        </div>
+    
+                        <div class="w-[154px] p-2">
                             <button tds-button color="secondary" tds-dropdown [backdrop]="true" trigger="click" [tdsDropdownMenu]="menu">
                                 <span class="flex items-center">
                                     {{data.PaymentMethod || "Chưa có PTTT"}}
@@ -69,31 +75,34 @@
                                     </div>
                                 </div>
                             </tds-dropdown-menu>
-                        </td>
-                        <td>
-                            <div class="flex gap-x-2">
-                                <button tds-button-icon color="secondary" (click)="showModalSendMessage(data)" tds-tooltip tooltipTitle="Gửi mẫu facebook">
-                                    <span class="flex items-center text-neutral-1-500">
-                                        <i class="tdsi-facebook-2-fill"></i>
-                                    </span>
-                                </button>
-                                <button tds-button-icon color="secondary" (click)="confirmSubmit(data)" tds-tooltip tooltipTitle="Gửi yêu cầu thanh toán">
-                                    <span class="flex items-center text-neutral-1-500">
-                                        <i class="tdsi-send-fill"></i>
-                                    </span>
-                                </button>
-                                <button tds-button-icon color="secondary" (click)="onSendImage(data)" tds-tooltip tooltipTitle="Gửi hình ảnh">
-                                    <span class="flex items-center text-neutral-1-500">
-                                        <i class="tdsi-images-fill"></i>
-                                    </span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-            </tbody>
-        </tds-table>
+                        </div>
+                        <div class="flex-auto p-2 gap-x-2 flex justify-center">
+                            <button tds-button-icon color="secondary" (click)="showModalSendMessage(data)" tds-tooltip tooltipTitle="Gửi mẫu facebook">
+                                <span class="flex items-center text-neutral-1-500">
+                                    <i class="tdsi-facebook-2-fill"></i>
+                                </span>
+                            </button>
+                            <!-- <button tds-button-icon color="secondary" (click)="confirmSubmit(data)" tds-tooltip tooltipTitle="Gửi yêu cầu thanh toán">
+                                <span class="flex items-center text-neutral-1-500">
+                                    <i class="tdsi-send-fill"></i>
+                                </span>
+                            </button> -->
+                            <button tds-button-icon color="secondary" (click)="onSendImage(data)" tds-tooltip tooltipTitle="Gửi hình ảnh">
+                                <span class="flex items-center text-neutral-1-500">
+                                    <i class="tdsi-images-fill"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+            </virtual-scroller>
+            <ng-template #noData>
+                <div  class="w-full">
+                    <tds-empty></tds-empty>
+                </div>
+            </ng-template>
+        </tds-spin>
     </div>
+    
 </div>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>

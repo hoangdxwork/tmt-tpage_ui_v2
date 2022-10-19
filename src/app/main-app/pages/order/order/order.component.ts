@@ -38,6 +38,7 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
+import { ModalOrderDeletedComponent } from '../components/modal-order-deleted/modal-order-deleted.component';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
@@ -287,7 +288,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
             tabs.sort((a, b) => a.Index - b.Index);
 
             this.tabNavs = [...tabs];
-            this.lstOftabNavs = this.tabNavs;
+            this.lstOftabNavs = this.tabNavs.filter(x => Number(x.Index) > 1);
         }
       });
   }
@@ -871,5 +872,17 @@ export class OrderComponent implements OnInit, AfterViewInit {
     else if (event.key === 'F10') {
       this.onCreateQuicklyFS();
     }
+  }
+
+  showModalCancelOrder(livecampaignId: string) {
+    this.modal.create({
+      title: 'Đơn hàng đã hủy trong chiến dịch live',
+      content: ModalOrderDeletedComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        livecampaignId: livecampaignId
+      }
+  });
   }
 }

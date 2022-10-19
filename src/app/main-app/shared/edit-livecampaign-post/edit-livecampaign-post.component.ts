@@ -1,3 +1,5 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
@@ -37,6 +39,7 @@ import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-
 
 export class EditLiveCampaignPostComponent implements OnInit {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   _form!: FormGroup;
   @Input() id?: string;
 
@@ -151,7 +154,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.applicationUserService.setUserActive();
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
+        if(res && TDSHelperArray.isArray(res)) {
           this.lstUser = [...res];
+        }
       },
       error: (err: any) => {
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
@@ -291,8 +296,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   initFormDetails(details: any[]) {
     details?.forEach(x => {
-        const control = <FormArray>this._form.controls['Details'];
-        control.push(this.initDetail(x));
+        this.detailsFormGroups.push(this.initDetail(x));
     });
   }
 
@@ -432,6 +436,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
         return;
     }
 
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
+
     this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
@@ -508,7 +517,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
             this.lstVariants = [...res.value];
             this.lstVariants?.map((x: ProductDTOV2) => {
                 x.UOMId = uomId;
-            })
+            });
+
+            this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
 
             this.isLoadingSelect = false;
         },
@@ -532,6 +543,23 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.closeSearchProduct();
   }
 
+  showModalAddQuickReply() {
+    let modal = this.modal.create({
+        title: 'Thêm mới trả lời nhanh',
+        content: ModalAddQuickReplyComponent,
+        viewContainerRef: this.viewContainerRef,
+        size: 'md'
+    });
+
+    modal.afterClose.subscribe({
+      next:(res) => {
+        if(res) {
+          this.loadQuickReply();
+        }
+      }
+    })
+  }
+
   addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[], isVariants?: boolean) {
     let id = this.id as string;
     let countNew = 0;
@@ -551,6 +579,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           res.map((x: LiveCampaignSimpleDetail, idx: number) => {
               x.ProductName = items[idx].ProductName;
               x.ProductNameGet = items[idx].ProductNameGet;
+              x.ImageUrl = items[idx].ImageUrl;
 
               let formDetails = this.detailsFormGroups.value as any[];
               let index = formDetails.findIndex(f => f.Id == x.Id && f.ProductId == x.ProductId);
@@ -558,19 +587,19 @@ export class EditLiveCampaignPostComponent implements OnInit {
               if(Number(index) >= 0) {
                   index = Number(index);
                   this.detailsFormGroups.at(index).patchValue(x);
-                  countNew +=1;
+                  countEdit +=1;
 
                   if(!isVariants){
-                      this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
+                      this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
                   }
               } else {
                   formDetails = [...[x], ...formDetails];
                   this.detailsFormGroups.clear();
-                  countEdit +=1;
+                  countNew +=1;
 
                   this.initFormDetails(formDetails);
                   if(!isVariants){
-                      this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm ${x.ProductName}</span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
+                      this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
                   }
               }
 
@@ -581,11 +610,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
           if(isVariants) {
               if(countNew > 0) {
-                this.notificationService.info(`Thêm sản phẩm`,`Bạn vừa thêm thành công <span class="font-semibold text-secondary-1">${countNew}</span> sản phẩm vào danh sách`);
+                this.notificationService.info(`Thêm sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${items[0].ProductName}</span></span><span> Số lượng thêm: <span class="font-semibold text-secondary-1">${countNew}</span></span></div>`);
               }
 
               if(countEdit > 0) {
-                  this.notificationService.info(`Cập nhật sản phẩm`,`Bạn vừa cập nhật thành công <span class="font-semibold text-secondary-1">${countEdit}</span> sản phẩm trong danh sách`);
+                  this.notificationService.info(`Cập nhật sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${items[0].ProductName}</span></span><span> Số lượng cập nhật: <span class="font-semibold text-secondary-1">${countEdit}</span></span></div>`);
               }
           }
         },
@@ -718,6 +747,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   refreshData() {
     this.visible = false;
     this.searchValue = '';
+    this.innerTextValue = '';
     this.dataModel = null as any;
 
     this.detailsFormGroups.clear();
@@ -774,6 +804,12 @@ export class EditLiveCampaignPostComponent implements OnInit {
         this.cdRef.detectChanges();
       }
     })
+  }
+
+  onPopoverVisibleChange(ev: boolean) {
+    if(!ev) {
+      this.indClick = -1;
+    }
   }
 
 }

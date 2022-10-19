@@ -1,3 +1,4 @@
+import { SharedService } from './../../../services/shared.service';
 import { ModalProductDefaultComponent } from './../components/modal-product-default/modal-product-default.component';
 import { ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { ModalListProductComponent } from './../components/modal-list-product/modal-list-product.component';
@@ -63,7 +64,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   filterExcel: any[] = [
     { value: "excel", text: "Tải file excel" },
     { value: "excel_phone", text: "Tải file excel có SĐT" },
-    { value: "excel_phone_distinct", text: "Tải file excel lờc trùng SĐT" },
+    { value: "excel_phone_distinct", text: "Tải file excel có lọc trùng SĐT" },
   ];
 
   filterOptionsComment: any[] = [
@@ -88,7 +89,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
     private postEvent: ConversationPostEvent,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private message: TDSMessageService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private sharedService: SharedService) {
   }
 
   ngOnInit() {
@@ -150,26 +152,36 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   }
 
   onChangeExcel(event: any) {
-    switch (event.value) {
-      case "excel":
-        this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}`, null, `comments-${this.data.ObjectId}`)
-          .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
-        break;
+    this.sharedService.checkPrermission().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: res =>{
+          switch (event.value) {
+            case "excel":
+              this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}`, null, `comments-${this.data.ObjectId}`)
+                .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
+              break;
+      
+            case "excel_phone":
+              this.excelExportService.exportPost(
+                `/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true`, null, `comments-${this.data.ObjectId}-with-phone`)
+                .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
+              break;
+      
+            case "excel_phone_distinct":
+              this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true&isFilterPhone=true`, null, `comments-${this.data.ObjectId}-with-distinct-phone`)
+                .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
+              break;
+      
+            default:
+              break;
+          }
+        }, error: error => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+        }
+      }
+    );
 
-      case "excel_phone":
-        this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true&isFilterPhone=true`, null, `comments-${this.data.ObjectId}-with-distinct-phone`)
-          .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
-        break;
-
-      case "excel_phone_distinct":
-        this.excelExportService.exportPost(
-          `/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true`, null, `comments-${this.data.ObjectId}-with-phone`)
-          .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
-        break;
-
-      default:
-        break;
-    }
+    
   }
 
   onChangeFilter(event: any): any {

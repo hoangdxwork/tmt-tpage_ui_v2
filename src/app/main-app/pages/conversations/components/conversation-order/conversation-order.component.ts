@@ -1,4 +1,6 @@
-
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { UOM } from './../../../../dto/product-template/product-tempalte.dto';
+import { Product } from './../../../../dto/order/so-orderlines.dto';
 import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
@@ -8,7 +10,7 @@ import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/ch
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef, ViewChild } from '@angular/core';
 import { takeUntil, map } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
@@ -70,6 +72,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -80,6 +83,7 @@ import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dt
 
 export class ConversationOrderComponent implements OnInit, OnChanges {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() syncConversationInfo!: ChatomniConversationInfoDto;
   @Input() team!: CRMTeamDTO;
@@ -107,7 +111,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   saleModel!: FastSaleOrder_DefaultDTOV2;
   enableInsuranceFee: boolean = false;
   userInit!: UserInitDTO;
-  lstProductSearch: ProductDTOV2[] = [{} as any];
+  lstProductSearch: ProductDTOV2[] = [];
 
   //TODO: dữ liệu aship v2
   shipExtraServices: ShipServiceExtra[] = [];
@@ -124,6 +128,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   isEqualAmountInsurance: boolean = false;
   delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
   isEnableCalcFee: boolean = false;
+
+  indClick: number = -1;
+  lstVariants:  ProductDTOV2[] = [];
+  isLoadingSelect: boolean = false;
+  countUOMLine: number = 0;
+  pageSize = 20;
+  pageIndex = 1;
+  isLoadingNextdata: boolean = false;
 
   numberWithCommas = (value:TDSSafeAny) => {
     if(value != null){
@@ -200,7 +212,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.loadCurrentCompany();
     this.loadCarrier();
 
-    this.onSelectOrderFromMessage();
     this.eventEmitter();
     this.onEventSocket();
   }
@@ -236,6 +247,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   eventEmitter(){
+    // Chọn làm số điện thoại, địa chỉ
+    this.onSelectOrderFromMessage();
+
     // TODO: thêm mới sản phẩm
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
@@ -373,20 +387,66 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onSelectOrderFromMessage() {
     this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (obs: any) => {
 
-          if(res && TDSHelperString.hasValueString(res.phone) ) {
-              this.quickOrderModel.Telephone = res.phone;
-          }
-          if(res && TDSHelperString.hasValueString(res.address)) {
-              this.quickOrderModel.Address = res.address;
-          }
-          if(res && TDSHelperString.hasValueString(res.note)) {
-              let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + res.note : res.note);
-              this.quickOrderModel.Note = text;
+          switch (obs.type) {
+            case 'phone':
+                this.quickOrderModel.Telephone = obs.value;
+            break;
+
+            case 'address':
+                this.quickOrderModel.Address = obs.value;
+            break;
+
+            case 'note':
+                let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + obs.value : obs.value);
+                this.quickOrderModel.Note = text;
+            break;
           }
 
-          this.cdRef.detectChanges();
+          // TODO: trường hợp không có đơn hàng
+          let id = this.quickOrderModel.Id as string;
+          if(!id) {
+              this.cdRef.detectChanges();
+              return;
+          }
+
+          this.isLoading = true;
+          this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                delete res['@odata.context'];
+                let model = {...res} as QuickSaleOnlineOrderModel;
+
+                switch (obs.type) {
+                  case 'phone':
+                      model.Telephone = this.quickOrderModel.Telephone;
+                  break;
+                  case 'address':
+                      model.Address = this.quickOrderModel.Address;
+                  break;
+                  case 'note':
+                      model.Note = this.quickOrderModel.Note;
+                  break;
+                }
+
+                this.saleOnline_OrderService.update(res.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: (order: any) => {
+                        this.isLoading = false;
+                        this.cdRef.detectChanges();
+                    },
+                    error: error => {
+                        this.isLoading = false;
+                        this.message.error(error?.error?.message);
+                        this.cdRef.detectChanges();
+                    }
+                })
+            },
+            error: error => {
+                this.isLoading = false;
+                this.message.error(error?.error?.message);
+                this.cdRef.detectChanges();
+            }
+          })
       }
     })
   }
@@ -469,7 +529,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.isEnableCreateOrder = event.checked;
     this.visibleIndex = -1;
 
-    if(event.checked == true && !this.saleModel) {
+    if(event.checked == true) {
         this.loadSaleModel();
     }
   }
@@ -641,8 +701,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.calculateFeeAship(model);
   }
 
-  onSelectShipServiceId(event: any) {
-    this.selectShipServiceV2(event)
+  onSelectShipServiceId (serviceId: string) {
+    if(serviceId) {
+      let exist = this.shipServices.filter((x: any) => x.ServiceId === serviceId)[0];
+      if(exist) {
+         this.selectShipServiceV2(exist)
+      }
+    }
   }
 
   signAmountTotalToInsuranceFee(): any  {
@@ -1118,6 +1183,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
+
+    // TODO check cấu hình ghi chú in
+    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    if(!printNote) {
+      fs_model.Comment = '';
+    }
+
     this.fastSaleOrderService.saveV2(fs_model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
@@ -1200,6 +1272,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.updateShipmentDetailsAship();
 
     fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
+
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = model.FormAction;
 
@@ -1363,6 +1436,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.quickOrderModel.Details[index].Quantity += 1;
     }
 
+    this.closeSearchProduct();
     this.calcTotal();
     this.coDAmount();
   }
@@ -1488,18 +1562,26 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSearchProduct(event: any) {
+    if(!this.textSearchProduct) {
+      return;
+    }
+
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
+
+    this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
 
   loadProduct(textSearch: string) {
+    this.isLoadingProduct = true;
 
-    let top = 20;
-    let skip = 0;
-
-    this.isLoadingProduct = false;
-    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataProductDTOV2) => {
+        this.countUOMLine = res['@odata.count'] as number;
         this.lstProductSearch = [...res.value];
         this.isLoadingProduct = false;
         this.cdRef.detectChanges();
@@ -1621,10 +1703,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.shipServices = res.data?.Services ?? [];
 
               if(TDSHelperArray.hasListValue(this.shipServices)) {
-                  let svDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                  this.selectShipServiceV2(svDetail);
-
-                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+                  let x = this.shipServices.filter((x: any) => x.ServiceId === model.ServiceId)[0];
+                  if(x) {
+                      this.selectShipServiceV2(x);
+                      this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                  } else {
+                    let item = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                    this.selectShipServiceV2(item);
+                    this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(item.TotalFee), 'en-US', '1.0-0')} đ`);
+                }
               }
           }
 
@@ -1741,6 +1828,54 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.isEnableCalcFee = true;
     } else {
         this.isEnableCalcFee = false;
+    }
+  }
+
+  vsEndUOMLine(event: NgxVirtualScrollerDto) {
+    if(this.isLoadingProduct || this.isLoadingNextdata) {
+        return;
+    }
+
+    let exisData = this.lstProductSearch && this.lstProductSearch.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+      const vsEnd = Number(this.lstProductSearch.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 && Number(this.lstProductSearch.length) < this.countUOMLine;
+      if(vsEnd) {
+          this.nextDataUOMLine();
+      }
+    }
+  }
+
+  nextDataUOMLine() {
+    this.isLoadingNextdata = true;
+    this.pageIndex += 1;
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, this.textSearchProduct).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && res.value) {
+            this.lstProductSearch = [...this.lstProductSearch, ...res.value];
+          }
+
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoadingNextdata = false;
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.detectChanges();
+      }
+    })
+  }
+
+  notiOrderFromMessage(type: string) {
+    switch (type) {
+      case 'phone':
+        this.message.info('Chọn làm số điện thoại thành công');
+      break;
+      case 'address':
+        this.message.info('Chọn làm địa chỉ thành công');
+      break;
+      case 'note':
+        this.message.info('Chọn làm ghi chú thành công');
+      break;
     }
   }
 }

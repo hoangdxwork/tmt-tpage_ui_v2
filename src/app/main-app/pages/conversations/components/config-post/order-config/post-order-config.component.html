@@ -17,17 +17,17 @@
                 </div>
             </div>
 
-            <div class="flex gap-x-2 items-center">
+            <!-- <div class="flex gap-x-2 items-center">
                 <tds-switch size="md" [(ngModel)]="dataModel.IsOrderCreateOnlyOnce" [ngModelOptions]="{standalone: true}"></tds-switch>
                 <div class="text-body-2 flex items-center"> Chỉ tạo đơn 1 lần
                     <span class="tdsi-information-fill text-info-500 ml-1" style="font-size: 15px"
                     tds-tooltip tooltipTitle="Khi khách bình luận trùng mã thì ưu tiên lấy số lượng lớn hơn"></span>
                 </div>
-            </div>
+            </div> -->
 
             <div class="flex gap-x-2 items-center">
                 <tds-switch size="md" [(ngModel)]="isImmediateApply" [ngModelOptions]="{standalone: true}"></tds-switch>
-                <div class="text-body-2 text-info-500 font-semibold"> Áp dụng ngay cho những bình luận đã có?</div>
+                <div class="text-body-2">Áp dụng ngay cho những bình luận đã có?</div>
             </div>
 
             <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
@@ -58,7 +58,7 @@
           </button>
       </div>
 
-      <div *ngIf="dataModel.IsEnableOrderAuto && !dataModel.IsForceOrderWithAllMessage" class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
+      <div *ngIf="dataModel.IsEnableOrderAuto" class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
         <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Tạo đơn với</div>
 
         <div class="flex flex-col gap-y-4 pt-4">

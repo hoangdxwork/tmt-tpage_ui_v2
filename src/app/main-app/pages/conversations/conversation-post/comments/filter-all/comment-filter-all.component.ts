@@ -83,6 +83,9 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   isReplyingComment: boolean = false;
   isOpenDrawer: boolean = false;
   isShowAllNumber: boolean = false;
+  visibleDrawerBillDetail: boolean = false;
+  idPopoverVisible: string = '';
+  order: TDSSafeAny;
 
   lstOfTag: TDSSafeAny[] = [];
   tags: TDSSafeAny[] = [];
@@ -180,7 +183,10 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
                     this.dataSource.Items = [...this.dataSource.Items];
 
                     this.lengthDataSource = this.dataSource.Items.length;
-                    this.virtualScroller.scrollToPosition(0);
+                    
+                    if(this.virtualScroller) {
+                      this.virtualScroller.scrollToPosition(0);
+                    }
                 } else {
                     this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
                     this.vsSocketImports = [...this.vsSocketImports];
@@ -803,6 +809,28 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   }
 
   removeTagOnView(tag: any) {
+  }
+
+  onVisibleDrawer(event: boolean){
+    this.visibleDrawerBillDetail = event;
+  }
+
+  onOpenDrawerBillDetail(item : TDSSafeAny){
+    this.idPopoverVisible = '';
+    if(item) {
+      this.visibleDrawerBillDetail = true;
+      let model = {
+        Id: item.Id,
+        Number: item.Number
+      }
+      this.order = {...model};
+
+      this.cdRef.detectChanges();
+    }
+  }
+
+  onPopoverVisible(id: string) {
+    this.idPopoverVisible = id;
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {

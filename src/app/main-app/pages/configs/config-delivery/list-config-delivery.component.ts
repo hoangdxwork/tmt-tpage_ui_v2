@@ -1,5 +1,3 @@
-
-import { Router } from '@angular/router';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -23,19 +21,17 @@ export class ListConfigDeliveryComponent implements OnInit {
   isLoading1: boolean = false;
   keyFilter: string = '';
   dataFilter: Array<DeliveryDataResponseDto> = [];
-  dataType: Array<any> = [];
+  type: Array<any> = [];
   providerDataSource: Array<DeliveryDataResponseDto> = [];
   deliveryDataSource: Array<DeliveryCarrierDTO> = [];
-  public expandSet = new Set<number>();
   pageSize = 10;
   pageIndex = 1;
-  count: number = 0;
-
   dataItems: any = {};
+  typeCollapse!: string;
 
   @ViewChild('innerText') innerText!: ElementRef;
 
-  constructor(private router: Router,
+  constructor(
     private deliveryCarrierV2Service: DeliveryCarrierV2Service,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
@@ -48,7 +44,6 @@ export class ListConfigDeliveryComponent implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    let skip = this.pageIndex - 1;
 
     this.deliveryCarrierV2Service.getProviderToAship()
       .pipe(finalize(() => this.isLoading = false))
@@ -57,10 +52,14 @@ export class ListConfigDeliveryComponent implements OnInit {
           this.providerDataSource = res.Data.Providers;
           this.dataFilter = res.Data.Providers;
 
-          if(this.dataFilter && this.dataFilter.length > 0) {
+          if (this.dataFilter && this.dataFilter.length > 0) {
             this.dataFilter.map(x => {
               let type = x.Type
-              this.deliveryCarrierV2Service.getViewByDeliveryType(type, skip, this.pageSize).pipe(takeUntil(this.destroy$)).subscribe({
+
+              let skip = this.pageIndex - 1;
+              let params = `top=${this.pageSize}&%24skip=${skip}&%24filter=(DeliveryType+eq+%27${type}%27)`;
+
+              this.deliveryCarrierV2Service.getViewByDeliveryType(params).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (res: any) => {
                   x.Values = [...res.value];
                   this.dataItems[x.Type] = res
@@ -77,37 +76,16 @@ export class ListConfigDeliveryComponent implements OnInit {
       });
   }
 
-  changePageIndex(pageIndex:number, index: number){
-    if(this.isLoading1) {
-      return;
-    }
-    this.isLoading1 = true;
-
-    let skip = (pageIndex - 1 ) * this.pageSize ;
-    let pageSize = this.pageSize * pageIndex;
-
-    this.deliveryCarrierV2Service.getViewByDeliveryType(this.dataFilter[index].Type, skip, pageSize).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        this.dataFilter[index].Values = [...res.value];
-        this.dataItems[this.dataFilter[index].Type] = res;
-
-        this.isLoading1 = false;
-      },
-      error: error => {
-        this.isLoading1 = false;
-
-      }
-    })
-  }
-
   loadSearchData() {
     let data = this.providerDataSource;
-    if(TDSHelperString.hasValueString(this.innerText)) {
+
+    if (TDSHelperString.hasValueString(this.innerText)) {
       this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
     }
+
     data = data.filter((x: DeliveryDataResponseDto) =>
-    (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-    (x.Type && TDSHelperString.stripSpecialChars(x.Type.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1))
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
+      (x.Type && TDSHelperString.stripSpecialChars(x.Type.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1))
 
     return data;
   }
@@ -129,42 +107,19 @@ export class ListConfigDeliveryComponent implements OnInit {
     this.loadData();
   }
 
-  onChangeCollapse(index: number, checked: boolean): void {
-    this.deliveryDataSource = [];
-    this.collapseAllRow();
-    if (checked) {
-      this.expandSet.add(index);
-
-    } else {
-      this.expandSet.delete(index);
-    }
-  }
-
-  private collapseAllRow() {
-    this.expandSet.clear();
-  }
-
   refreshDataDelivery(model: DeliveryDataResponseDto) {
     this.deliveryDataSource = [];
     this.loadDeliveryCarriesByType(model.Type);
   }
 
-  onDeleteDelivery(data: DeliveryCarrierDTO){
-
-    this.isLoading1 = true;
-    this.deliveryCarrierV2Service.delete(data.Id).pipe(finalize(() => this.isLoading1 = false))
-      .subscribe(res => {
-        this.message.success("Thành công");
-        this.loadDeliveryCarriesByType(data.DeliveryType);
-    }, error => {
-        this.message.error(error?.error?.message || "Thao tác thất bại");
-    });
-  }
-
-  onInputKeyup(ev:TDSSafeAny){
+  onInputKeyup(ev: TDSSafeAny) {
     this.isLoading = true;
     this.keyFilter = ev.value;
     this.dataFilter = [...this.loadSearchData()];
     this.isLoading = false;
+  }
+
+  openCollapse(type: string) {
+    this.typeCollapse = type;
   }
 }

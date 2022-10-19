@@ -1,3 +1,4 @@
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
@@ -5,7 +6,7 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { DeliveryCarrierDTOV2 } from '../../../../dto/delivery-carrier.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef, ViewChild } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -52,6 +53,7 @@ import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/pr
 import { ModalAddAddressV2Component } from '@app/pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
 @Component({
   selector: 'edit-order-v2',
@@ -61,6 +63,7 @@ import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dt
 
 export class EditOrderV2Component implements OnInit {
 
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() dataItem!: QuickSaleOnlineOrderModel;
 
   _form!: FormGroup;
@@ -101,6 +104,14 @@ export class EditOrderV2Component implements OnInit {
   innerText: string = '';
 
   selectedIndex: number = 0;
+
+  indClick: number = -1;
+  lstVariants:  ProductDTOV2[] = [];
+  isLoadingSelect: boolean = false;
+  countUOMLine: number = 0;
+  pageSize = 20;
+  pageIndex = 1;
+  isLoadingNextdata: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -304,6 +315,16 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onSearchProduct(event: any) {
+    if(!this.textSearchProduct) {
+      return;
+    }
+
+    if(this.virtualScroller) {
+      this.virtualScroller.refresh();
+      this.virtualScroller.scrollToPosition(0);
+    }
+
+    this.pageIndex = 1;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
@@ -472,8 +493,13 @@ export class EditOrderV2Component implements OnInit {
     this.calculateFeeAship(model);
   }
 
-  onSelectShipServiceId(event: any) {
-    this.selectShipServiceV2(event)
+  onSelectShipServiceId (serviceId: string) {
+    if(serviceId) {
+        let exist = this.shipServices.filter((x: any) => x.ServiceId === serviceId)[0];
+        if(exist) {
+          this.selectShipServiceV2(exist)
+        }
+    }
   }
 
   signAmountTotalToInsuranceFee(): any  {
@@ -651,7 +677,7 @@ export class EditOrderV2Component implements OnInit {
           } else {
               this.isLoading = false;
               this.message.success('Cập nhật đơn hàng thành công');
-              this.modalRef.destroy(null);
+              this.modalRef.destroy('onLoadPage');
           }
       },
       error: (error: any) => {
@@ -668,10 +694,17 @@ export class EditOrderV2Component implements OnInit {
         }, 5 * 1000)
       }
     });
+
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
     let model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(fs_model, this.quickOrderModel)};
+
+    // TODO check cấu hình ghi chú in
+    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    if(!printNote) {
+      model.Comment = '';
+    }
 
     this.fastSaleOrderService.saveV2(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: CreateFastSaleOrderDTO) => {
@@ -769,12 +802,11 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadProduct(textSearch: string) {
-    let top = 20;
-    let skip = 0;
     this.isLoadingProduct = true;
 
-    this.productTemplateUOMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, textSearch).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataProductDTOV2) => {
+        this.countUOMLine = res['@odata.count'] as number;
         this.lstProductSearch = [...res.value];
         this.isLoadingProduct = false
       },
@@ -870,11 +902,15 @@ export class EditOrderV2Component implements OnInit {
                   this.shipServices = res.data?.Services || [];
 
                   if(TDSHelperArray.hasListValue(this.shipServices)) {
-
-                      let x = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                      this.selectShipServiceV2(x);
-
-                      this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      let x = this.shipServices.filter((x: any) => x.ServiceId === model.ServiceId)[0];
+                      if(x) {
+                          this.selectShipServiceV2(x);
+                          this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
+                      }else {
+                        let item = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                        this.selectShipServiceV2(item);
+                        this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(item.TotalFee), 'en-US', '1.0-0')} đ`);
+                      }
                   }
                 }
             }
@@ -1048,5 +1084,39 @@ export class EditOrderV2Component implements OnInit {
     } else {
         this.isEnableCalcFee = false;
     }
+  }
+
+  vsEndUOMLine(event: NgxVirtualScrollerDto) {
+    if(this.isLoadingProduct || this.isLoadingNextdata) {
+        return;
+    }
+
+    let exisData = this.lstProductSearch && this.lstProductSearch.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+      const vsEnd = Number(this.lstProductSearch.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 && Number(this.lstProductSearch.length) < this.countUOMLine;
+      if(vsEnd) {
+          this.nextDataUOMLine();
+      }
+    }
+  }
+
+  nextDataUOMLine() {
+    this.isLoadingNextdata = true;
+    this.pageIndex += 1;
+    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex, this.pageSize, this.textSearchProduct).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && res.value) {
+            this.lstProductSearch = [...this.lstProductSearch, ...res.value];
+          }
+
+          this.isLoadingNextdata = false;
+          this.cdRef.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoadingNextdata = false;
+        this.message.error(`${error?.error?.message}`);
+        this.cdRef.detectChanges();
+      }
+    })
   }
 }

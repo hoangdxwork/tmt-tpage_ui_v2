@@ -9,5 +9,6 @@ export abstract class CreateVariantsHandler {
 
    static prepareModel(dataModel: ConfigProductVariant, formModel: TDSSafeAny) {
       dataModel = {...dataModel,...formModel};
+      return dataModel;
    }
 }

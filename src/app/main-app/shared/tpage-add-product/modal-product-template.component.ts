@@ -393,10 +393,10 @@ export class ModalProductTemplateComponent implements OnInit {
       });
 
       modal.afterClose.subscribe((result: ConfigProductVariant) => {
-        if (TDSHelperObject.hasValue(result)) {
-          this.lstVariants.map((item) => {
-            if (item.Id == result.Id) {
-              item = result;
+        if (TDSHelperObject.hasValue(result)) { 
+          this.lstVariants.map((item, index) => {
+            if (item.AttributeValues[0]?.Id == result.AttributeValues[0]?.Id) {
+              this.lstVariants[index] = {...result};
             }
           });
         }

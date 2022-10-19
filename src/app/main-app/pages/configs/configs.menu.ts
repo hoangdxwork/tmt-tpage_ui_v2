@@ -68,11 +68,6 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-discount-fill",
         link: '/configs/promotions',
     },
-    // {
-    //     name: "Trạng thái khách hàng",
-    //     icon: "tdsi-user-fill",
-    //     link: '/configs/partner-status',
-    // },
     {
         name: "Người dùng",
         icon: "tdsi-group-people-fill",

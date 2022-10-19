@@ -1,0 +1,124 @@
+<tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
+  <tds-collapse-panel [header]="header" tdsClass="p-0" bordered="false" [active]="typeCollapse == data.Type"
+    [expandedIcon]="'tdsi-arrow-down-line'" [extra]="icon" (activeChange)="onActiveChange($event)">
+    <ng-template #header>
+      <div class="flex gap-4 items-center bg-neutral-3-500">
+        <div class="relative">
+          <tds-avatar class="bg-base-white-100 dark:bg-d-base-white-100 justify-self-center text-base-white-500 dark:text-d-base-white-500"
+            [shape]="'square'" [size]="90" [tdsSrc]="data.UrlLogo">
+          </tds-avatar>
+        </div>
+        <div class="flex flex-col gap-1">
+          <div class="text-title-1 font-sans font-semibold"> {{ data.Name }} </div>
+
+          <div *ngIf="lenght > 0" class="flex gap-x-2 items-center">
+            <span class="text-caption-2 text-neutral-1-400">Đã kết nối</span>
+            <span class="text-primary-1 text-caption-2 font-semibold">{{ lenght }}</span>
+          </div>
+          <span *ngIf="lenght == 0" class="text-caption-2 text-neutral-1-400">Chưa kết nối</span>
+        </div>
+      </div>
+    </ng-template>
+    <!-- Header Icon -->
+    <ng-template #icon>
+      <div class="flex gap-2 items-center">
+        <button tds-button color="primary" [routerLink]="['/configs/delivery/connect']"
+          [queryParams]="{type: data.Type}">
+          <span class="flex items-center">
+            <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
+          </span>
+        </button>
+
+        <button [ngClass]="(typeCollapse == data.Type && lenght > 0) ? 'flex' : 'hidden'" tds-tooltip="Lọc danh sách" (click)="onFilter($event)" tds-button-icon color="secondary" tds-dropdown
+          trigger="click" placement="bottomRight" [tdsDropdownMenu]="btnFilter">
+          <i class="tdsi-filter-2-line text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+
+          <div *ngIf="currentType.id != 'all'"
+            class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
+            style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
+            <span class="text-[7px] leading-[5px] tdsi-tick-fill"></span>
+          </div>
+        </button>
+
+        <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
+          <div class="w-[180px] py-2">
+            <div tds-dropdown-item *ngFor="let item of lstType" (click)="onChangeType(item)"
+              class="w-full flex justify-between items-center"> {{item.name}}
+              <span *ngIf="item?.name == currentType?.name" class="tdsi-success-fill text-success-500"></span>
+            </div>
+          </div>
+        </tds-dropdown-menu>
+      </div>
+    </ng-template>
+
+    <tds-spin [spinning]="isLoading1">
+      <div *ngIf="data.Values" class="flex flex-col divide-y w-full">
+        <ng-template ngFor let-data let-index="index" [ngForOf]="data.Values" let-odd='odd'>
+          <div class="py-4 pl-4 pr-8 flex items-center">
+            <div class="flex flex-col gap-y-1.5 w-1/2">
+              <div class="font-semibold">{{ data.Name }}</div>
+              <div class="flex items-center gap-x-2">
+                <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+                <div *ngIf="data.Active == true">Có hiệu lực</div>
+                <div *ngIf="data.Active == false">Không có hiệu lực</div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-1.5 w-1/3 justify-center">
+              <div>Đối tác giao hàng</div>
+              <div class="font-semibold">{{ data.DeliveryType }}</div>
+            </div>
+            <div class="flex divide-x-2 font-semibold justify-end">
+              <div class="pr-4 flex items-center text-neutral-1-500 hover:text-info-500">
+                <i class="tdsi-edit-fill text-xl leading-none mr-2"></i>
+                <span class="cursor-pointer" [routerLink]="['/configs/delivery/edit']" [queryParams]="{id: data.Id}">Chỉnh sửa</span>
+              </div>
+              <div class="pl-4 flex items-center text-neutral-1-500 hover:text-error-500">
+                <i class="tdsi-trash-fill text-xl leading-none mr-2"></i>
+                <span class="cursor-pointer" (click)="onDeleteDelivery(data)">Xóa</span>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <!-- phân trang -->
+        <div class="flex items-end py-3 px-4">
+          <tds-pagination class="w-full" [pageSize]="pageSize" [showTotal]="rangeTemplate" [pageIndex]="pageIndex"
+            [total]="dataItems[data.Type]?.['@odata.count']" (pageIndexChange)="changePageIndex($event)">
+          </tds-pagination>
+
+          <ng-template #rangeTemplate let-range="range" class="pr-4">
+            {{ range[0] }}-{{ range[1] }} of {{ dataItems[data.Type]?.['@odata.count'] }}
+          </ng-template>
+        </div>
+      </div>
+      <div *ngIf="data.Values?.length == 0 && isFilter == 'all'" class="pb-4">
+        <tds-empty notFoundImage="./assets/imagesv2/Table.svg" [notFoundContent]="contentTpl" [notFoundFooter]="footerTpl">
+          <ng-template #contentTpl>
+            <span class="text-neutral-1-400 text-body-2 font-normal">Chưa có tài khoản <span class="font-semibold">{{ data.Name }}</span> được kết nối</span>
+          </ng-template>
+
+          <ng-template #footerTpl>
+            <button tds-button color="primary" [routerLink]="['/configs/delivery/connect']" [queryParams]="{type: data.Type}">
+              <span class="flex items-center">
+                <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
+              </span>
+            </button>
+          </ng-template>
+        </tds-empty>
+      </div>
+      <div *ngIf="data.Values?.length == 0 && isFilter == 'active'" class="pb-4">
+        <tds-empty notFoundImage="./assets/imagesv2/Table.svg" [notFoundContent]="contentTpl">
+          <ng-template #contentTpl>
+            <span class="text-neutral-1-400 text-body-2 font-normal">Chưa có tài khoản <span class="font-semibold">{{ data.Name }}</span> có hiệu lực</span>
+          </ng-template>
+        </tds-empty>
+      </div>
+      <div *ngIf="data.Values?.length == 0 && isFilter == 'expire'" class="pb-4">
+        <tds-empty notFoundImage="./assets/imagesv2/Table.svg" [notFoundContent]="contentTpl">
+          <ng-template #contentTpl>
+            <span class="text-neutral-1-400 text-body-2 font-normal">Chưa có tài khoản <span class="font-semibold">{{ data.Name }}</span> hết hiệu lực</span>
+          </ng-template>
+        </tds-empty>
+      </div>
+    </tds-spin>
+  </tds-collapse-panel>
+</tds-collapse>

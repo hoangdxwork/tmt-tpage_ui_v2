@@ -41,6 +41,11 @@
                       disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                   </tds-select>
                 </tds-form-field>
+                <div class="w-[34px]">
+                  <button type="button" tds-button-icon color="secondary" (click)="showModalAddQuickReply()">
+                    <i class="tdsi-plus-circle-fill text-primary-1"></i>
+                  </button>
+                </div>
               </div>
 
               <tds-label>Mẫu tin dự bị</tds-label>
@@ -130,55 +135,60 @@
                       </span>
                   </tds-form-field>
 
-                  <virtual-scroller *ngIf="textSearchProduct && lstProduct && lstProduct.length > 0; else noDataProduct"
-                    #scroll [items]="lstProduct"
-                    (vsEnd)="vsEndUOMLine($event)"
-                    [enableUnequalChildrenSizes]="true"
-                    [scrollAnimationTime]="750"
-                    class="absolute left-0 right-0 -bottom-2 top-full p-2 h-[400px] text-caption-1 overflow-hidden overflow-y-auto tds-panel-scroll z-10 bg-white flex flex-col gap-y-2 shadow-md">
-
-                    <div *ngFor="let item of scroll.viewPortItems; let index = index;"
-                        (click)="selectProduct(item, index)" tds-popover popoverTrigger="click"
-                        [popoverVisible]="index == indClick" [popoverBackdrop]="true"
-                        [popoverPlacement]="['topLeft', 'leftTop']" class="w-full block h-[56px]"
-                        [popoverContent]="contentTemplate" [popoverAutoClose]="true">
-
-                        <div class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
-                          <div>
-                              <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom }}đ </span>
-                          </div>
-
-                          <div *ngIf="lstInventory && lstInventory[item.Id]">
-                              <span class="text-neutral-1-400">Tồn kho: </span>
-                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
-
-                              <span class="text-neutral-1-400">Tồn dự báo: </span>
-                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
-                          </div>
-                        </div>
-
-                        <ng-template #contentTemplate>
-                          <tds-spin [spinning]="isLoadingSelect" class="flex flex-col gap-y-2">
-                              <div class="text-body-2 font-semibold"> Bạn có muốn chọn tất cả {{lstVariants.length}} biến thể cùng với sản phẩm này. </div>
-
-                              <div class="flex items-center justify-end gap-x-2 pt-4">
-                                <button *ngIf="lstVariants && lstVariants.length > 1" tds-button size="sm" (click)="getAllVariants()" type="button">
-                                    Chọn tất cả
-                                </button>
-
-                                <button tds-button color="secondary" size="sm" (click)="getCurrentVariant(item)" type="button">
-                                    Chọn hiện tại
-                                </button>
+                  <div *ngIf="textSearchProduct && lstProduct && lstProduct.length > 0; else noDataProduct" class="absolute left-0 right-0 -bottom-2 top-full h-[400px] z-10 bg-white shadow-md">
+                    <tds-spin [spinning]="isLoadingProduct" class="flex h-full overflow-hidden">
+                      <virtual-scroller 
+                        #scroll [items]="lstProduct"
+                        (vsEnd)="vsEndUOMLine($event)"
+                        [enableUnequalChildrenSizes]="true" 
+                        [scrollAnimationTime]="750"
+                        class="h-full p-2 text-caption-1 overflow-hidden overflow-y-auto tds-panel-scroll bg-white flex flex-col gap-y-2 shadow-md">
+    
+                        <div *ngFor="let item of scroll.viewPortItems; let index = index;"
+                            (click)="selectProduct(item, index)" tds-popover popoverTrigger="click"
+                            [popoverVisible]="index == indClick" [popoverBackdrop]="true" (popoverVisibleChange)="onPopoverVisibleChange($event)"
+                            [popoverPlacement]="['topLeft', 'leftTop']" class="w-full block h-[56px]"
+                            [popoverContent]="contentTemplate" [popoverAutoClose]="true">
+    
+                            <div class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
+                              <div>
+                                  <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom }}đ </span>
                               </div>
-                          </tds-spin>
-
-                        </ng-template>
-                    </div>
-                    <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
-                        <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
-                    </div>
-
-                  </virtual-scroller>
+    
+                              <div *ngIf="lstInventory && lstInventory[item.Id]">
+                                  <span class="text-neutral-1-400">Tồn kho: </span>
+                                  <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
+    
+                                  <span class="text-neutral-1-400">Tồn dự báo: </span>
+                                  <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
+                              </div>
+                            </div>
+    
+                            <ng-template #contentTemplate>
+                              <tds-spin [spinning]="isLoadingSelect" class="flex flex-col gap-y-2">
+                                  <div class="text-body-2 font-semibold"> Bạn có muốn chọn tất cả {{lstVariants.length}} biến thể cùng với sản phẩm này. </div>
+    
+                                  <div class="flex items-center justify-end gap-x-2 pt-4">
+                                    <button *ngIf="lstVariants && lstVariants.length > 1" tds-button size="sm" (click)="getAllVariants()" type="button">
+                                        Chọn tất cả
+                                    </button>
+    
+                                    <button tds-button color="secondary" size="sm" (click)="getCurrentVariant(item)" type="button">
+                                        Chọn hiện tại
+                                    </button>
+                                  </div>
+                              </tds-spin>
+    
+                            </ng-template>
+                        </div>
+                        <div *ngIf="isLoadingNextdata" class="px-2 bg-white">
+                          <tds-skeleton [tdsActive]="true" [tdsTitle]="false" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
+                        </div>
+    
+                      </virtual-scroller>
+                    </tds-spin>
+                  </div>
+                  
 
                   <ng-template #noDataProduct>
                       <div *ngIf="textSearchProduct" class="absolute left-0 right-0 -bottom-2 top-full p-2 h-44 overflow-hidden z-10 bg-white shadow-md">

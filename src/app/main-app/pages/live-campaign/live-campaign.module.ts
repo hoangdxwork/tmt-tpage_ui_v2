@@ -1,3 +1,4 @@
+import { TDSImageModule } from 'tds-ui/image';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { DirectivesModule } from './../../shared/directives/directives.module';
 import { ConversationService } from './../../services/conversation/conversation.service';
@@ -97,6 +98,9 @@ import { DrawerBillMessageComponent } from './components/drawer-bill-message/dra
 import { TDSBadgeModule } from 'tds-ui/badges';
 import { EditLiveCampaignComponent } from './components/edit-livecampaign/edit-livecampaign.component';
 import { AddLiveCampaignV2Component } from './components/add-livecampaign-v2/add-livecampaign-v2.component';
+import { TableAllOrderComponent } from './components/table-all-order/table-all-order.component';
+import { TableDeletedOrderComponent } from './components/table-deleted-order/table-deleted-order.component';
+import { ImportProductLivecampaignComponent } from './components/import-product-livecampaign/import-product-livecampaign.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -129,7 +133,8 @@ const cmp =[
   FilterOptionCampaignComponent,
   ExpandOrderLivecampaignComponent,
   EditLiveCampaignComponent,
-  AddLiveCampaignV2Component
+  AddLiveCampaignV2Component,
+  ImportProductLivecampaignComponent
 ]
 
 const SERVICES = [
@@ -169,7 +174,9 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ...cmp
+    ...cmp,
+    TableAllOrderComponent,
+    TableDeletedOrderComponent
   ],
   imports: [
     CommonModule,
@@ -209,7 +216,7 @@ const SERVICES = [
     TDSConversationsModule,
     OrderModule,
     DirectivesModule,
-    
+    TDSImageModule
   ],
   providers: [
     ...SERVICES
