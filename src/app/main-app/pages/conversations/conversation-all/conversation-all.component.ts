@@ -389,7 +389,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
     if(this.isLoading || this.isProcessing){
-        return;
+      return;
     }
 
     this.isLoading = true;
@@ -398,35 +398,55 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           if (res && TDSHelperArray.hasListValue(res.Items)) {
               this.lstConversation = [...res.Items];
-
-              let currentOmni: ChatomniConversationItemDto;
-              let params_csid: string;
-
-              // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
-              params_csid = this.paramsUrl?.csid;
-              if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
-                  params_csid = this.getStorageConversationId();
-              }
-
-              currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
-
-              // TODO: nếu không tồn tại params_csid thì lấy item đầu tiên
-              if(!TDSHelperObject.hasValue(currentOmni) && !TDSHelperString.hasValueString(currentOmni?.ConversationId)) {
-                  currentOmni = this.lstConversation[0];
-              }
-
-              this.setCurrentConversationItem(currentOmni);
-
+              this.prepareParamsUrl();
           } else {
-              //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-              this.validateData();
+              this.isLoading = false;
+              this.validateData(); //lọc hội thoại data rỗng res.items = 0
           }
-
-          this.isLoading = false;
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  prepareParamsUrl() {
+    let currentOmni: ChatomniConversationItemDto;
+    let params_csid: string;
+
+    // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
+    params_csid = this.paramsUrl?.csid;
+    if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
+        params_csid = this.getStorageConversationId();
+    }
+
+    currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
+    let exist = currentOmni && currentOmni?.ConversationId;
+    if(exist) {
+        this.setCurrentConversationItem(currentOmni);
+        this.isLoading = false;
+        return;
+    }
+
+    // TODO: nếu không có trong ds thì call api get id
+    let teamId = this.currentTeam?.Id as number;
+    this.chatomniConversationService.getById(teamId, params_csid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
+          currentOmni = {...res};
+          this.lstConversation = [...[currentOmni], ...this.lstConversation];
+
+          this.setCurrentConversationItem(currentOmni);
+          this.isLoading = false;
+          return;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+
+          currentOmni = this.lstConversation[0];
+          this.setCurrentConversationItem(currentOmni);
+          return;
       }
     })
   }

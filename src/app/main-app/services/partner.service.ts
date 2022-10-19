@@ -254,6 +254,14 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getAllByPartnerId(channelId: number, partnerId: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v2.0/partner/${channelId}_${partnerId}/channels`,
+        method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
   updatePartnerSimple(data: TDSSafeAny) {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdatePartnerSimple `,

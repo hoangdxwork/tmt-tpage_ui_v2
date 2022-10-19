@@ -53,7 +53,10 @@
                                   </tpage-avatar-facebook>
                                   <span class="absolute right-0 bottom-0">
                                       <span *ngIf="!team.Active"><img style="filter: grayscale(1)" src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
-                                      <span *ngIf="team.Active"><img src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
+                                      <span *ngIf="!team.Active"><img style="filter: grayscale(1)" src="../../../assets/imagesv2/tshop/icon-liveapp.svg"></span>
+
+                                      <span *ngIf="team.Active && team.Type == 'Facebook'"><img src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
+                                      <span *ngIf="team.Active && team.Type == 'TUser'"><img src="../../../assets/imagesv2/tshop/icon-liveapp.svg" class="w-[24px] h-[24px]"></span>
                                   </span>
                               </div>
                               <div class="flex flex-col gap-1">
@@ -123,6 +126,15 @@
                                               <span class="tdsi-undo-line flex text-sm"></span>
                                               <span class="flex text-xs">Cập nhật token</span>
                                           </div>
+
+                                          <div class="text-success-400 flex items-center gap-x-1 cursor-pointer"
+                                              *ngIf="userTShopLogin?.Id && userTShopLogin?.Id == team?.OwnerId && team.Active"
+                                              (click)="refreshTShopPageToken(team.Id, child.ChannelId)">
+
+                                              <span class="tdsi-undo-line flex text-sm"></span>
+                                              <span class="flex text-xs">Cập nhật token</span>
+                                          </div>
+
                                       </div>
                                   </div>
                               </div>
@@ -241,9 +253,53 @@
                         <button  type="button" tds-button color="primary" (click)="onFacebookConnected()"
                         tds-tooltip tooltipTitle="Thêm page vào kênh kết nối">Thêm vào TPage</button>
                     </div>
-                    <div *ngIf="isUserConnectChannel" class="w-full grid mt-2">
+                    <div class="w-full grid mt-2">
                         <button type="button" tds-button color="info" (click)="facebookSignOut()"
                         tds-tooltip tooltipTitle="Đăng xuất khỏi Facebook">Đăng xuất</button>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </ng-template>
+
+          <div class="bg-white rounded-xl w-full p-4 flex flex-col gap-y-4" *ngIf="!userTShopLogin || !userTShopLogin.Id; else userLoggedTShop">
+              <p class="text-lg font-semibold">Kết nối tài khoản</p>
+              <span class="text-sm font-normal text-center">
+                Kết nối tài khoản LiveApp của bạn để đồng bộ
+                tin nhắn, bình luận, bài viết về TPage
+              </span>
+              <!-- <a href="{{tShopAuthentication}}" target="ne" class="text-neutral-1-400 w-full"> -->
+                  <button size="xl" class="flex py-[9px] px-[17px] bg-accent-4 rounded-md justify-center w-full" (click)="tShopSignIn()">
+                      <span class="flex items-center text-white text-sm gap-x-2">
+                        <!-- <span class="w-[16px] h-[16px] block">
+                          <img src="../../../assets/imagesv2/tshop/liveapp.svg">
+                        </span> -->
+                        <span class="font-semibold text-sm">Kết nối với TShop</span>
+                      </span>
+                  </button>
+              <!-- </a> -->
+          </div>
+
+          <ng-template #userLoggedTShop>
+            <div class="bg-white rounded-xl w-full p-4">
+              <div class="bg-neutral-3-500 w-full flex items-center flex-wrap">
+                  <div class="flex items-center w-full">
+                     <div class="relative">
+                        <tds-avatar [size]="'xl'" [tdsSrc]="userTShopLogin?.Avatar" [shape]="'circle'"></tds-avatar>
+                        <span class="absolute bottom-0 right-0 w-[24px] h-[24px] block">
+                            <img src="../../../assets/imagesv2/tshop/liveapp.svg" class="rounded-full">
+                        </span>
+                     </div>
+                     <div class="text-title-1 font-sans font-semibold ml-4">{{userTShopLogin?.Name}}</div>
+                  </div>
+                  <div class="w-full" style="margin-top: 30px">
+                    <div *ngIf="!isUserTShopConnectChannel" class="w-full grid ">
+                        <button  type="button" tds-button color="primary" (click)="onTShopConnected()"
+                        tds-tooltip tooltipTitle="Thêm page vào kênh kết nối">Thêm vào TPage</button>
+                    </div>
+                    <div class="w-full grid mt-2">
+                        <button type="button" tds-button color="info" (click)="tShopSignOut()"
+                        tds-tooltip tooltipTitle="Đăng xuất khỏi TShop">Đăng xuất</button>
                     </div>
                   </div>
               </div>

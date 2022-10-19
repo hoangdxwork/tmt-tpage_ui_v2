@@ -39,6 +39,7 @@ import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.com
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
 import { ModalOrderDeletedComponent } from '../components/modal-order-deleted/modal-order-deleted.component';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'app-order',
@@ -140,6 +141,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     private crmMatchingService: CRMMatchingService,
     private modalService: TDSModalService,
     private chatomniMessageFacade: ChatomniMessageFacade,
+    private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService) {
   }
 
@@ -767,12 +769,17 @@ export class OrderComponent implements OnInit, AfterViewInit {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+    if(!TDSHelperString.hasValueString(data.CRMTeamId)) {
+      this.message.error(Message.PageNotExist);
+      return;
+    }
+
+    this.partnerService.getAllByPartnerId(data.CRMTeamId, partnerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any): any => {
 
           let pageIds: any = [];
           obs?.map((x: any) => {
-              pageIds.push(x.page_id);
+              pageIds.push(x.ChannelId);
           });
 
           this.isOpenChat = false;
@@ -791,12 +798,12 @@ export class OrderComponent implements OnInit, AfterViewInit {
                 let pageDic = {} as any;
 
                 teams.map((x: any) => {
-                  let exist = obs.filter((r: any) => r.page_id == x.ChannelId)[0];
+                  let exist = obs.filter((r: any) => r.ChannelId == x.ChannelId)[0];
 
-                  if (exist && !pageDic[exist.page_id]) {
-                    pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                  if (exist && !pageDic[exist.ChannelId]) {
+                    pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vào
                     this.mappingTeams.push({
-                        psid: exist.psid,
+                        psid: exist.UserId,
                         team: x
                     })
                   }
@@ -804,7 +811,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
                 if (this.mappingTeams.length > 0) {
                     this.currentMappingTeam = this.mappingTeams[0];
-                    this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+                    this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
                 }
             }
           });
@@ -816,18 +823,18 @@ export class OrderComponent implements OnInit, AfterViewInit {
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-            this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-            this.psid = res.psid;
+            this.psid = psid;
             this.isOpenDrawer = true;
         }
       },
