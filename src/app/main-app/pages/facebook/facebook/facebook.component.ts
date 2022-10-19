@@ -555,8 +555,6 @@ export class FacebookComponent extends TpageBaseComponent implements OnInit, Aft
   loadPageNotConnect(team: CRMTeamDTO) {
     this.isLoading = true;
 
-    console.log(team);
-
     switch(team.Type) {
       case 'Facebook':
         {
