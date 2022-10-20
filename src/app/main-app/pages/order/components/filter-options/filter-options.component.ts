@@ -51,7 +51,7 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   loadSummaryStatus() {
-    this.listStatus = this.summaryStatus.map(f=> {
+    this.listStatus = this.summaryStatus.map(f => {
       return {
         Name: f.Name,
         Index: f.Index,

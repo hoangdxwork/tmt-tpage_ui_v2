@@ -29,12 +29,13 @@
                                         </div>
                                         <div class="flex items-center">
                                             <span class="text-neutral-1-600 mr-2">Vận chuyển</span>
-                                            <span class="font-semibold"> {{ dataModel.CarrierName || '---' }} </span>
-                                        </div>
-                                        <div class="flex items-center">
                                             <div class="rounded-full bg-neutral-3-100 px-2">
                                                 <span class="text-neutral-1-700 font-semibold">{{ dataModel.ShowShipStatus || '---' }}</span>
                                             </div>
+                                        </div>
+                                        <div class="flex items-center gap-x-2">
+                                            <img width="40px" height="20px" [src]="dataModel.CarrierDeliveryType | getAvatarCarrier" alt="">
+                                            <span class="font-semibold"> {{ dataModel.CarrierName || '---' }} </span>
                                             <span class="text-info-500 font-semibold ml-2">{{ dataModel.TrackingRef || '---' }}</span>
                                         </div>
                                     </div>

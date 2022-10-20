@@ -133,7 +133,7 @@ export class CreateVariantsModalComponent implements OnInit, OnDestroy {
   }
 
   prepareModel(data: ConfigProductVariant) {
-    CreateVariantsHandler.prepareModel(data, this._form.value);
+    data = CreateVariantsHandler.prepareModel(data, this._form.value);
     data.AttributeValues = TDSHelperArray.hasListValue(data.AttributeValues) ? data.AttributeValues : this.editModel?.AttributeValues;
     return data;
   }

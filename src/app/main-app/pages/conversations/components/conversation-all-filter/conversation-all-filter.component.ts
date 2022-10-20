@@ -209,6 +209,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   onChangeHasPhone(event: boolean) {
     if(event == true) {
         this.queryObj['has_phone'] = event;
+        this.queryObj['not_phone'] = false;
     } else {
         delete this.queryObj['has_phone'];
     }
@@ -217,6 +218,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   onChangeNotPhone(event: boolean) {
     if(event == true) {
         this.queryObj['not_phone'] = event;
+        this.queryObj['has_phone'] = false;
     } else {
         delete this.queryObj['not_phone'];
     }

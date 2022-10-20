@@ -140,7 +140,8 @@
                                     <span class="text-neutral-1-600 mr-2">Trạng thái ĐH</span>
                                     <span class="text-header-2 text-neutral-1-300 font-semibold"> {{dataModel.ShowState || '---'}}</span>
                                 </div>
-                                <div class="flex items-center" *ngIf="dataModel.CarrierName">
+                                <div class="flex items-center gap-x-2" *ngIf="dataModel.CarrierName">
+                                    <img width="40px" height="20px" [src]="dataModel.CarrierDeliveryType | getAvatarCarrier" alt="">
                                     <span class="font-semibold ml-2" tds-tooltip tooltipTitle="Đối tác giao hàng: {{ dataModel.CarrierName }}">
                                         {{ dataModel.CarrierName }}
                                     </span>

@@ -250,13 +250,17 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
 
   onRemove(id: string) {
     this.isLoading = true;
-    this.liveCampaignService.delete(id)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+    this.liveCampaignService.delete(id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(
+      {
+        next: res => {
           this.message.success('Thao tác thành công');
           this.loadData(this.pageSize, this.pageIndex);
-      }, error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      })
+        }, 
+        error: error => {
+          this.message.error(`${error?.error?.message}` ? 'Chiến dịch đã có đơn hàng' : 'Đã xảy ra lỗi');
+        }
+      }
+    )
   }
 
   ngOnChanges(changes: SimpleChanges) {

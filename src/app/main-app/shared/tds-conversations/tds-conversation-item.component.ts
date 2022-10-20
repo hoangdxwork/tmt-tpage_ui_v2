@@ -1,3 +1,4 @@
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from './../../dto/suggest-address/suggest-address.dto';
 import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -99,38 +100,37 @@ export class TDSConversationItemComponent implements OnInit  {
   }
 
   selectOrder(type: string, index?: number): any {
-    let data = { phone: null, address: null, note: null } as any;
+    let model = { type: '', value: '' } as any;
     let value = this.getTextOfContentMessage();
 
     if(TDSHelperString.hasValueString(value)) {
         switch(type) {
             case "phone":
-                let phone = PhoneHelper.getMultiplePhoneFromText(value, this.companyCurrents);
-                if (!phone) {
-                    return this.tdsMessage.error("Không tìm thấy số điện thoại");
-                }
-                this.tdsMessage.info("Chọn làm số điện thoại thành công");
-                data.phone = phone;
+              let phone = PhoneHelper.getMultiplePhoneFromText(value, this.companyCurrents);
+              if (!phone) {
+                  return this.tdsMessage.error("Không tìm thấy số điện thoại");
+              }
+              model.value = phone;
+              model.type = 'phone';
               break;
 
             case "address":
-                data.address = value;
-                if (value) {
-                  this.tdsMessage.info("Chọn làm  địa chỉ thành công");
-                }
+              model.value = value;
+              model.type = 'address';
               break;
 
             case "note":
-                if (index && this.contentMessageChild && this.contentMessageChild._results[index] && this.contentMessageChild._results[index].nativeElement && this.contentMessageChild._results[index].nativeElement.outerText){
-                    data.note = this.contentMessageChild._results[index].nativeElement.outerText;
+                if (Number(index) >=0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].nativeElement && this.contentMessageChild._results[Number(index)].nativeElement.outerText){
+                  model.value = this.contentMessageChild._results[Number(index)].nativeElement.outerText;
                 } else {
-                    data.note = value;
+                  model.value = value;
                 }
+                model.type = 'note';
               break;
         }
 
         //TODO: load sang tab conversation-order paste lại dữ liệu
-        this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
+        this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
     } else {
         return false;
     }
@@ -255,7 +255,7 @@ export class TDSConversationItemComponent implements OnInit  {
                   this.dataItem  = {...data}
               });
             }
-  
+
             this.cdRef.detectChanges();
         },
         error: error => {
@@ -360,24 +360,24 @@ export class TDSConversationItemComponent implements OnInit  {
             if(TDSHelperArray.hasListValue(res)){
               res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
                 x["Status"] = ChatomniStatus.Done;
-  
+
               let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-  
+
               if(i == res.length - 1){
                 let itemLast = {...data}
-  
+
                 let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
                 //TODO: Đẩy qua conversation-all-v2
                 this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
               }
             });
           }
-  
+
           this.messageModel = null;
           this.isReply = false;
           this.isReplyingComment = false;
           this.tdsMessage.success('Gửi sản phẩm thành công');
-  
+
           this.cdRef.markForCheck();
           },
           error: error => {
@@ -584,36 +584,47 @@ export class TDSConversationItemComponent implements OnInit  {
     return model;
   }
 
-  showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){ 
+  showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){
     let value: string = '';
+    if (Number(index) >= 0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].text) {
+      value = this.contentMessageChild._results[ Number(index)].text;
+    } else {
+        value = this.getTextOfContentMessage();
+    }
 
-    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') { 
+    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') {
         if(nlpEntities[0].Value){
           let data = JSON.parse(nlpEntities[0].Value);
 
           if (data && typeof data === "object") {
-  
-              let item: ResultCheckAddressDTO = {
-                Address: data.FullAddress || null,
-                CityCode: data.CityCode || null,
-                CityName: data.CityName || null,
-                DistrictCode:  data.DistrictCode || null,
-                DistrictName: data.DistrictName || null,
-                WardCode: data.WardCode || null,
-                WardName: data.WardName || null
-            } as any;
-  
-            this.chatomniEventEmiter.selectAddressEmiter$.emit(item);
-            this.tdsMessage.success('Chọn làm địa chỉ thành công');
+            let _cities = {code: data.CityCode || null, name: data.CityName || null} as SuggestCitiesDTO;
+            let _districts = {code: data.DistrictCode || null, name: data.DistrictName || null} as SuggestDistrictsDTO;
+            let _wards = {code: data.WardCode || null, name: data.WardName || null} as SuggestWardsDTO;
+
+              let modal = this.modalService.create({
+                title: 'Thêm địa chỉ',
+                content: ModalAddAddressV2Component,
+                size: "lg",
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  isSelectAddress: true,
+                  _street: value,
+                  _cities: _cities,
+                  _districts: _districts,
+                  _wards: _wards,
+                }
+              });
+    
+            modal.afterClose.subscribe({
+              next: (result: ResultCheckAddressDTO) => {
+                if(result){
+                    this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+                }
+              }
+            })
             return;
           }
         }
-    }
-
-    if (Number(index) >= 0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].text) {
-        value = this.contentMessageChild._results[ Number(index)].text;
-    } else {
-        value = this.getTextOfContentMessage();
     }
 
     if(TDSHelperArray.hasListValue(value)) {

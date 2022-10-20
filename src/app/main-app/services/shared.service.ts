@@ -198,4 +198,13 @@ export class SharedService extends BaseSevice {
 
     return this.apiService.getData(api, { id: id});
   }
+
+  checkPrermission() {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/common/CheckPermission?function=App.SaleOnline.Facebook.Excel`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, null);
+  }
 }

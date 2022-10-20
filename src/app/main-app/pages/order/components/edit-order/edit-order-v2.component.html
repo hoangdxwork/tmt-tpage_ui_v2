@@ -28,7 +28,7 @@
                           </span>
                         </div>
                         <tds-dropdown-menu #menu="tdsDropdownMenu">
-                          <div class="w-full" *ngIf="lstPartnerStatus">
+                          <div class="w-full max-h-[300px] overflow-y-auto tds-panel-scroll" *ngIf="lstPartnerStatus">
                               <div tds-dropdown-item *ngFor="let status of lstPartnerStatus" (click)="selectStatus(status)">
                                   <a [ngStyle]="{'color': status.value }"> {{ status.text }} </a>
                               </div>
@@ -380,8 +380,7 @@
 
                                 <tds-form-field class="w-3/4">
                                     <tds-select valueField="ServiceId" textField="ServiceName"
-                                        (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
-                                        [valuePrimitive]="false" [data]="shipServices"
+                                        (selectChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ' [data]="shipServices"
                                         [ngModel]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}">
 
                                         <ng-template tds-label-tmp let-item="item">  {{item.data.ServiceName}}
