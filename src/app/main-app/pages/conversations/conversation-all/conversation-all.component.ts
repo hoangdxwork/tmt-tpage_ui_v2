@@ -88,6 +88,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   notificationRef!: TDSNotificationRef;
   totalConversations: number = 0;
+  orderCode: any;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -356,6 +357,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       this.lstConversation = [...this.lstConversation];
                   }
 
+                  // TODO: cập nhật mã đơn hàng
+                  if(this.conversationInfo && this.syncConversationInfo.Order) {
+                      this.orderCode = this.syncConversationInfo.Order.Code;
+                  }
+
                   this.cdRef.markForCheck();
               }
           })
@@ -484,6 +490,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.chatomniConversationService.getInfo(this.currentTeam!.Id, item.ConversationId).pipe(takeUntil(this.destroy$)).subscribe({
               next: (info: ChatomniConversationInfoDto) => {
                   this.conversationInfo = {...info};
+
+                  if(this.conversationInfo && this.conversationInfo.Order) {
+                      this.orderCode = this.conversationInfo.Order.Code;
+                  }
+
                   this.isLoading = false;
                   this.cdRef.markForCheck();
               },
@@ -852,6 +863,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.conversationInfo;
     delete this.conversationItem;
     delete this.dataSource$;
+    delete this.orderCode;
   }
 
   setStorageConversationId(id: string): any {

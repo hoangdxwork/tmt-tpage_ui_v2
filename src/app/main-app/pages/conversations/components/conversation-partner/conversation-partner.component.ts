@@ -236,24 +236,24 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         }
 
         if(this.conversationInfo && this.team) {
-          this.isLoading = true;
-          let model = {...this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem)};
+          // this.isLoading = true;
+          // let model = {...this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem)};
 
-          this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: this.team.Id }).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-                this.isLoading = false;
-                this.notiOrderFromMessage(obs.type);
-                if(this.isEditPartner) {
-                  this.tempPartner = {...this.partner}
-                }
-                this.cdRef.detectChanges();
-            },
-            error: (error: any) => {
-                this.isLoading = false;
-                this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-                this.cdRef.detectChanges();
-            }
-          });
+          // this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: this.team.Id }).pipe(takeUntil(this.destroy$)).subscribe({
+          //   next: (res: any) => {
+          //       this.isLoading = false;
+          //       this.notiOrderFromMessage(obs.type);
+          //       if(this.isEditPartner) {
+          //         this.tempPartner = {...this.partner}
+          //       }
+          //       this.cdRef.detectChanges();
+          //   },
+          //   error: (error: any) => {
+          //       this.isLoading = false;
+          //       this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          //       this.cdRef.detectChanges();
+          //   }
+          // });
         }
       }
     })
@@ -602,7 +602,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this._districts as any) = null;
     (this._wards as any) = null;
     (this._street as any) = null;
-    delete this.tempPartner; 
+    delete this.tempPartner;
   }
 
 }
