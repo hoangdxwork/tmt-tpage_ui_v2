@@ -46,24 +46,27 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
       ],
       yAxis: [
         {
-          data: ['1'],
-
+          axisLabel: {
+            margin: 45,
+            width: 180,
+           },
+          data: ['Đơn hàng'],
         }
       ]
     },
     series: [
       {
         type: 'bar',
-        name: 'Tổng hoá đơn của bạn',
-        barWidth:32,
+        name: 'Tổng đơn hàng của bạn',
+        barWidth: 32,
         data: [ 0 ]
       },
       {
         type: 'bar',
         name: 'Hạn mức gói sử dụng',
-        barWidth:32,
+        barWidth: 32,
         data: [ 0 ]
-      }
+      },
     ]
   }
   // khởi tạo 1 object TDSBarChartComponent với 2 thành phần cơ bản axis, series
@@ -86,13 +89,15 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.options = this.chartOptions.BarChartOption(this.chartComponent, true); //khởi tạo option bar chart cơ bản
+    this.options = this.chartOptions.BarChartOption(this.chartComponent); //khởi tạo option bar chart cơ bản
   }
 
   uploadChart(used: TenantUsedDTO) {
-    this.chartComponent.series[0].data[0] = used.fastSaleOrder;
-    this.chartComponent.series[0].data[1] = this.tenantInfo.Limitations.FastSaleOrder;
+    this.chartComponent.series[0].data[0] = used.saleOnlineOrder;
+    this.chartComponent.series[1].data[1] = this.tenantInfo.Limitations.FastSaleOrder;
     this.options = this.chartOptions.BarChartOption(this.chartComponent); //khởi tạo option bar chart cơ bản
+    // console.log(this.options);
+
   }
 
   onExpand() {
