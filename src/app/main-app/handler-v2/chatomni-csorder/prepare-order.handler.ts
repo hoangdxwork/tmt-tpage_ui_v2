@@ -59,7 +59,7 @@ export class CsOrder_PrepareModelHandler {
     x.UserId = model.UserId || model.User?.Id;
 
     x.Details = [];
-    model.Details?.map(obj => {
+    model.Details?.map((obj: any) => {
       let item = {
           Note: obj.Note,
           Price: obj.Price,
@@ -172,8 +172,6 @@ export class CsOrder_PrepareModelHandler {
     x.Facebook_PostId = comment.ObjectId;
     x.Facebook_UserName = comment.Data?.Actor?.Name;
     x.PartnerName = comment.Data?.Actor?.Name;
-
-    // x.Facebook_Comments = [this.prepareFacebookComment(comment)];
 
     //TODO: check sản phẩm mặc định
     let product = this.facebookPostService.getDefaultProductPost() as Detail_QuickSaleOnlineOrder;

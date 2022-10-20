@@ -361,6 +361,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         params_postid = this.getStoragePostId();
     }
 
+    if(params_postid == null) {
+      currentObject = this.lstObjects[0];
+      this.currentObject = currentObject;
+
+      this.selectPost(currentObject);
+      this.isLoading = false;
+      return;
+    }
+
     currentObject = this.lstObjects.filter(x => x.ObjectId == params_postid)[0];
     let exist = currentObject && currentObject?.ObjectId;
     if(exist) {
@@ -371,7 +380,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         return;
     }
 
-    // TODO: nếu không có trong ds thì call api get id
     let teamId = this.currentTeam?.Id as number;
     this.chatomniObjectService.getById(params_postid, teamId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
@@ -382,7 +390,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           this.selectPost(currentObject);
           this.isLoading = false;
-          return;
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -390,8 +397,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           currentObject = this.lstObjects[0];
           this.currentObject = currentObject;
+
+          this.selectPost(currentObject);
           this.isLoading = false;
-          return;
       }
     })
   }

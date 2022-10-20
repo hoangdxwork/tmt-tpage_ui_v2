@@ -242,9 +242,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
                 this.vsSocketImports[vsIndex].LatestMessage = {
-                  CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
-                  Message: itemNewMess.LatestMessage?.Message,
-                  MessageType: itemNewMess.LatestMessage?.MessageType
+                    CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                    Message: itemNewMess.LatestMessage?.Message,
+                    MessageType: itemNewMess.LatestMessage?.MessageType
                 } as any;
 
                 this.vsSocketImports[vsIndex].CountUnread = (this.vsSocketImports[vsIndex].CountUnread || 0) + 1;
@@ -263,6 +263,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   eventEmitter() {
+
     // TODO: cập nhật tags
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
@@ -400,8 +401,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               this.lstConversation = [...res.Items];
               this.prepareParamsUrl();
           } else {
-              this.isLoading = false;
               this.validateData(); //lọc hội thoại data rỗng res.items = 0
+              this.isLoading = false;
           }
       },
       error: (error: any) => {
@@ -421,6 +422,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         params_csid = this.getStorageConversationId();
     }
 
+    if(params_csid == null) {
+      currentOmni = this.lstConversation[0];
+      this.setCurrentConversationItem(currentOmni);
+
+      this.isLoading = false;
+      return;
+    }
+
     currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
     let exist = currentOmni && currentOmni?.ConversationId;
     if(exist) {
@@ -429,7 +438,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         return;
     }
 
-    // TODO: nếu không có trong ds thì call api get id
     let teamId = this.currentTeam?.Id as number;
     this.chatomniConversationService.getById(teamId, params_csid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {
@@ -438,7 +446,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           this.setCurrentConversationItem(currentOmni);
           this.isLoading = false;
-          return;
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -446,7 +453,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           currentOmni = this.lstConversation[0];
           this.setCurrentConversationItem(currentOmni);
-          return;
       }
     })
   }
@@ -518,14 +524,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
-
           if(res && res.Items) {
               this.lstConversation = [...(res.Items || [])];
               this.lstConversation = [...this.lstConversation];
           } else {
               this.disableNextUrl = true;
           }
-
           this.isLoadingNextdata = false;
       },
       error: (error) => {
@@ -536,12 +540,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
-        this.disableNextUrl = false;
-        this.removeStorageConversationId();
+      this.disableNextUrl = false;
+      this.removeStorageConversationId();
 
-        let uri = this.router.url.split("?")[0];
-        let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
-        this.router.navigateByUrl(uriParams);
+      let uri = this.router.url.split("?")[0];
+      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+      this.router.navigateByUrl(uriParams);
     }
 
     this.crmService.onUpdateTeam(data);
