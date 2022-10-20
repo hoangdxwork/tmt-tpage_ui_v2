@@ -143,19 +143,19 @@
                                             [enableUnequalChildrenSizes]="true"
                                             [scrollAnimationTime]="750"
                                             class="h-full p-2 text-caption-1 overflow-hidden overflow-y-auto tds-panel-scroll bg-white flex flex-col gap-y-2 shadow-md">
-                
+
                                             <div *ngFor="let item of scroll.viewPortItems; let index = index;"
                                                 (click)="selectProduct(item)" class="w-full block h-[56px]">
-                
+
                                                 <div *ngIf="item" class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
                                                 <div>
                                                     <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom }}đ </span>
                                                 </div>
-                
+
                                                 <div *ngIf="lstInventory && lstInventory[item.Id]">
                                                     <span class="text-neutral-1-400">Tồn kho: </span>
                                                     <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
-                
+
                                                     <span class="text-neutral-1-400">Tồn dự báo: </span>
                                                     <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
                                                 </div>
@@ -164,8 +164,8 @@
                                             <div *ngIf="isLoadingNextdata" class="px-2 bg-white">
                                                 <tds-skeleton [tdsActive]="true" [tdsTitle]="false" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
                                             </div>
-                
-                                        </virtual-scroller> 
+
+                                        </virtual-scroller>
                                     </tds-spin>
                                 </div>
 
@@ -635,28 +635,14 @@
           </div>
 
           <!-- Button Footer conversation post-->
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' && team?.Type == 'TShop'">
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromChannelComment()">Lưu</button>
+          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' ">
+            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost()">Lưu</button>
 
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromChannelComment('SaveAndPrint', 'print')">
+            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost('SaveAndPrint', 'print')">
                Lưu và in
             </button>
 
-            <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onInsertFromChannelComment('SaveAndPrint','printShip')">
-                <span class="flex items-center">
-                    <i class="tdsi-truck-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
-                </span>
-            </button>
-          </div>
-
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' && team?.Type == 'Facebook'">
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost()">Lưu</button>
-
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost('SaveAndPrint', 'print')">
-               Lưu và in
-            </button>
-
-            <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onInsertFromPost('SaveAndPrint','printShip')">
+            <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onSavePost('SaveAndPrint','printShip')">
                 <span class="flex items-center">
                     <i class="tdsi-truck-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
                 </span>

@@ -194,7 +194,7 @@
                               [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
 
                                 <span class="mr-2 flex items-center"> Đơn hàng
-                                    <tds-tag status='primary' class="ml-3" *ngIf="conversationInfo && conversationInfo.Order && conversationInfo.Order.Code"> #{{conversationInfo.Order.Code}} </tds-tag>
+                                    <tds-tag status='primary' class="ml-3" *ngIf="orderCode"> #{{orderCode}} </tds-tag>
                                 </span>
 
                                 <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
