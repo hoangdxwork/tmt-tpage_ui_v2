@@ -8,6 +8,7 @@
       <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
     </tds-form-field>
     <bill-filter-options (onLoadOption)="onLoadOption($event)"></bill-filter-options>
+    <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
   </div>
 
   <div class="h-full pb-2.5">
@@ -27,17 +28,17 @@
         <tr>
           <th [tdsLeft]="true" [width]="'44px'" [(checked)]="checked" [indeterminate]="indeterminate">
           </th>
-          <th [tdsLeft]="true" [width]="'57px'">STT</th>
-          <th [tdsLeft]="true" [width]="'200px'">Hình thanh toán</th>
-          <th [tdsLeft]="true" [width]="'200px'">Số HĐ</th>
-          <th [width]="'200px'">Khách hàng</th>
-          <th [width]="'200px'" [align]="'right'">Tiền cọc</th>
-          <th [width]="'200px'" [align]="'right'">Còn nợ</th>
-          <th [width]="'200px'" [align]="'right'">Tổng tiền</th>
-          <th [width]="'200px'" [align]="'right'">Tiền thu hộ</th>
-          <th [width]="'200px'">Trạng thái</th>
-          <th [width]="'200px'">Nhân viên</th>
-          <th [width]="'200px'">Ngày cập nhật</th>
+          <th [tdsLeft]="true" [align]="'center'" [width]="'57px'">STT</th>
+          <th *ngIf="isHidden('IRAttachmentUrl')" [tdsLeft]="true" [width]="'200px'">Hình thanh toán</th>
+          <th *ngIf="isHidden('Number')" [tdsLeft]="true" [width]="'200px'">Số HĐ</th>
+          <th *ngIf="isHidden('PartnerDisplayName')" [width]="'160px'">Khách hàng</th>
+          <th *ngIf="isHidden('AmountDeposit')" [width]="'130px'" [align]="'right'">Tiền cọc</th>
+          <th *ngIf="isHidden('Residual')" [width]="'130px'" [align]="'right'">Còn nợ</th>
+          <th *ngIf="isHidden('AmountTotal')" [width]="'130px'" [align]="'right'">Tổng tiền</th>
+          <th *ngIf="isHidden('CashOnDelivery')" [width]="'130px'" [align]="'right'">Tiền thu hộ</th>
+          <th *ngIf="isHidden('ShowState')" [width]="'130px'">Trạng thái</th>
+          <th *ngIf="isHidden('UserName')" [width]="'150px'">Nhân viên</th>
+          <th *ngIf="isHidden('DateCreated')" [align]="'center'" [width]="'150px'">Ngày cập nhật</th>
           <th [tdsRight]="true" [width]="'220px'">Thao tác</th>
         </tr>
       </thead>
@@ -46,12 +47,12 @@
           <tr>
             <td [tdsLeft]="true" [checked]="setOfCheckedId.has(data.Id)"></td>
 
-            <td [tdsLeft]="true">
-              {{index + 1}}
+            <td [tdsLeft]="true" [align]="'center'">
+              {{ index | numericalOrder:pageSize:pageIndex }}
             </td>
 
             <!-- Hình thanh toán -->
-            <td [tdsLeft]="true">
+            <td *ngIf="isHidden('IRAttachmentUrl')" [tdsLeft]="true">
               <div class="w-[154px] h-[104px] image-payment relative">
                 <img src="{{ data.IRAttachmentUrl }}" class="rounded-lg min-w-[154px] max-w-[154px] min-h-[104px] max-h-[104px] object-cover"/>
                 <div class="w-full h-full inset-0 absolute bg-white/[0.9] rounded-lg items-center justify-center flex hidden show-img-payment">
@@ -63,7 +64,7 @@
             </td>
 
             <!-- Số HĐ -->
-            <td [tdsLeft]="true">
+            <td *ngIf="isHidden('Number')" [tdsLeft]="true">
               <div class="flex flex-col gap-y-2">
                 <div>
                   <span *ngIf="!data.IsDeposited" class="text-xs text-error-400">Chưa xác nhận cọc</span>
@@ -124,7 +125,7 @@
             </td>
 
             <!-- Khách hàng -->
-            <td>
+            <td *ngIf="isHidden('PartnerDisplayName')">
               <div class="flex flex-col gap-y-1">
                 <span>{{data.PartnerDisplayName}}</span>
                 <span class="text-neutral-1-500">{{data.PartnerPhone}}</span>
@@ -132,19 +133,19 @@
             </td>
 
             <!-- Tiền cọc -->
-            <td [align]="'right'">{{ data.AmountDeposit || 0 | numberCustom }} đ</td>
+            <td *ngIf="isHidden('AmountDeposit')" [align]="'right'">{{ data.AmountDeposit || 0 | numberCustom }} đ</td>
 
             <!-- Còn nợ -->
-            <td [align]="'right'">{{ data.Residual || 0 | numberCustom }} đ</td>
+            <td *ngIf="isHidden('Residual')" [align]="'right'">{{ data.Residual || 0 | numberCustom }} đ</td>
 
             <!-- Tổng tiền -->
-            <td [align]="'right'">{{ data.AmountTotal || 0 | numberCustom }} đ</td>
+            <td *ngIf="isHidden('AmountTotal')" [align]="'right'">{{ data.AmountTotal || 0 | numberCustom }} đ</td>
 
             <!-- Tiền thu hộ -->
-            <td [align]="'right'">{{ data.CashOnDelivery || 0 | numberCustom }} đ</td>
+            <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'">{{ data.CashOnDelivery || 0 | numberCustom }} đ</td>
 
             <!-- Trạng thái -->
-            <td>
+            <td *ngIf="isHidden('ShowState')">
               <div class="w-full">
                 <tds-tag [status]="data.State |  getColorStatusState" size="sm" type="outline">{{data.ShowState}}</tds-tag>
                 <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán</p>
@@ -152,10 +153,10 @@
             </td>
 
             <!-- Nhân viên -->
-            <td>{{ data.UserName }}</td>
+            <td *ngIf="isHidden('UserName')">{{ data.UserName }}</td>
 
             <!-- Ngày cập nhật -->
-            <td>{{ data.DateCreated | date:"dd/MM/yyyy" }}</td>
+            <td *ngIf="isHidden('DateCreated')" [align]="'center'">{{ data.DateCreated | date:"dd/MM/yyyy" }}</td>
 
             <!-- Thao tác -->
             <td [tdsRight]="true">

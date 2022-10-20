@@ -15,6 +15,9 @@ export class ODataLiveCampaignBillService extends BaseSevice {
   table: string = "FastSaleOrder";
   baseRestApi: string = "";
 
+  public readonly _keyCacheGrid = 'billpayment-page:grid_billpayment:settings';
+  public readonly _keyCacheGridBill = 'bill-page:grid_bill:settings';
+
   constructor(
       private apiService: TCommonService,
       public caheApi: THelperCacheService

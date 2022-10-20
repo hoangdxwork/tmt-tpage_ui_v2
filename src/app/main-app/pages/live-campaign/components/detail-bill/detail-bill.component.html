@@ -1,7 +1,7 @@
 <div class="w-full h-full bg-white rounded-xl pb-2">
   <div class="flex flex-col h-full">
     <div class="p-4 font-semibold text-xl flex gap-x-3 justify-end">
-      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
         <button tds-button color="info" (click)="approveOrder()">
           <span class="flex items-center">
             <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Xác nhận bán hàng
@@ -9,7 +9,7 @@
         </button>
       </tds-spin>
 
-      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
         <button tds-button color="info" (click)="sendDelivery()">
           <span class="flex items-center">
             <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Gửi vận đơn
@@ -17,7 +17,7 @@
         </button>
       </tds-spin>
 
-      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
         <button tds-button color="info" (click)="print('print')">
           <span class="flex items-center">
             <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In hóa đơn
@@ -25,7 +25,7 @@
         </button>
       </tds-spin>
 
-      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
         <button tds-button color="info" (click)="print('printShips')">
           <span class="flex items-center">
             <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
@@ -41,6 +41,7 @@
         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
       <bill-filter-options (onLoadOption)="onLoadOption($event)"></bill-filter-options>
+      <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
     </div>
 
     <div class="flex-auto text-body-2 text-neutral-1-900">
@@ -58,32 +59,32 @@
         (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr>
-            <th [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" width="42px"
-                (checkedChange)="onAllChecked($event)" class="border-r"></th>
-            <th [width]="'3.5%'">STT</th>
-            <th [width]="'8.7%'">Số hóa đơn</th>
-            <th [width]="'8.7%'">Tên khách hàng</th>
-            <th [width]="'8.7%'">Số điện thoại</th>
-            <th [width]="'8.7%'">Tổng tiền</th>
-            <th [width]="'8.7%'">Đặt cọc</th>
-            <th [width]="'8.7%'">Còn nợ</th>
-            <th [width]="'8.7%'">Trạng thái</th>
-            <th [width]="'8.7%'">Số lần in HĐ</th>
-            <th [width]="'8.7%'">Nhân viên</th>
-            <th [width]="'8.7%'">Thời gian</th>
-            <th [width]="'8.7%'">Thao tác</th>
+            <th [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" width="44px"
+                (checkedChange)="onAllChecked($event)"></th>
+            <th [tdsLeft]="true" [width]="'57px'" [align]="'center'">STT</th>
+            <th *ngIf="isHidden('Number')" [tdsLeft]="true" [width]="'150px'">Số hóa đơn</th>
+            <th *ngIf="isHidden('PartnerDisplayName')" [tdsLeft]="true" [width]="'160px'">Tên khách hàng</th>
+            <th *ngIf="isHidden('PartnerPhone')" [width]="'150px'">Số điện thoại</th>
+            <th *ngIf="isHidden('AmountTotal')" [width]="'130px'" [align]="'right'">Tổng tiền</th>
+            <th *ngIf="isHidden('AmountDeposit')" [width]="'130px'" [align]="'right'">Đặt cọc</th>
+            <th *ngIf="isHidden('Residual')" [width]="'130px'" [align]="'right'">Còn nợ</th>
+            <th *ngIf="isHidden('State')" [width]="'130px'">Trạng thái</th>
+            <th *ngIf="isHidden('PrintDeliveryCount')" [width]="'150px'" [align]="'center'">Số lần in HĐ</th>
+            <th *ngIf="isHidden('UserName')" [width]="'180px'">Nhân viên</th>
+            <th *ngIf="isHidden('DateCreated')" [width]="'150px'">Thời gian</th>
+            <th [tdsRight]="true" [width]="'100px'">Thao tác</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let bill of tableMessage.data; let index=index">
             <td [tdsLeft]="true" [checked]="setOfCheckedId.has(bill.Id)"
-                  (checkedChange)="onItemChecked(bill.Id, $event)" class="border-r">
+                  (checkedChange)="onItemChecked(bill.Id, $event)">
                 </td>
-            <td>
-              {{index + 1}}
+            <td [align]="'center'" [tdsLeft]="true">
+              {{ index | numericalOrder:pageSize:pageIndex }}
             </td>
             <!-- Số hóa đơn -->
-            <td>
+            <td *ngIf="isHidden('Number')" [tdsLeft]="true">
               <div class="w-full flex font-semibold text-center pb-2">
                 <span [ngClass]="bill.Number ? 'text-info-400' : 'text-error-500'">{{bill.Number || 'N/A'}}</span>
               </div>
@@ -136,53 +137,53 @@
               </div>
             </td>
             <!-- Tên khách hàng -->
-            <td>
+            <td *ngIf="isHidden('PartnerDisplayName')" [tdsLeft]="true">
               {{bill.PartnerDisplayName}}
             </td>
             <!-- Số điện thoại -->
-            <td>
+            <td *ngIf="isHidden('PartnerPhone')">
               {{bill.PartnerPhone}}
             </td>
             <!-- Tổng tiền -->
-            <td>
-              {{bill.AmountTotal || 0 | numberCustom}}
+            <td *ngIf="isHidden('AmountTotal')" [align]="'right'">
+              {{bill.AmountTotal || 0 | numberCustom}} đ
             </td>
             <!-- Đặt cọc -->
-            <td>
-              {{bill.AmountDeposit || 0 | numberCustom}}
+            <td *ngIf="isHidden('AmountDeposit')" [align]="'right'">
+              {{bill.AmountDeposit || 0 | numberCustom}} đ
             </td>
             <!-- Còn nợ -->
-            <td>
-              {{bill.Residual || 0 | numberCustom}}
+            <td *ngIf="isHidden('Residual')" [align]="'right'">
+              {{bill.Residual || 0 | numberCustom}} đ
             </td>
             <!-- Trạng thái -->
-            <td>
+            <td *ngIf="isHidden('State')">
               <div class="w-full">
                 <tds-tag [status]="bill.State | getColorStatusState" size="sm" type="outline">{{bill.ShowState}}</tds-tag>
                 <p *ngIf="bill.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán</p>
               </div>
             </td>
             <!-- Số lần in ship -->
-            <td>
+            <td *ngIf="isHidden('PrintDeliveryCount')" [align]="'center'">
               {{bill.PrintDeliveryCount || 0 | numberCustom}}
             </td>
             <!-- Nhân viên -->
-            <td>
+            <td *ngIf="isHidden('UserName')">
               {{bill.UserName}}
             </td>
             <!-- Thời gian -->
-            <td>
+            <td *ngIf="isHidden('DateCreated')">
               {{bill.DateCreated | date: 'dd/MM/yyyy'}}
             </td>
             <!-- Thao tác -->
-            <td>
+            <td [tdsRight]="true">
               <div class="flex gap-x-2">
-                <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(bill)">
+                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Gửi tin nhắn" (click)="openMiniChat(bill)">
                   <span class="flex items-center">
                     <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                   </span>
                 </button>
-                <button tds-button-icon color="secondary" size="sm" (click)="onEdit(bill.Id)">
+                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Chỉnh sửa" (click)="onEdit(bill.Id)">
                   <span class="flex items-center text-neutral-1-500">
                     <i class="tdsi-edit-fill"></i>
                   </span>
