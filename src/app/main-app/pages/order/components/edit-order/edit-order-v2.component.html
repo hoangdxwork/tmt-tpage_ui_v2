@@ -219,7 +219,7 @@
                     </td>
                     <td>
                       <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1" (ngModelChange)="onChangeQuantity($event, index)"
+                        <tds-input-number [min]="1" [step]="1" (ngModelChange)="onChangeQuantity($event, index)"
                           [formatter]="numberWithCommas" [parser]="parserComas"
                           [(ngModel)]="data.Quantity" [ngModelOptions]="{standalone: true}">
                         </tds-input-number>

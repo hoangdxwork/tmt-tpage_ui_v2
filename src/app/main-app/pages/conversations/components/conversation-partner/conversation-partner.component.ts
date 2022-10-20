@@ -118,15 +118,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     })
 
-    //TODO: Cập nhật địa chỉ từ tds-conversation-item-v2 khi lưu chọn địa chỉ
-    this.omniEventEmiter.selectAddressEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (result: ResultCheckAddressDTO)=>{
-          let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner);
-          this.partner = partner;
-          this.mappingAddress(this.partner);
-          this.cdRef.detectChanges();
-      }
-    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -201,7 +192,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             this.partner.Phone = obs.value;
           break;
           case 'address':
-            this.partner.Street = obs.value;
+            if(obs.value && TDSHelperObject.hasValue(obs.value)) {
+              let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(obs.value, this.partner);
+              this.partner = partner;
+              this.mappingAddress(this.partner);
+              this.cdRef.detectChanges();
+            }
           break;
           case 'note':
             let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + obs.value : obs.value);
