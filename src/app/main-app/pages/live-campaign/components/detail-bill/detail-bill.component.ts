@@ -15,7 +15,7 @@ import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
 import { FastSaleOrderModelDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
-import { SortEnum } from 'src/app/lib';
+import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { finalize } from 'rxjs/operators';
 import { TagService } from 'src/app/main-app/services/tag.service';
@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 import { TDSSafeAny, TDSHelperObject, TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { ColumnTableDTO } from '@app/dto/common/table.dto';
 
 @Component({
   selector: 'detail-bill',
@@ -76,6 +77,21 @@ export class DetailBillComponent implements OnInit {
   setOfCheckedId = new Set<number>();
   idsModel: any = [];
 
+  public hiddenColumns = new Array<ColumnTableDTO>();
+  public columns: any[] = [
+    { value: 'Number', name: 'Số hóa đơn', isChecked: true },
+    { value: 'PartnerDisplayName', name: 'Tên khách hàng', isChecked: true },
+    { value: 'PartnerPhone', name: 'Số điện thoại', isChecked: true },
+    { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
+    { value: 'AmountDeposit', name: 'Đặt cọc', isChecked: true },
+    { value: 'Residual', name: 'Còn nợ', isChecked: true },
+    { value: 'State', name: 'Trạng thái', isChecked: true },
+    { value: 'PrintDeliveryCount', name: 'Số lần in HĐ', isChecked: true },
+    { value: 'UserName', name: 'Nhân viên', isChecked: true },
+    { value: 'DateCreated', name: 'Thời gian', isChecked: true },
+  ];
+
+
   constructor(
     private message: TDSMessageService,
     private tagService: TagService,
@@ -84,6 +100,7 @@ export class DetailBillComponent implements OnInit {
     private oDataLiveCampaignBillService: ODataLiveCampaignBillService,
     private partnerService: PartnerService,
     private destroy$: TDSDestroyService,
+    private cacheApi: THelperCacheService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
     private chatomniMessageFacade: ChatomniMessageFacade,
@@ -96,6 +113,7 @@ export class DetailBillComponent implements OnInit {
   ngOnInit() {
     this.setFilter();
     this.loadTags();
+    this.loadGridConfig()
   }
 
   setFilter() {
@@ -440,6 +458,38 @@ export class DetailBillComponent implements OnInit {
   refreshCheckedStatus(): void {
     this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
     this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
+  }
+
+  columnsChange(event: Array<ColumnTableDTO>) {
+    this.hiddenColumns = event;
+    if (event && event.length > 0) {
+      const gridConfig = {
+        columnConfig: event
+      };
+
+      const key = this.oDataLiveCampaignBillService._keyCacheGridBill;
+      this.cacheApi.setItem(key, gridConfig);
+
+      event.forEach(column => { this.isHidden(column.value) });
+    }
+  }
+
+  isHidden(columnName: string) {
+    return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
+  }
+
+  loadGridConfig() {
+    const key = this.oDataLiveCampaignBillService._keyCacheGridBill;
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
+            if (res && res.value) {
+              let jsColumns = JSON.parse(res.value) as any;
+              this.hiddenColumns = jsColumns.value.columnConfig;
+            } else {
+              this.hiddenColumns = this.columns;
+            }
+        }
+    })
   }
 
 }
