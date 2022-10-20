@@ -334,16 +334,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       }
     })
 
-    //TODO: Cập nhật địa chỉ từ tds-conversation-item-v2 khi lưu chọn địa chỉ
-    this.omniEventEmiter.selectAddressEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ResultCheckAddressDTO)=>{
-          let data = this.csOrder_SuggestionHandler.onLoadSuggestion(res, this.quickOrderModel);
-          this.quickOrderModel = data;
-          this.mappingAddress(this.quickOrderModel);
-          this.cdRef.detectChanges();
-      }
-    })
-
     // TODO: Thông tin đơn hàng sau khi click thông tin khách hàng ở comment bài viết
     this.conversationOrderFacade.loadOrderByPartnerComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
@@ -376,7 +366,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             break;
 
             case 'address':
-                this.quickOrderModel.Address = obs.value;
+                if(obs.value && TDSHelperObject.hasValue(obs.value)) {
+                  let data = this.csOrder_SuggestionHandler.onLoadSuggestion(obs.value, this.quickOrderModel);
+                  this.quickOrderModel = data;
+                  this.mappingAddress(this.quickOrderModel);
+                  this.cdRef.detectChanges();
+                }
             break;
 
             case 'note':
@@ -404,6 +399,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                   break;
                   case 'address':
                       model.Address = this.quickOrderModel.Address;
+                      model.CityCode = this.quickOrderModel.CityCode;
+                      model.CityName = this.quickOrderModel.CityName;
+                      model.DistrictCode = this.quickOrderModel.DistrictCode;
+                      model.DistrictName = this.quickOrderModel.DistrictName;
+                      model.WardCode = this.quickOrderModel.WardCode;
+                      model.WardName = this.quickOrderModel.WardName;
                   break;
                   case 'note':
                       model.Note = this.quickOrderModel.Note;

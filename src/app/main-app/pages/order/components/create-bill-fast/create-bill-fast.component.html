@@ -172,12 +172,7 @@
                               </td>
                               <!-- Tổng tiền -->
                               <td>
-                                <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceSubTotal | numberCustom }}"
-                                    (ngModelChange)="changePriceProduct($event, index, i)" [(ngModel)]="orderLines.PriceSubTotal" [formatter]="numberWithCommas" [parser]="parserComas"
-                                    [ngModelOptions]="{standalone: true}">
-                                  </tds-input-number>
-                                </tds-form-field>
+                                <span>{{ orderLines.PriceSubTotal | numberCustom }}</span>
                               </td>
                               <!-- Ghi chú -->
                               <td>
