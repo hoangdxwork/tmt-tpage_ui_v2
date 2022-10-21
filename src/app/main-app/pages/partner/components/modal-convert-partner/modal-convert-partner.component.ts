@@ -21,11 +21,9 @@ export class ModalConvertPartnerComponent implements OnInit {
   toPartner: any = { Id: 0, Name: null };
 
   constructor(private modal: TDSModalRef,
-    private odataPartnerService: OdataPartnerService,
     private message: TDSMessageService,
     private modalService: TDSModalService,
-    private partnerService: PartnerService,
-    private fb : FormBuilder) { }
+    private partnerService: PartnerService) { }
 
   ngOnInit(): void {
   }
