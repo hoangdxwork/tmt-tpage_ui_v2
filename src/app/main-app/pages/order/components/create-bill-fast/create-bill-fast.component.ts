@@ -165,12 +165,6 @@ export class CreateBillFastComponent implements OnInit {
         isApprove: is_approve
       }
     });
-
-    modal.afterClose.subscribe({
-      next:(result) => {
-        this.onCancel();
-      }
-    })
   }
 
   changeCarrierAll() {
@@ -292,17 +286,13 @@ export class CreateBillFastComponent implements OnInit {
         obs.pipe(takeUntil(this.destroy$)).subscribe({
           next:(res: TDSSafeAny) => {
             this.printerService.printHtml(res);
-            this.modalRef.destroy(true);
           },
           error:(error: TDSSafeAny) => {
             if(error?.error?.message) {
               this.message.error(error?.error?.message);
             }
-            this.modalRef.destroy(true);
           }
         });
-      }else{
-        this.modalRef.destroy(true);
       }
     }
   }
@@ -342,7 +332,7 @@ export class CreateBillFastComponent implements OnInit {
 
   onSave(confirm?: string) {
     if(this.isLoading){
-      return
+      return;
     }
 
     if(!this.lstData || this.lstData.length === 0) {
@@ -362,7 +352,6 @@ export class CreateBillFastComponent implements OnInit {
           this.isLoading = false;
           this.message.success(Message.Bill.InsertSuccess);
           this.printSave(res);
-          this.onCancel();
         }
         else {
           this.isLoading = false;

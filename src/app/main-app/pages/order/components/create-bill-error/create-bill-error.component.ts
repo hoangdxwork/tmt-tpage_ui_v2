@@ -136,18 +136,10 @@ export class CreateBillErrorComponent implements OnInit {
       obs.pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-          // TODO: nếu không còn lỗi thì đóng modal
-          if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected)){
-            this.onCancel(null);
-          }
         }, 
         error:(error: TDSSafeAny) => {
           if(error) {
             this.notification.error( 'Lỗi in phiếu', error);
-          }
-          // TODO: nếu không còn lỗi thì đóng modal
-          if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected)){
-            this.onCancel(null);
           }
         }
       });
@@ -207,10 +199,6 @@ export class CreateBillErrorComponent implements OnInit {
 
           if(this.lstErrorSelected.length == 0){
             this.isOpenCheckBox = false;
-            //TODO: nếu không in và không còn lỗi thì đóng modal
-            if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected) && !this.isPrintShip && !this.isPrint){
-              this.onCancel(null);
-            }
           }
 
           this.cdr.detectChanges();
@@ -219,7 +207,7 @@ export class CreateBillErrorComponent implements OnInit {
           this.isLoading = false;
           this.message.error(err?.error?.message || Message.InsertFail);
 
-          this.onCancel(err);
+          // this.onCancel(err);
           this.cdr.detectChanges();
         }
       });
@@ -270,10 +258,6 @@ export class CreateBillErrorComponent implements OnInit {
 
           if(this.lstErrorSelected.length == 0){
             this.isOpenCheckBox = false;
-            //TODO: nếu không in và không còn lỗi thì đóng modal
-            if(!TDSHelperArray.hasListValue(this.lstErrors) && !TDSHelperArray.hasListValue(this.lstErrorSelected) && !this.isPrintShip && !this.isPrint){
-              this.onCancel(null);
-            }
           }
 
           if (this.isPrint || this.isPrintShip) {
@@ -286,7 +270,7 @@ export class CreateBillErrorComponent implements OnInit {
           this.isLoading = false;
           this.message.error(err?.error?.message || Message.InsertFail);
           
-          this.onCancel(err);
+          // this.onCancel(err);
           this.cdr.detectChanges();
         }
       });
