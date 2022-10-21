@@ -32,10 +32,7 @@ import { ColumnTableDTO } from '@app/dto/common/table.dto';
   selector: 'detail-bill-payment',
   templateUrl: './detail-bill-payment.component.html',
   styles: [
-    `tr:hover .show-payment {
-      display: block
-    }
-    .image-payment:hover .show-img-payment {
+    `.image-payment:hover .show-img-payment {
       display: flex
     }`
   ],
