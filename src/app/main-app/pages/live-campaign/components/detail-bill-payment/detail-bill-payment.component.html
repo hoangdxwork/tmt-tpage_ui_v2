@@ -39,7 +39,7 @@
           <th *ngIf="isHidden('ShowState')" [width]="'130px'">Trạng thái</th>
           <th *ngIf="isHidden('UserName')" [width]="'150px'">Nhân viên</th>
           <th *ngIf="isHidden('DateCreated')" [align]="'center'" [width]="'150px'">Ngày cập nhật</th>
-          <th [tdsRight]="true" [width]="'220px'">Thao tác</th>
+          <th [tdsRight]="true" [width]="'130px'">Thao tác</th>
         </tr>
       </thead>
       <tbody>
@@ -55,7 +55,7 @@
             <td *ngIf="isHidden('IRAttachmentUrl')" [tdsLeft]="true">
               <div class="w-[154px] h-[104px] image-payment relative">
                 <img src="{{ data.IRAttachmentUrl }}" class="rounded-lg min-w-[154px] max-w-[154px] min-h-[104px] max-h-[104px] object-cover"/>
-                <div class="w-full h-full inset-0 absolute bg-white/[0.9] rounded-lg items-center justify-center flex hidden show-img-payment">
+                <div class="w-full h-full inset-0 absolute bg-white/[0.9] rounded-lg items-center justify-center hidden show-img-payment">
                   <div class="rounded px-2 py-1 text-caption-2 text-primary-1 font-semibold border border-primary-1 cursor-pointer" (click)="showModalDeposit(data)">
                     Xác nhận cọc
                   </div>
@@ -171,9 +171,9 @@
                     <i class="tdsi-messenger-fill"></i>
                   </span>
                 </button>
-                <button tds-button color="primary" size="sm" (click)="showModalPayment(data.Id, data.State)" class="hidden show-payment">
+                <button tds-button-icon color="primary" size="sm" (click)="showModalPayment(data.Id, data.State)" tds-tooltip tooltipTitle="Thanh toán">
                   <span class="flex items-center">
-                    <i class="tdsi-earning-fill text-lg leading-none mr-2"></i>Thanh toán
+                    <i class="tdsi-earning-fill text-lg leading-none"></i>
                   </span>
                 </button>
               </div>

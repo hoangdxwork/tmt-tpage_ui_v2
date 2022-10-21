@@ -205,36 +205,40 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           break;
         }
 
-        // TODO: trường hợp không có đơn hàng
-        let id = this.partner.Id;
-        if(!id || id == 0) {
-            this.notiOrderFromMessage(obs.type);
-            this.cdRef.detectChanges();
-            return;
-        }
-
-        if(this.conversationInfo && this.team) {
-          this.isLoading = true;
-          let model = {...this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem)};
-
-          this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: this.team.Id }).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-                this.isLoading = false;
-                this.notiOrderFromMessage(obs.type);
-                if(this.isEditPartner) {
-                  this.tempPartner = {...this.partner}
-                }
-                this.cdRef.detectChanges();
-            },
-            error: (error: any) => {
-                this.isLoading = false;
-                this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-                this.cdRef.detectChanges();
-            }
-          });
-        }
+        this.updatePartner(obs.type);
       }
     })
+  }
+
+  updatePartner(type: string) {
+    // TODO: trường hợp không có khách hàng
+    let id = this.partner.Id;
+    if(!id || id == 0) {
+        this.notiOrderFromMessage(type);
+        this.cdRef.detectChanges();
+        return;
+    }
+
+    if(this.conversationInfo && this.team) {
+      this.isLoading = true;
+      let model = {...this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem)};
+
+      this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: this.team.Id }).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.isLoading = false;
+            this.notiOrderFromMessage(type);
+            if(this.isEditPartner) {
+              this.tempPartner = {...this.partner}
+            }
+            this.cdRef.detectChanges();
+        },
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
+        }
+      });
+    }
   }
 
   loadPartnerStatus() {
@@ -505,15 +509,19 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         _districts: this._districts,
         _wards: this._wards,
         _street: this.partner.Street || '',
-        isSelectAddress: true
+        isSelectAddress: true,
+        isSelectAddressConversation: true
       }
     });
 
   modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-    next: (result: ResultCheckAddressDTO) => {
+    next: (result: TDSSafeAny) => {
       if(result){
-          this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result, this.partner)};
+          this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result.value, this.partner)};
           this.mappingAddress(this.partner);
+          if(result.type == 'confirm') {
+            this.updatePartner(result.type);
+          }
       }
       this.cdRef.detectChanges();
     }
@@ -548,6 +556,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       case 'note':
         this.message.info('Chọn làm ghi chú thành công');
       break;
+
+      //TODO: trường hợp chọn xác nhận ở chỉnh sửa địa chỉ khách hàng
+      case 'confirm':
+        this.message.success('Lưu địa chỉ khách hàng thành công');
+      break
     }
   }
 
