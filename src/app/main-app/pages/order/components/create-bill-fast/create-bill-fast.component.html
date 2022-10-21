@@ -20,17 +20,19 @@
   <div class="w-full mt-[30px] rounded-md max-h-[580px]">
     <div class="w-full h-full ">
       <tds-table class="tds-table-rounded" #productTable [loading]="isLoading" [bordered]="true" [listData]="lstData"
-        [showPagination]="false" [frontPagination]="false" [scroll]="{y:'500px'}">
+        [showPagination]="false" [frontPagination]="false" [scroll]="{ y:'500px' }">
         <thead class="rounded">
           <tr>
-            <th width="6%">STT</th>
-            <th width="24%">Khách hàng</th>
-            <th width="16%">Đối tác giao hàng</th>
-            <th width="12%">Tiền hàng</th>
-            <th width="12%">Phí ship</th>
+            <th width="4%">STT</th>
+            <th width="18%">Khách hàng</th>
+            <th width="10%">Đối tác giao hàng</th>
+            <th width="10%">Tiền hàng</th>
+            <th width="10%">COD</th>
+            <th width="10%">Tiền cọc</th>
+            <th width="10%">Phí ship</th>
             <th width="10%">KL ship (g)</th>
             <th width="10%">Thanh toán</th>
-            <th width="10%">Thao tác</th>
+            <th width="8%">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -79,6 +81,22 @@
                   </tds-input-number>
                 </tds-form-field>
               </td>
+              <!-- COD -->
+              <td class="align-top">
+                <tds-form-field>
+                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ data.CashOnDelivery | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                    [(ngModel)]="data.CashOnDelivery" [ngModelOptions]="{standalone: true}">
+                  </tds-input-number>
+                </tds-form-field>
+              </td>
+              <!-- Tiền cọc -->
+              <td class="align-top">
+                <tds-form-field>
+                  <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ data.AmountDeposit | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                    [(ngModel)]="data.AmountDeposit" [ngModelOptions]="{standalone: true}">
+                  </tds-input-number>
+                </tds-form-field>
+              </td>
               <!-- Phí ship -->
               <td class="align-top">
                 <tds-form-field>
@@ -118,7 +136,7 @@
               </td>
             </tr>
             <tr>
-              <td colspan="8">
+              <td colspan="10">
                 <tds-collapse [expandIconPosition]="'right'">
                   <tds-collapse-panel [header]="headerTpl" header="Danh sách sản phẩm" tdsClass="p-0"
                     [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-right-line'">
