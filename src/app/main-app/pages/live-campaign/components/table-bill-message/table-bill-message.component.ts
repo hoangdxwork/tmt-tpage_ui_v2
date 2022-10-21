@@ -1,3 +1,4 @@
+import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CRMMatchingService } from './../../../../services/crm-matching.service';
 import { Component, Input, OnInit } from '@angular/core';
@@ -45,7 +46,8 @@ export class TableBillMessageComponent implements OnInit {
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
-    private chatomniMessageFacade: ChatomniMessageFacade
+    private chatomniMessageFacade: ChatomniMessageFacade,
+    private chatomniConversationService: ChatomniConversationService
   ) { }
 
   ngOnInit(): void {
@@ -126,23 +128,25 @@ export class TableBillMessageComponent implements OnInit {
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
+            this.psid = psid;
+            this.isOpenDrawer = true;
         }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-      })
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   selectMappingTeam(item: any) {
