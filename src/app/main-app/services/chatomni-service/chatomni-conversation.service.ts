@@ -166,7 +166,7 @@ export class ChatomniConversationService extends BaseSevice {
 
     let id = `${teamId}_${csid}`;
     let api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/info?id=${id}`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/info/${id}`,
         method: CoreApiMethodType.get
     }
     return this.apiService.getData<any>(api, null);
