@@ -5,13 +5,14 @@
       <div class="w-full flex flex-col">
         <tds-form-field>
           <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="true"
-            [valuePrimitive]="false" [(ngModel)]="carrier" [data]="lstCarriers" [ngModelOptions]="{standalone: true}">
+            [valuePrimitive]="false" [(ngModel)]="carrier" [data]="lstCarriers" [ngModelOptions]="{standalone: true}"
+            (selectChange)="changeCarrierAll()">
           </tds-select>
           <span class="flex items-center text-info-500 text-xs pt-1 absolute">
             <i class="tdsi-warning-2-fill mr-1.5"></i>Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
         </tds-form-field>
       </div>
-      <button tds-button color="primary" (click)="changeCarrierAll()">Áp dụng tất cả</button>
+      <!-- <button tds-button color="primary" (click)="changeCarrierAll()">Áp dụng tất cả</button> -->
     </div>
   </div>
 

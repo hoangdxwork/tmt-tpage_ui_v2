@@ -299,12 +299,6 @@ export class CreateBillDefaultComponent implements OnInit {
         type: type
       }
     });
-
-    modal.afterClose.subscribe({
-      next:(res) => {
-        this.modalRef.destroy(null);
-      }
-    })
   }
 
   prepareModel() {
@@ -386,7 +380,7 @@ export class CreateBillDefaultComponent implements OnInit {
     }
 
     let model = this.prepareModel();
-    console.log(model)
+    
     if (!this.checkCarrier(model)) {
       return;
     }
@@ -406,8 +400,6 @@ export class CreateBillDefaultComponent implements OnInit {
             if(type) {
               this.printOrder(res, Number(model?.CarrierId), type);
             }
-
-            this.modalRef.destroy(null);
           } else {
             this.onModalError(res.DataErrorDefault || [], res.Errors, Number(model?.CarrierId), type);
           }
@@ -434,13 +426,11 @@ export class CreateBillDefaultComponent implements OnInit {
     if (obs) {
       obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-          this.onCancel();
 
       }, (error: TDSSafeAny) => {
           if(error?.error?.message) {
               this.notification.error( 'Lỗi in phiếu', error?.error?.message);
           }
-          this.onCancel();
       });
     }
   }
