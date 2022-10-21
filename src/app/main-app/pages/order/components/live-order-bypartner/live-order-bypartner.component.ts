@@ -79,8 +79,9 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
       let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
       this.odataGetOrderPartnerIdService.getOrdersByPartner(this.partnerId, params).pipe(takeUntil(this.destroy$)).subscribe(res => {
-        this.count = res["@odata.count"];
-        this.lstOrder = res.value;
+        this.count = res["@odata.count"] as number;
+        this.lstOrder = [...res.value];
+
         this.isLoading = false;
       }, err => {
         this.message.error(err?.error?.message || Message.CanNotLoadData);

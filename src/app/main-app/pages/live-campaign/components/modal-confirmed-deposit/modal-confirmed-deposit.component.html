@@ -26,7 +26,7 @@
 
         <div>Tiền thu hộ:</div>
         <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | numberCustom}}đ</div>
-        
+
       </div>
 
       <div class="w-full mt-3 flex items-end" *ngIf="!data.IsDeposited">
@@ -45,8 +45,8 @@
 
     </div>
     <div class="flex justify-center">
-      <div class="h-[350px] w-2/3 rounded-xl bg-neutral-3-50 border overflow-hidden">
-        <img tds-image class="object-cover" tdsSrc="{{data?.IRAttachmentUrl}}" alt="">
+      <div class="h-[350px] flex items-center w-2/3 rounded-xl bg-neutral-3-50 border overflow-hidden">
+        <img tds-image class="object-cover h-full w-full" tdsSrc="{{data?.IRAttachmentUrl}}" alt="">
       </div>
     </div>
   </div>
