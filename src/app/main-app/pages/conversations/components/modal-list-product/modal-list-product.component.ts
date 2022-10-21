@@ -147,6 +147,9 @@ export class ModalListProductComponent implements OnInit {
   }
 
   refreshData(){
+    this.lstOfData = [];
+    this.pageIndex = 1;
+    this.loadData();
   }
 
   cancel(){
