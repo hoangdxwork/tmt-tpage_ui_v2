@@ -811,7 +811,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
                 if (this.mappingTeams.length > 0) {
                     this.currentMappingTeam = this.mappingTeams[0];
-                    this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+                    this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
                 }
             }
           });

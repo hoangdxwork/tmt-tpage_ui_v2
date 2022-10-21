@@ -1,3 +1,4 @@
+import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
 import { TDSModalService } from 'tds-ui/modal';
@@ -90,7 +91,8 @@ export class DetailBillComponent implements OnInit {
     private printerService: PrinterService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
-    private notification: TDSNotificationService
+    private notification: TDSNotificationService,
+    private chatomniConversationService: ChatomniConversationService
   ) { }
 
   ngOnInit() {
@@ -274,23 +276,44 @@ export class DetailBillComponent implements OnInit {
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  // loadMDBByPSId(pageId: string, psid: string) {
+  //   // Xoá hội thoại hiện tại
+  //   (this.currentConversation as any) = null;
+
+  //   // get data currentConversation
+  //   this.crmMatchingService.getMDBByPSId(pageId, psid)
+  //     .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+  //       if (res) {
+  //         let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+  //         this.currentConversation = { ...model };
+
+  //         this.psid = res.psid;
+  //         this.isOpenDrawer = true;
+  //       }
+  //     }, error => {
+  //       this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+  //     })
+  // }
+
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
+            this.psid = psid;
+            this.isOpenDrawer = true;
         }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-      })
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   selectMappingTeam(item: any) {
