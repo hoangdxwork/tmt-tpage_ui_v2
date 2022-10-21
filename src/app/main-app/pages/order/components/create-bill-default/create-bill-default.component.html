@@ -21,13 +21,15 @@
       <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstLine" [showPagination]="false">
         <thead class="rounded">
           <tr>
-            <th width="5%">STT</th>
-            <th width="25%">Khách hàng</th>
-            <th width="17%">Đối tác giao hàng</th>
-            <th width="12%">Tiền hàng</th>
-            <th width="12%">Phí ship</th>
-            <th width="12%">KL ship (g)</th>
-            <th width="9%">Thanh toán</th>
+            <th width="4%">STT</th>
+            <th width="18%">Khách hàng</th>
+            <th width="10%">Đối tác giao hàng</th>
+            <th width="10%">Tiền hàng</th>
+            <th width="10%">COD</th>
+            <th width="10%">Tiền cọc</th>
+            <th width="10%">Phí ship</th>
+            <th width="10%">KL ship (g)</th>
+            <th width="10%">Thanh toán</th>
             <th width="8%">Thao tác</th>
           </tr>
         </thead>
@@ -70,6 +72,22 @@
                 <tds-form-field>
                   <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.TotalAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
                     [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}">
+                  </tds-input-number>
+                </tds-form-field>
+              </td>
+              <!-- COD -->
+              <td class="align-top">
+                <tds-form-field>
+                  <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.COD | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                    [(ngModel)]="data.COD" [ngModelOptions]="{standalone: true}">
+                  </tds-input-number>
+                </tds-form-field>
+              </td>
+              <!-- Tiền cọc -->
+              <td class="align-top">
+                <tds-form-field>
+                  <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.DepositAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                    [(ngModel)]="data.DepositAmount" [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
               </td>
