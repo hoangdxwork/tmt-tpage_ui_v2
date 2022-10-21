@@ -1,6 +1,6 @@
 <div *ngIf="form">
-  <form [formGroup]="form" autocomplete="off" >
-    <div class="flex flex-col bg-neutral-3-100 gap-y-1">
+  <form [formGroup]="form" autocomplete="off">
+    <div class="flex flex-col gap-y-1">
       <div class="bg-white p-4">
           <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-neutral-1-600 text-header-2 font-semibold">
             <span>Điều kiện áp dụng</span>
@@ -126,7 +126,7 @@
           </div>
       </div>
 
-      <div class="bg-white">
+      <div class="bg-white rounded-b-xl pb-2.5">
           <div class="h-full flex flex-col" *ngIf="form?.value?.RewardType === 'discount'">
               <div class="text-neutral-1-600 text-header-2 font-semibold p-4 flex justify-between">
                   <span>Chi tiết khuyến mãi combo</span>
@@ -137,96 +137,97 @@
                       </span>
                   </button>
               </div>
-              <tds-table #basicTable [showSizeChanger]="true" [frontPagination]="false" [listData]="detailsFormGroups.value">
-                  <thead>
-                      <tr>
-                          <th [width]="'4%'">STT</th>
-                          <th [width]="'25%'" *ngIf="discountApplyOnForm !== 'specific_product'">Sản phẩm mua</th>
-                          <th [width]="'20%'" *ngIf="discountApplyOnForm === 'specific_product'">Sản phẩm mua</th>
-                          <th>Số lượng</th>
-                          <th>% chiết khấu</th>
-                          <th>Tiền cố định</th>
-                          <th>Chiết khấu tối đa</th>
-                          <th [width]="'20%'" *ngIf="discountApplyOnForm === 'specific_product'">Trên sản phẩm</th>
-                          <th [width]="'160px'">Sản phẩm thưởng</th>
-                          <th [width]="'80px'">Hiệu lực</th>
-                          <th [width]="'80px'">Thao tác</th>
-                      </tr>
-                  </thead>
-                  <tbody formArrayName="Details">
-                      <tr *ngFor="let detail of detailsFormGroups.controls; let index=index" [formGroupName]="index">
-                          <!-- STT -->
-                          <td [width]="'48px'">{{ index + 1 }}</td>
-                          <!-- Sản phẩm mua -->
-                          <td [width]="'400px'">
-                              <tds-form-field >
-                                  <tds-select valueField="Id" textField="NameGet"
-                                      placeholder='Chọn sản phẩm' formControlName="RuleCombo" [valuePrimitive]="false"
-                                      disabledField="isActive" [data]="lstProduct" [allowClear]="true" mode="multiple">
-                                  </tds-select>
-                                  <tds-error>Vui lòng chọn sản phẩm</tds-error>
-                              </tds-form-field>
-                          </td>
-                          <!-- Số lượng -->
-                          <td>
-                              <div class="border border-neutral-2-200 rounded bg-white">
-                                  <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="RuleMinQuantity"
-                                    tdsInput type="number" [min]="0" />
-                              </div>
-                          </td>
-                          <!-- % chiết khấu -->
-                          <td>
-                              <div class="border border-neutral-2-200 rounded bg-white">
-                                  <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="DiscountPercentage"
-                                    tdsInput type="number" [min]="0" [step]="1000" [max]="100" />
-                              </div>
-                          </td>
-                          <!-- Tiền cố định -->
-                          <td>
-                              <div class="border border-neutral-2-200 rounded bg-white">
-                                  <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="RuleMinimumAmount"
-                                    tdsInput type="number" [min]="0" [step]="1000" />
-                              </div>
-                          </td>
-                          <!-- Chiết khấu tối đa -->
-                          <td>
-                              <div class="border border-neutral-2-200 rounded bg-white">
-                                  <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="DiscountMaxAmount"
-                                    tdsInput type="number" [step]="1000" [min]="0"/>
-                              </div>
-                          </td>
-                          <!-- Trên sản phẩm -->
-                          <td *ngIf="form?.value?.DiscountApplyOn === 'specific_product'">
+
+              <tds-table #basicTable [showSizeChanger]="true" class="h-[330px]" [scroll]="{y:'auto', x:'auto'}" [frontPagination]="false" [listData]="detailsFormGroups.value">
+                <thead>
+                    <tr>
+                        <th [width]="'4%'">STT</th>
+                        <th [width]="'25%'" *ngIf="discountApplyOnForm !== 'specific_product'">Sản phẩm mua</th>
+                        <th [width]="'20%'" *ngIf="discountApplyOnForm === 'specific_product'">Sản phẩm mua</th>
+                        <th>Số lượng</th>
+                        <th>% chiết khấu</th>
+                        <th>Tiền cố định</th>
+                        <th>Chiết khấu tối đa</th>
+                        <th [width]="'20%'" *ngIf="discountApplyOnForm === 'specific_product'">Trên sản phẩm</th>
+                        <th [width]="'160px'">Sản phẩm thưởng</th>
+                        <th [width]="'80px'">Hiệu lực</th>
+                        <th [width]="'80px'">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody formArrayName="Details">
+                    <tr *ngFor="let detail of detailsFormGroups.controls; let index=index" [formGroupName]="index">
+                        <!-- STT -->
+                        <td [width]="'48px'">{{ index + 1 }}</td>
+                        <!-- Sản phẩm mua -->
+                        <td [width]="'400px'">
                             <tds-form-field >
-                              <tds-select valueField="Id" textField="NameGet"
-                                  placeholder='Chọn sản phẩm' formControlName="RewardCombo" [valuePrimitive]="false"
-                                  disabledField="isActive" [data]="lstProduct" [allowClear]="true" mode="multiple">
-                              </tds-select>
-                              <tds-error>Vui lòng chọn sản phẩm</tds-error>
-                          </tds-form-field>
-                          </td>
-                          <!-- Sản phẩm thưởng -->
-                          <td [width]="'160px'" class="text-sm">
-                              <span>
-                                Giảm giá {{ detail?.value?.DiscountPercentage }} % trên tổng tiền
-                              </span>
-                              <span *ngIf="detail?.value?.DiscountMaxAmount > 0">
-                                , tối đa không quá {{ detail?.value?.DiscountMaxAmount | numberCustom }} đ
-                              </span>
-                          </td>
-                          <!-- Hiệu lực -->
-                          <td [width]="'80px'">
-                              <tds-switch formControlName="Active"></tds-switch>
-                          </td>
-                          <!-- Thao tác -->
-                          <td [width]="'80px'">
-                              <button tds-button-icon color="secondary" (click)="deleteDetailDiscount(index)">
-                                  <span class="flex items-center">
-                                    <i class="tdsi-trash-fill text-lg text-neutral-1-500 leading-none"></i>
-                                  </span>
-                              </button>
-                          </td>
-                  </tbody>
+                                <tds-select valueField="Id" textField="NameGet"
+                                    placeholder='Chọn sản phẩm' formControlName="RuleCombo" [valuePrimitive]="false"
+                                    disabledField="isActive" [data]="lstProduct" [allowClear]="true" mode="multiple">
+                                </tds-select>
+                                <tds-error>Vui lòng chọn sản phẩm</tds-error>
+                            </tds-form-field>
+                        </td>
+                        <!-- Số lượng -->
+                        <td>
+                            <div class="border border-neutral-2-200 rounded bg-white">
+                                <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="RuleMinQuantity"
+                                  tdsInput type="number" [min]="0" />
+                            </div>
+                        </td>
+                        <!-- % chiết khấu -->
+                        <td>
+                            <div class="border border-neutral-2-200 rounded bg-white">
+                                <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="DiscountPercentage"
+                                  tdsInput type="number" [min]="0" [step]="1000" [max]="100" />
+                            </div>
+                        </td>
+                        <!-- Tiền cố định -->
+                        <td>
+                            <div class="border border-neutral-2-200 rounded bg-white">
+                                <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="RuleMinimumAmount"
+                                  tdsInput type="number" [min]="0" [step]="1000" />
+                            </div>
+                        </td>
+                        <!-- Chiết khấu tối đa -->
+                        <td>
+                            <div class="border border-neutral-2-200 rounded bg-white">
+                                <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="DiscountMaxAmount"
+                                  tdsInput type="number" [step]="1000" [min]="0"/>
+                            </div>
+                        </td>
+                        <!-- Trên sản phẩm -->
+                        <td *ngIf="form?.value?.DiscountApplyOn === 'specific_product'">
+                          <tds-form-field >
+                            <tds-select valueField="Id" textField="NameGet"
+                                placeholder='Chọn sản phẩm' formControlName="RewardCombo" [valuePrimitive]="false"
+                                disabledField="isActive" [data]="lstProduct" [allowClear]="true" mode="multiple">
+                            </tds-select>
+                            <tds-error>Vui lòng chọn sản phẩm</tds-error>
+                        </tds-form-field>
+                        </td>
+                        <!-- Sản phẩm thưởng -->
+                        <td [width]="'160px'" class="text-sm">
+                            <span>
+                              Giảm giá {{ detail?.value?.DiscountPercentage }} % trên tổng tiền
+                            </span>
+                            <span *ngIf="detail?.value?.DiscountMaxAmount > 0">
+                              , tối đa không quá {{ detail?.value?.DiscountMaxAmount | numberCustom }} đ
+                            </span>
+                        </td>
+                        <!-- Hiệu lực -->
+                        <td [width]="'80px'">
+                            <tds-switch formControlName="Active"></tds-switch>
+                        </td>
+                        <!-- Thao tác -->
+                        <td [width]="'80px'">
+                            <button tds-button-icon color="secondary" (click)="deleteDetailDiscount(index)">
+                                <span class="flex items-center">
+                                  <i class="tdsi-trash-fill text-lg text-neutral-1-500 leading-none"></i>
+                                </span>
+                            </button>
+                        </td>
+                </tbody>
               </tds-table>
           </div>
           <div class="h-full flex flex-col" *ngIf="form?.value?.RewardType === 'product'">
@@ -240,7 +241,7 @@
                   </button>
               </div>
               <!-- Chỉnh sửa sau -->
-              <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [listData]="detailsFormGroups.value">
+              <tds-table #tableProduct [showSizeChanger]="true" class="h-[330px]" [scroll]="{y:'auto', x:'auto'}" [frontPagination]="false" [listData]="detailsFormGroups.value">
                   <thead>
                         <tr>
                             <th [width]="'48px'">STT</th>
