@@ -801,7 +801,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
                   let exist = obs.filter((r: any) => r.ChannelId == x.ChannelId)[0];
 
                   if (exist && !pageDic[exist.ChannelId]) {
-                    pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vào
+                    pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vàoss
                     this.mappingTeams.push({
                         psid: exist.UserId,
                         team: x
@@ -811,7 +811,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
                 if (this.mappingTeams.length > 0) {
                     this.currentMappingTeam = this.mappingTeams[0];
-                    this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+                    this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
                 }
             }
           });
