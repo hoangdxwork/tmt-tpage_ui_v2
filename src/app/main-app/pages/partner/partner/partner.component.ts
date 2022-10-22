@@ -533,13 +533,20 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openTransferPartner() {
-    this.modalService.create({
+    const modal = this.modalService.create({
       title: 'Chuyển đổi khách hàng',
       content: ModalConvertPartnerComponent,
       size: "md",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         lstOfData: this.lstOfData
+      }
+    });
+    modal.afterClose.subscribe({
+      next: result => {
+        if (TDSHelperObject.hasValue(result)) {
+          this.loadData(this.pageSize, this.pageIndex);
+        }
       }
     });
   }

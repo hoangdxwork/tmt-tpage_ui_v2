@@ -155,6 +155,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     if(conversationInfo.Bill && conversationInfo.Bill.LastBill) {
         this.lastBill = {...conversationInfo.Bill.LastBill}
+        console.log(this.lastBill);
+
     }
 
     if(conversationInfo.Bill && conversationInfo.Bill.Data) {
@@ -576,7 +578,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this._districts as any) = null;
     (this._wards as any) = null;
     (this._street as any) = null;
-    delete this.tempPartner; 
+    delete this.tempPartner;
   }
 
 }
