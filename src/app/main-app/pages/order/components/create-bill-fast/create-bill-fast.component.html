@@ -6,7 +6,7 @@
     <div class="w-2/5 flex flex-col">
       <tds-form-field>
         <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="true"
-          [valuePrimitive]="false" [(ngModel)]="carrierForAll" [ngModelOptions]="{standalone: true}" [data]="lstCarriers" (selectChange)="changeCarrierAll()">
+          [valuePrimitive]="false" [(ngModel)]="carrier" [ngModelOptions]="{standalone: true}" [data]="lstCarriers" (selectChange)="changeCarrierAll()">
         </tds-select>
         <span class="flex items-center text-info-500 text-xs pt-1 absolute">
           <i class="tdsi-warning-2-fill mr-1.5"></i>Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
@@ -26,8 +26,8 @@
             <th width="4%">STT</th>
             <th width="28%">Khách hàng</th>
             <th width="15%">Đối tác giao hàng</th>
-            <th width="35%" class="text-center">Thông tin ship</th>
-            <th width="10%">Thanh toán</th>
+            <th width="45%" class="text-center">Thông tin ship</th>
+            <!-- <th width="10%">Thanh toán</th> -->
             <th width="8%">Thao tác</th>
           </tr>
         </thead>
@@ -71,28 +71,7 @@
               </td>
               <!-- Thông tin ship -->
               <td class="align-top">
-                <div class="grid grid-cols-3 items-center gap-y-4 gap-x-6">
-                  <!-- Tiền hàng -->
-                  <tds-label>Tiền hàng</tds-label>
-                  <tds-form-field class="col-span-2 w-full">
-                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.AmountTotal | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                      [(ngModel)]="data.AmountTotal" [ngModelOptions]="{standalone: true}">
-                    </tds-input-number>
-                  </tds-form-field>
-                  <!-- COD -->
-                  <tds-label>Tiền thu hộ</tds-label>
-                  <tds-form-field class="col-span-2 w-full">
-                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.CashOnDelivery | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                      [(ngModel)]="data.CashOnDelivery" [ngModelOptions]="{standalone: true}">
-                    </tds-input-number>
-                  </tds-form-field>
-                  <!-- Tiền cọc -->
-                  <tds-label>Tiền cọc</tds-label>
-                  <tds-form-field class="col-span-2 w-full">
-                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.AmountDeposit | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                      [(ngModel)]="data.AmountDeposit" [ngModelOptions]="{standalone: true}">
-                    </tds-input-number>
-                  </tds-form-field>
+                <div class="grid grid-cols-3 items-center gap-y-2 gap-x-6">
                   <!-- Phí ship -->
                   <tds-label>Phí ship</tds-label>
                   <tds-form-field class="col-span-2 w-full">
@@ -107,12 +86,6 @@
                       [(ngModel)]="data.ShipWeight" [ngModelOptions]="{standalone: true}">
                     </tds-input-number>
                   </tds-form-field>
-                </div>
-              </td>
-              <!-- Thanh toán -->
-              <td class="text-center align-top">
-                <div class="h-[34px] w-full flex items-center justify-center">
-                  <tds-checkbox (change)="onCheckPayment(data)"></tds-checkbox>
                 </div>
               </td>
               <!-- Thao tác -->
@@ -179,7 +152,8 @@
                               <td>
                                 <tds-form-field>
                                   <tds-input-number [min]="0" [step]="1000" tds-tooltip tooltipTitle="{{ orderLines.PriceUnit | numberCustom }}"
-                                    (ngModelChange)="changePriceProduct($event, index, i)"  [(ngModel)]="orderLines.PriceUnit" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    (ngModelChange)="changePriceProduct($event, index, i)"  [(ngModel)]="orderLines.PriceUnit" 
+                                    [formatter]="numberWithCommas" [parser]="parserComas"
                                     [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                                 </tds-form-field>
@@ -191,8 +165,7 @@
                               <!-- Ghi chú -->
                               <td>
                                 <tds-form-field>
-                                  <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note"
-                                    [ngModelOptions]="{standalone: true}" />
+                                  <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note" [ngModelOptions]="{standalone: true}" />
                                 </tds-form-field>
                               </td>
                               <!-- Thao tác -->
