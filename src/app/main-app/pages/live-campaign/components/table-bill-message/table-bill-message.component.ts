@@ -83,6 +83,7 @@ export class TableBillMessageComponent implements OnInit {
 
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
+    this.isLoading = true;
 
     this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
 
@@ -121,9 +122,12 @@ export class TableBillMessageComponent implements OnInit {
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
             this.loadMDBByPSId(this.currentMappingTeam.team?.Id, this.currentMappingTeam.psid);
+          } else {
+            this.isLoading = false;
           }
         })
     }, error => {
+      this.isLoading = false;
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
@@ -141,9 +145,11 @@ export class TableBillMessageComponent implements OnInit {
 
             this.psid = psid;
             this.isOpenDrawer = true;
+            this.isLoading = false;
         }
       },
       error: (error: any) => {
+        this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })
