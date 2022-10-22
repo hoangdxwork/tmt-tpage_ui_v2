@@ -36,9 +36,10 @@ export class SortDataSourcePostPipe implements PipeTransform {
               dataChild = [...childitem];
           }
       })
+      dataChild.map(x=> { x.isNoPartnerId = true});
+
       model = [...model, ...dataChild];
     }
-
     return [...model];
   }
 
