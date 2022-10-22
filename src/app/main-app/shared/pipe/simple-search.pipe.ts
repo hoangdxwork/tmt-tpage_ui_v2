@@ -39,3 +39,20 @@ import * as lodash from 'lodash';
       return [...data];
   }
 }
+
+@Pipe({  name: 'simpleSearchLiveCampaignDetail' })
+  export class SimpleSearchLiveCampaignDetailPipe implements PipeTransform {
+
+  public transform(datas: any, term: string) {
+
+      if (!TDSHelperString.hasValueString(term)) return datas;
+
+      term = TDSHelperString.stripSpecialChars(term.toLocaleLowerCase()).trim();
+      let data = datas.filter((item: any) =>
+          TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase()).trim().indexOf(term) !== -1
+          || item.ProductCode?.indexOf(term) !== -1
+          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase()).trim().indexOf(term) !== -1);
+      
+      return [...data];
+  }
+}

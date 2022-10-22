@@ -58,10 +58,24 @@
           <div class="col-span-2 font-semibold">{{liveCampaigns.Note || '...'}}</div>
           <div>Nhân viên chốt đơn:</div>
           <div class="col-span-2 font-semibold flex gap-x-2" *ngIf="liveCampaigns?.Users">
-            <span *ngFor="let user of liveCampaigns.Users; let i = index">
+            <span *ngFor="let user of liveCampaigns.Users | slice: 0: 3; let i = index">
               {{user.Name}}
               <span *ngIf="liveCampaigns.Users.length > (i + 1)">,</span>
             </span>
+
+            <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="liveCampaigns.Users.length - 3 > 0" tds-popover
+                [popoverContent]="popoverContentTag" popoverPlacement="topRight">
+                +{{liveCampaigns.Users.length - 3}}
+            </div>
+
+            <ng-template #popoverContentTag>
+                <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
+                    <div *ngFor="let item of liveCampaigns.Users | slice:3:liveCampaigns.Users!.length; let i = index" class="relative group flex items-center font-semibold text-body-2 text-neutral-1-900 rounded truncate">
+                      {{item.Name }}
+                      <span *ngIf="liveCampaigns.Users.length > (i + 4)">,</span>
+                    </div>
+                </div>
+            </ng-template>
           </div>
         </div>
         <div class="grid grid-cols-3 gap-4">

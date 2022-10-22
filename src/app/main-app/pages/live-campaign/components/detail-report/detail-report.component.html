@@ -128,15 +128,32 @@
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Nhân viên chốt đơn</span>
-              <span class="font-semibold text-sm" *ngFor="let user of dataLiveCampaign?.Users; let i = index">
-                  {{ user.Name }}
-                  <span *ngIf="dataLiveCampaign?.Users && dataLiveCampaign.Users.length > (i + 1)">,</span>
-              </span>
+              <div *ngIf="dataLiveCampaign?.Users" class="text-body-2 font-semibold flex gap-x-2">
+                <span *ngFor="let user of dataLiveCampaign.Users | slice: 0: 3; let i = index" >
+                  {{user.Name}}
+                  <span *ngIf="dataLiveCampaign.Users.length > (i + 1)">,</span>
+                </span>
+    
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="dataLiveCampaign.Users.length - 3 > 0" tds-popover
+                    [popoverContent]="popoverContentTag" popoverPlacement="topRight">
+                    +{{dataLiveCampaign.Users.length - 3}}
+                </div>
+    
+                <ng-template #popoverContentTag>
+                    <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
+                        <div *ngFor="let item of dataLiveCampaign.Users | slice:3:dataLiveCampaign.Users!.length; let i = index" class="relative group flex items-center font-semibold text-body-2 text-neutral-1-900 rounded truncate">
+                          {{item.Name }}
+                          <span *ngIf="dataLiveCampaign.Users.length > (i + 4)">,</span>
+                        </div>
+                    </div>
+                </ng-template>
+              </div>
+              
             </div>
             <div class="flex gap-x-4 items-center">
               <span class="w-1/3 text-sm font-normal">Trạng thái xác nhận chốt đơn</span>
               <div class="flex items-center gap-x-2">
-                <tds-badge [status]="dataLiveCampaign?.ShowConfig | getColorShowConfig"></tds-badge>
+                <tds-badge [status]="dataLiveCampaign!.ShowConfig | getColorShowConfig"></tds-badge>
                 <span class="font-semibold text-sm">{{ dataLiveCampaign?.ShowConfig }}</span>
               </div>
             </div>

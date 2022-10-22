@@ -1,3 +1,4 @@
+import { LiveCampaignDTO } from './../../../../dto/live-campaign/odata-live-campaign.dto';
 import { ElementRef, AfterViewInit } from '@angular/core';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs/operators';
@@ -19,7 +20,7 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
 
   isLoading: boolean = false;
   data!: any;
-  dataLiveCampaign!: any;
+  dataLiveCampaign!: LiveCampaignDTO;
   height!: number;
   padding: number = 32;
   gridItems: number = 184;
