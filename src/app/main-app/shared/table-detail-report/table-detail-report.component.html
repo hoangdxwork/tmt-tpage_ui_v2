@@ -1,5 +1,5 @@
 <tds-spin [spinning]="isLoading">
-    <div class="flex flex-col w-full h-full" *ngIf="lstSearch">
+    <div class="flex flex-col w-full h-full" *ngIf="lstDetails">
         <div class="p-4">
           <tds-form-field class="w-full">
               <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
@@ -11,14 +11,14 @@
         <ul class="flex flex-col w-full h-full text-body-2 overflow-hidden">
             <li class="flex flex-row items-center bg-neutral-3-50 font-semibold">
                 <div class="w-1/12 flex flex-wrap items-center p-3">STT</div>
-                <div class="w-3/12 flex flex-wrap items-center p-3">Sản phẩm ({{lstSearch.length || 0}})</div>
+                <div class="w-3/12 flex flex-wrap items-center p-3">Sản phẩm ({{lstDetails.length || 0}})</div>
                 <div class="w-3/12 flex flex-wrap items-center p-3">Đơn hàng</div>
                 <div class="w-3/12 flex flex-wrap items-center p-3">Số lượng</div>
                 <div class="w-2/12 flex flex-wrap items-center p-3">Giá bán</div>
             </li>
-            <div class="overflow-auto tds-custom-scroll" *ngIf="lstSearch.length > 0; else emptyData"
+            <div class="overflow-auto tds-custom-scroll" *ngIf="lstDetails.length > 0; else emptyData"
                 [ngStyle]="{'min-height.px': tableHeight, 'max-height.px': tableHeight}">
-                <li *ngFor="let data of lstSearch; let i = index" class="flex flex-row items-stretch border-b border-neutral-2-50 cursor-pointer hover:bg-neutral-3-50">
+                <li *ngFor="let data of lstDetails | simpleSearchLiveCampaignDetail: innerText; let i = index" class="flex flex-row items-stretch border-b border-neutral-2-50 cursor-pointer hover:bg-neutral-3-50">
                     <div class="w-1/12 flex flex-row items-center p-3">{{ i + 1 }}</div>
                     <div class="w-3/12 flex flex-row items-center p-3">
                         <div class="flex flex-row items-center gap-x-3">

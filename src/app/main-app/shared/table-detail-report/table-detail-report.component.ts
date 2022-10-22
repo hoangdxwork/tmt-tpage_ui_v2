@@ -26,7 +26,7 @@ export class TableDetailReportComponent implements OnInit {
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
-    lstSearch!: ReportLiveCampaignDetailDTO[];
+    innerText: string = '';
 
     numberWithCommas =(value:TDSSafeAny) =>{
       if(value != null){
@@ -50,9 +50,6 @@ export class TableDetailReportComponent implements OnInit {
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
-        if(this.lstDetails){
-            this.lstSearch = [...this.lstDetails];
-        }
         this.cdr.detectChanges();
     }
 
@@ -136,10 +133,6 @@ export class TableDetailReportComponent implements OnInit {
     }
 
     onSearch(event: TDSSafeAny) {
-      let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
-      this.lstSearch = this.lstDetails.filter((item) =>
-          TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase()).trim().indexOf(text) !== -1
-          || item.ProductCode?.indexOf(text) !== -1
-          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase()).trim().indexOf(text) !== -1);
+        this.innerText = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
     }
 }
