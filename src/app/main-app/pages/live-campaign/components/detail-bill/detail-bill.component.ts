@@ -242,8 +242,8 @@ export class DetailBillComponent implements OnInit {
         return this.message.error('Không có kênh kết nối với khách hàng này.');
       }
 
-      this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
+      this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (teams: any): any => {
 
           if (teams.length == 0) {
             return this.message.error('Không có kênh kết nối với khách hàng này.');
@@ -268,9 +268,10 @@ export class DetailBillComponent implements OnInit {
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+            this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
           }
-        });
+        }
+      });
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
