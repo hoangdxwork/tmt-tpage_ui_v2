@@ -234,7 +234,7 @@
                   </tr>
                 </thead>
                 <tbody formArrayName="Details">
-                  <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="index" 
+                  <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="index"
                     [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id])}">
 
                     <td class="text-center"> {{ index + 1 }} </td>
@@ -243,7 +243,7 @@
                     <td>
                       <div class="flex gap-x-2 items-center">
                         <div class="w-1/5">
-                            <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="bg-white h-[60px] w-[60px]" [tdsSrc]="detail?.value.ImageUrl">
+                            <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="bg-white" [tdsSrc]="detail?.value.ImageUrl">
                             </tds-avatar>
                         </div>
 

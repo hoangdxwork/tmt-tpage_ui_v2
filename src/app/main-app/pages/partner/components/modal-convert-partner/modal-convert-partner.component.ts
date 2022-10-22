@@ -56,6 +56,7 @@ export class ModalConvertPartnerComponent implements OnInit {
                 cancelText: "Đóng",
                 confirmViewType:"compact"
             });
+            this.modal.destroy(res);
         }
 
         this.modal.destroy(null);

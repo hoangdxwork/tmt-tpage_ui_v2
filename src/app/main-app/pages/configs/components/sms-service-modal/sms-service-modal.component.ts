@@ -5,7 +5,7 @@ import { RestSMSService } from '../../../../services/sms.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ListSMSDTO, RestSMSDTO } from 'src/app/main-app/dto/sms/sms.dto';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 
@@ -59,7 +59,12 @@ export class SMSServiceModalComponent implements OnInit {
 
     loadData() {
         this.restSMSService.getListSMS().pipe(takeUntil(this.destroy$)).subscribe((res: ListSMSDTO[]) => {
-            this.items = res;
+            this.items = [...res];
+            res.forEach(item => {
+              item.name = this.parserName(item.name);
+            });
+            console.log(this.items);
+
             if (this.dataId) {
                 this.isLoading = true;
                 this.restSMSService.getById(this.dataId).pipe(takeUntil(this.destroy$)).subscribe((res: RestSMSDTO) => {
@@ -87,6 +92,14 @@ export class SMSServiceModalComponent implements OnInit {
         })
 
     }
+
+    parserName = (value: TDSSafeAny) => {
+      if(value != null)
+      {
+        return TDSHelperString.replaceAll(value,"Dịch vụ","");
+      }
+      return value;
+    };
 
     valueChange(ev: TDSSafeAny) {
         this.resetForm();
