@@ -32,7 +32,6 @@ export class CreateBillErrorComponent implements OnInit {
   isLoading = false;
   isPrint = false;
   isPrintShip = false;
-  isOpenCheckBox = true;
 
   constructor(private notification: TDSNotificationService,
     private modalRef: TDSModalRef,
@@ -47,10 +46,6 @@ export class CreateBillErrorComponent implements OnInit {
     this.lstDataErrorDefault.forEach((err) => {
       this.lstErrorSelected.push({ isSelected: false, error: err });
     });
-
-    if(this.lstErrorSelected.length == 0){
-      this.isOpenCheckBox = false;
-    }
 
     this.lstErrors.map(item => {
       item?.replace('text-info font-bold','text-info-500 font-semibold');
@@ -72,16 +67,15 @@ export class CreateBillErrorComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  changeAll(checked: TDSSafeAny) {
+  changeAll(value: TDSSafeAny) {
     this.lstErrorSelected.map((item) => {
-      item.isSelected = checked;
+      item.isSelected = value;
     });
 
     this.checkAllStatus();
   }
 
-  change(checked: TDSSafeAny, i: number) {
-    this.lstErrorSelected[i].isSelected = checked;
+  onChangeCheckBox() {
     this.checkAllStatus();
   }
 
@@ -197,17 +191,11 @@ export class CreateBillErrorComponent implements OnInit {
             this.printOrder(res.Ids);
           }
 
-          if(this.lstErrorSelected.length == 0){
-            this.isOpenCheckBox = false;
-          }
-
           this.cdr.detectChanges();
         },
         error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || Message.InsertFail);
-
-          // this.onCancel(err);
           this.cdr.detectChanges();
         }
       });
@@ -256,10 +244,6 @@ export class CreateBillErrorComponent implements OnInit {
             }
           }
 
-          if(this.lstErrorSelected.length == 0){
-            this.isOpenCheckBox = false;
-          }
-
           if (this.isPrint || this.isPrintShip) {
             this.printOrder(res.Ids);
           }
@@ -269,8 +253,6 @@ export class CreateBillErrorComponent implements OnInit {
         error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || Message.InsertFail);
-          
-          // this.onCancel(err);
           this.cdr.detectChanges();
         }
       });
