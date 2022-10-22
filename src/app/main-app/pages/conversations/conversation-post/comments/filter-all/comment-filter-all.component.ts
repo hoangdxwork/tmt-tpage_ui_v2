@@ -672,6 +672,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
+        this.isLoading = true;
         this.loadMDBByPSId(this.team.Id, data.UserId);
     }
   }
@@ -688,10 +689,12 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
             this.currentConversation = { ...res };
 
             this.isOpenDrawer = true;
+            this.isLoading = false;
             this.cdRef.detectChanges();
         }
       },
       error: (error: any) => {
+          this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })

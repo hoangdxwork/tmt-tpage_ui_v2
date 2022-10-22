@@ -764,6 +764,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
     this.isOpenChat = true;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -812,12 +813,15 @@ export class OrderComponent implements OnInit, AfterViewInit {
                 if (this.mappingTeams.length > 0) {
                     this.currentMappingTeam = this.mappingTeams[0];
                     this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+                } else {
+                  this.isLoading = false;
                 }
             }
           });
       },
       error: (error: any) => {
         this.isOpenChat = false;
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
       }
     })
@@ -836,9 +840,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
             this.psid = psid;
             this.isOpenDrawer = true;
+            this.isLoading = false;
         }
       },
       error: (error: any) => {
+          this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })

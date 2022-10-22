@@ -593,6 +593,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openMiniChat(data: PartnerDTO) {
     let partnerId = data.Id;
+    this.isLoading = true;
     this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any): any => {
 
@@ -629,11 +630,14 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
             if (this.mappingTeams.length > 0) {
               this.currentMappingTeam = this.mappingTeams[0];
               this.loadMDBByPSId(this.currentMappingTeam.team?.Id, this.currentMappingTeam.psid);
+            } else {
+              this.isLoading = false;
             }
           }
         });
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
@@ -652,9 +656,11 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.psid = res.psid;
           this.isOpenDrawer = true;
+          this.isLoading = false;
         }
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       }
     })

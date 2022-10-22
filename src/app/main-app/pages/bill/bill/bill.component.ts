@@ -569,6 +569,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -616,11 +617,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (this.mappingTeams.length > 0) {
                     this.currentMappingTeam = this.mappingTeams[0];
                     this.loadMDBByPSId(this.currentMappingTeam.team?.Id, this.currentMappingTeam.psid);
+                } else {
+                  this.isLoading = false;
                 }
             }
           })
       },
       error: (error: any) => {
+          this.isLoading = false;
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
@@ -637,11 +641,13 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
             // let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
             this.currentConversation = { ...res };
 
+            this.isLoading = false;
             this.psid = psid;
             this.isOpenDrawer = true;
           }
       },
       error: (error: any) => {
+          this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       }
     })

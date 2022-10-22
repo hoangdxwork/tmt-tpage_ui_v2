@@ -93,9 +93,9 @@
             </div>
         </div>
         <div class="post-picture" *ngIf="data?.Thumbnail && !checkPostPictureError(item)">
-            <img (error)="errorPostPicture(item)"
-                [src]="data.Thumbnail"
-                alt="{{data.Title}}" class="rounded-xl"/>
+            <!-- <img (error)="errorPostPicture(item)"
+                [src]="data.Thumbnail?.Url"
+                alt="{{data.Title}}" class="rounded-xl"/> -->
         </div>
     </div>
 </div>
