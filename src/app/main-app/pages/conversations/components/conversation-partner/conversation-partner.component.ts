@@ -155,8 +155,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     if(conversationInfo.Bill && conversationInfo.Bill.LastBill) {
         this.lastBill = {...conversationInfo.Bill.LastBill}
-        console.log(this.lastBill);
-
     }
 
     if(conversationInfo.Bill && conversationInfo.Bill.Data) {
