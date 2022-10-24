@@ -136,7 +136,7 @@
         <tbody>
             <ng-template ngFor let-data let-i="index" [ngForOf]="detailTable.data">
                 <tr>
-                    <td>{{ i + 1 }}</td>
+                    <td>{{ i | numericalOrder: pageSize : pageIndex }}</td>
                     <td>
                         <div class="flex flex-row gap-x-3">
                             <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>

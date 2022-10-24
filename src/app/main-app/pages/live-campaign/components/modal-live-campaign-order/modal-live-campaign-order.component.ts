@@ -35,9 +35,6 @@ export class ModalLiveCampaignOrderComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if(this.livecampaignDetailId) {
-      this.loadData(this.pageSize, this.pageIndex);
-    }
   }
 
   loadData(pageSize: number, pageIndex: number, text?: string){

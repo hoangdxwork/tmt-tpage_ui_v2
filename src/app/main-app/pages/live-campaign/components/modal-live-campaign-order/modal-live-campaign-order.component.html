@@ -37,7 +37,7 @@
         </td>
 
         <!-- Số lượng sản phẩm -->
-        <td>
+        <td class="text-center">
           {{data.Quantity}}
         </td>
 
@@ -48,8 +48,8 @@
 
         <!-- Trạng thái -->
         <td>
-          <tds-tag type="outline" [status]="data.State | getColorStatusState">
-            {{data.State | getShowState}}
+          <tds-tag type="outline" [status]="data.StatusText | getColorStatusText">
+            {{data.StatusText}}
           </tds-tag>
         </td>
 
