@@ -363,11 +363,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // TODO Cập nhật đã gán nhân viên
     this.chatomniEventEmiterService.assignedToUser$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (id: string) => {
-        if(id) {
-          let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
+      next: (data: ChatomniConversationItemDto) => {
+        if(data && data.ConversationId) {
+          let index = this.lstConversation.findIndex(x => x.ConversationId == data.ConversationId) as number;
           if(Number(index) >= 0) {
-              this.lstConversation[index].AssignedTo = true;
+              this.lstConversation[index].AssignedTo = data.AssignedTo;
               this.lstConversation[index] = {...this.lstConversation[index]};
               this.lstConversation = [...this.lstConversation];
 
