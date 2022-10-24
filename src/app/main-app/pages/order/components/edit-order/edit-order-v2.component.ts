@@ -550,10 +550,12 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onChangeQuantity(value: number, index: number) {
-    if(value >= 0) {
+    if(value >= 1) {
       this.quickOrderModel.Details[index].Quantity = value;
       this.calcTotal();
       this.coDAmount();
+    } else {
+      this.message.error('Vui lòng nhập số lượng sản phẩm');
     }
   }
 
@@ -605,7 +607,7 @@ export class EditOrderV2Component implements OnInit {
     let model = this.quickOrderModel;
     model.Details?.map(x => {
       if(x.Quantity == null) {
-          x.Quantity = 0;
+          x.Quantity = 1;
       }
     })
 

@@ -334,16 +334,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       }
     })
 
-    //TODO: Cập nhật địa chỉ từ tds-conversation-item-v2 khi lưu chọn địa chỉ
-    this.omniEventEmiter.selectAddressEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ResultCheckAddressDTO)=>{
-          let data = this.csOrder_SuggestionHandler.onLoadSuggestion(res, this.quickOrderModel);
-          this.quickOrderModel = data;
-          this.mappingAddress(this.quickOrderModel);
-          this.cdRef.detectChanges();
-      }
-    })
-
     // TODO: Thông tin đơn hàng sau khi click thông tin khách hàng ở comment bài viết
     this.conversationOrderFacade.loadOrderByPartnerComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
@@ -376,7 +366,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             break;
 
             case 'address':
-                this.quickOrderModel.Address = obs.value;
+                if(obs.value && TDSHelperObject.hasValue(obs.value)) {
+                  let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(obs.value, this.quickOrderModel)};
+                  this.quickOrderModel = data;
+                  this.mappingAddress(this.quickOrderModel);
+                  this.cdRef.detectChanges();
+                }
             break;
 
             case 'note':
@@ -385,42 +380,62 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             break;
           }
 
-          // TODO: trường hợp không có đơn hàng
-          let id = this.quickOrderModel.Id as string;
-          if(!id) {
-              this.cdRef.detectChanges();
-              return;
+          this.updateOrder(obs.type);
+      }
+    })
+  }
+
+  updateOrder(type: string) {
+    // TODO: trường hợp không có đơn hàng
+    let id = this.quickOrderModel.Id as string;
+    if(!id) {
+        this.cdRef.detectChanges();
+        return;
+    }
+
+    this.isLoading = true;
+    this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          let model = {...res} as QuickSaleOnlineOrderModel;
+
+          switch (type) {
+            case 'phone':
+                model.Telephone = this.quickOrderModel.Telephone;
+            break;
+            case 'address':
+                model.Address = this.quickOrderModel.Address;
+                model.CityCode = this.quickOrderModel.CityCode;
+                model.CityName = this.quickOrderModel.CityName;
+                model.DistrictCode = this.quickOrderModel.DistrictCode;
+                model.DistrictName = this.quickOrderModel.DistrictName;
+                model.WardCode = this.quickOrderModel.WardCode;
+                model.WardName = this.quickOrderModel.WardName;
+            break;
+            case 'note':
+                model.Note = this.quickOrderModel.Note;
+            break;
+            case 'confirm':
+              model.Address = this.quickOrderModel.Address;
+              model.CityCode = this.quickOrderModel.CityCode;
+              model.CityName = this.quickOrderModel.CityName;
+              model.DistrictCode = this.quickOrderModel.DistrictCode;
+              model.DistrictName = this.quickOrderModel.DistrictName;
+              model.WardCode = this.quickOrderModel.WardCode;
+              model.WardName = this.quickOrderModel.WardName;
+            break;
           }
 
-          this.isLoading = true;
-          this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-                delete res['@odata.context'];
-                let model = {...res} as QuickSaleOnlineOrderModel;
+          // this.updateOrder(res.Id, model);
+          this.saleOnline_OrderService.update(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (order: any) => {
+                this.isLoading = false;
 
-                switch (obs.type) {
-                  case 'phone':
-                      model.Telephone = this.quickOrderModel.Telephone;
-                  break;
-                  case 'address':
-                      model.Address = this.quickOrderModel.Address;
-                  break;
-                  case 'note':
-                      model.Note = this.quickOrderModel.Note;
-                  break;
-                }
-
-                this.saleOnline_OrderService.update(res.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
-                    next: (order: any) => {
-                        this.isLoading = false;
-                        this.cdRef.detectChanges();
-                    },
-                    error: error => {
-                        this.isLoading = false;
-                        this.message.error(error?.error?.message);
-                        this.cdRef.detectChanges();
-                    }
-                })
+                  //TODO: thông báo khi lưu xác nhận ở sửa địa chỉ đơn hàng
+                  if(type == 'confirm') {
+                    this.message.success('Lưu địa chỉ đơn hàng thành công');
+                  }
+                  this.cdRef.detectChanges();
             },
             error: error => {
                 this.isLoading = false;
@@ -428,6 +443,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 this.cdRef.detectChanges();
             }
           })
+      },
+      error: error => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -1608,16 +1628,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           _districts: this._districts,
           _wards: this._wards,
           _street: this.quickOrderModel.Address,
-          isSelectAddress: true
+          isSelectAddress: true,
+          isSelectAddressConversation: true
         }
       });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (result: ResultCheckAddressDTO) => {
+      next: (result: TDSSafeAny) => {
         if(result){
-            let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(result, this.quickOrderModel)};
+            let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(result.value, this.quickOrderModel)};
             this.quickOrderModel = {...data};
             this.mappingAddress(this.quickOrderModel);
+
+            if(result.type == 'confirm') {
+              this.updateOrder(result.type);
+            }
         }
         this.cdRef.detectChanges();
       }

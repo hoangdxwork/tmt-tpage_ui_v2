@@ -346,7 +346,9 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
             this.modal.afterAllClose.subscribe({
               next:(x: any) =>{
-                this.loadData(this.pageSize,this.pageIndex);
+                if(x) {
+                  this.loadData(this.pageSize,this.pageIndex);
+                }
               }
             });
           }
@@ -375,8 +377,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
       });
 
       this.modal.afterAllClose.subscribe({
-        next: () => {
+        next: (res: any) => {
+          if(res) {
             this.loadData(this.pageSize, this.pageIndex);
+          }
         }
       })
     }
@@ -391,7 +395,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           delete res['@odata.context'];
-          res = res as SaleOnlineOrderGetDetailsDto;
+          res = { ...res } as SaleOnlineOrderGetDetailsDto;
 
           const keyCreateBill = this.saleOnline_OrderService._keyCreateBillOrder;
           let item = JSON.stringify(res);

@@ -42,7 +42,7 @@ export class ConfigPromotionComboComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {

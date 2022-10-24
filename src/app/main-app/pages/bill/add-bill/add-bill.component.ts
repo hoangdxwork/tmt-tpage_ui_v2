@@ -324,10 +324,14 @@ export class AddBillComponent implements OnInit {
   loadDefault() {
     let model = { Type: 'invoice', SaleOrderIds:[] };
     this.isLoading = true;
+    let count = 0;
 
     this.fastSaleOrderService.setDefaultV2({ model: model });
     this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
       next:(data: any) => {
+          if(count > 0) return;
+          count +=1;
+
           delete data['@odata.context'];
           data.DateInvoice = new Date();
 
@@ -1125,7 +1129,6 @@ export class AddBillComponent implements OnInit {
   }
 
   prepareModel(): any {
-    // console.log(this.dataModel)
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại

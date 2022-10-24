@@ -61,7 +61,7 @@
         </tr>
 
         <tr [expand]="expandSet.has(order.OrderId)" class="text-neutral-1-900 text-body-2">
-           <div class="p-3 block w-full">
+           <!-- <div class="w-full"> -->
             <tds-table #basicTable [listData]="order.Details" [showPagination]="false" [scroll]="{ y:'200px' }">
               <thead>
                 <tr>
@@ -86,7 +86,7 @@
                 </ng-template>
               </tbody>
             </tds-table>
-           </div>
+           <!-- </div> -->
           <!-- </div> -->
         </tr>
       </ng-template>

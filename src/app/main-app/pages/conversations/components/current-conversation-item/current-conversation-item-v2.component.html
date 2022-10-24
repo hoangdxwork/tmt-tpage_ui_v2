@@ -119,7 +119,8 @@
                     </div>
                 </ng-template>
                 <div class="draft-message text-danger font-z10 tmr-t13" *ngIf="isDraftMessage">Chưa gửi</div>
-                <!-- <div *ngIf="item.HasOrder" class="tdsi-cart-fill text-body-2 leading-none text-white bg-base-blue-500 p-0.5 rounded-md"></div> -->
+                <div *ngIf="item.AssignedTo && item.AssignedTo?.Name" tds-tooltip tooltipTitle="Nhân viên được gán {{item.AssignedTo?.Name}}"
+                  class="tdsi-user-fill text-body-2 leading-none text-white bg-info-500 rounded-md" style="padding: 2px 3px 2px 2px"></div>
                 <div *ngIf="item.HasPhone" class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></div>
                 <div *ngIf="item.HasAddress" class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md"></div>
             </div>

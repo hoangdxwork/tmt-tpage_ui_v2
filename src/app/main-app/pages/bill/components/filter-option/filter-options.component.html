@@ -20,8 +20,9 @@
           <div class="w-full flex flex-wrap items-center gap-x-2 gap-y-2">
             <div *ngFor="let item of status">
               <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectState(item)">
-                {{item.Name}} ({{item.Total}})
+                {{item.Name}}
               </tds-tag>
+              <!-- listStatus -->
             </div>
           </div>
       </div>

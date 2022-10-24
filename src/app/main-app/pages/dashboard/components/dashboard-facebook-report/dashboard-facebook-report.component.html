@@ -1,6 +1,6 @@
 <div class="bg-white flex flex-col rounded-xl px-4 text-body-2 text-neutral-1-900">
     <div class="flex flex-row items-center justify-between py-4">
-        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê trang Facebook</span>
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê tương tác</span>
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
             <tds-select valueField="name" textField="name" [(ngModel)]="currentDateRanges" [border]="false"
@@ -79,7 +79,7 @@
                     </div>
                 </div> -->
             </div>
-            <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>  
+            <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>
         </tds-spin>
     </div>
 </div>

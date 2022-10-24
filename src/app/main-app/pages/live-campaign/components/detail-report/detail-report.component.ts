@@ -1,3 +1,5 @@
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { LiveCampaignDTO } from './../../../../dto/live-campaign/odata-live-campaign.dto';
 import { ElementRef, AfterViewInit } from '@angular/core';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs/operators';
@@ -5,6 +7,7 @@ import { LiveCampaignService } from './../../../../services/live-campaign.servic
 import { Component, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { OverviewReportDTO } from '@app/dto/live-campaign/report-livecampain-overview.dto';
 
 @Component({
   selector: 'detail-report',
@@ -18,8 +21,8 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
   @Input() liveCampaignId!: string;
 
   isLoading: boolean = false;
-  data!: any;
-  dataLiveCampaign!: any;
+  dataLiveCampaign!: LiveCampaignDTO;
+  dataOverviewReport!: OverviewReportDTO;
   height!: number;
   padding: number = 32;
   gridItems: number = 184;
@@ -31,7 +34,7 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.loadReportLiveCampaign(this.liveCampaignId);
+    this.loadOverviewReport(this.liveCampaignId);
     this.loadLiveCampaign(this.liveCampaignId);
   }
 
@@ -41,21 +44,6 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
         this.height = this.viewCollapse.nativeElement.offsetHeight - this.padding - this.gridItems - 170;
         this.cdr.detectChanges();
       });
-  }
-
-  loadReportLiveCampaign(id: string) {
-    this.isLoading = true;
-    this.liveCampaignService.getReport(id).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res) => {
-          this.data = {...res};
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        },
-        error:(err) => {
-          this.isLoading = false;
-          this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');
-        }
-      })
   }
 
   loadLiveCampaign(id: string) {
@@ -73,4 +61,20 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
         }
       });
   }
+
+  loadOverviewReport (id: string) {
+    this.isLoading = true;
+    this.liveCampaignService.overviewReport(id).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res) => {
+          this.dataOverviewReport = res;
+
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error:(err) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');
+        }
+      });
+  } 
 }

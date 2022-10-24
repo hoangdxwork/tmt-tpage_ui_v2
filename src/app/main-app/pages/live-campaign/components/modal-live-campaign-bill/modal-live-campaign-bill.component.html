@@ -1,5 +1,13 @@
 <div class="w-full text-body-2 text-neutral-1-900 h-[473px]">
-  <tds-table #tableMessage [listData]="data" [scroll]="{y:'auto'}">
+  <tds-table #tableMessage 
+    [listData]="lstOfData" 
+    [scroll]="{y:'auto'}"
+    [loading]="isLoading"
+    [showSizeChanger]="true"
+    [frontPagination]="true"
+    [(pageSize)]="pageSize"
+    [(pageIndex)]="pageIndex"
+    (queryParams)="onQueryParamsChange($event)"  (clickRefresh)="onRefresh()">
     <thead>
       <tr>
         <th [width]="'5%'">STT</th>
@@ -25,11 +33,11 @@
 
         <!-- Mã đơn hàng -->
         <td>
-          Chưa có
+          {{data.Number || '---'}}
         </td>
 
         <!-- Số lượng sản phẩm -->
-        <td>
+        <td  class="text-center">
           {{data.ProductUOMQty}}
         </td>
 

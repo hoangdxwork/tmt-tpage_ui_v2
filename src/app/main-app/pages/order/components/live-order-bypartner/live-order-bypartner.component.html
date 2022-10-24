@@ -12,15 +12,17 @@
     <div class="2xl:max-h-[400px] 2xl:h-[400px] xl:max-h-[300px] xl:h-[300px]">
         <tds-table class="w-full h-full tds-table-rounded" [scroll]="{ y:'auto' }" #productTable [bordered]="true"
             [listData]="lstOrder"
-            [pageIndex]="pageIndex"
-            [pageSize]="pageSize"
+            [showSizeChanger]="true"
+            [frontPagination]="false"
+            [(pageIndex)]="pageIndex"
+            [(pageSize)]="pageSize"
             [total]="count"
             [loading]="isLoading"
             (queryParams)="onQueryParamsChange($event)">
             <thead class="rounded">
                 <tr>
                     <th [width]="'50px'" class="text-center">STT</th>
-                    <th [width]="'150px'">Sản phẩm</th>
+                    <th [width]="'150px'">Mã đơn hàng</th>
                     <th [width]="'150px'">Kênh kết nối</th>
                     <th [width]="'150px'">Tổng tiền</th>
                     <th [width]="'100px'">Tổng SL</th>
@@ -90,8 +92,8 @@
                                 <span class="ml-1">{{data.CRMTeamName}}</span>
                             </div>
                         </td>
-                        <td>{{data.TotalAmount || 0 | numberCustom  }}</td>
-                        <td>{{data.TotalQuantity || 0 | numberCustom  }}</td>
+                        <td>{{ data.TotalAmount || 0 | numberCustom  }}</td>
+                        <td>{{ data.TotalQuantity || 0 | numberCustom  }}</td>
                         <td>{{ data.DateCreated | date: 'dd/MM/yyyy' }}</td>
                         <td>
                           <!-- data.StatusText | getColorStatusText -->

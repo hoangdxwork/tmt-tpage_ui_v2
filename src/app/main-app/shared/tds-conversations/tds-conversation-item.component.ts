@@ -19,7 +19,7 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
@@ -99,7 +99,7 @@ export class TDSConversationItemComponent implements OnInit  {
     }
   }
 
-  selectOrder(type: string, index?: number): any {
+  selectOrder(type: string, index?: number, nlpEntities?: NlpEntityDto[]): any {
     let model = { type: '', value: '' } as any;
     let value = this.getTextOfContentMessage();
 
@@ -115,9 +115,9 @@ export class TDSConversationItemComponent implements OnInit  {
               break;
 
             case "address":
-              model.value = value;
               model.type = 'address';
-              break;
+              this.showModalSuggestAddress(model, index, nlpEntities);
+              return;
 
             case "note":
                 if (Number(index) >=0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].nativeElement && this.contentMessageChild._results[Number(index)].nativeElement.outerText){
@@ -584,7 +584,7 @@ export class TDSConversationItemComponent implements OnInit  {
     return model;
   }
 
-  showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){
+  showModalSuggestAddress(model: TDSSafeAny, index?: number, nlpEntities?: NlpEntityDto[]){
     let value: string = '';
     if (Number(index) >= 0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].text) {
       value = this.contentMessageChild._results[ Number(index)].text;
@@ -607,8 +607,9 @@ export class TDSConversationItemComponent implements OnInit  {
                 size: "lg",
                 viewContainerRef: this.viewContainerRef,
                 componentParams: {
-                  isSelectAddress: true,
-                  _street: value,
+                  isEntities: true,
+                  innerText: value,
+                  _street: data.FullAddress,
                   _cities: _cities,
                   _districts: _districts,
                   _wards: _wards,
@@ -618,7 +619,9 @@ export class TDSConversationItemComponent implements OnInit  {
             modal.afterClose.subscribe({
               next: (result: ResultCheckAddressDTO) => {
                 if(result){
-                    this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+                    model.value = {...result};
+                    //TODO: load sang tab conversation-order paste lại dữ liệu
+                    this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
                 }
               }
             })
@@ -641,7 +644,9 @@ export class TDSConversationItemComponent implements OnInit  {
         modal.afterClose.subscribe({
           next: (result: ResultCheckAddressDTO) => {
             if(result){
-                this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+                model.value = {...result};
+                //TODO: load sang tab conversation-order paste lại dữ liệu
+                this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
             }
           }
         })

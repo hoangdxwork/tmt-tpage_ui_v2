@@ -1,6 +1,6 @@
 <div *tdsModalTitle>
   <div class="flex flex-row items-center gap-x-2">
-    <tds-checkbox [checked]="checkedAll" [indeterminate]="indeterminate" (change)="changeAll($event.checked)" *ngIf="isOpenCheckBox && !isLoading" [disabled]="isLoading"></tds-checkbox>
+    <tds-checkbox [(ngModel)]="checkedAll" [indeterminate]="indeterminate" (ngModelChange)="changeAll($event)" [disabled]="isLoading"></tds-checkbox>
     <tds-label class="text-error-500">Danh sách lỗi</tds-label>
   </div>
 </div>
@@ -13,7 +13,7 @@
       </div>
 
       <div *ngFor="let item of lstErrorSelected; let i = index;" class="flex items-center gap-x-4">
-        <tds-checkbox [checked]="item.isSelected" (change)="change($event.checked, i)">
+        <tds-checkbox [(ngModel)]="item.isSelected" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeCheckBox()">
           <tds-label>
             Khách hàng {{ item.error?.Partner?.Name || '' }} {{ item.error?.Partner?.Phone ? '(' + item.error?.Partner?.Phone + ')' : '' }} đã tạo đơn hàng
             tổng tiền là {{ ((item.error?.AmountTotal || item.error?.TotalAmount) | number) || 0 }}đ trong khoảng thời gian {{ item.error?.TimeLock || 15 }} phút. Bạn hãy đợi
@@ -22,14 +22,14 @@
         </tds-checkbox>
       </div>
     </div>
-    <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t" *ngIf="isOpenCheckBox">
-      <tds-checkbox [(ngModel)]="isPrint" (ngModelChange)="changePrint('isPrint', $event)">In phiếu</tds-checkbox>
-      <tds-checkbox [(ngModel)]="isPrintShip" (ngModelChange)="changePrint('isPrintShip', $event)">In phiếu ship</tds-checkbox>
+    <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t">
+      <tds-checkbox [(ngModel)]="isPrint" [ngModelOptions]="{standalone: true}" (ngModelChange)="changePrint('isPrint', $event)">In phiếu</tds-checkbox>
+      <tds-checkbox [(ngModel)]="isPrintShip" [ngModelOptions]="{standalone: true}" (ngModelChange)="changePrint('isPrintShip', $event)">In phiếu ship</tds-checkbox>
     </div>
 
     <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button type="submit" color="primary" (click)="onSave()" *ngIf="isOpenCheckBox">Tạo cưỡng bức</button>
+      <button tds-button type="button" color="primary" (click)="onSave()">Tạo cưỡng bức</button>
     </div>
   </div>
 </tds-spin>

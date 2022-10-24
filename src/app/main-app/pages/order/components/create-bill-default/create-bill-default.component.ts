@@ -299,12 +299,6 @@ export class CreateBillDefaultComponent implements OnInit {
         type: type
       }
     });
-
-    modal.afterClose.subscribe({
-      next:(res) => {
-        this.modalRef.destroy(null);
-      }
-    })
   }
 
   prepareModel() {
@@ -359,14 +353,14 @@ export class CreateBillDefaultComponent implements OnInit {
     }
   }
 
-  checkCarrier(model: OrderBillDefaultDTO){
-    if (!model.CarrierId) {
+  checkCarrier(){
+    if (!this.carrier) {
       this.message.error(Message.Bill.ErrorEmptyCarrier);
       return false;
     }
     
     let hasError = false;
-    model.Lines.forEach((x, i) => {
+    this.lstLine.forEach((x, i) => {
       if(!x.CarrierId){
         this.notification.error(`Lỗi`, `Dòng thứ <b class="text-info-500 font-semibold">${i + 1}</b> chưa chọn đối tác giao hàng`, { duration: 10000, pauseOnHover: true });
         hasError = true;
@@ -384,19 +378,18 @@ export class CreateBillDefaultComponent implements OnInit {
     if(this.isLoading){
       return;
     }
-
-    let model = this.prepareModel();
-    console.log(model)
-    if (!this.checkCarrier(model)) {
+    
+    if (!this.checkCarrier()) {
       return;
     }
     
-    if (!model.Lines || model.Lines.length == 0) {
+    if (!this.lstLine || this.lstLine.length == 0) {
       this.message.error(Message.EmptyData);
       return;
     }
 
     this.isLoading = true;
+    let model = this.prepareModel();
 
     this.fastSaleOrderService.insertOrderProductDefault({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: CreateBillDefaultErrorDTO) => {
@@ -406,8 +399,6 @@ export class CreateBillDefaultComponent implements OnInit {
             if(type) {
               this.printOrder(res, Number(model?.CarrierId), type);
             }
-
-            this.modalRef.destroy(null);
           } else {
             this.onModalError(res.DataErrorDefault || [], res.Errors, Number(model?.CarrierId), type);
           }
@@ -434,13 +425,11 @@ export class CreateBillDefaultComponent implements OnInit {
     if (obs) {
       obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-          this.onCancel();
 
       }, (error: TDSSafeAny) => {
           if(error?.error?.message) {
               this.notification.error( 'Lỗi in phiếu', error?.error?.message);
           }
-          this.onCancel();
       });
     }
   }

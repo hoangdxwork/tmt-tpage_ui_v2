@@ -1,3 +1,4 @@
+import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
 import { FilterObjDTO } from 'src/app/main-app/services/mock-odata/odata-product.service';
@@ -15,7 +16,7 @@ import { SharedService } from 'src/app/main-app/services/shared.service';
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
 import { TDSTableComponent, TDSTableQueryParams } from 'tds-ui/table';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { TDSModalRef } from 'tds-ui/modal';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ProductService } from '@app/services/product.service';
 
 @Component({
@@ -61,7 +62,9 @@ export class ModalListProductComponent implements OnInit {
     private destroy$: TDSDestroyService,
     private productService: ProductService,
     private conversationOrderFacade: ConversationOrderFacade,
-    private productTemplateUOMLineService: ProductTemplateUOMLineService) {
+    private productTemplateUOMLineService: ProductTemplateUOMLineService,
+    private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef) {
   }
 
   ngOnInit(): void {
@@ -144,6 +147,9 @@ export class ModalListProductComponent implements OnInit {
   }
 
   refreshData(){
+    this.lstOfData = [];
+    this.pageIndex = 1;
+    this.loadData();
   }
 
   cancel(){
@@ -193,6 +199,27 @@ export class ModalListProductComponent implements OnInit {
   //     return this.lstOfData = data;
   //   }
   // }
+
+  showModalAddProduct() {
+    const modal = this.modalService.create({
+      title: 'Thêm sản phẩm',
+      content: ModalProductTemplateComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+          typeComponent: null
+      }
+  });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: any) => {
+          if(res) {
+            let productTmplItems = res[0];
+            this.addItem(productTmplItems);
+          }
+        }
+      })
+  }
 
   onCancel(){
     this.modal.destroy(null);

@@ -1,3 +1,4 @@
+import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
@@ -16,12 +17,17 @@ export class ModalAddAddressV2Component implements OnInit {
   @Input() _districts!: SuggestDistrictsDTO;
   @Input() _wards!: SuggestWardsDTO;
   @Input() _street!: string;
-  @Input() isSelectAddress!: boolean; // chọn mở modal từ tab partner và order
+  @Input() isSelectAddressConversation!: boolean; // chọn mở modal từ tab partner và order
+  @Input() isSelectAddress!: boolean; 
+  @Input() isEntities!: boolean; // chọn mở modal từ tin nhắn có chứa nlpEntities
+  @Input() innerText: string = '';
+
   public items!: ResultCheckAddressDTO;
 
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
-    private modalService: TDSModalService) { }
+    private modalService: TDSModalService,
+    private message: TDSMessageService) { }
 
   ngOnInit(): void {
   }
@@ -49,6 +55,8 @@ export class ModalAddAddressV2Component implements OnInit {
       this.modal.destroy(null);
       return
     }
+
+    //TODO: tắt modal "Thêm địa chỉ" ở hội thoại, xác nhận khách hàng có muốn giữ địa chỉ không
     this.modalService.warning({
       title: 'Địa chỉ',
       content: 'Bạn có muốn giữ địa chỉ này',
@@ -60,9 +68,19 @@ export class ModalAddAddressV2Component implements OnInit {
     });
   }
 
-  onSave() {
+  onSave(type?: string) {
     if(this.items){
-      this.modal.destroy(this.items);
+        if(type) {
+          let model = {
+            type: type,
+            value: this.items
+          };
+          this.modal.destroy(model);
+          return;
+        }
+        this.modal.destroy(this.items);
+    } else {
+        this.message.error('Địa chỉ chưa được thay đổi')
     }
   }
 }

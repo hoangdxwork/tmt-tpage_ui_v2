@@ -14,7 +14,7 @@ export class TableDeletedOrderComponent implements OnInit {
   @Input() liveCampaignId!: string;
 
   pageSize = 20;
-  pageIndex = 1;
+  pageIndex = 0;
   isLoading: boolean = false;
   count: number = 1;
   checked = false;

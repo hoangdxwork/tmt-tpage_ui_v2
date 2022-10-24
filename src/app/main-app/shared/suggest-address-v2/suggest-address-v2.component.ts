@@ -29,11 +29,12 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   @Input() _districts!: SuggestDistrictsDTO | null;
   @Input() _wards!: SuggestWardsDTO | null;
   @Input() isSelectAddress!: boolean; // chọn mở modal từ tab partner và order
+  @Input() isEntities!: boolean; // chọn mở modal từ tin nhắn có chứa nlpEntities
+  @Input() innerText: string = '';
 
   lstCity!: Array<SuggestCitiesDTO>;
   lstDistrict!: Array<SuggestDistrictsDTO>;
   lstWard!: Array<SuggestWardsDTO>;
-  innerText: string = '';
   isAlert : boolean = false;
   isLoading : boolean = false;
 
@@ -87,9 +88,12 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
     if(this._street) {
       this._form.controls['Street'].setValue(this._street);
-        this.innerText = this._street;
+        this.innerText = this.innerText || this._street;
 
-        if(!this.isSelectAddress){
+        if(this.isEntities){
+          this.mappingAddress();
+        }
+        else if(!this.isSelectAddress){
             this.checkAddress(null);
         }
     }
@@ -208,6 +212,19 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
         WardName: this._form.controls['Ward'].value ? this._form.controls['Ward'].value?.name : null
     } as any
 
+    this.onLoadSuggestion.emit(item);
+  }
+
+  mappingAddress(){
+    let item: ResultCheckAddressDTO = {
+        Address: this._street || null,
+        CityCode: this._cities?.code || null,
+        CityName: this._cities?.name || null,
+        DistrictCode:  this._districts?.code || null,
+        DistrictName: this._districts?.name || null,
+        WardCode: this._wards?.code || null,
+        WardName: this._wards?.name || null
+    } as any;
     this.onLoadSuggestion.emit(item);
   }
 
