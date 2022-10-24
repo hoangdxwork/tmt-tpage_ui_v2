@@ -403,7 +403,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             case 'phone':
                 model.Telephone = this.quickOrderModel.Telephone;
             break;
-            case 'address' || 'confirm':
+            case 'address':
                 model.Address = this.quickOrderModel.Address;
                 model.CityCode = this.quickOrderModel.CityCode;
                 model.CityName = this.quickOrderModel.CityName;
@@ -414,6 +414,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             break;
             case 'note':
                 model.Note = this.quickOrderModel.Note;
+            break;
+            case 'confirm':
+              model.Address = this.quickOrderModel.Address;
+              model.CityCode = this.quickOrderModel.CityCode;
+              model.CityName = this.quickOrderModel.CityName;
+              model.DistrictCode = this.quickOrderModel.DistrictCode;
+              model.DistrictName = this.quickOrderModel.DistrictName;
+              model.WardCode = this.quickOrderModel.WardCode;
+              model.WardName = this.quickOrderModel.WardName;
             break;
           }
 
