@@ -1,11 +1,12 @@
 import { format } from "date-fns";
-import { TDSHelperArray, TDSHelperObject } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { DataRequestDTO, FilterDataRequestDTO, FilterItemDataRequestDTO, SortDataRequestDTO } from "../dto/dataRequest.dto";
 import { OperatorEnum } from "../enum";
 
 // @dynamic
 export class THelperDataRequest {
     private static readonly _maxResultCount = "$top";
+    private static readonly _maxResultCountTake = "$take";
     private static readonly _skipCount = "$skip";
     private static readonly _filter = "$filter";
     private static readonly _sorting = "$orderby";
@@ -74,6 +75,32 @@ export class THelperDataRequest {
                 result += '&'
             }
             result += `${this._sorting}=${this.convertSortToString(sorting!)}`
+        }
+
+        return result;
+    }
+
+    public static convertDataRequestToStringShipTake(pageSize: number, pageIndex: number, q?: string): string {
+
+        let result = '';
+        let maxResultCount: number = pageSize;
+        let skipCount: number = (pageIndex - 1) * pageSize;
+
+        if (TDSHelperObject.hasValue(maxResultCount)) {
+            result = `${this._maxResultCountTake}=${maxResultCount}`
+        }
+
+        if (TDSHelperObject.hasValue(skipCount)) {
+            if (result.length > 0) {
+                result += '&'
+            }
+            result += `${this._skipCount}=${skipCount}`
+        }
+
+
+        if (TDSHelperString.hasValueString(q)) {
+            result += '&'
+            result += `q=${q}`
         }
 
         return result;

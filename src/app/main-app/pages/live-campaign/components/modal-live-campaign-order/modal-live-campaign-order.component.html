@@ -1,11 +1,13 @@
-<div class="w-full text-body-2 text-neutral-1-900 h-[473px] rounded-md border">
+<div class="w-full text-body-2 text-neutral-1-900 h-[473px]">
   <tds-table #tableMessage
-    [listData]="data"
+    [listData]="lstOfData"
     [scroll]="{ y:'auto' }"
     [showSizeChanger]="true"
-    [frontPagination]="false"
+    [frontPagination]="true"
     [(pageSize)]="pageSize"
-    [(pageIndex)]="pageIndex">
+    [(pageIndex)]="pageIndex"
+    [loading]="isLoading"
+    (queryParams)="onQueryParamsChange($event)"  (clickRefresh)="onRefresh()">
     <thead>
       <tr>
         <th [width]="'5%'" class="text-center">STT</th>
@@ -31,7 +33,7 @@
 
         <!-- Mã đơn hàng -->
         <td>
-          Chưa có
+          {{data.Code || '---'}}
         </td>
 
         <!-- Số lượng sản phẩm -->

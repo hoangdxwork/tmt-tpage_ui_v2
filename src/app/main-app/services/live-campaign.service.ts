@@ -280,9 +280,41 @@ export class LiveCampaignService extends BaseSevice {
 
   importProductLivecampaign(data: any): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this.baseRestApi}/importproductlivecampaign`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/importproductlivecampaign`,
       method: CoreApiMethodType.post
     }
     return this.apiService.getData<any>(api, data);
+  }
+
+  overviewReport(liveCampaignId: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/overviewreport`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  overviewDetailsReport(liveCampaignId: string, params: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/overviewdetailsreport?${params}`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  overviewSaleOnlineoOrders(liveCampaignId: string, params: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/overviewsaleonlineorders?liveCampaignDetailId=${liveCampaignId}&${params}`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  overviewFastSaleOrders(liveCampaignId: string, params: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/overviewfastsaleorders?liveCampaignDetailId=${liveCampaignId}&${params}`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
   }
 }
