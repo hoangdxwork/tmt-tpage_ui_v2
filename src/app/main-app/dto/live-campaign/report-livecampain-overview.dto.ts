@@ -40,6 +40,8 @@ export interface ReportLiveCampaignDetailDTO {
   LimitedQuantity: number;
   ProductCode: string;
   IsActive: boolean;
+  TotalFastSaleOrder?: number;
+  TotalSaleOnlineOrder?: number;
 }
 
 export interface OrderSummaryDTO {
@@ -67,4 +69,17 @@ export interface ReportLiveCampaignDTO {
   OrderSummary: OrderSummaryDTO;
   BillSummary: BillSummaryDTO;
   PaySummary: PaySummaryDTO;
+}
+
+export interface TotalOrderBillSummaryDTO {
+  OrderQuantity: number;
+  ProductQuantity: number;
+  TotalAmount: number;
+}
+
+export interface OverviewReportDTO {
+  OrderSummary: OrderSummaryDTO;
+  BillSummary: BillSummaryDTO;
+  PaySummary: PaySummaryDTO;
+  TotalOrderBillSummary: TotalOrderBillSummaryDTO;
 }

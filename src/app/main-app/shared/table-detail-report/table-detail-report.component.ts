@@ -1,3 +1,5 @@
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
 import { Message } from '../../../lib/consts/message.const';
@@ -20,13 +22,17 @@ import { TDSModalService } from 'tds-ui/modal';
 export class TableDetailReportComponent implements OnInit {
 
     @Input() liveCampaignId!: string;
-    @Input() lstDetails!: ReportLiveCampaignDetailDTO[];
     @Input() tableHeight: number = 300;
 
+    lstDetails: ReportLiveCampaignDetailDTO[] = [];
+    count!: number;
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
     innerText: string = '';
+
+    pageSize: number = 10;
+    pageIndex: number = 1;
 
     numberWithCommas =(value:TDSSafeAny) =>{
       if(value != null){
@@ -50,46 +56,57 @@ export class TableDetailReportComponent implements OnInit {
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
-        this.cdr.detectChanges();
     }
 
-    showModalLiveCampaignOrder(lstOrder: any[]) {
-        if(!lstOrder){
-            return
-        }
-        if(lstOrder.length == 0){
-            return
-        }
+    loadData(pageSize: number, pageIndex: number, text?: string) {
+        this.isLoading = true;
+        let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
+        this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
+            next: res => {
+                this.lstDetails = [...res.Details];
+                this.count = res.TotalCount;
+                this.isLoading = false;
 
-        this.modalService.create({
-            title: 'Đơn hàng chờ chốt',
-            size: 'xl',
-            content: ModalLiveCampaignOrderComponent,
-            viewContainerRef: this.viewContainerRef,
-            componentParams: {
-                data: lstOrder
+                this.cdr.detectChanges();
+            },
+            error: error => {
+                this.isLoading = false;
+                this.message.error(error?.error?.message || 'Tải sản phẩm lỗi')
             }
-        });
+        })
     }
 
-    showModalLiveCampaignBill(lstFastSaleOrder: any[]) {
-        if(!lstFastSaleOrder){
-            return;
-        }
+    onQueryParamsChange(event: TDSTableQueryParams) {
+        this.loadData(event.pageSize, event.pageIndex, this.innerText);
+    }
+    
 
-        if(lstFastSaleOrder.length == 0){
-            return;
+    showModalLiveCampaignOrder(id: string, index: number) {
+        if(index){
+            this.modalService.create({
+                title: 'Đơn hàng chờ chốt',
+                size: 'xl',
+                content: ModalLiveCampaignOrderComponent,
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                    livecampaignDetailId: id
+                }
+            });
         }
+    }
 
-        this.modalService.create({
-            title: 'Hóa đơn chờ chốt',
-            size: 'xl',
-            content: ModalLiveCampaignBillComponent,
-            viewContainerRef: this.viewContainerRef,
-            componentParams: {
-                data: lstFastSaleOrder
-            }
-        });
+    showModalLiveCampaignBill(id: string, index: number) {
+        if(index){
+            this.modalService.create({
+                title: 'Hóa đơn chờ chốt',
+                size: 'xl',
+                content: ModalLiveCampaignBillComponent,
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                    livecampaignDetailId: id
+                }
+            });
+        }
     }
 
     openQuantityPopover(data: ReportLiveCampaignDetailDTO, dataId: string) {
@@ -133,6 +150,16 @@ export class TableDetailReportComponent implements OnInit {
     }
 
     onSearch(event: TDSSafeAny) {
-        this.innerText = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
+        let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
+        this.innerText = text;
+        this.pageIndex = 1;
+        this.loadData(this.pageSize, this.pageIndex, text);
+    }
+
+    onRefresh(){
+        this.pageIndex = 1;
+        this.pageSize = 10;
+        this.innerText = '';
+        this.loadData(this.pageSize, this.pageIndex);
     }
 }
