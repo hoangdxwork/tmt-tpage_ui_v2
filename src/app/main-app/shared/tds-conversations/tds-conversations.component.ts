@@ -862,7 +862,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
               //TODO: truyền về conversation-all
               setTimeout(() => {
-                  this.chatomniEventEmiter.assignedToUser$.emit(this.data.ConversationId);
+                  this.chatomniEventEmiter.assignedToUser$.emit(this.data);
               }, 300);
 
               this.isLoadingSelectUser = false;
@@ -990,7 +990,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     const formData = new FormData();
     formData.append('files', item.file as any, item.file.name);
     formData.append('id', '0000000000000051');
-    
+
     return this.sharedService.saveImageV2(formData)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
@@ -1048,7 +1048,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     const file = e.clipboardData?.files[0] as File;
-    
+
     if(file.type.indexOf('image') === 0) {
       this.isLoadingImage = true;
       let fileName= file.name.replace('image', file.lastModified.toString());
@@ -1071,7 +1071,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-  @HostListener('window:dragover', ['$event']) 
+  @HostListener('window:dragover', ['$event'])
   onDragOver(evt: TDSSafeAny) {
     this.displayDropZone = true;
     evt.preventDefault();
