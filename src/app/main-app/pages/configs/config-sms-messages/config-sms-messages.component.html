@@ -28,9 +28,9 @@
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular">
                             <td>{{ data.Id }}</td>
-                            <td>{{ data.Provider }}</td>
-                            <td>{{ data.ApiKey }}</td>
                             <td>{{ data.Name }}</td>
+                            <td>{{ data.ApiKey }}</td>
+                            <td>{{ data.CustomProperties }}</td>
                             <td>
                                 <button tds-button-icon color="secondary" size="sm" class=" mr-2" tds-tooltip="Chỉnh sửa" (click)="showEditModal(data.Id)">
                                     <span class="flex items-center">

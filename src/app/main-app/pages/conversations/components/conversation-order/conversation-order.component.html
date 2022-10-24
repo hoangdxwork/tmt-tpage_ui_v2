@@ -143,19 +143,19 @@
                                             [enableUnequalChildrenSizes]="true"
                                             [scrollAnimationTime]="750"
                                             class="h-full p-2 text-caption-1 overflow-hidden overflow-y-auto tds-panel-scroll bg-white flex flex-col gap-y-2 shadow-md">
-                
+
                                             <div *ngFor="let item of scroll.viewPortItems; let index = index;"
                                                 (click)="selectProduct(item)" class="w-full block h-[56px]">
-                
+
                                                 <div *ngIf="item" class="flex flex-col p-2 hover:bg-neutral-3-50 cursor-pointer rounded-md" [ngClass]="index == indClick ? 'bg-neutral-3-50': ''">
                                                 <div>
                                                     <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom }}đ </span>
                                                 </div>
-                
+
                                                 <div *ngIf="lstInventory && lstInventory[item.Id]">
                                                     <span class="text-neutral-1-400">Tồn kho: </span>
                                                     <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
-                
+
                                                     <span class="text-neutral-1-400">Tồn dự báo: </span>
                                                     <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
                                                 </div>
@@ -164,8 +164,8 @@
                                             <div *ngIf="isLoadingNextdata" class="px-2 bg-white">
                                                 <tds-skeleton [tdsActive]="true" [tdsTitle]="false" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
                                             </div>
-                
-                                        </virtual-scroller> 
+
+                                        </virtual-scroller>
                                     </tds-spin>
                                 </div>
 
@@ -481,7 +481,7 @@
                         </ng-container>
                       </div>
 
-                      <div class="grid grid-cols-3 gap-y-4 gap-x-6">
+                      <div class="grid grid-cols-3 gap-y-4 gap-x-6 mt-2">
                         <!-- phí ship đối tác -->
                         <div class="col-span-3 w-full flex flex-row items-center" >
                             <tds-label class="pr-4">Phí ship (đối tác)</tds-label>
