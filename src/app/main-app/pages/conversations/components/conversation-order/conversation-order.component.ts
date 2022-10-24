@@ -367,7 +367,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             case 'address':
                 if(obs.value && TDSHelperObject.hasValue(obs.value)) {
-                  let data = this.csOrder_SuggestionHandler.onLoadSuggestion(obs.value, this.quickOrderModel);
+                  let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(obs.value, this.quickOrderModel)};
                   this.quickOrderModel = data;
                   this.mappingAddress(this.quickOrderModel);
                   this.cdRef.detectChanges();
@@ -387,7 +387,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   updateOrder(type: string) {
     // TODO: trường hợp không có đơn hàng
-    let id = this.quickOrderModel.Id as string;
+    let id = this.quickOrderModel.Id as string;debugger
     if(!id) {
         this.cdRef.detectChanges();
         return;
@@ -395,10 +395,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     this.isLoading = true;
     this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: any) => {debugger
           delete res['@odata.context'];
           let model = {...res} as QuickSaleOnlineOrderModel;
-
+          debugger
           switch (type) {
             case 'phone':
                 model.Telephone = this.quickOrderModel.Telephone;
@@ -1627,7 +1627,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (result: TDSSafeAny) => {
         if(result){
-            let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(result.value, this.quickOrderModel)};
+            let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(result.value, this.quickOrderModel)};debugger
             this.quickOrderModel = {...data};
             this.mappingAddress(this.quickOrderModel);
 

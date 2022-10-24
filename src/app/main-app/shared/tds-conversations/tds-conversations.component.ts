@@ -94,7 +94,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   tags: TDSSafeAny[] = [];
   keyFilterTag: string = '';
   isVisbleTag: boolean = false;
-  userLoggedId!: string;
+  userLogged!: any;
 
   isEnableChatbot: boolean = false;
   pageId!: string;
@@ -126,7 +126,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private chatomniSendMessageService: ChatomniSendMessageService,
     private socketOnEventService: SocketOnEventService,
     private chatomniConversationFacade: ChatomniConversationFacade) {
-      this.userLoggedId = this.sharedService.userLogged?.Id;
+
+      this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
+          next: (user: any) => {
+              this.userLogged = user;
+          }
+      })
   }
 
   ngOnInit() {
@@ -289,7 +294,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   initiateTimer() {
     this.destroyTimer();
     this.markSeenTimer = setTimeout(() => {
-      this.markSeen();
+      let user_id = this.userLogged?.Id;
+
+      if(user_id) {
+          this.markSeen(user_id);
+      } else {
+        this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
+          next: (user: any) => {
+              if(!user) return;
+              user_id = user.Id;
+              this.markSeen(user_id);
+          },
+          error: (error: any) => {
+              this.message.error(`${error?.error?.message}`);
+          }
+        })
+      }
     }, 3 * 1000); // Ở lại ít nhất 3s mới gọi markSeen
   }
 
@@ -299,29 +319,25 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-  private markSeen() {
-    let assign_user_id = this.userLoggedId;
+  private markSeen(user_id: string) {
+    this.crmMatchingService.markSeen(this.pageId, this.data!.ConversationId, this.type, user_id)
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: (x: any) => {
 
-    if(assign_user_id && this.data!.ConversationId) {
-      this.crmMatchingService.markSeen(this.pageId, this.data!.ConversationId, this.type, assign_user_id)
-        .pipe(takeUntil(this.destroy$)).subscribe({
-          next: (x: any) => {
+            // Cập nhật count_unread
+            let model = {
+                pageId: this.pageId,
+                type: this.type,
+                csid: this.data!.ConversationId
+            }
 
-              // Cập nhật count_unread
-              let model = {
-                  pageId: this.pageId,
-                  type: this.type,
-                  csid: this.data!.ConversationId
-              }
-
-              this.chatomniEventEmiter.updateMarkSeenBadge$.emit(model);
-              this.cdRef.markForCheck();
-        },
-        error: error => {
-            this.message.error(`markseen: ${error?.error?.message}`);
-        }
-      })
-    }
+            this.chatomniEventEmiter.updateMarkSeenBadge$.emit(model);
+            this.cdRef.markForCheck();
+      },
+      error: error => {
+          this.message.error(`markseen: ${error?.error?.message}`);
+      }
+    })
   }
 
   showImageStore(): void {
