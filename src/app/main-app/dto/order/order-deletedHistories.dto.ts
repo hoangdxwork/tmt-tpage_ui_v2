@@ -21,6 +21,9 @@ export interface DeletedOrderDTO {
   Address: string;
   Total: number;
   TotalQuantity: number;
+  IsCancelCheckout?: boolean;
+  UserId: string;
+  UserName: string;
   Details: DeletedOrderDetail[];
 }
 
