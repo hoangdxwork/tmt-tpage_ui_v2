@@ -612,7 +612,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
     modal.afterClose.subscribe({
       next:(res) => {
-          this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
+          this.lstQuickReplies = [...[res], ...this.lstQuickReplies];
       }
     })
   }
