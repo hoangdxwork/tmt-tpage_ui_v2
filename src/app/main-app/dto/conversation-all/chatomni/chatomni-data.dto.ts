@@ -130,7 +130,7 @@ export interface ChatomniDataItemDto {
   Source?: any;
   Type: ChatomniMessageType;
   UserId: string;
-  Error?: ErrorMessageOmni;
+  Error?: ErrorMessageOmni | any;
   Status: ChatomniStatus;
   IsSystem: boolean; // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
   CreatedById?: string | any;

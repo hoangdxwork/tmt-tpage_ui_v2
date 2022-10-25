@@ -56,13 +56,19 @@ export class SocketOnEventService {
           return socketData;
       }),
       mergeMap((socketData: SocketioOnMessageDto) => {
+        console.log(socketData);
 
         let channelId = null;
-        let onRead = socketData && socketData.EventName == ChatmoniSocketEventName.chatomniOnReadConversation;
-        if(onRead) {
+        switch (socketData.EventName) {
+          case ChatmoniSocketEventName.chatomniOnUpdate:
+            channelId = socketData.Data.ChannelId;
+            break;
+          case ChatmoniSocketEventName.chatomniOnReadConversation:
             channelId = socketData.Data?.PageId;
-        } else {
+            break;
+          default:
             channelId = socketData.Conversation?.ChannelId;
+          break;
         }
 
         return this.crmTeamService.getActiveByPageIds$([channelId]).pipe((map((teams: CRMTeamDTO[]) => {
@@ -94,7 +100,12 @@ export class SocketOnEventService {
               // TODO: cập nhật tin nhắn lỗi
               case ChatmoniSocketEventName.chatomniOnUpdate:
                   socketData = { ...socketData } as SocketioOnUpdateDto;
-                  let modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
+
+                  // TODO: thông báo tin nhắn lỗi
+                  let modelUpdate = null as any;
+                  if(socketData && socketData.Data && socketData.Data.Status == 1) {
+                      modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
+                  }
 
                   this.socketEvent$.next({
                       Notification: modelUpdate,
@@ -122,7 +133,6 @@ export class SocketOnEventService {
               // TODO: user đang xem
               case ChatmoniSocketEventName.chatomniOnReadConversation:
                 socketData = { ...socketData } as SocketioOnReadConversationDto;
-                console.log(socketData)
 
                 this.socketEvent$.next({
                     Notification: null,
@@ -200,7 +210,7 @@ export class SocketOnEventService {
 
   }
 
-  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
+  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {debugger
     let model: SocketEventNotificationDto = {} as any;
     model = {
         Title: `${socketData.Message}`,

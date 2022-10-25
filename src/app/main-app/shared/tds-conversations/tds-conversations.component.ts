@@ -138,8 +138,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.validateData();
 
     if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
-        this.pageId = this.team.ChannelId;
-        this.loadData(this.data);
+      this.pageId = this.team.ChannelId;
+      this.loadData(this.data);
     }
 
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
@@ -215,6 +215,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             break;
 
           case ChatmoniSocketEventName.chatomniOnUpdate:
+              let exist =  res.Data && this.data && this.data.ConversationId == res.Data.Data?.UserId;
+              let index = (this.dataSource?.Items || []).findIndex(x => x.Id == res.Data?.Data?.MessageId);
+
+              if(exist && Number(index) >= 0) {
+                  if(res.Data.Data.Status == 1) { // gửi lỗi
+                      this.dataSource.Items[index].Status = 2;
+                  } else if(res.Data.Data.Status == 0) { // gửi thành công
+                      this.dataSource.Items[index].Status = 1;
+                  }
+
+                  this.dataSource.Items[index] = {...this.dataSource.Items[index]};
+                  this.cdRef.detectChanges();
+              }
             break;
 
           case ChatmoniSocketEventName.onUpdate:

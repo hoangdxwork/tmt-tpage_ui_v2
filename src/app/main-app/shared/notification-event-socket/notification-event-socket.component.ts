@@ -4,6 +4,7 @@ import { CRMTeamService } from './../../services/crm-team.service';
 import { Router } from '@angular/router';
 import { SocketEventSubjectDto } from './../../services/socket-io/socket-onevent.service';
 import { Component, Input, OnInit, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'notification-event-socket',
@@ -28,12 +29,12 @@ export class NotificationEventSocketComponent implements OnInit {
   }
 
   getLink(data: SocketEventSubjectDto) {
-    if (data && data.Notification && data.Notification?.Url) {
+    if (data && data.Notification && data.Notification?.Url && data.EventName != ChatmoniSocketEventName.chatomniOnReadConversation) {
         if (data.Team && data.Team.Id) {
             this.router.navigateByUrl(data.Notification.Url);
             this.crmTeamService.onUpdateTeam(data.Team);
         } else {
-            console.log('Không  tìm thấy teamId' + `, channelId: ${data.Data.Conversation.ChannelId}`);
+            console.log('Không tìm thấy teamId' + `, channelId: ${data.Data.Conversation.ChannelId}`);
         }
     }
   }
