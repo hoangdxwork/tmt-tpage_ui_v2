@@ -79,8 +79,8 @@
             </div>
 
             <!-- Nhân viên - admin đang xem -->
-            <div *ngIf="item" class="flex items-center w-full mt-1 mb-1" [style.justify-content]="item.AssignedTo?.Name ? 'space-between' : 'end'">
-                <div *ngIf="item.AssignedTo" class="flex items-center" tds-tooltip tooltipTitle="Nhân viên được gán {{item.AssignedTo?.Name}}">
+            <div *ngIf="item" class="flex items-center w-full" [style.justify-content]="item.AssignedTo?.Name ? 'space-between' : 'end'">
+                <div *ngIf="item.AssignedTo" class="flex items-center">
                     <span *ngIf="item.AssignedTo?.Avatar">
                         <tds-avatar [shape]="'circle'" [size]="18" [tdsSrc]="item.AssignedTo.Avatar"></tds-avatar>
                     </span>

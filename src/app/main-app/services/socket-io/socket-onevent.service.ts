@@ -64,7 +64,7 @@ export class SocketOnEventService {
             channelId = socketData.Data.ChannelId;
             break;
           case ChatmoniSocketEventName.chatomniOnReadConversation:
-            channelId = socketData.Data?.PageId;
+            channelId = socketData.Data?.Conversation?.ChannelId;
             break;
           default:
             channelId = socketData.Conversation?.ChannelId;
@@ -81,6 +81,7 @@ export class SocketOnEventService {
           if (!(team && team.Id)) {
               return;
           }
+
 
           switch (socketData.EventName) {
               // TODO: thông báo tin nhắn, comment
