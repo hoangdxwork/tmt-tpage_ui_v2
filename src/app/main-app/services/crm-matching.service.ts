@@ -73,6 +73,16 @@ export class CRMMatchingService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, { page_id: page_id, type: type, assign_user_id: assign_user_id });
   }
 
+  markSeenV2(teamId: number, csid: string): Observable<any> {
+    let id = `${teamId}_${csid}`;
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/markseen`,
+        method: CoreApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+
   addNote(psid: string, data: MDBFacebookMappingNoteDTO) {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/notes`,

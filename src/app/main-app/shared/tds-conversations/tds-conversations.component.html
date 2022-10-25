@@ -60,12 +60,18 @@
                             </div>
                             <div class="gap-y-2 flex flex-col overflow-y-auto tds-panel-scroll">
                                 <div *ngFor="let item of lstUser" (click)="assignUser(item)" [ngClass]="isLoadingSelectUser? 'cursor-wait': ''"
-                                class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
-                                <div class="flex gap-x-2">
-                                    <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
-                                    <span>{{item.Name}}</span>
-                                </div>
-                                <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.AssignedTo?.Id"></span>
+                                    class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
+                                    <div class="flex gap-x-2">
+                                        <span *ngIf="item.Avatar">
+                                            <tds-avatar [shape]="'circle'" [size]="22" [tdsSrc]="item.Avatar"></tds-avatar>
+                                        </span>
+                                        <span *ngIf="!item.Avatar">
+                                            <tds-avatar [text]="item.Name | avatarRandom" [shape]="'circle'" [size]="22"
+                                              [style.background-color]="item.Name | randomColor" style="color: '#fff'; font-size: 14px;"></tds-avatar>
+                                        </span>
+                                        <span>{{item.Name}}</span>
+                                    </div>
+                                    <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.AssignedTo?.Id"></span>
                                 </div>
                             </div>
                             <!-- <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">

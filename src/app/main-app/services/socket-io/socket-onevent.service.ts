@@ -56,7 +56,16 @@ export class SocketOnEventService {
           return socketData;
       }),
       mergeMap((socketData: SocketioOnMessageDto) => {
-        return this.crmTeamService.getActiveByPageIds$([socketData.Conversation?.ChannelId]).pipe((map((teams: CRMTeamDTO[]) => {
+
+        let channelId = null;
+        let onRead = socketData && socketData.EventName == ChatmoniSocketEventName.chatomniOnReadConversation;
+        if(onRead) {
+            channelId = socketData.Data?.PageId;
+        } else {
+            channelId = socketData.Conversation?.ChannelId;
+        }
+
+        return this.crmTeamService.getActiveByPageIds$([channelId]).pipe((map((teams: CRMTeamDTO[]) => {
             let team = teams[0] as CRMTeamDTO;
             return [(socketData || {}), (team || {})];
         })))
@@ -113,6 +122,7 @@ export class SocketOnEventService {
               // TODO: user đang xem
               case ChatmoniSocketEventName.chatomniOnReadConversation:
                 socketData = { ...socketData } as SocketioOnReadConversationDto;
+                console.log(socketData)
 
                 this.socketEvent$.next({
                     Notification: null,
