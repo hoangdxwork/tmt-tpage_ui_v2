@@ -1,3 +1,4 @@
+import { User } from './../../../dto/saleonlineorder/quick-saleonline-order.dto';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
 import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
 import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
@@ -34,6 +35,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { SocketioOnReadConversationDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 
 @Component({
   selector: 'app-conversation-all',
@@ -157,7 +159,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-
         switch(res && res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
@@ -193,6 +194,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               break;
 
             case ChatmoniSocketEventName.chatomniOnReadConversation:
+              this.setSocketOnReadConversation(res.Data);
               break;
 
             default:
@@ -200,6 +202,23 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       }
     })
+  }
+
+  setSocketOnReadConversation(data: SocketioOnReadConversationDto) {
+    let exist = data.Data?.Conversation && this.currentTeam?.ChannelId == data.Data.Conversation?.ChannelId;
+    let index = this.lstConversation?.findIndex(x => x.ConversationId == data.Data.Conversation?.Id) as number;
+
+    if(exist && Number(index) >= 0) {
+      this.lstConversation[index].Markseen = {
+          Data: data.Data,
+          Message: data.Message
+      } as any;
+
+      this.lstConversation[index] = {...this.lstConversation[index]};
+      this.lstConversation = [...this.lstConversation];
+    }
+
+    this.cdRef.detectChanges();
   }
 
   setSocketChatomniOnMessage(data: SocketEventSubjectDto) {

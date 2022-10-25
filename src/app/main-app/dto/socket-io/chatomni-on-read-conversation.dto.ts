@@ -6,15 +6,21 @@ export interface CreatedByOnReadConversationDto {
   UserName: string;
 }
 
+export interface ConversationOnReadDto {
+  Id: string;
+  UserId: string;
+  ChannelId: string;
+  ChannelType: string;
+}
+
 export interface OnReadConversationDto {
   CreatedBy: CreatedByOnReadConversationDto
-  PageId: string,
-  UserId: string;
+  Conversation: ConversationOnReadDto
 }
 
 export interface SocketioOnReadConversationDto {
   Data: OnReadConversationDto;
   Message: string;
   EventName: string;
-  Type: string; //"UpdateMarkseen"-> giá trị const
+  Type: string; //UpdateMarkseen
 }

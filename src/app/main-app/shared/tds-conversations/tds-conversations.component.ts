@@ -294,22 +294,26 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   initiateTimer() {
     this.destroyTimer();
     this.markSeenTimer = setTimeout(() => {
-      let user_id = this.userLogged?.Id;
+      let teamId = this.team.Id;
+      let csid = this.data!.ConversationId;
 
-      if(user_id) {
-          this.markSeen(user_id);
-      } else {
-        this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
-          next: (user: any) => {
-              if(!user) return;
-              user_id = user.Id;
-              this.markSeen(user_id);
-          },
-          error: (error: any) => {
-              this.message.error(`${error?.error?.message}`);
-          }
-        })
-      }
+      if(!teamId && !csid) return;
+      this.crmMatchingService.markSeenV2(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
+        next: () => {
+            // Cập nhật count_unread
+            let model = {
+              pageId: this.pageId,
+              type: this.type,
+              csid: this.data!.ConversationId
+            } as any;
+
+            this.chatomniEventEmiter.updateMarkSeenBadge$.emit(model);
+            this.cdRef.markForCheck();
+        },
+        error: (error: any) => {
+            this.message.error(`markseen: ${error?.error?.message}`);
+        }
+      })
     }, 3 * 1000); // Ở lại ít nhất 3s mới gọi markSeen
   }
 
@@ -317,27 +321,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if (this.markSeenTimer) {
       clearTimeout(this.markSeenTimer);
     }
-  }
-
-  private markSeen(user_id: string) {
-    this.crmMatchingService.markSeen(this.pageId, this.data!.ConversationId, this.type, user_id)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (x: any) => {
-
-            // Cập nhật count_unread
-            let model = {
-                pageId: this.pageId,
-                type: this.type,
-                csid: this.data!.ConversationId
-            }
-
-            this.chatomniEventEmiter.updateMarkSeenBadge$.emit(model);
-            this.cdRef.markForCheck();
-      },
-      error: error => {
-          this.message.error(`markseen: ${error?.error?.message}`);
-      }
-    })
   }
 
   showImageStore(): void {
@@ -1057,15 +1040,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onPaste(e: any) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
     if(this.isLoadingImage){
       return;
     }
 
     const file = e.clipboardData?.files[0] as File;
 
-    if(file.type.indexOf('image') === 0) {
+    if(file && file.type && file.type.indexOf('image') === 0) {
       this.isLoadingImage = true;
       let fileName= file.name.replace('image', file.lastModified.toString());
 
@@ -1084,6 +1065,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.cdRef.detectChanges();
         }
       });
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
     }
   }
 
