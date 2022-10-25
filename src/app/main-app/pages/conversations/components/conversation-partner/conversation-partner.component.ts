@@ -211,13 +211,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   updatePartner(type: string) {
-    // TODO: trường hợp không có khách hàng
-    let id = this.partner.Id;
-    if(!id || id == 0) {
-        this.notiOrderFromMessage(type);
-        this.cdRef.detectChanges();
-        return;
-    }
 
     if(this.conversationInfo && this.team) {
       this.isLoading = true;
