@@ -460,6 +460,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         if(result){
             this.lstOfTag = [...this.lstOfTag, result];
             this.tags = [...this.tags, result];
+            this.crmTagService.addData(result);
         }
     }})
   }
@@ -488,7 +489,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.isLoadingSpin = false;
     this.isProcessing = false;
     this.uploadedImages = [];
-    this.tags = [];
     this.filterObj = null;
   }
 

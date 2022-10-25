@@ -268,7 +268,7 @@
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]" *ngIf="data && data.Tags">
                         <div *ngFor="let tag of data.Tags | slice:4:data.Tags!.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
-                            <div **ngIf="tag"  class="cursor-pointer w-full min-w-[70px] px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
+                            <div *ngIf="tag"  class="cursor-pointer w-full min-w-[70px] px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
                                   [ngStyle]="{'background-color': [tag.ColorClass]}">
                                   {{tag.Name}}
                             </div>

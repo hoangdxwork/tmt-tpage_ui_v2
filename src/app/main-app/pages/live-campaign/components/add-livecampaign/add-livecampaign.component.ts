@@ -569,7 +569,7 @@ export class AddLiveCampaignComponent implements OnInit {
     modal.afterClose.subscribe({
       next:(res) => {
         if(res) {
-          this.loadQuickReply();
+          this.lstQuickReplies = [...[res], ...this.lstQuickReplies];
         }
       }
     })

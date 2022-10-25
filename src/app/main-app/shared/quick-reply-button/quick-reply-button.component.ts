@@ -73,6 +73,15 @@ export class QuickReplyButtonComponent implements OnInit, OnChanges {
       size: 'md',
       componentParams: {}
     });
+
+    modal.afterClose.subscribe({
+      next: res => {
+        if(res) {
+          this.lstquickReplyDefault = [...[res], ...this.lstquickReplyDefault];
+          this.quickReplies = [...this.lstquickReplyDefault];
+        }
+      }
+    })
   }
 
   changeVisible(event: boolean){
