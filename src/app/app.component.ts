@@ -8,6 +8,7 @@ import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'app-root',
@@ -60,9 +61,12 @@ export class AppComponent {
         let checkNotti = JSON.parse(localSocket || null) || '';
 
         if(checkNotti != 'OFF') {
+
             this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
             let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
-            if (res && res.Notification && !exist) {
+            let sendError = res.EventName == ChatmoniSocketEventName.chatomniOnUpdate;
+
+            if (res && res.Notification && (!exist || sendError)) {
                 this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
             }
         }
