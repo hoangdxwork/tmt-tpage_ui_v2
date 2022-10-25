@@ -575,17 +575,21 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         if (!local[a.Id]) {
           local[a.Id] = { "point": 0 };
         }
+
         if (!local[b.Id]) {
           local[b.Id] = { "point": 0 };
         }
+
         if (this.data && this.data.Tags) {
           if ((this.data.Tags as any)[a.Id] && !(this.data.Tags as any)[b.Id]) {
             return -1;
           }
         }
+
         if ((local[a.Id].point > local[b.Id].point) && !(this.data.Tags as any)[b.Id]) {
           return -1;
         }
+
         return 0;
       });
     }
@@ -971,6 +975,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   refreshRead() {
     this.validateData();
     this.loadMessages(this.data);
+
+    if(this.lstOfTag && this.lstOfTag.length == 0) {
+      this.loadTags(this.data);
+    }
   }
 
   handleChange(info: TDSUploadChangeParam): void {
