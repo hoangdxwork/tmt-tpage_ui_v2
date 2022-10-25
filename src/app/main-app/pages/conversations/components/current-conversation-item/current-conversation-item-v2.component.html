@@ -2,13 +2,13 @@
   <div class="w-full relative overflow-hidden h-full" style="white-space: pre-line; word-break: break-word;">
     <div [ngClass]="conversationItem && (conversationItem.Id == item.Id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
     <div [ngClass]="conversationItem && (conversationItem.Id == item.Id)?'bg-secondary-3':'bg-white'"
-        class="p-3 flex flex-col gap-3 w-full h-full min-h-[106px] hover:bg-neutral-3-50">
+        class="p-2 flex flex-col gap-2 w-full h-full min-h-[124px] hover:bg-neutral-3-50">
       <div class="flex gap-3">
         <div class="relative">
             <tpage-avatar-facebook
-              [noAssignedUser]="item.AssignedTo ? true : false"
-              [shape]="'circle'" [size]="'lg'" [hasAvatar]="item.Avatar"
-              [psid]="item.ConversationId" [token]="team.ChannelToken">
+                [noAssignedUser]="item.AssignedTo ? true : false"
+                [shape]="'circle'" [size]="'lg'" [hasAvatar]="item.Avatar"
+                [psid]="item.ConversationId" [token]="team.ChannelToken">
             </tpage-avatar-facebook>
 
             <!-- icon comment -->
@@ -77,6 +77,25 @@
                      showMore [length]="25" [text]="(item.LatestMessage?.Message | jsonPayload)">
                 </div>
             </div>
+
+            <!-- Nhân viên - admin đang xem -->
+            <div *ngIf="item" class="flex items-center w-full" [style.justify-content]="item.AssignedTo?.Name ? 'space-between' : 'end'">
+                <div *ngIf="item.AssignedTo" class="flex items-center">
+                    <span *ngIf="item.AssignedTo?.Avatar">
+                        <tds-avatar [shape]="'circle'" [size]="18" [tdsSrc]="item.AssignedTo.Avatar"></tds-avatar>
+                    </span>
+                    <span *ngIf="!item.AssignedTo?.Avatar">
+                        <tds-avatar [text]="item.AssignedTo?.Name | avatarRandom" [shape]="'circle'" [size]="17"
+                          [style.background-color]="item.AssignedTo?.Name | randomColor" style="color: '#fff'; font-size: 12px;"></tds-avatar>
+                    </span>
+                    <span class="ml-1 text-[13px]" style="line-height: 15px;">{{item.AssignedTo?.Name}}</span>
+                </div>
+
+                <div class="flex items-center text-accent-3 text-[13px]" *ngIf="item.Markseen && item.Markseen?.Message">
+                    <span> {{item.Markseen?.Message}}</span>
+                    <span class="tdsi-flash-on-fill"></span>
+                </div>
+            </div>
         </div>
       </div>
 
@@ -119,20 +138,10 @@
                     </div>
                 </ng-template>
                 <div class="draft-message text-danger font-z10 tmr-t13" *ngIf="isDraftMessage">Chưa gửi</div>
-                <div *ngIf="item.AssignedTo && item.AssignedTo?.Name" tds-tooltip tooltipTitle="Nhân viên được gán {{item.AssignedTo?.Name}}"
-                  class="tdsi-user-fill text-body-2 leading-none text-white bg-info-500 rounded-md" style="padding: 2px 3px 2px 2px"></div>
                 <div *ngIf="item.HasPhone" class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></div>
                 <div *ngIf="item.HasAddress" class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md"></div>
             </div>
         </div>
-
-        <!-- <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">
-            <div class="tdsi-flash-on-fill text-accent-3"></div>
-            <div class="text-accent-3 text-caption-1 font-regular font-sans">
-                <span class="mr-1">{{eventData[team.Facebook_PageId][psid].time | yiDateTimeFormat}}</span>
-                <span>{{eventData[team.Facebook_PageId][psid].message}}</span>
-            </div>
-        </div> -->
       </div>
     </div>
     <div *ngIf="isConversationOver">

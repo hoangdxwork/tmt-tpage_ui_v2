@@ -52,7 +52,12 @@ export class ModalAddQuickReplyComponent implements OnInit {
 
   onSave() {
     if(this._form.controls.subjectHtml.invalid){
-      this.message.warning('Vui lòng nhập tên mẫu');
+      this.message.error('Vui lòng nhập tên mẫu');
+      return;
+    }
+
+    if(!this._form.controls.bodyHtml?.value){
+      this.message.error('Vui lòng nội dung');
       return;
     }
 

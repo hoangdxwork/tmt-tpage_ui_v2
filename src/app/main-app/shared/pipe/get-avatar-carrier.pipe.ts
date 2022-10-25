@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
+import { TDSHelperString } from "tds-ui/shared/utility";
 
 @Pipe({
   name: 'getAvatarCarrier'
@@ -53,3 +54,30 @@ export class GetAvatarCarrier implements PipeTransform {
 }
 
 
+@Pipe({
+  name: 'avatarRandom'
+})
+export class AvatarRandomPipe implements PipeTransform {
+    transform(value: string) {
+        if(TDSHelperString.hasValueString(value)) {
+            let cavan = value.slice(0, 1);
+            cavan = cavan.toUpperCase();
+            return cavan;
+        }
+        return "?";
+    }
+}
+
+@Pipe({
+  name: 'randomColor'
+})
+export class RandomColorPipe implements PipeTransform {
+    transform(value: string) {
+      let colors = [
+        "#f44336", "#e91e63", "#ff80ab", "#f50057", "#c51162", "#9c27b0", "#ab47bc", "#9c27b0", "#6a1b9a", "#4a148c",
+        "#ea80fc", "#e040fb", "#d500f9", "#7e57c2", "#673ab7", "#f39c12", "#651fff", "#3d5afe", "#bdc3c7", "#00838f"
+      ];
+      let randomColor = colors[Math.floor(Math.random() * colors.length)];
+      return randomColor;
+    }
+}

@@ -44,8 +44,8 @@
         <div class="text-body-2" [innerHTML]="data.Notification.Title"></div>
 
         <!-- Tin nhắn nội dung -->
-        <div *ngIf="data.Notification.Message && !data.Notification.Attachments">
-            <div class=" text-body-2 line-clamp" [innerHTML]="data.Notification.Message | jsonPayload | formatIconLike | bbcodeConvert | safeHtml"></div>
+        <div *ngIf="data.Notification.Message">
+            <div class=" text-body-2 line-clamp" [innerHTML]="data.Notification.Message | safeHtml"></div>
         </div>
     </div>
 </div>

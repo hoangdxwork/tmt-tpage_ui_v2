@@ -8,9 +8,9 @@
         <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)"
           [width]="'42px'" [align]="'center'" [tdsLeft]="true"></th>
         <th [width]="'60px'" class="text-center">STT</th>
-        <th [width]="'120px'">Mã</th>
-        <th [width]="'120px'">Mã khách hàng</th>
+        <th [width]="'100px'">Mã</th>
         <th [width]="'150px'">Tên khách hàng</th>
+        <th [width]="'140px'">Người xóa</th>
         <th [width]="'250px'">Địa chỉ</th>
         <th [width]="'150px'">Ngày tạo</th>
         <th [width]="'100px'" class="w-full text-center">Tổng số lượng</th>
@@ -39,12 +39,19 @@
           <!-- Mã -->
           <td [tdsLeft]="true">{{ order.Code }}</td>
 
-          <!-- Mã khách hàng -->
-          <td [tdsLeft]="true">{{ order.PartnerId }}</td>
-
           <!-- Tên khách hàng -->
           <td>
             <p class="truncate max-w-[200px]">{{order.PartnerName}}</p>
+          </td>
+          
+          <!-- Người xóa -->
+          <td >
+            <span *ngIf="order.UserName && !order.IsCancelCheckout; else isUserName">
+              {{order.UserName}}
+            </span>
+            <ng-template #isUserName>
+              Người dùng xóa
+            </ng-template>
           </td>
 
           <!-- Địa chỉ -->
@@ -57,7 +64,7 @@
           <td class="text-center">{{ order.TotalQuantity }}</td>
 
           <!-- Tổng tiền -->
-          <td class="text-right">{{ order.Total }}</td>
+          <td class="text-right">{{ (order.Total | numberCustom) || 0 }}</td>
         </tr>
 
         <tr [expand]="expandSet.has(order.OrderId)" class="text-neutral-1-900 text-body-2">

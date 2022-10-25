@@ -37,7 +37,7 @@ import { jsonPayloadPipe } from './json-payload.pipe';
 import { GetShowStatePipe } from './get-show-state.pipe';
 import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPipe, GetColorStatusTextPipe, GetColorShowConfigPipe } from './get-order-status.pipe';
 import { OnSetWidthTagPipe } from './set-width-tagpipe';
-import { GetAvatarCarrier } from './get-avatar-carrier.pipe';
+import { AvatarRandomPipe, GetAvatarCarrier, RandomColorPipe } from './get-avatar-carrier.pipe';
 import { HighlightSearchPipe } from './highlightSearch.pipe';
 import { SimpleSearchPipe, SimpleSearchV2Pipe, SimpleSearchLiveCampaignDetailPipe } from './simple-search.pipe';
 
@@ -91,7 +91,9 @@ const cmp =[
   GetColorShowConfigPipe,
   SimpleSearchPipe,
   SimpleSearchV2Pipe,
-  SimpleSearchLiveCampaignDetailPipe
+  SimpleSearchLiveCampaignDetailPipe,
+  AvatarRandomPipe,
+  RandomColorPipe
 ]
 
 @NgModule({

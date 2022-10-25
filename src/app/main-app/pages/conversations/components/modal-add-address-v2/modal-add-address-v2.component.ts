@@ -68,11 +68,11 @@ export class ModalAddAddressV2Component implements OnInit {
     });
   }
 
-  onSave(type?: string) {
+  onSave() {
     if(this.items){
-        if(type) {
+        if(this.isSelectAddressConversation) {
           let model = {
-            type: type,
+            type: 'confirm',
             value: this.items
           };
           this.modal.destroy(model);
