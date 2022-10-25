@@ -116,7 +116,7 @@ export class TDSConversationItemComponent implements OnInit  {
 
             case "address":
               model.type = 'address';
-              this.showModalSuggestAddress(model, index, nlpEntities);
+              this.showModalSuggestAddress(model, index);
               return;
 
             case "note":
@@ -592,43 +592,43 @@ export class TDSConversationItemComponent implements OnInit  {
         value = this.getTextOfContentMessage();
     }
 
-    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') {
-        if(nlpEntities[0].Value){
-          let data = JSON.parse(nlpEntities[0].Value);
+    // if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') {
+    //     if(nlpEntities[0].Value){
+    //       let data = JSON.parse(nlpEntities[0].Value);
 
-          if (data && typeof data === "object") {
-            let _cities = {code: data.CityCode || null, name: data.CityName || null} as SuggestCitiesDTO;
-            let _districts = {code: data.DistrictCode || null, name: data.DistrictName || null} as SuggestDistrictsDTO;
-            let _wards = {code: data.WardCode || null, name: data.WardName || null} as SuggestWardsDTO;
+    //       if (data && typeof data === "object") {
+    //         let _cities = {code: data.CityCode || null, name: data.CityName || null} as SuggestCitiesDTO;
+    //         let _districts = {code: data.DistrictCode || null, name: data.DistrictName || null} as SuggestDistrictsDTO;
+    //         let _wards = {code: data.WardCode || null, name: data.WardName || null} as SuggestWardsDTO;
 
-              let modal = this.modalService.create({
-                title: 'Thêm địa chỉ',
-                content: ModalAddAddressV2Component,
-                size: "lg",
-                viewContainerRef: this.viewContainerRef,
-                componentParams: {
-                  isEntities: true,
-                  innerText: value,
-                  _street: data.FullAddress,
-                  _cities: _cities,
-                  _districts: _districts,
-                  _wards: _wards,
-                }
-              });
-    
-            modal.afterClose.subscribe({
-              next: (result: ResultCheckAddressDTO) => {
-                if(result){
-                    model.value = {...result};
-                    //TODO: load sang tab conversation-order paste lại dữ liệu
-                    this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
-                }
-              }
-            })
-            return;
-          }
-        }
-    }
+    //           let modal = this.modalService.create({
+    //             title: 'Thêm địa chỉ',
+    //             content: ModalAddAddressV2Component,
+    //             size: "lg",
+    //             viewContainerRef: this.viewContainerRef,
+    //             componentParams: {
+    //               isEntities: true,
+    //               innerText: value,
+    //               _street: data.FullAddress,
+    //               _cities: _cities,
+    //               _districts: _districts,
+    //               _wards: _wards,
+    //             }
+    //           });
+
+    //         modal.afterClose.subscribe({
+    //           next: (result: ResultCheckAddressDTO) => {
+    //             if(result){
+    //                 model.value = {...result};
+    //                 //TODO: load sang tab conversation-order paste lại dữ liệu
+    //                 this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
+    //             }
+    //           }
+    //         })
+    //         return;
+    //       }
+    //     }
+    // }
 
     if(TDSHelperArray.hasListValue(value)) {
         let modal = this.modalService.create({
