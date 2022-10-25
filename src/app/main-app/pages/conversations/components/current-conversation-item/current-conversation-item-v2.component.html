@@ -88,7 +88,7 @@
                         <tds-avatar [text]="item.AssignedTo?.Name | avatarRandom" [shape]="'circle'" [size]="17"
                           [style.background-color]="item.AssignedTo?.Name | randomColor" style="color: '#fff'; font-size: 12px;"></tds-avatar>
                     </span>
-                    <span class="ml-1 text-[13px]">{{item.AssignedTo?.Name}}</span>
+                    <span class="ml-1 text-[13px]" style="line-height: 15px;">{{item.AssignedTo?.Name}}</span>
                 </div>
 
                 <div class="flex items-center text-accent-3 text-[13px]" *ngIf="item.Markseen && item.Markseen?.Message">
