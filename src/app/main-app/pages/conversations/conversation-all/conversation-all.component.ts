@@ -206,7 +206,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   setSocketOnReadConversation(data: SocketioOnReadConversationDto) {
     let exist = data.Data?.Conversation && this.currentTeam?.ChannelId == data.Data.Conversation?.ChannelId;
-    let index = this.lstConversation?.findIndex(x => x.ConversationId == data.Data.Conversation?.Id) as number;
+    let index = this.lstConversation?.findIndex(x => x.ConversationId == data.Data.Conversation?.UserId) as number;
 
     if(exist && Number(index) >= 0) {
       this.lstConversation[index].Markseen = {
