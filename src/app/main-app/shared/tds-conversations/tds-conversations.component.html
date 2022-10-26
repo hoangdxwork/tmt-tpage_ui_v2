@@ -67,7 +67,7 @@
                                         </span>
                                         <span *ngIf="!item.Avatar">
                                             <tds-avatar [text]="item.Name | avatarRandom" [shape]="'circle'" [size]="22"
-                                              [style.background-color]="item.Name | randomColor" style="color: '#fff'; font-size: 14px;"></tds-avatar>
+                                              [style.background-color]="item.Id | randomColor" style="color: '#fff'; font-size: 14px;"></tds-avatar>
                                         </span>
                                         <span>{{item.Name}}</span>
                                     </div>
