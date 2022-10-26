@@ -238,11 +238,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        if( res.Data?.Facebook_PageId && this.conversationInfo && this.conversationInfo?.Conversation?.UserId == res.Data.Facebook_ASUserId && res.EventName == ChatmoniSocketEventName.onUpdate ) {
-            this.conversationInfo.Order = {...res.Data?.Data};
-            this.loadData(this.conversationInfo);
-            this.cdRef.detectChanges();
-        }
       }
     })
   }

@@ -1,4 +1,4 @@
-export interface SocketioOnOrderDto {
+export interface OnSocketOnSaleOnline_OrderDto {
     Data: DataOrder,
     EventName: string,
     Message: string,
@@ -7,6 +7,9 @@ export interface SocketioOnOrderDto {
 
 export interface DataOrder{
     Id: string,
+    Code: string,
+    Session: string,
+    SessionIndex: string,
     Facebook_PostId: string,
     Facebook_UserName: string,
     Facebook_ASUserId: string,
