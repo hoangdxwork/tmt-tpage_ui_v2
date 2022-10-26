@@ -1,3 +1,4 @@
+import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
 import { ChatmoniSocketEventName } from './../../services/socket-io/soketio-event';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
@@ -107,6 +108,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   order: TDSSafeAny;
   companyCurrents: TDSSafeAny;
 
+  isShowPoupQuickRepply: boolean = false;
+  quickReplies: Array<QuickReplyDTO> = [];
+  objQuickReply: TDSSafeAny = {};
+
   constructor(private modalService: TDSModalService,
     private chatomniMessageService: ChatomniMessageService,
     private omniMessageFacade: ChatomniMessageFacade,
@@ -125,7 +130,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private chatomniEventEmiter: ChatomniEventEmiterService,
     private chatomniSendMessageService: ChatomniSendMessageService,
     private socketOnEventService: SocketOnEventService,
-    private chatomniConversationFacade: ChatomniConversationFacade) {
+    private chatomniConversationFacade: ChatomniConversationFacade,
+    private quickReplyService: QuickReplyService) {
 
       this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
           next: (user: any) => {
@@ -149,6 +155,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.onEventSocket();
     this.yiAutoScroll?.forceScrollDown();
     this.loadCurrentCompany();
+    this.loadDataQuickRepply();
   }
 
   eventEmitter(){
@@ -1225,6 +1232,68 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
       this.loadMessages(this.data);
   }
+  }
+
+  loadDataQuickRepply() {
+    this.quickReplyService.setDataActive();
+    this.quickReplyService.getDataActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if (res) {
+          let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
+          this.quickReplies = res?.sort((a: TDSSafeAny, b: TDSSafeAny) => {
+              if (getArr != null) {
+                return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
+              } else
+              return
+          });
+        }
+      },
+      error: (error: any) => {
+          this.message.error(error?.error.message || 'Load trả lời nhanh thất bại');
+      }
+    });
+  }
+
+  onChangeMessage(event: TDSSafeAny) {debugger
+    let text = event.value.trim();
+    let exist = event && event.keyupEvent && event.keyupEvent.code == 'Slash' && text == '/';
+    if(exist){
+      this.isShowPoupQuickRepply = true;
+      
+    } else if(text.charAt(0) != '/'){
+      this.isShowPoupQuickRepply = false;
+    }
+
+    event.keyupEvent.preventDefault();
+    event.keyupEvent.stopImmediatePropagation();
+  }
+
+  setTextquickReply(item: QuickReplyDTO) {
+    let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
+    if (getArr === null) {
+      this.objQuickReply[item.Id] = {
+        TotalView: 1,
+        LastViewDate: new Date(),
+      };
+      localStorage.setItem('arrOBJQuickReply', JSON.stringify(this.objQuickReply));
+    } else {
+      let findIndex = getArr[item.Id];
+      if (findIndex === undefined) {
+        getArr[item.Id] = {
+          TotalView: 1,
+          LastViewDate: new Date()
+        };
+      } else {
+        findIndex.TotalView = findIndex.TotalView + 1;
+        findIndex.LastViewDate = new Date();
+      }
+
+      localStorage.setItem('arrOBJQuickReply', JSON.stringify(getArr));
+    }
+
+    this.onQuickReplySelected(item);
+    this.isShowPoupQuickRepply = false;
+
   }
 
   ngOnDestroy(): void {
