@@ -3,7 +3,6 @@ import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edi
 import { TDSModalService, TDSModalRef } from 'tds-ui/modal';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { SocketioOnOrderDto } from './../../dto/socket-io/chatomni-on-order.dto';
 import { DataComentTShop, DataMessageTshop } from './../../dto/socket-io/chatomni-on-message.dto';
 import { Injectable } from "@angular/core";
 import { Attachments, ChatomniMessageType } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
@@ -15,6 +14,7 @@ import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
 import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
+import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -56,7 +56,6 @@ export class SocketOnEventService {
           return socketData;
       }),
       mergeMap((socketData: SocketioOnMessageDto) => {
-        console.log(socketData);
 
         let channelId = null;
         switch (socketData.EventName) {
@@ -65,6 +64,9 @@ export class SocketOnEventService {
             break;
           case ChatmoniSocketEventName.chatomniMarkseen:
             channelId = socketData.Data?.Conversation?.ChannelId;
+            break;
+          case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
+            channelId = socketData.Data?.Facebook_PageId;
             break;
           default:
             channelId = socketData.Conversation?.ChannelId;
@@ -81,7 +83,6 @@ export class SocketOnEventService {
           if (!(team && team.Id)) {
               return;
           }
-
 
           switch (socketData.EventName) {
               // TODO: thông báo tin nhắn, comment
@@ -118,8 +119,8 @@ export class SocketOnEventService {
               break;
 
               // TODO: update đơn hàng hội thoại
-              case ChatmoniSocketEventName.onUpdate:
-                  socketData = { ...socketData } as SocketioOnOrderDto;
+              case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
+                  socketData = { ...socketData } as OnSocketOnSaleOnline_OrderDto;
                   let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
 
                   this.socketEvent$.next({
@@ -211,7 +212,7 @@ export class SocketOnEventService {
 
   }
 
-  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {debugger
+  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
         Title: `${socketData.Message}`,
@@ -223,11 +224,11 @@ export class SocketOnEventService {
     return { ...model };
   }
 
-  prepareChatomniOnUpdateOrder(socketData: SocketioOnOrderDto) {
+  prepareChatomniOnUpdateOrder(socketData: OnSocketOnSaleOnline_OrderDto) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
-        Title: `Order: ${socketData.Data?.Facebook_UserName || 'Người dùng Facebook'} vừa cập nhật đơn hàng`,
-        Message: `${socketData.Message}`,
+        Title: `${socketData.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
+        Message: `Mã đơn hàng ${socketData.Data?.Code}`,
         Attachments: {} as any,
         Url: ''
     } as any;

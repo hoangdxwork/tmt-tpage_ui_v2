@@ -125,12 +125,20 @@ export class THelperDataRequest {
         let value = filter.value;
 
         if (typeof value === 'string') {
+
             value = encodeURIComponent(value);
+            let exist1 = value.indexOf("'");
+            let exist2 = value.indexOf("''");
+            if(exist1 > 0 && exist2 < 0) {
+                value = value.replace("'", "''");
+            }
+
             if(filter.operator === OperatorEnum.contains) {
                 str =`${filter.operator}(${filter.field},%27${value}%27)`
             } else {
                 str = `${filter.field}%20${filter.operator}%20'${value}'`
             }
+
         } else if(value instanceof Date) {
             let date = format(value, "yyyy-MM-dd'T'HH:mm:ss'%2B'00:00");
             str=`${filter.field}%20${filter.operator}%20${date}`

@@ -199,9 +199,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             case ChatmoniSocketEventName.chatomniOnUpdate:
               break;
 
-            case ChatmoniSocketEventName.onUpdate:
-              break;
-
             case ChatmoniSocketEventName.chatomniMarkseen:
               this.setSocketMarkseen(res.Data);
               break;

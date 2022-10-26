@@ -230,7 +230,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
               }
             break;
 
-          case ChatmoniSocketEventName.onUpdate:
+          case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
             break;
 
           default:
