@@ -1,4 +1,5 @@
-import { SocketioOnReadConversationDto } from "@app/dto/socket-io/chatomni-on-read-conversation.dto";
+
+import { SocketioOnMarkseenDto } from "@app/dto/socket-io/chatomni-on-read-conversation.dto";
 import { StateChatbot } from "../conversation-all.dto";
 import { ChatomniMessageType } from "./chatomni-data.dto";
 
@@ -50,7 +51,7 @@ export interface ChatomniConversationItemDto {
   State?: StateChatbot;
   Message?: string;
 
-  Markseen?: SocketioOnReadConversationDto | any; // user đang xem từ socket bắn về
+  Markseen?: SocketioOnMarkseenDto | any; // user đang xem từ socket bắn về
 }
 
 export interface PagingTimestamp {

@@ -1,5 +1,5 @@
 
-export interface CreatedByOnReadConversationDto {
+export interface CreatedByOnMarkseenDto {
   Avatar: string;
   Id: string;
   Name: string;
@@ -14,11 +14,11 @@ export interface ConversationOnReadDto {
 }
 
 export interface OnReadConversationDto {
-  CreatedBy: CreatedByOnReadConversationDto
+  CreateBy: CreatedByOnMarkseenDto
   Conversation: ConversationOnReadDto
 }
 
-export interface SocketioOnReadConversationDto {
+export interface SocketioOnMarkseenDto {
   Data: OnReadConversationDto;
   Message: string;
   EventName: string;
