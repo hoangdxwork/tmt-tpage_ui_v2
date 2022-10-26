@@ -228,6 +228,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
                       this.dataSource.Items[index].Error = {...error};
                   } else if(res.Data.Data.Status == 0) { // gửi thành công
                       this.dataSource.Items[index].Status = ChatomniStatus.Done;
+                      delete this.dataSource.Items[index].Error;
                   }
 
                   this.dataSource.Items[index] = {...this.dataSource.Items[index]};
