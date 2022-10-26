@@ -218,19 +218,27 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
               let exist =  res.Data && this.data && this.data.ConversationId == res.Data.Data?.UserId;
               let index = (this.dataSource?.Items || []).findIndex(x => x.Id == res.Data?.Data?.MessageId);
 
-              if(exist && Number(index) >= 0) {
+              if(exist && Number(index) >= 0) { 
                   if(res.Data.Data.Status == 1) { // gửi lỗi
-                      this.dataSource.Items[index].Status = 2;
+                      let error = {} as any;
+                      error.Code = null;
+                      error.Message = res.Data.Data.MessageError;
+
+                      this.dataSource.Items[index].Status = ChatomniStatus.Error;
+                      this.dataSource.Items[index].Error = {...error};
                   } else if(res.Data.Data.Status == 0) { // gửi thành công
-                      this.dataSource.Items[index].Status = 1;
+                      this.dataSource.Items[index].Status = ChatomniStatus.Done;
+                      delete this.dataSource.Items[index].Error;
                   }
 
                   this.dataSource.Items[index] = {...this.dataSource.Items[index]};
-                  this.cdRef.detectChanges();
+                  this.dataSource.Items = [...this.dataSource.Items]
+
+                  this.cdRef.markForCheck();
               }
             break;
 
-          case ChatmoniSocketEventName.onUpdate:
+          case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
             break;
 
           default:
@@ -633,7 +641,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.isLoadingSendMess = true;
-    let activityFinal = this.dataSource.Items ? this.dataSource.Items[this.dataSource.Items!.length - 1]: null
+    let activityFinal = this.dataSource?.Items ? this.dataSource.Items[this.dataSource.Items!.length - 1]: null
 
     if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === ChatomniMessageType.FacebookComment || activityFinal?.Type === ChatomniMessageType.TShopComment)) {
         if (this.type === 'all') {
@@ -768,7 +776,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
       res.map((x: ResponseAddMessCommentDtoV2, i: number) => {
 
-          x["Status"] = ChatomniStatus.Done;
+          x["Status"] = ChatomniStatus.Pending;
           if (TDSHelperArray.hasListValue(model.Attachment) && !x.Message) {
               x["Attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
           }

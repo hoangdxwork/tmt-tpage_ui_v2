@@ -63,8 +63,14 @@ export class AppComponent {
         if(checkNotti != 'OFF') {
 
             this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
-            let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
-            let sendError = res.EventName == ChatmoniSocketEventName.chatomniOnUpdate;
+            let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id; 
+            
+            let eventUpdate = res.EventName == ChatmoniSocketEventName.chatomniOnUpdate;
+            let sendError = false;
+
+            if (eventUpdate) {
+              sendError = res.Data?.Data?.UserId == this.route.snapshot.queryParams?.csid;
+            }
 
             if (res && res.Notification && (!exist || sendError)) {
                 this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
@@ -111,7 +117,7 @@ export class AppComponent {
     Object.assign(TGlobalConfig, objConfig);
   }
 
-  onShowModal(orderId:string) {
-    this.socketOnEventService.showModalSocketOrder(orderId);
-  }
+  // onShowModal(orderId:string) {
+  //   this.socketOnEventService.showModalSocketOrder(orderId);
+  // }
 }
