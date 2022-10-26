@@ -1,5 +1,4 @@
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSDestroyService } from 'tds-ui/core/services';
 import { CRMTeamService } from './../../services/crm-team.service';
 import { Router } from '@angular/router';
 import { SocketEventSubjectDto } from './../../services/socket-io/socket-onevent.service';
@@ -29,13 +28,10 @@ export class NotificationEventSocketComponent implements OnInit {
   }
 
   getLink(data: SocketEventSubjectDto) {
-    if (data && data.Notification && data.Notification?.Url && data.EventName != ChatmoniSocketEventName.chatomniOnReadConversation) {
-        if (data.Team && data.Team.Id) {
-            this.router.navigateByUrl(data.Notification.Url);
-            this.crmTeamService.onUpdateTeam(data.Team);
-        } else {
-            console.log('Không tìm thấy teamId' + `, channelId: ${data.Data.Conversation.ChannelId}`);
-        }
+    let exist = data && data.Notification && data.Notification?.Url && (data.EventName != ChatmoniSocketEventName.chatomniMarkseen);
+    if (exist && data.Team && data.Team?.Id) {
+        this.router.navigateByUrl(data.Notification.Url);
+        this.crmTeamService.onUpdateTeam(data.Team);
     }
   }
 

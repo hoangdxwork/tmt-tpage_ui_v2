@@ -14,7 +14,7 @@ import { CRMTeamService } from "../crm-team.service";
 import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
-import { SocketioOnReadConversationDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
+import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -63,7 +63,7 @@ export class SocketOnEventService {
           case ChatmoniSocketEventName.chatomniOnUpdate:
             channelId = socketData.Data.ChannelId;
             break;
-          case ChatmoniSocketEventName.chatomniOnReadConversation:
+          case ChatmoniSocketEventName.chatomniMarkseen:
             channelId = socketData.Data?.Conversation?.ChannelId;
             break;
           default:
@@ -132,8 +132,8 @@ export class SocketOnEventService {
               break;
 
               // TODO: user đang xem
-              case ChatmoniSocketEventName.chatomniOnReadConversation:
-                socketData = { ...socketData } as SocketioOnReadConversationDto;
+              case ChatmoniSocketEventName.chatomniMarkseen:
+                socketData = { ...socketData } as SocketioOnMarkseenDto;
 
                 this.socketEvent$.next({
                     Notification: null,
