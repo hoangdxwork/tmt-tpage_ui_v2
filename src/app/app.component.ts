@@ -117,7 +117,7 @@ export class AppComponent {
     Object.assign(TGlobalConfig, objConfig);
   }
 
-  onShowModal(orderId:string) {
-    this.socketOnEventService.showModalSocketOrder(orderId);
-  }
+  // onShowModal(orderId:string) {
+  //   this.socketOnEventService.showModalSocketOrder(orderId);
+  // }
 }
