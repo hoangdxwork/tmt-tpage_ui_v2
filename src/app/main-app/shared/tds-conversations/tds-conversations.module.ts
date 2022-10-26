@@ -1,3 +1,4 @@
+import { TDSAutocompleteModule } from 'tds-ui/auto-complete';
 import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
 import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ShowItemImageComponent } from './../show-item-image/show-item-image.component';
@@ -91,7 +92,8 @@ const CMP =[
     TDSEmptyModule,
     TDSMessageModule,
     PickerModule,
-    EmojiModule
+    EmojiModule,
+    TDSAutocompleteModule
   ],
   exports:[
     ...CMP
