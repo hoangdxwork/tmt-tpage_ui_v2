@@ -211,7 +211,7 @@ export class SocketOnEventService {
 
   }
 
-  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {debugger
+  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
         Title: `${socketData.Message}`,
