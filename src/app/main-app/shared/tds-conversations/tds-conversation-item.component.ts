@@ -284,10 +284,9 @@ export class TDSConversationItemComponent implements OnInit  {
       .pipe(takeUntil(this.destroy$)).subscribe(
         {
           next: (res: any) => {
-            this.tdsMessage.success("Thao tác thành công");
             if (TDSHelperArray.hasListValue(res)) {
               res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-                  x["Status"] = ChatomniStatus.Done;
+                  x["Status"] = ChatomniStatus.Pending;
                   let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
                   this.dataItem  = {...data}
               });
