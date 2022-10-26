@@ -86,7 +86,7 @@
                     </span>
                     <span *ngIf="!item.AssignedTo?.Avatar">
                         <tds-avatar [text]="item.AssignedTo?.Name | avatarRandom" [shape]="'circle'" [size]="17"
-                          [style.background-color]="item.AssignedTo?.Name | randomColor" style="color: '#fff'; font-size: 12px;"></tds-avatar>
+                          [style.background-color]="item.AssignedTo?.Id | randomColor" style="color: '#fff'; font-size: 12px;"></tds-avatar>
                     </span>
                     <span class="ml-1 text-[13px]" style="line-height: 15px;">{{item.AssignedTo?.Name}}</span>
                 </div>
