@@ -40,6 +40,7 @@ import { OnSetWidthTagPipe } from './set-width-tagpipe';
 import { AvatarRandomPipe, GetAvatarCarrier, RandomColorPipe } from './get-avatar-carrier.pipe';
 import { HighlightSearchPipe } from './highlightSearch.pipe';
 import { SimpleSearchPipe, SimpleSearchV2Pipe, SimpleSearchLiveCampaignDetailPipe } from './simple-search.pipe';
+import { ReduceSystemMessagePipe } from './reduce-system-message.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -93,7 +94,9 @@ const cmp =[
   SimpleSearchV2Pipe,
   SimpleSearchLiveCampaignDetailPipe,
   AvatarRandomPipe,
-  RandomColorPipe
+  RandomColorPipe,
+  ReduceSystemMessagePipe
+
 ]
 
 @NgModule({
