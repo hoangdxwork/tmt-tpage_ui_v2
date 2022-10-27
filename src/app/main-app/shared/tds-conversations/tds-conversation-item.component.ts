@@ -89,12 +89,12 @@ export class TDSConversationItemComponent implements OnInit  {
   }
 
   ngOnInit(): void {
-    if(this.dataItem && !this.dataItem.Message) {
+    if(this.dataItem && this.dataItem.Data && !this.dataItem.Message) {
         let exist = this.dataItem.Data?.attachments?.data;
         if(exist) {
-          this.dataItem.Data!.is_error_attachment = false;
+            this.dataItem.Data!.is_error_attachment = false;
         } else {
-          this.dataItem.Data!.is_error_attachment = true;
+            this.dataItem.Data!.is_error_attachment = true;
         }
     }
   }
@@ -171,6 +171,7 @@ export class TDSConversationItemComponent implements OnInit  {
     if(this.isLiking){
       return
     }
+
     this.isLiking = true;
     let model = {
       TeamId: this.team.Id,

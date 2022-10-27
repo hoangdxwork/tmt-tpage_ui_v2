@@ -18,7 +18,7 @@ export class SocketService  {
 
   constructor(private notificationService: TDSNotificationService,
     @Inject(DOCUMENT) private document: Document) {
- 
+
     this.initSocket();
   }
 

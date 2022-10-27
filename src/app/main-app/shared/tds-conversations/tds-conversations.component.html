@@ -147,20 +147,22 @@
             </div>
 
             <div *ngIf="dataSource && dataSource?.Items" >
-                <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
+                <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | reduceSystemMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
                   <div *ngIf="item" @eventFadeState>
 
                     <!-- TODO: user đã đọc -->
                     <div class="w-full block" *ngIf="item.Type == 0 && item.Message">
                         <div class="date-v3 block">
-                            <p class="text-neutral-1-500 text-[13px] w-full mb-0">{{item.Message}}</p>
+                            <p class="text-neutral-1-500 text-[11px] inline-block mb-0" tds-tooltip tooltipTitle="{{item.ChannelCreatedTime | date: 'dd/MM/yyyy HH:mm:ss'}}">
+                                {{item.Message}}
+                            </p>
                         </div>
                     </div>
 
                     <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
                         <div class="w-full relative">
                             <div class="date-v3">
-                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
+                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.ChannelCreatedTime | yiDateTimeV3"></span>
                                 <span class="hr"></span>
                             </div>
                         </div>
@@ -295,7 +297,7 @@
         </div>
         <!-- editer+toolbars -->
         <tds-spin [spinning]="isLoadingImage">
-            
+
             <div class="h-0 overflow-hidden flex">
                 <tds-form-field class="w-full">
                     <input aria-colspan="" class="placeholder-neutral-1-400 !h-0"  [tdsInputDebounce]="350" (inputKeyup)="onChangeMessage($event)"
