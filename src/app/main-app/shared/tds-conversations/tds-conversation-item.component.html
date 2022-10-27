@@ -73,7 +73,7 @@
 
           <!-- Tin nhắn không tải được -->
           <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
-              tds-tooltip tooltipTitle="{{dataItem.CreatedTime | yiDateTimeFormat}}">
+              tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
 

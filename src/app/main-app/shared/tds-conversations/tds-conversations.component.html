@@ -153,14 +153,16 @@
                     <!-- TODO: user đã đọc -->
                     <div class="w-full block" *ngIf="item.Type == 0 && item.Message">
                         <div class="date-v3 block">
-                            <p class="text-neutral-1-500 text-[13px] w-full mb-0">{{item.Message}}</p>
+                            <p class="text-neutral-1-500 text-[11px] w-full mb-0" tds-tooltip tooltipTitle="{{item.ChannelCreatedTime | date: 'dd/MM/yyyy HH:mm:ss'}}">
+                                {{item.Message}}
+                            </p>
                         </div>
                     </div>
 
                     <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
                         <div class="w-full relative">
                             <div class="date-v3">
-                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
+                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.ChannelCreatedTime | yiDateTimeV3"></span>
                                 <span class="hr"></span>
                             </div>
                         </div>
@@ -298,7 +300,7 @@
             <div class="w-[320px]" tds-dropdown [tdsDropdownMenu]="menu" [placement]="'topLeft'" trigger="click" [(visible)]="isShowPoupQuickRepply" [autoClose]="false">
                 <tds-dropdown-menu #menu="tdsDropdownMenu">
                     <div class="w-[320px] max-h-[400px] overflow-hidden overflow-y-auto tds-panel-scroll">
-                        <tds-auto-option *ngFor="let option of quickReplies" 
+                        <tds-auto-option *ngFor="let option of quickReplies"
                             [value]="option.BodyPlain" [label]="option.Name">
                             <div class="w-full flex flex-col text-neutral-1-900 text-body-2 font-regular">
                                 <div (click)="setTextquickReply(option)" class="py-2 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50 text-body-2">
@@ -310,7 +312,7 @@
                     </div>
                 </tds-dropdown-menu>
             </div>
-      
+
           <div class="flex flex-col w-full px-4  bg-white rounded-xl relative">
               <div [ngClass]="isLoadingSendMess?'!cursor-wait':'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
 
@@ -336,7 +338,7 @@
 
               <div class="w-full pt-4 flex flex-row">
                   <textarea tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
-                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" 
+                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
                       (paste)="onPaste($event)" [tdsInputDebounce]="500" (inputKeyup)="onChangeMessage($event)"
                       (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
                   </textarea>

@@ -225,7 +225,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
               let exist =  res.Data && this.data && this.data.ConversationId == res.Data.Data?.UserId;
               let index = (this.dataSource?.Items || []).findIndex(x => x.Id == res.Data?.Data?.MessageId);
 
-              if(exist && Number(index) >= 0) { 
+              if(exist && Number(index) >= 0) {
                   if(res.Data.Data.Status == 1) { // gửi lỗi
                       let error = {} as any;
                       error.Code = null;
@@ -1254,12 +1254,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  onChangeMessage(event: TDSSafeAny) {debugger
+  onChangeMessage(event: TDSSafeAny) {
     let text = event.value.trim();
     let exist = event && event.keyupEvent && event.keyupEvent.code == 'Slash' && text == '/';
     if(exist){
       this.isShowPoupQuickRepply = true;
-      
+
     } else if(text.charAt(0) != '/'){
       this.isShowPoupQuickRepply = false;
     }

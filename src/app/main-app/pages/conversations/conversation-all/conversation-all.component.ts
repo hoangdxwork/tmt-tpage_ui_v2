@@ -372,6 +372,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
               next: (data: any) => {
                   this.syncConversationInfo = {...data};
+                  this.conversationInfo.Order = {...data.Order};
 
                   let csid = this.syncConversationInfo.Conversation.ConversationId;
                   let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
