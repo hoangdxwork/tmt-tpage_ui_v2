@@ -67,7 +67,9 @@
                             <td>
                                 <div showMore [length]="70" [text]="(data.BodyPlain | formatIconLike | bbcodeConvert)"></div>
                             </td>
-                            <td></td>
+                            <td>
+                                {{ data.Command }}
+                            </td>
                             <td>
                                 <tds-switch [(ngModel)]="data.Active" (ngModelChange)="onChangeStatus(data.Id)"></tds-switch>
                             </td>

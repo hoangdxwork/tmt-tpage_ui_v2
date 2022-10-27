@@ -62,7 +62,6 @@ import * as lodash from 'lodash';
   export class SimpleSearchQuickRepplyPipe implements PipeTransform {
 
   public transform(datas: QuickReplyDTO[], term?: string): any {
-
       if (!TDSHelperString.hasValueString(term)) 
           return datas;
 
@@ -72,7 +71,8 @@ import * as lodash from 'lodash';
           term = TDSHelperString.stripSpecialChars(term.toLocaleLowerCase()).trim();
           let data = datas.filter((item: QuickReplyDTO) =>
               TDSHelperString.stripSpecialChars((item.BodyPlain || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1
-              || TDSHelperString.stripSpecialChars((item.Name || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1);
+              || TDSHelperString.stripSpecialChars((item.Name || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1
+              || TDSHelperString.stripSpecialChars((item.Command || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1);
 
          return [...data];
 
