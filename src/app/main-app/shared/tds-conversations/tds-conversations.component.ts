@@ -254,6 +254,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
       }
     })
+
+    // TODO: sự kiện thêm mẫu mẫu tin nhắn nhanh
+    this.quickReplyService.onChangeQuickReply.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res :any) => {
+          this.quickReplies = [...[res], ...this.quickReplies];
+          this.cdRef.detectChanges();
+      }
+    })
   }
 
   loadCurrentCompany() {
@@ -1271,7 +1279,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             this.viewChildInputMessage.nativeElement.focus();
           }, 100);
     }
-    
+
     event.keyupEvent.preventDefault();
     event.keyupEvent.stopImmediatePropagation();
   }
@@ -1308,7 +1316,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onSelectionChange(event: any) {
-    if(event && event.value) { 
+    if(event && event.value) {
       setTimeout(() => {
         let text = ReplaceHelper.quickReply(event.value, this.partner);
         this.messageModel = text;
