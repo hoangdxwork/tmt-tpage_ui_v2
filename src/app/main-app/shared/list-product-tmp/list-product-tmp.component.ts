@@ -255,7 +255,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
           if(res) {
-            let productTmplItems = res[0];
+            let productTmplItems = res[0];debugger
 
             if(res[1]) {
               let cacheObject = res[1];
@@ -308,15 +308,17 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     }
   }
 
-  filterLstVariants(data: DataPouchDBDTO, productTmplItems?: any){
+  filterLstVariants(data: DataPouchDBDTO, productTmplItems?: any) {
     let model = this.indexDbStorage.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
 
-    model.map((x: DataPouchDBDTO)=>{
-      x.Tags = productTmplItems?.Tags || null;
+    model.map((x: DataPouchDBDTO) => {
+      x.Tags = productTmplItems?.OrderTag || null;
 
       if(this.inventories && this.inventories[x.Id]) {
           x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
       }
+
+      x.AttributeLength = Number(productTmplItems.AttributeLength) > 0 ? Number(productTmplItems.AttributeLength) : null;
     });
 
     this.lstVariants = [...model];
@@ -355,6 +357,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       case 'liveCampaign':
         this.onLoadProductToLiveCampaign.emit(this.lstVariants);
     }
+
     this.indClick = -1;
   }
 

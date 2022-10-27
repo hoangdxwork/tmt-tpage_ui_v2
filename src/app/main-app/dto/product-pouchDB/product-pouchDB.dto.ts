@@ -32,7 +32,9 @@ export interface DataPouchDBDTO {
   CategName: string;
   Tags: string,
   QtyAvailable?: number,
-  VirtualAvailable?: number
+  VirtualAvailable?: number;
+
+  AttributeLength?: any // field này dùng để check tạo mã chiến dịch live, ko có trong db
 }
 
 export interface ProductPouchDBDTO {

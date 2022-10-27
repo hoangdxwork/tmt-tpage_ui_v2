@@ -415,7 +415,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
             ProductNameGet: x.NameGet,
             UOMId: x.UOMId,
             UOMName: x.UOMName,
-            Tags: x.Tags || '',
+            Tags: x.OrderTag || '',
             LimitedQuantity: 0,
             ProductCode: x.DefaultCode,
             ImageUrl: x.ImageUrl,
@@ -520,7 +520,6 @@ export class EditLiveCampaignPostComponent implements OnInit {
             });
 
             this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
-
             this.isLoadingSelect = false;
         },
         error: error => {

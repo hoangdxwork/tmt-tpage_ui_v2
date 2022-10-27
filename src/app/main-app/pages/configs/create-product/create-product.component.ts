@@ -147,7 +147,7 @@ export class ConfigAddProductComponent implements OnInit {
         } else {
           this.isLoading = false;
         }
-      }, 
+      },
       error: (error) => {
         this.isLoading = false;
         this.message.error(error?.error?.message || Message.CanNotLoadData);
