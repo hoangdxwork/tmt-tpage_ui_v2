@@ -1,3 +1,4 @@
+import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Pipe, PipeTransform } from '@angular/core';
 import * as lodash from 'lodash';
@@ -54,5 +55,29 @@ import * as lodash from 'lodash';
           || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase()).trim().indexOf(term) !== -1);
       
       return [...data];
+  }
+}
+
+@Pipe({  name: 'simpleSearchQuickRepply' })
+  export class SimpleSearchQuickRepplyPipe implements PipeTransform {
+
+  public transform(datas: QuickReplyDTO[], term?: string): any {
+
+      if (!TDSHelperString.hasValueString(term)) 
+          return datas;
+
+      if (term && term.charAt(0) == '/' && term.length > 1) {
+          term = term.slice(1, term.length); 
+
+          term = TDSHelperString.stripSpecialChars(term.toLocaleLowerCase()).trim();
+          let data = datas.filter((item: QuickReplyDTO) =>
+              TDSHelperString.stripSpecialChars((item.BodyPlain || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1
+              || TDSHelperString.stripSpecialChars((item.Name || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1);
+
+         return [...data];
+
+      }
+
+      return datas;
   }
 }

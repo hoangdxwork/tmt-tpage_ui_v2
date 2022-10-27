@@ -297,21 +297,25 @@
         </div>
         <!-- editer+toolbars -->
         <tds-spin [spinning]="isLoadingImage">
-            <div class="w-[320px]" tds-dropdown [tdsDropdownMenu]="menu" [placement]="'topLeft'" trigger="click" [(visible)]="isShowPoupQuickRepply" [autoClose]="false">
-                <tds-dropdown-menu #menu="tdsDropdownMenu">
-                    <div class="w-[320px] max-h-[400px] overflow-hidden overflow-y-auto tds-panel-scroll">
-                        <tds-auto-option *ngFor="let option of quickReplies"
-                            [value]="option.BodyPlain" [label]="option.Name">
-                            <div class="w-full flex flex-col text-neutral-1-900 text-body-2 font-regular">
-                                <div (click)="setTextquickReply(option)" class="py-2 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50 text-body-2">
-                                    <span class="font-semibold">{{option.Name}}</span>
-                                    <div showMore [length]="50" [text]="option.BodyPlain | replacePartner: partner"></div>
-                                </div>
-                            </div>
-                        </tds-auto-option>
-                    </div>
-                </tds-dropdown-menu>
+
+            <div class="h-0 overflow-hidden flex">
+                <tds-form-field class="w-full">
+                    <input aria-colspan="" class="placeholder-neutral-1-400 !h-0"  [tdsInputDebounce]="350" (inputKeyup)="onChangeMessage($event)"
+                        placeholder="input here" tdsInput [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" #viewChildQuickRepply [tdsAutocomplete]="auto" />
+                </tds-form-field>
             </div>
+            
+            <tds-autocomplete #auto [width]="350" [autoClose]="false" [overlayClassName]="'h-[400px] cs-quick-repply flex'"  (selectionChange)="onSelectionChange($event)">
+                <tds-auto-option *ngFor="let option of (quickReplies | simpleSearchQuickRepply: messageModel)"
+                [value]="option.BodyPlain" [label]="option.Name">
+                <div class="w-full flex flex-col text-neutral-1-900 text-body-2 font-regular">
+                    <div (click)="setTextquickReply(option)" class="py-2 px-1 flex flex-col w-full cursor-pointer hover:bg-neutral-3-50 text-body-2">
+                        <span class="font-semibold">{{option.Name}}</span>
+                        <div showMore [length]="50" [text]="option.BodyPlain | replacePartner: partner"></div>
+                    </div>
+                </div>
+            </tds-auto-option>
+            </tds-autocomplete>
 
           <div class="flex flex-col w-full px-4  bg-white rounded-xl relative">
               <div [ngClass]="isLoadingSendMess?'!cursor-wait':'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
@@ -337,9 +341,9 @@
               </div>
 
               <div class="w-full pt-4 flex flex-row">
-                  <textarea tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
-                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                      (paste)="onPaste($event)" [tdsInputDebounce]="500" (inputKeyup)="onChangeMessage($event)"
+                  <textarea #viewChildInputMessage tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
+                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" 
+                      (paste)="onPaste($event)" [tdsInputDebounce]="0" (inputKeyup)="onChangeMessage($event)"
                       (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
                   </textarea>
 
