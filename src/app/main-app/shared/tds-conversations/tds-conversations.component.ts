@@ -1313,6 +1313,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         let text = ReplaceHelper.quickReply(event.value, this.partner);
         this.messageModel = text;
 
+        this.messageSendingToServer();
         this.cdRef.detectChanges();
       }, 100);
     }

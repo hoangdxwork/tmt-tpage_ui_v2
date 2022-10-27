@@ -34,6 +34,7 @@ export class ModalAddQuickReplyComponent implements OnInit {
     this.modelDefault = {
       SubjectHtml: '',
       BodyHtml: '',
+      Command: '',
       Active: false
     }
   }
@@ -42,6 +43,7 @@ export class ModalAddQuickReplyComponent implements OnInit {
     this._form = this.fb.group({
       active: new FormControl(true),
       bodyHtml: new FormControl(''),
+      command: new FormControl(''),
       subjectHtml: new FormControl('',[Validators.required]),
     })
   }
@@ -101,6 +103,10 @@ export class ModalAddQuickReplyComponent implements OnInit {
 
     if(formModel.active) {
       this.modelDefault.Active = formModel.active;
+    }
+
+    if(formModel.command) {
+      this.modelDefault.Command = formModel.command;
     }
 
     return this.modelDefault;
