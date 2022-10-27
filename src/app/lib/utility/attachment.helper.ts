@@ -3,7 +3,6 @@ import { AttachmentType } from "../consts/show-attachment";
 
 export class AttachmentHelper {
   public static getType(type: string) {
-    debugger;
     let existType = TDSHelperString.hasValueString(type);
     let existEnum = Object.keys(AttachmentType);
 
@@ -13,7 +12,7 @@ export class AttachmentHelper {
         return AttachmentType[find];
       }
     }
-    
+
     return null;
   }
 
