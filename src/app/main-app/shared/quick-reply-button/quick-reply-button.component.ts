@@ -79,6 +79,8 @@ export class QuickReplyButtonComponent implements OnInit, OnChanges {
         if(res) {
           this.lstquickReplyDefault = [...[res], ...this.lstquickReplyDefault];
           this.quickReplies = [...this.lstquickReplyDefault];
+
+          this.quickReplyService.onChangeQuickReply.emit(res);
         }
       }
     })

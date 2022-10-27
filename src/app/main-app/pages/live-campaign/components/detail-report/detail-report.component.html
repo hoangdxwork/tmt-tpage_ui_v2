@@ -1,6 +1,6 @@
 <div class="w-full h-full" #viewCollapse>
-  <tds-spin [spinning]="isLoading">
-    <div class="h-full w-full flex flex-col gap-y-4" *ngIf="dataOverviewReport">
+  <tds-spin [spinning]="isLoading" class="h-full w-full flex">
+    <div class="h-full w-full flex flex-col" *ngIf="dataOverviewReport">
       <div class="flex gap-x-4 items-center">
         <div class="w-1/4 bg-white rounded-xl">
           <div class="w-full h-full flex 2xl:gap-x-6 xl:gap-x-4 p-6 items-start">
@@ -92,15 +92,13 @@
       </div>
 
       <!-- Danh sách sản phẩm -->
-      <div class="flex gap-x-4 h-full overflow-hidden">
-        <div class="w-2/3 h-full bg-white rounded-xl flex">
-          <div class="h-full w-full flex flex-col overflow-hidden">
-            <div class="p-4 font-semibold text-xl">
-              <span>Sản phẩm</span>
-            </div>
-            <!-- Bảng danh sách sản phẩm -->
-            <table-detail-report [liveCampaignId]="liveCampaignId"  [tableHeight]="height" class="w-full h-full"></table-detail-report>
+      <div class="flex gap-x-4 pt-4 w-full h-full overflow-hidden">
+        <div class="w-2/3 h-full bg-white rounded-xl flex flex-col overflow-hidden">
+          <div class="p-4 font-semibold text-xl">
+            <span>Sản phẩm</span>
           </div>
+          <!-- Bảng danh sách sản phẩm -->
+          <table-detail-report [liveCampaignId]="liveCampaignId" class="w-full h-full"></table-detail-report>
         </div>
 
         <!-- Thông tin -->

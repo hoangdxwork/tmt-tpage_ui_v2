@@ -6,7 +6,6 @@ import { OperatorEnum } from "../enum";
 // @dynamic
 export class THelperDataRequest {
     private static readonly _maxResultCount = "$top";
-    private static readonly _maxResultCountTake = "$take";
     private static readonly _skipCount = "$skip";
     private static readonly _filter = "$filter";
     private static readonly _sorting = "$orderby";
@@ -87,14 +86,14 @@ export class THelperDataRequest {
         let skipCount: number = (pageIndex - 1) * pageSize;
 
         if (TDSHelperObject.hasValue(maxResultCount)) {
-            result = `${this._maxResultCountTake}=${maxResultCount}`
+            result = `take=${maxResultCount}`
         }
 
         if (TDSHelperObject.hasValue(skipCount)) {
             if (result.length > 0) {
                 result += '&'
             }
-            result += `${this._skipCount}=${skipCount}`
+            result += `skip=${skipCount}`
         }
 
 

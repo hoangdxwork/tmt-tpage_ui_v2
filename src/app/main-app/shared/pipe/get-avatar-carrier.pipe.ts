@@ -71,13 +71,20 @@ export class AvatarRandomPipe implements PipeTransform {
 @Pipe({
   name: 'randomColor'
 })
+
 export class RandomColorPipe implements PipeTransform {
     transform(value: string) {
-      let colors = [
-        "#f44336", "#e91e63", "#ff80ab", "#f50057", "#c51162", "#9c27b0", "#ab47bc", "#9c27b0", "#6a1b9a", "#4a148c",
-        "#ea80fc", "#e040fb", "#d500f9", "#7e57c2", "#673ab7", "#f39c12", "#651fff", "#3d5afe", "#bdc3c7", "#00838f"
-      ];
-      let randomColor = colors[Math.floor(Math.random() * colors.length)];
-      return randomColor;
+      if(!value) return;
+
+      let color = this.colorize(value);
+      return color;
     }
+
+    colorize(str: string) {
+      for (var i = 0, hash = 0; i < str.length;
+        hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+
+      let color = Math.floor(Math.abs((Math.sin(hash) * 10000) % 1 * 16777216)).toString(16);
+      return '#' + Array(6 - color.length + 1).join('0') + color;
+  }
 }

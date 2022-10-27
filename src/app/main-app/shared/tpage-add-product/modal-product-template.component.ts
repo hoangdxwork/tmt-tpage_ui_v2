@@ -66,7 +66,12 @@ export class ModalProductTemplateComponent implements OnInit {
   };
 
   isLoading: boolean = false;
-  public readonly lstProductType = ProductType;
+  lstProductType = [
+    { value: 'product', text: 'Có thể lưu trữ'},
+    { value: 'consu', text: 'Có thể tiêu thụ'},
+    { value: 'service', text: 'Dịch vụ'}
+  ];
+
   fileList: TDSUploadFile[] = [];
 
   constructor(private sharedService: SharedService,
@@ -153,7 +158,7 @@ export class ModalProductTemplateComponent implements OnInit {
       ImageUrl: [null],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
-      Tags: [null]
+      OrderTag: [null]
     });
   }
 
@@ -175,6 +180,7 @@ export class ModalProductTemplateComponent implements OnInit {
     formControls["PurchasePrice"].setValue(data.PurchasePrice);
     formControls["DiscountPurchase"].setValue(data.DiscountPurchase);
     formControls["StandardPrice"].setValue(data.StandardPrice);
+    formControls['OrderTag'].setValue(data.OrderTag);
   }
 
   prepareModel() {
@@ -193,7 +199,7 @@ export class ModalProductTemplateComponent implements OnInit {
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
     this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
     this.defaultGet["StandardPrice"] = formModel.StandardPrice;
-    this.defaultGet["Tags"] = formModel.Tags? formModel.Tags.toString(): null;
+    this.defaultGet["OrderTag"] = formModel.OrderTag ? formModel.OrderTag.toString(): null;
 
     if (formModel.UOM) {
       this.defaultGet["UOM"] = formModel.UOM;
@@ -219,13 +225,14 @@ export class ModalProductTemplateComponent implements OnInit {
     this.isLoading = true
 
     this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$))
-      .subscribe(
-        {
+      .subscribe({
           next: (res: any) => {
-
             delete res['@odata.context'];
 
             let product = res as ProductTemplateV2DTO;
+            // TODO: thêm dk để tạo mã sp chiến dịch live
+            product.AttributeLength = model.AttributeLines?.length || 0;debugger
+
             this.message.success('Thêm mới sản phẩm thành công');
 
             // TODO: Trường hợp ở component Phiếu bán hàng
@@ -243,8 +250,7 @@ export class ModalProductTemplateComponent implements OnInit {
 
   loadProduct(type: string | undefined, product: ProductTemplateV2DTO) {
     this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next : (x: KeyCacheIndexDBDTO) => {
           if (type == "select") {
             this.onCancel([product, x]);
@@ -393,7 +399,7 @@ export class ModalProductTemplateComponent implements OnInit {
       });
 
       modal.afterClose.subscribe((result: ConfigProductVariant) => {
-        if (TDSHelperObject.hasValue(result)) { 
+        if (TDSHelperObject.hasValue(result)) {
           this.lstVariants.map((item, index) => {
             if (item.AttributeValues[0]?.Id == result.AttributeValues[0]?.Id) {
               this.lstVariants[index] = {...result};

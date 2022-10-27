@@ -127,6 +127,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
   createForm() {
     this.formQuickReply = this.formBuilder.group({
       active: new FormControl(false),
+      command: new FormControl(''),
       bodyHtml: new FormControl(''),
       subjectHtml: new FormControl('', [Validators.required]),
       advancedTemplateRadio: new FormControl(false),
@@ -374,6 +375,9 @@ export class CreateQuickReplyModalComponent implements OnInit {
 
     if (formModelQuickReply.active != null) {
       this.data.Active = formModelQuickReply.active as boolean;
+    }
+    if (formModelQuickReply.command != null ) {
+      this.data.Command = formModelQuickReply.command
     }
     if (formModelQuickReply.bodyHtml != null && !formModelQuickReply.advancedTemplateRadio) {
       this.data.BodyHtml = formModelQuickReply.bodyHtml

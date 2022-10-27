@@ -44,7 +44,7 @@
           </div>
 
 		      <!-- Nhiều hình -->
-          <div *ngIf="dataItem.Data && dataItem.Data.attachments && dataItem.Data.attachments?.data!.length > 1" class="flex flex-wrap w-[327px]">
+          <div *ngIf="dataItem.Data && dataItem.Data?.attachments && dataItem.Data.attachments?.data!.length > 1" class="flex flex-wrap w-[327px]">
               <div *ngFor="let att of dataItem.Data.attachments.data" class="p-0.5"  [ngClass]="dataItem.Data.attachments.data.length == 2 ? 'w-1/2' : 'w-1/3'">
                   <div class="w-full relative" [ngStyle]="{'padding-top.%': 100}">
 
@@ -65,7 +65,7 @@
               </div>
           </div>
 
-          <div *ngIf="dataItem.Data && dataItem.Data.attachments && this.isShowItemImage == true">
+          <div *ngIf="dataItem.Data && dataItem.Data?.attachments && this.isShowItemImage == true">
               <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
                   (closeShowItemImage)="onCloseShowItemImage($event)">
               </show-item-image>
@@ -73,7 +73,7 @@
 
           <!-- Tin nhắn không tải được -->
           <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
-              tds-tooltip tooltipTitle="{{dataItem.CreatedTime | yiDateTimeFormat}}">
+              tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
 

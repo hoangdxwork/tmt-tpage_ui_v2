@@ -60,21 +60,40 @@ export class AppComponent {
         let localSocket = localStorage.getItem('_socketNotification') as any;
         let checkNotti = JSON.parse(localSocket || null) || '';
 
-        if(checkNotti != 'OFF') {
+        if(checkNotti == 'OFF') return;
 
-            this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
-            let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id; 
-            
-            let eventUpdate = res.EventName == ChatmoniSocketEventName.chatomniOnUpdate;
-            let sendError = false;
+        this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
+        switch(res.EventName) {
+          // Thông báo tin nhắn lỗi
+          case ChatmoniSocketEventName.chatomniOnUpdate:
+              let paramsError =  this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+              let userError = res.Data?.Data?.UserId == this.route.snapshot.queryParams?.csid;
+              let errorNoti = res && paramsError && userError;
 
-            if (eventUpdate) {
-              sendError = res.Data?.Data?.UserId == this.route.snapshot.queryParams?.csid;
-            }
+              if(errorNoti == false) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+            break;
 
-            if (res && res.Notification && (!exist || sendError)) {
-                this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
-            }
+          // Thông báo cập nhật đơn hàng
+          case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
+              let paramsPost = this.router.url.startsWith('/conversation') && this.route.snapshot.queryParams?.post_id == res.Data?.Facebook_PostId;
+              let orderNoti = res && paramsPost;
+
+              if(orderNoti == true) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          break;
+
+          // Thông báo khi có tin nhắn gửi về
+          case ChatmoniSocketEventName.chatomniOnMessage:
+              let paramsMess = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+              let exist = res && paramsMess;
+
+              if(exist == true) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          break;
+
+          default:
+          break;
         }
       }
     })

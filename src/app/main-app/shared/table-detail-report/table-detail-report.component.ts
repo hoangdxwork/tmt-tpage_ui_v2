@@ -1,4 +1,5 @@
-import { TDSTableQueryParams } from 'tds-ui/table';
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { NgxVirtualScrollerDto } from './../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
@@ -8,7 +9,7 @@ import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.ser
 import { ModalLiveCampaignBillComponent } from '../../pages/live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { ModalLiveCampaignOrderComponent } from '../../pages/live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { Component, Input, OnInit, ViewContainerRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 
@@ -22,7 +23,7 @@ import { TDSModalService } from 'tds-ui/modal';
 export class TableDetailReportComponent implements OnInit {
 
     @Input() liveCampaignId!: string;
-    @Input() tableHeight: number = 300;
+    @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
     lstDetails: ReportLiveCampaignDetailDTO[] = [];
     count!: number;
@@ -33,6 +34,7 @@ export class TableDetailReportComponent implements OnInit {
 
     pageSize: number = 10;
     pageIndex: number = 1;
+    resfeshScroll: boolean = false;
 
     numberWithCommas =(value:TDSSafeAny) =>{
       if(value != null){
@@ -56,6 +58,7 @@ export class TableDetailReportComponent implements OnInit {
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
+        this.loadData(this.pageSize, this.pageIndex);
     }
 
     loadData(pageSize: number, pageIndex: number, text?: string) {
@@ -63,7 +66,9 @@ export class TableDetailReportComponent implements OnInit {
         let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
         this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
             next: res => {
-                this.lstDetails = [...res.Details];
+                this.lstDetails = [...this.lstDetails, ...res.Details];
+                this.lstDetails.map((x: any, i: number)=> { x.Index = i + 1; });
+
                 this.count = res.TotalCount;
                 this.isLoading = false;
 
@@ -75,11 +80,6 @@ export class TableDetailReportComponent implements OnInit {
             }
         })
     }
-
-    onQueryParamsChange(event: TDSTableQueryParams) {
-        this.loadData(event.pageSize, event.pageIndex, this.innerText);
-    }
-    
 
     showModalLiveCampaignOrder(id: string, index: number) {
         if(index){
@@ -151,15 +151,28 @@ export class TableDetailReportComponent implements OnInit {
 
     onSearch(event: TDSSafeAny) {
         let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
-        this.innerText = text;
+        this.lstDetails = [];
         this.pageIndex = 1;
+        this.resfeshScroll = false;
         this.loadData(this.pageSize, this.pageIndex, text);
     }
-
-    onRefresh(){
-        this.pageIndex = 1;
-        this.pageSize = 10;
-        this.innerText = '';
-        this.loadData(this.pageSize, this.pageIndex);
+    
+    nextData() {
+        this.pageIndex += 1;
+        this.loadData(this.pageSize, this.pageIndex, this.innerText);
     }
+
+    vsEnd(event: NgxVirtualScrollerDto) {
+        if(this.isLoading) {
+          return;
+        }
+
+        let exisData = this.lstDetails && this.lstDetails.length > 0 && event && event.scrollStartPosition > 0;
+        if(exisData) {
+          const vsEnd = Number(this.lstDetails.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 &&  Number(this.lstDetails.length) < this.count;
+          if(vsEnd) {
+              this.nextData();
+          }
+        }
+      }
 }

@@ -410,7 +410,7 @@ export class AddLiveCampaignPostComponent implements OnInit {
             ProductNameGet: x.NameGet,
             RemainQuantity: 0,
             ScanQuantity: 0,
-            Tags: x.Tags || '',
+            Tags: x.OrderTag || '',
             UOMId: x.UOMId,
             UOMName: x.UOMName,
             ProductCode: x.DefaultCode,
