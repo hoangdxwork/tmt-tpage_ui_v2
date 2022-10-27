@@ -94,7 +94,7 @@ export class LiveCampaignService extends BaseSevice {
 
   update(data: any, isUpdate: boolean): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${data.Id})?isUpdate=${isUpdate}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${data.Id})?isUpdate=${isUpdate}&includeOrderTag=true`,
       method: CoreApiMethodType.put,
     }
 
@@ -247,7 +247,7 @@ export class LiveCampaignService extends BaseSevice {
 
   updateDetails(id: string, data: any): Observable<any> {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails?includeordertag=true`,
         method: CoreApiMethodType.post,
     }
 
