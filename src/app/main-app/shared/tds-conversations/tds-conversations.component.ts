@@ -59,6 +59,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
   @ViewChild('viewchildSearchMess') viewchildSearchMess!: ElementRef<any>;
+  @ViewChild('viewChildQuickRepply') viewChildQuickRepply!: ElementRef<any>;
+  @ViewChild('viewChildInputMessage') viewChildInputMessage!: ElementRef<any>;
   @HostBinding("@eventFadeState") eventAnimation = true;
   @Input() partner?: any;
 
@@ -108,7 +110,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   order: TDSSafeAny;
   companyCurrents: TDSSafeAny;
 
-  isShowPoupQuickRepply: boolean = false;
   quickReplies: Array<QuickReplyDTO> = [];
   objQuickReply: TDSSafeAny = {};
 
@@ -1254,16 +1255,25 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  onChangeMessage(event: TDSSafeAny) {debugger
+  
+
+  onChangeMessage(event: TDSSafeAny) {
     let text = event.value.trim();
     let exist = event && event.keyupEvent && event.keyupEvent.code == 'Slash' && text == '/';
-    if(exist){
-      this.isShowPoupQuickRepply = true;
-      
-    } else if(text.charAt(0) != '/'){
-      this.isShowPoupQuickRepply = false;
-    }
 
+    if(exist){
+        setTimeout(() => {
+          if(this.viewChildQuickRepply)
+            this.viewChildQuickRepply.nativeElement.focus();
+          }, 100);
+    } else if(text.charAt(0) != '/'){
+        setTimeout(() => {
+          if(this.viewChildInputMessage)
+            this.viewChildInputMessage.nativeElement.click();
+            this.viewChildInputMessage.nativeElement.focus();
+          }, 100);
+    }
+    
     event.keyupEvent.preventDefault();
     event.keyupEvent.stopImmediatePropagation();
   }
@@ -1292,8 +1302,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.onQuickReplySelected(item);
-    this.isShowPoupQuickRepply = false;
+    setTimeout(() => {
+      if(this.viewChildInputMessage)
+        this.viewChildInputMessage.nativeElement.click();
+        this.viewChildInputMessage.nativeElement.focus();
+      }, 100);
+  }
 
+  onSelectionChange(event: any) {
+    if(event && event.value) { 
+      setTimeout(() => {
+        let text = ReplaceHelper.quickReply(event.value, this.partner);
+        this.messageModel = text;
+
+        this.cdRef.detectChanges();
+      }, 100);
+    }
   }
 
   ngOnDestroy(): void {
