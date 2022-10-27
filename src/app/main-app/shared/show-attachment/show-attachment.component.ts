@@ -23,10 +23,12 @@ export class ShowAttachmentComponent implements OnInit, OnChanges {
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
+    debugger;
     this.currentType = this.getAttachmentType(changes.type.currentValue);
   }
 
   ngOnInit(): void {
+    debugger;
   }
 
   error() {
@@ -34,6 +36,7 @@ export class ShowAttachmentComponent implements OnInit, OnChanges {
   }
 
   getAttachmentType(type: string) {
+    debugger;
     let getType = AttachmentHelper.getType(type);
     if (getType) return getType;
 

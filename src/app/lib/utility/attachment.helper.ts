@@ -3,15 +3,17 @@ import { AttachmentType } from "../consts/show-attachment";
 
 export class AttachmentHelper {
   public static getType(type: string) {
+    debugger;
     let existType = TDSHelperString.hasValueString(type);
     let existEnum = Object.keys(AttachmentType);
 
-    if(!existType && existEnum.length > 0) {
+    if(existType && existEnum.length > 0) {
       let find = existEnum.find(x => AttachmentType[x] == type);
       if(find){
         return AttachmentType[find];
       }
     }
+    
     return null;
   }
 
