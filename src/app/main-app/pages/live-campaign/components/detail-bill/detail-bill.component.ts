@@ -401,16 +401,17 @@ export class DetailBillComponent implements OnInit {
                 // danh sách lỗi
               }
 
-              if(res.Success) {
-                that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
-                this.loadData(this.pageSize, this.pageIndex);
-              }
-
               that.isProcessing = false;
 
               if(type) {
                 this.print(type);
               }
+
+              if(res.Success) {
+                that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
+              }
+
+              this.loadData(this.pageSize, this.pageIndex);
 
               this.isLoading = false;
             },
