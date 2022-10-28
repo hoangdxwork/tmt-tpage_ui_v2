@@ -56,13 +56,3 @@
       <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
       <button tds-button class="min-w-[100px]" type="submit" color="primary" (click)="onSave()">Xác nhận</button>
 </div>
-
-<tds-modal [(visible)]="isVisible" title="Danh sách lỗi" size="lg" (onCancel)="handleCancel()" [okText]="null" [cancelText]="'Đóng'">
-  <ng-container *tdsModalContent>
-    <div class="flex flex-col border-y divide-y max-h-[350px] overflow-auto tds-custom-scroll">
-        <div *ngFor="let err of lstErrors">
-            <div [innerHTML]="err" class="p-2 bg-neutral-3-50 send-delivery-error-content"></div>
-        </div>
-    </div>
-  </ng-container>
-</tds-modal>

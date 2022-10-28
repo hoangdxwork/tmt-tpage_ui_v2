@@ -19,6 +19,7 @@ export interface FilterObjSOOrderModel {
   } | any,
   liveCampaignId: string | any,
   teamId?: string | any,
+  IsHasPhone: boolean | null
 }
 
 export interface TabNavsDTO {
@@ -134,11 +135,11 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
     if (TDSHelperArray.hasListValue(filterObj.status)) {
       dataFilter.filters.push({
-        filters: filterObj.status.map((x) => ({
+        filters: filterObj.status?.map((x) => ({
           field: "StatusText",
           operator: "eq",
           value: x,
-        })),
+        })) || [],
 
         logic: "or"
       })
