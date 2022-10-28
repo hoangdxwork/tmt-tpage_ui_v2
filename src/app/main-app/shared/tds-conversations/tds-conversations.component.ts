@@ -804,6 +804,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           //TODO: Lấy item cuối đẩy qua conversation-all-v2
           if(index < 0) {
               this.dataSource.Items = [...this.dataSource.Items, ...[data]];
+          } else {
+            //TODO: trường hợp socket trả về trước res, gán lại data để Status là Pending
+              this.dataSource.Items[index] = {...data};
+              this.dataSource.Items = [...this.dataSource.Items];
           }
 
           //TODO: Đẩy qua conversation-all-v2
