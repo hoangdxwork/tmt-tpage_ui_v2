@@ -30,6 +30,7 @@ import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'edit-livecampaign-post',
@@ -75,7 +76,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   isLoadingSelect: boolean = false;
   countUOMLine: number = 0;
   pageSize = 20;
-  pageIndex = 1;
+  pageIndex = 0;
   isLoadingNextdata: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
@@ -393,11 +394,14 @@ export class EditLiveCampaignPostComponent implements OnInit {
         viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe((result: any[]) => {
-      if(result && result[0]) {
+    modal.afterClose.subscribe((res: any) => {
+      if(!res) return;
+      res = {...res} as SyncCreateProductTemplateDto;
+
+      if(res.type === 'select' && res.productTmpl) {
         this.onReset();
 
-        let x = result[0] as ProductTemplateV2DTO;
+        let x = res.productTmpl as ProductTemplateV2DTO;
         let item = {
             Quantity: 1,
             RemainQuantity: 0,
@@ -438,7 +442,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       this.virtualScroller.scrollToPosition(0);
     }
 
-    this.pageIndex = 1;
+    this.pageIndex = 0;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
@@ -449,11 +453,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.lstVariants = [];
   }
 
-  addItemProduct(listData: ProductDTOV2[], isVariants?: boolean){
+  addItemProduct(listData: ProductDTOV2[], isVariants?: boolean) {
     let formDetails = this.detailsFormGroups.value as any[];
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
-    listData.forEach((x:ProductDTOV2) => {
+    listData.forEach((x: ProductDTOV2) => {
       let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
       if(!exist){
           let qty = Number(this.lstInventory[x.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
@@ -502,7 +506,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   loadProductAttributeLine(id: TDSSafeAny, uomId: number) {
-    if(this.isLoadingSelect){
+    if(this.isLoadingSelect) {
         return;
     }
 
@@ -616,7 +620,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         },
         error: (err: any) => {
             this.isLoading = false;
-            this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
+            this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
         }
     })
   }

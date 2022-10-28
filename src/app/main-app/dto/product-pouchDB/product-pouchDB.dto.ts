@@ -46,13 +46,15 @@ export interface ProductPouchDBDTO {
 export interface KeyCacheIndexDBDTO {
   cacheCount: number;
   cacheVersion: number;
-  cacheDbStorage:  DataPouchDBDTO[];
+  cacheDbStorage: DataPouchDBDTO[];
 }
 
 export interface SyncCreateProductTemplateDto {
-  indexDB: KeyCacheIndexDBDTO;
+  type: any;
+  cacheDbStorage: DataPouchDBDTO[];
   productTmpl: ProductTemplateV2DTO;
 }
+
 
 
 

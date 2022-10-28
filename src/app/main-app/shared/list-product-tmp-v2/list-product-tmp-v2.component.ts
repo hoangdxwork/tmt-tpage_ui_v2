@@ -4,7 +4,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { takeUntil } from 'rxjs/operators';
@@ -23,6 +23,7 @@ import { ProductService } from '@app/services/product.service';
   templateUrl: './list-product-tmp-v2.component.html',
   providers: [TDSDestroyService]
 })
+
 export class ListProductTmpV2Component implements OnInit {
 
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
@@ -31,11 +32,9 @@ export class ListProductTmpV2Component implements OnInit {
   @Input() isLoadingProduct: boolean = false;
   @Input() type!: string;
 
-  @Output() onLoadProductToOrderLines: EventEmitter<any> = new EventEmitter<any>();
   @Output() onLoadProductToLiveCampaign: EventEmitter<any> = new EventEmitter<any>();
 
   lstOfData!: DataPouchDBDTO[];
-
   lstVariants: ProductDTOV2[] = [];
 
   indexDbStorage!: DataPouchDBDTO[];
@@ -251,31 +250,29 @@ export class ListProductTmpV2Component implements OnInit {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        type: this.type
+          type: this.type
       }
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: any) => {
-          if(res) {
-            let productTmplItems = res[0];
+      next: (res: any) => {
+        if(!res) return;
 
-            if(res[1]) {
-              let cacheObject = res[1];
-              this.indexDbStorage = [...cacheObject.cacheDbStorage];
+        res = {...res} as SyncCreateProductTemplateDto;
+        this.indexDbStorage = [...res.cacheDbStorage];
+
+        if(res.type === 'select' && res.productTmpl) {
+            let model = res.productTmpl;
+            let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId) as DataPouchDBDTO[];
+
+            if(items && items.length == 0) {
+                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
             }
 
-            // TODO: trường hợp thêm mới push sp vào orderLines
-            if(productTmplItems?.Id) {
-
-              let items = this.indexDbStorage.filter((x: DataPouchDBDTO) => x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
-
-              this.filterLstVariants(items, productTmplItems);
-              this.getAllVariantsv2();
-            }
-          }
+            this.onLoadProductToLiveCampaign.emit(items);
         }
-      })
+      }
+    })
   }
 
   reloadIndexDB() {
@@ -308,12 +305,6 @@ export class ListProductTmpV2Component implements OnInit {
           x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
       }
     });
-
-    this.lstVariants = [...model] as ProductDTOV2[];
-
-    this.lstVariants.map(x=> {
-      x.PriceVariant = x.Price;
-    })
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -336,65 +327,50 @@ export class ListProductTmpV2Component implements OnInit {
     this.keyFilter = this.innerText || '';
 
     this.loadDataTable();
-
     this.isLoading = false;
   }
 
-  addItem(data: DataPouchDBDTO, index?: number) {
-    this.indClick = index as number;
+  selectProduct(data: DataPouchDBDTO, index: number){
+    if(this.isLoadingSelect) return;
 
-    // TODO: trường hợp thêm sản phẩm vào đơn hàng
-    switch(this.type){
-      case 'order':
-        this.onLoadProductToOrderLines.emit(data);
-        break;
-      case 'liveCampaign':
-        this.filterLstVariants(data);
-        let dataModel = data as ProductDTOV2
-        this.selectProduct(dataModel);
-    }
-  }
-
-  selectProduct(data: ProductDTOV2, index?: number){
+    this.indClick = index;
     let uomId: number = data.UOMId;
+
     if(Number(index) >= 0) {
         this.indClick = Number(index);
     }
 
-    this.loadProductAttributeLine(data.ProductTmplId, uomId);
+    let id = data.ProductTmplId;
+    this.loadProductAttributeLine(id, uomId);
   }
 
-  loadProductAttributeLine(id: TDSSafeAny, uomId: number) {
-    if(this.isLoadingSelect){
-      return;
-    }
-
+  loadProductAttributeLine(id: any, uomId: number) {
     this.isLoadingSelect = true;
     this.lstVariants = [];
 
-    this.productTemplateService.getProductVariants(id).pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: (res) => {
+    this.productTemplateService.getProductVariants(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+
+          if(res && res.value && res.value.length == 0) {
+              this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+              this.indClick = -1;
+          }
+
           this.lstVariants = [...(res.value || [])];
           this.lstVariants.map((x: ProductDTOV2) => {
-            x.UOMId = uomId;
+              x.UOMId = uomId;
           });
 
           this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
-
-          if(this.lstVariants.length == 0) {
-            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-            this.indClick = -1;
-          }
+          this.indClick = -1;
           this.isLoadingSelect = false;
-        },
-        error: error => {
+      },
+      error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
           this.isLoadingSelect = false;
           this.indClick = -1;
-        }
       }
-    )
+    })
   }
 
   getAllVariantsv2(){
@@ -410,6 +386,7 @@ export class ListProductTmpV2Component implements OnInit {
         }
         this.onLoadProductToLiveCampaign.emit(model);
     }
+
     this.indClick = -1;
   }
 

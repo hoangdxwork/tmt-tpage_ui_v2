@@ -34,6 +34,7 @@ import { CRMTeamService } from '@app/services/crm-team.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
+import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'app-add-livecampaign-postv2',
@@ -354,10 +355,14 @@ export class AddLivecampaignPostV2Component implements OnInit {
         viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe((result: any[]) => {
-      if(result && result[0]) {
+    modal.afterClose.subscribe((res: any) => {
+
+      if(!res) return;
+      res = {...res} as SyncCreateProductTemplateDto;
+
+      if(res.type === 'select' && res.productTmpl) {
         this.onReset();
-        let x = result[0] as ProductTemplateV2DTO;
+        let x = res.productTmpl as ProductTemplateV2DTO;
 
         let item = {
             Quantity: 1,
@@ -640,7 +645,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
             })
 
             this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
-
             this.isLoadingSelect = false;
         },
         error: error => {

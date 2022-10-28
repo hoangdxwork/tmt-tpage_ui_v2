@@ -1,5 +1,5 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from './../../dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { mergeMap } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
@@ -158,7 +158,7 @@ export class ModalProductTemplateComponent implements OnInit {
   updateForm(data: ProductTemplateDTO) {
     let formControls = this._form.controls;
 
-    formControls["Type"].setValue(data.ShowType);
+    formControls["Type"].setValue(data.Type);
     formControls["Categ"].setValue(data.Categ);
     formControls["UOM"].setValue(data.UOM);
     formControls["UOMPO"].setValue(data.UOMPO);
@@ -225,12 +225,15 @@ export class ModalProductTemplateComponent implements OnInit {
           return this.productIndexDBService.getCacheDBRequest().pipe(map((indexDB: any) => {
               return [product, indexDB];
           }))
-      })).subscribe({
+      }))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
         next: ([product, indexDB]) => {
 
             let model: SyncCreateProductTemplateDto = {
-                productTmpl: product as ProductTemplateV2DTO,
-                indexDB: indexDB as KeyCacheIndexDBDTO
+              type: type,
+              productTmpl: product as ProductTemplateV2DTO,
+              cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
             };
 
             this.modalRef.destroy(type ? model : null);
@@ -241,57 +244,7 @@ export class ModalProductTemplateComponent implements OnInit {
             this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       })
-
-    // this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
-    //     next: (res: any) => {
-    //         delete res['@odata.context'];
-
-    //         // TODO: Đồng bộ sp indexDB
-    //         this.productIndexDBService.setCacheDBRequest();
-    //         this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
-    //             next: (data: any) => {
-
-    //             }
-    //         })
-
-    //         let product = res as ProductTemplateV2DTO;
-    //         // TODO: thêm dk để tạo mã sp chiến dịch live
-    //         product.AttributeLength = model.AttributeLines?.length || 0;
-
-    //         this.message.success('Thêm mới sản phẩm thành công');
-    //         this.loadProduct(type, product);
-    //         this.isLoading = false;
-    //     },
-    //     error: (error) => {
-    //         this.isLoading = false;
-    //         this.message.error(error?.error?.message || Message.InsertFail);
-    //     }
-    // });
   }
-
-
-
-
-  // loadProduct(type: string | undefined, product: ProductTemplateV2DTO) {
-  //   this.productIndexDBService.setCacheDBRequest();
-  //   this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
-  //       next: (x: KeyCacheIndexDBDTO) => {
-  //         if (type == "select") {
-  //           this.onCancel([product, x]);
-  //         } else {
-  //           this.onCancel(null);
-  //         }
-  //       },
-  //       error: (error) => {
-  //         if (type == "select") {
-  //           this.onCancel([product, null]);
-  //         } else {
-  //           this.onCancel(null);
-  //         }
-  //       }
-  //     }
-  //   )
-  // }
 
   onCancel() {
     this.modalRef.destroy(null);
@@ -316,9 +269,7 @@ export class ModalProductTemplateComponent implements OnInit {
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
       size: 'lg',
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-      }
+      viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.subscribe(result => {

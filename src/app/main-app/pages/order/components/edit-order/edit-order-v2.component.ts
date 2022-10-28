@@ -54,6 +54,7 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'edit-order-v2',
@@ -402,9 +403,13 @@ export class EditOrderV2Component implements OnInit {
         viewContainerRef: this.viewContainerRef,
     });
 
-    modal.afterClose.subscribe(result => {
-      if(TDSHelperObject.hasValue(result)) {
-        let data = result[0];
+    modal.afterClose.subscribe(res => {
+      if(!res) return;
+
+      res = {...res} as SyncCreateProductTemplateDto;
+      if(res.type === 'select' && res.productTmpl) {
+
+        let data = res.productTmpl;
         let item = {
             Quantity: 1,
             Price: data.ListPrice,
@@ -418,11 +423,10 @@ export class EditOrderV2Component implements OnInit {
             Factor: 1,
             OrderId: this.quickOrderModel.Id,
             Priority: 0,
-            ImageUrl: result.ImageUrl,
+            ImageUrl: data.ImageUrl,
         } as Detail_QuickSaleOnlineOrder;
 
         this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
-
         this.calcTotal();
         this.coDAmount();
       }

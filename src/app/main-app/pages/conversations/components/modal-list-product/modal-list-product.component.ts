@@ -1,21 +1,18 @@
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
-import { FilterObjDTO } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ConversationOrderFacade } from './../../../../services/facades/conversation-order.facade';
-import { AfterViewInit, ChangeDetectorRef, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
-import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { ChangeDetectorRef, Input, ViewContainerRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
-import { debounceTime, finalize, map, mergeMap, takeUntil } from 'rxjs/operators';
-import { CommonService } from 'src/app/main-app/services/common.service';
+import { takeUntil } from 'rxjs/operators';
 import { orderBy as _orderBy } from 'lodash';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
-import { TDSTableComponent, TDSTableQueryParams } from 'tds-ui/table';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ProductService } from '@app/services/product.service';
 
@@ -40,14 +37,7 @@ export class ModalListProductComponent implements OnInit {
 
   indexDbVersion: number = 0;
   indexDbProductCount: number = -1;
-  indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
-
-  cacheObject: KeyCacheIndexDBDTO = {
-    cacheCount: -1,
-    cacheVersion: 0,
-    cacheDbStorage: []
-  }
 
   inventories!: TDSSafeAny;
   companyCurrents!: CompanyCurrentDTO;
@@ -106,14 +96,7 @@ export class ModalListProductComponent implements OnInit {
     });
   }
 
-  validateData(){
-    this.indexDbStorage = [];
-    this.indexDbVersion = 0;
-    this.indexDbProductCount = -1;
-  }
-
   loadData(): void {
-    this.validateData();
     this.isLoading = true;
 
     this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex - 1, this.pageSize, this.textSearchProduct)
@@ -158,20 +141,28 @@ export class ModalListProductComponent implements OnInit {
 
   showModalAddProduct() {
     const modal = this.modalService.create({
-      title: 'Thêm sản phẩm',
-      content: ModalProductTemplateComponent,
-      size: 'xl',
-      viewContainerRef: this.viewContainerRef,
-  });
+        title: 'Thêm sản phẩm',
+        content: ModalProductTemplateComponent,
+        size: 'xl',
+        viewContainerRef: this.viewContainerRef
+    });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: any) => {
-          if(res) {
-            let productTmplItems = res[0];
-            this.addItem(productTmplItems);
-          }
+      next:(res: any) => {
+        if(!res) return;
+
+        res = {...res} as SyncCreateProductTemplateDto;
+        let indexDbStorage = [...res.cacheDbStorage];
+
+        if(res.type === 'select' && res.productTmpl) {
+          let model = res.productTmpl;
+          let item = indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId)[0] as DataPouchDBDTO;
+
+          if(!item) return;
+          this.addItem(item);
         }
-      })
+      }
+    })
   }
 
   onCancel(){

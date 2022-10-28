@@ -308,10 +308,11 @@ export class AddLiveCampaignV2Component implements OnInit {
   onLoadProduct(model: any) {
     let listData = [...(model.value|| [])];
     let formDetails = this.detailsFormGroups.value as any[];
+
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
-    listData.forEach((x:ProductDTOV2) => {
-      let exist = formDetails.filter((f:LiveCampaignProductDTO) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
+    listData.forEach((x: ProductDTOV2) => {
+      let exist = formDetails.filter((f: LiveCampaignProductDTO) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
 
       // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
       if(!exist){
@@ -493,7 +494,6 @@ export class AddLiveCampaignV2Component implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModel(this._form);
-
       this.create(model);
     }
   }
@@ -512,9 +512,6 @@ export class AddLiveCampaignV2Component implements OnInit {
         }
       });
   }
-
-  // prepareModel() {
-  // }
 
   isCheckValue() {
     let formValue = this._form.value;
