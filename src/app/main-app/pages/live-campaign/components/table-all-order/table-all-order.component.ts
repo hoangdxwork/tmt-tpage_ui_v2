@@ -59,7 +59,8 @@ export class TableAllOrderComponent implements OnInit {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
     },
-    liveCampaignId: null
+    liveCampaignId: null,
+    IsHasPhone: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
@@ -133,6 +134,10 @@ export class TableAllOrderComponent implements OnInit {
     let filters = this.odataLiveCampaignOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
+    if(this.filterObj.IsHasPhone != null) {
+      params += `&IsHasPhone=${this.filterObj.IsHasPhone}`;
+    }
+    
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
         this.count = res['@odata.count'] as number;
@@ -172,20 +177,23 @@ export class TableAllOrderComponent implements OnInit {
   }
 
 
-  onLoadOption(event: any): void {
+  onLoadOption(event: FilterObjSOOrderModel): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.pageSize = 20;
 
+    let lstStatus = event?.status?.filter(x => x != 'Tất cả');
+
     this.filterObj = {
       tags: event.tags,
-      status: event?.status != 'Tất cả' ? event?.status : null,
+      status: lstStatus ? lstStatus : [],
       searchText: event.searchText,
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate,
       } : null,
       liveCampaignId: null,
+      IsHasPhone: event.IsHasPhone
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -200,6 +208,7 @@ export class TableAllOrderComponent implements OnInit {
       searchText: '',
       dateRange: {} as any,
       liveCampaignId: null,
+      IsHasPhone: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);

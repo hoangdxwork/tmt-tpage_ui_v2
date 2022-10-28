@@ -19,7 +19,7 @@ import { LiveCampaignService } from '@app/services/live-campaign.service';
 
 export class FilterOptionsComponent implements OnInit {
 
-  @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
+  @Output() onLoadOption = new EventEmitter<FilterObjSOOrderModel>();
   @Input() tabNavs!: TabNavsDTO[];
   @Input() summaryStatus: Array<TabNavsDTO> = [];
   @Input() lstDataTag: Array<TDSSafeAny> = [];
@@ -132,8 +132,16 @@ export class FilterOptionsComponent implements OnInit {
 
   checkActiveStatus(){
     this.listStatus.map(stt=>{
-      stt.IsSelected = this.filterObj.status.some(f=>f == stt.Name);
+      stt.IsSelected = this.filterObj.status?.some(f=>f == stt.Name);
     })
+  }
+
+  selectIsHasPhone(checked: boolean, status: boolean) {
+    if(checked) {
+      this.filterObj.IsHasPhone = status;
+    } else {
+      this.filterObj.IsHasPhone = null;
+    }
   }
 
   onApply() {
@@ -173,6 +181,7 @@ export class FilterOptionsComponent implements OnInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
+      IsHasPhone: null
     };
 
     this.isActive = false;

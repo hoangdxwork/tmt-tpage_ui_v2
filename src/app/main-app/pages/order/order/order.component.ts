@@ -78,6 +78,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     },
     teamId: '',
     liveCampaignId: '',
+    IsHasPhone: null
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -221,6 +222,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
+
+    if(this.filterObj.IsHasPhone != null) {
+      params += `&IsHasPhone=${this.filterObj.IsHasPhone}`;
+    }
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
@@ -529,7 +534,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
       },
-      liveCampaignId: null
+      liveCampaignId: null,
+      IsHasPhone: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
