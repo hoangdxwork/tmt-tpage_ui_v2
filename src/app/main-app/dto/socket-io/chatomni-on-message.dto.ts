@@ -28,6 +28,7 @@ export interface MessageSocketioDto {
   ChannelCreatedTime: Date;
   LatestMessage?: ChatomniConversationMessageDto;
   IsOwner: boolean;
+  CreatedBy?: any
 }
 
 export interface SocketioOnMessageDto {

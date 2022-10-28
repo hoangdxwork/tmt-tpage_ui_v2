@@ -9,7 +9,7 @@ import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversat
 import { CRMTeamService } from "../crm-team.service";
 import { Subject, takeUntil } from "rxjs";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
-import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniMessageType } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
+import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniMessageType, ChatomniStatus } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 
 @Injectable()
 
@@ -47,10 +47,10 @@ export class ChatomniConversationFacade extends BaseSevice  {
         Source: null,
         Type: socket.Message?.MessageType,
         UserId: socket.Message?.UserId,
-        Status: 1,
+        Status: ChatomniStatus.Done, 
         IsSystem: false, // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
         CreatedById: null,
-        CreatedBy: null,
+        CreatedBy: socket.Message?.CreatedBy,
         CreatedTime: socket.Message?.CreatedTime,
         ChannelCreatedTime: socket.Message?.ChannelCreatedTime,
         ChannelUpdatedTime: null,
