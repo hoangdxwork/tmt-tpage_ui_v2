@@ -176,7 +176,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
                   switch(this.type) {
                       case 'message':
-                          let existMessage = res.Data.Message.MessageType == (ChatomniMessageType.FacebookMessage || ChatomniMessageType.TShopMessage);
+                          let existMessage = res.Data.Message.MessageType == (ChatomniMessageType.FacebookMessage || ChatomniMessageType.TShopMessage) && !res.Data.Message.IsOwner;
                           if(existMessage) {
                               this.setSocketChatomniOnMessage(res);
                           }
