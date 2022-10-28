@@ -75,7 +75,7 @@
             <th *ngIf="isHidden('State')" [width]="'130px'">Trạng thái</th>
             <th *ngIf="isHidden('PrintDeliveryCount')" [width]="'150px'" [align]="'center'">Số lần in HĐ</th>
             <th *ngIf="isHidden('UserName')" [width]="'180px'">Nhân viên</th>
-            <th *ngIf="isHidden('DateCreated')" [width]="'150px'">Thời gian</th>
+            <th *ngIf="isHidden('DateInvoice')" [width]="'150px'">Ngày bán</th>
             <th [tdsRight]="true" [width]="'100px'">Thao tác</th>
           </tr>
         </thead>
@@ -186,8 +186,8 @@
               {{bill.UserName}}
             </td>
             <!-- Thời gian -->
-            <td *ngIf="isHidden('DateCreated')">
-              {{bill.DateCreated | date: 'dd/MM/yyyy hh:ss'}}
+            <td *ngIf="isHidden('DateInvoice')">
+              {{bill.DateInvoice | date: 'dd/MM/yyyy HH:ss'}}
             </td>
             <!-- Thao tác -->
             <td [tdsRight]="true">
