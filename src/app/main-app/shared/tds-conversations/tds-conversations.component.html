@@ -147,7 +147,7 @@
             </div>
 
             <div *ngIf="dataSource && dataSource?.Items" >
-                <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | reduceSystemMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
+                <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
                   <div *ngIf="item" @eventFadeState>
 
                     <!-- TODO: user đã đọc -->
@@ -304,7 +304,7 @@
                         placeholder="input here" tdsInput [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" #viewChildQuickRepply [tdsAutocomplete]="auto" />
                 </tds-form-field>
             </div>
-            
+
             <tds-autocomplete #auto [width]="350" [autoClose]="false" [overlayClassName]="'h-[400px] cs-quick-repply flex'"  (selectionChange)="onSelectionChange($event)">
                 <tds-auto-option *ngFor="let option of (quickReplies | simpleSearchQuickRepply: messageModel)"
                 [value]="option.BodyPlain" [label]="option.Name">
@@ -342,7 +342,7 @@
 
               <div class="w-full pt-4 flex flex-row">
                   <textarea #viewChildInputMessage tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
-                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" 
+                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
                       (paste)="onPaste($event)" [tdsInputDebounce]="0" (inputKeyup)="onChangeMessage($event)"
                       (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
                   </textarea>
