@@ -1,7 +1,7 @@
 <div class="w-full h-full bg-white rounded-xl pb-2">
   <div class="flex flex-col h-full">
     <div class="p-4 font-semibold text-xl flex gap-x-3 justify-end">
-      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+      <!-- <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
         <button tds-button color="info" (click)="approveOrder()">
           <span class="flex items-center">
             <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Xác nhận bán hàng
@@ -31,13 +31,34 @@
             <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
           </span>
       </button>
-      </tds-spin>
+      </tds-spin> -->
+
+
+      <tds-button-group>
+        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+          <button tds-button color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'"
+            [tdsDropdownMenu]="menu">
+            <span class="flex items-center">
+              Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+            </span>
+          </button>
+        </tds-spin>
+
+        <tds-dropdown-menu #menu="tdsDropdownMenu">
+          <div class="w-[272px]">
+            <div tds-dropdown-item (click)="sendDelivery()">Gửi vận đơn</div>
+            <div tds-dropdown-item (click)="print('print')">In hóa đơn</div>
+            <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
+            <div tds-dropdown-item (click)="approveOrder()">Xác nhận bán hàng</div>
+            <div tds-dropdown-item (click)="approveOrder('print')">Xác nhận và in hóa đơn</div>
+            <div tds-dropdown-item (click)="approveOrder('printShips')">Xác nhận và in phiếu ship</div>
+          </div>
+        </tds-dropdown-menu>
+      </tds-button-group>
 
       <tds-form-field class="w-[320px]">
-        <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
-          [(ngModel)]="filterObj.searchText"
-          [tdsInputDebounce]="750"
-          (inputKeyup)="onSearch($event)" />
+        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="filterObj.searchText"
+          [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
       <bill-filter-options (onLoadOption)="onLoadOption($event)"></bill-filter-options>
@@ -45,26 +66,17 @@
     </div>
 
     <div class="flex-auto text-body-2 text-neutral-1-900">
-      <tds-table #tableMessage
-        [showSizeChanger]="true"
-        [frontPagination]="false"
-        [(pageSize)]="pageSize"
-        [(pageIndex)]="pageIndex"
-        [listData]="lstOfData"
-        [scroll]="{y:'auto'}"
-        [loading]="isLoading"
-        [total]="count"
-        [scroll]="{y:'auto'}"
-        (clickRefresh)="refreshData()"
-        (queryParams)="onQueryParamsChange($event)">
+      <tds-table #tableMessage [showSizeChanger]="true" [frontPagination]="false" [(pageSize)]="pageSize"
+        [(pageIndex)]="pageIndex" [listData]="lstOfData" [scroll]="{y:'auto'}" [loading]="isLoading" [total]="count"
+        [scroll]="{y:'auto'}" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr>
             <th [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" width="44px"
-                (checkedChange)="onAllChecked($event)"></th>
+              (checkedChange)="onAllChecked($event)"></th>
             <th [tdsLeft]="true" [width]="'57px'" [align]="'center'">STT</th>
             <th *ngIf="isHidden('Number')" [tdsLeft]="true" [width]="'150px'">Số hóa đơn</th>
             <th *ngIf="isHidden('PartnerDisplayName')" [tdsLeft]="true" [width]="'160px'">Tên khách hàng</th>
-            <th *ngIf="isHidden('PartnerPhone')" [width]="'150px'">Số điện thoại</th>
+            <th *ngIf="isHidden('TrackingRef')" [width]="'170px'">Mã vận đơn</th>
             <th *ngIf="isHidden('AmountTotal')" [width]="'130px'" [align]="'right'">Tổng tiền</th>
             <th *ngIf="isHidden('AmountDeposit')" [width]="'130px'" [align]="'right'">Đặt cọc</th>
             <th *ngIf="isHidden('Residual')" [width]="'130px'" [align]="'right'">Còn nợ</th>
@@ -78,8 +90,8 @@
         <tbody>
           <tr *ngFor="let bill of tableMessage.data; let index=index">
             <td [tdsLeft]="true" [checked]="setOfCheckedId.has(bill.Id)"
-                  (checkedChange)="onItemChecked(bill.Id, $event)">
-                </td>
+              (checkedChange)="onItemChecked(bill.Id, $event)">
+            </td>
             <td [align]="'center'" [tdsLeft]="true">
               {{ index | numericalOrder:pageSize:pageIndex }}
             </td>
@@ -99,12 +111,16 @@
 
                 <button (click)="openTag(bill.Id, bill.Tags)" tds-button-icon tds-popover
                   [popoverVisible]="indClickTag == bill.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                  [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left" color="secondary" size="sm"
-                  class=" border-0">
+                  [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left" color="secondary"
+                  size="sm" class=" border-0">
                   <div class="w-5 h-5 relative">
-                    <i class="tdsi-tag-fill text-base text-neutral-1-500 leading-4 select-all absolute top-0 left-0"></i>
-                    <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12" height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745"/>
+                    <i
+                      class="tdsi-tag-fill text-base text-neutral-1-500 leading-4 select-all absolute top-0 left-0"></i>
+                    <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
+                      height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z"
+                        fill="#28A745" />
                     </svg>
                   </div>
                 </button>
@@ -114,7 +130,8 @@
                   <div class="w-96">
                     <tds-form-field>
                       <tds-select valueField="Id" textField="Name" placeholder='Chọn các tag' [(ngModel)]="modelTags"
-                        [allowClear]="true" [valuePrimitive]="false" [data]="lstTags" [autoClose]="true" mode="multiple">
+                        [allowClear]="true" [valuePrimitive]="false" [data]="lstTags" [autoClose]="true"
+                        mode="multiple">
                       </tds-select>
                     </tds-form-field>
                   </div>
@@ -138,11 +155,14 @@
             </td>
             <!-- Tên khách hàng -->
             <td *ngIf="isHidden('PartnerDisplayName')" [tdsLeft]="true">
-              {{bill.PartnerDisplayName}}
+              <div class="w-full">
+                <p class="w-full">{{bill.PartnerDisplayName}}</p>
+                <p class="text-[#929DAA]">{{bill.PartnerPhone}}</p>
+              </div>
             </td>
             <!-- Số điện thoại -->
-            <td *ngIf="isHidden('PartnerPhone')">
-              {{bill.PartnerPhone}}
+            <td *ngIf="isHidden('TrackingRef')" class="w-full truncate">
+              {{bill.TrackingRef}}
             </td>
             <!-- Tổng tiền -->
             <td *ngIf="isHidden('AmountTotal')" [align]="'right'">
@@ -159,8 +179,10 @@
             <!-- Trạng thái -->
             <td *ngIf="isHidden('State')">
               <div class="w-full">
-                <tds-tag [status]="bill.State | getColorStatusState" size="sm" type="outline">{{bill.ShowState}}</tds-tag>
-                <p *ngIf="bill.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán</p>
+                <tds-tag [status]="bill.State | getColorStatusState" size="sm" type="outline">{{bill.ShowState}}
+                </tds-tag>
+                <p *ngIf="bill.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh toán
+                </p>
               </div>
             </td>
             <!-- Số lần in ship -->
@@ -173,12 +195,13 @@
             </td>
             <!-- Thời gian -->
             <td *ngIf="isHidden('DateCreated')">
-              {{bill.DateCreated | date: 'dd/MM/yyyy'}}
+              {{bill.DateCreated | date: 'dd/MM/yyyy hh:ss'}}
             </td>
             <!-- Thao tác -->
             <td [tdsRight]="true">
               <div class="flex gap-x-2">
-                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Gửi tin nhắn" (click)="openMiniChat(bill)">
+                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Gửi tin nhắn"
+                  (click)="openMiniChat(bill)">
                   <span class="flex items-center">
                     <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                   </span>
@@ -196,8 +219,8 @@
     </div>
   </div>
   <tds-drawer [visible]="isOpenDrawer"
-  [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
-  [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+    [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
     <ng-template #titleMessage>
       <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
         Gửi tin nhắn Facebook
@@ -220,4 +243,3 @@
 <ng-template #indicatorTemplate>
   <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
 </ng-template>
-

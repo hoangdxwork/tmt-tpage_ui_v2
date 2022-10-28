@@ -81,7 +81,7 @@ export class DetailBillComponent implements OnInit {
   public columns: any[] = [
     { value: 'Number', name: 'Số hóa đơn', isChecked: true },
     { value: 'PartnerDisplayName', name: 'Tên khách hàng', isChecked: true },
-    { value: 'PartnerPhone', name: 'Số điện thoại', isChecked: true },
+    { value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true },
     { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
     { value: 'AmountDeposit', name: 'Đặt cọc', isChecked: true },
     { value: 'Residual', name: 'Còn nợ', isChecked: true },
@@ -377,7 +377,7 @@ export class DetailBillComponent implements OnInit {
     }
   }
 
-  approveOrder() {
+  approveOrder(type? :string) {
     if (this.isProcessing) {
       this.isLoading = false;
       return
@@ -407,6 +407,11 @@ export class DetailBillComponent implements OnInit {
               }
 
               that.isProcessing = false;
+
+              if(type) {
+                this.print(type);
+              }
+
               this.isLoading = false;
             },
             error:error => {
