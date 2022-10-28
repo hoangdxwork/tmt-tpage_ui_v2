@@ -247,7 +247,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        typeComponent: 'lst-product-tmp',
         type: this.type
       }
     });

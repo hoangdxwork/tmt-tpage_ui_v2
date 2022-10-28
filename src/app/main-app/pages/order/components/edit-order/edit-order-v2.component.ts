@@ -400,9 +400,6 @@ export class EditOrderV2Component implements OnInit {
         content: ModalProductTemplateComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          typeComponent: null,
-        }
     });
 
     modal.afterClose.subscribe(result => {

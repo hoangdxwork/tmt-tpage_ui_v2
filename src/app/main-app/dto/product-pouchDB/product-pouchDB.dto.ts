@@ -1,4 +1,4 @@
-
+import { ProductTemplateV2DTO } from "../product-template/product-tempalte.dto";
 
 export interface DataPouchDBDTO {
   Id: number;
@@ -47,6 +47,11 @@ export interface KeyCacheIndexDBDTO {
   cacheCount: number;
   cacheVersion: number;
   cacheDbStorage:  DataPouchDBDTO[];
+}
+
+export interface SyncCreateProductTemplateDto {
+  indexDB: KeyCacheIndexDBDTO;
+  productTmpl: ProductTemplateV2DTO;
 }
 
 

@@ -921,14 +921,10 @@ export class AddBillComponent implements OnInit {
   }
 
   onLoadProductToOrderLines(event: any): any {
-
-    // TODO: check dk trùng biến thể chiến dịch live
-    if(event && event.length > 0) {
-      return
-    }
+    if(!event) return;
 
     if (!this._form.controls['Partner'].value) {
-      return this.message.error('Vui lòng chọn khách hàng!');
+        return this.message.error('Vui lòng chọn khách hàng!');
     }
 
     let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
@@ -939,7 +935,6 @@ export class AddBillComponent implements OnInit {
     } else {
         this.pushProductToOrderlines(event);
     }
-
   }
 
   // TODO: trường hợp thêm mới

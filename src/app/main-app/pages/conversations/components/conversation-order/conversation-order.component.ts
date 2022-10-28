@@ -1199,10 +1199,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          typeComponent: null,
-        }
+        viewContainerRef: this.viewContainerRef
     })
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe(result => {

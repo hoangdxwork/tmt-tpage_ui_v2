@@ -221,7 +221,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
           next: (res) => {
               this.isLoading = false;
               delete res['@odata.context'];
-              
+
               if(res.StartDate) {
                   res.StartDate = new Date(res.StartDate)
               }
@@ -351,10 +351,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-            typeComponent: null
-        }
+        viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.subscribe((result: any[]) => {

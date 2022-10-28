@@ -156,59 +156,12 @@ export class ModalListProductComponent implements OnInit {
     this.modal.destroy(null);
   }
 
-  // loadDataTable() :any {
-  //   let data = this.indexDbStorage;
-  //   if(TDSHelperObject.hasValue(this.currentOption)) {
-  //       if(TDSHelperString.hasValueString(this.innerText)) {
-  //           this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
-  //       }
-  //       data = data.filter((x: DataPouchDBDTO) =>
-  //         (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-  //         (x.Barcode && TDSHelperString.stripSpecialChars(x.Barcode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-  //         (x.NameNoSign && TDSHelperString.stripSpecialChars(x.NameNoSign.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-  //         (x.NameGet && TDSHelperString.stripSpecialChars(x.NameGet.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
-  //   }
-
-  //   if(TDSHelperObject.hasValue(this.currentType)) {
-  //      data = _orderBy(data, ["PosSalesCount"], "desc");
-  //   }
-
-  //   if(this.commonService.priceListItems$){
-  //     this.commonService.priceListItems$.subscribe((res: any) => {
-  //       this.priceListItems = res;
-  //       if(TDSHelperArray.hasListValue(this.priceListItems)) {
-  //         data.forEach((x: DataPouchDBDTO) => {
-  //           if(x.SaleOK && ! x.IsDiscount) {
-  //               let price = this.priceListItems[`${x.ProductTmplId}_${x.UOMId}`];
-  //               if (price) {
-  //                 if (!x.OldPrice) {
-  //                     x.OldPrice = x.Price;
-  //                 }
-  //                 x.Price = price;
-  //               } else {
-  //                 if (x.OldPrice >= 0) {
-  //                     x.Price = x.OldPrice;
-  //                 }
-  //               }
-  //           }
-  //         })
-  //       }
-  //       return this.lstOfData = data;
-  //     })
-  //   } else {
-  //     return this.lstOfData = data;
-  //   }
-  // }
-
   showModalAddProduct() {
     const modal = this.modalService.create({
       title: 'Thêm sản phẩm',
       content: ModalProductTemplateComponent,
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
-      componentParams: {
-          typeComponent: null
-      }
   });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({

@@ -251,7 +251,6 @@ export class ListProductTmpV2Component implements OnInit {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        typeComponent: 'lst-product-tmp',
         type: this.type
       }
     });
@@ -304,7 +303,7 @@ export class ListProductTmpV2Component implements OnInit {
 
     model.map((x: DataPouchDBDTO)=>{
       x.Tags = productTmplItems?.Tags || null;
-      
+
       if(this.inventories && this.inventories[x.Id]) {
           x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
       }
@@ -361,11 +360,11 @@ export class ListProductTmpV2Component implements OnInit {
     if(Number(index) >= 0) {
         this.indClick = Number(index);
     }
-    
+
     this.loadProductAttributeLine(data.ProductTmplId, uomId);
   }
 
-  loadProductAttributeLine(id: TDSSafeAny, uomId: number) { 
+  loadProductAttributeLine(id: TDSSafeAny, uomId: number) {
     if(this.isLoadingSelect){
       return;
     }
