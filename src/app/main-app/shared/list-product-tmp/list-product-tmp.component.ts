@@ -255,7 +255,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
           if(res) {
-            let productTmplItems = res[0];debugger
+            let productTmplItems = res[0];
 
             if(res[1]) {
               let cacheObject = res[1];
@@ -264,7 +264,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
             // TODO: trường hợp thêm mới push sp vào orderLines
             if(productTmplItems?.Id) {
-
               let items = this.indexDbStorage.filter((x: DataPouchDBDTO) => x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
 
               this.filterLstVariants(items, productTmplItems);
@@ -318,7 +317,11 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
           x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
       }
 
-      x.AttributeLength = Number(productTmplItems.AttributeLength) > 0 ? Number(productTmplItems.AttributeLength) : null;
+      if(productTmplItems?.AttributeLength) {
+          x.AttributeLength = Number(productTmplItems.AttributeLength) > 0 ? Number(productTmplItems.AttributeLength) : null
+      } else {
+          x.AttributeLength = null;
+      }
     });
 
     this.lstVariants = [...model];

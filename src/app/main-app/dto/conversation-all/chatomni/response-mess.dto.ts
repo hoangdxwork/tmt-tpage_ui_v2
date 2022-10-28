@@ -79,7 +79,7 @@ export interface ResponseAddMessCommentDtoV2 {
     ConversationId: string;
     UserId: string;
     CreatedById?: any;
-    CreatedBy?: any;
+    CreatedBy?: CreatedBy;
     CreatedTime: Date;
     ChannelCreatedTime: Date;
     ChannelUpdatedTime?: any;

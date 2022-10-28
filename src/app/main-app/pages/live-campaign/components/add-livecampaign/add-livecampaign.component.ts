@@ -472,7 +472,7 @@ export class AddLiveCampaignComponent implements OnInit {
     let model = {} as any;
 
     model.Id = (formValue.Id) ? formValue.Id : undefined;
-    model.Config = formValue.Config?.value;
+    model.Config = formValue.Config?.value || formValue.Config;
     model.Name = formValue.Name;
     model.Users = formValue.Users || [];
     model.Note = formValue.Note;

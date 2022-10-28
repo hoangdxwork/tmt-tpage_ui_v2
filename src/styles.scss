@@ -131,3 +131,7 @@ tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
 .cs-quick-repply .tds-custom-scroll .flex-col {
   width: 100%;
 }
+.cs-quick-repply .tds-custom-scroll .flex-col tds-auto-option {
+  border-bottom-width: 1px;
+  border-style: dotted;
+}
