@@ -88,7 +88,7 @@ export class DetailBillComponent implements OnInit {
     { value: 'State', name: 'Trạng thái', isChecked: true },
     { value: 'PrintDeliveryCount', name: 'Số lần in HĐ', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
-    { value: 'DateCreated', name: 'Thời gian', isChecked: true },
+    { value: 'DateInvoice', name: 'Ngày bán', isChecked: true },
   ];
 
 
