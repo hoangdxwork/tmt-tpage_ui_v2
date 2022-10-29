@@ -144,7 +144,9 @@ export class AddLivecampaignPostV2Component implements OnInit {
       EndDate: [new Date()],
       Users: [null],
       Preliminary_Template: [null],
+      Preliminary_TemplateId: [null],
       ConfirmedOrder_Template: [null],
+      ConfirmedOrder_TemplateId: [null],
       MinAmountDeposit: [0],
       MaxAmountDepositRequired: [0],
       IsEnableAuto: [false],
@@ -157,6 +159,30 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
     this._form.controls['ConfigObject'].patchValue(this.lstConfig[0]);
     this._form.controls['Config'].setValue('Draft');
+  }
+
+  onChangeConfirmedOrder_Template(event: any) {
+    if(event) {
+        this._form.controls['ConfirmedOrder_TemplateId'].setValue(event.Id);
+    } else {
+        this._form.controls['ConfirmedOrder_TemplateId'].setValue(null);
+    }
+  }
+
+  onChangePreliminary_Template(event: any) {
+    if(event) {
+        this._form.controls['Preliminary_TemplateId'].setValue(event.Id);
+    } else {
+        this._form.controls['Preliminary_TemplateId'].setValue(null);
+    }
+  }
+
+  onChangeConfig(event: any) {
+    if(event) {
+        this._form.controls['Config'].setValue(event.value);
+    } else {
+        this._form.controls['Config'].setValue(null);
+    }
   }
 
   loadUser() {
@@ -235,6 +261,15 @@ export class AddLivecampaignPostV2Component implements OnInit {
               }
 
               this.dataModel = res;
+
+              if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
+                  this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
+              }
+
+              if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
+                  this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
+              }
+
               this.updateForm(res);
           },
           error:(err) => {
@@ -314,10 +349,17 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
     //TODO: cập nhật vào formArray
     this.detailsFormGroups.at(index).patchValue(details);
+    this.liveCampainDetails = [...this._form.controls["Details"].value];
+
     this.modelTags = [];
     this.indClickTag = -1;
+  }
 
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+  checkIndexTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    return index;
   }
 
   initFormDetails(details: LiveCampaignProductDTO[]) {
@@ -382,9 +424,9 @@ export class AddLivecampaignPostV2Component implements OnInit {
       if(res.type === 'select' && res.productTmpl) {
         this.onReset();
         let x = res.productTmpl as ProductTemplateV2DTO;
-
+        let qty = (this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0) ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
         let item = {
-            Quantity: 1,
+            Quantity: qty,
             LiveCampaign_Id: null,
             LimitedQuantity: 0,
             Price: x.ListPrice || 0,
@@ -394,7 +436,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
             ProductNameGet: x.NameGet,
             RemainQuantity: 0,
             ScanQuantity: 0,
-            Tags: x.Tags || '',
+            Tags: x.OrderTag || x.Tags,
             UOMId: x.UOMId,
             UOMName: x.UOMName,
             ProductCode: x.DefaultCode,
@@ -460,7 +502,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
               ProductNameGet: x.NameGet,
               RemainQuantity: 0,
               ScanQuantity: 0,
-              Tags: '',
+              Tags: x.Tags,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
               ProductCode: x.DefaultCode,
@@ -510,7 +552,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
             countEdit +=1;
 
             if(!isVariants){
-              this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${item.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
+              this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">
+              ${item.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
             }
         } else {
             formDetails = [...[item], ...formDetails]

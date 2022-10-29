@@ -13,7 +13,7 @@ export class PrepareAddCampaignHandler {
         let formValue = form.value;
         let model = {} as LiveCampaignModel;
 
-        model.Config = formValue.ConfigObject?.value;
+        model.Config = formValue.Config || formValue.ConfigObject?.value;
         model.Name = formValue.Name;
         model.Users = formValue.Users || [];
         model.Note = formValue.Note;
@@ -21,8 +21,8 @@ export class PrepareAddCampaignHandler {
         model.DateCreated = new Date();
         model.StartDate = new Date(formValue.StartDate);
         model.EndDate = new Date(formValue.EndDate);
-        model.Preliminary_TemplateId = formValue.Preliminary_Template?.Id;
-        model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_Template?.Id;
+        model.Preliminary_TemplateId = formValue.Preliminary_TemplateId || formValue.Preliminary_Template?.Id;
+        model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_TemplateId || formValue.ConfirmedOrder_Template?.Id;
         model.MinAmountDeposit = Number(formValue.MinAmountDeposit);
         model.MaxAmountDepositRequired = Number(formValue.MaxAmountDepositRequired);
         model.IsEnableAuto = formValue.IsEnableAuto;
@@ -57,7 +57,7 @@ export class PrepareAddCampaignHandler {
       let model = {} as LiveCampaignSimpleDto;
 
       model.Id = formValue.Id;
-      model.Config = formValue.ConfigObject?.value;
+      model.Config = formValue.Config || formValue.ConfigObject?.value;
       model.Name = formValue.Name;
       model.Users = formValue.Users || [];
       model.Note = formValue.Note;
@@ -65,8 +65,8 @@ export class PrepareAddCampaignHandler {
       model.DateCreated = new Date();
       model.StartDate = formValue.StartDate ? new Date(formValue.StartDate) : null;
       model.EndDate = formValue.EndDate ? new Date(formValue.EndDate) : null;
-      model.Preliminary_TemplateId = formValue.Preliminary_Template?.Id;
-      model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_Template?.Id;
+      model.Preliminary_TemplateId = formValue.Preliminary_TemplateId || formValue.Preliminary_Template?.Id;
+      model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_TemplateId || formValue.ConfirmedOrder_Template?.Id;
       model.MinAmountDeposit = Number(formValue.MinAmountDeposit);
       model.MaxAmountDepositRequired = Number(formValue.MaxAmountDepositRequired);
       model.IsEnableAuto = formValue.IsEnableAuto;
