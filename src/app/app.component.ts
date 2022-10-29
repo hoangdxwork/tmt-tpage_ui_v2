@@ -4,7 +4,7 @@ import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
@@ -68,7 +68,8 @@ export class AppComponent {
           case ChatmoniSocketEventName.chatomniOnUpdate:
               let paramsError =  this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
               let userError = res.Data?.Data?.UserId == this.route.snapshot.queryParams?.csid;
-              let errorNoti = res && paramsError && userError;
+              let hasNoti = TDSHelperObject.hasValue(res.Notification);
+              let errorNoti = res && hasNoti && paramsError && userError ;
 
               if(errorNoti == false) break;
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });

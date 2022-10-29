@@ -81,14 +81,14 @@ export class DetailBillComponent implements OnInit {
   public columns: any[] = [
     { value: 'Number', name: 'Số hóa đơn', isChecked: true },
     { value: 'PartnerDisplayName', name: 'Tên khách hàng', isChecked: true },
-    { value: 'PartnerPhone', name: 'Số điện thoại', isChecked: true },
+    { value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true },
     { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
     { value: 'AmountDeposit', name: 'Đặt cọc', isChecked: true },
     { value: 'Residual', name: 'Còn nợ', isChecked: true },
     { value: 'State', name: 'Trạng thái', isChecked: true },
     { value: 'PrintDeliveryCount', name: 'Số lần in HĐ', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
-    { value: 'DateCreated', name: 'Thời gian', isChecked: true },
+    { value: 'DateInvoice', name: 'Ngày bán', isChecked: true },
   ];
 
 
@@ -377,7 +377,7 @@ export class DetailBillComponent implements OnInit {
     }
   }
 
-  approveOrder() {
+  approveOrder(type? :string) {
     if (this.isProcessing) {
       this.isLoading = false;
       return
@@ -401,12 +401,18 @@ export class DetailBillComponent implements OnInit {
                 // danh sách lỗi
               }
 
-              if(res.Success) {
-                that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
-                this.loadData(this.pageSize, this.pageIndex);
+              that.isProcessing = false;
+
+              if(type) {
+                this.print(type);
               }
 
-              that.isProcessing = false;
+              if(res.Success) {
+                that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
+              }
+
+              this.loadData(this.pageSize, this.pageIndex);
+
               this.isLoading = false;
             },
             error:error => {
