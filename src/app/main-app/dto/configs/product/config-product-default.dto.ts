@@ -280,6 +280,7 @@ export interface ConfigProductDefaultDTO {
     UOMLines: UOMLine[];
     ComboProducts: ComboProductDTO[];
     ProductSupplierInfos: any[];
+    OrderTag: any;
 }
 
 export interface ConfigSuggestVariants {
