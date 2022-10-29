@@ -16,7 +16,7 @@
               <tds-form-field class="col-span-2 w-full">
                   <tds-select valueField="value" textField="text"
                       placeholder='Chọn trạng thái' [valuePrimitive]="false" formControlName="ConfigObject"
-                      disabledField="isActive" [data]="lstConfig" [allowClear]="true">
+                      disabledField="isActive" [data]="lstConfig" [allowClear]="false" (ngModelChange)="onChangeConfig($event)">
                   </tds-select>
               </tds-form-field>
 
@@ -38,7 +38,7 @@
                 <tds-form-field class="w-full">
                   <tds-select valueField="Id" textField="Name"
                       placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="ConfirmedOrder_Template"
-                      disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
+                      disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true" (ngModelChange)="onChangeConfirmedOrder_Template($event)">
                   </tds-select>
                 </tds-form-field>
                 <div class="w-[34px]">
@@ -50,7 +50,7 @@
 
               <tds-label>Mẫu tin dự bị</tds-label>
               <tds-form-field class="col-span-2 w-full">
-                  <tds-select valueField="Id" textField="Name"
+                  <tds-select valueField="Id" textField="Name" (ngModelChange)="onChangePreliminary_Template($event)"
                       placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="Preliminary_Template"
                       disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
                   </tds-select>
@@ -270,7 +270,7 @@
                                       <!-- Tags -->
                                       <div class="flex items-center gap-x-1">
                                           <span *ngIf="detail?.value?.Tags?.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
-                                          (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                          (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == checkIndexTag(detail.value)" popoverTrigger="click"
                                           [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
                                         <div class="flex flex-wrap items-center" *ngIf="detail?.value?.Tags?.length > 0">
@@ -278,7 +278,7 @@
                                                 <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                             </div>
 
-                                            <button (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                            <button (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == checkIndexTag(detail.value)" popoverTrigger="click"
                                                 [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                                 tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                                 color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">

@@ -140,7 +140,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
       EndDate: [null],
       Users: [null],
       Preliminary_Template: [null],
+      Preliminary_TemplateId: [null],
       ConfirmedOrder_Template: [null],
+      ConfirmedOrder_TemplateId: [null],
       MinAmountDeposit: [0],
       MaxAmountDepositRequired: [0],
       IsEnableAuto: [false],
@@ -150,6 +152,30 @@ export class EditLiveCampaignPostComponent implements OnInit {
       Facebook_UserId: [null],
       Facebook_UserName: [null]
     });
+  }
+
+  onChangeConfirmedOrder_Template(event: any) {
+    if(event) {
+        this._form.controls['ConfirmedOrder_TemplateId'].setValue(event.Id);
+    } else {
+        this._form.controls['ConfirmedOrder_TemplateId'].setValue(null);
+    }
+  }
+
+  onChangePreliminary_Template(event: any) {
+    if(event) {
+        this._form.controls['Preliminary_TemplateId'].setValue(event.Id);
+    } else {
+        this._form.controls['Preliminary_TemplateId'].setValue(null);
+    }
+  }
+
+  onChangeConfig(event: any) {
+    if(event) {
+        this._form.controls['Config'].setValue(event.value);
+    } else {
+        this._form.controls['Config'].setValue(null);
+    }
   }
 
   loadUser() {
@@ -232,6 +258,14 @@ export class EditLiveCampaignPostComponent implements OnInit {
           }
 
           this.dataModel = res;
+          if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
+              this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
+          }
+
+          if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
+              this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
+          }
+
           this.updateForm(res);
           this.isLoading = false;
       },
@@ -307,6 +341,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
     this.modelTags = [];
     this.indClickTag = -1;
+  }
+
+  checkIndexTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    return index;
   }
 
   initFormDetails(details: any[]) {
@@ -416,8 +457,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
         this.onReset();
 
         let x = res.productTmpl as ProductTemplateV2DTO;
+        let qty = (this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable)) > 0 ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
         let item = {
-            Quantity: 1,
+            Quantity: qty,
             RemainQuantity: 0,
             ScanQuantity: 0,
             QuantityCanceled: 0,
@@ -430,7 +472,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
             ProductNameGet: x.NameGet,
             UOMId: x.UOMId,
             UOMName: x.UOMName,
-            Tags: x.OrderTag || '',
+            Tags: x.OrderTag || x.Tags,
             LimitedQuantity: 0,
             ProductCode: x.DefaultCode,
             ImageUrl: x.ImageUrl,
@@ -474,7 +516,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     listData.forEach((x: ProductDTOV2) => {
       let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
       if(!exist){
-          let qty = Number(this.lstInventory[x.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+          let qty = (this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0) ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
           let item = {
               Quantity: qty,
               RemainQuantity: 0,
@@ -489,7 +531,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              Tags: '',
+              Tags: x.Tags,
               LimitedQuantity: 0,
               ProductCode: x.Barcode || x.DefaultCode,
               ImageUrl: x.ImageUrl,
@@ -591,6 +633,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           this.isLoading = false;
 
           res.map((x: LiveCampaignSimpleDetail, idx: number) => {
+
               x.ProductName = items[idx].ProductName;
               x.ProductNameGet = items[idx].ProductNameGet;
               x.ImageUrl = items[idx].ImageUrl;
@@ -653,10 +696,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
 
     let id = this.id as string;
-    this.updateLiveCampaign(id, model);
+    this.onUpdateSimple(id, model);
   }
 
-  updateLiveCampaign(id: string, model: LiveCampaignSimpleDto){
+  onUpdateSimple(id: string, model: LiveCampaignSimpleDto){
     this.isLoading = true;
     this.liveCampaignService.updateSimple(id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {

@@ -111,7 +111,9 @@ export class AddLiveCampaignV2Component implements OnInit {
       StartDate: [new Date()],
       EndDate: [new Date()],
       Preliminary_Template: [null],
+      Preliminary_TemplateId: [null],
       ConfirmedOrder_Template: [null],
+      ConfirmedOrder_TemplateId: [null],
       MinAmountDeposit: [0],
       MaxAmountDepositRequired: [0],
       IsEnableAuto: [false],
@@ -168,6 +170,14 @@ export class AddLiveCampaignV2Component implements OnInit {
                   })
               }
 
+              if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
+                  this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
+              }
+
+              if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
+                  this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
+              }
+
               this.updateForm(this.dataModel);
           }
         },
@@ -176,6 +186,30 @@ export class AddLiveCampaignV2Component implements OnInit {
             this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       })
+    }
+  }
+
+  onChangeConfirmedOrder_Template(event: any) {
+    if(event) {
+        this._form.controls['ConfirmedOrder_TemplateId'].setValue(event.Id);
+    } else {
+        this._form.controls['ConfirmedOrder_TemplateId'].setValue(null);
+    }
+  }
+
+  onChangePreliminary_Template(event: any) {
+    if(event) {
+        this._form.controls['Preliminary_TemplateId'].setValue(event.Id);
+    } else {
+        this._form.controls['Preliminary_TemplateId'].setValue(null);
+    }
+  }
+
+  onChangeConfig(event: any) {
+    if(event) {
+        this._form.controls['Config'].setValue(event.value);
+    } else {
+        this._form.controls['Config'].setValue(null);
     }
   }
 
@@ -326,7 +360,7 @@ export class AddLiveCampaignV2Component implements OnInit {
 
       // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
       if(!exist){
-          let qty = Number(this.lstInventory[x.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+          let qty = (this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0) ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
           let item = {
               Quantity: qty,
               LiveCampaign_Id: null,
@@ -457,6 +491,13 @@ export class AddLiveCampaignV2Component implements OnInit {
 
     this.modelTags = [];
     this.indClickTag = -1;
+  }
+
+  checkIndexTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    return index;
   }
 
   onChangeCollapse(event: TDSSafeAny) {
