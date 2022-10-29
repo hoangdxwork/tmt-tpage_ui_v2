@@ -23,6 +23,7 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
   templateUrl: './list-live-campaign.component.html',
   providers: [TDSDestroyService]
 })
+
 export class ListLiveCampaignComponent implements OnInit {
 
   @Input() post!: any; //ChatomniObjectsItemDto
@@ -144,56 +145,56 @@ export class ListLiveCampaignComponent implements OnInit {
   }
 
   showModelCreateLiveCampaign() {
-    const modal = this.modal.create({
-      title: 'Tạo mới chiến dịch',
-      content: AddLiveCampaignPostComponent,
-      size: "xl",
-      bodyStyle: {
-        padding: '0px',
-      },
-      viewContainerRef: this.viewContainerRef,
-    });
+    // const modal = this.modal.create({
+    //   title: 'Tạo mới chiến dịch',
+    //   content: AddLiveCampaignPostComponent,
+    //   size: "xl",
+    //   bodyStyle: {
+    //     padding: '0px',
+    //   },
+    //   viewContainerRef: this.viewContainerRef,
+    // });
   }
 
   showModelEditLiveCampaign(id?: string) {
-    if(!id) {
-      this.message.info(Message.SelectOneLine);
-      return;
-    }
+    // if(!id) {
+    //   this.message.info(Message.SelectOneLine);
+    //   return;
+    // }
 
-    const modal = this.modal.create({
-      title: 'Chỉnh sửa chiến dịch',
-      content: AddLiveCampaignPostComponent,
-      size: "xl",
-      bodyStyle: {
-        padding: '0px',
-      },
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        id: id
-      }
-    });
+    // const modal = this.modal.create({
+    //   title: 'Chỉnh sửa chiến dịch',
+    //   content: AddLiveCampaignPostComponent,
+    //   size: "xl",
+    //   bodyStyle: {
+    //     padding: '0px',
+    //   },
+    //   viewContainerRef: this.viewContainerRef,
+    //   componentParams:{
+    //     id: id
+    //   }
+    // });
   }
 
   showModelCopyLiveCampaign(id?: string) {
-    if(!id) {
-      this.message.info(Message.SelectOneLine);
-      return;
-    }
+    // if(!id) {
+    //   this.message.info(Message.SelectOneLine);
+    //   return;
+    // }
 
-    const modal = this.modal.create({
-      title: 'Sao chép chiến dịch',
-      content: AddLiveCampaignPostComponent,
-      size: "xl",
-      bodyStyle: {
-        padding: '0px',
-      },
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        id: id,
-        isCopy: true
-      }
-    });
+    // const modal = this.modal.create({
+    //   title: 'Sao chép chiến dịch',
+    //   content: AddLiveCampaignPostComponent,
+    //   size: "xl",
+    //   bodyStyle: {
+    //     padding: '0px',
+    //   },
+    //   viewContainerRef: this.viewContainerRef,
+    //   componentParams:{
+    //     id: id,
+    //     isCopy: true
+    //   }
+    // });
   }
 
   showModelOverViewLiveCampaign(id?: string, name?: string) {

@@ -148,7 +148,7 @@ export interface ProductTemplateV2DTO {
     UOMPO: UOMPO;
     OrderTag: any;
 
-    AttributeLength?: any // field này dùng để check tạo mã chiến dịch live, ko có trong db
+    _attributes_length?: any // field này dùng để check tạo mã chiến dịch live, ko có trong db
 }
 
 

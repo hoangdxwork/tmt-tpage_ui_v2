@@ -22,7 +22,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
-import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, SyncCreateProductTemplateDto } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
@@ -250,7 +250,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.selectProduct(res);
-          let index = this.quickOrderModel.Details.findIndex(x=> x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
+          let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
 
           if(Number(index) > -1){
               if(res.DiscountSale > 0) {
@@ -1199,28 +1199,27 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          typeComponent: null,
-        }
+        viewContainerRef: this.viewContainerRef
     })
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe(result => {
-        if(TDSHelperObject.hasValue(result)) {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(!res) return;
 
-            let data = result[0] as ProductTemplateV2DTO;
-            let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'create_template');
-            this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
+          res = {...res} as SyncCreateProductTemplateDto;
+          let data = res.productTmpl as ProductTemplateV2DTO;
 
-            this.calcTotal();
-            this.coDAmount();
-        }
-        this.cdRef.detectChanges();
+          let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'template');
+          this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
+
+          this.calcTotal();
+          this.coDAmount();
+          this.cdRef.detectChanges();
+      }
     })
   }
 
   mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu
-
     //data sẽ là ProductDTOV2 | ProductTemplateV2DTO
     let model : Detail_QuickSaleOnlineOrder = {
       Quantity: 1,
@@ -1240,7 +1239,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     } as Detail_QuickSaleOnlineOrder;
 
     // TODO: trường hợp thêm mới từ product-template
-    if(type == 'create_template') {
+    if(type == 'template') {
       model.ProductId = data.VariantFirstId;
       model.Price = data.ListPrice;
     }

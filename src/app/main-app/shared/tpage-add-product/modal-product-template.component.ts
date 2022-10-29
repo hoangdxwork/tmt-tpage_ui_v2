@@ -1,6 +1,6 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { KeyCacheIndexDBDTO } from './../../dto/product-pouchDB/product-pouchDB.dto';
-import { finalize } from 'rxjs';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from './../../dto/product-pouchDB/product-pouchDB.dto';
+import { mergeMap } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
@@ -12,7 +12,7 @@ import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { SharedService } from '../../services/shared.service';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
@@ -33,7 +33,6 @@ import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte
 export class ModalProductTemplateComponent implements OnInit {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
-  @Input() typeComponent!: any;
   @Input() type!: string;
 
   _form!: FormGroup;
@@ -47,19 +46,15 @@ export class ModalProductTemplateComponent implements OnInit {
 
   cacheObject!: KeyCacheIndexDBDTO;
 
-  minIndex = 0;
-
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return value;
-  } ;
+  };
 
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return TDSHelperString.replaceAll(value,'.','');
     }
     return value;
@@ -97,47 +92,45 @@ export class ModalProductTemplateComponent implements OnInit {
 
   loadDefault() {
     this.isLoading = true;
-
     this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res: TDSSafeAny) => {
-        delete res["@odata.context"];
-        this.defaultGet = res;
-        this.updateForm(res);
-        this.isLoading = false;
+      next: (res: TDSSafeAny) => {
+          delete res["@odata.context"];
+          this.defaultGet = res;
+
+          this.updateForm(res);
+          this.isLoading = false;
       },
-      error:(error) => {
-        this.isLoading = false;
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      error:(error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     });
   }
 
   loadCategory() {
     this.isLoading = true;
-
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
-        this.lstCategory = [...res.value];
-        this.isLoading = false;
+          this.lstCategory = [...res?.value];
+          this.isLoading = false;
       },
       error:(error) => {
-        this.isLoading = false;
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.isLoading = false;
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     });
   }
 
   loadUOMCateg() {
     this.isLoading = true;
-
     this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe({
       next:res => {
-        this.lstUOMCategory = [...res.value];
-        this.isLoading = false;
+          this.lstUOMCategory = [...res?.value];
+          this.isLoading = false;
       },
       error:(err) => {
-        this.isLoading = false;
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     });
   }
@@ -165,7 +158,7 @@ export class ModalProductTemplateComponent implements OnInit {
   updateForm(data: ProductTemplateDTO) {
     let formControls = this._form.controls;
 
-    formControls["Type"].setValue(data.ShowType);
+    formControls["Type"].setValue(data.Type);
     formControls["Categ"].setValue(data.Categ);
     formControls["UOM"].setValue(data.UOM);
     formControls["UOMPO"].setValue(data.UOMPO);
@@ -210,67 +203,54 @@ export class ModalProductTemplateComponent implements OnInit {
       this.defaultGet["UOMPO"] = formModel.UOMPO;
       this.defaultGet["UOMPOId"] = formModel.UOMPO.Id;
     }
+
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
     this.defaultGet["ProductVariants"] = [...this.lstVariants];
 
     return this.defaultGet;
   }
 
-  onSave(type?: string) :any {
-    if(this.isLoading) {
-      return;
-    }
-
+  onSave(type?: string) {
+    if(this.isLoading) return;
     let model = this.prepareModel();
-    this.isLoading = true
 
-    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$))
+    this.isLoading = true;
+    this.productTemplateService.insert(model).pipe(
+      map((product: any) => {
+          delete product['@odata.context'];
+          return product;
+      }),
+      mergeMap((product: any) => {
+          this.productIndexDBService.setCacheDBRequest();
+          return this.productIndexDBService.getCacheDBRequest().pipe(map((indexDB: any) => {
+              return [product, indexDB];
+          }))
+      }))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-          next: (res: any) => {
-            delete res['@odata.context'];
+        next: ([product, indexDB]) => {
 
-            let product = res as ProductTemplateV2DTO;
-            // TODO: thêm dk để tạo mã sp chiến dịch live
-            product.AttributeLength = model.AttributeLines?.length || 0;debugger
+            // TODO: chỉ dùng cho chiến dịch live
+            product._attributes_length = model.AttributeLines?.length;
 
-            this.message.success('Thêm mới sản phẩm thành công');
+            const data: SyncCreateProductTemplateDto = {
+              type: type,
+              productTmpl: product as ProductTemplateV2DTO,
+              cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
+            };
 
-            // TODO: Trường hợp ở component Phiếu bán hàng
-            // Khi gán dữ liệu , lấy field VariantFirstId
-
-            this.loadProduct(type, product);
+            this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
-          },
-          error: (error) => {
-            this.isLoading = false;
-            this.message.error(error?.error?.message || Message.InsertFail);
-        }
-        });
-  }
-
-  loadProduct(type: string | undefined, product: ProductTemplateV2DTO) {
-    this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
-        next : (x: KeyCacheIndexDBDTO) => {
-          if (type == "select") {
-            this.onCancel([product, x]);
-          } else {
-            this.onCancel(null);
-          }
         },
-        error: (error) => {
-          if (type == "select") {
-            this.onCancel([product, null]);
-          } else {
-            this.onCancel(null);
-          }
+        error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
-      }
-    )
+      })
   }
 
-  onCancel(result: TDSSafeAny) {
-    this.modalRef.destroy(result);
+  onCancel() {
+    this.modalRef.destroy(null);
   }
 
   onCreateCategory() {
@@ -292,9 +272,7 @@ export class ModalProductTemplateComponent implements OnInit {
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
       size: 'lg',
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-      }
+      viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.subscribe(result => {

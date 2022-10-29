@@ -2,7 +2,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { takeUntil } from 'rxjs/operators';
@@ -99,10 +99,10 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       next:(res: KeyCacheIndexDBDTO) => {
           if(TDSHelperObject.hasValue(res)) {
             this.indexDbStorage = res?.cacheDbStorage;
-
-            this.loadDataTable();
-            this.isLoading = false;
           }
+
+          this.loadDataTable();
+          this.isLoading = false;
           this.disabledReload = false;
         },
         error:(err) => {
@@ -119,36 +119,37 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     if(TDSHelperObject.hasValue(this.currentOption)) {
 
         if(TDSHelperString.hasValueString(this.keyFilter)) {
-            this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
+            this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim().toLowerCase());
         }
 
         switch(this.currentOption.value) {
 
           case "all":
             data = data.filter((x: DataPouchDBDTO) =>
-              (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-              (x.Barcode && TDSHelperString.stripSpecialChars(x.Barcode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-              (x.NameNoSign && TDSHelperString.stripSpecialChars(x.NameNoSign.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-              (x.NameGet && TDSHelperString.stripSpecialChars(x.NameGet.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
-            break;
+              (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1) ||
+              (x.Barcode && TDSHelperString.stripSpecialChars(x.Barcode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1) ||
+              (x.NameNoSign && TDSHelperString.stripSpecialChars(x.NameNoSign.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1) ||
+              (x.NameGet && TDSHelperString.stripSpecialChars(x.NameGet.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1));
+          break;
 
           case "code":
             data = data.filter((x: DataPouchDBDTO) =>
-              (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
-            break;
+              (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1));
+          break;
 
           case "barcode":
             data = data.filter((x: DataPouchDBDTO) =>
-              (x.Barcode && TDSHelperString.stripSpecialChars(x.Barcode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
-            break;
+              (x.Barcode && TDSHelperString.stripSpecialChars(x.Barcode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1));
+          break;
 
           case "name":
             data = data.filter((x: DataPouchDBDTO) =>
-              (x.NameNoSign && TDSHelperString.stripSpecialChars(x.NameNoSign.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
-              (x.NameGet && TDSHelperString.stripSpecialChars(x.NameGet.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
-            break;
+              (x.NameNoSign && TDSHelperString.stripSpecialChars(x.NameNoSign.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1) ||
+              (x.NameGet && TDSHelperString.stripSpecialChars(x.NameGet.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter)) !== -1));
+          break;
 
-          default: break;
+          default:
+          break;
         }
     }
 
@@ -199,13 +200,12 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   selectType(item: any): void {
     this.currentType = item;
-
     this.loadDataTable();
   }
 
   selectOption(item: any): void {
-      this.currentOption = item;
-      this.loadDataTable();
+    this.currentOption = item;
+    this.loadDataTable();
   }
 
   loadCurrentCompany() {
@@ -215,11 +215,11 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
         this.companyCurrents = res || {};
 
         if(this.companyCurrents?.DefaultWarehouseId) {
-          this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+            this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
         }
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+          this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
       }
     });
   }
@@ -245,14 +245,21 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       bodyStyle: {
         padding : '0px'
       },
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        typeComponent: 'lst-product-tmp',
-        type: this.type
-      }
+      viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+<<<<<<< HEAD
+      next: (res: any) => {
+          if(!res) return;
+
+          res = {...res} as SyncCreateProductTemplateDto;
+          this.indexDbStorage = [...res.cacheDbStorage];
+
+          if(res.type === 'select' && res.productTmpl) {
+            let model = res.productTmpl;
+            let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active)[0] as DataPouchDBDTO;
+=======
         next:(res: any) => {
           if(res) {
             let productTmplItems = res[0];
@@ -265,13 +272,17 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
             // TODO: trường hợp thêm mới push sp vào orderLines
             if(productTmplItems?.Id) {
               let items = this.indexDbStorage.filter((x: DataPouchDBDTO) => x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
+>>>>>>> dev
 
-              this.filterLstVariants(items, productTmplItems);
-              this.getAllVariants();
+            if(!item) {
+                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+                return;
             }
+
+            this.addItem(item);
           }
-        }
-      })
+      }
+    })
   }
 
   reloadIndexDB() {
@@ -285,46 +296,24 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
     // TODO: nếu nhấn liên tục 3 lần thì load lại api
     if(this.retryClick == 3) {
-        this.disabledReload = true;
-        this.productIndexDBService.removeCacheDBRequest();
-        this.retryClick = 0;
-        this.message.info('Đang tải lại danh sách sản phẩm, vui lòng đợi');
+      this.disabledReload = true;
+      this.productIndexDBService.removeCacheDBRequest();
+      this.retryClick = 0;
+      this.message.info('Đang tải lại danh sách sản phẩm, vui lòng đợi');
     }
 
     this.loadData();
   }
 
   addItem(data: DataPouchDBDTO, index?: number) {
-    this.indClick = index as number;
-
-    // TODO: trường hợp thêm sản phẩm vào đơn hàng
-    switch(this.type){
-      case 'order':
-        this.onLoadProductToOrderLines.emit(data);
-        break;
-      case 'liveCampaign':
-        this.filterLstVariants(data);
+    let exist = data && data.Active == false;
+    if(exist) {
+        this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+        return;
     }
-  }
 
-  filterLstVariants(data: DataPouchDBDTO, productTmplItems?: any) {
-    let model = this.indexDbStorage.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
-
-    model.map((x: DataPouchDBDTO) => {
-      x.Tags = productTmplItems?.OrderTag || null;
-
-      if(this.inventories && this.inventories[x.Id]) {
-          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
-      }
-
-      if(productTmplItems?.AttributeLength) {
-          x.AttributeLength = Number(productTmplItems.AttributeLength) > 0 ? Number(productTmplItems.AttributeLength) : null
-      } else {
-          x.AttributeLength = null;
-      }
-    });
-
-    this.lstVariants = [...model];
+    this.indClick = index as number;
+    this.onLoadProductToOrderLines.emit(data);
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -347,27 +336,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.keyFilter = this.innerText || '';
 
     this.loadDataTable();
-
     this.isLoading = false;
-  }
-
-  getAllVariants(){
-    // TODO: trường hợp thêm list các biến thể của sản phẩm
-    switch(this.type){
-      case 'order':
-        this.onLoadProductToOrderLines.emit(this.lstVariants);
-        break;
-      case 'liveCampaign':
-        this.onLoadProductToLiveCampaign.emit(this.lstVariants);
-    }
-
-    this.indClick = -1;
-  }
-
-  getCurrentVariant(data: DataPouchDBDTO){
-    // TODO: trường hợp thêm sản phẩm
-    this.onLoadProductToLiveCampaign.emit(data);
-    this.indClick = -1;
   }
 
   onSearch() {

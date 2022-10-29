@@ -13,7 +13,7 @@ export class PrepareAddCampaignHandler {
         let formValue = form.value;
         let model = {} as LiveCampaignModel;
 
-        model.Config = formValue.Config?.value;
+        model.Config = formValue.ConfigObject?.value;
         model.Name = formValue.Name;
         model.Users = formValue.Users || [];
         model.Note = formValue.Note;
@@ -48,7 +48,6 @@ export class PrepareAddCampaignHandler {
         }
 
         model.Details = formValue.Details;
-
         return {...model};
     }
 
@@ -58,7 +57,7 @@ export class PrepareAddCampaignHandler {
       let model = {} as LiveCampaignSimpleDto;
 
       model.Id = formValue.Id;
-      model.Config = formValue.Config?.value;
+      model.Config = formValue.ConfigObject?.value;
       model.Name = formValue.Name;
       model.Users = formValue.Users || [];
       model.Note = formValue.Note;

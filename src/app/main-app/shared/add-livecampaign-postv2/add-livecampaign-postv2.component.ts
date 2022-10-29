@@ -34,6 +34,7 @@ import { CRMTeamService } from '@app/services/crm-team.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
+import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'app-add-livecampaign-postv2',
@@ -135,6 +136,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
       Id: [null],
       Details: this.fb.array([]),
       Config: [null],
+      ConfigObject: [null],// xóa khi lưu
       Name: [null, Validators.required],
       Note: [null],
       ResumeTime: [0],
@@ -152,6 +154,9 @@ export class AddLivecampaignPostV2Component implements OnInit {
       Facebook_UserId: [null],
       Facebook_UserName: [null]
     });
+
+    this._form.controls['ConfigObject'].patchValue(this.lstConfig[0]);
+    this._form.controls['Config'].setValue('Draft');
   }
 
   loadUser() {
@@ -221,7 +226,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
           next: (res) => {
               this.isLoading = false;
               delete res['@odata.context'];
-              
+
               if(res.StartDate) {
                   res.StartDate = new Date(res.StartDate)
               }
@@ -249,8 +254,14 @@ export class AddLivecampaignPostV2Component implements OnInit {
     };
 
     this._form.patchValue(data);
-    this.initFormDetails(data.Details);
 
+    this._form.controls["Config"].setValue(data.Config);
+    let exist = this.lstConfig.filter((x: any) => x.value === data.Config)[0];
+    if(exist) {
+        this._form.controls['ConfigObject'].patchValue(exist);
+    }
+
+    this.initFormDetails(data.Details);
     this.liveCampainDetails = [...data.Details];
   }
 
@@ -273,14 +284,17 @@ export class AddLivecampaignPostV2Component implements OnInit {
     }
   }
 
-  openTag(index: number) {
+  openTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
     this.indClickTag = index;
     //TODO: lấy dữ liệu từ formArray
     let data = this.detailsFormGroups.at(index).value;
 
     if(data && TDSHelperArray.isArray(data.Tags)){
       this.modelTags = data.Tags;
-    }else{
+    } else {
       this.modelTags = data.Tags ? data.Tags.split(",") : [];
     }
   }
@@ -290,14 +304,20 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.indClickTag = -1;
   }
 
-  onSaveTag(index: number) {
+  onSaveTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
     //TODO: dữ liệu từ formArray
     let details = this.detailsFormGroups.at(index).value;
     details.Tags = this.modelTags;
+
     //TODO: cập nhật vào formArray
     this.detailsFormGroups.at(index).patchValue(details);
     this.modelTags = [];
     this.indClickTag = -1;
+
+    this.liveCampainDetails = [...this._form.controls["Details"].value];
   }
 
   initFormDetails(details: LiveCampaignProductDTO[]) {
@@ -351,16 +371,17 @@ export class AddLivecampaignPostV2Component implements OnInit {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-            typeComponent: null
-        }
+        viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe((result: any[]) => {
-      if(result && result[0]) {
+    modal.afterClose.subscribe((res: any) => {
+
+      if(!res) return;
+      res = {...res} as SyncCreateProductTemplateDto;
+
+      if(res.type === 'select' && res.productTmpl) {
         this.onReset();
-        let x = result[0] as ProductTemplateV2DTO;
+        let x = res.productTmpl as ProductTemplateV2DTO;
 
         let item = {
             Quantity: 1,
@@ -525,7 +546,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
           model.Facebook_UserName = team.Name;
       }
       this.createLiveCampaign(model);
-
     }
   }
 
@@ -611,6 +631,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.searchValue = '';
     this.detailsFormGroups.clear();
     this.initFormDetails(this.liveCampainDetails);
+    this.indClick = -1;
   }
 
   onReset(): void {
@@ -619,12 +640,13 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.visible = false;
     this.detailsFormGroups.clear();
     this.initFormDetails(this.liveCampainDetails);
+    this.indClick = -1;
   }
 
   onSearch(): void {
     this.liveCampainDetails = [...this.detailsFormGroups.value];
-
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+    this.indClick = -1;
   }
 
   loadProductAttributeLine(id: TDSSafeAny, uomId: number) {
@@ -643,7 +665,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
             })
 
             this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
-
             this.isLoadingSelect = false;
         },
         error: error => {

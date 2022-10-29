@@ -85,7 +85,7 @@
                   <tds-label class="w-1/4">Chốt đơn xác nhận</tds-label>
                   <tds-form-field class="w-3/4">
                     <tds-select valueField="value" textField="text"
-                        placeholder='Trạng thái chốt đơn' [valuePrimitive]="false"  formControlName="Config"
+                        placeholder='Trạng thái chốt đơn' [valuePrimitive]="false" formControlName="ConfigObject"
                         disabledField="isActive" [data]="lstConfig" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
@@ -177,15 +177,10 @@
           <div class="w-2/3">
             <div class="rounded-xl bg-white h-full flex-col flex">
               <div class="p-3 w-full flex gap-x-2 font-semibold text-base items-center relative">
-                      <span class="tdsi-product-fill text-neutral-1-400"></span>
-                      <span class="text-neutral-1-900 ml-2">Sản phẩm
-                          <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
-                      </span>
-                  <div class="absolute" style="right: 24px" *ngIf="searchValue.length > 0">
-                      <button tds-button-icon color="secondary" tds-tooltip tooltipTitle="Tải lại" type="button" (click)="onReset()" style="border: 0">
-                          <i class="tdsi-reload-fill"></i>
-                      </button>
-                  </div>
+                  <span class="tdsi-product-fill text-neutral-1-400"></span>
+                  <span class="text-neutral-1-900 ml-2">Sản phẩm
+                      <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
+                  </span>
               </div>
 
               <div class="w-full flex-auto text-body-2 text-neutral-1-900">
@@ -220,12 +215,18 @@
                         <th [width]="'120px'">Giới hạn trên đơn</th>
                         <th [width]="'120px'">Giá bán</th>
 
-                        <th [width]="'64px'" class="text-center">
-                          <button type="button" tds-button-icon color="secondary" (click)="onDeleteAll()" tds-tooltip tooltipTitle="Xóa tất cả sản phẩm"
+                        <th [width]="'92px'" class="text-center">
+                          <button type="button" size="sm"  tds-button-icon color="secondary" (click)="onDeleteAll()" tds-tooltip tooltipTitle="Xóa tất cả sản phẩm"
                            [disabled]="_form.controls['Details'].value.length == 0 ? true : false">
                               <span class="flex items-center">
                                 <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
                               </span>
+                          </button>
+
+                          <button *ngIf="innerTextValue" type="button" class="ml-1" tds-button-icon color="secondary" size="sm" (click)="onReset()" tds-tooltip tooltipTitle="Reload">
+                            <span class="flex items-center text-neutral-1-500">
+                                <i class="tdsi-loading-fill"></i>
+                            </span>
                           </button>
                         </th>
                     </tr>
@@ -251,7 +252,7 @@
                             <!-- Tags -->
                             <div class="flex items-center gap-x-1">
                               <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
-                                  (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                  (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                   [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
                                 <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
@@ -259,7 +260,7 @@
                                         <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                     </div>
 
-                                    <button (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                    <button (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                         [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                         tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                         color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
@@ -293,7 +294,7 @@
                                               <i class="tdsi-close-fill"></i>
                                           </span>
                                       </button>
-                                      <button tds-button-icon size="sm" type="button" color="primary" (click)="onSaveTag(index)">
+                                      <button tds-button-icon size="sm" type="button" color="primary" (click)="onSaveTag(detail.value)">
                                           <span class="flex items-center">
                                               <i class="tdsi-checkbox-check-fill"></i>
                                           </span>

@@ -921,14 +921,10 @@ export class AddBillComponent implements OnInit {
   }
 
   onLoadProductToOrderLines(event: any): any {
-
-    // TODO: check dk trùng biến thể chiến dịch live
-    if(event && event.length > 0) {
-      return
-    }
+    if(!event) return;
 
     if (!this._form.controls['Partner'].value) {
-      return this.message.error('Vui lòng chọn khách hàng!');
+        return this.message.error('Vui lòng chọn khách hàng!');
     }
 
     let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
@@ -939,7 +935,6 @@ export class AddBillComponent implements OnInit {
     } else {
         this.pushProductToOrderlines(event);
     }
-
   }
 
   // TODO: trường hợp thêm mới
@@ -967,26 +962,26 @@ export class AddBillComponent implements OnInit {
     }
 
     this.isLoadingProduct = true;
-    this.fsOrderLineService.onChangeProduct(data)
-      .pipe(finalize(() => { this.isLoadingProduct = false })).subscribe({
+    this.fsOrderLineService.onChangeProduct(data).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: FSOrderLines) => {
-          delete res['@odata.context'];
 
-          let item: OrderLineV2 = this.prepareCopyItemHandler.prepareOnChangeProductModel(res, this.dataModel, event);
+            delete res['@odata.context'];
+            let item: OrderLineV2 = this.prepareCopyItemHandler.prepareOnChangeProductModel(res, this.dataModel, event);
 
-          if (item.Id <= 0) {
-            item.Id = this.idPush - 1;
-            this.idPush = item.Id;
-          }
+            if (item.Id <= 0) {
+              item.Id = this.idPush - 1;
+              this.idPush = item.Id;
+            }
 
-          let formArray = <FormArray> this._form.controls['OrderLines'];
-          formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel, item));
+            let formArray = <FormArray> this._form.controls['OrderLines'];
+            formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel, item));
 
-          this.calcTotal();
-          this.cdRef.detectChanges();
-
+            this.calcTotal();
+            this.cdRef.detectChanges();
+            this.isLoadingProduct = false;
         },
         error:(error) => {
+            this.isLoadingProduct = false;
             this.message.error(`${error?.error?.message}` || 'Thêm sản phẩm thất bại')
         }
       })
