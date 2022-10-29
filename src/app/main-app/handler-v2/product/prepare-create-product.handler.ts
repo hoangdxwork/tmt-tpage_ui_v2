@@ -9,11 +9,11 @@ import { ConfigAttributeLine, ConfigProductDefaultDTO, ConfigProductVariant } fr
    providedIn: 'root'
 })
 export class AddProductHandler {
-   
+
    static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines?: ConfigAttributeLine[], listProductVariants?: ConfigProductVariant[], listComboProducts?: ComboProductDTO[], lstUOM?: any[]) {
 
       dataModel = {...dataModel,...formModel};
-      
+
       if(listAttributeLines){
          dataModel.AttributeLines = listAttributeLines;
       }
@@ -27,7 +27,7 @@ export class AddProductHandler {
          dataModel.ProductVariants = listProductVariants;
          dataModel.ProductVariantCount = listProductVariants?.length;
       }
-      
+
       if(listComboProducts){
          dataModel.ComboProducts = listComboProducts;
       }
@@ -40,7 +40,7 @@ export class AddProductHandler {
          })
          dataModel.UOMLines = lstUOM;
       }
-      
+
       dataModel.Images = images || [];
       dataModel.ProductVariants.map(
          (variant)=>{
@@ -130,6 +130,7 @@ export class AddProductHandler {
          }
       }
 
+      dataModel["OrderTag"] = formModel.OrderTag ? formModel.OrderTag.toString(): null;
       return dataModel;
    }
 }

@@ -139,6 +139,10 @@ export class ConfigAddProductComponent implements OnInit {
           this.lstVariants = this.dataModel.ProductVariants;
         }
 
+        if(this.dataModel.OrderTag) {
+          this.dataModel.OrderTag = this.dataModel.OrderTag.split(',');
+        }
+
         this.formatProperty(this.dataModel);
 
         // nếu type = 'product' thì lấy thông tin số lượng thực tế của sản phẩm

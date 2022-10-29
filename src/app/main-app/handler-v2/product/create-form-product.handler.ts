@@ -45,7 +45,8 @@ export class CreateFormProductHandler {
         UOMPO: [null],
         Volume: [0],
         Weight: [0],
-        YearOfManufacture: [null]
+        YearOfManufacture: [null],
+        OrderTag: [null]
       });
 
     return _form;
