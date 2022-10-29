@@ -249,7 +249,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-<<<<<<< HEAD
       next: (res: any) => {
           if(!res) return;
 
@@ -259,20 +258,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
           if(res.type === 'select' && res.productTmpl) {
             let model = res.productTmpl;
             let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active)[0] as DataPouchDBDTO;
-=======
-        next:(res: any) => {
-          if(res) {
-            let productTmplItems = res[0];
-
-            if(res[1]) {
-              let cacheObject = res[1];
-              this.indexDbStorage = [...cacheObject.cacheDbStorage];
-            }
-
-            // TODO: trường hợp thêm mới push sp vào orderLines
-            if(productTmplItems?.Id) {
-              let items = this.indexDbStorage.filter((x: DataPouchDBDTO) => x.ProductTmplId == productTmplItems.Id && x.UOMId == productTmplItems.UOMId)[0] as DataPouchDBDTO;
->>>>>>> dev
 
             if(!item) {
                 this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
