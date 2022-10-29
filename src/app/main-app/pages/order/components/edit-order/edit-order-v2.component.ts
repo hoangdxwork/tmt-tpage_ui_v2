@@ -325,7 +325,7 @@ export class EditOrderV2Component implements OnInit {
       this.virtualScroller.scrollToPosition(0);
     }
 
-    this.pageIndex = 1;
+    this.pageIndex = 0;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }

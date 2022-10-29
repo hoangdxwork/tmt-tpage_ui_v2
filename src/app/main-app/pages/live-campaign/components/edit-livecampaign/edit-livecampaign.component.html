@@ -13,7 +13,7 @@
       </div>
 
       <div class="flex gap-x-2">
-          <button tds-button color="info" type="button">Cập nhật cấu hình bài viết</button>
+          <button tds-button color="info" type="button" (click)="onUpdateLive()">Cập nhật cấu hình bài viết</button>
           <button tds-button class="w-[100px]" color="primary" type="button" (click)="onSave()">Lưu lại</button>
           <button tds-button class="w-[100px]" color="secondary" type="button" (click)="onBack()">Hủy bỏ</button>
       </div>
@@ -81,7 +81,7 @@
                 <tds-label class="w-1/4">Chốt đơn xác nhận</tds-label>
                 <tds-form-field class="w-3/4">
                   <tds-select valueField="value" textField="text"
-                      placeholder='Trạng thái chốt đơn' [valuePrimitive]="false"  formControlName="Config"
+                      placeholder='Trạng thái chốt đơn' [valuePrimitive]="false"  formControlName="ConfigObject"
                       disabledField="isActive" [data]="lstConfig" [allowClear]="true">
                   </tds-select>
                 </tds-form-field>
@@ -173,15 +173,10 @@
         <div class="w-2/3">
           <div class="rounded-xl bg-white h-full flex-col flex">
             <div class="p-3 w-full flex gap-x-2 font-semibold text-base items-center relative">
-                    <span class="tdsi-product-fill text-neutral-1-400"></span>
-                    <span class="text-neutral-1-900 ml-2">Sản phẩm
-                        <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
-                    </span>
-                <div class="absolute" style="right: 24px" *ngIf="searchValue.length > 0">
-                    <button tds-button-icon color="secondary" tds-tooltip tooltipTitle="Tải lại" type="button" (click)="onReset()" style="border: 0">
-                        <i class="tdsi-reload-fill"></i>
-                    </button>
-                </div>
+                <span class="tdsi-product-fill text-neutral-1-400"></span>
+                <span class="text-neutral-1-900 ml-2">Sản phẩm
+                    <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
+                </span>
             </div>
 
             <div class="w-full flex-auto text-body-2 text-neutral-1-900">
@@ -256,7 +251,7 @@
                           <!-- Tags -->
                           <div class="flex items-center gap-x-1">
                             <span *ngIf="detail?.value.Tags.length <= 0 && isEditDetails[detail.value.Id]" class="text-info-500 font-normal text-sm cursor-pointer"
-                                (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                 [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
                               <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
@@ -264,7 +259,7 @@
                                       <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                   </div>
 
-                                  <button *ngIf="isEditDetails[detail.value.Id]" (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                  <button *ngIf="isEditDetails[detail.value.Id]" (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                       [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                       tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                       color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
@@ -298,7 +293,7 @@
                                             <i class="tdsi-close-fill"></i>
                                         </span>
                                     </button>
-                                    <button tds-button-icon size="sm" color="primary" type="button" (click)="onSaveTag(index)">
+                                    <button tds-button-icon size="sm" color="primary" type="button" (click)="onSaveTag(detail.value)">
                                         <span class="flex items-center">
                                             <i class="tdsi-checkbox-check-fill"></i>
                                         </span>

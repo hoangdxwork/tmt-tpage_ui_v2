@@ -78,7 +78,7 @@
                 <ng-template tds-virtual-scroll let-data let-index="index">
                     <tr *ngIf="data" (click)="selectProduct(data, index)" tds-popover popoverTrigger="click"
                         [popoverVisible]="index == indClick" [popoverBackdrop]="true" (popoverVisibleChange)="onPopoverVisibleChange($event)"
-                        [popoverContent]="contentTemplate" [popoverAutoClose]="true" class="group hover:cursor-pointer">
+                        [popoverContent]=" (lstVariants && lstVariants.length > 1) ? contentTemplate : undefined" [popoverAutoClose]="true" class="group hover:cursor-pointer">
                         <td>
                             <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
                             </tds-avatar>
@@ -99,16 +99,17 @@
                         <td class="text-body-2">{{ data.Price | numberCustom }} đ</td>
                     </tr>
 
-                    <ng-template #contentTemplate>
+                    <ng-template #contentTemplate >
                         <tds-spin [spinning]="isLoadingSelect" class="flex flex-col gap-y-2">
                             <div class="text-body-2 font-semibold">
-                              Bạn có muốn chọn tất cả {{ lstVariants.length }} biến thể cùng với sản phẩm này.
+                                Bạn có muốn chọn tất cả {{ lstVariants.length }} biến thể cùng với sản phẩm này.
                             </div>
+
                             <div class="flex items-center justify-end gap-x-2 pt-4">
-                              <button *ngIf="lstVariants.length > 1" tds-button size="sm" (click)="getAllVariantsv2()" type="button">
+                              <button *ngIf="lstVariants.length > 1" tds-button size="sm" (click)="getVariant()" type="button">
                                   Chọn tất cả
                               </button>
-                              <button tds-button color="secondary" size="sm" (click)="getCurrentVariantv2(data)" type="button">
+                              <button tds-button color="secondary" size="sm" (click)="getVariant(data)" type="button">
                                   Chọn hiện tại
                               </button>
                             </div>

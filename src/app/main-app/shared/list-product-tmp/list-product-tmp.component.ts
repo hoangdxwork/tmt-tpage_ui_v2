@@ -257,9 +257,13 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
           if(res.type === 'select' && res.productTmpl) {
             let model = res.productTmpl;
-            let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId)[0] as DataPouchDBDTO;
+            let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active)[0] as DataPouchDBDTO;
 
-            if(!item) return;
+            if(!item) {
+                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+                return;
+            }
+
             this.addItem(item);
           }
       }
@@ -287,6 +291,12 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   }
 
   addItem(data: DataPouchDBDTO, index?: number) {
+    let exist = data && data.Active == false;
+    if(exist) {
+        this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+        return;
+    }
+
     this.indClick = index as number;
     this.onLoadProductToOrderLines.emit(data);
   }

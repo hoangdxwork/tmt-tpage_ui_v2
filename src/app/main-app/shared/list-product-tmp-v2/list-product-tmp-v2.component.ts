@@ -32,10 +32,10 @@ export class ListProductTmpV2Component implements OnInit {
   @Input() isLoadingProduct: boolean = false;
   @Input() type!: string;
 
-  @Output() onLoadProductToLiveCampaign: EventEmitter<any> = new EventEmitter<any>();
+  @Output() onLoadProductToLiveCampaign: EventEmitter<any> = new EventEmitter<DataPouchDBDTO[]>();
 
   lstOfData!: DataPouchDBDTO[];
-  lstVariants: ProductDTOV2[] = [];
+  lstVariants: DataPouchDBDTO[] = [];
 
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
@@ -76,7 +76,7 @@ export class ListProductTmpV2Component implements OnInit {
   keyFilter: string = '';
 
   constructor(private productIndexDBService: ProductIndexDBService,
-    public cacheApi: THelperCacheService,
+      public cacheApi: THelperCacheService,
       private modalService: TDSModalService,
       private sharedService: SharedService,
       private message: TDSMessageService,
@@ -262,14 +262,24 @@ export class ListProductTmpV2Component implements OnInit {
         this.indexDbStorage = [...res.cacheDbStorage];
 
         if(res.type === 'select' && res.productTmpl) {
-            let model = res.productTmpl;
-            let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId) as DataPouchDBDTO[];
+            let model = res.productTmpl as ProductTemplateV2DTO;
+            let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
 
             if(items && items.length == 0) {
                 this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+                return;
             }
 
-            this.onLoadProductToLiveCampaign.emit(items);
+            items.map((x: DataPouchDBDTO) => {
+                x.Tags = model?.OrderTag || null;
+                if(this.inventories && this.inventories[x.Id]) {
+                    x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
+                }
+
+                x._attributes_length = model._attributes_length || 0;
+            });
+
+            this.onLoadProductToLiveCampaign.emit([...items]);
         }
       }
     })
@@ -295,18 +305,6 @@ export class ListProductTmpV2Component implements OnInit {
     this.loadData();
   }
 
-  filterLstVariants(data: DataPouchDBDTO, productTmplItems?: any){
-    let model = this.indexDbStorage.filter(f => f.ProductTmplId == data.ProductTmplId && f.UOMId == data.UOMId);
-
-    model.map((x: DataPouchDBDTO)=>{
-      x.Tags = productTmplItems?.Tags || null;
-
-      if(this.inventories && this.inventories[x.Id]) {
-          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
-      }
-    });
-  }
-
   trackByIndex(_: number, data: DataPouchDBDTO): number {
     return data.Id;
   }
@@ -330,73 +328,40 @@ export class ListProductTmpV2Component implements OnInit {
     this.isLoading = false;
   }
 
-  selectProduct(data: DataPouchDBDTO, index: number){
+  selectProduct(model: DataPouchDBDTO, index: number){
     if(this.isLoadingSelect) return;
 
     this.indClick = index;
-    let uomId: number = data.UOMId;
+    let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.ProductTmplId && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
 
-    if(Number(index) >= 0) {
-        this.indClick = Number(index);
+    if(items && items.length == 0) {
+      this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+      return;
     }
 
-    let id = data.ProductTmplId;
-    this.loadProductAttributeLine(id, uomId);
-  }
-
-  loadProductAttributeLine(id: any, uomId: number) {
-    this.isLoadingSelect = true;
-    this.lstVariants = [];
-
-    this.productTemplateService.getProductVariants(id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-
-          if(res && res.value && res.value.length == 0) {
-              this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-              this.indClick = -1;
-          }
-
-          this.lstVariants = [...(res.value || [])];
-          this.lstVariants.map((x: ProductDTOV2) => {
-              x.UOMId = uomId;
-          });
-
-          this.lstVariants = this.lstVariants.filter((x: ProductDTOV2) => x.Active);
-          this.indClick = -1;
-          this.isLoadingSelect = false;
-      },
-      error: error => {
-          this.message.error(error?.error?.message || Message.CanNotLoadData);
-          this.isLoadingSelect = false;
-          this.indClick = -1;
+    items.map((x: DataPouchDBDTO) => {
+      x._attributes_length = 0;
+      if(this.inventories && this.inventories[x.Id]) {
+          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
       }
-    })
+    });
+
+    this.lstVariants = [...items];
+
+    if(this.lstVariants && this.lstVariants.length == 1) {
+      this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
+      this.indClick = -1;
+    }
   }
 
-  getAllVariantsv2(){
-    // TODO: trường hợp thêm list các biến thể của sản phẩm
-    switch(this.type){
-      case 'order':
-        // this.onLoadProductToOrderLines.emit(this.lstVariants);
-        break;
-      case 'liveCampaign':
-        let model = {
-          value: [...this.lstVariants],
-          isVariants: true
-        }
-        this.onLoadProductToLiveCampaign.emit(model);
+  getVariant(data?: DataPouchDBDTO) {
+    if(data && data.Id) {//chọn hiện tại
+      this.onLoadProductToLiveCampaign.emit([data]);
+    } else {
+      this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
     }
 
-    this.indClick = -1;
-  }
-
-  getCurrentVariantv2(data: DataPouchDBDTO){
-    // TODO: trường hợp thêm sản phẩm
-    let model = {
-      value: [data] as ProductDTOV2[],
-      isVariants: false
-    }
-    this.onLoadProductToLiveCampaign.emit(model);
+    this.lstVariants = [];
     this.indClick = -1;
   }
 

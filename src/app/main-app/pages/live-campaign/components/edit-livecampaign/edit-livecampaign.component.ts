@@ -108,6 +108,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this._form = this.fb.group({
       Id: [null],
       Config: [null],
+      ConfigObject: [null],// xóa khi lưu
       Name: [null],
       Note: [null],
       ResumeTime: [0],
@@ -139,7 +140,6 @@ export class EditLiveCampaignComponent implements OnInit {
 
   loadData() {
     let id = this.liveCampaignId;
-
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
@@ -223,6 +223,11 @@ export class EditLiveCampaignComponent implements OnInit {
   updateForm(data: LiveCampaignDTO) {
     this._form.patchValue(data);
 
+    let exist = this.lstConfig.filter((x: any) => x.value === data.Config)[0];
+    if(exist) {
+        this._form.controls['ConfigObject'].patchValue(exist);
+    }
+
     if(data && data.Details) {
         this.initFormDetails(data.Details);
     }
@@ -268,13 +273,12 @@ export class EditLiveCampaignComponent implements OnInit {
     return item;
   }
 
-
-  onLoadProduct(model: any) { 
-    let listData = [...(model.value|| [])];
+  onLoadProduct(model: DataPouchDBDTO[]) {
+    let listData = [...(model || [])];
     let formDetails = this.detailsFormGroups.value as any[];
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
-    listData.forEach((x:ProductDTOV2) => {
+    listData.forEach((x: DataPouchDBDTO) => {
       let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
       if(!exist){
           let qty = Number(this.lstInventory[x.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
@@ -284,8 +288,8 @@ export class EditLiveCampaignComponent implements OnInit {
               ScanQuantity: 0,
               QuantityCanceled: 0,
               UsedQuantity: 0,
-              Price: model.isVariants ? (x.PriceVariant || 0) : (x.Price || 0),
-              Note: x.Note,
+              Price: (x.Price || 0),
+              Note: null,
               ProductId: x.Id,
               LiveCampaign_Id: this.liveCampaignId,
               ProductName: x.Name,
@@ -300,7 +304,7 @@ export class EditLiveCampaignComponent implements OnInit {
           } as LiveCampaignSimpleDetail;
 
           let name = item.ProductNameGet || item.ProductName;
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags);
+          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
           item.Tags = tags?.join(',');
 
           simpleDetail = [...simpleDetail, ...[item]];
@@ -312,11 +316,11 @@ export class EditLiveCampaignComponent implements OnInit {
     })
 
     if(simpleDetail && simpleDetail.length > 0){
-        this.addProductLiveCampaignDetails(simpleDetail, model.isVariants);
+        this.addProductLiveCampaignDetails(simpleDetail);
     }
   }
 
-  addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[], isVariants?: boolean) {
+  addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[]) {
     let id = this.liveCampaignId as string;
     let countNew = 0;
     let countEdit = 0;
@@ -342,20 +346,18 @@ export class EditLiveCampaignComponent implements OnInit {
               if(Number(index) >= 0) {
                   index = Number(index);
                   this.detailsFormGroups.at(index).patchValue(x);
-                  countEdit +=1;
 
-                  if(!isVariants){
-                      this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
-                  }
+                  countEdit +=1;
+                  this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">
+                  [${x.ProductCode}] ${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
               } else {
                   formDetails = [...[x], ...formDetails];
                   this.detailsFormGroups.clear();
                   countNew +=1;
 
                   this.initFormDetails(formDetails);
-                  if(!isVariants){
-                      this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
-                  }
+                  this.notificationService.info(`Thêm mới sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">
+                  [${x.ProductCode}] ${x.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span></div>`)
               }
 
               delete this.isEditDetails[x.Id];
@@ -363,15 +365,15 @@ export class EditLiveCampaignComponent implements OnInit {
 
           this.livecampaignSimpleDetail = [...this.detailsFormGroups.value];
 
-          if(isVariants) {
-              if(countNew > 0) {
-                this.notificationService.info(`Thêm sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${res[0].ProductName}</span></span><span> Số lượng thêm: <span class="font-semibold text-secondary-1">${countNew}</span></span></div>`);
-              }
+          // if(isVariants) {
+          //     if(countNew > 0) {
+          //       this.notificationService.info(`Thêm sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${res[0].ProductName}</span></span><span> Số lượng thêm: <span class="font-semibold text-secondary-1">${countNew}</span></span></div>`);
+          //     }
 
-              if(countEdit > 0) {
-                  this.notificationService.info(`Cập nhật sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${res[0].ProductName}</span></span><span> Số lượng cập nhật: <span class="font-semibold text-secondary-1">${countEdit}</span></span></div>`);
-              }
-          }
+          //     if(countEdit > 0) {
+          //         this.notificationService.info(`Cập nhật sản phẩm`,`<div class="flex flex-col gap-y-2"><span>Biến thể sản phẩm: <span class="font-semibold">${res[0].ProductName}</span></span><span> Số lượng cập nhật: <span class="font-semibold text-secondary-1">${countEdit}</span></span></div>`);
+          //     }
+          // }
         },
         error: (err: any) => {
             this.isLoading = false;
@@ -380,7 +382,7 @@ export class EditLiveCampaignComponent implements OnInit {
     })
   }
 
-  generateTagDetail(productName: string, code: string, tags: string) {
+  generateTagDetail(productName: string, code: string, tags: string,  _attributes_length?: number) {
     productName = productName.replace(`[${code}]`, "");
     productName = productName.trim();
 
@@ -399,7 +401,7 @@ export class EditLiveCampaignComponent implements OnInit {
       result.push(wordNameNoSpace);
     }
 
-    if(TDSHelperString.hasValueString(code) && code) {
+    if(TDSHelperString.hasValueString(code) && code && _attributes_length == 0) {
       result.push(code);
     }
 
@@ -414,7 +416,10 @@ export class EditLiveCampaignComponent implements OnInit {
     return [...result];
   }
 
-  openTag(index: number) {
+  openTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
     this.indClickTag = index;
     //TODO: lấy dữ liệu từ formArray
     let data = this.detailsForm.at(index).value;
@@ -447,7 +452,23 @@ export class EditLiveCampaignComponent implements OnInit {
     this.detailsFormGroups.clear();
     this.livecampaignSimpleDetail = [];
 
-    this.loadData();
+    let id = this.liveCampaignId;
+    this.isLoading = true;
+    this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+
+          if(data && data.Details) {
+              this.initFormDetails(data.Details);
+          }
+
+          this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
+          this.isLoading = false;
+      },
+      error:(error) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   onOpenSearchvalue(){
@@ -459,17 +480,21 @@ export class EditLiveCampaignComponent implements OnInit {
     this.indClickTag = -1;
   }
 
-  onSaveTag(index: number) {
+  onSaveTag(item: any) {
+    //TODO: dữ liệu từ formArray
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
     //TODO: dữ liệu từ formArray
     let details = this.detailsForm.at(index).value;
     details.Tags = this.modelTags;
 
     //TODO: cập nhật vào formArray
     this.detailsForm.at(index).patchValue(details);
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
+
     this.modelTags = [];
     this.indClickTag = -1;
-
-    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
   onChangeCollapse(event: TDSSafeAny) {
@@ -482,7 +507,7 @@ export class EditLiveCampaignComponent implements OnInit {
         title: 'Thao tác chưa được lưu',
         content: 'Xác nhận đóng và không lưu dữ liệu',
         onOk: () => {
-          history.back(); 
+          history.back();
           return;
         },
         onCancel:() => { return; },
@@ -537,7 +562,7 @@ export class EditLiveCampaignComponent implements OnInit {
       next: (res: any) => {
           this.isLoading = false;
           this.message.success('Cập nhật chiến dịch live thành công');
-          
+
           if(Object.keys(this.isEditDetails).length > 0) {
             this.modalService.info({
               title: 'Thao tác chưa được lưu',
@@ -553,7 +578,7 @@ export class EditLiveCampaignComponent implements OnInit {
           } else {
             this.router.navigateByUrl(`/live-campaign/detail/${model.Id}`);
           }
-          
+
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -686,6 +711,71 @@ export class EditLiveCampaignComponent implements OnInit {
 
   onSearch() {
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+  }
+
+  onUpdateLive() {
+    if(this.isCheckValue() === 0) return;
+    let model = this.prepareModelUpdateLive();
+
+    this.liveCampaignService.update(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
+          this.isLoading = false;
+          this.message.success(Message.ManipulationSuccessful);
+          this.router.navigateByUrl(`/live-campaign/detail/${model.Id}`);
+      },
+      error:(error) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+      }
+    })
+  }
+
+  prepareModelUpdateLive() {
+    let formValue = this._form.value;
+    let model = {} as any;
+
+    model.Id =  formValue.Id;
+    model.Config = formValue.ConfigObject?.value;
+    model.Name = formValue.Name;
+    model.Users = formValue.Users || [];
+    model.Note = formValue.Note;
+    model.ResumeTime = formValue.ResumeTime;
+
+    if(this.datePicker){
+      model.StartDate = this.datePicker[0];
+      model.EndDate = this.datePicker[1];
+    }
+
+    model.Preliminary_Template = formValue.Preliminary_Template;
+    model.ConfirmedOrder_Template = formValue.ConfirmedOrder_Template;
+    model.MinAmountDeposit = formValue.MinAmountDeposit;
+    model.MaxAmountDepositRequired = formValue.MaxAmountDepositRequired;
+    model.IsEnableAuto = formValue.IsEnableAuto;
+    model.EnableQuantityHandling = formValue.EnableQuantityHandling;
+    model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
+    model.IsShift = formValue.IsShift;
+    model.ImageUrl = formValue.ImageUrl;
+
+    model.Facebook_UserId = formValue.FacebookUserId;
+    model.Facebook_UserName = formValue.Facebook_UserName;
+
+    formValue.Details?.forEach((x: any, index: number) => {
+      x["Index"] = index;
+      x.Tags = x?.Tags?.toString();
+
+      if(TDSHelperString.hasValueString(model.Id)) {
+        x.LiveCampaign_Id = model.Id;
+      }
+    });
+
+    let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+    if(TDSHelperObject.hasValue(team) && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
+        model.Facebook_UserId = team.ChannelId;
+        model.Facebook_UserName = team.Name;
+    }
+
+    model.Details = formValue.Details;
+    return model;
   }
 
 }

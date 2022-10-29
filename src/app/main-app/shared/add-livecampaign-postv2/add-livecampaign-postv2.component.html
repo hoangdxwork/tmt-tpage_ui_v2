@@ -15,7 +15,7 @@
               <tds-label>Chốt đơn xác nhận</tds-label>
               <tds-form-field class="col-span-2 w-full">
                   <tds-select valueField="value" textField="text"
-                      placeholder='Chọn trạng thái' [valuePrimitive]="false" formControlName="Config"
+                      placeholder='Chọn trạng thái' [valuePrimitive]="false" formControlName="ConfigObject"
                       disabledField="isActive" [data]="lstConfig" [allowClear]="true">
                   </tds-select>
               </tds-form-field>
@@ -270,7 +270,7 @@
                                       <!-- Tags -->
                                       <div class="flex items-center gap-x-1">
                                           <span *ngIf="detail?.value?.Tags?.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
-                                          (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                          (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                           [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
                                         <div class="flex flex-wrap items-center" *ngIf="detail?.value?.Tags?.length > 0">
@@ -278,7 +278,7 @@
                                                 <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                             </div>
 
-                                            <button (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
+                                            <button (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
                                                 [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                                 tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                                 color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
@@ -312,7 +312,7 @@
                                                         <i class="tdsi-close-fill"></i>
                                                     </span>
                                                 </button>
-                                                <button tds-button-icon size="sm" color="primary" (click)="onSaveTag(index)">
+                                                <button tds-button-icon size="sm" color="primary" (click)="onSaveTag(detail.value)">
                                                     <span class="flex items-center">
                                                         <i class="tdsi-checkbox-check-fill"></i>
                                                     </span>

@@ -34,7 +34,7 @@ export interface DataPouchDBDTO {
   QtyAvailable?: number,
   VirtualAvailable?: number;
 
-  AttributeLength?: any // field này dùng để check tạo mã chiến dịch live, ko có trong db
+  _attributes_length?: any // field này dùng để check tạo mã chiến dịch live, ko có trong db
 }
 
 export interface ProductPouchDBDTO {

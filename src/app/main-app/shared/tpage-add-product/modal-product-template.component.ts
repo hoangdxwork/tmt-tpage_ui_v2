@@ -230,13 +230,16 @@ export class ModalProductTemplateComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-            let model: SyncCreateProductTemplateDto = {
+            // TODO: chỉ dùng cho chiến dịch live
+            product._attributes_length = model.AttributeLines?.length;
+
+            const data: SyncCreateProductTemplateDto = {
               type: type,
               productTmpl: product as ProductTemplateV2DTO,
               cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
             };
 
-            this.modalRef.destroy(type ? model : null);
+            this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
         },
         error: (error: any) => {

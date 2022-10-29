@@ -132,6 +132,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       Id: [this.id],
       Details: this.fb.array([]),
       Config: [null],
+      ConfigObject: [null],
       Name: [null, Validators.required],
       Note: [null],
       ResumeTime: [0],
@@ -245,6 +246,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this._form.patchValue(data);
     this._form.controls['Id'].setValue(this.id);
 
+    let exist = this.lstConfig.filter((x: any) => x.value === data.Config)[0];
+    if(exist) {
+        this._form.controls['ConfigObject'].patchValue(exist);
+    }
+
     this.initFormDetails(data.Details);
     this.livecampaignSimpleDetail = [...this.detailsFormGroups.value];
   }
@@ -268,7 +274,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
   }
 
-  openTag(index: number) {
+  openTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
     this.indClickTag = index;
     let data = this.detailsFormGroups.at(index).value;
 
@@ -284,13 +293,18 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.indClickTag = -1;
   }
 
-  onSaveTag(index: number) {
+  onSaveTag(item: any) {
+    let formDetails = this.detailsFormGroups.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
     //TODO: dữ liệu từ formArray
     let details = this.detailsFormGroups.at(index).value;
     details.Tags = this.modelTags;
 
     //TODO: cập nhật vào formArray
     this.detailsFormGroups.at(index).patchValue(details);
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
+
     this.modelTags = [];
     this.indClickTag = -1;
   }
@@ -753,7 +767,19 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.detailsFormGroups.clear();
     this.livecampaignSimpleDetail = [];
 
-    this.loadData();
+    let id = this.id as string;
+    this.isLoading = true;
+    this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.initFormDetails(res.Details);
+          this.livecampaignSimpleDetail = [...this.detailsFormGroups.value];
+          this.isLoading = false;
+      },
+      error:(err) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    });
   }
 
   onReset(): void {
@@ -762,9 +788,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.visible = false;
     this.detailsFormGroups.clear();
     this.initFormDetails(this.livecampaignSimpleDetail);
+    this.indClickTag = -1;
   }
 
   onSearch(): void {
+    this.indClickTag = -1;
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 
