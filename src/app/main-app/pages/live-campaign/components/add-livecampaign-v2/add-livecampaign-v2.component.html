@@ -232,8 +232,8 @@
                     </tr>
                   </thead>
                   <tbody formArrayName="Details">
-                    <tr *ngFor="let detail of detailsFormGroups.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="index" [ngClass]="detail?.value.Id ? '' : 'bg-primary-3'">
-                      <td class="text-center"> {{ index + 1 }} </td>
+                    <tr *ngFor="let detail of detailsFormGroups.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls" [ngClass]="detail?.value.Id ? '' : 'bg-primary-3'">
+                      <td class="text-center"> {{ (detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls) + 1 }} </td>
 
                       <!-- Sản phẩm -->
                       <td>
@@ -252,7 +252,7 @@
                             <!-- Tags -->
                             <div class="flex items-center gap-x-1">
                               <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
-                                  (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == checkIndexTag(detail.value)" popoverTrigger="click"
+                                  (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls)" popoverTrigger="click"
                                   [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
                                 <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
@@ -260,7 +260,7 @@
                                         <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                     </div>
 
-                                    <button (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == checkIndexTag(detail.value)" popoverTrigger="click"
+                                    <button (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls)" popoverTrigger="click"
                                         [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                         tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                         color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
@@ -308,13 +308,13 @@
 
                       <!-- Ẩn/ hiện -->
                       <td>
-                          <tds-switch size="md" formControlName="IsActive" (ngModelChange)="onChangeIsActive($event)"></tds-switch>
+                          <tds-switch size="md" formControlName="IsActive" (ngModelChange)="onChangeIsActive($event, detail.value)"></tds-switch>
                       </td>
 
                       <!-- Số lượng -->
                       <td>
                         <tds-form-field>
-                            <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event)"
+                            <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event, detail.value)"
                                [formatter]="numberWithCommas" [parser]="parserComas">
                             </tds-input-number>
                         </tds-form-field>
@@ -323,7 +323,7 @@
                       <!-- Giới hạn trên đơn -->
                       <td>
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event)"
+                          <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event, detail.value)"
                               [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
@@ -332,7 +332,7 @@
                       <!-- Giá bán -->
                       <td>
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1000" formControlName="Price" (ngModelChange)="onChangePrice($event)"
+                          <tds-input-number [min]="0" [step]="1000" formControlName="Price" (ngModelChange)="onChangePrice($event, detail.value)"
                              [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>

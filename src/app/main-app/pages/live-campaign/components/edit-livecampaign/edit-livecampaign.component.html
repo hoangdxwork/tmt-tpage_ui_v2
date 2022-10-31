@@ -228,10 +228,10 @@
                   </tr>
                 </thead>
                 <tbody formArrayName="Details">
-                  <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="index"
+                  <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsForm.controls"
                     [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id])}">
 
-                    <td class="text-center"> {{ index + 1 }} </td>
+                    <td class="text-center"> {{ (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls) + 1 }} </td>
 
                     <!-- Sản phẩm -->
                     <td>
@@ -250,7 +250,7 @@
                           <!-- Tags -->
                           <div class="flex items-center gap-x-1">
                             <span *ngIf="detail?.value.Tags.length <= 0 && isEditDetails[detail.value.Id]" class="text-info-500 font-normal text-sm cursor-pointer"
-                                (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == checkIndexTag(detail?.value)"
+                                (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)"
                                 popoverTrigger="click" [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true"
                                 popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
@@ -259,7 +259,7 @@
                                       <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                   </div>
 
-                                  <button *ngIf="isEditDetails[detail.value.Id]" (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == checkIndexTag(detail?.value)"
+                                  <button *ngIf="isEditDetails[detail.value.Id]" (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)"
                                       popoverTrigger="click" [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true"
                                       popoverPlacement="left" tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                       color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
@@ -308,7 +308,7 @@
                     <!-- Ẩn/ hiện -->
                     <td class="text-center">
                         <div *ngIf="isEditDetails[detail.value.Id]">
-                          <tds-switch size="md" formControlName="IsActive" (ngModelChange)="onChangeIsActive($event)"></tds-switch>
+                          <tds-switch size="md" formControlName="IsActive" (ngModelChange)="onChangeIsActive($event, detail.value)"></tds-switch>
                         </div>
                         <div *ngIf="!isEditDetails[detail.value.Id] && detail.value.IsActive" class="text-body-2 text-secondary-1" style="font-style: italic;">
                           Hoạt động
@@ -323,7 +323,7 @@
                     <td class="text-center">
                       <div *ngIf="isEditDetails[detail.value.Id]">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event)"
+                          <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event, detail.value)"
                              [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
@@ -335,7 +335,7 @@
                     <td class="text-center">
                       <div *ngIf="isEditDetails[detail.value.Id]">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event)"
+                          <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event, detail.value)"
                               [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
@@ -347,7 +347,7 @@
                     <td class="text-right">
                       <div *ngIf="isEditDetails[detail.value.Id]">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1000" formControlName="Price" (ngModelChange)="onChangePrice($event)"
+                          <tds-input-number [min]="0" [step]="1000" formControlName="Price" (ngModelChange)="onChangePrice($event, detail.value)"
                              [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
