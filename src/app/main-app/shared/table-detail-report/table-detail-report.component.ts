@@ -1,3 +1,6 @@
+import { ProductService } from './../../services/product.service';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
+import { SharedService } from './../../services/shared.service';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { NgxVirtualScrollerDto } from './../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -26,6 +29,8 @@ export class TableDetailReportComponent implements OnInit {
     @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
     lstDetails: ReportLiveCampaignDetailDTO[] = [];
+    inventories!: TDSSafeAny;
+    companyCurrents!: CompanyCurrentDTO;
     count!: number;
     indClickQuantity: string = '';
     currentQuantity: number = 0;
@@ -52,12 +57,15 @@ export class TableDetailReportComponent implements OnInit {
 
     constructor(private message: TDSMessageService,
         private modalService: TDSModalService,
+        private sharedService: SharedService,
+        private productService: ProductService,
         private viewContainerRef: ViewContainerRef,
         private destroy$: TDSDestroyService,
         private liveCampaignService: LiveCampaignService,
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
+        this.loadCurrentCompany();
         this.loadData(this.pageSize, this.pageIndex);
     }
 
@@ -80,6 +88,34 @@ export class TableDetailReportComponent implements OnInit {
             }
         })
     }
+
+    loadCurrentCompany() {
+        this.sharedService.setCurrentCompany();
+        this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: CompanyCurrentDTO) => {
+            this.companyCurrents = res || {};
+    
+            if(this.companyCurrents?.DefaultWarehouseId) {
+                this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
+            }
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+          }
+        });
+      }
+    
+      loadInventoryWarehouseId(warehouseId: number) {
+        this.productService.setInventoryWarehouseId(warehouseId);
+        this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.inventories = res;
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+          }
+        });
+      }
 
     showModalLiveCampaignOrder(id: string, index: number) {
         if(index){

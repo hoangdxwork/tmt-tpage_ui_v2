@@ -19,9 +19,8 @@
   </div>
 
   <div class="bg-white py-2.5 px-4">
-    <tds-filter-status [(ngModel)]='tabCurrent' [ngModelOptions]="{standalone: true}">
-      <tds-filter-status-item *ngFor="let menu of lstMenu; let index = index"
-        [name]='menu' [value]='index'>
+    <tds-filter-status [(ngModel)]='tabCurrent' [ngModelOptions]="{standalone: true}" (selectChange)="onChangeTab($event)">
+      <tds-filter-status-item *ngFor="let menu of lstMenu; let index = index" [name]='menu' [value]='index'>
         <ng-template tds-filter-status-template let-active='active' let-count='count' let-name='name' let-value>
           <div class="py-1.5 px-4 flex items-center rounded-full mr-2" [ngClass]="active ? 'text-white bg-primary-1' : 'text-neutral-1-700 ng-white'">
               <span class="text-body-2 font-semibold">

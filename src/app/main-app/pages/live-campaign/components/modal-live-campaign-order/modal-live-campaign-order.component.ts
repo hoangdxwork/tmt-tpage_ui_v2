@@ -38,8 +38,9 @@ export class ModalLiveCampaignOrderComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number, text?: string){
-    this.isLoading = true;
     let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
+    this.isLoading = true;
+
     this.liveCampaignService.overviewSaleOnlineoOrders(this.livecampaignDetailId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: res =>{
         this.lstOfData = [...res.Datas];
@@ -50,16 +51,17 @@ export class ModalLiveCampaignOrderComponent implements OnInit {
       },
       error: error=> {
         this.isLoading = false;
-        this.message.error(error?.error?.message || 'Tải sản phẩm lỗi')
+        this.message.error(error?.error?.message || 'Tải sản phẩm lỗi');
+        this.cdref.detectChanges();
       }
     })
   }
 
   onCancel() {
-    this.modalRef.destroy();
+    this.modalRef.destroy(null);
   }
 
-  showModelInfoOrder(id: string | undefined) {
+  showModelInfoOrder(id?: string) {
     this.modal.create({
       title: 'Thông tin đơn hàng',
       size:'xl',
@@ -74,7 +76,6 @@ export class ModalLiveCampaignOrderComponent implements OnInit {
     });
   }
 
-
   onQueryParamsChange(event: TDSTableQueryParams) {
       this.loadData(event.pageSize, event.pageIndex);
   }
@@ -82,6 +83,7 @@ export class ModalLiveCampaignOrderComponent implements OnInit {
   onRefresh(){
     this.pageIndex = 1;
     this.pageSize = 10;
+
     this.loadData(this.pageSize, this.pageIndex);
   }
 }

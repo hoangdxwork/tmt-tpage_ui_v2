@@ -1,13 +1,15 @@
 <div class="w-full text-body-2 text-neutral-1-900 h-[473px]">
-  <tds-table #tableMessage
+  <tds-table #basicTable 
     [listData]="lstOfData"
     [scroll]="{ y:'auto' }"
     [showSizeChanger]="true"
-    [frontPagination]="true"
+    [frontPagination]="false"
     [(pageSize)]="pageSize"
     [(pageIndex)]="pageIndex"
     [loading]="isLoading"
-    (queryParams)="onQueryParamsChange($event)"  (clickRefresh)="onRefresh()">
+    [total]="count"
+    (queryParams)="onQueryParamsChange($event)"  
+    (clickRefresh)="onRefresh()">
     <thead>
       <tr>
         <th [width]="'5%'" class="text-center">STT</th>
@@ -20,25 +22,25 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of tableMessage.data; let index=index">
+      <tr *ngFor="let data of basicTable.data; let index = index">
         <!-- STT-->
         <td class="text-center">
-          {{index + 1}}
+          {{ index + 1 }}
         </td>
 
         <!-- Khách hàng -->
         <td>
-          {{data.Facebook_UserName}}
+          {{ data.Facebook_UserName }}
         </td>
 
         <!-- Mã đơn hàng -->
         <td>
-          {{data.Code || '---'}}
+          {{ data.Code || '---' }}
         </td>
 
         <!-- Số lượng sản phẩm -->
         <td class="text-center">
-          {{data.Quantity}}
+          {{ data.Quantity }}
         </td>
 
         <!-- Ngày tạo -->
@@ -49,7 +51,7 @@
         <!-- Trạng thái -->
         <td>
           <tds-tag type="outline" [status]="data.StatusText | getColorStatusText">
-            {{data.StatusText}}
+            {{ data.StatusText }}
           </tds-tag>
         </td>
 

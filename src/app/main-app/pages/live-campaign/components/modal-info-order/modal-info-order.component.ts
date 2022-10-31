@@ -1,4 +1,5 @@
-import { finalize } from 'rxjs/operators';
+import { takeUntil } from 'rxjs';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, Input, OnInit } from '@angular/core';
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
@@ -7,7 +8,8 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'modal-info-order',
-  templateUrl: './modal-info-order.component.html'
+  templateUrl: './modal-info-order.component.html',
+  providers: [TDSDestroyService]
 })
 export class ModalInfoOrderComponent implements OnInit {
 
@@ -19,7 +21,8 @@ export class ModalInfoOrderComponent implements OnInit {
   constructor(
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
-    private saleOnline_OrderService: SaleOnline_OrderService
+    private saleOnline_OrderService: SaleOnline_OrderService,
+    private destroy$: TDSDestroyService
   ) { }
 
   ngOnInit(): void {
@@ -28,19 +31,23 @@ export class ModalInfoOrderComponent implements OnInit {
 
   loadData(id: string) {
     this.isLoading = true;
-    this.saleOnline_OrderService.getById(id)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.data = res;
+
+    this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        if(res) {
+          this.data = {...res};
+        }
+
         this.isLoading = false;
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+      }, 
+      error: (err) => {
         this.isLoading = false;
-      });
+        this.message.error(`${err?.error?.message || JSON.stringify(err)}`);
+      }
+    });
   }
 
   onCancel() {
-    this.modalRef.destroy();
+    this.modalRef.destroy(null);
   }
-
 }
