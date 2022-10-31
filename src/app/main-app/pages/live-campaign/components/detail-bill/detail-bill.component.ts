@@ -10,7 +10,7 @@ import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.servi
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PartnerService } from './../../../../services/partner.service';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
@@ -82,6 +82,7 @@ export class DetailBillComponent implements OnInit {
     { value: 'Number', name: 'Số hóa đơn', isChecked: true },
     { value: 'PartnerDisplayName', name: 'Tên khách hàng', isChecked: true },
     { value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true },
+    { value: 'Address', name: 'Địa chỉ', isChecked: true },
     { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
     { value: 'AmountDeposit', name: 'Đặt cọc', isChecked: true },
     { value: 'Residual', name: 'Còn nợ', isChecked: true },
@@ -107,13 +108,13 @@ export class DetailBillComponent implements OnInit {
     private printerService: PrinterService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
-    private notification: TDSNotificationService
+    private notification: TDSNotificationService,
   ) { }
 
   ngOnInit() {
     this.setFilter();
     this.loadTags();
-    this.loadGridConfig()
+    this.loadGridConfig();
   }
 
   setFilter() {
@@ -197,6 +198,28 @@ export class DetailBillComponent implements OnInit {
 
   onEdit(id: number) {
     this.router.navigateByUrl(`bill/detail/${id}`);
+  }
+
+  onDelete(data: any) {
+    this.modal.error({
+      title: 'Xóa hóa đơn',
+      content: 'Bạn có muốn xóa hóa đơn',
+      onOk: () => {
+        this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: () => {
+              this.message.success('Xóa hóa đơn thành công!');
+              this.loadData(this.pageSize, this.pageIndex);
+          },
+          error: (error: any) => {
+              this.message.error(`${error?.error?.message}`);
+          }
+        })
+      },
+      onCancel: () => { },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+      confirmViewType: "compact"
+    });
   }
 
   closeTag(): void {
@@ -496,6 +519,12 @@ export class DetailBillComponent implements OnInit {
             }
         }
     })
+  }
+
+  removeCheckedRow() {
+    this.setOfCheckedId = new Set<number>();
+    this.indeterminate = false;
+    this.checked = false;
   }
 
 }
