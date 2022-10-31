@@ -36,7 +36,6 @@ export class CheckTagSelectedCommnetPipe implements PipeTransform {
     }
     return false;
   }
-
 }
 
 @Pipe({
