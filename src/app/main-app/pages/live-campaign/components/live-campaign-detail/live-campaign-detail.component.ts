@@ -49,7 +49,7 @@ export class LiveCampaignDetailComponent implements OnInit {
           break;
       }
     });
-    
+
     this.loadData(this.liveCampaignId);
   }
 
@@ -65,6 +65,10 @@ export class LiveCampaignDetailComponent implements OnInit {
 
   directPage(route: string) {
     this.router.navigateByUrl(route);
+  }
+
+  onCreate() {
+    this.router.navigateByUrl(`live-campaign/create`);
   }
 
   onChangeTab(event: any) {

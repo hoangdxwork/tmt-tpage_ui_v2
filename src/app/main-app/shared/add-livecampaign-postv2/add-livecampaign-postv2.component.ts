@@ -1,7 +1,7 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
-import { LiveCampaignSimpleDetail } from './../../dto/live-campaign/livecampaign-simple.dto';
+import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from './../../dto/live-campaign/livecampaign-simple.dto';
 import { ProductTemplateService } from './../../services/product-template.service';
 import { LiveCampaignDTO } from './../../dto/live-campaign/odata-live-campaign.dto';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
@@ -59,7 +59,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
     { text: "Xác nhận và gửi vận đơn", value: "ConfirmedAndSendLading" },
   ];
 
-  dataModel!: LiveCampaignDTO;
+  dataModel!: LiveCampaignSimpleDto;
   lstUser: ApplicationUserDTO[] = [];
   lstQuickReplies$!: Observable<QuickReplyDTO[]>;
   lstProduct: ProductDTOV2[] = [];
@@ -592,7 +592,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
     }
   }
 
-  createLiveCampaign(model: LiveCampaignModel){
+  createLiveCampaign(model: LiveCampaignSimpleDto){
     this.isLoading = true;
     this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res:LiveCampaignModel) => {

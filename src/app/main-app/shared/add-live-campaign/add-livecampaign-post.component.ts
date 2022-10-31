@@ -567,13 +567,13 @@ export class AddLiveCampaignPostComponent implements OnInit {
     }
   }
 
-  updateLiveCampaign(id: string, model: LiveCampaignModel){
+  updateLiveCampaign(id: string, model: any){
     model.Id = id;
     model.Details = [];
 
     this.isLoading = true;
     this.liveCampaignService.updateSimple(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res:LiveCampaignModel) => {
+      next: (res: any) => {
           this.isLoading = false;
           this.message.success('Cập nhật chiến dịch live thành công');
           this.onCannel(res);
@@ -585,10 +585,10 @@ export class AddLiveCampaignPostComponent implements OnInit {
     });
   }
 
-  createLiveCampaign(model: LiveCampaignModel){
+  createLiveCampaign(model: any){
     this.isLoading = true;
     this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res:LiveCampaignModel) => {
+      next: (res: any) => {
           this.isLoading = false;
           this.message.success('Thêm mới chiến dịch live thành công');
           this.onCannel(res);

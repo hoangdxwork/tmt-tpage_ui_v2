@@ -232,10 +232,10 @@
                     </tr>
                   </thead>
                   <tbody formArrayName="Details">
-                    <tr *ngFor="let detail of detailsFormGroups.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls" [ngClass]="detail?.value.Id ? '' : 'bg-primary-3'">
+                    <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue"  [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsForm.controls" [ngClass]="detail?.value.Id ? '' : 'bg-primary-3'">
 
                       <!-- Số TT -->
-                      <td class="text-center"> {{ (detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls) + 1 }} </td>
+                      <td class="text-center"> {{ (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls) + 1 }} </td>
 
                       <!-- Sản phẩm -->
                       <td>
@@ -254,7 +254,7 @@
                             <!-- Tags -->
                             <div class="flex items-center gap-x-1">
                               <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
-                                  (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls)" popoverTrigger="click"
+                                  (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)" popoverTrigger="click"
                                   [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
                                 <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
@@ -262,7 +262,7 @@
                                         <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
                                     </div>
 
-                                    <button (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsFormGroups.controls)" popoverTrigger="click"
+                                    <button (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)" popoverTrigger="click"
                                         [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                         tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                         color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
@@ -279,7 +279,7 @@
 
                               <!-- button thêm nhãn -->
                               <ng-template #contentAddtag>
-                                  <div class="w-[304px]">
+                                  <div class="w-[360px]">
                                       <tds-form-field>
                                           <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
                                             [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
@@ -342,7 +342,7 @@
 
                       <!-- Thao tác -->
                       <td class="text-center">
-                        <button tds-button-icon color="secondary" size="sm" type="button" (click)="removeDetail(index, detail)" tds-tooltip tooltipTitle="Xóa sản phẩm">
+                        <button tds-button-icon color="secondary" size="sm" type="button" (click)="removeDetail(detail.value)" tds-tooltip tooltipTitle="Xóa sản phẩm">
                             <span class="flex items-center">
                                 <i class="tdsi-trash-fill text-neutral-1-500"></i>
                             </span>
