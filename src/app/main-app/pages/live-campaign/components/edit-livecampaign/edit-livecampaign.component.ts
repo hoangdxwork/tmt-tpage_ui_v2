@@ -6,7 +6,7 @@ import { GetInventoryDTO } from './../../../../dto/product/product.dto';
 import { ProductService } from './../../../../services/product.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -20,7 +20,6 @@ import { Observable, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { LiveCampaignProductDTO, LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
@@ -55,8 +54,8 @@ export class EditLiveCampaignComponent implements OnInit {
   indClickTag: number = -1;
   modelTags: Array<string> = [];
 
-  dataModel!: LiveCampaignDTO;
-  livecampaignSimpleDetail: any[] = [];
+  dataModel!: LiveCampaignSimpleDto;
+  livecampaignSimpleDetail: LiveCampaignSimpleDetail[] = [];
   isEditDetails: { [id: string] : boolean } = {};
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
@@ -78,10 +77,6 @@ export class EditLiveCampaignComponent implements OnInit {
     }
     return value;
   };
-
-  get detailsFormGroups() {
-    return (this._form?.get("Details")) as FormArray;
-  }
 
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -251,7 +246,7 @@ export class EditLiveCampaignComponent implements OnInit {
     return this._form.controls["Details"] as FormArray;
   }
 
-  updateForm(data: LiveCampaignDTO) {
+  updateForm(data: LiveCampaignSimpleDto) {
     this._form.patchValue(data);
 
     let exist = this.lstConfig.filter((x: any) => x.value === data.Config)[0];
@@ -269,11 +264,11 @@ export class EditLiveCampaignComponent implements OnInit {
 
   initFormDetails(details: any[]) {
     details?.forEach(x => {
-        this.detailsFormGroups.push(this.initDetail(x));
+        this.detailsForm.push(this.initDetail(x));
     });
   }
 
-  initDetail(data: LiveCampaignProductDTO | null) {
+  initDetail(data: LiveCampaignSimpleDetail | null) {
     let item = this.fb.group({
         Id: [null],
         Index: [null],
@@ -306,7 +301,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
   onLoadProduct(model: DataPouchDBDTO[]) {
     let listData = [...(model || [])];
-    let formDetails = this.detailsFormGroups.value as any[];
+    let formDetails = this.detailsForm.value as any[];
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
     listData.forEach((x: DataPouchDBDTO) => {
@@ -355,9 +350,6 @@ export class EditLiveCampaignComponent implements OnInit {
 
   addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[]) {
     let id = this.liveCampaignId as string;
-    let countNew = 0;
-    let countEdit = 0;
-
     items.map(x => {
       if(x && x.Tags) {
           x.Tags = x.Tags.toString();
@@ -376,14 +368,13 @@ export class EditLiveCampaignComponent implements OnInit {
               x.ProductNameGet = items[idx].ProductNameGet;
               x.ImageUrl = items[idx].ImageUrl;
 
-              let formDetails = this.detailsFormGroups.value as any[];
+              let formDetails = this.detailsForm.value as any[];
               let index = formDetails.findIndex(f => f.Id == x.Id && f.ProductId == x.ProductId);
 
               if(Number(index) >= 0) {
                   index = Number(index);
-                  this.detailsFormGroups.at(index).patchValue(x);
+                  this.detailsForm.at(index).patchValue(x);
 
-                  countEdit +=1;
                   this.notificationService.info(`Cập nhật sản phẩm`,
                   `<div class="flex flex-col ">
                       <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
@@ -391,13 +382,12 @@ export class EditLiveCampaignComponent implements OnInit {
                   </div>`)
               } else {
                   formDetails = [...[x], ...formDetails];
-                  this.detailsFormGroups.clear();
-                  countNew +=1;
-
+                  this.detailsForm.clear();
                   this.initFormDetails(formDetails);
+
                   this.notificationService.info(`Thêm mới sản phẩm`,
                   `<div class="flex flex-col">
-                      <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
+                      <span class="mb-1">Sản phẩm: <span class="font-semibold">[${x.ProductCode}] ${x.ProductName}</span></span>
                       <span>Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
                   </div>`)
               }
@@ -405,7 +395,7 @@ export class EditLiveCampaignComponent implements OnInit {
               delete this.isEditDetails[x.Id];
           })
 
-          this.livecampaignSimpleDetail = [...this.detailsFormGroups.value];
+          this.livecampaignSimpleDetail = [...this.detailsForm.value];
         },
         error: (err: any) => {
             this.isLoading = false;
@@ -449,7 +439,7 @@ export class EditLiveCampaignComponent implements OnInit {
   }
 
   openTag(item: LiveCampaignSimpleDetail) {
-    let formDetails = this.detailsFormGroups.value as any[];
+    let formDetails = this.detailsForm.value as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
     this.indClickTag = index;
@@ -481,7 +471,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.innerTextValue = '';
     this.dataModel = null as any;
 
-    this.detailsFormGroups.clear();
+    this.detailsForm.clear();
     this.livecampaignSimpleDetail = [];
 
     let id = this.liveCampaignId;
@@ -493,7 +483,8 @@ export class EditLiveCampaignComponent implements OnInit {
               this.initFormDetails(data.Details);
           }
 
-          this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
+          let formDetails = this.detailsForm.value;
+          this.livecampaignSimpleDetail = [...formDetails];
           this.isLoading = false;
       },
       error:(error) => {
@@ -514,7 +505,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
   onSaveTag(item: LiveCampaignSimpleDetail) {
     //TODO: dữ liệu từ formArray
-    let formDetails = this.detailsFormGroups.value as LiveCampaignSimpleDetail[];
+    let formDetails = this.detailsForm.value as LiveCampaignSimpleDetail[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
     //TODO: dữ liệu từ formArray
@@ -551,16 +542,25 @@ export class EditLiveCampaignComponent implements OnInit {
     }
   }
 
-  removeDetail(index: number, detail: LiveCampaignSimpleDetail) {
+  removeDetail(item: LiveCampaignSimpleDetail) {
     let id = this.liveCampaignId as string;
     this.isLoading = true;
-    this.liveCampaignService.deleteDetails(id, [detail.Id]).pipe(takeUntil(this.destroy$)).subscribe({
+    this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
 
-            this.detailsFormGroups.removeAt(index);
-            let data = this.livecampaignSimpleDetail.filter((x: any) => x.Id != detail.Id);
-            this.livecampaignSimpleDetail = [...data];
-            delete this.isEditDetails[detail.Id];
+            let formDetails = this.detailsForm.value as any[];
+            let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+            this.detailsForm.removeAt(index);
+
+            let newFormDetails = this.detailsForm.value as any[];
+            this.livecampaignSimpleDetail = [];
+            this.detailsForm.clear();
+
+            this.initFormDetails(newFormDetails);
+            this.livecampaignSimpleDetail = [...newFormDetails];
+
+            this.searchValue = this.innerTextValue;
+            delete this.isEditDetails[item.Id];
 
             this.isLoading = false;
             this.message.success('Thao tác thành công');
@@ -658,7 +658,7 @@ export class EditLiveCampaignComponent implements OnInit {
   }
 
   onDeleteAll(){
-    let formDetails = this.detailsFormGroups.value as LiveCampaignSimpleDetail[];
+    let formDetails = this.detailsForm.value as LiveCampaignSimpleDetail[];
     let ids = formDetails?.map(x => x.Id) as any[];
 
     this.modalService.error({
@@ -670,8 +670,9 @@ export class EditLiveCampaignComponent implements OnInit {
 
           this.liveCampaignService.deleteDetails(id, ids).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
+
                 this.isEditDetails = {};
-                this.detailsFormGroups.clear();
+                this.detailsForm.clear();
                 this.livecampaignSimpleDetail = [];
 
                 this.isLoading = false;
@@ -737,8 +738,8 @@ export class EditLiveCampaignComponent implements OnInit {
     });
 
     model.Details = formValue.Details;
-
-    this.liveCampaignService.update(model, true).pipe(takeUntil(this.destroy$)).subscribe({
+    let isUpdate = true;
+    this.liveCampaignService.update(model, isUpdate).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
           this.isLoading = false;
           this.message.success(Message.ManipulationSuccessful);

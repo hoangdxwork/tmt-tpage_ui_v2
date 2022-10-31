@@ -6,14 +6,12 @@ import { CompanyCurrentDTO } from './../../../../dto/configs/company-current.dto
 import { ProductService } from './../../../../services/product.service';
 import { SharedService } from './../../../../services/shared.service';
 import { LiveCampaignSimpleDetail } from './../../../../dto/live-campaign/livecampaign-simple.dto';
-import { ProductDTOV2 } from './../../../../dto/product/odata-product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
-import { Component, OnInit, ViewChild, ViewContainerRef, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
-import { FastSaleOrderLineService } from 'src/app/main-app/services/fast-sale-orderline.service';
 import { StringHelperV2 } from 'src/app/main-app/shared/helper/string.helper';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
@@ -22,10 +20,9 @@ import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-rep
 import { Observable, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray,TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { LiveCampaignProductDTO, LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
-import { CRMTeamService } from '@app/services/crm-team.service';
 import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
@@ -82,12 +79,10 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
-    private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private liveCampaignService: LiveCampaignService,
-    private fastSaleOrderLineService: FastSaleOrderLineService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
@@ -146,47 +141,45 @@ export class AddLiveCampaignV2Component implements OnInit {
   }
 
   loadLiveCampaign(liveCampaignId: string, isCopy: boolean) {
-    if(liveCampaignId) {
-      this.isLoading = true;
-      this.liveCampaignService.getDetailById(liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: any) => {
-          if(res) {
-              delete res['@odata.context'];
-              this.isLoading = false;
+    this.isLoading = true;
+    this.liveCampaignService.getDetailById(liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
 
-              if(res.StartDate) {
-                  res.StartDate = new Date(res.StartDate)
-              }
-              if(res.EndDate) {
-                  res.EndDate = new Date(res.EndDate)
-              }
+            if(!res) return;
+            delete res['@odata.context'];
 
-              this.dataModel = res;
-              //TODO: trường hợp copy sẽ xóa Id
-              if(isCopy == true) {
-                  delete this.dataModel.Id;
-                  this.dataModel.Details?.map(x => {
-                      delete x.Id;
-                  })
-              }
+            if(res.StartDate) {
+                res.StartDate = new Date(res.StartDate)
+            }
+            if(res.EndDate) {
+                res.EndDate = new Date(res.EndDate)
+            }
 
-              if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
-                  this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
-              }
+            this.dataModel = res;
+            //TODO: trường hợp copy sẽ xóa Id
+            if(isCopy == true) {
+                delete this.dataModel.Id;
+                this.dataModel.Details?.map(x => {
+                    delete x.Id;
+                })
+            }
 
-              if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
-                  this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
-              }
+            if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
+                this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
+            }
 
-              this.updateForm(this.dataModel);
-          }
-        },
-        error:(error) => {
+            if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
+                this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
+            }
+
+            this.updateForm(this.dataModel);
             this.isLoading = false;
-            this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-        }
-      })
-    }
+      },
+      error:(error) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   onChangeConfirmedOrder_Template(event: any) {
@@ -504,29 +497,8 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   removeDetail(index: number, item: TDSSafeAny) {
     const control = <FormArray>this._form.controls['Details'];
-
-    if(item && item.Id) {
-      this.isLoading = true;
-      this.fastSaleOrderLineService.getByLiveCampaignId(item.Id, item.ProductId, item.UOMId).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: any) => {
-            this.isLoading = false;
-            if(res && res.value) {
-                this.message.error(Message.LiveCampaign.ErrorRemoveLine);
-            }  else {
-                control.removeAt(index);
-            }
-
-            this.liveCampainDetails = [...this._form.controls["Details"].value];
-        },
-        error:(error) => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-        }
-      });
-    } else {
-        control.removeAt(index);
-        this.liveCampainDetails = [...this._form.controls["Details"].value];
-    }
+    control.removeAt(index);
+    this.liveCampainDetails = [...this._form.controls["Details"].value];
   }
 
   onSave() {
@@ -615,7 +587,7 @@ export class AddLiveCampaignV2Component implements OnInit {
       content: 'Bạn muốn xóa tất cả sản phẩm?',
       onOk: () => {
           (<FormArray>this._form.get('Details')).clear();
-          this.liveCampainDetails = [...this._form.controls["Details"].value];
+          this.liveCampainDetails = [];
       },
       onCancel: () => { },
       okText: "Xác nhận",
