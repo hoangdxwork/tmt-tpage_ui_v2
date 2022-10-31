@@ -68,6 +68,7 @@ import { AddLivecampaignPostV2Component } from './add-livecampaign-postv2/add-li
 import { ListProductTmpV2Component } from './list-product-tmp-v2/list-product-tmp-v2.component';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
+import { TrackingRefBlankComponent } from './trackingref-blank/trackingref-blank.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -96,7 +97,8 @@ const cmp =[
   DrawerDetailBillComponent,
   EditLiveCampaignPostComponent,
   AddLivecampaignPostV2Component,
-  ListProductTmpV2Component
+  ListProductTmpV2Component,
+  TrackingRefBlankComponent
 ]
 
 const SERVICES = [
