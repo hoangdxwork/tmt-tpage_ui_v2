@@ -34,7 +34,7 @@ export class CalculateBillFeeHandler {
     });
 
     //TODO: Tính giá trị tổng bao gồm ShipWeight,WeightTotal,DiscountAmount,AmountUntaxed,PaymentAmount,TotalQuantity,AmoutTotal
-    this.updateTotalSummary(_form,datas,totalPrice,roleConfigs);
+    this.updateTotalSummary(_form,datas,totalPrice, roleConfigs);
     this.updateQuantitySummary(_form,datas);
     //TODO: update lại Giao hàng thu tiền
     this.fs_coDAmount(_form);
@@ -48,15 +48,15 @@ export class CalculateBillFeeHandler {
     return {...result};
   }
 
-  public updateTotalSummary(_form:FormGroup, datas: OrderLineV2[], totalAmountLines:number, roleConfigs: any) {
+  public updateTotalSummary(_form:FormGroup, datas: OrderLineV2[], totalAmountLines:number, roleConfigs: SaleSetting_V2) {
 
     let total = 0;
     let weightTotal = 0;
 
     if (TDSHelperArray.hasListValue(datas)) {
       datas.forEach((x: OrderLineV2) => {
-        total += x.PriceTotal;
-        weightTotal += x.WeightTotal;
+          total += x.PriceTotal;
+          weightTotal += x.WeightTotal;
       });
     }
 
@@ -68,6 +68,12 @@ export class CalculateBillFeeHandler {
 
     //TODO: Gán lại tiền giảm DiscountAmount
     totalAmountLines = total;
+
+    // Cấu hình giảm giá
+    if(roleConfigs && !roleConfigs.GroupDiscountTotal) {
+        _form.controls['Discount'].setValue(0);
+    }
+
     let discountAmount = Math.round(totalAmountLines * (_form.controls['Discount'].value / 100));
     _form.controls['DiscountAmount'].setValue(discountAmount);
 

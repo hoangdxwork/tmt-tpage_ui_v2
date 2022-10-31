@@ -51,6 +51,12 @@ export class SO_ComputeCaclHandler {
     quickOrderModel.TotalQuantity = totalQuantity;
 
     if(saleModel) {
+
+       // Cấu hình giảm giá
+        if(saleConfig && saleConfig.SaleSetting && !saleConfig.SaleSetting.GroupDiscountTotal) {
+            saleModel.Discount = 0;
+        }
+
         let discountAmount = Math.round(totalAmount * (saleModel.Discount / 100));
         saleModel.DiscountAmount = discountAmount;
 
