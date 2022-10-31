@@ -673,7 +673,6 @@ export class AddBillComponent implements OnInit {
   }
 
   openDiscountPopover(i: number){
-
     this.idDiscount = i;
   }
 
@@ -772,17 +771,7 @@ export class AddBillComponent implements OnInit {
         });
     }
 
-    // let datas = this._form.controls['OrderLines'].value;
-
-    // if (TDSHelperArray.hasListValue(datas)) {
-    //   datas[i][`${typeDiscount}`] = event;
-    // }
-
-    // let formArray = this._form.controls["OrderLines"] as FormArray;
-    // formArray.at(i).patchValue(datas[i]);
-
     this.dataModel.OrderLines = [...datas];
-
     this.calcTotal();
   }
 
@@ -802,19 +791,7 @@ export class AddBillComponent implements OnInit {
       });
     }
 
-    // let datas = this._form.controls['OrderLines'].value;
-
-    // if (TDSHelperArray.hasListValue(datas)) {
-    //   datas[i].Type = type;
-    //   datas[i].Discount = 0;
-    //   datas[i].Discount_Fixed = 0;
-    // }
-
-    // let formArray = this._form.controls["OrderLines"] as FormArray;
-    // formArray.at(i).patchValue(datas[i]);
-
     this.dataModel.OrderLines = [...datas];
-
     this.calcTotal();
   }
 
