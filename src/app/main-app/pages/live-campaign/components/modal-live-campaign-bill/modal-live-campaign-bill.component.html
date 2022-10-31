@@ -4,9 +4,10 @@
     [scroll]="{y:'auto'}"
     [loading]="isLoading"
     [showSizeChanger]="true"
-    [frontPagination]="true"
+    [frontPagination]="false"
     [(pageSize)]="pageSize"
     [(pageIndex)]="pageIndex"
+    [total]="count"
     (queryParams)="onQueryParamsChange($event)"  (clickRefresh)="onRefresh()">
     <thead>
       <tr>

@@ -148,7 +148,7 @@ export interface SaleOnline_Order_DetailDTO {
   Note: string;
   Dactor?: number;
   OrderId: string;
-
+  IsOrderPriority?: boolean;
   // Thứ tự ưu tiên, thứ tự <= 0 => hiển thị trạng thái hết hàng lúc người dùng cập nhật giỏ hàng
   Priority: number;
   ImageUrl: string;

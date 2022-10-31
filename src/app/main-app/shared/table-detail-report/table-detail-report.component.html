@@ -39,6 +39,17 @@
                                             {{ item | truncateString }}
                                         </tds-tag>
                                     </div>
+                                    
+                                    <div class="flex flex-col">
+                                        <span class="text-body-2 w-[130px] truncate" tds-tooltip
+                                            tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
+                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                                            <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].QtyAvailable }}</span>
+                                        </span>
+                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                            <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].VirtualAvailable }}</span>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </td>

@@ -37,8 +37,8 @@ export class ModalLiveCampaignBillComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number, text?: string){
-    this.isLoading = true;
     let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
+    this.isLoading = true;
 
     this.liveCampaignService.overviewFastSaleOrders(this.livecampaignDetailId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: res =>{
@@ -50,7 +50,8 @@ export class ModalLiveCampaignBillComponent implements OnInit {
       },
       error: error=> {
         this.isLoading = false;
-        this.message.error(error?.error?.message || 'Tải sản phẩm lỗi')
+        this.message.error(error?.error?.message || 'Tải sản phẩm lỗi');
+        this.cdref.detectChanges();
       }
     })
   }
@@ -72,6 +73,7 @@ export class ModalLiveCampaignBillComponent implements OnInit {
   onRefresh(){
     this.pageIndex = 1;
     this.pageSize = 10;
+    
     this.loadData(this.pageSize, this.pageIndex);
   }
 }

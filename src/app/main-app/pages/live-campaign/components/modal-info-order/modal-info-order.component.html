@@ -60,18 +60,19 @@
             <span class="mr-2">Sản phẩm</span>
             <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
               [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
-              {{data?.Details?.length}}
+              {{ data?.Details?.length }}
             </div>
           </div>
         </ng-template>
-        <div class="w-full flex-auto text-body-2 text-neutral-1-900 h-[193px]">
-          <tds-table #table [showSizeChanger]="true" [frontPagination]="false" [listData]="data?.Details || []" [scroll]="{y:'auto'}">
+        <div class="w-full flex-auto text-body-2 text-neutral-1-900 h-[393px]">
+          <tds-table #table [showSizeChanger]="true" [frontPagination]="false" [listData]="data?.Details || []" [scroll]="{ y:'auto' }">
             <thead>
               <tr>
-                  <th [width]="'5%'">STT</th>
-                  <th [width]="'32%'">Sản phẩm</th>
-                  <th [width]="'32%'">Giá bán</th>
-                  <th [width]="'32%'">Số lượng</th>
+                  <th width="5%">STT</th>
+                  <th width="40%">Sản phẩm</th>
+                  <th width="20%" [align]="'right'">Giá bán</th>
+                  <th width="20%" [align]="'center'">Số lượng</th>
+                  <th width="15%">Độ ưu tiên</th>
               </tr>
             </thead>
             <tbody>
@@ -92,11 +93,19 @@
                     </div>
                   </div>
                 </td>
-                <td>
-                  {{data.Price | numberCustom}}
+                <td class="text-right">
+                  {{ data.Price | numberCustom }}đ
+                </td>
+                <td class="text-center">
+                  {{ data.Quantity | numberCustom }}
                 </td>
                 <td>
-                  {{data.Quantity}}
+                  <div *ngIf="data.IsOrderPriority != null" class="flex flex-auto mt-0.5">
+                    <div class="px-2 py-0.5 rounded text-white font-semibold text-caption-2" [ngClass]="data.IsOrderPriority == true ? 'bg-primary-1' : 'bg-neutral-1-300' ">
+                      <span *ngIf="data.IsOrderPriority != true">Dự bị</span>
+                      <span *ngIf="data.IsOrderPriority == true">Ưu tiên</span>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
