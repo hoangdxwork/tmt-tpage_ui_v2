@@ -5,7 +5,7 @@ import { GetInventoryDTO } from './../../../../dto/product/product.dto';
 import { CompanyCurrentDTO } from './../../../../dto/configs/company-current.dto';
 import { ProductService } from './../../../../services/product.service';
 import { SharedService } from './../../../../services/shared.service';
-import { LiveCampaignSimpleDetail } from './../../../../dto/live-campaign/livecampaign-simple.dto';
+import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from './../../../../dto/live-campaign/livecampaign-simple.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -53,8 +53,8 @@ export class AddLiveCampaignV2Component implements OnInit {
   indClickTag: number = -1;
   modelTags: Array<string> = [];
 
-  dataModel!: LiveCampaignDTO;
-  liveCampainDetails: any[] = [];
+  dataModel!: LiveCampaignSimpleDto;
+  livecampaignSimpleDetail: LiveCampaignSimpleDetail[] = [];
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
@@ -231,11 +231,11 @@ export class AddLiveCampaignV2Component implements OnInit {
     });
   }
 
-  get detailsFormGroups() {
+  get detailsForm() {
     return this._form.controls["Details"] as FormArray;
   }
 
-  updateForm(data: LiveCampaignDTO) {
+  updateForm(data: LiveCampaignSimpleDto) {
     this._form.patchValue(data);
 
     this._form.controls["Config"].setValue(data.Config);
@@ -249,16 +249,16 @@ export class AddLiveCampaignV2Component implements OnInit {
     }
 
     this.datePicker = [data.StartDate, data.EndDate];
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
-  initFormDetails(details: LiveCampaignProductDTO[]) {
+  initFormDetails(details: LiveCampaignSimpleDetail[]) {
     details?.forEach(x => {
-        this.detailsFormGroups.push(this.initDetail(x));
+        this.detailsForm.push(this.initDetail(x));
     });
   }
 
-  initDetail(data: LiveCampaignProductDTO | null) {
+  initDetail(data: LiveCampaignSimpleDetail | null) {
     if(data) {
       let tags: any[] = [];
       if(data.Tags && typeof(data.Tags) == "string") {
@@ -344,11 +344,11 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   onLoadProduct(model: DataPouchDBDTO[]) {
     let listData = [...(model|| [])];
-    let formDetails = this.detailsFormGroups.value as any[];
+    let formDetails = this.detailsForm.value as any[];
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
     listData.forEach((x: DataPouchDBDTO) => {
-      let exist = formDetails.filter((f: LiveCampaignProductDTO) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
+      let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
 
       // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
       if(!exist){
@@ -391,22 +391,22 @@ export class AddLiveCampaignV2Component implements OnInit {
     }
   }
 
-  pushItemToFormArray(items: LiveCampaignProductDTO[]) {
-    let formDetails = this.detailsFormGroups.value as any[];
+  pushItemToFormArray(items: LiveCampaignSimpleDetail[]) {
+    let formDetails = this.detailsForm.value as any[];
     let countNew = 0;
     let countEdit = 0;
 
-    items.forEach((item: LiveCampaignProductDTO) => {
+    items.forEach((item: LiveCampaignSimpleDetail) => {
         let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
         if(Number(index) >= 0) {
             index = Number(index);
-            this.detailsFormGroups.at(index).patchValue(item);
+            this.detailsForm.at(index).patchValue(item);
 
             countEdit +=1;
             this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">[${item.ProductCode}] ${item.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
         } else {
             formDetails = [...[item], ...formDetails]
-            this.detailsFormGroups.clear();
+            this.detailsForm.clear();
             this.initFormDetails(formDetails);
 
             countNew +=1;
@@ -414,7 +414,7 @@ export class AddLiveCampaignV2Component implements OnInit {
         }
     })
 
-    this.liveCampainDetails = [...this.detailsFormGroups.value];
+    this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
 
   generateTagDetail(productName: string, code: string, tags: string, _attributes_length?: number) {
@@ -452,12 +452,12 @@ export class AddLiveCampaignV2Component implements OnInit {
   }
 
   openTag(item: any) {
-    let formDetails = this.detailsFormGroups.value as any[];
+    let formDetails = this.detailsForm.value as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
     this.indClickTag = index;
     //TODO: lấy dữ liệu từ formArray
-    let data = this.detailsFormGroups.at(index).value;
+    let data = this.detailsForm.at(index).value;
 
     if(data && TDSHelperArray.isArray(data.Tags)){
       this.modelTags = data.Tags;
@@ -471,17 +471,17 @@ export class AddLiveCampaignV2Component implements OnInit {
     this.indClickTag = -1;
   }
 
-  onSaveTag(item: any) {
+  onSaveTag(item: LiveCampaignSimpleDetail) {
     //TODO: dữ liệu từ formArray
-    let formDetails = this.detailsFormGroups.value as any[];
+    let formDetails = this.detailsForm.value as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
-    let details = this.detailsFormGroups.at(index).value;
+    let details = this.detailsForm.at(index).value;
     details.Tags = this.modelTags;
 
     //TODO: cập nhật vào formArray
-    this.detailsFormGroups.at(index).patchValue(details);
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+    this.detailsForm.at(index).patchValue(details);
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
 
     this.modelTags = [];
     this.indClickTag = -1;
@@ -495,10 +495,19 @@ export class AddLiveCampaignV2Component implements OnInit {
     history.back();
   }
 
-  removeDetail(index: number, item: TDSSafeAny) {
-    const control = <FormArray>this._form.controls['Details'];
-    control.removeAt(index);
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+  removeDetail(item: LiveCampaignSimpleDetail) {
+    let formDetails = this.detailsForm.value as any[];
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+    this.detailsForm.removeAt(index);
+
+    let newFormDetails = this.detailsForm.value as any[];
+    this.livecampaignSimpleDetail = [];
+    this.detailsForm.clear();
+
+    this.initFormDetails(newFormDetails);
+    this.livecampaignSimpleDetail = [...newFormDetails];
+
+    this.searchValue = this.innerTextValue;
   }
 
   onSave() {
@@ -587,7 +596,7 @@ export class AddLiveCampaignV2Component implements OnInit {
       content: 'Bạn muốn xóa tất cả sản phẩm?',
       onOk: () => {
           (<FormArray>this._form.get('Details')).clear();
-          this.liveCampainDetails = [];
+          this.livecampaignSimpleDetail = [];
       },
       onCancel: () => { },
       okText: "Xác nhận",
@@ -601,19 +610,19 @@ export class AddLiveCampaignV2Component implements OnInit {
   }
 
   onChangeIsActive(event: any, item: any) {
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
   onChangeQuantity(event: any, item: any) {
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
   onChangeLimitedQuantity(event: any, item: any) {
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
   onChangePrice(event: any, item: any) {
-    this.liveCampainDetails = [...this._form.controls["Details"].value];
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
   onReset() {
@@ -621,18 +630,16 @@ export class AddLiveCampaignV2Component implements OnInit {
     this.searchValue = '';
     this.visible = false;
     (<FormArray>this._form.get('Details')).clear();
-    this.initFormDetails(this.liveCampainDetails);
+    this.initFormDetails(this.livecampaignSimpleDetail);
     this.indClickTag = -1;
   }
 
   onSearch() {
     this.indClickTag = -1;
-    this.liveCampainDetails = [...this.detailsFormGroups.value];
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 
   onOpenSearchvalue(){
-    this.liveCampainDetails = [...this.detailsFormGroups.value];
     this.visible = true;
   }
 

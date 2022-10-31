@@ -8,10 +8,10 @@ import { LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simpl
 
 export class PrepareAddCampaignHandler {
 
-    public prepareModel(form: FormGroup): LiveCampaignModel {
+    public prepareModel(form: FormGroup) {
 
         let formValue = form.value;
-        let model = {} as LiveCampaignModel;
+        let model = {} as LiveCampaignSimpleDto;
 
         model.Config = formValue.Config || formValue.ConfigObject?.value;
         model.Name = formValue.Name;
