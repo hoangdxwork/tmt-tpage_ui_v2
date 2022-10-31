@@ -28,7 +28,7 @@ import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
-import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe } from './check-tag-selected.pipe';
+import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe, IndexSimpleDetailLiveCampainPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 import { LatestMessageTypePipe } from './lastest-message-type.pipe';
@@ -98,7 +98,8 @@ const cmp =[
   RandomColorPipe,
   SimpleSearchQuickRepplyPipe,
   ReduceSystemMessagePipe,
-  SeenedMessagePipe
+  SeenedMessagePipe,
+  IndexSimpleDetailLiveCampainPipe
 ]
 
 @NgModule({

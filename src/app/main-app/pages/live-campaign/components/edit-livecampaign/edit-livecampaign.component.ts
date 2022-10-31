@@ -4,7 +4,6 @@ import { SharedService } from './../../../../services/shared.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { GetInventoryDTO } from './../../../../dto/product/product.dto';
 import { ProductService } from './../../../../services/product.service';
-import { ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -12,7 +11,6 @@ import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { FastSaleOrderLineService } from 'src/app/main-app/services/fast-sale-orderline.service';
 import { StringHelperV2 } from 'src/app/main-app/shared/helper/string.helper';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
@@ -21,7 +19,7 @@ import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-rep
 import { Observable, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { LiveCampaignProductDTO, LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { CRMTeamService } from '@app/services/crm-team.service';
@@ -92,7 +90,6 @@ export class EditLiveCampaignComponent implements OnInit {
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private liveCampaignService: LiveCampaignService,
-    private fastSaleOrderLineService: FastSaleOrderLineService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
@@ -315,7 +312,9 @@ export class EditLiveCampaignComponent implements OnInit {
     listData.forEach((x: DataPouchDBDTO) => {
       let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
       if(!exist){
-          let qty = (this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable)) > 0 ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable)) > 0
+          ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+
           let item = {
               Quantity: qty,
               RemainQuantity: 0,
@@ -369,8 +368,10 @@ export class EditLiveCampaignComponent implements OnInit {
     this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any[]) => {
           this.isLoading = false;
+          if(!res) return;
 
           res.map((x: LiveCampaignSimpleDetail, idx: number) => {
+
               x.ProductName = items[idx].ProductName;
               x.ProductNameGet = items[idx].ProductNameGet;
               x.ImageUrl = items[idx].ImageUrl;
@@ -385,8 +386,8 @@ export class EditLiveCampaignComponent implements OnInit {
                   countEdit +=1;
                   this.notificationService.info(`Cập nhật sản phẩm`,
                   `<div class="flex flex-col ">
-                    <span>Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
-                    <span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
+                      <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
+                      <span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
                   </div>`)
               } else {
                   formDetails = [...[x], ...formDetails];
@@ -396,8 +397,8 @@ export class EditLiveCampaignComponent implements OnInit {
                   this.initFormDetails(formDetails);
                   this.notificationService.info(`Thêm mới sản phẩm`,
                   `<div class="flex flex-col">
-                    <span>Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
-                    <span>Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
+                      <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
+                      <span>Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
                   </div>`)
               }
 
@@ -447,7 +448,7 @@ export class EditLiveCampaignComponent implements OnInit {
     return [...result];
   }
 
-  openTag(item: any) {
+  openTag(item: LiveCampaignSimpleDetail) {
     let formDetails = this.detailsFormGroups.value as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
@@ -456,19 +457,19 @@ export class EditLiveCampaignComponent implements OnInit {
     let data = this.detailsForm.at(index).value;
 
     if(data && TDSHelperArray.isArray(data.Tags)){
-      this.modelTags = data.Tags;
+        this.modelTags = data.Tags;
     } else {
-      this.modelTags = data ? data.Tags.split(",") : [];
+        this.modelTags = data ? data.Tags.split(",") : [];
     }
   }
 
-  onEditDetails(item: TDSSafeAny) {
+  onEditDetails(item: LiveCampaignSimpleDetail) {
     if(item && item.Id) {
-        this.isEditDetails[item.Id] = true;
+      this.isEditDetails[item.Id] = true;
     }
   }
 
-  onSaveDetails(item: TDSSafeAny) {
+  onSaveDetails(item: LiveCampaignSimpleDetail) {
     if(item && item.Id) {
         this.addProductLiveCampaignDetails([item]);
     }
@@ -511,9 +512,9 @@ export class EditLiveCampaignComponent implements OnInit {
     this.indClickTag = -1;
   }
 
-  onSaveTag(item: any) {
+  onSaveTag(item: LiveCampaignSimpleDetail) {
     //TODO: dữ liệu từ formArray
-    let formDetails = this.detailsFormGroups.value as any[];
+    let formDetails = this.detailsFormGroups.value as LiveCampaignSimpleDetail[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
     //TODO: dữ liệu từ formArray
@@ -526,13 +527,6 @@ export class EditLiveCampaignComponent implements OnInit {
 
     this.modelTags = [];
     this.indClickTag = -1;
-  }
-
-  checkIndexTag(item: any) {
-    let formDetails = this.detailsFormGroups.value as any[];
-    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
-
-    return index;
   }
 
   onChangeCollapse(event: TDSSafeAny) {
@@ -557,20 +551,19 @@ export class EditLiveCampaignComponent implements OnInit {
     }
   }
 
-  removeDetail(index: number, detail: TDSSafeAny) {
+  removeDetail(index: number, detail: LiveCampaignSimpleDetail) {
     let id = this.liveCampaignId as string;
     this.isLoading = true;
     this.liveCampaignService.deleteDetails(id, [detail.Id]).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-            this.isLoading = false;
-            this.message.success('Thao tác thành công');
 
             this.detailsFormGroups.removeAt(index);
-
             let data = this.livecampaignSimpleDetail.filter((x: any) => x.Id != detail.Id);
             this.livecampaignSimpleDetail = [...data];
-
             delete this.isEditDetails[detail.Id];
+
+            this.isLoading = false;
+            this.message.success('Thao tác thành công');
         },
         error: (err: any) => {
             this.isLoading = false;
@@ -677,12 +670,12 @@ export class EditLiveCampaignComponent implements OnInit {
 
           this.liveCampaignService.deleteDetails(id, ids).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-                this.isLoading = false;
-                this.message.success('Thao tác thành công');
-
                 this.isEditDetails = {};
                 this.detailsFormGroups.clear();
                 this.livecampaignSimpleDetail = [];
+
+                this.isLoading = false;
+                this.message.success('Thao tác thành công');
             },
             error: (err: any) => {
                 this.isLoading = false;
@@ -701,26 +694,20 @@ export class EditLiveCampaignComponent implements OnInit {
     this.router.navigateByUrl(route);
   }
 
-  onChangeIsActive(event: any) {
-      this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
+  onChangeIsActive(event: any, item: LiveCampaignSimpleDetail) {
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
-  onChangeQuantity(event: any) {
-    if(event) {
-        this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
-    }
+  onChangeQuantity(event: any, item: LiveCampaignSimpleDetail) {
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
-  onChangeLimitedQuantity(event: any) {
-    if(event) {
-        this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
-    }
+  onChangeLimitedQuantity(event: any, item: LiveCampaignSimpleDetail) {
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
-  onChangePrice(event: any) {
-    if(event) {
-        this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
-    }
+  onChangePrice(event: any, item: LiveCampaignSimpleDetail) {
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
 
   onReset() {
@@ -741,12 +728,12 @@ export class EditLiveCampaignComponent implements OnInit {
 
     let formValue = this._form.value;
     formValue.Details?.forEach((x: any, index: number) => {
-      x["Index"] = index;
-      x.Tags = x?.Tags?.toString();
+        x["Index"] = index;
+        x.Tags = x?.Tags?.toString();
 
-      if(TDSHelperString.hasValueString(model.Id)) {
-        x.LiveCampaign_Id = model.Id;
-      }
+        if(TDSHelperString.hasValueString(model.Id)) {
+          x.LiveCampaign_Id = model.Id;
+        }
     });
 
     model.Details = formValue.Details;

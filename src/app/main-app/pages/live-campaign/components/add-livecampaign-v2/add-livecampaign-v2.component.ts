@@ -267,7 +267,6 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   initDetail(data: LiveCampaignProductDTO | null) {
     if(data) {
-
       let tags: any[] = [];
       if(data.Tags && typeof(data.Tags) == "string") {
           tags = data.Tags.split(",");
@@ -360,7 +359,9 @@ export class AddLiveCampaignV2Component implements OnInit {
 
       // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
       if(!exist){
-          let qty = (this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0) ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
+          ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+
           let item = {
               Quantity: qty,
               LiveCampaign_Id: null,
@@ -491,13 +492,6 @@ export class AddLiveCampaignV2Component implements OnInit {
 
     this.modelTags = [];
     this.indClickTag = -1;
-  }
-
-  checkIndexTag(item: any) {
-    let formDetails = this.detailsFormGroups.value as any[];
-    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
-
-    return index;
   }
 
   onChangeCollapse(event: TDSSafeAny) {
@@ -634,26 +628,20 @@ export class AddLiveCampaignV2Component implements OnInit {
     this.router.navigateByUrl(route);
   }
 
-  onChangeIsActive(event: any) {
-      this.liveCampainDetails = [...this._form.controls["Details"].value];
+  onChangeIsActive(event: any, item: any) {
+    this.liveCampainDetails = [...this._form.controls["Details"].value];
   }
 
-  onChangeQuantity(event: any) {
-    if(event) {
-        this.liveCampainDetails = [...this._form.controls["Details"].value];
-    }
+  onChangeQuantity(event: any, item: any) {
+    this.liveCampainDetails = [...this._form.controls["Details"].value];
   }
 
-  onChangeLimitedQuantity(event: any) {
-    if(event) {
-        this.liveCampainDetails = [...this._form.controls["Details"].value];
-    }
+  onChangeLimitedQuantity(event: any, item: any) {
+    this.liveCampainDetails = [...this._form.controls["Details"].value];
   }
 
-  onChangePrice(event: any) {
-    if(event) {
-        this.liveCampainDetails = [...this._form.controls["Details"].value];
-    }
+  onChangePrice(event: any, item: any) {
+    this.liveCampainDetails = [...this._form.controls["Details"].value];
   }
 
   onReset() {
