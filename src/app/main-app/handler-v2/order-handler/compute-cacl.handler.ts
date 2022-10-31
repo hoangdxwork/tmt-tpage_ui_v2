@@ -10,7 +10,6 @@ export class SO_ComputeCaclHandler {
 
   // TODO: Dùng cho đơn hàng
   public so_coDAmount(saleModel: FastSaleOrder_DefaultDTOV2): any {
-
     let coDAmount = saleModel.AmountTotal + saleModel.DeliveryPrice - saleModel.AmountDeposit;
 
     if(coDAmount >= 0){
@@ -20,9 +19,12 @@ export class SO_ComputeCaclHandler {
     return saleModel.CashOnDelivery;
   }
 
-  public so_calcTax(saleModel: FastSaleOrder_DefaultDTOV2){
-
+  public so_calcTax(saleModel: FastSaleOrder_DefaultDTOV2, saleConfig: SaleSettingConfigDto_V2){
     saleModel.AmountTax = 0;
+
+    if(saleConfig && saleConfig.SaleSetting && !saleConfig.SaleSetting.GroupFastSaleTax) {
+        saleModel.Tax = null;
+    }
 
     if(saleModel.Tax) {
         let amountTax = Math.round(saleModel.AmountUntaxed * ((saleModel.Tax?.Amount) / 100));
@@ -64,7 +66,7 @@ export class SO_ComputeCaclHandler {
         saleModel.AmountUntaxed = totalAmount;
 
         //TODO: Tính thuế để gán lại tổng tiền AmountTotal
-        let tax = this.so_calcTax(saleModel);
+        let tax = this.so_calcTax(saleModel, saleConfig);
         saleModel.AmountTax = tax.AmountTax;
         saleModel.AmountTotal = tax.AmountTotal;
 

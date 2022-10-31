@@ -1012,7 +1012,8 @@
                             </button>
 
                             <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax" class="col-span-2 flex items-center justify-end">
-                              <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }} đ</span> -
+                              <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }}đ</span>
+                              <span class="ml-1 mr-1"> - </span>
                               <span>{{ _form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0 }}%</span>
                             </div>
 

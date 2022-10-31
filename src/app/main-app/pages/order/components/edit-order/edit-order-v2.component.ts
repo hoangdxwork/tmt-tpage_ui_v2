@@ -591,7 +591,7 @@ export class EditOrderV2Component implements OnInit {
 
   calcTax() {
     if(this.saleModel) {
-        let tax = {...this.computeCaclHandler.so_calcTax(this.saleModel)};
+        let tax = {...this.computeCaclHandler.so_calcTax(this.saleModel, this.saleConfig)};
         this.saleModel.AmountTax = tax.AmountTax;
         this.saleModel.AmountTotal = tax.AmountTotal;
     }
