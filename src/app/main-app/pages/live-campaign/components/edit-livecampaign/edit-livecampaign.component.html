@@ -212,7 +212,7 @@
                       <th [width]="'120px'" class="text-right">Giá bán</th>
 
                       <th [width]="'102px'" class="text-center">
-                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="onDeleteAll()" tds-tooltip tooltipTitle="Xóa tất cả sản phẩm"
+                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()" tds-tooltip tooltipTitle="Xóa tất cả sản phẩm"
                          [disabled]="_form.controls['Details'].value.length == 0 ? true : false">
                             <span class="flex items-center">
                               <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>

@@ -7,7 +7,7 @@ import { ProductService } from './../../../../services/product.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
@@ -101,7 +101,7 @@ export class EditLiveCampaignComponent implements OnInit {
       Id: [null],
       Config: [null],
       ConfigObject: [null],// xóa khi lưu
-      Name: [null],
+      Name: [null, Validators.required],
       Note: [null],
       ResumeTime: [0],
       Users: [null],
@@ -137,8 +137,9 @@ export class EditLiveCampaignComponent implements OnInit {
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
-        if(res) {
+            if(!res) return;
             delete res['@odata.context'];
+
             if(res.StartDate) {
                 res.StartDate = new Date(res.StartDate)
             }
@@ -157,7 +158,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
             this.updateForm(this.dataModel);
             this.isLoading = false;
-        }
+
       },
       error:(error) => {
           this.isLoading = false;
@@ -254,12 +255,9 @@ export class EditLiveCampaignComponent implements OnInit {
         this._form.controls['ConfigObject'].patchValue(exist);
     }
 
-    if(data && data.Details) {
-        this.initFormDetails(data.Details);
-    }
-
+    this.initFormDetails(data.Details);
     this.datePicker = [data.StartDate, data.EndDate];
-    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
+    this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
 
   initFormDetails(details: any[]) {
@@ -379,7 +377,7 @@ export class EditLiveCampaignComponent implements OnInit {
                   `<div class="flex flex-col ">
                       <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
                       <span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
-                  </div>`)
+                  </div>`);
               } else {
                   formDetails = [...[x], ...formDetails];
                   this.detailsForm.clear();
@@ -389,7 +387,7 @@ export class EditLiveCampaignComponent implements OnInit {
                   `<div class="flex flex-col">
                       <span class="mb-1">Sản phẩm: <span class="font-semibold">[${x.ProductCode}] ${x.ProductName}</span></span>
                       <span>Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
-                  </div>`)
+                  </div>`);
               }
 
               delete this.isEditDetails[x.Id];
@@ -478,6 +476,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
+          if(!data) return;
 
           if(data && data.Details) {
               this.initFormDetails(data.Details);
@@ -657,7 +656,7 @@ export class EditLiveCampaignComponent implements OnInit {
     })
   }
 
-  onDeleteAll(){
+  removeAllDetail(){
     let formDetails = this.detailsForm.value as LiveCampaignSimpleDetail[];
     let ids = formDetails?.map(x => x.Id) as any[];
 
@@ -715,11 +714,13 @@ export class EditLiveCampaignComponent implements OnInit {
     this.searchValue = '';
     this.innerTextValue = '';
     this.visible = false;
+    this.indClickTag = -1;
     (<FormArray>this._form.get('Details')).clear();
     this.initFormDetails(this.livecampaignSimpleDetail);
   }
 
   onSearch() {
+    this.indClickTag = -1;
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 
