@@ -94,11 +94,11 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
   }
 
   printCustomer() {
-    this.tableAllOrderComponent.printCustomer()
+    this.tableAllOrderComponent.printCustomer();
   }
 
   printMultiOrder() {
-    this.tableAllOrderComponent.printMultiOrder()
+    this.tableAllOrderComponent.printMultiOrder();
   }
 
   onSearch(data: TDSSafeAny) {

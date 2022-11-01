@@ -475,8 +475,15 @@ export class TableAllOrderComponent implements OnInit {
 
   onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
-      let ids = [...this.setOfCheckedId];
-      this.showModalCreateBillFast(ids)
+      this.fastSaleOrderService.checkPermissionQuickCreateFSO().subscribe({
+        next:(err) => {
+          let ids = [...this.setOfCheckedId];
+          this.showModalCreateBillFast(ids);
+        },
+        error:(err) => {
+          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+        }
+      })
     }
   }
 

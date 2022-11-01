@@ -232,7 +232,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.checked = false;
     this.indeterminate = false;
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
 
     this.filterObj = {
       tags: [],
@@ -335,7 +335,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   removeCheckedRow() {
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
   }
 
   onLoadOption(event: FilterObjPartnerModel) {

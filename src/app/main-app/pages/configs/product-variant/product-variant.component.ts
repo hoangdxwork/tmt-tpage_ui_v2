@@ -108,7 +108,7 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
 
     this.checked = false;
     this.indeterminate = false;
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
 
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -239,7 +239,7 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
 
     this.checked = false;
     this.indeterminate = false;
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
 
     this.loadData(this.pageSize, this.pageIndex);
   }

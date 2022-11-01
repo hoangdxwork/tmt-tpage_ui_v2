@@ -1,7 +1,8 @@
 <div class="w-full h-full bg-white rounded-xl pb-2">
   <div class="flex flex-col h-full">
     <div #WidthTable class="h-full text-body-2 text-neutral-1-900">
-      <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstOfData"
+      <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstOfData" 
+        [(pageIndex)]="pageIndex" [(pageSize)]="pageSize"
         [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
         (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>
@@ -11,14 +12,14 @@
               [width]="'42px'" [align]="'center'" [tdsLeft]="true" class="border-r"></th>
             <th [width]="'60px'" class="text-center" [tdsLeft]="true" class="border-r">STT</th>
             <th [width]="'120px'" [tdsLeft]="true" class="border-r">Mã đơn hàng</th>
+            <th [width]="'150px'" class="border-r">Kênh kết nối</th>
             <th [width]="'250px'" class="border-r">Tên khách hàng</th>
-            <th [width]="'150px'" class="border-r">Số điện thoại</th>
             <th [width]="'150px'" class="text-right border-r">Tổng tiền</th>
             <th [width]="'120px'" class="w-full text-center border-r">Tổng số lượng</th>
             <th [width]="'130px'" class="border-r">Trạng thái</th>
             <th [width]="'120px'" class="border-r">Nhân viên</th>
-            <th [width]="'170px'" class="border-r">Thời gian</th>
-            <th [width]="'130px'" [tdsRight]="true">Thao tác</th>
+            <th [width]="'170px'" [align]="'center'" class="border-r">Thời gian</th>
+            <th [width]="'130px'" [align]="'center'" [tdsRight]="true">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +38,7 @@
                 [style]="setOfCheckedId.has(order.Id) ? 'background-color:#F2FCF5' : '' ">
               </td>
 
-              <td [tdsLeft]="true" class="text-center border-r"> {{index + 1}} </td>
+              <td [tdsLeft]="true" class="text-center border-r"> {{ index | numericalOrder:pageSize:pageIndex }} </td>
 
               <!-- Mã đơn hàng -->
               <td [tdsLeft]="true" class="border-r">
@@ -52,13 +53,13 @@
                   </div>
                 </div> -->
                   <div class="w-full flex">
-                    <span class="w-full " [ngClass]="order.Code ? '' : 'text-error-500'">{{order.Code || 'N/A'}}</span>
+                    <span class="w-full" [ngClass]="order.Code ? '' : 'text-error-500'">{{order.Code || 'N/A'}}</span>
                   </div>
                   <!-- Nhãn -->
                   <div class="flex items-center gap-x-1 w-full">
                     <div class="flex flex-wrap items-center w-fit">
                       <div *ngFor="let item of order.Tags | prettyjson">
-                        <tds-tag class=" mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
+                        <tds-tag class="mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
                       </div>
                       <button (click)="openTag(order.Id, order.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                         [popoverVisible]="indClickTag == order.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -121,32 +122,40 @@
                     </div>
                   </div>
                 </td>
+              <!-- Kênh kết nối -->
+              <td  class="border-r">
+                <div class="w-full flex">
+                  <span *ngIf="order.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                  <span class="ml-1 ">{{order.CRMTeamName}}</span>
+                </div>
+              </td>
 
               <!-- Tên khách hàng -->
               <td  class="border-r">
                 <div class="w-full flex flex-col gap-y-1">
-                  <p class="truncate max-w-[200px]">{{order.PartnerName}}</p>
                   <div class="flex items-center">
-                    <!-- <p *ngIf="order.Telephone" class="text-[#929DAA] mr-1">{{order.Telephone}}</p> -->
-                    <div tds-button color="secondary" *ngIf="order.PartnerStatus"
-                      class="border border-solid rounded px-2 py-px mr-1"
-                      [ngStyle]="(order.PartnerStatus.sS) | buttonStatusColor">
-                      <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
-                        {{ order.PartnerStatus.sT }}
-                      </span>
+                    <p class=" mr-1">{{ order.PartnerName }}</p>
+                  </div>
+                  <div class="flex items-center">
+                    <p *ngIf="order.Telephone" class="text-[#929DAA] mr-1">{{ order.Telephone }}</p>
+                    <div class="flex flex-col mr-1">
+                      <tds-tag *ngIf="order.NameNetwork" [status]="order.NameNetwork | nameNetWork" type="outline">
+                        {{ order.NameNetwork }}
+                      </tds-tag>
                     </div>
-                    <button *ngIf="order.Address" class="bg-orange-500 rounded p-[3px]" tds-tooltip
-                      tooltipTitle="{{ order.Address }}">
+                    <button *ngIf="order.Address" class="bg-orange-500 rounded p-[3px]" tds-tooltip tooltipTitle="{{ order.Address }}">
                       <span class="flex items-center justify-center text-white ">
                         <i class="tdsi-pin-fill"></i>
                       </span>
                     </button>
                   </div>
+                  <div *ngIf="order.PartnerStatus" [ngStyle]="{'color': order.PartnerStatus.sS}">
+                        <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
+                          {{ order.PartnerStatus.sT }}
+                        </span>
+                    </div>
                 </div>
               </td>
-
-              <!-- Số điện thoại -->
-              <td  class="border-r"> {{ order.Telephone }} </td>
 
               <!-- Tổng tiền -->
               <td class="text-right border-r">{{order.TotalAmount || 0 | numberCustom}} đ</td>
@@ -182,10 +191,10 @@
               </td>
 
               <!-- Nhân viên -->
-              <td  class="border-r">{{order.UserName}}</td>
+              <td  class="border-r">{{ order.UserName }}</td>
 
               <!-- Thời gian -->
-              <td  class="border-r">{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
+              <td  class="border-r text-center">{{ order.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</td>
 
               <!-- Thao tác -->
               <td [tdsRight]="true">

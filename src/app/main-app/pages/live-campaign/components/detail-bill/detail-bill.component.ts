@@ -132,11 +132,14 @@ export class DetailBillComponent implements OnInit {
     let filters = this.oDataLiveCampaignBillService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe(res => {
+    this.getViewData(params).subscribe({
+      next:(res) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
-    }, error => {
-        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+      }, 
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+      }
     });
   }
 
@@ -199,22 +202,40 @@ export class DetailBillComponent implements OnInit {
     this.router.navigateByUrl(`bill/detail/${id}`);
   }
 
-  onDelete(data: any) {
+  onDelete(data: FastSaleOrderModelDTO) {
+    if(this.isProcessing) {
+      return;
+    }
+
+    this.isProcessing = true;
+    this.isLoading = true;
+
     this.modal.error({
       title: 'Xóa hóa đơn',
       content: 'Bạn có muốn xóa hóa đơn',
       onOk: () => {
         this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {
-              this.message.success('Xóa hóa đơn thành công!');
-              this.loadData(this.pageSize, this.pageIndex);
+            this.isProcessing = false;
+            this.isLoading = false;
+            
+            // TODO: xóa Id trong danh sách được chọn
+            this.setOfCheckedId.delete(data.Id);
+
+            this.message.success('Xóa hóa đơn thành công!');
+            this.loadData(this.pageSize, this.pageIndex);
           },
           error: (error: any) => {
-              this.message.error(`${error?.error?.message}`);
+            this.isProcessing = false;
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}`);
           }
         })
       },
-      onCancel: () => { },
+      onCancel: () => { 
+        this.isProcessing = false;
+        this.isLoading = false;
+      },
       okText: "Xác nhận",
       cancelText: "Đóng",
       confirmViewType: "compact"
@@ -344,13 +365,16 @@ export class DetailBillComponent implements OnInit {
 
   print(type: string) {
     let that = this;
+
     if (this.isProcessing) {
-      this.isLoading = false
-      return
+      return;
     }
 
     if (this.checkValueEmpty() == 1) {
+      this.isLoading = true;
+      this.isProcessing = true;
       let obs: TDSSafeAny;
+
       switch (type) {
         case "print":
           obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.idsModel}`);
@@ -359,9 +383,13 @@ export class DetailBillComponent implements OnInit {
           obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.idsModel}`);
           break;
       }
+
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
-        obs.pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+        obs.pipe(takeUntil(this.destroy$), finalize(() => {
+          this.isProcessing = false; 
+          this.isLoading = false;
+        })).subscribe((res: TDSSafeAny) => {
             that.printerService.printHtml(res);
         })
       }
@@ -370,11 +398,13 @@ export class DetailBillComponent implements OnInit {
 
   sendDelivery() {
     if (this.isProcessing) {
-      this.isLoading = false
-      return
+      return;
     }
 
     if (this.checkValueEmpty() == 1) {
+      this.isProcessing = true; 
+      this.isLoading = true;
+
       this.modal.create({
         title: 'Danh sách phù hợp gửi lại mã vận đơn',
         content: SendDeliveryComponent,
@@ -393,6 +423,8 @@ export class DetailBillComponent implements OnInit {
           if(res != null){
             this.loadData(this.pageSize, this.pageIndex);
           }
+
+          this.isProcessing = false; 
           this.isLoading = false;
         }
       })
@@ -401,8 +433,7 @@ export class DetailBillComponent implements OnInit {
 
   approveOrder(type? :string) {
     if (this.isProcessing) {
-      this.isLoading = false;
-      return
+      return;
     }
 
     if (this.checkValueEmpty() == 1) {
@@ -440,6 +471,7 @@ export class DetailBillComponent implements OnInit {
             error:error => {
               this.isLoading = false;
               that.isProcessing = false;
+
               that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
             }
           })
@@ -456,89 +488,128 @@ export class DetailBillComponent implements OnInit {
 
   cancelDelivery() {
     let that = this;
+
     if (this.isProcessing) {
-      return
+      return;
     }
+    
+
     if (this.checkValueEmpty() == 1) {
       that.isProcessing = true;
+      this.isLoading = true;
+
       this.modal.warning({
         title: 'Hủy vận đơn',
         content: 'Bạn có muốn hủy vận đơn',
         onOk: () => {
           that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: TDSSafeAny) => {
-              this.isProcessing = false;
+              that.isProcessing = false;
+              this.isLoading = false;
+
               that.message.success('Hủy vận đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
             }, 
             error: (err) => {
-              this.isProcessing = false;
+              that.isProcessing = false;
+              this.isLoading = false;
+              
               that.message.error(`${err?.error?.message}` || `Hủy vận đơn thất bại`);
             }
           })
         },
-        onCancel: () => { that.isProcessing = false; },
+        onCancel: () => { 
+          that.isProcessing = false;
+          this.isLoading = false;
+        },
         okText: "Xác nhận",
         cancelText: "Đóng",
         // confirmViewType:"compact"
       });
     }
   }
+
   cancelInvoice() {
     if (this.isProcessing) {
-      return
+      return;
     }
+
     if (this.checkValueEmpty() == 1) {
       let that = this;
+      that.isProcessing = true;
+      this.isLoading = true;
+
       this.modal.success({
         title: 'Hủy hóa đơn',
         content: 'Bạn có muốn hủy hóa đơn',
         onOk: () => {
           that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: TDSSafeAny) => {
-              this.isProcessing = false;
+              that.isProcessing = false;
+              this.isLoading = false;
+
               that.message.success('Hủy hóa đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
             }, 
             error: (err) => {
-              this.isProcessing = false;
+              that.isProcessing = false;
+              this.isLoading = false;
+
               that.message.error(`${err?.error?.message}` || `Hủy hóa đơn thất bại`);
             }
           })
         },
-        onCancel: () => { that.isProcessing = false; },
+        onCancel: () => { 
+          that.isProcessing = false;
+          this.isLoading = false;
+        },
         okText: "Xác nhận",
         cancelText: "Đóng",
         // confirmViewType:"compact"
       });
     }
   }
+
   unLink() {
     if (this.isProcessing) {
       return;
     }
+
     if (this.checkValueEmpty() == 1) {
       let that = this;
       that.isProcessing = true;
+      this.isLoading = true;
+
       this.modal.success({
         title: 'Xóa hóa đơn',
         content: 'Bạn có muốn xóa hóa đơn',
         onOk: () => {
           that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: TDSSafeAny) => {
-              this.isProcessing = false;
+              that.isProcessing = false;
+              this.isLoading = false;
+
+              // TODO: xóa các Id trong danh sách được chọn
+              this.setOfCheckedId.clear();
+
               that.message.success('Xóa hóa đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              this.loadData(this.pageSize, this.pageIndex);
             }, 
             error: (err) => {
-              this.isProcessing = false;
+              that.isProcessing = false;
+              this.isLoading = false;
+
               that.message.error(`${err?.error?.message}` || `Xóa đơn thất bại`);
             }
           })
         },
-        onCancel: () => { that.isProcessing = false; },
+        onCancel: () => { 
+          that.isProcessing = false;
+          this.isLoading = false;
+        },
         okText: "Xác nhận",
-        cancelText: "Đóng",
+        cancelText: "Đóng"
       });
     }
   }
@@ -610,9 +681,9 @@ export class DetailBillComponent implements OnInit {
   }
 
   removeCheckedRow() {
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
+    
     this.indeterminate = false;
     this.checked = false;
   }
-
 }
