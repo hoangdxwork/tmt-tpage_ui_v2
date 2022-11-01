@@ -86,7 +86,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     return value;
   }
 
-  parserComas = (value: TDSSafeAny) =>{
+  parserComas = (value: TDSSafeAny) => {
     if(value != null) {
       return TDSHelperString.replaceAll(value,'.','');
     }
