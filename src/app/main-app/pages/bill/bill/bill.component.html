@@ -82,7 +82,14 @@
               <th width="120px" *ngIf="isHidden('PrintShipCount')" class="border-r" [align]="'center'">Số lần in ship</th>
               <th width="120px" *ngIf="isHidden('PrintDeliveryCount')" class="border-r" [align]="'center'">Số lần in HĐ</th>
               <th width="140px" *ngIf="isHidden('ShowShipStatus')" class="border-r">Đối soát GH</th>
-              <th width="120px" *ngIf="isHidden('DateCreated')" [align]="'center'" class="border-r">Ngày tạo đơn</th>
+              <th width="140px" *ngIf="isHidden('DateCreated')" [align]="'center'" class="border-r" >
+                <div class="flex gap-x-1 items-center justify-center">
+                  <span>Ngày tạo đơn</span>
+                  <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate == 'asc'?'Ngày tăng dần':(filterDate == 'desc'? 'Ngày giảm dần': 'Sắp xếp theo ngày')">
+                    <i [ngClass]="filterDate == 'asc'?'tdsi-sort-arrow-up-fill':(filterDate == 'desc'? 'tdsi-sort-arrow-down-fill': 'tdsi-sort-up-down-fill !text-neutral-1-500')" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                  </span>
+                </div>
+              </th>
               <th width="180px" *ngIf="isHidden('CreateByName')" class="border-r">Người lập</th>
               <th width="160px" *ngIf="isHidden('CRMTeamName')" class="border-r">Thông tin</th>
               <th width="180px" *ngIf="isHidden('IsRefund')" [align]="'center'" class="border-r">Đơn hàng trả</th>

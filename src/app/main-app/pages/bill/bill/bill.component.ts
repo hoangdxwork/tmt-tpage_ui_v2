@@ -138,6 +138,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   setOfCheckedId = new Set<number>();
   private destroy$ = new Subject<void>();
 
+  lstOfFilterDate = [
+    { text: 'Mới nhất', value: 'asc' },
+    { text: 'Cũ nhất', value: 'desc' }
+  ]
+  filterDate: string = '';
+
   constructor(private odataFastSaleOrderService: OdataFastSaleOrderService,
     @Inject(DOCUMENT) private document: Document,
     private tagService: TagService,
@@ -676,6 +682,28 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
       window.open(data.TrackingUrl, '_blank')
     }
+  }
+
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: FastSaleOrderDTO, b: FastSaleOrderDTO) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
+      
+      case 'asc': 
+        this.filterDate = 'desc';
+        data = data.sort((a: FastSaleOrderDTO, b: FastSaleOrderDTO) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
   }
 
   ngOnDestroy(): void {
