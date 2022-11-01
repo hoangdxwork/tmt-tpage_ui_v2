@@ -266,8 +266,7 @@
                                       </div>
 
                                       <div class="flex-auto flex flex-col gap-y-1">
-                                          <span class="font-semibold text-sm"> {{ detail?.value.ProductNameGet || detail?.value.ProductName }}
-                                              <span *ngIf="detail?.value?.UOMName">({{ detail?.value?.UOMName }})</span>
+                                          <span class="font-semibold text-[13px]"> {{ detail?.value.ProductNameGet || detail?.value.ProductName }}
                                           </span>
 
                                           <!-- Tags -->
@@ -278,7 +277,7 @@
 
                                             <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
                                                 <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
-                                                    <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
+                                                    <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='primary'>{{ item | truncateString }}</tds-tag>
                                                 </div>
 
                                                 <button *ngIf="isEditDetails[detail.value.Id]" type="button"
@@ -324,6 +323,8 @@
                                                 </div>
                                             </ng-template>
                                           </div>
+
+                                          <p class="text-[13px]">Đơn vị: {{detail.value.UOMName}}</p>
                                       </div>
                                     </div>
                                   </td>

@@ -76,8 +76,6 @@ export class EditLiveCampaignPostComponent implements OnInit {
   lstVariants:  DataPouchDBDTO[] = [];
   isLoadingSelect: boolean = false;
   countUOMLine: number = 0;
-  pageSize = 20;
-  pageIndex = 0;
   isLoadingNextdata: boolean = false;
   indexDbStorage!: DataPouchDBDTO[];
 
