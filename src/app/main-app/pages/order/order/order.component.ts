@@ -369,23 +369,32 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onCreateBillDefault() {
     if (this.checkValueEmpty() == 1) {
-      let ids = [...this.setOfCheckedId];
-      this.modal.create({
-        title: 'Thêm hóa đơn với sản phẩm mặc định',
-        content: CreateBillDefaultComponent,
-        centered: true,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          ids: ids
-        }
-      });
 
-      this.modal.afterAllClose.subscribe({
-        next: (res: any) => {
-          if(res) {
-            this.loadData(this.pageSize, this.pageIndex);
-          }
+      this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
+        next: (res) => {
+          let ids = [...this.setOfCheckedId];
+
+          this.modal.create({
+            title: 'Thêm hóa đơn với sản phẩm mặc định',
+            content: CreateBillDefaultComponent,
+            centered: true,
+            size: 'xl',
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              ids: ids
+            }
+          });
+    
+          this.modal.afterAllClose.subscribe({
+            next: (res: any) => {
+              if(res) {
+                this.loadData(this.pageSize, this.pageIndex);
+              }
+            }
+          })
+        },
+        error: (err) => {
+          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
         }
       })
     }
@@ -393,29 +402,37 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
-      let model = {
-        ids: [...this.setOfCheckedId]
-      }
 
-      this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res) => {
-          delete res['@odata.context'];
-          res = { ...res } as SaleOnlineOrderGetDetailsDto;
-
-          const keyCreateBill = this.saleOnline_OrderService._keyCreateBillOrder;
-          let item = JSON.stringify(res);
-          localStorage.setItem(keyCreateBill, item);
-
-          // TODO: lưu filter cache trước khi load trang add bill
-          const key =  this.saleOnline_OrderService._keyCacheFilter;
-          this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
-
-          this.router.navigateByUrl(`bill/create?isorder=true`);
+      this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
+        next:(res) => {
+          let model = {
+            ids: [...this.setOfCheckedId]
+          }
+    
+          this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res) => {
+              delete res['@odata.context'];
+              res = { ...res } as SaleOnlineOrderGetDetailsDto;
+    
+              const keyCreateBill = this.saleOnline_OrderService._keyCreateBillOrder;
+              let item = JSON.stringify(res);
+              localStorage.setItem(keyCreateBill, item);
+    
+              // TODO: lưu filter cache trước khi load trang add bill
+              const key =  this.saleOnline_OrderService._keyCacheFilter;
+              this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
+    
+              this.router.navigateByUrl(`bill/create?isorder=true`);
+            },
+            error: (err) => {
+              this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
+            }
+          })
         },
-        error: (err) => {
-          this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
+        error:(err) => {
+          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
         }
-      })
+      });
     }
   }
 

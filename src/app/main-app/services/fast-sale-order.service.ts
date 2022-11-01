@@ -541,6 +541,23 @@ export class FastSaleOrderService extends BaseSevice {
     }
 
     return this.apiService.getFileUpload(api, null);
+  }
 
+  checkPermissionCreateFSO(): Observable<boolean> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/common/CheckPermission?function=App.SaleOnline.Order.CreateFSO`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, null);
+  }
+
+  checkPermissionQuickCreateFSO(): Observable<boolean> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/common/CheckPermission?function=App.SaleOnline.Order.QuickCreateFSO`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, null);
   }
 }

@@ -21,7 +21,7 @@
           <div class="w-[272px]">
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
             <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
-            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In phiếu </div>
+            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In hóa đơn </div>
             <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và In phiếu ship </div>
             <div tds-dropdown-item (click)="print('print')">In hóa đơn</div>
             <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
@@ -66,7 +66,7 @@
           <div class="w-[272px]">
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
             <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
-            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In phiếu </div>
+            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In hóa đơn </div>
             <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và In phiếu ship </div>
             <div tds-dropdown-item (click)="print('print')">In hóa đơn</div>
             <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
@@ -97,16 +97,14 @@
               (checkedChange)="onAllChecked($event)"></th>
             <th [tdsLeft]="true" [width]="'57px'" [align]="'center'" class="border-r">STT</th>
             <th *ngIf="isHidden('Number')" [tdsLeft]="true" [width]="'150px'" class="border-r">Số hóa đơn</th>
-            <th *ngIf="isHidden('PartnerDisplayName')" [tdsLeft]="true" [width]="'160px'" class="border-r">Tên khách
-              hàng</th>
+            <th *ngIf="isHidden('PartnerDisplayName')" [tdsLeft]="true" [width]="'160px'" class="border-r">Tên khách hàng</th>
             <th *ngIf="isHidden('TrackingRef')" [width]="'170px'" class="border-r">Mã vận đơn</th>
             <th *ngIf="isHidden('Address')" [width]="'250px'" class="border-r">Địa chỉ</th>
             <th *ngIf="isHidden('AmountTotal')" [width]="'130px'" [align]="'right'" class="border-r">Tổng tiền</th>
             <th *ngIf="isHidden('AmountDeposit')" [width]="'130px'" [align]="'right'" class="border-r">Đặt cọc</th>
             <th *ngIf="isHidden('Residual')" [width]="'130px'" [align]="'right'" class="border-r">Còn nợ</th>
             <th *ngIf="isHidden('State')" [width]="'150px'" class="border-r">Trạng thái</th>
-            <th *ngIf="isHidden('PrintDeliveryCount')" [width]="'150px'" [align]="'center'" class="border-r">Số lần in
-              HĐ</th>
+            <th *ngIf="isHidden('PrintDeliveryCount')" [width]="'150px'" [align]="'center'" class="border-r">Số lần in HĐ</th>
             <th *ngIf="isHidden('UserName')" [width]="'180px'" class="border-r">Nhân viên</th>
             <th *ngIf="isHidden('DateInvoice')" [width]="'150px'" class="border-r" [align]="'center'">Ngày bán</th>
             <th [tdsRight]="true" [width]="'130px'">Thao tác</th>
@@ -130,7 +128,7 @@
               <div class="flex items-center gap-x-1 w-full">
                 <div *ngIf="bill.Tags" class="flex flex-wrap gap-x-2 gap-y-1 items-center w-fit">
                   <div *ngFor="let item of bill.Tags | prettyjson">
-                    <tds-tag class="truncate" status='primary'>{{item.Name}}</tds-tag>
+                    <tds-tag class="truncate" status='primary'>{{ item.Name }}</tds-tag>
                   </div>
                 </div>
 

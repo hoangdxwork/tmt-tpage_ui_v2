@@ -25,7 +25,7 @@
       <tr *ngFor="let data of basicTable.data; let index = index">
         <!-- STT-->
         <td class="text-center">
-          {{ pageSize*(pageIndex - 1) + index + 1 }}
+          {{ index | numericalOrder:pageSize:pageIndex }}
         </td>
 
         <!-- Khách hàng -->
