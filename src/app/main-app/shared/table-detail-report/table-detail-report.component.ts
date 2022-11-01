@@ -36,6 +36,8 @@ export class TableDetailReportComponent implements OnInit {
     currentQuantity: number = 0;
     isLoading: boolean = false;
     innerText: string = '';
+    idPopoverVisible: number = -1;
+    isShowAll: boolean = false;
 
     pageSize: number = 10;
     pageIndex: number = 1;
@@ -153,6 +155,10 @@ export class TableDetailReportComponent implements OnInit {
     changeQuantity(value: number) {
         this.currentQuantity = value;
     }
+
+    // onChangeShowMore(isShow: boolean) {
+    //     this.isShowAll = isShow;
+    // }
 
     saveChangeQuantity(id: string) {
         this.isLoading = true;

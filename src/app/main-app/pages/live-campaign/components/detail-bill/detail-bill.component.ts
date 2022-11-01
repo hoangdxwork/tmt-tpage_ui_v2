@@ -92,7 +92,6 @@ export class DetailBillComponent implements OnInit {
     { value: 'DateInvoice', name: 'Ngày bán', isChecked: true },
   ];
 
-
   constructor(
     private message: TDSMessageService,
     private tagService: TagService,
@@ -234,22 +233,22 @@ export class DetailBillComponent implements OnInit {
 
   assignTags(id: number, tags: TDSSafeAny) {
     let model = { OrderId: id, Tags: tags };
-    this.fastSaleOrderService.assignTagFastSaleOrder(model)
-      .subscribe((res: TDSSafeAny) => {
+    
+    this.fastSaleOrderService.assignTagFastSaleOrder(model).subscribe({
+      next:(res: TDSSafeAny) => {
         if(res && res.OrderId) {
           var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
           if(exits) {
-            exits.Tags = JSON.stringify(tags)
+            exits.Tags = JSON.stringify(tags);
           }
-
           this.indClickTag = -1;
-          this.modelTags = [];
           this.message.success('Gán nhãn thành công!');
         }
-
-    }, error => {
-      this.indClickTag = -1;
-      this.message.error('Gán nhãn thất bại!');
+      }, 
+      error: (err) => {
+        this.indClickTag = -1;
+        this.message.error('Gán nhãn thất bại!');
+      }
     });
   }
 
@@ -449,6 +448,95 @@ export class DetailBillComponent implements OnInit {
           that.isProcessing = false;
           this.isLoading = false;
         },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+      });
+    }
+  }
+
+  cancelDelivery() {
+    let that = this;
+    if (this.isProcessing) {
+      return
+    }
+    if (this.checkValueEmpty() == 1) {
+      that.isProcessing = true;
+      this.modal.warning({
+        title: 'Hủy vận đơn',
+        content: 'Bạn có muốn hủy vận đơn',
+        onOk: () => {
+          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+              this.isProcessing = false;
+              that.message.success('Hủy vận đơn thành công!');
+              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+            }, 
+            error: (err) => {
+              this.isProcessing = false;
+              that.message.error(`${err?.error?.message}` || `Hủy vận đơn thất bại`);
+            }
+          })
+        },
+        onCancel: () => { that.isProcessing = false; },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+        // confirmViewType:"compact"
+      });
+    }
+  }
+  cancelInvoice() {
+    if (this.isProcessing) {
+      return
+    }
+    if (this.checkValueEmpty() == 1) {
+      let that = this;
+      this.modal.success({
+        title: 'Hủy hóa đơn',
+        content: 'Bạn có muốn hủy hóa đơn',
+        onOk: () => {
+          that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+              this.isProcessing = false;
+              that.message.success('Hủy hóa đơn thành công!');
+              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+            }, 
+            error: (err) => {
+              this.isProcessing = false;
+              that.message.error(`${err?.error?.message}` || `Hủy hóa đơn thất bại`);
+            }
+          })
+        },
+        onCancel: () => { that.isProcessing = false; },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+        // confirmViewType:"compact"
+      });
+    }
+  }
+  unLink() {
+    if (this.isProcessing) {
+      return;
+    }
+    if (this.checkValueEmpty() == 1) {
+      let that = this;
+      that.isProcessing = true;
+      this.modal.success({
+        title: 'Xóa hóa đơn',
+        content: 'Bạn có muốn xóa hóa đơn',
+        onOk: () => {
+          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+              this.isProcessing = false;
+              that.message.success('Xóa hóa đơn thành công!');
+              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+            }, 
+            error: (err) => {
+              this.isProcessing = false;
+              that.message.error(`${err?.error?.message}` || `Xóa đơn thất bại`);
+            }
+          })
+        },
+        onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
       });

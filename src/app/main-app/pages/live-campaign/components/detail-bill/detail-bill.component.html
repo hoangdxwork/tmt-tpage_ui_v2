@@ -10,24 +10,25 @@
           </div>
         </div>
 
-        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-          <button tds-button color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'"
+        <button tds-button color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'"
             [tdsDropdownMenu]="menu">
             <span class="flex items-center">
               Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
             </span>
-          </button>
-        </tds-spin>
+        </button>
 
         <tds-dropdown-menu #menu="tdsDropdownMenu">
           <div class="w-[272px]">
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
+            <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
+            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In phiếu </div>
+            <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và In phiếu ship </div>
             <div tds-dropdown-item (click)="print('print')">In hóa đơn</div>
             <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
-            <hr />
-            <div tds-dropdown-item class="text-error-500">Hủy vận đơn </div>
-            <div tds-dropdown-item class="text-error-500">Hủy hóa đơn </div>
-            <div tds-dropdown-item class="text-error-500">Xóa</div>
+            <hr/>
+            <div tds-dropdown-item class="text-error-500" (click)="cancelDelivery()">Hủy vận đơn </div>
+            <div tds-dropdown-item class="text-error-500" (click)="cancelInvoice()">Hủy hóa đơn </div>
+            <div tds-dropdown-item class="text-error-500" (click)="unLink()">Xóa</div>
           </div>
         </tds-dropdown-menu>
       </div>
@@ -36,48 +37,43 @@
       </div>
       <!-- TODO: Thao tác -->
       <div class="flex flex-row items-center justify-end gap-x-2 pr-4">
-        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-          <button tds-button color="info" class="min-w-[100px]" (click)="approveOrder()">
-            <span class="flex items-center">
-              Xác nhận
-            </span>
-          </button>
-        </tds-spin>
+        <button tds-button color="info" class="min-w-[100px]" (click)="approveOrder()">
+          <span class="flex items-center">
+            Xác nhận
+          </span>
+        </button>
 
-        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-          <button tds-button color="secondary" (click)="approveOrder('print')">
-            <span class="flex items-center">
-              <i class="tdsi-paper-fill text-lg leading-none mr-2 text-neutral-1-500"></i>In hóa đơn
-            </span>
-          </button>
-        </tds-spin>
+        <button tds-button color="secondary" (click)="print('print')">
+          <span class="flex items-center">
+            <i class="tdsi-paper-fill text-lg leading-none mr-2 text-neutral-1-500"></i>In hóa đơn
+          </span>
+        </button>
 
-        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-          <button tds-button color="secondary" (click)="approveOrder('printShips')">
-            <span class="flex items-center">
-              <i class="tdsi-transport-fill text-lg leading-none mr-2 text-neutral-1-500"></i>In phiếu ship
-            </span>
-          </button>
-        </tds-spin>
+        <button tds-button color="secondary" (click)="print('printShips')">
+          <span class="flex items-center">
+            <i class="tdsi-transport-fill text-lg leading-none mr-2 text-neutral-1-500"></i>In phiếu ship
+          </span>
+        </button>
 
-        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-          <button tds-button color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'"
+        <button tds-button color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'"
             [tdsDropdownMenu]="menu" [ngClass]="setOfCheckedId.size > 0 ? 'hidden' : ''">
             <span class="flex items-center">
               Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
             </span>
-          </button>
-        </tds-spin>
+        </button>
 
         <tds-dropdown-menu #menu="tdsDropdownMenu">
           <div class="w-[272px]">
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
+            <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
+            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In phiếu </div>
+            <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và In phiếu ship </div>
             <div tds-dropdown-item (click)="print('print')">In hóa đơn</div>
             <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
-            <hr />
-            <div tds-dropdown-item class="text-error-500">Hủy vận đơn </div>
-            <div tds-dropdown-item class="text-error-500">Hủy hóa đơn </div>
-            <div tds-dropdown-item class="text-error-500">Xóa</div>
+            <hr/>
+            <div tds-dropdown-item class="text-error-500" (click)="cancelDelivery()">Hủy vận đơn </div>
+            <div tds-dropdown-item class="text-error-500" (click)="cancelInvoice()">Hủy hóa đơn </div>
+            <div tds-dropdown-item class="text-error-500" (click)="unLink()">Xóa</div>
           </div>
         </tds-dropdown-menu>
 
@@ -277,7 +273,3 @@
     </ng-container>
   </tds-drawer>
 </div>
-
-<ng-template #indicatorTemplate>
-  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-</ng-template>

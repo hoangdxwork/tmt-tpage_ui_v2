@@ -431,6 +431,8 @@ export class TableAllOrderComponent implements OnInit {
 
   printCustomer() {
     let obs: TDSSafeAny;
+    this.isLoading = true;
+
     obs = this.printerService.printUrl(`/SaleOnline_LiveCampaign/PrintCustomerWaitCheckOut?id=${this.liveCampaignId}`);
     obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       this.printerService.printHtml(res);
@@ -451,14 +453,19 @@ export class TableAllOrderComponent implements OnInit {
   printMultiOrder() {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
+      this.isLoading = true;
+
       ids.map((x: string) => {
         this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
             if (res) {
               this.orderPrintService.printIpFromOrder(res);
             }
+
+            this.isLoading = false;
           },
           error: (error: any) => {
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
           }
         })
@@ -468,13 +475,14 @@ export class TableAllOrderComponent implements OnInit {
 
   onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
-      this.isLoading = true;
       let ids = [...this.setOfCheckedId];
       this.showModalCreateBillFast(ids)
     }
   }
 
   showModalCreateBillFast(ids: string[]) {
+    this.isLoading = true;
+
     this.fastSaleOrderService.getListOrderIds({ ids: ids }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if (res) {
@@ -491,14 +499,16 @@ export class TableAllOrderComponent implements OnInit {
 
           modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
             next: (res) => {
-              this.loadData(this.pageSize, this.pageIndex);
+              if(res) {
+                this.loadData(this.pageSize, this.pageIndex);
+              }
             }
           })
         }
         this.isLoading = false;
       },
       error: (error: any) => {
-        this.isLoading = false
+        this.isLoading = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     });
