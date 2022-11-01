@@ -290,6 +290,8 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.currentType = { text: "Bán chạy", value: "PosSalesCount" };
     this.currentOption = { text: 'Tất cả', value: 'all'};
     this.innerText = '';
+    delete this.categIdFilter;
+    this.isShowFilterCategId = false;
 
     this.keyFilter = '';
     this.indClick = -1;

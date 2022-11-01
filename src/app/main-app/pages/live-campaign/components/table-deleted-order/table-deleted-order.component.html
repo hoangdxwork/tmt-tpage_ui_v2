@@ -1,7 +1,8 @@
 <div #WidthTable class="h-full text-body-2 text-neutral-1-900 pb-2">
   <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstDeletedOrder"
+    [(pageIndex)]="pageIndex" [(pageSize)]="pageSize"
     [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
-    (clickRefresh)="refreshData()">
+    (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
     <thead>
       <tr>
         <th [align]="'center'" [width]="'33px'" [tdsLeft]="true"></th>
@@ -32,7 +33,7 @@
           </td>
 
           <!-- STT -->
-          <td [tdsLeft]="true" class="text-center"> {{index + 1}} </td>
+          <td [tdsLeft]="true" class="text-center"> {{index | numericalOrder :pageSize: pageIndex}} </td>
 
           <!-- Mã -->
           <td [tdsLeft]="true">{{ order.Code }}</td>

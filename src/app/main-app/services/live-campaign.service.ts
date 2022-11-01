@@ -61,7 +61,8 @@ export class LiveCampaignService extends BaseSevice {
   }
 
   getAvailablesV2(offset: number, limit: number, text?: string){
-    let url = `ODataService.GetAvailables?%24orderby=DateCreated+desc&%24skip=${offset}&%24top=${limit}&$count=true`;
+    let skip = (offset -1) * limit;
+    let url = `ODataService.GetAvailables?%24orderby=DateCreated+desc&%24skip=${skip}&%24top=${limit}&$count=true`;
     if(TDSHelperString.hasValueString(text)) {
         url = `${url}&%24filter=((contains(Name%2C'${text}')+or+contains(NameNoSign%2C'${text}')))`;
     }
