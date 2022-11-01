@@ -1,3 +1,4 @@
+import { ProductCategoryService } from './../../services/product-category.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
@@ -15,6 +16,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
+import { ConfigCateg } from '@app/dto/configs/product/config-product-default.dto';
 
 @Component({
   selector: 'list-product-tmp',
@@ -55,6 +57,10 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   isLoading: boolean = false;
   indClick: number =  -1;
 
+  isShowFilterCategId: boolean = false;
+  categoryList: ConfigCateg[] = [];
+  categIdFilter!: ConfigCateg | TDSSafeAny;
+
   options: Array<TDSSafeAny> = [
     { text: 'Tất cả', value: 'all' },
     { text: 'Mã', value: 'code' },
@@ -67,7 +73,8 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     { text: "Bán chạy", value: "PosSalesCount" },
     { text: "Theo tên", value: "NameGet" },
     { text: "Theo mã", value: "DefaultCode" },
-    { text: "Mới nhất", value: "Id" }
+    { text: "Mới nhất", value: "Id" },
+    { text: "Theo nhóm", value: "CategId" }
   ];
 
   currentType: any =  { text: "Bán chạy", value: "PosSalesCount" };
@@ -82,11 +89,13 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       public apiService: TCommonService,
       private cdRef : ChangeDetectorRef,
       private destroy$: TDSDestroyService,
-      private viewContainerRef: ViewContainerRef) {
+      private viewContainerRef: ViewContainerRef,
+      private productCategoryService: ProductCategoryService) {
   }
 
   ngOnInit(): void {
     this.loadCurrentCompany();
+    this.loadProductCategory();
     this.loadData();
   }
 
@@ -172,6 +181,10 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
             data = _orderBy(data, ["PosSalesCount"], "desc");
           break;
 
+          case 'CategId':
+            this.isShowFilterCategId = true;
+          break;
+
           default: break;
         }
     }
@@ -200,6 +213,8 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   selectType(item: any): void {
     this.currentType = item;
+    this.isShowFilterCategId = false;
+
     this.loadDataTable();
   }
 
@@ -326,5 +341,42 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   onSearch() {
     this.search = !this.search;
+  }
+
+  loadProductCategory() {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: TDSSafeAny) => {
+          this.categoryList = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
+      }
+    );
+  }
+
+  onCloseFilter() {
+    this.isShowFilterCategId = false;
+    delete this.categIdFilter;
+  }
+
+  onFilterCategId() {
+    if(this.categIdFilter){
+        let data = this.indexDbStorage || [];
+        
+        data = data.filter((x: DataPouchDBDTO)=>(x.CategId == this.categIdFilter.Id))
+
+        this.lstOfData = [...data];
+        this.cdRef.detectChanges();
+    } else {
+        this.message.error('không tìm thấy Id cần tìm');
+    }
+  }
+
+  onChangePopover(event: boolean) {
+    if(!event) {
+      this.isShowFilterCategId = false;
+    }
   }
 }

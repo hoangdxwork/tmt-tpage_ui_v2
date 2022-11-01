@@ -1,3 +1,5 @@
+import { ProductCategoryService } from './../../services/product-category.service';
+import { ConfigCateg } from './../../dto/configs/product/config-product-default.dto';
 import { ProductTemplateService } from './../../services/product-template.service';
 import { ProductDTOV2 } from './../../dto/product/odata-product.dto';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -69,11 +71,16 @@ export class ListProductTmpV2Component implements OnInit {
     { text: "Bán chạy", value: "PosSalesCount" },
     { text: "Theo tên", value: "NameGet" },
     { text: "Theo mã", value: "DefaultCode" },
-    { text: "Mới nhất", value: "Id" }
+    { text: "Mới nhất", value: "Id" },
+    { text: "Theo nhóm", value: "CategId" }
   ];
 
   currentType: any =  { text: "Bán chạy", value: "PosSalesCount" };
   keyFilter: string = '';
+
+  isShowFilterCategId: boolean = false;
+  categoryList: ConfigCateg[] = [];
+  categIdFilter!: ConfigCateg | TDSSafeAny;
 
   constructor(private productIndexDBService: ProductIndexDBService,
       public cacheApi: THelperCacheService,
@@ -85,11 +92,13 @@ export class ListProductTmpV2Component implements OnInit {
       private cdRef : ChangeDetectorRef,
       private destroy$: TDSDestroyService,
       private viewContainerRef: ViewContainerRef,
-      private productTemplateService: ProductTemplateService) {
+      private productTemplateService: ProductTemplateService,
+      private productCategoryService: ProductCategoryService) {
   }
 
   ngOnInit(): void {
     this.loadCurrentCompany();
+    this.loadProductCategory();
     this.loadData();
   }
 
@@ -174,6 +183,10 @@ export class ListProductTmpV2Component implements OnInit {
             data = _orderBy(data, ["PosSalesCount"], "desc");
           break;
 
+          case 'CategId':
+            this.isShowFilterCategId = true;
+          break;
+
           default: break;
         }
     }
@@ -202,6 +215,7 @@ export class ListProductTmpV2Component implements OnInit {
 
   selectType(item: any): void {
     this.currentType = item;
+    this.isShowFilterCategId = false;
 
     this.loadDataTable();
   }
@@ -372,6 +386,44 @@ export class ListProductTmpV2Component implements OnInit {
   onPopoverVisibleChange(ev: boolean){
     if(!ev){
       this.indClick = -1
+    }
+  }
+
+  
+  loadProductCategory() {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: TDSSafeAny) => {
+          this.categoryList = [...res.value];
+        },
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        }
+      }
+    );
+  }
+
+  onCloseFilter() {
+    this.isShowFilterCategId = false;
+    delete this.categIdFilter;
+  }
+
+  onFilterCategId() {
+    if(this.categIdFilter){
+        let data = this.indexDbStorage || [];
+        
+        data = data.filter((x: DataPouchDBDTO)=>(x.CategId == this.categIdFilter.Id))
+
+        this.lstOfData = [...data];
+        this.cdRef.detectChanges();
+    } else {
+        this.message.error('không tìm thấy Id cần tìm');
+    }
+  }
+
+  onChangePopover(event: boolean) {
+    if(!event) {
+      this.isShowFilterCategId = false;
     }
   }
 

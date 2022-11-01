@@ -34,22 +34,51 @@
                     </div>
                 </tds-dropdown-menu>
             </tds-button-group>
-
-            <tds-button-group>
-                <button tds-button type="button" color="secondary" tds-dropdown trigger="click"
-                    [tdsDropdownMenu]="menu2">
-                    <span class="flex items-center" *ngIf="currentType">
-                        {{currentType.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                    </span>
-                </button>
-
-                <tds-dropdown-menu #menu2="tdsDropdownMenu">
-                    <div class="w-full">
-                        <div tds-dropdown-item *ngFor="let item of types" (click)="selectType(item)">{{item.text}}</div>
+            <div class="flex flex-col">
+                <div tds-popover [popoverVisible]="isShowFilterCategId" (popoverVisibleChange)="onChangePopover($event)" [popoverAutoClose]="false" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate"></div>
+                <ng-template #contentTemplate>
+                    <div class="w-[304px]">
+                        <tds-form-field>
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm'
+                            [allowClear]="true" [valuePrimitive]="false" [data]="categoryList" [(ngModel)]="categIdFilter"
+                            [autoClose]="true">
+                        </tds-select>
+                        </tds-form-field>
                     </div>
-                </tds-dropdown-menu>
-            </tds-button-group>
+                </ng-template>
+                <ng-template #footerTemplate>
+                    <div class="flex justify-end pt-2">
+                        <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onCloseFilter()">
+                        <span class="flex items-center">
+                            <i class="tdsi-close-fill"></i>
+                        </span>
+                        </button>
+                        <button tds-button-icon size="sm" color="primary" (click)="onFilterCategId()">
+                        <span class="flex items-center">
+                            <i class="tdsi-tick-fill"></i>
+                        </span>
+                        </button>
+                    </div>
+                </ng-template>
+    
+                <tds-button-group>
+                    <button tds-button type="button" color="secondary" tds-dropdown trigger="click"
+                        [tdsDropdownMenu]="menu2">
+                        <span class="flex items-center" *ngIf="currentType">
+                            {{currentType.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                        </span>
+                    </button>
+    
+                    <tds-dropdown-menu #menu2="tdsDropdownMenu">
+                        <div class="w-full">
+                            <div tds-dropdown-item *ngFor="let item of types" (click)="selectType(item)">{{item.text}}</div>
+                        </div>
+                    </tds-dropdown-menu>
+                </tds-button-group>
+            </div>
+            
 
+            
             <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm"  (click)="showModalAddProduct()">
                 <span class="flex items-center">
                     <i class="tdsi-plus-fill"></i>
