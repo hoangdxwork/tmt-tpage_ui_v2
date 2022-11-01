@@ -376,6 +376,8 @@ export class AddLiveCampaignV2Component implements OnInit {
           } as LiveCampaignSimpleDetail;
 
           let name = item.ProductNameGet || item.ProductName;
+          if(x._attributes_length == undefined) x._attributes_length = 0;
+
           let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
           item.Tags = tags?.join(',');
 
@@ -393,8 +395,6 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   pushItemToFormArray(items: LiveCampaignSimpleDetail[]) {
     let formDetails = this.detailsForm.value as any[];
-    let countNew = 0;
-    let countEdit = 0;
 
     items.forEach((item: LiveCampaignSimpleDetail) => {
         let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
@@ -402,15 +402,21 @@ export class AddLiveCampaignV2Component implements OnInit {
             index = Number(index);
             this.detailsForm.at(index).patchValue(item);
 
-            countEdit +=1;
-            this.notificationService.info(`Cập nhật sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">[${item.ProductCode}] ${item.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
+            this.notificationService.info(`Cập nhật sản phẩm`,
+            `<div class="flex flex-col ">
+                <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${item.ProductName}</span></span>
+                <span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span>
+            </div>`);
         } else {
             formDetails = [...[item], ...formDetails]
             this.detailsForm.clear();
             this.initFormDetails(formDetails);
 
-            countNew +=1;
-            this.notificationService.info(`Thêm sản phẩm`, `<div class="flex flex-col gap-y-2"><span>Sản phẩm: <span class="font-semibold">[${item.ProductCode}] ${item.ProductName}</span></span><span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span></div>`)
+            this.notificationService.info(`Thêm mới sản phẩm`,
+            `<div class="flex flex-col">
+                <span class="mb-1">Sản phẩm: <span class="font-semibold">[${item.ProductCode}] ${item.ProductName}</span></span>
+                <span>Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span>
+            </div>`);
         }
     })
 

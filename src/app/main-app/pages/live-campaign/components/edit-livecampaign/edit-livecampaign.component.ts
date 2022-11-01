@@ -330,6 +330,8 @@ export class EditLiveCampaignComponent implements OnInit {
           } as LiveCampaignSimpleDetail;
 
           let name = item.ProductNameGet || item.ProductName;
+          if(x._attributes_length == undefined) x._attributes_length = 0;
+
           let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
           item.Tags = tags?.join(',');
 
