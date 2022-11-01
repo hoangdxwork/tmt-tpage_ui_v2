@@ -18,34 +18,40 @@
         <th [width]="'16%'">Số lượng sản phẩm</th>
         <th [width]="'16%'">Ngày tạo</th>
         <th [width]="'16%'">Trạng thái</th>
-        <th [width]="'16%'"></th>
+        <th [width]="'16%'">Chi tiết</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data; let index = index">
         <!-- STT-->
         <td class="text-center">
-          {{ index + 1 }}
+          {{ pageSize*(pageIndex - 1) + index + 1 }}
         </td>
 
         <!-- Khách hàng -->
         <td>
-          {{ data.Facebook_UserName }}
+          {{ data.Facebook_UserName || '---' }}
         </td>
 
         <!-- Mã đơn hàng -->
         <td>
-          {{ data.Code || '---' }}
+          <div class="mb-2">{{ data.Code || '---' }}</div>
+          <div *ngIf="data.IsOrderPriority != null" class="flex flex-auto mt-0.5">
+            <div class="px-2 py-0.5 rounded text-white font-semibold text-caption-2" [ngClass]="data.IsOrderPriority == true ? 'bg-primary-1' : 'bg-neutral-1-300' ">
+              <span *ngIf="data.IsOrderPriority != true">Dự bị</span>
+              <span *ngIf="data.IsOrderPriority == true">Ưu tiên</span>
+            </div>
+          </div>
         </td>
 
         <!-- Số lượng sản phẩm -->
         <td class="text-center">
-          {{ data.Quantity }}
+          {{ data.Quantity || 0 }}
         </td>
 
         <!-- Ngày tạo -->
         <td>
-          Chưa có
+          {{ data.DateInvoice || '---' }}
         </td>
 
         <!-- Trạng thái -->
