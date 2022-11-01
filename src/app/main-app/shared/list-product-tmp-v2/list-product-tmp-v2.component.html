@@ -78,7 +78,8 @@
                 <ng-template tds-virtual-scroll let-data let-index="index">
                     <tr *ngIf="data" (click)="selectProduct(data, index)" tds-popover popoverTrigger="click"
                         [popoverVisible]="index == indClick" [popoverBackdrop]="true" (popoverVisibleChange)="onPopoverVisibleChange($event)"
-                        [popoverContent]=" (lstVariants && lstVariants.length > 1) ? contentTemplate : undefined" [popoverAutoClose]="true" class="group hover:cursor-pointer">
+                        [popoverContent]=" (lstVariants && lstVariants.length > 1) ? contentTemplate : undefined" [popoverAutoClose]="true"
+                        class="group hover:cursor-pointer"  [style.background-color]="(index == indClick) ? '#f0f0f0' : ''">
                         <td>
                             <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
                             </tds-avatar>
