@@ -9,6 +9,8 @@ import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { FirebasePushNotificationService } from '@app/services/firebase/firebase-notify.service';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
   selector: 'app-root',
@@ -24,15 +26,20 @@ export class AppComponent {
   isShowModal: boolean = false;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
+  message: any;
+  token: any;
+
   constructor(public libCommon: TCommonService,
     public auth: TAuthService,
     public cache: THelperCacheService,
     public zone: NgZone,
     public router: Router,
     private route: ActivatedRoute,
+    private sharedService: SharedService,
     private notification: TDSNotificationService,
     private tdsConfigService: TDSConfigService,
     private socketOnEventService: SocketOnEventService,
+    private firebasePushNotificationService: FirebasePushNotificationService,
     private loader: PageLoadingService,
     private destroy$: TDSDestroyService) {
     this.loader.show();
@@ -49,8 +56,8 @@ export class AppComponent {
     let that = this;
     that.init().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.loader.hidden();
-        that.isLoaded = true;
+          this.loader.hidden();
+          that.isLoaded = true;
       }
     });
 
@@ -102,6 +109,15 @@ export class AppComponent {
     this.tdsConfigService.set('notification', {
         maxStack: 3
     });
+
+    this.firebasePushNotificationService.setReceiveMessage();
+    this.firebasePushNotificationService.getReceiveMessage().subscribe({
+      next: (payload: any) => {
+        if(payload) {
+            this.notification.info('Thông báo từ firebase', payload)
+        }
+      }
+    });
   }
 
   init(): Observable<boolean> {
@@ -137,7 +153,13 @@ export class AppComponent {
     Object.assign(TGlobalConfig, objConfig);
   }
 
-  // onShowModal(orderId:string) {
-  //   this.socketOnEventService.showModalSocketOrder(orderId);
-  // }
+  removeToken() {
+    this.firebasePushNotificationService.deleteToken();
+  }
+
+  applyFirebase() {
+    const userId = "admin";
+    this.firebasePushNotificationService.requestPermission(userId);
+  }
+
 }

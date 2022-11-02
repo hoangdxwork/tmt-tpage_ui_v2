@@ -18,5 +18,15 @@ export const environment = {
   facebook: {
     appId: '327268081110321',
     appVersion: 'v11.0',
+  },
+  firebaseConfig: {
+    apiKey: "AIzaSyAAnP3M-JqrBLr-AGoHTZ1Qtx7QR0MXGVQ",
+    authDomain: "tposmobile.firebaseapp.com",
+    databaseURL: "https://tposmobile.firebaseio.com",
+    projectId: "tposmobile",
+    storageBucket: "tposmobile.appspot.com",
+    messagingSenderId: "852209026200",
+    appId: "1:852209026200:web:ef6ad3d5d7573855a63ced",
+    measurementId: "G-XHX5BTL43H"
   }
 };

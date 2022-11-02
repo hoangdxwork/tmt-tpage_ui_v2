@@ -5,3 +5,14 @@
 <ng-template #templateNotificationMessNew let-data="data">
     <notification-event-socket [data]="data"></notification-event-socket>
 </ng-template>
+
+
+<div class="fixed bottom-[15px] right-[25px] firebase-main">
+    <div class="block">
+        <p class="font-semibold mb-3">Đăng ký nhận tin</p>
+        <div class="flex item-center">
+            <button type="button" class="mr-2" tds-button color="secondary" (click)="removeToken()">Xóa token</button>
+            <button type="button" class="ml-2" tds-button color="info" (click)="applyFirebase()">Xác nhận</button>
+        </div>
+    </div>
+</div>

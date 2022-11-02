@@ -19,7 +19,18 @@ import { PipeModule } from '@app/shared/pipe/pipe.module';
 import { TDSMessageModule } from 'tds-ui/message';
 import { QuillModule } from 'ngx-quill';
 
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
+import { TDSButtonModule } from "tds-ui/button";
+
 import "quill-mention";
+import { environment } from 'src/environments/environment';
+
+import { initializeApp } from 'firebase/app';
+initializeApp(environment.firebaseConfig);
 
 const atValues = [
   { id: 1, value: "Họ & tên" },
@@ -82,7 +93,13 @@ registerLocaleData(localeVi);
     TDSMessageModule,
     MainSharedModule,
     OrderModule,
-    QuillModule.forRoot(quillOptions)
+    TDSButtonModule,
+    QuillModule.forRoot(quillOptions),
+    AngularFireAuthModule,
+    AngularFireDatabaseModule,
+    AngularFirestoreModule,
+    AngularFireMessagingModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
   ],
   providers: [{ provide: TDS_I18N, useValue: vi_VN },
     TAuthGuardService, {
