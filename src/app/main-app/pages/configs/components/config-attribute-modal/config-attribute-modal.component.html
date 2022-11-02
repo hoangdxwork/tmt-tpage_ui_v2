@@ -17,20 +17,20 @@
             [noResult]="NoResultTable">
             <thead>
                 <tr>
-                    <th [width]="'160px'">Tên thuộc tính</th>
-                    <th [width]="'492px'">Giá trị thuộc tính</th>
-                    <th [width]="'116px'" [align]="'center'">Thao tác</th>
+                    <th [width]="'33.33%'">Tên thuộc tính</th>
+                    <th [width]="'33.33%'">Giá trị thuộc tính</th>
+                    <th [width]="'33.33%'">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                     <tr>
-                        <td [width]="'160px'">{{ data.Attribute.Name }}</td>
-                        <td [width]="'492px'">
+                        <td>{{ data.Attribute.Name }}</td>
+                        <td>
                             <tds-form-field>
                                 <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
                                     disabledField="isActive" mode="multiple" [valuePrimitive]="false"
-                                    [ngModel]="data.Values|selectMultipleValue" [ngModelOptions]="{standalone: true}"
+                                    [ngModel]="data.Values|selectMultipleValue" [ngModelOptions]="{standalone: true}"THÊM MỚI SẢN PHẨM
                                     [data]="lstValue[i]?.Values || []" [autoClose]="true" [allowClear]="true"
                                     (selectChange)="onSelectValues($event,data.AttributeId)">
                                 </tds-select>
@@ -39,7 +39,7 @@
                                 </tds-error>
                             </tds-form-field>
                         </td>
-                        <td [width]="'116px'" [align]="'center'">
+                        <td>
                             <button tds-button-flat-icon type="button" size="sm" tds-tooltip="Xóa"
                                 (click)="deleteAttribute(data.AttributeId)">
                                 <span class="flex items-center">
