@@ -489,6 +489,13 @@ export class AddBillComponent implements OnInit {
 
     this._street = result?._street;
     this.innerText = this._street;
+
+    this._form.controls["Ship_Receiver"].patchValue({
+      City: this._cities,
+      District: this._districts,
+      Ward: this._wards,
+      Street: this._street
+    })
   }
 
   loadSaleConfig() {
@@ -1707,7 +1714,8 @@ export class AddBillComponent implements OnInit {
       this._form.controls['Ship_Receiver'].patchValue({
         District: district
       });
-        this.loadWards(district.code);
+      
+      this.loadWards(district.code);
     }
     this.mappingStreet();
 

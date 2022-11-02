@@ -76,5 +76,5 @@ export class DetailReportComponent implements OnInit, AfterViewInit {
           this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');
         }
       });
-  } 
+  }
 }
