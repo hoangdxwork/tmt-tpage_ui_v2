@@ -1,3 +1,4 @@
+import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
 import { TDSModalService } from 'tds-ui/modal';
@@ -108,6 +109,7 @@ export class DetailBillComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
     private notification: TDSNotificationService,
+    private chatomniConversationService: ChatomniConversationService
   ) { }
 
   ngOnInit() {
@@ -136,7 +138,7 @@ export class DetailBillComponent implements OnInit {
       next:(res) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
-      }, 
+      },
       error:(err) => {
         this.message.error(err?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
       }
@@ -218,7 +220,7 @@ export class DetailBillComponent implements OnInit {
           next: () => {
             this.isProcessing = false;
             this.isLoading = false;
-            
+
             // TODO: xóa Id trong danh sách được chọn
             this.setOfCheckedId.delete(data.Id);
 
@@ -232,7 +234,7 @@ export class DetailBillComponent implements OnInit {
           }
         })
       },
-      onCancel: () => { 
+      onCancel: () => {
         this.isProcessing = false;
         this.isLoading = false;
       },
@@ -254,7 +256,7 @@ export class DetailBillComponent implements OnInit {
 
   assignTags(id: number, tags: TDSSafeAny) {
     let model = { OrderId: id, Tags: tags };
-    
+
     this.fastSaleOrderService.assignTagFastSaleOrder(model).subscribe({
       next:(res: TDSSafeAny) => {
         if(res && res.OrderId) {
@@ -265,7 +267,7 @@ export class DetailBillComponent implements OnInit {
           this.indClickTag = -1;
           this.message.success('Gán nhãn thành công!');
         }
-      }, 
+      },
       error: (err) => {
         this.indClickTag = -1;
         this.message.error('Gán nhãn thất bại!');
@@ -285,6 +287,7 @@ export class DetailBillComponent implements OnInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -301,8 +304,8 @@ export class DetailBillComponent implements OnInit {
         return this.message.error('Không có kênh kết nối với khách hàng này.');
       }
 
-      this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
+      this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (teams: any): any => {
 
           if (teams.length == 0) {
             return this.message.error('Không có kênh kết nối với khách hàng này.');
@@ -327,31 +330,58 @@ export class DetailBillComponent implements OnInit {
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+            this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+          } else {
+            this.isLoading = false;
           }
-        });
+        }
+      });
     }, error => {
+      this.isLoading = false;
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  // loadMDBByPSId(pageId: string, psid: string) {
+  //   // Xoá hội thoại hiện tại
+  //   (this.currentConversation as any) = null;
+
+  //   // get data currentConversation
+  //   this.crmMatchingService.getMDBByPSId(pageId, psid)
+  //     .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+  //       if (res) {
+  //         let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+  //         this.currentConversation = { ...model };
+
+  //         this.psid = res.psid;
+  //         this.isOpenDrawer = true;
+  //       }
+  //     }, error => {
+  //       this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+  //     })
+  // }
+
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
+            this.psid = psid;
+            this.isOpenDrawer = true;
+            this.isLoading = false;
         }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-      })
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   selectMappingTeam(item: any) {
@@ -387,7 +417,7 @@ export class DetailBillComponent implements OnInit {
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
         obs.pipe(takeUntil(this.destroy$), finalize(() => {
-          this.isProcessing = false; 
+          this.isProcessing = false;
           this.isLoading = false;
         })).subscribe((res: TDSSafeAny) => {
             that.printerService.printHtml(res);
@@ -402,7 +432,7 @@ export class DetailBillComponent implements OnInit {
     }
 
     if (this.checkValueEmpty() == 1) {
-      this.isProcessing = true; 
+      this.isProcessing = true;
       this.isLoading = true;
 
       this.modal.create({
@@ -424,7 +454,7 @@ export class DetailBillComponent implements OnInit {
             this.loadData(this.pageSize, this.pageIndex);
           }
 
-          this.isProcessing = false; 
+          this.isProcessing = false;
           this.isLoading = false;
         }
       })
@@ -491,7 +521,7 @@ export class DetailBillComponent implements OnInit {
     if (this.isProcessing) {
       return;
     }
-    
+
 
     if (this.checkValueEmpty() == 1) {
       that.isProcessing = true;
@@ -509,16 +539,16 @@ export class DetailBillComponent implements OnInit {
               that.message.success('Hủy vận đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
               this.loadData(this.pageSize, this.pageIndex);
-            }, 
+            },
             error: (err) => {
               that.isProcessing = false;
               this.isLoading = false;
-              
+
               that.message.error(`${err?.error?.message}` || `Hủy vận đơn thất bại`);
             }
           })
         },
-        onCancel: () => { 
+        onCancel: () => {
           that.isProcessing = false;
           this.isLoading = false;
         },
@@ -551,7 +581,7 @@ export class DetailBillComponent implements OnInit {
               that.message.success('Hủy hóa đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
               this.loadData(this.pageSize, this.pageIndex);
-            }, 
+            },
             error: (err) => {
               that.isProcessing = false;
               this.isLoading = false;
@@ -560,7 +590,7 @@ export class DetailBillComponent implements OnInit {
             }
           })
         },
-        onCancel: () => { 
+        onCancel: () => {
           that.isProcessing = false;
           this.isLoading = false;
         },
@@ -596,7 +626,7 @@ export class DetailBillComponent implements OnInit {
               that.message.success('Xóa hóa đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
               this.loadData(this.pageSize, this.pageIndex);
-            }, 
+            },
             error: (err) => {
               that.isProcessing = false;
               this.isLoading = false;
@@ -605,7 +635,7 @@ export class DetailBillComponent implements OnInit {
             }
           })
         },
-        onCancel: () => { 
+        onCancel: () => {
           that.isProcessing = false;
           this.isLoading = false;
         },
@@ -683,7 +713,7 @@ export class DetailBillComponent implements OnInit {
 
   removeCheckedRow() {
     this.setOfCheckedId.clear();
-    
+
     this.indeterminate = false;
     this.checked = false;
   }

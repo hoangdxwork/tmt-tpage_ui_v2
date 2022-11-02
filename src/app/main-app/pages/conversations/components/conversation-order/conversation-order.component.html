@@ -635,14 +635,14 @@
           </div>
 
           <!-- Button Footer conversation post-->
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post'">
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost()">Lưu</button>
+          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' ">
+            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost()">Lưu</button>
 
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost('SaveAndPrint', 'print')">
+            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost('SaveAndPrint', 'print')">
                Lưu và in
             </button>
 
-            <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onInsertFromPost('SaveAndPrint','printShip')">
+            <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onSavePost('SaveAndPrint','printShip')">
                 <span class="flex items-center">
                     <i class="tdsi-truck-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
                 </span>

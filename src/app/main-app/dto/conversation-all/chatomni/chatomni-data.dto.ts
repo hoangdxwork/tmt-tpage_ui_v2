@@ -122,7 +122,7 @@ export interface NlpEntityDto {
 }
 
 export interface ChatomniDataItemDto {
-  Data: ChatomniFacebookDataDto; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
+  Data: any; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
   Id: string;
   ObjectId: string;
   ParentId?: string | any;
