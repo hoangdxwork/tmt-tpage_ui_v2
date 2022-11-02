@@ -31,7 +31,9 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/firebase-sw.js",
+              "src/manifest.json"
             ],
             "styles": [
               "./node_modules/quill/dist/quill.snow.css",
@@ -131,7 +133,8 @@
               "browserTarget": "source:build:staging"
             },
             "development": {
-              "browserTarget": "source:build:development"
+              "browserTarget": "source:build:development",
+              "ssl": true
             }
           },
           "defaultConfiguration": "development"
