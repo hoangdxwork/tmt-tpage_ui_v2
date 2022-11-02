@@ -61,7 +61,8 @@ export class LiveCampaignService extends BaseSevice {
   }
 
   getAvailablesV2(offset: number, limit: number, text?: string){
-    let url = `ODataService.GetAvailables?%24orderby=DateCreated+desc&%24skip=${offset}&%24top=${limit}&$count=true`;
+    let skip = (offset -1) * limit;
+    let url = `ODataService.GetAvailables?%24orderby=DateCreated+desc&%24skip=${skip}&%24top=${limit}&$count=true`;
     if(TDSHelperString.hasValueString(text)) {
         url = `${url}&%24filter=((contains(Name%2C'${text}')+or+contains(NameNoSign%2C'${text}')))`;
     }
@@ -94,7 +95,7 @@ export class LiveCampaignService extends BaseSevice {
 
   update(data: any, isUpdate: boolean): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${data.Id})?isUpdate=${isUpdate}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${data.Id})?isUpdate=${isUpdate}&includeOrderTag=true`,
       method: CoreApiMethodType.put,
     }
 
@@ -247,7 +248,7 @@ export class LiveCampaignService extends BaseSevice {
 
   updateDetails(id: string, data: any): Observable<any> {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails?includeordertag=true`,
         method: CoreApiMethodType.post,
     }
 
@@ -280,9 +281,41 @@ export class LiveCampaignService extends BaseSevice {
 
   importProductLivecampaign(data: any): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this.baseRestApi}/importproductlivecampaign`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/importproductlivecampaign`,
       method: CoreApiMethodType.post
     }
     return this.apiService.getData<any>(api, data);
+  }
+
+  overviewReport(liveCampaignId: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/overviewreport`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  overviewDetailsReport(liveCampaignId: string, params: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/overviewdetailsreport?${params}`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  overviewSaleOnlineoOrders(liveCampaignId: string, params: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/overviewsaleonlineorders?liveCampaignDetailId=${liveCampaignId}&${params}`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  overviewFastSaleOrders(liveCampaignId: string, params: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/overviewfastsaleorders?liveCampaignDetailId=${liveCampaignId}&${params}`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
   }
 }

@@ -1,3 +1,9 @@
+import { ProductService } from './../../services/product.service';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
+import { SharedService } from './../../services/shared.service';
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { NgxVirtualScrollerDto } from './../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
 import { Message } from '../../../lib/consts/message.const';
@@ -6,7 +12,7 @@ import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.ser
 import { ModalLiveCampaignBillComponent } from '../../pages/live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { ModalLiveCampaignOrderComponent } from '../../pages/live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { Component, Input, OnInit, ViewContainerRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 
@@ -20,13 +26,22 @@ import { TDSModalService } from 'tds-ui/modal';
 export class TableDetailReportComponent implements OnInit {
 
     @Input() liveCampaignId!: string;
-    @Input() lstDetails!: ReportLiveCampaignDetailDTO[];
-    @Input() tableHeight: number = 300;
+    @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
+    lstDetails: ReportLiveCampaignDetailDTO[] = [];
+    inventories!: TDSSafeAny;
+    companyCurrents!: CompanyCurrentDTO;
+    count!: number;
     indClickQuantity: string = '';
     currentQuantity: number = 0;
     isLoading: boolean = false;
-    lstSearch!: ReportLiveCampaignDetailDTO[];
+    innerText: string = '';
+    idPopoverVisible: number = -1;
+    isShowAll: boolean = false;
+
+    pageSize: number = 10;
+    pageIndex: number = 1;
+    resfeshScroll: boolean = false;
 
     numberWithCommas =(value:TDSSafeAny) =>{
       if(value != null){
@@ -44,55 +59,92 @@ export class TableDetailReportComponent implements OnInit {
 
     constructor(private message: TDSMessageService,
         private modalService: TDSModalService,
+        private sharedService: SharedService,
+        private productService: ProductService,
         private viewContainerRef: ViewContainerRef,
         private destroy$: TDSDestroyService,
         private liveCampaignService: LiveCampaignService,
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
-        if(this.lstDetails){
-            this.lstSearch = [...this.lstDetails];
-        }
-        this.cdr.detectChanges();
+        this.loadCurrentCompany();
+        this.loadData(this.pageSize, this.pageIndex);
     }
 
-    showModalLiveCampaignOrder(lstOrder: any[]) {
-        if(!lstOrder){
-            return
-        }
-        if(lstOrder.length == 0){
-            return
-        }
+    loadData(pageSize: number, pageIndex: number, text?: string) {
+        this.isLoading = true;
+        let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
+        this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
+            next: res => {
+                this.lstDetails = [...this.lstDetails, ...res.Details];
+                this.lstDetails.map((x: any, i: number)=> { x.Index = i + 1; });
 
-        this.modalService.create({
-            title: 'Đơn hàng chờ chốt',
-            size: 'xl',
-            content: ModalLiveCampaignOrderComponent,
-            viewContainerRef: this.viewContainerRef,
-            componentParams: {
-                data: lstOrder
+                this.count = res.TotalCount;
+                this.isLoading = false;
+
+                this.cdr.detectChanges();
+            },
+            error: error => {
+                this.isLoading = false;
+                this.message.error(error?.error?.message || 'Tải sản phẩm lỗi')
             }
-        });
+        })
     }
 
-    showModalLiveCampaignBill(lstFastSaleOrder: any[]) {
-        if(!lstFastSaleOrder){
-            return;
-        }
-
-        if(lstFastSaleOrder.length == 0){
-            return;
-        }
-
-        this.modalService.create({
-            title: 'Hóa đơn chờ chốt',
-            size: 'xl',
-            content: ModalLiveCampaignBillComponent,
-            viewContainerRef: this.viewContainerRef,
-            componentParams: {
-                data: lstFastSaleOrder
+    loadCurrentCompany() {
+        this.sharedService.setCurrentCompany();
+        this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: CompanyCurrentDTO) => {
+            this.companyCurrents = res || {};
+    
+            if(this.companyCurrents?.DefaultWarehouseId) {
+                this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
             }
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+          }
         });
+      }
+    
+      loadInventoryWarehouseId(warehouseId: number) {
+        this.productService.setInventoryWarehouseId(warehouseId);
+        this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.inventories = res;
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+          }
+        });
+      }
+
+    showModalLiveCampaignOrder(id: string, index: number) {
+        if(index){
+            this.modalService.create({
+                title: 'Đơn hàng chờ chốt',
+                size: 'xl',
+                content: ModalLiveCampaignOrderComponent,
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                    livecampaignDetailId: id
+                }
+            });
+        }
+    }
+
+    showModalLiveCampaignBill(id: string, index: number) {
+        if(index){
+            this.modalService.create({
+                title: 'Hóa đơn chờ chốt',
+                size: 'xl',
+                content: ModalLiveCampaignBillComponent,
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                    livecampaignDetailId: id
+                }
+            });
+        }
     }
 
     openQuantityPopover(data: ReportLiveCampaignDetailDTO, dataId: string) {
@@ -103,6 +155,10 @@ export class TableDetailReportComponent implements OnInit {
     changeQuantity(value: number) {
         this.currentQuantity = value;
     }
+
+    // onChangeShowMore(isShow: boolean) {
+    //     this.isShowAll = isShow;
+    // }
 
     saveChangeQuantity(id: string) {
         this.isLoading = true;
@@ -136,10 +192,29 @@ export class TableDetailReportComponent implements OnInit {
     }
 
     onSearch(event: TDSSafeAny) {
-      let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
-      this.lstSearch = this.lstDetails.filter((item) =>
-          TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase()).trim().indexOf(text) !== -1
-          || item.ProductCode?.indexOf(text) !== -1
-          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase()).trim().indexOf(text) !== -1);
+        let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
+        this.lstDetails = [];
+        this.pageIndex = 1;
+        this.resfeshScroll = false;
+        this.loadData(this.pageSize, this.pageIndex, text);
     }
+    
+    nextData() {
+        this.pageIndex += 1;
+        this.loadData(this.pageSize, this.pageIndex, this.innerText);
+    }
+
+    vsEnd(event: NgxVirtualScrollerDto) {
+        if(this.isLoading) {
+          return;
+        }
+
+        let exisData = this.lstDetails && this.lstDetails.length > 0 && event && event.scrollStartPosition > 0;
+        if(exisData) {
+          const vsEnd = Number(this.lstDetails.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 &&  Number(this.lstDetails.length) < this.count;
+          if(vsEnd) {
+              this.nextData();
+          }
+        }
+      }
 }

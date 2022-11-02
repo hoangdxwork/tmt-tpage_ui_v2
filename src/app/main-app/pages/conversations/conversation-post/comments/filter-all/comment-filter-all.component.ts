@@ -205,9 +205,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
           case ChatmoniSocketEventName.chatomniOnUpdate:
           break;
 
-          case ChatmoniSocketEventName.onUpdate:
-          break;
-
           default:
             break;
         }

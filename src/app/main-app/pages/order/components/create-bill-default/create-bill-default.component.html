@@ -5,13 +5,13 @@
       <div class="w-full flex flex-col">
         <tds-form-field>
           <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="true"
-            [valuePrimitive]="false" [(ngModel)]="carrier" [data]="lstCarriers" [ngModelOptions]="{standalone: true}">
+            [valuePrimitive]="false" [(ngModel)]="carrier" [data]="lstCarriers" [ngModelOptions]="{standalone: true}"
+            (selectChange)="changeCarrierAll()">
           </tds-select>
           <span class="flex items-center text-info-500 text-xs pt-1 absolute">
             <i class="tdsi-warning-2-fill mr-1.5"></i>Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
         </tds-form-field>
       </div>
-      <button tds-button color="primary" (click)="changeCarrierAll()">Áp dụng tất cả</button>
     </div>
   </div>
 
@@ -20,13 +20,11 @@
       <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstLine" [showPagination]="false">
         <thead class="rounded">
           <tr>
-            <th width="5%">STT</th>
-            <th width="25%">Khách hàng</th>
-            <th width="17%">Đối tác giao hàng</th>
-            <th width="12%">Tiền hàng</th>
-            <th width="12%">Phí ship</th>
-            <th width="12%">KL ship (g)</th>
-            <th width="9%">Thanh toán</th>
+            <th width="4%">STT</th>
+            <th width="28%">Khách hàng</th>
+            <th width="18%">Đối tác giao hàng</th>
+            <th width="32%" class="text-center">Thông tin ship</th>
+            <th width="10%">Thanh toán</th>
             <th width="8%">Thao tác</th>
           </tr>
         </thead>
@@ -59,50 +57,66 @@
               <td class="align-top">
                 <tds-form-field>
                   <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác' [allowClear]="false" tds-tooltip tooltipTitle="{{ data.CarrierName }}"
-                    [valuePrimitive]="false" [(ngModel)]="data.CarrierId" [ngModelOptions]="{standalone: true}" class="w-[150px]"
+                    [valuePrimitive]="false" [(ngModel)]="data.CarrierId" [ngModelOptions]="{standalone: true}"
                     [data]="lstCarriers" (ngModelChange)="onChangeCarrier($event, data)">
                   </tds-select>
                 </tds-form-field>
               </td>
-              <!-- Tiền hàng -->
+              <!-- Thông tin ship -->
               <td class="align-top">
-                <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.TotalAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                    [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}">
-                  </tds-input-number>
-                </tds-form-field>
-              </td>
-              <!-- Phí ship -->
-              <td class="align-top">
-                <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.ShipAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                    [(ngModel)]="data.ShipAmount" [ngModelOptions]="{standalone: true}">
-                  </tds-input-number>
-                </tds-form-field>
-              </td>
-              <!-- Khối lượng -->
-              <td class="align-top">
-                <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1"  tds-tooltip tooltipTitle="{{ data.ShipWeight | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                    [(ngModel)]="data.ShipWeight" [ngModelOptions]="{standalone: true}">
-                  </tds-input-number>
-                </tds-form-field>
+                <div class="grid grid-cols-3 items-center gap-y-2 gap-x-6">
+                  <!-- Tiền hàng -->
+                  <tds-label>Tiền hàng</tds-label>
+                  <tds-form-field class="col-span-2 w-full">
+                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.TotalAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                      [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}">
+                    </tds-input-number>
+                  </tds-form-field>
+                  <!-- COD -->
+                  <tds-label>Tiền thu hộ</tds-label>
+                  <tds-form-field class="col-span-2 w-full">
+                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.COD | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                      [(ngModel)]="data.COD" [ngModelOptions]="{standalone: true}">
+                    </tds-input-number>
+                  </tds-form-field>
+                  <!-- Tiền cọc -->
+                  <tds-label>Tiền cọc</tds-label>
+                  <tds-form-field class="col-span-2 w-full">
+                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.DepositAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                      [(ngModel)]="data.DepositAmount" [ngModelOptions]="{standalone: true}">
+                    </tds-input-number>
+                  </tds-form-field>
+                  <!-- Phí ship -->
+                  <tds-label>Phí ship</tds-label>
+                  <tds-form-field class="col-span-2 w-full">
+                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.ShipAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                      [(ngModel)]="data.ShipAmount" [ngModelOptions]="{standalone: true}">
+                    </tds-input-number>
+                  </tds-form-field>
+                  <!-- khối lượng -->
+                  <tds-label>Khối lượng</tds-label>
+                  <tds-form-field class="col-span-2 w-full">
+                    <tds-input-number [min]="0" [step]="1"  tds-tooltip tooltipTitle="{{ data.ShipWeight | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
+                      [(ngModel)]="data.ShipWeight" [ngModelOptions]="{standalone: true}">
+                    </tds-input-number>
+                  </tds-form-field>
+                </div>
               </td>
               <!-- Thanh toán -->
               <td class="text-center align-top">
                 <div class="h-[34px] w-full flex items-center justify-center">
-                  <tds-checkbox [(ngModel)]="data.IsPayment"></tds-checkbox>
+                  <tds-checkbox [(ngModel)]="data.IsPayment" [ngModelOptions]="{standalone: true}"></tds-checkbox>
                 </div>
               </td>
               <!-- Thao tác -->
               <td class="align-top">
                 <div class="flex gap-x-2">
-                  <button tds-button-icon color="secondary" size="sm" (click)="onEdit(index)">
+                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="onEdit(index)">
                     <span class="flex items-center">
                       <i class="tdsi-edit-fill text-neutral-1-500"></i>
                     </span>
                   </button>
-                  <button tds-button-icon color="secondary" size="sm" (click)="onRemove(index)">
+                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="onRemove(index)">
                     <span class="flex items-center">
                       <i class="tdsi-trash-fill text-neutral-1-500"></i>
                     </span>
@@ -111,7 +125,6 @@
               </td>
             </tr>
             <tr [classList]="'border-t-0'">
-              <td></td>
               <td colspan="3">
                 <div class="flex gap-x-2">
                   <tds-form-field class="w-full">
@@ -124,9 +137,9 @@
                   </button>
                 </div>
               </td>
-              <td colspan="4" class="align-top">
+              <td colspan="3" class="align-top">
                 <tds-form-field>
-                  <input tdsInput placeholder="Ghi chú sản phẩm" autocomplete="off" [(ngModel)]="data.ProductNote"/>
+                  <input tdsInput placeholder="Ghi chú sản phẩm" autocomplete="off" [(ngModel)]="data.ProductNote" [ngModelOptions]="{standalone: true}"/>
                 </tds-form-field>
               </td>
             </tr>
@@ -139,14 +152,9 @@
   <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <div class="flex justify-between gap-x-2">
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave('print')">
-        Lưu và in
-      </button>
-      <button tds-button class="w-[170px]" type="submit" color="info" (click)="onSave('printShip')">
-        Lưu và in phiếu ship
-      </button>
-      <button tds-button class="w-[100px]" type="submit" color="primary"
-        (click)="onSave()">Lưu</button>
+      <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave('print')">Lưu và in</button>
+      <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave('printShip')">Lưu và in phiếu ship</button>
+      <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave()">Lưu</button>
     </div>
   </div>
 </tds-spin>

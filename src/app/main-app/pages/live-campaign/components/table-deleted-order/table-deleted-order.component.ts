@@ -1,13 +1,15 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, Input, OnInit } from '@angular/core';
-import { DeletedOrderDetail, DeletedOrderDTO } from '@app/dto/order/order-deletedHistories.dto';
+import { DeletedOrderDTO } from '@app/dto/order/order-deletedHistories.dto';
 import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
-import { finalize } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'table-deleted-order',
   templateUrl: './table-deleted-order.component.html',
+  providers: [TDSDestroyService]
 })
 export class TableDeletedOrderComponent implements OnInit {
 
@@ -27,21 +29,26 @@ export class TableDeletedOrderComponent implements OnInit {
   constructor(
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private destroy$: TDSDestroyService,
   ) { }
 
   ngOnInit(): void {
-    this.loadDeletedOrder(this.liveCampaignId, this.pageIndex, this.pageSize)
   }
 
   loadDeletedOrder(liveCampaignId: string, skip: number, take: number) {
     this.isLoading = true;
-    this.saleOnline_OrderService.getOrderDeteledHistoriesV1(liveCampaignId, skip, take)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.lstDeletedOrder = res.Orders;
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-      });
+    this.saleOnline_OrderService.getOrderDeteledHistoriesV1(liveCampaignId, skip, take).pipe(takeUntil(this.destroy$)).subscribe({
+        next: res => {
+          this.lstDeletedOrder = res.Orders;
+          this.count = res.TotalCount;
+
+          this.isLoading = false;
+        }, 
+        error: error => {
+          this.isLoading = false
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        }
+    });
   }
 
   refreshData() {
@@ -49,10 +56,12 @@ export class TableDeletedOrderComponent implements OnInit {
     this.loadDeletedOrder(this.liveCampaignId, this.pageIndex, this.pageSize);
   }
 
-  // onQueryParamsChange(params: TDSTableQueryParams) {
-  //   this.pageSize = params.pageSize;
-  //   this.loadDeletedOrder(this.liveCampaignId, params.pageSize, params.pageIndex);
-  // }
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
+    this.pageIndex = params.pageIndex;
+    let skip = (params.pageIndex -1) * params.pageSize;
+    this.loadDeletedOrder(this.liveCampaignId, skip, params.pageSize);
+  }
 
   onAllChecked(value: boolean): void {
     this.lstDeletedOrder.forEach(item => this.updateCheckedSet(item.OrderId, value));

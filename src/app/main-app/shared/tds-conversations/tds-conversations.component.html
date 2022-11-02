@@ -60,12 +60,18 @@
                             </div>
                             <div class="gap-y-2 flex flex-col overflow-y-auto tds-panel-scroll">
                                 <div *ngFor="let item of lstUser" (click)="assignUser(item)" [ngClass]="isLoadingSelectUser? 'cursor-wait': ''"
-                                class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
-                                <div class="flex gap-x-2">
-                                    <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
-                                    <span>{{item.Name}}</span>
-                                </div>
-                                <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.AssignedTo?.Id"></span>
+                                    class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
+                                    <div class="flex gap-x-2">
+                                        <span *ngIf="item.Avatar">
+                                            <tds-avatar [shape]="'circle'" [size]="22" [tdsSrc]="item.Avatar"></tds-avatar>
+                                        </span>
+                                        <span *ngIf="!item.Avatar">
+                                            <tds-avatar [text]="item.Name | avatarRandom" [shape]="'circle'" [size]="22"
+                                              [style.background-color]="item.Id | randomColor" style="color: '#fff'; font-size: 14px;"></tds-avatar>
+                                        </span>
+                                        <span>{{item.Name}}</span>
+                                    </div>
+                                    <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.AssignedTo?.Id"></span>
                                 </div>
                             </div>
                             <!-- <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">
@@ -143,13 +149,24 @@
             <div *ngIf="dataSource && dataSource?.Items" >
                 <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
                   <div *ngIf="item" @eventFadeState>
+
+                    <!-- TODO: user đã đọc -->
+                    <div class="w-full block" *ngIf="item.Type == 0 && item.Message">
+                        <div class="date-v3 block">
+                            <p class="text-neutral-1-500 text-[11px] inline-block mb-0" tds-tooltip tooltipTitle="{{item.ChannelCreatedTime | date: 'dd/MM/yyyy HH:mm:ss'}}">
+                                {{item.Message}}
+                            </p>
+                        </div>
+                    </div>
+
                     <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
                         <div class="w-full relative">
                             <div class="date-v3">
-                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
+                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.ChannelCreatedTime | yiDateTimeV3"></span>
                                 <span class="hr"></span>
                             </div>
                         </div>
+
                         <!-- Thông tin bài post -->
                         <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
                             && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
@@ -221,9 +238,7 @@
                         <div class="flex justify-between">
                             <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
                             <button tds-button-icon color="secondary" class="!rounded-full"
-                                (click)="showModalAddTag()"
-                                tds-tooltip
-                                tooltipTitle="Thêm nhãn mới">
+                                (click)="showModalAddTag()" tds-tooltip tooltipTitle="Thêm nhãn mới">
                                 <span class="flex items-center">
                                     <i class="tdsi-plus-fill"></i>
                                 </span>
@@ -268,7 +283,7 @@
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]" *ngIf="data && data.Tags">
                         <div *ngFor="let tag of data.Tags | slice:4:data.Tags!.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
-                            <div **ngIf="tag"  class="cursor-pointer w-full min-w-[70px] px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
+                            <div *ngIf="tag"  class="cursor-pointer w-full min-w-[70px] px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
                                   [ngStyle]="{'background-color': [tag.ColorClass]}">
                                   {{tag.Name}}
                             </div>
@@ -282,6 +297,26 @@
         </div>
         <!-- editer+toolbars -->
         <tds-spin [spinning]="isLoadingImage">
+
+            <div class="h-0 overflow-hidden flex">
+                <tds-form-field class="w-full">
+                    <input aria-colspan="" class="placeholder-neutral-1-400 !h-0"  [tdsInputDebounce]="350" (inputKeyup)="onChangeMessage($event)"
+                        placeholder="input here" tdsInput [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" #viewChildQuickRepply [tdsAutocomplete]="auto" />
+                </tds-form-field>
+            </div>
+
+            <tds-autocomplete #auto [width]="350" [autoClose]="false" [overlayClassName]="'h-[400px] cs-quick-repply flex'"  (selectionChange)="onSelectionChange($event)">
+                <tds-auto-option *ngFor="let option of (quickReplies | simpleSearchQuickRepply: messageModel)"
+                [value]="option.BodyPlain" [label]="option.Name">
+                <div class="w-full flex flex-col text-neutral-1-900 text-body-2 font-regular">
+                    <div (click)="setTextquickReply(option)" class="py-2 px-1 flex flex-col w-full cursor-pointer hover:bg-neutral-3-50 text-body-2">
+                        <span class="font-semibold">{{option.Name}}</span>
+                        <div showMore [length]="50" [text]="option.BodyPlain | replacePartner: partner"></div>
+                    </div>
+                </div>
+            </tds-auto-option>
+            </tds-autocomplete>
+
           <div class="flex flex-col w-full px-4  bg-white rounded-xl relative">
               <div [ngClass]="isLoadingSendMess?'!cursor-wait':'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
 
@@ -306,9 +341,9 @@
               </div>
 
               <div class="w-full pt-4 flex flex-row">
-                  <textarea tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
+                  <textarea #viewChildInputMessage tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
                       [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                      (paste)="onPaste($event)"
+                      (paste)="onPaste($event)" [tdsInputDebounce]="0" (inputKeyup)="onChangeMessage($event)"
                       (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
                   </textarea>
 

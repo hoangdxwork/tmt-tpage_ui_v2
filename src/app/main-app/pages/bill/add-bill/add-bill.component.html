@@ -650,7 +650,7 @@
                       </div>
 
                     </div>
-                    
+
                     <!-- ship extras service -->
                     <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="col-span-3">
                       <div class="grid grid-cols-3 gap-y-4 gap-x-6">
@@ -822,9 +822,14 @@
 
       <div class="flex gap-x-4 h-full" *ngIf="dataModel && dataModel.State == 'draft'">
           <div class="xl:w-1/3 2xl:w-1/3 h-full">
-            <list-product-tmp [type]="'order'" [priceListItems]="priceListItems" [isLoadingProduct]="isLoadingProduct"
-              (onLoadProductToOrderLines)="onLoadProductToOrderLines($event)"></list-product-tmp>
+              <list-product-tmp
+                [type]="'order'"
+                [priceListItems]="priceListItems"
+                [isLoadingProduct]="isLoadingProduct"
+                (onLoadProductToOrderLines)="onLoadProductToOrderLines($event)">
+              </list-product-tmp>
           </div>
+
           <div class="xl:w-2/3 2xl:w-2/3 h-full">
             <div class="rounded-xl bg-white flex h-full w-full gap-y-2 py-3 text-body-2 text-neutral-1-900">
               <tds-table templateMode #TableAddBill [scroll]="{y:'auto', x: 'auto'}" [showPagination]="false">
@@ -1007,7 +1012,8 @@
                             </button>
 
                             <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax" class="col-span-2 flex items-center justify-end">
-                              <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }} đ</span> -
+                              <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }}đ</span>
+                              <span class="ml-1 mr-1"> - </span>
                               <span>{{ _form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0 }}%</span>
                             </div>
 

@@ -23,36 +23,17 @@
               <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật thông tin khách hàng</span>
             </div>
 
-            <span class="text-title-1 font-semibold pt-6">Cấu hình thanh toán</span>
+            <span class="text-title-1 font-semibold pt-6">Cấu hình cập nhật và thanh toán</span>
             <!-- Cho phép thanh toán -->
             <div class="flex flex-row items-center pt-4">
               <tds-switch size="md" formControlName="IsCheckout"></tds-switch>
               <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép thanh toán</span>
             </div>
 
-            <!-- Cập nhật số lượng -->
-            <div class="flex flex-row items-center pt-4">
-              <tds-switch size="md" formControlName="IsUpdateQuantity"></tds-switch>
-              <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật số lượng</span>
-            </div>
-
             <!-- Cho phép mua thêm -->
             <div class="flex flex-row items-center pt-4">
               <tds-switch size="md" formControlName="IsBuyMore"></tds-switch>
               <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép mua thêm</span>
-            </div>
-
-            <span class="text-title-1 font-semibold pt-6">Cấu hình hủy đơn hàng</span>
-            <!-- Cho phép hủy thanh toán (xóa đơn hàng) -->
-            <div class="flex flex-row items-center pt-4">
-              <tds-switch size="md" formControlName="IsCancelCheckout"></tds-switch>
-              <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép hủy đơn hàng</span>
-            </div>
-
-            <!-- Cập nhật ghi chú -->
-            <div class="flex flex-row items-center pt-4">
-              <tds-switch size="md" formControlName="IsUpdateNote"></tds-switch>
-              <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật ghi chú</span>
             </div>
 
             <!-- Cho phép xóa sản phẩm mua được -->
@@ -64,8 +45,7 @@
             <!-- Cho phép xóa sản phẩm không hợp lệ (Không mua được) -->
             <div class="flex flex-row items-center pt-4">
               <tds-switch size="md" formControlName="IsRemoveProductInValid"></tds-switch>
-              <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép xóa sản phẩm không hợp lệ (Không mua
-                được)</span>
+              <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép xóa sản phẩm không hợp lệ (Không mua được)</span>
             </div>
 
             <!-- Cho phép hiện tồn kho -->
@@ -74,12 +54,30 @@
               <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép hiện tồn kho</span>
             </div>
 
+            <!-- Cập nhật số lượng -->
+            <div class="flex flex-row items-center pt-4">
+              <tds-switch size="md" formControlName="IsUpdateQuantity"></tds-switch>
+              <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật số lượng</span>
+            </div>
+
+            <!-- Cập nhật ghi chú -->
+            <div class="flex flex-row items-center pt-4">
+              <tds-switch size="md" formControlName="IsUpdateNote"></tds-switch>
+              <span class="text-neutral-1-900 text-body-2 pl-2">Cập nhật ghi chú</span>
+            </div>
+
             <!-- Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng -->
             <!-- <div class="flex flex-row items-center pt-4">
-                <tds-switch size="md" formControlName="IsMergeOrder"></tds-switch>
-                <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng</span>
-              </div> -->
+              <tds-switch size="md" formControlName="IsMergeOrder"></tds-switch>
+              <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng</span>
+            </div> -->
 
+            <span class="text-title-1 font-semibold pt-6">Cấu hình hủy đơn hàng</span>
+            <!-- Cho phép hủy thanh toán (xóa đơn hàng) -->
+            <div class="flex flex-row items-center pt-4">
+              <tds-switch size="md" formControlName="IsCancelCheckout"></tds-switch>
+              <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép hủy đơn hàng</span>
+            </div>
           </div>
 
           <div class="flex flex-row items-center justify-start pt-4">

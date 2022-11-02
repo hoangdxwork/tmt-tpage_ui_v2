@@ -54,6 +54,7 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'edit-order-v2',
@@ -324,7 +325,7 @@ export class EditOrderV2Component implements OnInit {
       this.virtualScroller.scrollToPosition(0);
     }
 
-    this.pageIndex = 1;
+    this.pageIndex = 0;
     let text = this.textSearchProduct;
     this.loadProduct(text);
   }
@@ -400,14 +401,15 @@ export class EditOrderV2Component implements OnInit {
         content: ModalProductTemplateComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          typeComponent: null,
-        }
     });
 
-    modal.afterClose.subscribe(result => {
-      if(TDSHelperObject.hasValue(result)) {
-        let data = result[0];
+    modal.afterClose.subscribe(res => {
+      if(!res) return;
+
+      res = {...res} as SyncCreateProductTemplateDto;
+      if(res.type === 'select' && res.productTmpl) {
+
+        let data = res.productTmpl;
         let item = {
             Quantity: 1,
             Price: data.ListPrice,
@@ -421,11 +423,10 @@ export class EditOrderV2Component implements OnInit {
             Factor: 1,
             OrderId: this.quickOrderModel.Id,
             Priority: 0,
-            ImageUrl: result.ImageUrl,
+            ImageUrl: data.ImageUrl,
         } as Detail_QuickSaleOnlineOrder;
 
         this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
-
         this.calcTotal();
         this.coDAmount();
       }
@@ -550,10 +551,12 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onChangeQuantity(value: number, index: number) {
-    if(value >= 0) {
+    if(value >= 1) {
       this.quickOrderModel.Details[index].Quantity = value;
       this.calcTotal();
       this.coDAmount();
+    } else {
+      this.message.error('Vui lòng nhập số lượng sản phẩm');
     }
   }
 
@@ -588,7 +591,7 @@ export class EditOrderV2Component implements OnInit {
 
   calcTax() {
     if(this.saleModel) {
-        let tax = {...this.computeCaclHandler.so_calcTax(this.saleModel)};
+        let tax = {...this.computeCaclHandler.so_calcTax(this.saleModel, this.saleConfig)};
         this.saleModel.AmountTax = tax.AmountTax;
         this.saleModel.AmountTotal = tax.AmountTotal;
     }
@@ -605,7 +608,7 @@ export class EditOrderV2Component implements OnInit {
     let model = this.quickOrderModel;
     model.Details?.map(x => {
       if(x.Quantity == null) {
-          x.Quantity = 0;
+          x.Quantity = 1;
       }
     })
 

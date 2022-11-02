@@ -32,7 +32,7 @@ export class CreateBillFastComponent implements OnInit {
   lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
   lstCarriers: Array<CarrierListOrderDTO> = [];
   lstCheckRowErrors: Array<string> = [];
-  carrierForAll!: CarrierListOrderDTO;
+  carrier!: CarrierListOrderDTO;
   isLoading: boolean = false;
   isPrint: boolean = false;
   isPrintShip: boolean = false;
@@ -68,6 +68,7 @@ export class CreateBillFastComponent implements OnInit {
   ngOnInit(): void {
     if(TDSHelperArray.hasListValue(this.lstData)) {
       this.loadCarrier();
+
       this.updateAmountTotal(this.lstData);
       this.lstData.forEach((x, i) =>{
         this.checkPartnerInfo(x.Partner, i);
@@ -113,35 +114,6 @@ export class CreateBillFastComponent implements OnInit {
     return this.lstPayment.some((item) => item.Id == data.Id);
   }
 
-  onCheckPayment(data: GetListOrderIdsDTO){
-    if(!this.checkEnabledPayment(data)){
-
-      this.isLoading = true;
-      let model = {
-        ids: [data.Id]//Id:0 -> bug
-      }
-
-      this.fastSaleOrderService.getRegisterPayment(model).pipe(takeUntil(this.destroy$)).subscribe({
-          next:(res) => {
-            delete res['@odata.context'];
-            this.lstPayment.push({
-              Id: data.Id,
-              Payment: res
-            });
-
-            this.isLoading = false;
-          },
-          error:(err) => {
-            this.isLoading = false;
-            this.message.error(err?.error?.message || 'Có lỗi xảy ra. Không thể thanh toán cho hóa đơn này');
-          }
-        })
-    } else {
-      this.isLoading = false;
-      this.lstPayment = this.lstPayment.filter((item) => item.Id != data.Id);
-    }
-  }
-
   onModalError(DataErrorFast: TDSSafeAny[], errors: TDSSafeAny[], is_approve: boolean) {
     let type!:string;
 
@@ -165,21 +137,15 @@ export class CreateBillFastComponent implements OnInit {
         isApprove: is_approve
       }
     });
-
-    modal.afterClose.subscribe({
-      next:(result) => {
-        this.onCancel();
-      }
-    })
   }
 
   changeCarrierAll() {
     this.lstData.forEach(item => {
-      item.Carrier = this.carrierForAll;
-      item.CarrierId = this.carrierForAll.Id;
-      item.CarrierName = this.carrierForAll.Name;
-      item.DeliveryPrice = this.carrierForAll.Config_DefaultFee || 0;
-      item.ShipWeight = this.carrierForAll.Config_DefaultWeight || 100;
+      item.Carrier = this.carrier;
+      item.CarrierId = this.carrier.Id;
+      item.CarrierName = this.carrier.Name;
+      item.DeliveryPrice = this.carrier.Config_DefaultFee || 0;
+      item.ShipWeight = this.carrier.Config_DefaultWeight || 100;
     });
   }
 
@@ -292,17 +258,13 @@ export class CreateBillFastComponent implements OnInit {
         obs.pipe(takeUntil(this.destroy$)).subscribe({
           next:(res: TDSSafeAny) => {
             this.printerService.printHtml(res);
-            this.modalRef.destroy(true);
           },
           error:(error: TDSSafeAny) => {
             if(error?.error?.message) {
               this.message.error(error?.error?.message);
             }
-            this.modalRef.destroy(true);
           }
         });
-      }else{
-        this.modalRef.destroy(true);
       }
     }
   }
@@ -342,7 +304,7 @@ export class CreateBillFastComponent implements OnInit {
 
   onSave(confirm?: string) {
     if(this.isLoading){
-      return
+      return;
     }
 
     if(!this.lstData || this.lstData.length === 0) {
@@ -362,7 +324,6 @@ export class CreateBillFastComponent implements OnInit {
           this.isLoading = false;
           this.message.success(Message.Bill.InsertSuccess);
           this.printSave(res);
-          this.onCancel();
         }
         else {
           this.isLoading = false;

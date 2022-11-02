@@ -1,6 +1,6 @@
 import { map } from 'rxjs/operators';
 import { CreateQuickReplyDTO, QuickReplyDTO } from './../dto/quick-reply.dto.ts/quick-reply.dto';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { BaseSevice } from './base.service';
@@ -15,6 +15,8 @@ export class QuickReplyService extends BaseSevice {
 
   public lstDataActive: any = [];
   private readonly _lstDataActive$ = new ReplaySubject<any>();
+
+  public onChangeQuickReply = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService) {
       super(apiService);

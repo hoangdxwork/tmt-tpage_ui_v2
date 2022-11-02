@@ -19,7 +19,7 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
@@ -89,17 +89,17 @@ export class TDSConversationItemComponent implements OnInit  {
   }
 
   ngOnInit(): void {
-    if(this.dataItem && !this.dataItem.Message) {
+    if(this.dataItem && this.dataItem.Data && !this.dataItem.Message) {
         let exist = this.dataItem.Data?.attachments?.data;
         if(exist) {
-          this.dataItem.Data!.is_error_attachment = false;
+            this.dataItem.Data!.is_error_attachment = false;
         } else {
-          this.dataItem.Data!.is_error_attachment = true;
+            this.dataItem.Data!.is_error_attachment = true;
         }
     }
   }
 
-  selectOrder(type: string, index?: number): any {
+  selectOrder(type: string, index?: number, nlpEntities?: NlpEntityDto[]): any {
     let model = { type: '', value: '' } as any;
     let value = this.getTextOfContentMessage();
 
@@ -115,9 +115,9 @@ export class TDSConversationItemComponent implements OnInit  {
               break;
 
             case "address":
-              model.value = value;
               model.type = 'address';
-              break;
+              this.showModalSuggestAddress(model, index);
+              return;
 
             case "note":
                 if (Number(index) >=0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].nativeElement && this.contentMessageChild._results[Number(index)].nativeElement.outerText){
@@ -171,6 +171,7 @@ export class TDSConversationItemComponent implements OnInit  {
     if(this.isLiking){
       return
     }
+
     this.isLiking = true;
     let model = {
       TeamId: this.team.Id,
@@ -284,10 +285,9 @@ export class TDSConversationItemComponent implements OnInit  {
       .pipe(takeUntil(this.destroy$)).subscribe(
         {
           next: (res: any) => {
-            this.tdsMessage.success("Thao tác thành công");
             if (TDSHelperArray.hasListValue(res)) {
               res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-                  x["Status"] = ChatomniStatus.Done;
+                  x["Status"] = ChatomniStatus.Pending;
                   let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
                   this.dataItem  = {...data}
               });
@@ -584,7 +584,7 @@ export class TDSConversationItemComponent implements OnInit  {
     return model;
   }
 
-  showModalSuggestAddress(index?: number, nlpEntities?: NlpEntityDto[]){
+  showModalSuggestAddress(model: TDSSafeAny, index?: number, nlpEntities?: NlpEntityDto[]){
     let value: string = '';
     if (Number(index) >= 0 && this.contentMessageChild && this.contentMessageChild._results[Number(index)] && this.contentMessageChild._results[Number(index)].text) {
       value = this.contentMessageChild._results[ Number(index)].text;
@@ -592,40 +592,43 @@ export class TDSConversationItemComponent implements OnInit  {
         value = this.getTextOfContentMessage();
     }
 
-    if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') {
-        if(nlpEntities[0].Value){
-          let data = JSON.parse(nlpEntities[0].Value);
+    // if(nlpEntities && nlpEntities.length > 0 && nlpEntities[0] && nlpEntities[0].Name == 'address') {
+    //     if(nlpEntities[0].Value){
+    //       let data = JSON.parse(nlpEntities[0].Value);
 
-          if (data && typeof data === "object") {
-            let _cities = {code: data.CityCode || null, name: data.CityName || null} as SuggestCitiesDTO;
-            let _districts = {code: data.DistrictCode || null, name: data.DistrictName || null} as SuggestDistrictsDTO;
-            let _wards = {code: data.WardCode || null, name: data.WardName || null} as SuggestWardsDTO;
+    //       if (data && typeof data === "object") {
+    //         let _cities = {code: data.CityCode || null, name: data.CityName || null} as SuggestCitiesDTO;
+    //         let _districts = {code: data.DistrictCode || null, name: data.DistrictName || null} as SuggestDistrictsDTO;
+    //         let _wards = {code: data.WardCode || null, name: data.WardName || null} as SuggestWardsDTO;
 
-              let modal = this.modalService.create({
-                title: 'Thêm địa chỉ',
-                content: ModalAddAddressV2Component,
-                size: "lg",
-                viewContainerRef: this.viewContainerRef,
-                componentParams: {
-                  isSelectAddress: true,
-                  _street: value,
-                  _cities: _cities,
-                  _districts: _districts,
-                  _wards: _wards,
-                }
-              });
-    
-            modal.afterClose.subscribe({
-              next: (result: ResultCheckAddressDTO) => {
-                if(result){
-                    this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
-                }
-              }
-            })
-            return;
-          }
-        }
-    }
+    //           let modal = this.modalService.create({
+    //             title: 'Thêm địa chỉ',
+    //             content: ModalAddAddressV2Component,
+    //             size: "lg",
+    //             viewContainerRef: this.viewContainerRef,
+    //             componentParams: {
+    //               isEntities: true,
+    //               innerText: value,
+    //               _street: data.FullAddress,
+    //               _cities: _cities,
+    //               _districts: _districts,
+    //               _wards: _wards,
+    //             }
+    //           });
+
+    //         modal.afterClose.subscribe({
+    //           next: (result: ResultCheckAddressDTO) => {
+    //             if(result){
+    //                 model.value = {...result};
+    //                 //TODO: load sang tab conversation-order paste lại dữ liệu
+    //                 this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
+    //             }
+    //           }
+    //         })
+    //         return;
+    //       }
+    //     }
+    // }
 
     if(TDSHelperArray.hasListValue(value)) {
         let modal = this.modalService.create({
@@ -641,7 +644,9 @@ export class TDSConversationItemComponent implements OnInit  {
         modal.afterClose.subscribe({
           next: (result: ResultCheckAddressDTO) => {
             if(result){
-                this.chatomniEventEmiter.selectAddressEmiter$.emit(result);
+                model.value = {...result};
+                //TODO: load sang tab conversation-order paste lại dữ liệu
+                this.conversationOrderFacade.onSelectOrderFromMessage$.emit(model);
             }
           }
         })

@@ -7,7 +7,7 @@ import { get as _get, maxBy as _maxBy } from 'lodash';
 import { set as _set } from 'lodash';
 import { ChatomniConversationDto, ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
-import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniMessageType } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
+import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniMessageType, ChatomniStatus } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 
 export interface OnSyncDto {
   Type: TypeOnSync;
@@ -56,10 +56,10 @@ export class ChatomniConversationFacade extends BaseSevice  {
         Source: null,
         Type: socket.Message?.MessageType,
         UserId: socket.Message?.UserId,
-        Status: 1,
+        Status: ChatomniStatus.Done, 
         IsSystem: false, // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
         CreatedById: null,
-        CreatedBy: null,
+        CreatedBy: socket.Message?.CreatedBy,
         CreatedTime: socket.Message?.CreatedTime,
         ChannelCreatedTime: socket.Message?.ChannelCreatedTime,
         ChannelUpdatedTime: null,

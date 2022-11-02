@@ -1,162 +1,97 @@
-<tds-spin [spinning]="isLoading">
-    <div class="flex flex-col w-full h-full" *ngIf="lstSearch">
-        <div class="p-4">
-          <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
-              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-          </tds-form-field>
-        </div>
+<div class="flex flex-col w-full h-full text-body-2 text-neutral-1-900" *ngIf="lstDetails">
+    <div class="px-4">
+        <tds-form-field class="w-full">
+            <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" [(ngModel)]="innerText" (inputKeyup)="onSearch($event)"/>
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+    </div>
 
-        <!-- table sản phẩm -->
-        <ul class="flex flex-col w-full h-full text-body-2 overflow-hidden">
-            <li class="flex flex-row items-center bg-neutral-3-50 font-semibold">
-                <div class="w-1/12 flex flex-wrap items-center p-3">STT</div>
-                <div class="w-3/12 flex flex-wrap items-center p-3">Sản phẩm ({{lstSearch.length || 0}})</div>
-                <div class="w-3/12 flex flex-wrap items-center p-3">Đơn hàng</div>
-                <div class="w-3/12 flex flex-wrap items-center p-3">Số lượng</div>
-                <div class="w-2/12 flex flex-wrap items-center p-3">Giá bán</div>
-            </li>
-            <div class="overflow-auto tds-custom-scroll" *ngIf="lstSearch.length > 0; else emptyData"
-                [ngStyle]="{'min-height.px': tableHeight, 'max-height.px': tableHeight}">
-                <li *ngFor="let data of lstSearch; let i = index" class="flex flex-row items-stretch border-b border-neutral-2-50 cursor-pointer hover:bg-neutral-3-50">
-                    <div class="w-1/12 flex flex-row items-center p-3">{{ i + 1 }}</div>
-                    <div class="w-3/12 flex flex-row items-center p-3">
-                        <div class="flex flex-row items-center gap-x-3">
-                            <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
-                            <div class="flex flex-col gap-y-2 w-full">
-                                <tds-label>{{ data.ProductName }}</tds-label>
-                                <div *ngIf="data.Tags" class="flex flex-wrap items-center gap-1">
-                                    <tds-tag *ngFor="let item of data.Tags | stringToStringArray" class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
-                                        {{ item | truncateString }}
-                                    </tds-tag>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-3/12 flex flex-col justify-center p-3">
-                        <div class="flex flex-row items-center w-full">
-                            <p class="text-body-2 mr-2">Đơn hàng chờ:
-                                <span tds-tooltip tooltipTitle="{{ data.ListSaleOnlineOrder?.length || 0 }}" class="font-semibold">
-                                    {{ data.ListSaleOnlineOrder?.length || 0 }}
-                                </span>
-                            </p>
-                            <p class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
-                                tds-tooltip tooltipTitle="Đơn hàng chờ chốt"
-                                (click)="showModalLiveCampaignOrder(data.ListSaleOnlineOrder)">
-                                <span class="flex items-center justify-center">
-                                    <i class="tdsi-group-2-line text-base"></i>
-                                </span>
-                            </p>
-                        </div>
-                        <div class="flex flex-row items-center w-full">
-                            <p class="text-body-2 mr-2">Hóa đơn:
-                                <span tds-tooltip tooltipTitle="{{ data.ListFastSaleOrder?.length || 0 }}" class="truncate font-semibold">
-                                    {{ data.ListFastSaleOrder?.length || 0 }}
-                                </span>
-                            </p>
-                            <p class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
-                                tds-tooltip tooltipTitle="Hóa đơn chờ chốt"
-                                (click)="showModalLiveCampaignBill(data.ListFastSaleOrder)">
-                                <span class="flex items-center justify-center">
-                                    <i class="tdsi-group-2-line text-base"></i>
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="w-3/12 flex flex-col justify-center p-3">
-                        <div class="flex flex-row items-center">
-                            <span tds-tooltip tooltipTitle="{{ data.Quantity || 0 }}" class="truncate mr-2">{{ data.Quantity }}</span>
-                            <div class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
-                                tds-popover [popoverVisible]="indClickQuantity == data.Id" popoverTrigger="click"
-                                [popoverFooter]="footerQuantity" [popoverContent]="contentQuantity"
-                                [popoverBackdrop]="true" popoverPlacement="bottom" [popoverAutoClose]="false"
-                                tds-tooltip tooltipTitle="Chỉnh sửa số lượng"
-                                (click)="openQuantityPopover(data,data.Id)">
-                                <span class="flex items-center justify-center">
-                                    <i class="tdsi-edit-1-line text-base"></i>
-                                </span>
-                            </div>
-    
-                            <!-- button thêm nhãn -->
-                            <ng-template #contentQuantity>
-                                <div class="w-[304px]">
-                                    <tds-form-field>
-                                        <tds-input-number [min]='0' [step]="1" [(ngModel)]="currentQuantity" [formatter]="numberWithCommas" [parser]="parserComas"
-                                            (ngModelChange)="changeQuantity($event)"
-                                            [ngModelOptions]="{standalone: true}">
-                                        </tds-input-number>
-                                    </tds-form-field>
-                                </div>
-                            </ng-template>
-    
-                            <ng-template #footerQuantity>
-                                <div class="flex justify-end pt-2">
-                                    <button tds-button-icon color="secondary" class="mr-2" size="sm"
-                                        (click)="closeQuantityPopover()">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-close-fill"></i>
-                                        </span>
-                                    </button>
-                                    <button tds-button-icon size="sm" color="primary"
-                                        (click)="saveChangeQuantity(data.Id)">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-tick-fill"></i>
-                                        </span>
-                                    </button>
-                                </div>
-                            </ng-template>
-                        </div>
-                        <div class="text-neutral-1-400 text-caption-2">Chờ chốt: {{ (data.QueueQuantity | numberCustom ) || 0 }}</div>
-                        <div class="text-neutral-1-400 text-caption-2">Đã chốt: {{ (data.UsedQuantity | numberCustom ) || 0 }}</div>
-                        <div class="text-caption-2 font-semibold" [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
-                            Còn lại: {{ ((data.Quantity - data.UsedQuantity) | numberCustom ) || 0 }}
-                        </div>
-                    </div>
-                    <div class="w-2/12 flex flex-col justify-center p-3">{{ (data.Price | numberCustom) || 0 }}</div>
-                </li>
-            </div>
-            <ng-template #emptyData>
-                <tds-empty></tds-empty>
-            </ng-template>
-        </ul>
-    
-        <!-- <tds-table #detailTable [listData]="lstSearch" [pageSize]="lstSearch.length" [showPagination]="false" [scroll]="{ y: 'auto'}">
+    <div class="w-full flex flex-auto flex-col p-2">
+        <tds-table class="!h-auto" #detailTable [listData]="lstDetails" [showPagination]="false">
             <thead>
                 <tr>
-                    <th [width]="'6%'">STT</th>
-                    <th [width]="'31%'">Sản phẩm ({{lstSearch.length || 0}})</th>
-                    <th [width]="'21%'">Đơn hàng</th>
-                    <th [width]="'21%'">Số lượng</th>
-                    <th [width]="'21%'">Giá bán</th>
-                </tr>
-            </thead>
-            <tbody>
-                <ng-template ngFor let-data let-i="index" [ngForOf]="detailTable.data">
-                    <tr>
-                        <td>{{ i + 1 }}</td>
-                        <td>
-                            <div class="flex flex-row gap-x-3">
-                                <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
-                                <div class="flex flex-col gap-y-2 w-[250px]">
-                                    <tds-label>{{ data.ProductName }}</tds-label>
+                <th [width]="'6%'">STT</th>
+                <th [width]="'35%'">Sản phẩm ({{count || 0}})</th>
+                <th [width]="'21%'">Đơn hàng</th>
+                <th [width]="'21%'">Số lượng</th>
+                <th [width]="'17%'">Giá bán</th>
+            </tr>
+        </thead>
+        </tds-table>
+
+        <tds-spin [spinning]="isLoading" class="flex flex-col overflow-hidden overflow-y-auto w-full h-full">
+            <virtual-scroller *ngIf="lstDetails && lstDetails.length > 0; else noData"
+                #scroll [items]="lstDetails" class="tds-custom-scroll w-full h-full"
+                (vsEnd)="vsEnd($event)"
+                [enableUnequalChildrenSizes]="true"
+                [scrollAnimationTime]="750">
+                    <div *ngFor="let data of scroll.viewPortItems; let i = index" class="flex items-center border-b border-b-neutral-3-100 hover:bg-neutral-3-50">
+                        <td class="py-2 px-4 w-[6%]">{{ data.Index }}</td>
+                        <td class="py-2 px-4  w-[35%]">
+                            <div class="flex flex-row gap-x-3 items-center">
+                                <div>
+                                    <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
+                                </div>
+                                <div class="flex flex-col w-full">
+                                    <span class="font-semibold max-w-[240px] min-w-[120px] w-fit truncate mb-1"
+                                        tds-tooltip="{{ data.ProductNameGet }}">{{ data.ProductNameGet }}</span>
                                     <div *ngIf="data.Tags" class="flex flex-wrap items-center gap-1">
-                                        <tds-tag *ngFor="let item of data.Tags | stringToStringArray" class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
-                                            {{ item | truncateString }}
-                                        </tds-tag>
+                                        <div *ngFor="let item of data.Tags | stringToStringArray">
+                                            <tds-tag class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
+                                                <div class="max-w-[48px] w-fit truncate">{{ item }}</div>
+                                            </tds-tag>
+                                        </div>
+                                        <!-- <span *ngIf="(data.Tags | stringToStringArray).length > 3"
+                                            tds-tooltip tooltipTitle="Xem thêm"
+                                            tds-popover
+                                            [popoverVisible]="idPopoverVisible == i"
+                                            [popoverContent]="invContent"
+                                            popoverTrigger="click"
+                                            [popoverBackdrop]="true"
+                                            class="border rounded-xl flex items-center justify-center w-5 h-5 cursor-pointer">+</span>
+                                            <ng-template #invContent>
+                                                <div class="flex flex-wrap gap-x-1 min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
+                                                    <div *ngFor="let item of data.Tags | stringToStringArray | slice:3; let i = index" class="flex gap-x-1">
+                                                        <tds-tag *ngIf="i <= 10 || (i > 10 && isShowAll)" class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
+                                                            <div class="max-w-[48px] w-fit truncate">{{ item }}</div>
+                                                        </tds-tag>
+                                                    </div>
+    
+                                                    <div *ngIf="(data.Tags | stringToStringArray).length > 10 && !isShowAll" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
+                                                        ...Xem thêm
+                                                    </div>
+    
+                                                    <div *ngIf="(data.Tags | stringToStringArray).length > 10 && isShowAll" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
+                                                        ...Thu gọn
+                                                    </div>
+                                                </div>
+                                            </ng-template> -->
+                                    </div>
+                                    <div class="text-neutral-1-400 font-regular text-body-2">Đơn vị: 
+                                        <span class="text-primary-1">{{ data.UOMName }}</span>
+                                    </div>
+                                    <div class="flex flex-auto">
+                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                                            <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].QtyAvailable || 0 }}</span>
+                                        </span>
+                                        <span class="px-2">/</span>
+                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                            <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].VirtualAvailable || 0 }}</span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        <td>
+                        <td class="py-2 px-4  w-[21%]">
                             <div class="flex flex-row items-center w-full">
                                 <p class="text-body-2 mr-2">Đơn hàng chờ:
-                                    <span tds-tooltip tooltipTitle="{{ data.ListSaleOnlineOrder?.length || 0 }}" class="font-semibold">
-                                        {{ data.ListSaleOnlineOrder?.length || 0 }}
+                                    <span tds-tooltip tooltipTitle="{{ data.TotalSaleOnlineOrder || 0 }}" class="font-semibold">
+                                        {{ data.TotalSaleOnlineOrder || 0 }}
                                     </span>
                                 </p>
                                 <p class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
                                     tds-tooltip tooltipTitle="Đơn hàng chờ chốt"
-                                    (click)="showModalLiveCampaignOrder(data.ListSaleOnlineOrder)">
+                                    (click)="showModalLiveCampaignOrder(data.Id ,data.TotalSaleOnlineOrder!)">
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-group-2-line text-base"></i>
                                     </span>
@@ -164,20 +99,20 @@
                             </div>
                             <div class="flex flex-row items-center w-full">
                                 <p class="text-body-2 mr-2">Hóa đơn:
-                                    <span tds-tooltip tooltipTitle="{{ data.ListFastSaleOrder?.length || 0 }}" class="truncate font-semibold">
-                                        {{ data.ListFastSaleOrder?.length || 0 }}
+                                    <span tds-tooltip tooltipTitle="{{ data.TotalFastSaleOrder || 0 }}" class="truncate font-semibold">
+                                        {{ data.TotalFastSaleOrder || 0 }}
                                     </span>
                                 </p>
                                 <p class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
                                     tds-tooltip tooltipTitle="Hóa đơn chờ chốt"
-                                    (click)="showModalLiveCampaignBill(data.ListFastSaleOrder)">
+                                    (click)="showModalLiveCampaignBill(data.Id, data.TotalFastSaleOrder!)">
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-group-2-line text-base"></i>
                                     </span>
                                 </p>
                             </div>
                         </td>
-                        <td>
+                        <td class="py-2 px-4  w-[21%]">
                             <div class="flex flex-row items-center">
                                 <span tds-tooltip tooltipTitle="{{ data.Quantity || 0 }}" class="truncate mr-2">{{ data.Quantity }}</span>
                                 <div class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
@@ -190,8 +125,7 @@
                                         <i class="tdsi-edit-1-line text-base"></i>
                                     </span>
                                 </div>
-    
-                                
+                                <!-- button thêm nhãn -->
                                 <ng-template #contentQuantity>
                                     <div class="w-[304px]">
                                         <tds-form-field>
@@ -202,16 +136,16 @@
                                         </tds-form-field>
                                     </div>
                                 </ng-template>
-    
+
                                 <ng-template #footerQuantity>
                                     <div class="flex justify-end pt-2">
-                                        <button tds-button-icon color="secondary" class="mr-2" size="sm"
+                                        <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm"
                                             (click)="closeQuantityPopover()">
                                             <span class="flex items-center">
                                                 <i class="tdsi-close-fill"></i>
                                             </span>
                                         </button>
-                                        <button tds-button-icon size="sm" color="primary"
+                                        <button tds-button-icon type="button"  size="sm" color="primary"
                                             (click)="saveChangeQuantity(data.Id)">
                                             <span class="flex items-center">
                                                 <i class="tdsi-tick-fill"></i>
@@ -226,10 +160,14 @@
                                 Còn lại: {{ ((data.Quantity - data.UsedQuantity) | numberCustom ) || 0 }}
                             </div>
                         </td>
-                        <td>{{ (data.Price | numberCustom) || 0 }}</td>
-                    </tr>
-                </ng-template>
-            </tbody>
-        </tds-table> -->
+                        <td class="py-2 px-4  w-[17%]">{{ (data.Price | numberCustom) || 0 }}</td>
+                    </div>
+            </virtual-scroller>
+            <ng-template #noData>
+                <div  class="w-full">
+                    <tds-empty></tds-empty>
+                </div>
+            </ng-template>
+        </tds-spin> 
     </div>
-</tds-spin>
+</div>

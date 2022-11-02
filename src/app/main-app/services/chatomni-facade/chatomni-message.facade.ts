@@ -1,4 +1,4 @@
-import { ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
+import { ResponseAddMessCommentDtoV2, CreatedBy } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { Tag, MDBByPSIdDTO } from './../../dto/crm-matching/mdb-by-psid.dto';
 import { ChatomniLastMessageEventEmitterDto, ChatomniConversationItemDto, ChatomniTagsEventEmitterDto, ChatomniConversationTagDto } from './../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniFacebookDataDto, ChatomniDataItemDto, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
@@ -82,7 +82,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       ChannelCreatedTime: data.ChannelCreatedTime,
       Message: data.Message,
       Status: data.Status as number,
-      CreatedBy: data.CreatedBy,
+      CreatedBy: {...data.CreatedBy} as unknown as CreatedBy,
       UserId: data.UserId
     } as unknown as ChatomniDataItemDto;
 

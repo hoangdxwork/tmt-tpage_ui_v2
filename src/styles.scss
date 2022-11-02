@@ -124,3 +124,17 @@ tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
   flex-wrap: wrap;
   width: 100%;
 }
+
+
+.cs-quick-repply .tds-custom-scroll {
+  max-height: 400px !important;
+  width: 100%;
+  display: flex;
+}
+.cs-quick-repply .tds-custom-scroll .flex-col {
+  width: 100%;
+}
+.cs-quick-repply .tds-custom-scroll .flex-col tds-auto-option {
+  border-bottom-width: 1px;
+  border-style: dotted;
+}

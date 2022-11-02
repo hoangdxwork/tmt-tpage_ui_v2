@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { IRAttachmentDTO } from './../../../dto/attachment/attachment.dto';
 import { ProductTemplateService } from './../../../services/product-template.service';
@@ -23,7 +24,8 @@ import { PrepareCreateVariantHandler } from 'src/app/main-app/handler-v2/product
 
 @Component({
   selector: 'create-product-variant',
-  templateUrl: './create-product-variant.component.html'
+  templateUrl: './create-product-variant.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class CreateProductVariantComponent implements OnInit {
@@ -34,19 +36,19 @@ export class CreateProductVariantComponent implements OnInit {
   lstPOSCateg: Array<POS_CategoryDTO> = [];
   lstAttributeLine: ConfigAttributeLine[] = [];
   lstShowAttribute: ConfigAttributeLine[] = [];
+
   listCateg = [
     { value: "product", text: "Có thể lưu trữ" },
     { value: "consu", text: "Có thể tiêu thụ" },
     { value: "service", text: "Dịch vụ" }
   ];
+
   fileList: TDSUploadFile[] = [];
   previewImage: string | undefined = '';
   previewVisible = false;
   uploadUrl = '';
   modelDefault!: ProductDTO;
   addToFBPage = false;
-
-  private destroy$ = new Subject<void>();
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -55,7 +57,7 @@ export class CreateProductVariantComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -68,6 +70,7 @@ export class CreateProductVariantComponent implements OnInit {
     private router: Router,
     private message: TDSMessageService,
     private notification: TDSNotificationService,
+    private destroy$: TDSDestroyService,
     private CRMService: CRMTeamService,
     private productService: ProductService,
     private prepareCreateVariant: PrepareCreateVariantHandler,
@@ -179,7 +182,7 @@ export class CreateProductVariantComponent implements OnInit {
       {
         next: (res: any) => {
           this.lstProductCateg = res.value;
-        }, 
+        },
         error: err => {
           this.message.error(err?.error?.message || Message.CanNotLoadData);
         }
@@ -217,7 +220,7 @@ export class CreateProductVariantComponent implements OnInit {
       {
         next: (res: any) => {
           this.lstUOMPO = res.value;
-        }, 
+        },
         error: err => {
           this.message.error(err?.error?.message || Message.CanNotLoadData);
         }
@@ -324,11 +327,11 @@ export class CreateProductVariantComponent implements OnInit {
           if (this.addToFBPage) {
             this.addProductToPageFB(res.Id, model.Name);
           }
-    
+
           this.loadDataIndexDBCache();
           this.message.success(Message.InsertSuccess);
           this.router.navigateByUrl('/configs/product-variant');
-        }, 
+        },
         error: error => {
           this.message.error(error?.error?.message || Message.InsertFail);
         }

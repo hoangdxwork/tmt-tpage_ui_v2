@@ -257,7 +257,7 @@
                                                 </div>
 
                                                 <!-- ghi chú -->
-                                                <span [ngClass]="item.Note? 'text-neutral-1-600 rounded-full bg-neutral-3-50 px-2' : 'text-info-500'" tds-popover popoverTrigger="click" [popoverContent]="popoverAddNote"
+                                                <span class="cursor-pointer" [ngClass]="item.Note? 'text-neutral-1-600 rounded-full bg-neutral-3-50 px-2' : 'text-info-500'" tds-popover popoverTrigger="click" [popoverContent]="popoverAddNote"
                                                     [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left" showMore [length]="15" [text]="item.Note || 'Ghi chú'">
                                                 </span>
 
@@ -275,7 +275,7 @@
                                     <!-- Số lượng -->
                                     <td width="30%">
                                         <div class="flex gap-x-2 items-center">
-                                            <button type="button" class="tdsi-minus-fill text-white p-0.5 bg-neutral-1-200 rounded-full hover:bg-primary-1" [disabled]="item.Quantity == 1" (click)="minus(item, index)"></button>
+                                            <button type="button" class="tdsi-minus-fill text-white p-0.5 bg-neutral-1-200 rounded-full cursor-pointer hover:bg-primary-1" [disabled]="item.Quantity == 1" (click)="minus(item, index)"></button>
 
                                             <tds-form-field class="w-[50px] hover:bg-primary-1 bg-opacity-10 rounded">
                                                 <!-- <tds-input-number autocomplete="off" placeholder="Số lượng" [min]="1" [step]="1" [formatter]="numberWithCommas"
@@ -481,7 +481,7 @@
                         </ng-container>
                       </div>
 
-                      <div class="grid grid-cols-3 gap-y-4 gap-x-6">
+                      <div class="grid grid-cols-3 gap-y-4 gap-x-6 mt-2">
                         <!-- phí ship đối tác -->
                         <div class="col-span-3 w-full flex flex-row items-center" >
                             <tds-label class="pr-4">Phí ship (đối tác)</tds-label>

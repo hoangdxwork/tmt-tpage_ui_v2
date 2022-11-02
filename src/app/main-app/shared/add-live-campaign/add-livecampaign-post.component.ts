@@ -29,6 +29,7 @@ import { CRMTeamService } from '@app/services/crm-team.service';
 import { TDSTableComponent } from 'tds-ui/table';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { StringHelperV2 } from '../helper/string.helper';
+import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'add-livecampaign-post',
@@ -388,16 +389,17 @@ export class AddLiveCampaignPostComponent implements OnInit {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-            typeComponent: null
-        }
+        viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe((result: any[]) => {
-      if(result && result[0]) {
+    modal.afterClose.subscribe((res: any) => {
+
+      if(!res) return;
+      res = {...res} as SyncCreateProductTemplateDto;
+
+      if(res.type === 'select' && res.productTmpl) {
         this.onReset();
-        let x = result[0] as ProductTemplateV2DTO;
+        let x = res.productTmpl as ProductTemplateV2DTO;
 
         let item = {
             Quantity: 1,
@@ -410,13 +412,13 @@ export class AddLiveCampaignPostComponent implements OnInit {
             ProductNameGet: x.NameGet,
             RemainQuantity: 0,
             ScanQuantity: 0,
-            Tags: x.Tags || '',
+            Tags: x.OrderTag || '',
             UOMId: x.UOMId,
             UOMName: x.UOMName,
             ProductCode: x.DefaultCode,
             ImageUrl: x.ImageUrl,
             IsActive: x.Active,
-            UsedQuantity: 0,
+            UsedQuantity: 0
         } as LiveCampaignProductDTO;
 
         let name = item.ProductNameGet || item.ProductName;
@@ -565,13 +567,13 @@ export class AddLiveCampaignPostComponent implements OnInit {
     }
   }
 
-  updateLiveCampaign(id: string, model: LiveCampaignModel){
+  updateLiveCampaign(id: string, model: any){
     model.Id = id;
     model.Details = [];
 
     this.isLoading = true;
     this.liveCampaignService.updateSimple(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res:LiveCampaignModel) => {
+      next: (res: any) => {
           this.isLoading = false;
           this.message.success('Cập nhật chiến dịch live thành công');
           this.onCannel(res);
@@ -583,10 +585,10 @@ export class AddLiveCampaignPostComponent implements OnInit {
     });
   }
 
-  createLiveCampaign(model: LiveCampaignModel){
+  createLiveCampaign(model: any){
     this.isLoading = true;
     this.liveCampaignService.create(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res:LiveCampaignModel) => {
+      next: (res: any) => {
           this.isLoading = false;
           this.message.success('Thêm mới chiến dịch live thành công');
           this.onCannel(res);

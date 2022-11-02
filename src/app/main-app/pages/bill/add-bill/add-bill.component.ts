@@ -324,10 +324,14 @@ export class AddBillComponent implements OnInit {
   loadDefault() {
     let model = { Type: 'invoice', SaleOrderIds:[] };
     this.isLoading = true;
+    let count = 0;
 
     this.fastSaleOrderService.setDefaultV2({ model: model });
     this.fastSaleOrderService.getDefaultV2().pipe(takeUntil(this.destroy$)).subscribe({
       next:(data: any) => {
+          if(count > 0) return;
+          count +=1;
+
           delete data['@odata.context'];
           data.DateInvoice = new Date();
 
@@ -485,6 +489,13 @@ export class AddBillComponent implements OnInit {
 
     this._street = result?._street;
     this.innerText = this._street;
+
+    this._form.controls["Ship_Receiver"].patchValue({
+      City: this._cities,
+      District: this._districts,
+      Ward: this._wards,
+      Street: this._street
+    })
   }
 
   loadSaleConfig() {
@@ -669,7 +680,6 @@ export class AddBillComponent implements OnInit {
   }
 
   openDiscountPopover(i: number){
-
     this.idDiscount = i;
   }
 
@@ -768,17 +778,7 @@ export class AddBillComponent implements OnInit {
         });
     }
 
-    // let datas = this._form.controls['OrderLines'].value;
-
-    // if (TDSHelperArray.hasListValue(datas)) {
-    //   datas[i][`${typeDiscount}`] = event;
-    // }
-
-    // let formArray = this._form.controls["OrderLines"] as FormArray;
-    // formArray.at(i).patchValue(datas[i]);
-
     this.dataModel.OrderLines = [...datas];
-
     this.calcTotal();
   }
 
@@ -798,19 +798,7 @@ export class AddBillComponent implements OnInit {
       });
     }
 
-    // let datas = this._form.controls['OrderLines'].value;
-
-    // if (TDSHelperArray.hasListValue(datas)) {
-    //   datas[i].Type = type;
-    //   datas[i].Discount = 0;
-    //   datas[i].Discount_Fixed = 0;
-    // }
-
-    // let formArray = this._form.controls["OrderLines"] as FormArray;
-    // formArray.at(i).patchValue(datas[i]);
-
     this.dataModel.OrderLines = [...datas];
-
     this.calcTotal();
   }
 
@@ -917,14 +905,10 @@ export class AddBillComponent implements OnInit {
   }
 
   onLoadProductToOrderLines(event: any): any {
-
-    // TODO: check dk trùng biến thể chiến dịch live
-    if(event && event.length > 0) {
-      return
-    }
+    if(!event) return;
 
     if (!this._form.controls['Partner'].value) {
-      return this.message.error('Vui lòng chọn khách hàng!');
+        return this.message.error('Vui lòng chọn khách hàng!');
     }
 
     let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
@@ -935,7 +919,6 @@ export class AddBillComponent implements OnInit {
     } else {
         this.pushProductToOrderlines(event);
     }
-
   }
 
   // TODO: trường hợp thêm mới
@@ -963,26 +946,26 @@ export class AddBillComponent implements OnInit {
     }
 
     this.isLoadingProduct = true;
-    this.fsOrderLineService.onChangeProduct(data)
-      .pipe(finalize(() => { this.isLoadingProduct = false })).subscribe({
+    this.fsOrderLineService.onChangeProduct(data).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: FSOrderLines) => {
-          delete res['@odata.context'];
 
-          let item: OrderLineV2 = this.prepareCopyItemHandler.prepareOnChangeProductModel(res, this.dataModel, event);
+            delete res['@odata.context'];
+            let item: OrderLineV2 = this.prepareCopyItemHandler.prepareOnChangeProductModel(res, this.dataModel, event);
 
-          if (item.Id <= 0) {
-            item.Id = this.idPush - 1;
-            this.idPush = item.Id;
-          }
+            if (item.Id <= 0) {
+              item.Id = this.idPush - 1;
+              this.idPush = item.Id;
+            }
 
-          let formArray = <FormArray> this._form.controls['OrderLines'];
-          formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel, item));
+            let formArray = <FormArray> this._form.controls['OrderLines'];
+            formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel, item));
 
-          this.calcTotal();
-          this.cdRef.detectChanges();
-
+            this.calcTotal();
+            this.cdRef.detectChanges();
+            this.isLoadingProduct = false;
         },
         error:(error) => {
+            this.isLoadingProduct = false;
             this.message.error(`${error?.error?.message}` || 'Thêm sản phẩm thất bại')
         }
       })
@@ -1125,7 +1108,6 @@ export class AddBillComponent implements OnInit {
   }
 
   prepareModel(): any {
-    // console.log(this.dataModel)
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại
@@ -1732,7 +1714,8 @@ export class AddBillComponent implements OnInit {
       this._form.controls['Ship_Receiver'].patchValue({
         District: district
       });
-        this.loadWards(district.code);
+      
+      this.loadWards(district.code);
     }
     this.mappingStreet();
 

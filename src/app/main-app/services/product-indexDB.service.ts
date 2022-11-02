@@ -23,6 +23,7 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
     cacheVersion: -1,
     cacheDbStorage: []
   }
+
   private destroy$ = new Subject<void>();
   private readonly _cacheObject$ = new Subject<KeyCacheIndexDBDTO>()
 
@@ -42,74 +43,70 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
   setCacheDBRequest() {
     let keyCache = this._keyCacheProductIndexDB;
     this.cacheApi.getItem(keyCache).pipe(map((x: any) => {
-        if (TDSHelperString.hasValueString(x)) {
-
-          let cache = JSON.parse(x['value']) as TDSSafeAny;
-          let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
-          this.cacheObject = Object.assign(this.cacheObject, cacheDB);
-            
-        } else {
-
           this.cacheObject = {
-            cacheCount: 0,
-            cacheVersion: -1,
-            cacheDbStorage: []
+              cacheCount: 0,
+              cacheVersion: -1,
+              cacheDbStorage: []
+          };
+
+          if(TDSHelperString.hasValueString(x)) {
+              let cache = JSON.parse(x['value']) as TDSSafeAny;
+              let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
+              this.cacheObject = Object.assign(this.cacheObject, cacheDB);
           }
 
-        }
           return this.cacheObject;
       }),
       mergeMap((x: KeyCacheIndexDBDTO) => {
           return this.getLastVersionV2(x.cacheCount, x.cacheVersion).pipe(map(a => a));
       }))
       .subscribe({
-        next :(res: ProductPouchDBDTO) => {
-          const data = this.cacheObject;
+          next: (res: ProductPouchDBDTO) => {
+              const data = this.cacheObject;
 
-          if (res.IsDelete === true) {
-            (data.cacheDbStorage as any) = [];
-          }
-
-          let exist = (data.cacheCount == 0 && data.cacheVersion == -1);
-          if (exist) {
-            // TODO: trường hợp load lần đầu
-            (data.cacheDbStorage as any) = [];
-            data.cacheDbStorage = [...res.Datas];
-          } else {
-            res.Datas.map((x: DataPouchDBDTO) => {        
-              let index = data.cacheDbStorage.findIndex(y=> y.Id == x.Id && y.UOMId == x.UOMId)
-              
-              if(index > -1){
-                data.cacheDbStorage[index] = {...x};
-              } else {
-                data.cacheDbStorage = [...[x], ...data.cacheDbStorage];
+              if (res && res.IsDelete === true) {
+                  data.cacheDbStorage = [];
               }
-            })
+
+              let exist = (data.cacheCount == 0 && data.cacheVersion == -1);
+              if (exist) {
+                  data.cacheDbStorage = [];
+                  data.cacheDbStorage = [...res.Datas];
+              } else {
+                  res.Datas?.map((x: DataPouchDBDTO) => {
+                      let index = data.cacheDbStorage?.findIndex(y => y.Id == x.Id && y.UOMId == x.UOMId);
+                      if(Number(index) >= 0){
+                          data.cacheDbStorage[index] = {...x};
+                      } else {
+                          data.cacheDbStorage = [...[x], ...data.cacheDbStorage];
+                      }
+                  })
+              }
+
+              data.cacheDbStorage = [...data.cacheDbStorage];
+              data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => b.Version - a.Version);
+
+              //TODO: check số version
+              let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
+              let lastVersion = Number(Math.max(...versions)) ;
+
+              //TODO: check số lượng
+              let countDB = Number(data.cacheDbStorage.length);
+
+              //TODO: lưu cache cho ds sản phẩm
+              const items: KeyCacheIndexDBDTO = {
+                  cacheCount: countDB,
+                  cacheVersion: lastVersion,
+                  cacheDbStorage: data.cacheDbStorage
+              };
+
+              let keyCache = this._keyCacheProductIndexDB;
+              this.cacheApi.setItem(keyCache, JSON.stringify(items));
+              this._cacheObject$.next(items);
+          },
+          error: (error: any) => {
+              console.log(error);
           }
-
-          data.cacheDbStorage = [...data.cacheDbStorage];
-
-          data.cacheDbStorage = data.cacheDbStorage.sort((a: any,b: any) => b.Version - a.Version);
-
-          //TODO: check số version
-          let versions = data.cacheDbStorage.map((x: DataPouchDBDTO) => x.Version);
-          let lastVersion = Number(Math.max(...versions)) ;
-
-          //TODO: check số lượng
-          let countDB = Number(data.cacheDbStorage.length);
-
-          //TODO: lưu cache cho ds sản phẩm
-          const items: KeyCacheIndexDBDTO = {
-            cacheCount: countDB,
-            cacheVersion: lastVersion,
-            cacheDbStorage: data.cacheDbStorage
-          };
-
-          let keyCache = this._keyCacheProductIndexDB;
-          this.cacheApi.setItem(keyCache, JSON.stringify(items));
-
-          this._cacheObject$.next(items);
-        }    
       }
     )
   }

@@ -91,6 +91,7 @@
                       #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
                       (vsEnd)="vsEnd($event)"
                       (vsStart)="vsStart($event)"
+                      [childHeight]="100"
                       [enableUnequalChildrenSizes]="true"
                       [scrollAnimationTime]="750">
 
@@ -99,10 +100,10 @@
                       </div>
 
                       <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1">
-                          <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 106px">
+                          <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 100px">
                               <a (click)="changeCurrentConversationItem(item)" class="w-full h-full"
                                   [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
-                                  <current-conversation-item-v2 class="min-h-[106px] h-full"
+                                  <current-conversation-item-v2 class="min-h-[100px] h-full"
                                       [item]="item" [csid]="item.ConversationId" [type]="type"
                                       [conversationItem]="conversationItem"
                                       [state]="item.State"
@@ -121,7 +122,6 @@
                       </div>
 
                       <div class="!flex-auto bg-white !h-auto w-full !min-h-min"></div>
-
                   </virtual-scroller>
 
                   <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">

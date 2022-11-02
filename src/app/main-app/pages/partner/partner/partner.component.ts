@@ -232,7 +232,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.checked = false;
     this.indeterminate = false;
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
 
     this.filterObj = {
       tags: [],
@@ -335,7 +335,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   removeCheckedRow() {
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
   }
 
   onLoadOption(event: FilterObjPartnerModel) {
@@ -371,6 +371,8 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.excelExportService.exportPost('/Partner/ExportFile',data, 'customer_list')
             .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$))
             .subscribe();
+        }, error: error => {
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       })
 
@@ -531,13 +533,20 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openTransferPartner() {
-    this.modalService.create({
+    const modal = this.modalService.create({
       title: 'Chuyển đổi khách hàng',
       content: ModalConvertPartnerComponent,
       size: "md",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         lstOfData: this.lstOfData
+      }
+    });
+    modal.afterClose.subscribe({
+      next: result => {
+        if (TDSHelperObject.hasValue(result)) {
+          this.loadData(this.pageSize, this.pageIndex);
+        }
       }
     });
   }

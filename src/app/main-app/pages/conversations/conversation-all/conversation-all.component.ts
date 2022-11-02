@@ -1,3 +1,4 @@
+import { User } from './../../../dto/saleonlineorder/quick-saleonline-order.dto';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
 import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
 import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
@@ -34,6 +35,8 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { SharedService } from '@app/services/shared.service';
+import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 
 @Component({
   selector: 'app-conversation-all',
@@ -88,6 +91,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   notificationRef!: TDSNotificationRef;
   totalConversations: number = 0;
+  userLogged: any;
   orderCode: any;
 
   constructor(private message: TDSMessageService,
@@ -106,10 +110,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService,
     private destroy$: TDSDestroyService,
+    private sharedService: SharedService,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniEventEmiterService: ChatomniEventEmiterService,
     private socketOnEventService: SocketOnEventService) {
       super(crmService, activatedRoute, router);
+
+      this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (user: any) => {
+            this.userLogged = user;
+        }
+      })
   }
 
   ngOnInit(): void {
@@ -158,7 +169,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-
         switch(res && res.EventName){
 
           case ChatmoniSocketEventName.chatomniOnMessage:
@@ -167,7 +177,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
                   switch(this.type) {
                       case 'message':
-                          let existMessage = res.Data.Message.MessageType == (ChatomniMessageType.FacebookMessage || ChatomniMessageType.TShopMessage);
+                          let existMessage = res.Data.Message.MessageType == (ChatomniMessageType.FacebookMessage || ChatomniMessageType.TShopMessage) && !res.Data.Message.IsOwner;
                           if(existMessage) {
                               this.setSocketChatomniOnMessage(res);
                           }
@@ -190,10 +200,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             case ChatmoniSocketEventName.chatomniOnUpdate:
               break;
 
-            case ChatmoniSocketEventName.onUpdate:
-              break;
-
-            case ChatmoniSocketEventName.chatomniOnReadConversation:
+            case ChatmoniSocketEventName.chatomniMarkseen:
+              this.setSocketMarkseen(res.Data);
               break;
 
             default:
@@ -201,6 +209,26 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       }
     })
+  }
+
+  setSocketMarkseen(data: SocketioOnMarkseenDto) {
+    let exist = data.Data && data.Data.Conversation && data.Data.CreateBy && this.userLogged
+        && this.currentTeam && this.currentTeam.ChannelId == data.Data.Conversation.ChannelId
+        && data.Data.CreateBy.Id != this.userLogged.Id;
+
+    let index = this.lstConversation?.findIndex(x => x.ConversationId == data.Data?.Conversation?.UserId) as number;
+
+    if(exist && Number(index) >= 0) {
+      this.lstConversation[index].Markseen = {
+          Data: data.Data,
+          Message: data.Message
+      } as any;
+
+      this.lstConversation[index] = {...this.lstConversation[index]};
+      this.lstConversation = [...this.lstConversation];
+    }
+
+    this.cdRef.detectChanges();
   }
 
   setSocketChatomniOnMessage(data: SocketEventSubjectDto) {
@@ -346,6 +374,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
               next: (data: any) => {
                   this.syncConversationInfo = {...data};
+                  this.conversationInfo.Order = {...data.Order};
 
                   let csid = this.syncConversationInfo.Conversation.ConversationId;
                   let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
@@ -370,11 +399,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // TODO Cập nhật đã gán nhân viên
     this.chatomniEventEmiterService.assignedToUser$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (id: string) => {
-        if(id) {
-          let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
+      next: (data: ChatomniConversationItemDto) => {
+        if(data && data.ConversationId) {
+          let index = this.lstConversation.findIndex(x => x.ConversationId == data.ConversationId) as number;
           if(Number(index) >= 0) {
-              this.lstConversation[index].AssignedTo = true;
+              this.lstConversation[index].AssignedTo = data.AssignedTo;
               this.lstConversation[index] = {...this.lstConversation[index]};
               this.lstConversation = [...this.lstConversation];
 

@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { TDSHelperArray, TDSHelperObject } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { DataRequestDTO, FilterDataRequestDTO, FilterItemDataRequestDTO, SortDataRequestDTO } from "../dto/dataRequest.dto";
 import { OperatorEnum } from "../enum";
 
@@ -79,6 +79,32 @@ export class THelperDataRequest {
         return result;
     }
 
+    public static convertDataRequestToStringShipTake(pageSize: number, pageIndex: number, q?: string): string {
+
+        let result = '';
+        let maxResultCount: number = pageSize;
+        let skipCount: number = (pageIndex - 1) * pageSize;
+
+        if (TDSHelperObject.hasValue(maxResultCount)) {
+            result = `take=${maxResultCount}`
+        }
+
+        if (TDSHelperObject.hasValue(skipCount)) {
+            if (result.length > 0) {
+                result += '&'
+            }
+            result += `skip=${skipCount}`
+        }
+
+
+        if (TDSHelperString.hasValueString(q)) {
+            result += '&'
+            result += `q=${q}`
+        }
+
+        return result;
+    }
+
     static convertFilterToString(filter: FilterDataRequestDTO) {
         let str = '';
         str = filter.filters.map((f: FilterDataRequestDTO | FilterItemDataRequestDTO) => {
@@ -98,12 +124,20 @@ export class THelperDataRequest {
         let value = filter.value;
 
         if (typeof value === 'string') {
+
             value = encodeURIComponent(value);
+            let exist1 = value.indexOf("'");
+            let exist2 = value.indexOf("''");
+            if(exist1 > 0 && exist2 < 0) {
+                value = value.replace("'", "''");
+            }
+
             if(filter.operator === OperatorEnum.contains) {
                 str =`${filter.operator}(${filter.field},%27${value}%27)`
             } else {
                 str = `${filter.field}%20${filter.operator}%20'${value}'`
             }
+
         } else if(value instanceof Date) {
             let date = format(value, "yyyy-MM-dd'T'HH:mm:ss'%2B'00:00");
             str=`${filter.field}%20${filter.operator}%20${date}`

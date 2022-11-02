@@ -36,7 +36,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   isLoading: boolean = false;
   pageSize = 20;
-  pageIndex = 0;
+  pageIndex = 1;
   sort: Array<SortDataRequestDTO> = [{
     field: "DateCreated",
     dir: SortEnum.desc,
@@ -116,7 +116,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   onSearch(event: TDSSafeAny) {
     this.innerText = event?.value;
-    this.pageIndex = 0;
+    this.pageIndex = 1;
     if(TDSHelperString.hasValueString(this.innerText)) {
         this.innerText = TDSHelperString.stripSpecialChars(this.innerText.toLocaleLowerCase()).trim();
     }
@@ -142,7 +142,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
             this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
 
             this.innerText = '';
-            this.pageIndex = 0;
+            this.pageIndex = 1;
             this.loadData();
             this.cdRef.detectChanges();
         }
@@ -330,7 +330,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
     let exisData = this.lstOfData && this.lstOfData.length > 0 && event && event.scrollStartPosition > 0;
     if(exisData) {
-      const vsEnd = Number(this.lstOfData.length - 1) == Number(event.endIndex) && this.pageIndex >= 0 && Number(this.lstOfData.length) < this.count;
+      const vsEnd = Number(this.lstOfData.length - 1) == Number(event.endIndex) && this.pageIndex > 0 && Number(this.lstOfData.length) < this.count;
       if(vsEnd) {
           this.nextData();
       }
@@ -339,10 +339,6 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
   nextData() {
     this.isLoadingNextdata = true;
-
-    if(this.pageIndex == 0) {
-        this.pageIndex = 1;
-    }
 
     this.pageIndex += 1;
     this.liveCampaignService.getAvailablesV2(this.pageIndex, this.pageSize, this.innerText).pipe(takeUntil(this.destroy$)).subscribe({

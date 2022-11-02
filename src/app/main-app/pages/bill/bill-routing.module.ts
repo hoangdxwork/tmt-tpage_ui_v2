@@ -5,6 +5,7 @@ import { AddBillComponent } from './add-bill/add-bill.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BillComponent } from './bill/bill.component';
+import { TrackingRefBlankComponent } from '@app/shared/trackingref-blank/trackingref-blank.component';
 
 const routes: Routes = [
   {
@@ -34,6 +35,10 @@ const routes: Routes = [
   {
     path: 'historyds/:id',
     component: HistoryDeliveryStatusDetailComponent
+  },
+  {
+    path: 'trackingref-blank',
+    component: TrackingRefBlankComponent
   }
 ];
 

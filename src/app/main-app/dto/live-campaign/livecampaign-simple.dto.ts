@@ -1,6 +1,6 @@
 
   export interface LiveCampaignSimpleDetail {
-    Id: string;
+    Id: string | any;
     Index: number;
     Quantity: number;
     RemainQuantity: number;
@@ -68,7 +68,7 @@ export interface ConfirmedOrderTemplate {
 }
 
 export interface LiveCampaignSimpleDto {
-  Id: string;
+  Id: string | any;
   Name: string;
   NameNoSign?: any;
   Facebook_UserId: string;

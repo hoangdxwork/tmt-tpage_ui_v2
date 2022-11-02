@@ -130,7 +130,7 @@ export interface ChatomniDataItemDto {
   Source?: any;
   Type: ChatomniMessageType;
   UserId: string;
-  Error?: ErrorMessageOmni;
+  Error?: ErrorMessageOmni | any;
   Status: ChatomniStatus;
   IsSystem: boolean; // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
   CreatedById?: string | any;
@@ -141,6 +141,7 @@ export interface ChatomniDataItemDto {
   IsOwner: boolean;
   NlpEntities?: NlpEntityDto[];
   IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
+  isNoPartnerId?:  boolean; // không có trong api trả về, dùng để phân biệt cmt child chưa tìm thấy cmt partner trong list api trả về
 }
 
 export interface PagingTimestamp {

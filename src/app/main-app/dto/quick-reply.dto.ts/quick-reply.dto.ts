@@ -5,6 +5,7 @@ export interface QuickReplyDTO {
   PartnerTo?: any;
   Subject: string;
   SubjectHtml?: any;
+  Command?: string;
   BodyHtml: string;
   BodyPlain: string;
   AdvancedTemplate?: any;
@@ -22,7 +23,8 @@ export interface QuickReplyDTO {
 export interface CreateQuickReplyDTO {
   Active: boolean,
   AdvancedTemplate?: string,
-  BodyHtml?: string
+  Command?: string,
+  BodyHtml?: string,
   SubjectHtml: string,
 }
 

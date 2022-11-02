@@ -28,12 +28,14 @@ export interface MessageSocketioDto {
   ChannelCreatedTime: Date;
   LatestMessage?: ChatomniConversationMessageDto;
   IsOwner: boolean;
+  CreatedBy?: any
 }
 
 export interface SocketioOnMessageDto {
   Conversation: ConversationSocketioDto;
   Message: MessageSocketioDto;
   EventName: string;
+  Data: any;
 }
 
 export interface DataMessageTshop{

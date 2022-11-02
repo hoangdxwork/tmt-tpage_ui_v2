@@ -106,7 +106,7 @@ export class ProductTemplateService extends BaseSevice {
 
   getProductVariants(id:TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/odata/ProductTemplate(${id})/ODataService.GetVariants?%24format=json&%24top=20&%24count=true`,
+      url: `${this._BASE_URL}/odata/ProductTemplate(${id})/ODataService.GetVariants?%24format=json&%24top=30&%24count=true`,
       method: CoreApiMethodType.get,
     }
 

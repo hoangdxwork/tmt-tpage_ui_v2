@@ -34,7 +34,7 @@ export class CalculateBillFeeHandler {
     });
 
     //TODO: Tính giá trị tổng bao gồm ShipWeight,WeightTotal,DiscountAmount,AmountUntaxed,PaymentAmount,TotalQuantity,AmoutTotal
-    this.updateTotalSummary(_form,datas,totalPrice,roleConfigs);
+    this.updateTotalSummary(_form,datas,totalPrice, roleConfigs);
     this.updateQuantitySummary(_form,datas);
     //TODO: update lại Giao hàng thu tiền
     this.fs_coDAmount(_form);
@@ -48,15 +48,15 @@ export class CalculateBillFeeHandler {
     return {...result};
   }
 
-  public updateTotalSummary(_form:FormGroup, datas: OrderLineV2[], totalAmountLines:number, roleConfigs: any) {
+  public updateTotalSummary(_form:FormGroup, datas: OrderLineV2[], totalAmountLines:number, roleConfigs: SaleSetting_V2) {
 
     let total = 0;
     let weightTotal = 0;
 
     if (TDSHelperArray.hasListValue(datas)) {
       datas.forEach((x: OrderLineV2) => {
-        total += x.PriceTotal;
-        weightTotal += x.WeightTotal;
+          total += x.PriceTotal;
+          weightTotal += x.WeightTotal;
       });
     }
 
@@ -68,6 +68,12 @@ export class CalculateBillFeeHandler {
 
     //TODO: Gán lại tiền giảm DiscountAmount
     totalAmountLines = total;
+
+    // Cấu hình giảm giá
+    if(roleConfigs && !roleConfigs.GroupDiscountTotal) {
+        _form.controls['Discount'].setValue(0);
+    }
+
     let discountAmount = Math.round(totalAmountLines * (_form.controls['Discount'].value / 100));
     _form.controls['DiscountAmount'].setValue(discountAmount);
 
@@ -75,7 +81,7 @@ export class CalculateBillFeeHandler {
     _form.controls['AmountUntaxed'].setValue(total);
 
     //TODO: Tính thuế để gán lại tổng tiền AmountTotal
-    this.calcTax(_form);
+    this.calcTax(_form, roleConfigs);
 
     //TODO: Gán lại số tiền trả PaymentAmount;
     let amountDepositSale = _form.controls['SaleOrder'].value ? _form.controls['SaleOrder'].value.AmountDeposit : 0;
@@ -88,15 +94,19 @@ export class CalculateBillFeeHandler {
     return total;
   }
 
-  public calcTax(_form:FormGroup) {
+  public calcTax(_form:FormGroup, roleConfigs: SaleSetting_V2) {
     _form.controls['AmountTax'].setValue(0);
 
+    if(roleConfigs && !roleConfigs.GroupFastSaleTax) {
+        _form.controls['Tax'].setValue(null);
+    }
+
     if (_form.controls['Tax'].value) {
-      let amountTax = Math.round(_form.controls['AmountUntaxed'].value * ((_form.controls['Tax'].value.Amount) / 100));
+      let amountTax = Math.round((_form.controls['AmountUntaxed'].value || 0) * ((_form.controls['Tax'].value.Amount || 0) / 100));
       _form.controls['AmountTax'].setValue(amountTax);
     }
 
-    let amountTotal = Math.round(_form.controls['AmountUntaxed'].value + _form.controls['AmountTax'].value);
+    let amountTotal = Math.round((_form.controls['AmountUntaxed'].value || 0) + (_form.controls['AmountTax'].value || 0));
     _form.controls['AmountTotal'].setValue(amountTotal);
   }
 

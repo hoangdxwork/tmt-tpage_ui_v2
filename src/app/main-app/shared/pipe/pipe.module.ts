@@ -28,7 +28,7 @@ import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
-import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe } from './check-tag-selected.pipe';
+import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe, IndexSimpleDetailLiveCampainPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 import { LatestMessageTypePipe } from './lastest-message-type.pipe';
@@ -37,9 +37,12 @@ import { jsonPayloadPipe } from './json-payload.pipe';
 import { GetShowStatePipe } from './get-show-state.pipe';
 import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPipe, GetColorStatusTextPipe, GetColorShowConfigPipe } from './get-order-status.pipe';
 import { OnSetWidthTagPipe } from './set-width-tagpipe';
-import { GetAvatarCarrier } from './get-avatar-carrier.pipe';
+import { AvatarRandomPipe, GetAvatarCarrier, RandomColorPipe } from './get-avatar-carrier.pipe';
 import { HighlightSearchPipe } from './highlightSearch.pipe';
-import { SimpleSearchPipe, SimpleSearchV2Pipe } from './simple-search.pipe';
+import { SimpleSearchPipe, SimpleSearchV2Pipe, SimpleSearchLiveCampaignDetailPipe, SimpleSearchQuickRepplyPipe } from './simple-search.pipe';
+import { ReduceSystemMessagePipe } from './reduce-system-message.pipe';
+import { SeenedMessagePipe } from './coversation-message.pipe';
+import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -90,7 +93,15 @@ const cmp =[
   HighlightSearchPipe,
   GetColorShowConfigPipe,
   SimpleSearchPipe,
-  SimpleSearchV2Pipe
+  SimpleSearchV2Pipe,
+  SimpleSearchLiveCampaignDetailPipe,
+  AvatarRandomPipe,
+  RandomColorPipe,
+  SimpleSearchQuickRepplyPipe,
+  ReduceSystemMessagePipe,
+  SeenedMessagePipe,
+  IndexSimpleDetailLiveCampainPipe,
+  FilterIndexDBLivePipe
 ]
 
 @NgModule({

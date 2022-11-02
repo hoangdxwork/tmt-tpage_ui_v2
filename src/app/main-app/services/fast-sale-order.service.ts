@@ -533,4 +533,31 @@ export class FastSaleOrderService extends BaseSevice {
     }
     return this.apiService.getData<DeliveryResponseDto<CaculateFeeResponseDto>>(api, data);
   }
+
+  checkPrermissionBill() {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/common/CheckPermission?function=App.Sale.Fast.Order.ExportExcel`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, null);
+  }
+
+  checkPermissionCreateFSO(): Observable<boolean> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/common/CheckPermission?function=App.SaleOnline.Order.CreateFSO`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, null);
+  }
+
+  checkPermissionQuickCreateFSO(): Observable<boolean> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/common/CheckPermission?function=App.SaleOnline.Order.QuickCreateFSO`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, null);
+  }
 }

@@ -34,6 +34,7 @@ export class ModalAddQuickReplyComponent implements OnInit {
     this.modelDefault = {
       SubjectHtml: '',
       BodyHtml: '',
+      Command: '',
       Active: false
     }
   }
@@ -42,6 +43,7 @@ export class ModalAddQuickReplyComponent implements OnInit {
     this._form = this.fb.group({
       active: new FormControl(true),
       bodyHtml: new FormControl(''),
+      command: new FormControl(''),
       subjectHtml: new FormControl('',[Validators.required]),
     })
   }
@@ -52,7 +54,12 @@ export class ModalAddQuickReplyComponent implements OnInit {
 
   onSave() {
     if(this._form.controls.subjectHtml.invalid){
-      this.message.warning('Vui lòng nhập tên mẫu');
+      this.message.error('Vui lòng nhập tên mẫu');
+      return;
+    }
+
+    if(!this._form.controls.bodyHtml?.value){
+      this.message.error('Vui lòng nội dung');
       return;
     }
 
@@ -96,6 +103,10 @@ export class ModalAddQuickReplyComponent implements OnInit {
 
     if(formModel.active) {
       this.modelDefault.Active = formModel.active;
+    }
+
+    if(formModel.command) {
+      this.modelDefault.Command = formModel.command;
     }
 
     return this.modelDefault;

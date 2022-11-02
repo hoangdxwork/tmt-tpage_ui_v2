@@ -308,6 +308,7 @@ export interface ProductTemplateDTO {
   Specifications: string;
   Tags: string;
   CreatedByName: string;
+  OrderTag: any;
 }
 
 export interface ProductUOMDTO {

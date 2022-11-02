@@ -4,10 +4,11 @@ import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'app-root',
@@ -59,12 +60,41 @@ export class AppComponent {
         let localSocket = localStorage.getItem('_socketNotification') as any;
         let checkNotti = JSON.parse(localSocket || null) || '';
 
-        if(checkNotti != 'OFF') {
-            this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
-            let exist = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
-            if (res && res.Notification && !exist) {
-                this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
-            }
+        if(checkNotti == 'OFF') return;
+
+        this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
+        switch(res.EventName) {
+          // Thông báo tin nhắn lỗi
+          case ChatmoniSocketEventName.chatomniOnUpdate:
+              let paramsError =  this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+              let userError = res.Data?.Data?.UserId == this.route.snapshot.queryParams?.csid;
+              let hasNoti = TDSHelperObject.hasValue(res.Notification);
+              let errorNoti = res && hasNoti && paramsError && userError ;
+
+              if(errorNoti == false) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+            break;
+
+          // Thông báo cập nhật đơn hàng
+          case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
+              let paramsPost = this.router.url.startsWith('/conversation') && this.route.snapshot.queryParams?.post_id == res.Data?.Facebook_PostId;
+              let orderNoti = res && paramsPost;
+
+              if(orderNoti == true) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          break;
+
+          // Thông báo khi có tin nhắn gửi về
+          case ChatmoniSocketEventName.chatomniOnMessage:
+              let paramsMess = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+              let exist = res && paramsMess;
+
+              if(exist == true) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          break;
+
+          default:
+          break;
         }
       }
     })
@@ -107,7 +137,7 @@ export class AppComponent {
     Object.assign(TGlobalConfig, objConfig);
   }
 
-  onShowModal(orderId:string) {
-    this.socketOnEventService.showModalSocketOrder(orderId);
-  }
+  // onShowModal(orderId:string) {
+  //   this.socketOnEventService.showModalSocketOrder(orderId);
+  // }
 }

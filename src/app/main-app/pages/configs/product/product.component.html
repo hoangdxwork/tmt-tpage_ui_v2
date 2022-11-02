@@ -82,14 +82,14 @@
                                 (checkedChange)="onAllChecked($event)">
                             </th>
                             <th *ngIf="!isHiddenColumn('ImageUrl')" [width]="'68px'" [tdsLeft]="true">Ảnh</th>
-                            <th *ngIf="!isHiddenColumn('DefaultCode')" [width]="'150px'" [tdsLeft]="true">Mã sản phẩm</th>
+                            <th *ngIf="!isHiddenColumn('DefaultCode')" [width]="'130px'" [tdsLeft]="true">Mã sản phẩm</th>
                             <th *ngIf="!isHiddenColumn('Name')" [width]="'180px'">Tên sản phẩm</th>
-                            <th *ngIf="!isHiddenColumn('ListPrice')" [width]="'150px'" class="text-right">Giá bán</th>
-                            <th *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'150px'" class="text-center">SL thực tế</th>
-                            <th *ngIf="!isHiddenColumn('UOMName')" [width]="'150px'">Đơn vị</th>
-                            <th *ngIf="!isHiddenColumn('Tags')" [width]="'150px'">Nhãn</th>
-                            <th *ngIf="!isHiddenColumn('DateCreated')" [width]="'190px'">Ngày tạo</th>
-                            <th *ngIf="!isHiddenColumn('Active')" [width]="'100px'" class="text-center">Hiệu lực</th>
+                            <th *ngIf="!isHiddenColumn('ListPrice')" [width]="'130px'" class="text-right">Giá bán</th>
+                            <th *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'130px'" class="text-center">SL thực tế</th>
+                            <th *ngIf="!isHiddenColumn('UOMName')" [width]="'120px'">Đơn vị</th>
+                            <th *ngIf="!isHiddenColumn('Tags')" [width]="'130px'">Nhãn</th>
+                            <th *ngIf="!isHiddenColumn('DateCreated')" [width]="'160px'">Ngày tạo</th>
+                            <th *ngIf="!isHiddenColumn('Active')" [width]="'100px'" [tdsRight]="true" class="text-center">Hiệu lực</th>
                             <th [width]="'100px'" [tdsRight]="true">Thao tác</th>
                         </tr>
                     </thead>
@@ -109,7 +109,11 @@
                                 <td *ngIf="!isHiddenColumn('DefaultCode')" [tdsLeft]="true">{{
                                     data.DefaultCode }}
                                 </td>
-                                <td *ngIf="!isHiddenColumn('Name')">{{ data.Name }}</td>
+                                <td *ngIf="!isHiddenColumn('Name')">
+                                  <div class="w-full">
+                                    {{ data.Name }}
+                                  </div>
+                                </td>
                                 <td *ngIf="!isHiddenColumn('ListPrice')" class="text-right">{{ data.ListPrice | numberCustom }} đ
                                 </td>
                                 <td *ngIf="!isHiddenColumn('QtyAvailable')" class="text-center">{{ data.QtyAvailable | numberCustom }}</td>
@@ -124,7 +128,7 @@
                                             tds-tooltip="Thêm nhãn" [popoverVisible]="indClickTag == data.Id"
                                             popoverTrigger="click" [popoverFooter]="footerAddTag"
                                             [popoverAutoClose]="false" [popoverContent]="contentAddtag"
-                                            [popoverBackdrop]="true" popoverPlacement="left" color="custom" size="sm"
+                                            [popoverBackdrop]="true" popoverPlacement="top" color="custom" size="sm"
                                             class="bg-transparent border-0 focus:ring-3 focus:ring-primary-1/20">
                                             <div class="w-5 h-5 relative">
                                                 <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
@@ -138,7 +142,7 @@
                                     </div>
                                     <!-- button thêm nhãn -->
                                     <ng-template #contentAddtag>
-                                        <div class="w-96">
+                                        <div class="w-[304px] pb-4">
                                             <tds-form-field>
                                                 <tds-select valueField="Id" textField="Name" placeholder='Chọn tag'
                                                     [(ngModel)]="configModelTags" [allowClear]="true"
@@ -149,14 +153,14 @@
                                         </div>
                                     </ng-template>
                                     <ng-template #footerAddTag>
-                                        <div class="flex justify-end pt-2">
-                                            <button tds-button color="secondary" class="mr-2" size="md"
+                                        <div class="flex justify-end mt-4">
+                                            <button tds-button color="secondary" class="mr-2 min-w-[89px]" size="sm"
                                                 (click)="closeTag()">
                                                 <span class="flex items-center">
                                                     Đóng
                                                 </span>
                                             </button>
-                                            <button tds-button color="primary" size="md"
+                                            <button tds-button color="primary" size="sm" class="min-w-[89px]"
                                                 (click)="assignTags(data.Id, configModelTags)">
                                                 <span class="flex items-center">
                                                     Lưu
@@ -166,7 +170,7 @@
                                     </ng-template>
                                 </td>
                                 <td *ngIf="!isHiddenColumn('DateCreated')">{{ data.DateCreated | date:'dd/MM/yyyy hh:mm' }}</td>
-                                <td *ngIf="!isHiddenColumn('Active')">
+                                <td *ngIf="!isHiddenColumn('Active')" [tdsRight]="true">
                                     <span class="flex items-center justify-center">
                                         <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                                     </span>

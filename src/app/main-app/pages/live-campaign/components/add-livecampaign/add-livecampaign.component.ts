@@ -311,7 +311,7 @@ export class AddLiveCampaignComponent implements OnInit {
     });
 
     if(product) {
-        let generateTag = this.generateTagDetail(product.NameGet, product.DefaultCode, product.Tags);
+        let generateTag = this.generateTagDetail(product.NameGet, product.DefaultCode, product.Tags, product);
 
         model.controls.Tags.setValue(generateTag);
         model.controls.ProductName.setValue(product.NameGet);
@@ -327,7 +327,7 @@ export class AddLiveCampaignComponent implements OnInit {
     return model;
   }
 
-  generateTagDetail(productName: string, code: string, tags: string) {
+  generateTagDetail(productName: string, code: string, tags: string, product: any) {
     productName = productName.replace(`[${code}]`, "");
     productName = productName.trim();
 
@@ -346,8 +346,8 @@ export class AddLiveCampaignComponent implements OnInit {
       result.push(wordNameNoSpace);
     }
 
-    if(TDSHelperString.hasValueString(code) && code) {
-      result.push(code);
+    if(TDSHelperString.hasValueString(code) && code && product && Number(product.AttributeLength) <= 0) {
+        result.push(code);
     }
 
     if(TDSHelperString.hasValueString(tags)) {
@@ -472,7 +472,7 @@ export class AddLiveCampaignComponent implements OnInit {
     let model = {} as any;
 
     model.Id = (formValue.Id) ? formValue.Id : undefined;
-    model.Config = formValue.Config?.value;
+    model.Config = formValue.Config?.value || formValue.Config;
     model.Name = formValue.Name;
     model.Users = formValue.Users || [];
     model.Note = formValue.Note;
@@ -569,7 +569,7 @@ export class AddLiveCampaignComponent implements OnInit {
     modal.afterClose.subscribe({
       next:(res) => {
         if(res) {
-          this.loadQuickReply();
+          this.lstQuickReplies = [...[res], ...this.lstQuickReplies];
         }
       }
     })

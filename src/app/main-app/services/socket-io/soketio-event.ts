@@ -6,6 +6,6 @@ export enum SocketIoEvent {
 export enum ChatmoniSocketEventName {
   chatomniOnMessage = "chatomni.on-message",
   chatomniOnUpdate = "chatomni.on-update",
-  chatomniOnReadConversation = "chatomni.on-read-conversation",
-  onUpdate = "update"
+  chatomniMarkseen = "chatomni.on-markseen",
+  onUpdateSaleOnline_Order = "updated"
 }
