@@ -99,7 +99,7 @@
               <th width="44px" [align]="'center'" [tdsLeft]="true"></th>
               <th width="42px" [(checked)]="checked" [indeterminate]="indeterminate" class="border-l" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
-              <th width="90px" [tdsLeft]="true" class="border-l text-center">STT</th>
+              <th width="63px" [tdsLeft]="true" class="border-l text-center">STT</th>
               <th width="120px" *ngIf="isHidden('Code')" [tdsLeft]="true" class="border-l min-w-[120px] max-w-[240px]">Mã</th>
               <th width="200px" *ngIf="isHidden('CRMTeamName')" class="border-l">Kênh kết nối</th>
               <th width="200px" *ngIf="isHidden('LiveCampaignName')" class="border-l">Chiến dịch live</th>
@@ -224,10 +224,10 @@
                 <td *ngIf="isHidden('Name')" class="border-l">
                   <div class="w-full flex flex-col gap-y-1">
                     <div class="flex items-center">
-                      <p class=" mr-1">{{data.PartnerName}}</p>
+                      <p class="font-semibold mr-1">{{data.PartnerName}}</p>
                     </div>
                     <div class="flex items-center">
-                      <p *ngIf="data.Telephone" class="text-[#929DAA] mr-1">{{data.Telephone}}</p>
+                      <p *ngIf="data.Telephone" class="text-[#929DAA] font-semibold mr-1">{{data.Telephone}}</p>
                       <div class="flex flex-col mr-1">
                         <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
                           {{ data.NameNetwork }}
