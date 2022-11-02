@@ -240,7 +240,7 @@
 
                               <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
                                   <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
-                                      <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
+                                      <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ (item || '') | truncateString }}</tds-tag>
                                   </div>
 
                                   <button (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"

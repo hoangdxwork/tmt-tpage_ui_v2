@@ -26,7 +26,8 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
     },
-    liveCampaignId: null
+    liveCampaignId: null,
+    IsHasPhone: null
   }
 
   currentTab: number = 0;
@@ -93,11 +94,11 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
   }
 
   printCustomer() {
-    this.tableAllOrderComponent.printCustomer()
+    this.tableAllOrderComponent.printCustomer();
   }
 
   printMultiOrder() {
-    this.tableAllOrderComponent.printMultiOrder()
+    this.tableAllOrderComponent.printMultiOrder();
   }
 
   onSearch(data: TDSSafeAny) {

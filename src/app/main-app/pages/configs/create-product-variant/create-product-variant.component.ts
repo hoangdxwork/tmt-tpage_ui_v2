@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { IRAttachmentDTO } from './../../../dto/attachment/attachment.dto';
 import { ProductTemplateService } from './../../../services/product-template.service';
@@ -23,7 +24,8 @@ import { PrepareCreateVariantHandler } from 'src/app/main-app/handler-v2/product
 
 @Component({
   selector: 'create-product-variant',
-  templateUrl: './create-product-variant.component.html'
+  templateUrl: './create-product-variant.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class CreateProductVariantComponent implements OnInit {
@@ -48,8 +50,6 @@ export class CreateProductVariantComponent implements OnInit {
   modelDefault!: ProductDTO;
   addToFBPage = false;
 
-  private destroy$ = new Subject<void>();
-
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -70,6 +70,7 @@ export class CreateProductVariantComponent implements OnInit {
     private router: Router,
     private message: TDSMessageService,
     private notification: TDSNotificationService,
+    private destroy$: TDSDestroyService,
     private CRMService: CRMTeamService,
     private productService: ProductService,
     private prepareCreateVariant: PrepareCreateVariantHandler,

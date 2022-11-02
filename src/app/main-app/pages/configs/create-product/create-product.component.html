@@ -4,7 +4,7 @@
       <div class="flex flex-col w-full bg-white rounded-t-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
           <div class="flex flex-row items-center">
-            <button tds-flat-button-icon size="md" type="button" (click)="backToMain()">
+            <button tds-flat-button-icon size="md" type="button" (click)="backToMain()"  type="button">
               <span class="flex items-center">
                 <i class="tdsi-back-fill text-xl leading-5"></i>
               </span>
@@ -76,6 +76,13 @@
                 </tds-error>
               </tds-form-field>
 
+              <tds-label>Mã chốt đơn:</tds-label>
+              <tds-form-field class="w-full col-span-2">
+                <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false"
+                  formControlName="OrderTag" [allowClear]="true" mode="tags">
+                </tds-select>
+              </tds-form-field>
+
               <tds-label>Nhóm sản phẩm:</tds-label>
               <div class="col-span-2 flex space-x-2">
                 <tds-form-field class="w-full">
@@ -88,7 +95,7 @@
                   </tds-error>
                 </tds-form-field>
 
-                <button tds-button-icon color="primary" type="button" (click)="addCategory()">
+                <button tds-button-icon color="primary" type="button" (click)="addCategory()"  type="button">
                   <span class="flex items-center">
                     <i class="tdsi-plus-fill"></i>
                   </span>
@@ -110,7 +117,7 @@
                   </tds-error>
                 </tds-form-field>
 
-                <button *ngIf="id" tds-button-icon color="primary" tds-tooltip tooltipTitle="Cập nhật số lượng thực tế" (click)="showUpdateInitInventoryModal()">
+                <button *ngIf="id" type="button" tds-button-icon color="primary" tds-tooltip tooltipTitle="Cập nhật số lượng thực tế" (click)="showUpdateInitInventoryModal()">
                   <i class="tdsi-edit-fill"></i>
                 </button>
               </div>
@@ -566,7 +573,7 @@
                       <img src="../../assets/imagesv2/live-campaign/noData.svg" alt="">
                       <span class="text-neutral-1-400 text-body-2">Chưa có thành phần nào</span>
                   </div>
-                  <button tds-button type="button" color="primary" (click)="showCreateComboModal()">
+                  <button tds-button type="button" color="primary" (click)="showCreateComboModal()" >
                       <span class="flex items-center ">
                           <i class="tdsi-plus-fill mr-2"></i>Thêm thành phần
                       </span>

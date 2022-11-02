@@ -1,16 +1,14 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductUOMDTO, ProductDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
 import { ProductUOMService } from 'src/app/main-app/services/product-uom.service';
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { Subject } from 'rxjs';
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -19,7 +17,8 @@ import { PrepareEditVariantHandler } from 'src/app/main-app/handler-v2/product-v
 @Component({
   selector: 'edit-product-variant',
   templateUrl: './edit-product-variant.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 
 export class EditProductVariantComponent implements OnInit {
@@ -50,12 +49,10 @@ export class EditProductVariantComponent implements OnInit {
     return value;
   };
 
-  private destroy$ = new Subject<void>();
-
   constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
     private productIndexDBService: ProductIndexDBService,
-    private cacheApi: THelperCacheService,
+    private destroy$: TDSDestroyService,
     private productService: ProductService,
     private prepareEditVariantHandler: PrepareEditVariantHandler,
     private message: TDSMessageService,
@@ -92,11 +89,15 @@ export class EditProductVariantComponent implements OnInit {
     this.productService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe(
         {
           next: (res: any) => {
-            delete res['@odata.context'];
-            this.dataModel = res;
-            this.cdRef.detectChanges();
-            this.updateForm(res);
+            if(res) {
+              delete res['@odata.context'];
+              this.dataModel = res;
+              
+              this.updateForm(res);
+            }
+            
             this.isLoading = false;
+            this.cdRef.detectChanges();
           }, 
           error: error => {
             this.message.error(error.error.message || 'Load dữ liệu thất bại');

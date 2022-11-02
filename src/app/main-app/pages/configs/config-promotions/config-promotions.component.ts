@@ -133,7 +133,7 @@ export class ConfigPromotionsComponent implements OnInit {
 
     this.checked = false;
     this.indeterminate = false;
-    this.setOfCheckedId = new Set<number>();
+    this.setOfCheckedId.clear();
 
     this.filterObj = {
       searchText: '',

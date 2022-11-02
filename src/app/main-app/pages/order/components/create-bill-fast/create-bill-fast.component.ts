@@ -68,6 +68,7 @@ export class CreateBillFastComponent implements OnInit {
   ngOnInit(): void {
     if(TDSHelperArray.hasListValue(this.lstData)) {
       this.loadCarrier();
+
       this.updateAmountTotal(this.lstData);
       this.lstData.forEach((x, i) =>{
         this.checkPartnerInfo(x.Partner, i);

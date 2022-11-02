@@ -9,7 +9,7 @@ import { CRMMatchingService } from '../../../../services/crm-matching.service';
 import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMTeamService } from '../../../../services/crm-team.service';
 import { PartnerService } from '../../../../services/partner.service';
-import { Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -50,6 +50,8 @@ export class TableAllOrderComponent implements OnInit {
   marginLeftCollapse: number = 0;
   widthCollapse: number = 0;
   paddingCollapse: number = 36;
+  lstStatusTypeExt!: Array<any>;
+  indClickTag = "";
 
   public filterObj: FilterObjSOOrderModel = {
     tags: [],
@@ -59,10 +61,12 @@ export class TableAllOrderComponent implements OnInit {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
     },
-    liveCampaignId: null
+    liveCampaignId: null,
+    IsHasPhone: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
+  public modelTags: Array<TDSSafeAny> = [];
 
   sort: Array<SortDataRequestDTO> = [{
     field: "DateCreated",
@@ -84,6 +88,7 @@ export class TableAllOrderComponent implements OnInit {
 
   isTabNavs: boolean = false;
   public tabNavs: Array<TabNavsDTO> = [];
+  public lstOftabNavs: Array<TabNavsDTO> = [];
   public summaryStatus: Array<TabNavsDTO> = [];
 
   constructor(
@@ -101,9 +106,14 @@ export class TableAllOrderComponent implements OnInit {
     private chatomniMessageFacade: ChatomniMessageFacade,
     private destroy$: TDSDestroyService,
     private resizeObserver: TDSResizeObserver,
+    private tagService: TagService,
+    private cdRef: ChangeDetectorRef,
     private commonService: CommonService,) { }
 
   ngOnInit(): void {
+    this.loadTags();
+    this.loadStatusTypeExt();
+    this.loadSummaryStatus();
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -132,6 +142,10 @@ export class TableAllOrderComponent implements OnInit {
   loadData(pageSize: number, pageIndex: number) {
     let filters = this.odataLiveCampaignOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
+
+    if(this.filterObj.IsHasPhone != null) {
+      params += `&IsHasPhone=${this.filterObj.IsHasPhone}`;
+    }
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
@@ -172,20 +186,23 @@ export class TableAllOrderComponent implements OnInit {
   }
 
 
-  onLoadOption(event: any): void {
+  onLoadOption(event: FilterObjSOOrderModel): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.pageSize = 20;
 
+    let lstStatus = event?.status?.filter(x => x != 'Tất cả');
+
     this.filterObj = {
       tags: event.tags,
-      status: event?.status != 'Tất cả' ? event?.status : null,
+      status: lstStatus ? lstStatus : [],
       searchText: event.searchText,
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate,
       } : null,
       liveCampaignId: null,
+      IsHasPhone: event.IsHasPhone
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -200,6 +217,7 @@ export class TableAllOrderComponent implements OnInit {
       searchText: '',
       dateRange: {} as any,
       liveCampaignId: null,
+      IsHasPhone: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -413,6 +431,8 @@ export class TableAllOrderComponent implements OnInit {
 
   printCustomer() {
     let obs: TDSSafeAny;
+    this.isLoading = true;
+
     obs = this.printerService.printUrl(`/SaleOnline_LiveCampaign/PrintCustomerWaitCheckOut?id=${this.liveCampaignId}`);
     obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       this.printerService.printHtml(res);
@@ -433,14 +453,19 @@ export class TableAllOrderComponent implements OnInit {
   printMultiOrder() {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
+      this.isLoading = true;
+
       ids.map((x: string) => {
         this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
             if (res) {
               this.orderPrintService.printIpFromOrder(res);
             }
+
+            this.isLoading = false;
           },
           error: (error: any) => {
+            this.isLoading = false;
             this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
           }
         })
@@ -450,13 +475,21 @@ export class TableAllOrderComponent implements OnInit {
 
   onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
-      this.isLoading = true;
-      let ids = [...this.setOfCheckedId];
-      this.showModalCreateBillFast(ids)
+      this.fastSaleOrderService.checkPermissionQuickCreateFSO().subscribe({
+        next:(err) => {
+          let ids = [...this.setOfCheckedId];
+          this.showModalCreateBillFast(ids);
+        },
+        error:(err) => {
+          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+        }
+      })
     }
   }
 
   showModalCreateBillFast(ids: string[]) {
+    this.isLoading = true;
+
     this.fastSaleOrderService.getListOrderIds({ ids: ids }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if (res) {
@@ -473,14 +506,16 @@ export class TableAllOrderComponent implements OnInit {
 
           modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
             next: (res) => {
-              this.loadData(this.pageSize, this.pageIndex);
+              if(res) {
+                this.loadData(this.pageSize, this.pageIndex);
+              }
             }
           })
         }
         this.isLoading = false;
       },
       error: (error: any) => {
-        this.isLoading = false
+        this.isLoading = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     });
@@ -507,6 +542,100 @@ export class TableAllOrderComponent implements OnInit {
       componentParams: {
         orderId: orderId,
         type: "order"
+      }
+    });
+  }
+
+  updateStatusSaleOnline(data: any, status: any) {
+    let value = status.Text;
+
+    this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+          this.message.success('Cập nhật thành công');
+          data.StatusText = status.Text;
+
+          this.loadSummaryStatus();
+          this.cdRef.markForCheck();
+      },
+      error: (error: any) => {
+          this.message.error(error.error.message || 'Cập nhật thất bại');
+      }
+    });
+  }
+
+  loadSummaryStatus() {
+    let model: SaleOnlineOrderSummaryStatusDTO = {
+      DateStart: this.filterObj.dateRange?.startDate,
+      DateEnd: this.filterObj.dateRange?.endDate,
+      SearchText: this.filterObj.searchText,
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+    }
+
+    this.isTabNavs = true;
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
+      finalize(() => this.isTabNavs = false)).subscribe({
+        next: (res: Array<TDSSafeAny>) => {
+            let tabs: TabNavsDTO[] = [];
+            let total = 0;
+
+            res?.map((x: TDSSafeAny, index: number) => {
+                total += x.Total;
+                index = index + 2;
+
+                tabs.push({ Name: `${x.ShowState}`, Index: index, Total: x.Total });
+            });
+
+            tabs.push({ Name: "Tất cả", Index: 1, Total: total });
+            tabs.sort((a, b) => a.Index - b.Index);
+
+            this.tabNavs = [...tabs];
+            this.lstOftabNavs = this.tabNavs.filter(x => Number(x.Index) > 1);
+        }
+      });
+  }
+
+  loadStatusTypeExt() {
+    this.commonService.getStatusTypeExt().subscribe(res => {
+      this.lstStatusTypeExt = [...res];
+      this.cdRef.markForCheck();
+    });
+  }
+
+  openTag(id: string, data: TDSSafeAny) {
+    this.modelTags = [];
+    this.indClickTag = id;
+    this.modelTags = JSON.parse(data);
+  }
+
+  closeTag(): void {
+    this.indClickTag = "";
+  }
+
+  loadTags() {
+    let type = "saleonline";
+    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+      this.lstDataTag = [...res.value];
+    });
+  }
+
+  assignTags(id: string, tags: TDSSafeAny) {
+    let model = { OrderId: id, Tags: tags };
+    this.saleOnline_OrderService.assignSaleOnlineOrder(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        if (res && res.OrderId) {
+            let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+            if (exits) {
+              exits.Tags = JSON.stringify(tags)
+            }
+
+            this.indClickTag = "";
+            this.modelTags = [];
+            this.message.success(Message.Tag.InsertSuccess);
+        }
+      },
+      error: (error: any) => {
+          this.indClickTag = "";
+          this.message.error(`${error?.error?.message}` || Message.Tag.InsertFail);
       }
     });
   }

@@ -1,4 +1,4 @@
-
+import { ProductTemplateV2DTO } from "../product-template/product-tempalte.dto";
 
 export interface DataPouchDBDTO {
   Id: number;
@@ -34,7 +34,7 @@ export interface DataPouchDBDTO {
   QtyAvailable?: number,
   VirtualAvailable?: number;
 
-  AttributeLength?: any // field này dùng để check tạo mã chiến dịch live, ko có trong db
+  _attributes_length?: any // field này dùng để check tạo mã chiến dịch live, ko có trong db
 }
 
 export interface ProductPouchDBDTO {
@@ -46,8 +46,15 @@ export interface ProductPouchDBDTO {
 export interface KeyCacheIndexDBDTO {
   cacheCount: number;
   cacheVersion: number;
-  cacheDbStorage:  DataPouchDBDTO[];
+  cacheDbStorage: DataPouchDBDTO[];
 }
+
+export interface SyncCreateProductTemplateDto {
+  type: any;
+  cacheDbStorage: DataPouchDBDTO[];
+  productTmpl: ProductTemplateV2DTO;
+}
+
 
 
 

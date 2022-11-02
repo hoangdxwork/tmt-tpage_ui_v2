@@ -13,9 +13,9 @@
       </div>
 
       <div class="flex gap-x-2">
-          <button tds-button color="info" type="button">Cập nhật cấu hình bài viết</button>
+          <button tds-button color="info" type="button" (click)="onUpdateLive()">Cập nhật cấu hình bài viết</button>
           <button tds-button class="w-[100px]" color="primary" type="button" (click)="onSave()">Lưu lại</button>
-          <button tds-button class="w-[100px]" color="secondary" type="button" (click)="onBack()">Hủy bỏ</button>
+          <!-- <button tds-button class="w-[100px]" color="secondary" type="button" (click)="onBack()">Hủy bỏ</button> -->
       </div>
     </div>
 
@@ -55,8 +55,7 @@
                 <div class="col-span-3 flex flex-row gap-x-2">
                   <tds-form-field class="w-full truncate">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn mẫu tin' formControlName="ConfirmedOrder_Template"
-                        [valuePrimitive]="false" [allowClear]="true" [data]="lstQuickReplies"
-                        [allowClear]="true">
+                        [valuePrimitive]="false" [allowClear]="true" [data]="lstQuickReplies" [allowClear]="true" (ngModelChange)="onChangeConfirmedOrder_Template($event)">
                     </tds-select>
                   </tds-form-field>
                   <div class="w-[34px]">
@@ -81,8 +80,8 @@
                 <tds-label class="w-1/4">Chốt đơn xác nhận</tds-label>
                 <tds-form-field class="w-3/4">
                   <tds-select valueField="value" textField="text"
-                      placeholder='Trạng thái chốt đơn' [valuePrimitive]="false"  formControlName="Config"
-                      disabledField="isActive" [data]="lstConfig" [allowClear]="true">
+                      placeholder='Trạng thái chốt đơn' [valuePrimitive]="false"  formControlName="ConfigObject"
+                      disabledField="isActive" [data]="lstConfig" [allowClear]="false" (ngModelChange)="onChangeConfig($event)">
                   </tds-select>
                 </tds-form-field>
               </div>
@@ -92,7 +91,7 @@
                 <tds-form-field class="col-span-3">
                   <tds-select valueField="Id" textField="Name"
                       placeholder='Chọn mẫu tin' [valuePrimitive]="false"  formControlName="Preliminary_Template"
-                      disabledField="isActive" [data]="lstQuickReplies" [allowClear]="true">
+                      disabledField="isActive" [data]="lstQuickReplies" [allowClear]="true" (ngModelChange)="onChangePreliminary_Template($event)">
                   </tds-select>
                 </tds-form-field>
               </div>
@@ -173,15 +172,10 @@
         <div class="w-2/3">
           <div class="rounded-xl bg-white h-full flex-col flex">
             <div class="p-3 w-full flex gap-x-2 font-semibold text-base items-center relative">
-                    <span class="tdsi-product-fill text-neutral-1-400"></span>
-                    <span class="text-neutral-1-900 ml-2">Sản phẩm
-                        <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
-                    </span>
-                <div class="absolute" style="right: 24px" *ngIf="searchValue.length > 0">
-                    <button tds-button-icon color="secondary" tds-tooltip tooltipTitle="Tải lại" type="button" (click)="onReset()" style="border: 0">
-                        <i class="tdsi-reload-fill"></i>
-                    </button>
-                </div>
+                <span class="tdsi-product-fill text-neutral-1-400"></span>
+                <span class="text-neutral-1-900 ml-2">Sản phẩm
+                    <span *ngIf="_form.controls['Details'].value">({{_form.controls['Details'].value.length}})</span>
+                </span>
             </div>
 
             <div class="w-full flex-auto text-body-2 text-neutral-1-900">
@@ -212,13 +206,13 @@
                           </ng-template>
                       </div>
                       </th>
-                      <th [width]="'80px'">Ẩn/ hiện</th>
-                      <th [width]="'120px'">Số lượng</th>
-                      <th [width]="'120px'">Giới hạn trên đơn</th>
-                      <th [width]="'120px'">Giá bán</th>
+                      <th [width]="'80px'" class="text-center">Ẩn/ hiện</th>
+                      <th [width]="'100px'" class="text-center">Số lượng</th>
+                      <th [width]="'120px'" class="text-center">Giới hạn trên đơn</th>
+                      <th [width]="'120px'" class="text-right">Giá bán</th>
 
-                      <th [width]="'92px'" class="text-center">
-                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="onDeleteAll()" tds-tooltip tooltipTitle="Xóa tất cả sản phẩm"
+                      <th [width]="'102px'" class="text-center">
+                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()" tds-tooltip tooltipTitle="Xóa tất cả sản phẩm"
                          [disabled]="_form.controls['Details'].value.length == 0 ? true : false">
                             <span class="flex items-center">
                               <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
@@ -234,10 +228,10 @@
                   </tr>
                 </thead>
                 <tbody formArrayName="Details">
-                  <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index"  [formGroupName]="index"
+                  <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue"  [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsForm.controls"
                     [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id])}">
 
-                    <td class="text-center"> {{ index + 1 }} </td>
+                    <td class="text-center"> {{ (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls) + 1 }} </td>
 
                     <!-- Sản phẩm -->
                     <td>
@@ -248,72 +242,73 @@
                         </div>
 
                         <div class="flex flex-col gap-y-1 cursor-pointer w-4/5">
-                            <span class="font-semibold text-sm">
-                                {{detail?.value.ProductNameGet || detail?.value.ProductName}}
-                                <span *ngIf="detail?.value.UOMName">({{detail?.value.UOMName}})</span>
+                            <span class="font-semibold text-[14px]"> {{detail?.value.ProductNameGet || detail?.value.ProductName}}
                             </span>
 
-                          <!-- Tags -->
-                          <div class="flex items-center gap-x-1">
-                            <span *ngIf="detail?.value.Tags.length <= 0 && isEditDetails[detail.value.Id]" class="text-info-500 font-normal text-sm cursor-pointer"
-                                (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
-                                [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
+                            <!-- Tags -->
+                            <div class="flex items-center gap-x-1">
+                              <span *ngIf="detail?.value.Tags.length <= 0 && isEditDetails[detail.value.Id]" class="text-info-500 font-normal text-sm cursor-pointer"
+                                  (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)"
+                                  popoverTrigger="click" [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true"
+                                  popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
-                              <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
-                                  <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
-                                      <tds-tag class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item | truncateString }}</tds-tag>
+                                <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
+                                    <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
+                                        <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='primary'>{{ (item || '') | truncateString }}</tds-tag>
+                                    </div>
+
+                                    <button *ngIf="isEditDetails[detail.value.Id]" (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)"
+                                        popoverTrigger="click" [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true"
+                                        popoverPlacement="left" tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
+                                        color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
+
+                                        <div class="w-5 h-5 relative">
+                                            <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                                            <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
+                                              height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745" />
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </div>
+
+                              <!-- button thêm nhãn -->
+                              <ng-template #contentAddtag>
+                                  <div class="w-[360px]">
+                                      <tds-form-field>
+                                          <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
+                                            [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
+                                            [data]="(detail.value.Tags | stringToStringArray)">
+                                          </tds-select>
+                                      </tds-form-field>
                                   </div>
+                              </ng-template>
 
-                                  <button *ngIf="isEditDetails[detail.value.Id]" (click)="openTag(index)" tds-popover [popoverVisible]="indClickTag == index" popoverTrigger="click"
-                                      [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
-                                      tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
-                                      color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
+                              <ng-template #footerAddTag>
+                                  <div class="flex justify-end pt-2">
+                                      <button tds-button-icon color="secondary" type="button" class="mr-2" size="sm" (click)="onCloseTag()">
+                                          <span class="flex items-center">
+                                              <i class="tdsi-close-fill"></i>
+                                          </span>
+                                      </button>
+                                      <button tds-button-icon size="sm" color="primary" type="button" (click)="onSaveTag(detail.value)">
+                                          <span class="flex items-center">
+                                              <i class="tdsi-checkbox-check-fill"></i>
+                                          </span>
+                                      </button>
+                                  </div>
+                              </ng-template>
+                            </div>
 
-                                      <div class="w-5 h-5 relative">
-                                          <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
-                                          <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
-                                            height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                              <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745" />
-                                          </svg>
-                                      </div>
-                                  </button>
-                              </div>
-
-                            <!-- button thêm nhãn -->
-                            <ng-template #contentAddtag>
-                                <div class="w-[304px]">
-                                    <tds-form-field>
-                                        <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                          [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
-                                          [data]="(detail.value.Tags | stringToStringArray)">
-                                        </tds-select>
-                                    </tds-form-field>
-                                </div>
-                            </ng-template>
-
-                            <ng-template #footerAddTag>
-                                <div class="flex justify-end pt-2">
-                                    <button tds-button-icon color="secondary" type="button" class="mr-2" size="sm" (click)="onCloseTag()">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-close-fill"></i>
-                                        </span>
-                                    </button>
-                                    <button tds-button-icon size="sm" color="primary" type="button" (click)="onSaveTag(index)">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-checkbox-check-fill"></i>
-                                        </span>
-                                    </button>
-                                </div>
-                            </ng-template>
-                          </div>
+                            <p class="text-[13px]">Đơn vị: {{detail.value.UOMName}}</p>
                         </div>
                       </div>
                     </td>
 
                     <!-- Ẩn/ hiện -->
-                    <td>
+                    <td class="text-center">
                         <div *ngIf="isEditDetails[detail.value.Id]">
-                          <tds-switch size="md" formControlName="IsActive" (ngModelChange)="onChangeIsActive($event)"></tds-switch>
+                          <tds-switch size="md" formControlName="IsActive" (ngModelChange)="onChangeIsActive($event, detail.value)"></tds-switch>
                         </div>
                         <div *ngIf="!isEditDetails[detail.value.Id] && detail.value.IsActive" class="text-body-2 text-secondary-1" style="font-style: italic;">
                           Hoạt động
@@ -325,10 +320,10 @@
                     </td>
 
                     <!-- Số lượng -->
-                    <td>
+                    <td class="text-center">
                       <div *ngIf="isEditDetails[detail.value.Id]">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event)"
+                          <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event, detail.value)"
                              [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
@@ -337,10 +332,10 @@
                     </td>
 
                     <!-- Giới hạn trên đơn -->
-                    <td>
+                    <td class="text-center">
                       <div *ngIf="isEditDetails[detail.value.Id]">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event)"
+                          <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event, detail.value)"
                               [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
@@ -349,37 +344,37 @@
                     </td>
 
                     <!-- Giá bán -->
-                    <td>
+                    <td class="text-right">
                       <div *ngIf="isEditDetails[detail.value.Id]">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1000" formControlName="Price" (ngModelChange)="onChangePrice($event)"
+                          <tds-input-number [min]="0" [step]="1000" formControlName="Price" (ngModelChange)="onChangePrice($event, detail.value)"
                              [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
                       </div>
 
-                      <div *ngIf="!isEditDetails[detail.value.Id]" class="text-body-2"> {{ detail.value.Price || 0 | numberCustom }} </div>
+                      <div *ngIf="!isEditDetails[detail.value.Id]" class="text-body-2"> {{ detail.value.Price || 0 | numberCustom }} đ </div>
                     </td>
 
                     <!-- Thao tác -->
-                    <td class="text-center">
-                      <div class="flex gap-x-1">
-                        <button *ngIf="!isEditDetails[detail.value.Id]" tds-button-icon color="info" type="button" size="sm" class="ml-1 mr-1"
+                    <td >
+                      <div class="flex gap-x-1 justify-center">
+                        <button *ngIf="!isEditDetails[detail.value.Id]" tds-button-icon color="info" type="button" size="sm"
                             tds-tooltip tooltipTitle="Chỉnh sửa" (click)="onEditDetails(detail.value)" type="button">
                             <span class="flex items-center">
                                 <i class="tdsi-edit-2-fill"></i>
                             </span>
                         </button>
 
-                        <button *ngIf="isEditDetails[detail.value.Id]" tds-button-icon color="success" type="button" size="sm" class="ml-1 mr-1"
+                        <button *ngIf="isEditDetails[detail.value.Id]" tds-button-icon color="success" type="button" size="sm"
                             tds-tooltip tooltipTitle="Áp dụng" (click)="onSaveDetails(detail.value)" type="button">
                             <span class="flex items-center">
                                 <i class="tdsi-checkbox-check-fill"></i>
                             </span>
                         </button>
 
-                        <button tds-button-icon color="red" type="button" size="sm" class="ml-1 mr-1" type="button"
-                            tds-tooltip tooltipTitle="Xóa" (click)="removeDetail(index, detail.value)" >
+                        <button tds-button-icon color="red" type="button" size="sm" type="button" tds-tooltip tooltipTitle="Xóa"
+                            (click)="removeDetail(detail.value)" >
                             <span class="flex items-center">
                                 <i class="tdsi-trash-fill"></i>
                             </span>

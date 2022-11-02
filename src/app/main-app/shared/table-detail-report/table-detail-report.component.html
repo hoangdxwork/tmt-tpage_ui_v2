@@ -32,12 +32,52 @@
                                 <div>
                                     <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
                                 </div>
-                                <div class="flex flex-col gap-y-2 w-full">
-                                    <tds-label>{{ data.ProductName }} ({{ data.UOMName }})</tds-label>
+                                <div class="flex flex-col w-full">
+                                    <span class="font-semibold max-w-[240px] min-w-[120px] w-fit truncate mb-1"
+                                        tds-tooltip="{{ data.ProductNameGet }}">{{ data.ProductNameGet }}</span>
                                     <div *ngIf="data.Tags" class="flex flex-wrap items-center gap-1">
-                                        <tds-tag *ngFor="let item of data.Tags | stringToStringArray" class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
-                                            {{ item | truncateString }}
-                                        </tds-tag>
+                                        <div *ngFor="let item of data.Tags | stringToStringArray">
+                                            <tds-tag class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
+                                                <div class="max-w-[48px] w-fit truncate">{{ item }}</div>
+                                            </tds-tag>
+                                        </div>
+                                        <!-- <span *ngIf="(data.Tags | stringToStringArray).length > 3"
+                                            tds-tooltip tooltipTitle="Xem thêm"
+                                            tds-popover
+                                            [popoverVisible]="idPopoverVisible == i"
+                                            [popoverContent]="invContent"
+                                            popoverTrigger="click"
+                                            [popoverBackdrop]="true"
+                                            class="border rounded-xl flex items-center justify-center w-5 h-5 cursor-pointer">+</span>
+                                            <ng-template #invContent>
+                                                <div class="flex flex-wrap gap-x-1 min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
+                                                    <div *ngFor="let item of data.Tags | stringToStringArray | slice:3; let i = index" class="flex gap-x-1">
+                                                        <tds-tag *ngIf="i <= 10 || (i > 10 && isShowAll)" class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status='secondary' size="sm">
+                                                            <div class="max-w-[48px] w-fit truncate">{{ item }}</div>
+                                                        </tds-tag>
+                                                    </div>
+    
+                                                    <div *ngIf="(data.Tags | stringToStringArray).length > 10 && !isShowAll" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
+                                                        ...Xem thêm
+                                                    </div>
+    
+                                                    <div *ngIf="(data.Tags | stringToStringArray).length > 10 && isShowAll" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
+                                                        ...Thu gọn
+                                                    </div>
+                                                </div>
+                                            </ng-template> -->
+                                    </div>
+                                    <div class="text-neutral-1-400 font-regular text-body-2">Đơn vị: 
+                                        <span class="text-primary-1">{{ data.UOMName }}</span>
+                                    </div>
+                                    <div class="flex flex-auto">
+                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                                            <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].QtyAvailable || 0 }}</span>
+                                        </span>
+                                        <span class="px-2">/</span>
+                                        <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                            <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].VirtualAvailable || 0 }}</span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>

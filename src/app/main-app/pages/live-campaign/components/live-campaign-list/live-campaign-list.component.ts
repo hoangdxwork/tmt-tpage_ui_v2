@@ -221,7 +221,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
   }
 
   onDetail(id: string) {
-    this.router.navigateByUrl(`live-campaign/detail/${id}`);
+    this.router.navigateByUrl(`live-campaign/detail/${id}?tab=report`);
   }
 
   onEdit(id: string) {

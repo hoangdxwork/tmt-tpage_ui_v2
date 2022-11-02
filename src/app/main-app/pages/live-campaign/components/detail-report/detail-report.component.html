@@ -184,11 +184,11 @@
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Số tiền cọc bắt buộc</span>
-                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.MaxAmountDepositRequired }}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.MaxAmountDepositRequired || 0 | numberCustom }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Số tiền tối thiểu đặt cọc</span>
-                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.MinAmountDeposit }}</span>
+                    <span class="font-semibold text-sm">{{ dataLiveCampaign?.MinAmountDeposit || 0 | numberCustom }}</span>
                   </div>
                   <div class="flex gap-x-4 items-center">
                     <span class="2xl:w-1/3 xl:w-1/2 text-sm font-normal">Bật số lượng</span>

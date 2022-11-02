@@ -10,7 +10,7 @@ import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.servi
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PartnerService } from './../../../../services/partner.service';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
@@ -82,6 +82,7 @@ export class DetailBillComponent implements OnInit {
     { value: 'Number', name: 'Số hóa đơn', isChecked: true },
     { value: 'PartnerDisplayName', name: 'Tên khách hàng', isChecked: true },
     { value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true },
+    { value: 'Address', name: 'Địa chỉ', isChecked: true },
     { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
     { value: 'AmountDeposit', name: 'Đặt cọc', isChecked: true },
     { value: 'Residual', name: 'Còn nợ', isChecked: true },
@@ -90,7 +91,6 @@ export class DetailBillComponent implements OnInit {
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
     { value: 'DateInvoice', name: 'Ngày bán', isChecked: true },
   ];
-
 
   constructor(
     private message: TDSMessageService,
@@ -107,13 +107,13 @@ export class DetailBillComponent implements OnInit {
     private printerService: PrinterService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
-    private notification: TDSNotificationService
+    private notification: TDSNotificationService,
   ) { }
 
   ngOnInit() {
     this.setFilter();
     this.loadTags();
-    this.loadGridConfig()
+    this.loadGridConfig();
   }
 
   setFilter() {
@@ -132,11 +132,14 @@ export class DetailBillComponent implements OnInit {
     let filters = this.oDataLiveCampaignBillService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe(res => {
+    this.getViewData(params).subscribe({
+      next:(res) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
-    }, error => {
-        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+      }, 
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+      }
     });
   }
 
@@ -199,6 +202,46 @@ export class DetailBillComponent implements OnInit {
     this.router.navigateByUrl(`bill/detail/${id}`);
   }
 
+  onDelete(data: FastSaleOrderModelDTO) {
+    if(this.isProcessing) {
+      return;
+    }
+
+    this.isProcessing = true;
+    this.isLoading = true;
+
+    this.modal.error({
+      title: 'Xóa hóa đơn',
+      content: 'Bạn có muốn xóa hóa đơn',
+      onOk: () => {
+        this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: () => {
+            this.isProcessing = false;
+            this.isLoading = false;
+            
+            // TODO: xóa Id trong danh sách được chọn
+            this.setOfCheckedId.delete(data.Id);
+
+            this.message.success('Xóa hóa đơn thành công!');
+            this.loadData(this.pageSize, this.pageIndex);
+          },
+          error: (error: any) => {
+            this.isProcessing = false;
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}`);
+          }
+        })
+      },
+      onCancel: () => { 
+        this.isProcessing = false;
+        this.isLoading = false;
+      },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+      confirmViewType: "compact"
+    });
+  }
+
   closeTag(): void {
     this.indClickTag = -1;
   }
@@ -211,22 +254,22 @@ export class DetailBillComponent implements OnInit {
 
   assignTags(id: number, tags: TDSSafeAny) {
     let model = { OrderId: id, Tags: tags };
-    this.fastSaleOrderService.assignTagFastSaleOrder(model)
-      .subscribe((res: TDSSafeAny) => {
+    
+    this.fastSaleOrderService.assignTagFastSaleOrder(model).subscribe({
+      next:(res: TDSSafeAny) => {
         if(res && res.OrderId) {
           var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
           if(exits) {
-            exits.Tags = JSON.stringify(tags)
+            exits.Tags = JSON.stringify(tags);
           }
-
           this.indClickTag = -1;
-          this.modelTags = [];
           this.message.success('Gán nhãn thành công!');
         }
-
-    }, error => {
-      this.indClickTag = -1;
-      this.message.error('Gán nhãn thất bại!');
+      }, 
+      error: (err) => {
+        this.indClickTag = -1;
+        this.message.error('Gán nhãn thất bại!');
+      }
     });
   }
 
@@ -322,13 +365,16 @@ export class DetailBillComponent implements OnInit {
 
   print(type: string) {
     let that = this;
+
     if (this.isProcessing) {
-      this.isLoading = false
-      return
+      return;
     }
 
     if (this.checkValueEmpty() == 1) {
+      this.isLoading = true;
+      this.isProcessing = true;
       let obs: TDSSafeAny;
+
       switch (type) {
         case "print":
           obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.idsModel}`);
@@ -337,9 +383,13 @@ export class DetailBillComponent implements OnInit {
           obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.idsModel}`);
           break;
       }
+
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
-        obs.pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+        obs.pipe(takeUntil(this.destroy$), finalize(() => {
+          this.isProcessing = false; 
+          this.isLoading = false;
+        })).subscribe((res: TDSSafeAny) => {
             that.printerService.printHtml(res);
         })
       }
@@ -348,11 +398,13 @@ export class DetailBillComponent implements OnInit {
 
   sendDelivery() {
     if (this.isProcessing) {
-      this.isLoading = false
-      return
+      return;
     }
 
     if (this.checkValueEmpty() == 1) {
+      this.isProcessing = true; 
+      this.isLoading = true;
+
       this.modal.create({
         title: 'Danh sách phù hợp gửi lại mã vận đơn',
         content: SendDeliveryComponent,
@@ -371,6 +423,8 @@ export class DetailBillComponent implements OnInit {
           if(res != null){
             this.loadData(this.pageSize, this.pageIndex);
           }
+
+          this.isProcessing = false; 
           this.isLoading = false;
         }
       })
@@ -379,8 +433,7 @@ export class DetailBillComponent implements OnInit {
 
   approveOrder(type? :string) {
     if (this.isProcessing) {
-      this.isLoading = false;
-      return
+      return;
     }
 
     if (this.checkValueEmpty() == 1) {
@@ -412,12 +465,12 @@ export class DetailBillComponent implements OnInit {
               }
 
               this.loadData(this.pageSize, this.pageIndex);
-
               this.isLoading = false;
             },
             error:error => {
               this.isLoading = false;
               that.isProcessing = false;
+
               that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
             }
           })
@@ -428,6 +481,136 @@ export class DetailBillComponent implements OnInit {
         },
         okText: "Xác nhận",
         cancelText: "Đóng",
+      });
+    }
+  }
+
+  cancelDelivery() {
+    let that = this;
+
+    if (this.isProcessing) {
+      return;
+    }
+    
+
+    if (this.checkValueEmpty() == 1) {
+      that.isProcessing = true;
+      this.isLoading = true;
+
+      this.modal.warning({
+        title: 'Hủy vận đơn',
+        content: 'Bạn có muốn hủy vận đơn',
+        onOk: () => {
+          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+              that.isProcessing = false;
+              this.isLoading = false;
+
+              that.message.success('Hủy vận đơn thành công!');
+              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              this.loadData(this.pageSize, this.pageIndex);
+            }, 
+            error: (err) => {
+              that.isProcessing = false;
+              this.isLoading = false;
+              
+              that.message.error(`${err?.error?.message}` || `Hủy vận đơn thất bại`);
+            }
+          })
+        },
+        onCancel: () => { 
+          that.isProcessing = false;
+          this.isLoading = false;
+        },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+        // confirmViewType:"compact"
+      });
+    }
+  }
+
+  cancelInvoice() {
+    if (this.isProcessing) {
+      return;
+    }
+
+    if (this.checkValueEmpty() == 1) {
+      let that = this;
+      that.isProcessing = true;
+      this.isLoading = true;
+
+      this.modal.success({
+        title: 'Hủy hóa đơn',
+        content: 'Bạn có muốn hủy hóa đơn',
+        onOk: () => {
+          that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+              that.isProcessing = false;
+              this.isLoading = false;
+
+              that.message.success('Hủy hóa đơn thành công!');
+              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              this.loadData(this.pageSize, this.pageIndex);
+            }, 
+            error: (err) => {
+              that.isProcessing = false;
+              this.isLoading = false;
+
+              that.message.error(`${err?.error?.message}` || `Hủy hóa đơn thất bại`);
+            }
+          })
+        },
+        onCancel: () => { 
+          that.isProcessing = false;
+          this.isLoading = false;
+        },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+        // confirmViewType:"compact"
+      });
+    }
+  }
+
+  unLink() {
+    if (this.isProcessing) {
+      return;
+    }
+
+    if (this.checkValueEmpty() == 1) {
+      let that = this;
+      that.isProcessing = true;
+      this.isLoading = true;
+
+      this.modal.success({
+        title: 'Xóa hóa đơn',
+        content: 'Bạn có muốn xóa hóa đơn',
+        onOk: () => {
+          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: TDSSafeAny) => {
+              that.isProcessing = false;
+              this.isLoading = false;
+
+              // TODO: xóa các Id trong danh sách được chọn
+              this.setOfCheckedId.clear();
+
+              that.message.success('Xóa hóa đơn thành công!');
+              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              this.loadData(this.pageSize, this.pageIndex);
+            }, 
+            error: (err) => {
+              that.isProcessing = false;
+              this.isLoading = false;
+
+              that.message.error(`${err?.error?.message}` || `Xóa đơn thất bại`);
+            }
+          })
+        },
+        onCancel: () => { 
+          that.isProcessing = false;
+          this.isLoading = false;
+        },
+        okText: "Xác nhận",
+        cancelText: "Đóng"
       });
     }
   }
@@ -498,4 +681,10 @@ export class DetailBillComponent implements OnInit {
     })
   }
 
+  removeCheckedRow() {
+    this.setOfCheckedId.clear();
+    
+    this.indeterminate = false;
+    this.checked = false;
+  }
 }
