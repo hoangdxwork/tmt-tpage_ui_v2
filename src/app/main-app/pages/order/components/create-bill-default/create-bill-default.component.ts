@@ -108,7 +108,11 @@ export class CreateBillDefaultComponent implements OnInit {
         next:(res) => {
           delete res['@odata.context'];
           this.lstData = {...res};
-
+          // TODO: Cập nhật đối tác mặc định
+          if(this.lstData.Carrier) {
+            this.carrier = this.lstData.Carrier;
+          }
+          // TODO: cập nhật danh sách đơn hàng
           this.lstLine = this.lstData.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
           this.lstLine.forEach((x, i) =>{
             this.checkPartnerInfo(x.Partner, i);
@@ -177,8 +181,8 @@ export class CreateBillDefaultComponent implements OnInit {
     return {
       COD: line.COD,
       CheckAddress: line.CheckAddress,
-      CarrierId: line.CarrierId,
-      CarrierName: line.CarrierName,
+      CarrierId: line.CarrierId || this.carrier?.Id,
+      CarrierName: line.CarrierName || this.carrier?.Name,
       Comment: line.Comment,
       CompanyId: line.CompanyId,
       DepositAmount: line.DepositAmount,

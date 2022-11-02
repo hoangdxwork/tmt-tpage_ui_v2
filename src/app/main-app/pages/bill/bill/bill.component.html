@@ -138,7 +138,7 @@
                   <div class="flex items-center gap-x-1 w-full">
                     <div class="flex flex-wrap items-center w-fit">
                       <div *ngFor="let item of data.Tags | prettyjson">
-                        <tds-tag [tds-tooltip]="item.Name" class="mr-1 mb-1 cursor-pointer" status='primary'>{{ item.Name | truncateString }}</tds-tag>
+                        <tds-tag [tds-tooltip]="item.Name" class="mr-1 mb-1 cursor-pointer" status='primary'>{{ (item.Name || '') | truncateString }}</tds-tag>
                       </div>
                       <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                         [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"

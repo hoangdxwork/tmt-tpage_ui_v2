@@ -7,7 +7,7 @@
             class="flex flex-col w-full max-h-[320px] items-center justify-between divide-y divide-neutral-2-100 px-4 overflow-auto tds-custom-scroll">
             <div class="flex w-full items-center py-4" *ngFor="let item of dataModel">
                 <div class="w-3/4 flex">
-                    <div class="border border-neutral-1-50 rounded px-2">{{ item.TagName | truncateString:30 }}</div>
+                    <div class="border border-neutral-1-50 rounded px-2">{{ (item.TagName || '') | truncateString:30 }}</div>
                 </div>
                 <div class="w-1/4 flex flex-row items-center gap-x-4">
                     <span class="text-caption-1 font-semibold text-neutral-1-700">Lượt sử dụng</span>
