@@ -61,7 +61,7 @@
               <tds-label>Thời gian tổng hợp (phút)</tds-label>
               <tds-form-field class="col-span-2 w-full">
                     <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
-                      [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                    [tdsInputDebounce]="350" (inputKeyup)="onChangeResumeTime($event)" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
               </tds-form-field>
 
               <tds-label>Ngày bắt đầu</tds-label>

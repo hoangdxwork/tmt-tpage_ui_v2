@@ -870,4 +870,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.indClick = -1;
   }
 
+  onChangeResumeTime(event: any) {
+    if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
+      this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+      this._form.controls['ResumeTime'].setValue(0);
+    }
+  }
 }
