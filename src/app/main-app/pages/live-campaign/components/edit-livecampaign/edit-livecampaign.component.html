@@ -254,7 +254,7 @@
 
                                 <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
                                     <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
-                                        <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='primary'>{{ item | truncateString }}</tds-tag>
+                                        <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='primary'>{{ (item || '') | truncateString }}</tds-tag>
                                     </div>
 
                                     <button *ngIf="isEditDetails[detail.value.Id]" (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)"
@@ -353,7 +353,7 @@
                         </tds-form-field>
                       </div>
 
-                      <div *ngIf="!isEditDetails[detail.value.Id]" class="text-body-2"> {{ detail.value.Price || 0 | numberCustom }} </div>
+                      <div *ngIf="!isEditDetails[detail.value.Id]" class="text-body-2"> {{ detail.value.Price || 0 | numberCustom }} đ </div>
                     </td>
 
                     <!-- Thao tác -->

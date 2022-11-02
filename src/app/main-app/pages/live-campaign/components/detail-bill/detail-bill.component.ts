@@ -465,7 +465,6 @@ export class DetailBillComponent implements OnInit {
               }
 
               this.loadData(this.pageSize, this.pageIndex);
-
               this.isLoading = false;
             },
             error:error => {
@@ -509,6 +508,7 @@ export class DetailBillComponent implements OnInit {
 
               that.message.success('Hủy vận đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              this.loadData(this.pageSize, this.pageIndex);
             }, 
             error: (err) => {
               that.isProcessing = false;
@@ -550,6 +550,7 @@ export class DetailBillComponent implements OnInit {
 
               that.message.success('Hủy hóa đơn thành công!');
               that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+              this.loadData(this.pageSize, this.pageIndex);
             }, 
             error: (err) => {
               that.isProcessing = false;

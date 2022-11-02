@@ -249,18 +249,18 @@
 
                 <!-- Địa chỉ -->
                 <td *ngIf="isHidden('Address')" class="border-l">
-                  <span>{{ data.Address | truncateString:80 }}</span>
+                  <span>{{ (data.Address || '') | truncateString:80 }}</span>
                   <!-- <div showMore [text]="(data.Address | bbcodeConvert)"></div> -->
                 </td>
 
                 <!-- Tổng tiền -->
                 <td *ngIf="isHidden('TotalAmount')" class="border-l text-right">
-                  <span>{{data.TotalAmount || 0 | numberCustom | numberCustom }} đ</span>
+                  <span>{{data.TotalAmount || 0 | numberCustom }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
                 <td *ngIf="isHidden('TotalQuantity')" class="border-l text-center">
-                  <span>{{data.TotalQuantity || 0 | numberCustom | numberCustom }}</span>
+                  <span>{{data.TotalQuantity || 0 | numberCustom }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
