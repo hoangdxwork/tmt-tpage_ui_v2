@@ -37,7 +37,7 @@ const routes: Routes = [
     component: HistoryDeliveryStatusDetailComponent
   },
   {
-    path: 'trackingref-blank/:id',
+    path: 'trackingref-blank',
     component: TrackingRefBlankComponent
   }
 ];

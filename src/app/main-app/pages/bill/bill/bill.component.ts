@@ -679,11 +679,9 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onOpenTrackingUrl(data: FastSaleOrderDTO) {
-    // if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
-    //   window.open(data.TrackingUrl, '_blank')
-    // }
-
-    this.router.navigateByUrl(`bill/trackingref-blank/${data.Id}`);
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
+    }
   }
 
   onChangeFilterDate() {
@@ -693,8 +691,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         this.filterDate = 'asc';
         data = data.sort((a: FastSaleOrderDTO, b: FastSaleOrderDTO) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
       break;
-      
-      case 'asc': 
+
+      case 'asc':
         this.filterDate = 'desc';
         data = data.sort((a: FastSaleOrderDTO, b: FastSaleOrderDTO) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
 
