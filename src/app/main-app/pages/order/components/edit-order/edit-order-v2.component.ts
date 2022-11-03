@@ -1,5 +1,4 @@
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
-import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { FormGroup } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
@@ -56,6 +55,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
+import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 
 @Component({
   selector: 'edit-order-v2',
@@ -417,11 +417,15 @@ export class EditOrderV2Component implements OnInit {
           this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
           return;
         }
-        let data = items[0];
+
+        let data = items[0] as DataPouchDBDTO;
+        let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
+            ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
+
         let item = {
-            Quantity: 1,
-            Price: data.ListPrice,
-            ProductId: data.VariantFirstId,
+            Quantity: qty,
+            Price: data.Price,
+            ProductId: data.Id,
             ProductName: data.Name,
             ProductNameGet: data.NameGet,
             ProductCode: data.DefaultCode,

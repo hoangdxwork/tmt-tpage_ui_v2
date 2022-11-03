@@ -52,8 +52,8 @@ export class DefaultOrderComponent implements OnInit {
               this.saleSetting = {...res};
               let product = this.productTemplateUOMLineService.getDefaultProduct();
 
-              let exist = this.saleSetting &&  this.saleSetting.SaleSetting && 
-                  product && product.Id != (this.saleSetting.SaleSetting.ProductId || this.saleSetting.SaleSetting.Product?.Id); 
+              let exist = this.saleSetting &&  this.saleSetting.SaleSetting &&
+                  product && product.Id != (this.saleSetting.SaleSetting.ProductId || this.saleSetting.SaleSetting.Product?.Id);
 
               if(!exist) {
                   this.productTemplateUOMLineService.removeCache();
@@ -122,7 +122,7 @@ export class DefaultOrderComponent implements OnInit {
     if(!this.defaultProduct) {
       this.message.error('Chưa chọn sản phẩm');
     }
-    
+
     model.Product = {
       Id: this.defaultProduct?.ProductId,
       NameGet: this.defaultProduct?.ProductNameGet
@@ -135,7 +135,7 @@ export class DefaultOrderComponent implements OnInit {
           if(res) {
             delete res["@odata.context"];
             this.saleSetting.SaleSetting = {...res};
-            
+
             if(this.defaultProduct) {
                 this.productTemplateUOMLineService.setDefaultProduct(this.defaultProduct);
             }
@@ -179,7 +179,7 @@ export class DefaultOrderComponent implements OnInit {
       next: (res: any) => {
           if(res) {
             this.saleSetting.SaleSetting = res;
-            
+
             delete this.defaultProduct;
             this.productTemplateUOMLineService.removeCache();
             this.sharedService.excuteSaleSetting(this.saleSetting.SaleSetting.Id).subscribe();
