@@ -30,6 +30,7 @@ import { TDSTabsModule } from 'tds-ui/tabs';
 import { FacebookChannelComponent } from './components/facebook-channel/facebook-channel.component';
 import { TshopChannelComponent } from './components/tshop-channel/tshop-channel.component';
 import { TDSEmptyModule } from 'tds-ui/empty';
+import { ConvertPageComponent } from './components/convert-page/convert-page.component';
 
 const SERVICES = [
   FacebookGraphService,
@@ -42,7 +43,8 @@ const SERVICES = [
     AddPageComponent,
     TShopLoginComponent,
     FacebookChannelComponent,
-    TshopChannelComponent
+    TshopChannelComponent,
+    ConvertPageComponent
   ],
   imports: [
     CommonModule,
