@@ -109,6 +109,7 @@
               <th width="100px" *ngIf="isHidden('TotalQuantity')" class="border-l text-center">Tổng SL</th>
               <th width="155px" *ngIf="isHidden('DateCreated')" class="border-l">Ngày tạo đơn</th>
               <th width="160px" *ngIf="isHidden('StatusText')" class="border-l">Trạng thái</th>
+              <th width="160px" *ngIf="isHidden('PriorityStatus')" class="border-l">Độ ưu tiên</th>
               <th width="126px" *ngIf="isHidden('UserName')" class="border-l">Nhân viên</th>
               <th width="131px" [tdsRight]="true" class="border-l">Thao tác</th>
             </tr>
@@ -279,9 +280,6 @@
                         {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
                       </span>
                     </tds-tag>
-                    <tds-tag *ngIf="data.PriorityStatus" [status]='data.PriorityStatus | priorityStatusColor'>
-                      {{data.PriorityStatus | priorityStatusName}}
-                    </tds-tag>
                   </div>
 
                   <tds-dropdown-menu #menu1="tdsDropdownMenu">
@@ -299,6 +297,13 @@
                       </div>
                     </div>
                   </tds-dropdown-menu>
+                </td>
+
+                <!-- Độ ưu tiên -->
+                <td *ngIf="isHidden('PriorityStatus')" class="border-l">
+                  <tds-tag *ngIf="data.PriorityStatus" [status]='data.PriorityStatus | priorityStatusColor'>
+                    {{data.PriorityStatus | priorityStatusName}}
+                  </tds-tag>
                 </td>
 
                 <!-- Nhân viên -->
