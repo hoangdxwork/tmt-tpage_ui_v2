@@ -223,7 +223,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
     if(changes['syncConversationInfo'] && !changes['syncConversationInfo'].firstChange && this.disableSyncOrder == false) {
         let data = {...changes['syncConversationInfo'].currentValue} as ChatomniConversationInfoDto;
-        this.onSyncConversationInfo(data);debugger
+        this.onSyncConversationInfo(data);
     }
 
     if(this.disableSyncOrder) {

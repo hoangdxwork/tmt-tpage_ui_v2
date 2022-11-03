@@ -121,6 +121,8 @@ import { StatusOrderComponent } from './status-order/status-order.component';
 import { CreateOrderStatusComponent } from './components/create-order-status/create-order-status.component';
 import { PartnerStatusComponent } from './components/partner-status/partner-status.component';
 import { DeliveryListComponent } from './components/delivery-list/delivery-list.component';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { AccountJournalService } from '@app/services/account-journal.service';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -146,7 +148,9 @@ const SERVICES = [
     ProductIndexDBService,
     THelperCacheService,
     DeliveryCarrierV2Service,
-    StockChangeProductQtyService
+    StockChangeProductQtyService,
+    FirebaseRegisterService,
+    AccountJournalService,
 ]
 
 @NgModule({
