@@ -51,7 +51,7 @@
 
         <!-- Ngày tạo -->
         <td>
-          {{ data.DateInvoice || '---' }}
+          {{ (data.DateInvoice | yiDateTimeFormat) || '---' }}
         </td>
 
         <!-- Trạng thái -->

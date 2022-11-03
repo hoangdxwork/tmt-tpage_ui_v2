@@ -11,7 +11,7 @@
             </button>
             <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">{{ id ? "CHỈNH SỬA SẢN PHẨM" : "THÊM MỚI SẢN PHẨM" }}</span>
           </div>
-          <button tds-button color="primary" type="submit" class="w-[72px]" (click)="onSave()">
+          <button tds-button color="primary" type="submit" class="min-w-[100px]" (click)="onSave()">
             <span class="text-body-2 font-semibold">Lưu</span>
           </button>
         </div>
@@ -380,7 +380,7 @@
 
                 <tds-label class="max-w-[143px]">Năm sản xuất</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <tds-input-number formControlName="YearOfManufacture" [min]="0"
+                  <tds-input-number formControlName="YearOfManufacture" [min]="0" placeholder="0"
                     class="text-neutral-1-900 text-body-2 font-regular">
                   </tds-input-number>
                   <tds-error>

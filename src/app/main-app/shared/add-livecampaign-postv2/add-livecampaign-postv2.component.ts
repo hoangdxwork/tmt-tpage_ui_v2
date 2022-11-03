@@ -35,7 +35,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
-import { ProductIndexDBService } from '@app/services/product-indexDB.service';
+import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 
 @Component({
   selector: 'app-add-livecampaign-postv2',
@@ -771,4 +771,10 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.indClick = -1;
   }
 
+  onChangeResumeTime(event: any) {
+    if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
+      this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+      this._form.controls['ResumeTime'].setValue(0);
+    }
+  }
 }

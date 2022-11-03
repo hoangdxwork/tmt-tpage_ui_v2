@@ -5,10 +5,10 @@
       <div class="flex flex-col gap-y-1">
         <tds-breadcrumb tds-page-header-breadcrumb class="px-0 pt-0 pb-0">
             <tds-breadcrumb-item (click)="directPage('live-campaign')">Chiến dịch live</tds-breadcrumb-item>
-            <tds-breadcrumb-item>{{liveCampaignId ? 'Chỉnh sửa' : 'Thêm mới'}}</tds-breadcrumb-item>
+            <tds-breadcrumb-item>Chỉnh sửa</tds-breadcrumb-item>
         </tds-breadcrumb>
         <div class="">
-            <span class="text-header-1 text-neutral-1-900 font-semibold">{{ liveCampaignId ? 'Chỉnh sửa chiến dịch' : 'Thêm mới chiến dịch' }}</span>
+            <span class="text-header-1 text-neutral-1-900 font-semibold">Chỉnh sửa chiến dịch</span>
         </div>
       </div>
 
@@ -122,7 +122,8 @@
               <div class="grid grid-cols-4 gap-x-4 items-center">
                 <tds-label>Thời gian tổng hợp (phút)</tds-label>
                 <tds-form-field class="col-span-3">
-                    <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                    <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" 
+                    [tdsInputDebounce]="350" (inputKeyup)="onChangeResumeTime($event)" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 </tds-form-field>
               </div>
 

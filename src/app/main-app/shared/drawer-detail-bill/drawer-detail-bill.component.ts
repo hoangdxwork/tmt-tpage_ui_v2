@@ -198,7 +198,7 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
             }
           })
       },
-      onCancel: () => { that.isProcessing = false; },
+      onCancel: () => { that.isProcessing = false; this.cdRef.detectChanges(); },
       okText: "Xác nhận",
       cancelText: "Đóng",
     });

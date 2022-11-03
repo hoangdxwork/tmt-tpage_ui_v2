@@ -1,5 +1,6 @@
-import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
+import { FormGroup } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -22,7 +23,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { takeUntil, mergeMap } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
@@ -31,7 +32,6 @@ import { CommentsOfOrderDTO } from 'src/app/main-app/dto/saleonlineorder/comment
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { formatNumber } from '@angular/common';
-import { InitSaleDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
@@ -55,6 +55,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
+import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 
 @Component({
   selector: 'edit-order-v2',
@@ -64,7 +65,6 @@ import { SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-p
 
 export class EditOrderV2Component implements OnInit {
 
-  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() dataItem!: QuickSaleOnlineOrderModel;
 
   _form!: FormGroup;
@@ -113,6 +113,9 @@ export class EditOrderV2Component implements OnInit {
   pageSize = 20;
   pageIndex = 1;
   isLoadingNextdata: boolean = false;
+
+  indexDbStorage!: DataPouchDBDTO[];
+  innerTextDebounce!: string;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -171,7 +174,8 @@ export class EditOrderV2Component implements OnInit {
     private sharedService: SharedService,
     private destroy$: TDSDestroyService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
-    private router: Router) {
+    private router: Router,
+    private productIndexDBService: ProductIndexDBService) {
   }
 
   ngOnInit(): void {
@@ -181,6 +185,7 @@ export class EditOrderV2Component implements OnInit {
       this.loadUser();
       this.loadPartnerStatus();
       this.loadSaleConfig();
+      this.productIndexDB();
     }
 
     this.loadCarrier();
@@ -317,21 +322,16 @@ export class EditOrderV2Component implements OnInit {
 
   onSearchProduct(event: any) {
     if(!this.textSearchProduct) {
+      this.innerTextDebounce = '';
       return;
     }
 
-    if(this.virtualScroller) {
-      this.virtualScroller.refresh();
-      this.virtualScroller.scrollToPosition(0);
-    }
-
-    this.pageIndex = 0;
-    let text = this.textSearchProduct;
-    this.loadProduct(text);
+    this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
   }
 
   closeSearchProduct(){
     this.textSearchProduct = '';
+    this.innerTextDebounce = '';
   }
 
   onChangePartnerName(name: any){
@@ -368,26 +368,26 @@ export class EditOrderV2Component implements OnInit {
     this.quickOrderModel.Note = note;
   }
 
-  selectProduct(data: ProductDTOV2){
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMId) as number;
+  selectProduct(item: ProductDTOV2){
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === item.Id && x.UOMId === item.UOMId && item.Active) as number;
     if (Number(index) >= 0){
         this.quickOrderModel.Details[index].Quantity += 1;
     } else{
 
-      let item = {
-          Factor: data.Factor,
-          Price: data.Price,
-          ProductId: data.Id,
-          Note: data?.Note || null,
-          ProductName: data.Name,
-          ProductNameGet: data.NameGet,
-          ProductCode: data.DefaultCode,
+      let data = {
+          Factor: item.Factor,
+          Price: item.Price,
+          ProductId: item.Id,
+          Note: null,
+          ProductName: item.Name,
+          ProductNameGet: item.NameGet,
+          ProductCode: item.DefaultCode,
           Quantity: 1,
-          UOMId: data.UOMId,
-          UOMName: data.UOMName,
+          UOMId: item.UOMId,
+          UOMName: item.UOMName,
       } as Detail_QuickSaleOnlineOrder;
 
-      this.quickOrderModel.Details.push(item);
+      this.quickOrderModel.Details.push(data);
     }
 
     this.closeSearchProduct();
@@ -407,13 +407,25 @@ export class EditOrderV2Component implements OnInit {
       if(!res) return;
 
       res = {...res} as SyncCreateProductTemplateDto;
-      if(res.type === 'select' && res.productTmpl) {
+      this.indexDbStorage = [...res.cacheDbStorage];
 
-        let data = res.productTmpl;
+      if(res.type === 'select' && res.productTmpl) {
+        const product = res.productTmpl as ProductTemplateV2DTO;
+        let items = this.indexDbStorage.filter(y => y.Id == product.VariantFirstId && y.UOMId == product.UOMId && y.Active) as any[];
+
+        if(items && items.length == 0) {
+          this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+          return;
+        }
+
+        let data = items[0] as DataPouchDBDTO;
+        let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
+            ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
+
         let item = {
-            Quantity: 1,
-            Price: data.ListPrice,
-            ProductId: data.VariantFirstId,
+            Quantity: qty,
+            Price: data.Price,
+            ProductId: data.Id,
             ProductName: data.Name,
             ProductNameGet: data.NameGet,
             ProductCode: data.DefaultCode,
@@ -1123,5 +1135,28 @@ export class EditOrderV2Component implements OnInit {
         this.cdRef.detectChanges();
       }
     })
+  }
+
+  productIndexDB() {
+    this.isLoadingProduct = true;
+    this.indexDbStorage = [];
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: KeyCacheIndexDBDTO) => {
+            if(!res) return;
+            this.indexDbStorage = [...res?.cacheDbStorage];
+            this.isLoadingProduct = false;
+            this.cdRef.detectChanges();
+        },
+        error:(err) => {
+            this.isLoadingProduct = false;
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+            this.cdRef.detectChanges();
+        }
+    })
+  }
+
+  trackByIndex(_: number, data: DataPouchDBDTO): number {
+    return data.Id;
   }
 }

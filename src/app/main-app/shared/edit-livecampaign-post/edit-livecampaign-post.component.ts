@@ -29,7 +29,7 @@ import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
-import { ProductIndexDBService } from '@app/services/product-indexDB.service';
+import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 
 @Component({
   selector: 'edit-livecampaign-post',
@@ -870,4 +870,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.indClick = -1;
   }
 
+  onChangeResumeTime(event: any) {
+    if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
+      this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+      this._form.controls['ResumeTime'].setValue(0);
+    }
+  }
 }

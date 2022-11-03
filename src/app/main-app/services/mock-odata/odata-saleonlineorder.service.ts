@@ -19,7 +19,14 @@ export interface FilterObjSOOrderModel {
   } | any,
   liveCampaignId: string | any,
   teamId?: string | any,
-  IsHasPhone: boolean | null
+  IsHasPhone: boolean | any,
+  PriorityStatus: string | any
+}
+
+export const enum PriorityStatus {
+  PriorityAll = 'PriorityAll', // Ưu tiên
+  PreliminaryAPart = 'PreliminaryAPart', // Dự bị một phần
+  PreliminaryAll = 'PreliminaryAll', // Dự bị toàn phần
 }
 
 export interface TabNavsDTO {
@@ -110,6 +117,15 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       dataFilter.filters.push({
           filters: [
             { field: "LiveCampaignId", operator: OperatorEnum.eq, value: Guid.parse(filterObj.liveCampaignId) },
+          ],
+          logic: 'and'
+      })
+    }
+
+    if (filterObj && filterObj?.PriorityStatus) {
+      dataFilter.filters.push({
+          filters: [
+            { field: "PriorityStatus", operator: OperatorEnum.eq, value: filterObj.PriorityStatus },
           ],
           logic: 'and'
       })

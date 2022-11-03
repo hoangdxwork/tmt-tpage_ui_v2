@@ -62,7 +62,8 @@ export class TableAllOrderComponent implements OnInit {
       endDate: new Date(),
     },
     liveCampaignId: null,
-    IsHasPhone: null
+    IsHasPhone: null,
+    PriorityStatus: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
@@ -202,7 +203,8 @@ export class TableAllOrderComponent implements OnInit {
         endDate: event.dateRange.endDate,
       } : null,
       liveCampaignId: null,
-      IsHasPhone: event.IsHasPhone
+      IsHasPhone: event.IsHasPhone,
+      PriorityStatus: event.PriorityStatus
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -217,7 +219,8 @@ export class TableAllOrderComponent implements OnInit {
       searchText: '',
       dateRange: {} as any,
       liveCampaignId: null,
-      IsHasPhone: null
+      IsHasPhone: null,
+      PriorityStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);

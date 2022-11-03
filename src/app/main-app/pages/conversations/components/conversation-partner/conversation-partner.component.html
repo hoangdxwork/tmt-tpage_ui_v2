@@ -270,7 +270,9 @@
 
                                   <label>Trạng thái GH:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <tds-tag status='primary' type="outline" [status]="item.ShowState | getColorStatusShowState">{{item.ShowState}}</tds-tag>
+                                    <span class="text-info-400 cursor-pointer border-b border-info-400 border-dashed">
+                                      {{item.ShipPaymentStatus}}
+                                    </span>
                                   </div>
 
                                   <div class="flex flex-row items-center justify-end w-full col-span-4">

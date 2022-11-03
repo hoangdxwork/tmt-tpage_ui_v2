@@ -227,6 +227,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   onChangeHasAddress(event: boolean) {
     if(event == true) {
         this.queryObj['has_address'] = event;
+        this.queryObj['not_address'] = false;
     } else {
         delete this.queryObj['has_address'];
     }
@@ -235,6 +236,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   onChangeNotAddress(event: boolean) {
     if(event == true) {
         this.queryObj['not_address'] = event;
+        this.queryObj['has_address'] = false;
     } else {
         delete this.queryObj['not_address'];
     }

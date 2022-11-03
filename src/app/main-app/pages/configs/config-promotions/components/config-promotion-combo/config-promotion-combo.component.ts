@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
 import { CompanyService } from 'src/app/main-app/services/company.service';
 import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPercentageSpecificProduct, showProduct } from 'src/app/main-app/services/facades/config-promotion.facede';
-import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';

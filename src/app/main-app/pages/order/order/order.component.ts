@@ -78,7 +78,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     },
     teamId: '',
     liveCampaignId: '',
-    IsHasPhone: null
+    IsHasPhone: null,
+    PriorityStatus: null
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -92,6 +93,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     { value: 'TotalQuantity', name: 'Tổng SL', isChecked: true },
     { value: 'DateCreated', name: 'Ngày tạo', isChecked: false },
     { value: 'StatusText', name: 'Trạng thái', isChecked: true },
+    { value: 'PriorityStatus', name: 'Độ ưu tiên', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
   ];
 
@@ -384,7 +386,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               ids: ids
             }
           });
-    
+
           this.modal.afterAllClose.subscribe({
             next: (res: any) => {
               if(res) {
@@ -408,20 +410,20 @@ export class OrderComponent implements OnInit, AfterViewInit {
           let model = {
             ids: [...this.setOfCheckedId]
           }
-    
+
           this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res) => {
               delete res['@odata.context'];
               res = { ...res } as SaleOnlineOrderGetDetailsDto;
-    
+
               const keyCreateBill = this.saleOnline_OrderService._keyCreateBillOrder;
               let item = JSON.stringify(res);
               localStorage.setItem(keyCreateBill, item);
-    
+
               // TODO: lưu filter cache trước khi load trang add bill
               const key =  this.saleOnline_OrderService._keyCacheFilter;
               this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
-    
+
               this.router.navigateByUrl(`bill/create?isorder=true`);
             },
             error: (err) => {
@@ -552,7 +554,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-      IsHasPhone: null
+      IsHasPhone: null,
+      PriorityStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -590,6 +593,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.liveCampaignId = event.liveCampaignId ? event.liveCampaignId : null;
 
     this.filterObj.teamId = event.teamId ? event.teamId : null;
+
+    this.filterObj.PriorityStatus = event.PriorityStatus ? event.PriorityStatus : null;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
