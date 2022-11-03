@@ -165,13 +165,18 @@
 
               <!-- Trạng thái -->
               <td  class="border-r">
-                <tds-tag [status]="order.StatusText | getColorStatusText" type="outline" class="cursor-pointer"
-                  tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
-                  popoverTrigger="click">
-                  <span class="flex items-center">
-                    {{order.StatusText}}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
-                  </span>
-                </tds-tag>
+                <div class="flex flex-col gap-y-2">
+                  <tds-tag [status]="order.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
+                    tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
+                    popoverTrigger="click">
+                    <span class="flex items-center">
+                      {{ order.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
+                    </span>
+                  </tds-tag>
+                  <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>
+                    {{order.PriorityStatus | priorityStatusName}}
+                  </tds-tag>
+                </div>
 
                 <tds-dropdown-menu #menu1="tdsDropdownMenu">
                   <div class="w-[160px] max-h-[300px] overflow-y-auto tds-panel-scroll">
