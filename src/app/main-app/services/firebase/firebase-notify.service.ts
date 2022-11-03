@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, take, mergeMap } from "rxjs";
-import { AngularFireMessaging, AngularFireMessagingModule } from '@angular/fire/compat/messaging';
-import { AngularFireDatabase } from "@angular/fire/compat/database";
-import { AngularFireAuth } from "@angular/fire/compat/auth";
 import { TDSMessageService } from "tds-ui/message";
 import { FirebaseRegisterService } from "./firebase-register.service";
 import { FireBaseTopicDto } from "@app/dto/firebase/topics.dto";
+import { AngularFireDatabase } from "@angular/fire/compat/database";
+import { AngularFireMessaging } from "@angular/fire/compat/messaging";
+import { AngularFireAuth } from "@angular/fire/compat/auth";
 
 @Injectable({
   providedIn: 'root'
@@ -20,18 +20,18 @@ export class FirebasePushNotificationService  {
 
   constructor(private message: TDSMessageService,
       private angularFireMessaging: AngularFireMessaging,
-      private angularFireDb: AngularFireDatabase,
       private firebaseRegisterService: FirebaseRegisterService,
       private angularFireAuth: AngularFireAuth) {
 
         this.angularFireMessaging.messages.subscribe({
-          next: (message: any) => {
-              console.log("Subscribing to foreground messages",message);
-          },
-          error: (err: any) => {
-            console.error("Thông nhận tin", err);
-            this.message.error(err);
-          }
+            next: (messagingContext: any) => {
+                messagingContext.onMessage = messagingContext.onMessage.bind(messagingContext);
+                messagingContext.onTokenRefresh = messagingContext.onTokenRefresh.bind(messagingContext);
+            },
+            error: (err: any) => {
+                console.error("Thông nhận tin", err);
+                this.message.error(err);
+            }
         })
   }
 
@@ -40,7 +40,7 @@ export class FirebasePushNotificationService  {
         next: (res: any) => {
             const data = {} as any;
             data[userId] = token;
-            this.angularFireDb.object('/fcmTokens/').update(data);
+            // this.angularFireDb.object('/fcmTokens/').update(data);
         },
         error: (err: any) => {
             console.error("updateToken", err);
@@ -98,4 +98,5 @@ export class FirebasePushNotificationService  {
       }
     })
   }
+
 }
