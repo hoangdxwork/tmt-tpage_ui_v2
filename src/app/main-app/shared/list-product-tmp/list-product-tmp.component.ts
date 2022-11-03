@@ -4,7 +4,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '../../dto/product-pouchDB/product-pouchDB.dto';
-import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { ProductIndexDBService } from '../../services/product-indexdb.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { takeUntil } from 'rxjs/operators';
 import { orderBy as _orderBy } from 'lodash';
@@ -183,6 +183,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
           case 'CategId':
             this.isShowFilterCategId = true;
+            return
           break;
 
           default: break;
@@ -214,6 +215,9 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   selectType(item: any): void {
     this.currentType = item;
     this.isShowFilterCategId = false;
+    if(this.currentType.value != 'CategId') {
+      delete this.categIdFilter;
+    }
 
     this.loadDataTable();
   }
@@ -361,6 +365,9 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   onCloseFilter() {
     this.isShowFilterCategId = false;
     delete this.categIdFilter;
+
+    let data = this.indexDbStorage || [];
+    this.lstOfData = [...data];
   }
 
   onFilterCategId() {
@@ -379,6 +386,13 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   onChangePopover(event: boolean) {
     if(!event) {
       this.isShowFilterCategId = false;
+    }
+  }
+
+  onChangeCategId(event: string) {
+    if(!event) {
+      let data = this.indexDbStorage || [];
+      this.lstOfData = [...data];
     }
   }
 }

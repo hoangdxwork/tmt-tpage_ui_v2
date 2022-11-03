@@ -71,7 +71,7 @@ import { ConfigEditPromotionComponent } from './config-promotions/components/con
 import { ConfigAddPromotionComponent } from './config-promotions/components/config-add-promotion/config-add-promotion.component';
 import { ListProductVariantComponent } from './product-variant/product-variant.component';
 import { CreateProductVariantComponent } from './create-product-variant/create-product-variant.component';
-import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { ProductIndexDBService } from '../../services/product-indexdb.service';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSModalModule, TDSModalService } from 'tds-ui/modal';
 import { TDSAvatarModule } from 'tds-ui/avatar';

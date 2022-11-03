@@ -1,5 +1,5 @@
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
-import { ProductIndexDBService } from './../../../../services/product-indexDB.service';
+import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { FormGroup } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
@@ -368,16 +368,8 @@ export class EditOrderV2Component implements OnInit {
     this.quickOrderModel.Note = note;
   }
 
-  selectProduct(model: ProductDTOV2){
-    let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.ProductTmplId && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
-
-    if(items && items.length == 0) {
-      this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-      return;
-    }
-
-    let item = items[0];
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === item.Id && x.UOMId === item.UOMId) as number;
+  selectProduct(item: ProductDTOV2){
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === item.Id && x.UOMId === item.UOMId && item.Active) as number;
     if (Number(index) >= 0){
         this.quickOrderModel.Details[index].Quantity += 1;
     } else{

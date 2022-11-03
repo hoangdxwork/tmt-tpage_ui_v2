@@ -39,7 +39,7 @@
                 <ng-template #contentTemplate>
                     <div class="w-[304px]">
                         <tds-form-field>
-                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm'
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm' (selectChange)="onChangeCategId($event)"
                             [allowClear]="true" [valuePrimitive]="false" [data]="categoryList" [(ngModel)]="categIdFilter"
                             [autoClose]="true">
                         </tds-select>
