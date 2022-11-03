@@ -81,6 +81,15 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
       })
     }
 
+    if (filterObj && filterObj?.PriorityStatus) {
+      dataFilter.filters.push({
+          filters: [
+            { field: "PriorityStatus", operator: OperatorEnum.eq, value: filterObj.PriorityStatus },
+          ],
+          logic: 'and'
+      })
+    }
+
     return dataFilter;
   }
 

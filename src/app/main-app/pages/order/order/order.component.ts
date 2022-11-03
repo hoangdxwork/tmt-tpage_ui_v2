@@ -78,7 +78,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     },
     teamId: '',
     liveCampaignId: '',
-    IsHasPhone: null
+    IsHasPhone: null,
+    PriorityStatus: null
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -552,7 +553,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-      IsHasPhone: null
+      IsHasPhone: null,
+      PriorityStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -590,6 +592,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.liveCampaignId = event.liveCampaignId ? event.liveCampaignId : null;
 
     this.filterObj.teamId = event.teamId ? event.teamId : null;
+
+    this.filterObj.PriorityStatus = event.PriorityStatus ? event.PriorityStatus : null;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);

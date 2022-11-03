@@ -951,6 +951,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$)).subscribe({
           next: ()=> {
               this.assignTagOnView(item);
+              this.message.success('Thêm nhãn thành công');
               this.crmTagService.addTagLocalStorage(item.Id);
           },
           error: err => {
@@ -964,6 +965,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
             this.removeTagOnView(item);
+            this.message.success('Gỡ nhãn thành công');
         },
         error: err=>{
             this.message.error(err.error? err.error.message : 'Xóa nhãn thất bại');
