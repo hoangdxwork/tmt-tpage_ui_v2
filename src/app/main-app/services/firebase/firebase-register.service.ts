@@ -22,18 +22,18 @@ export class FirebaseRegisterService extends BaseSevice {
     super(apiService)
   }
 
-  registerDevice(data: any): Observable<TDSSafeAny>{
-    let url = `${this._BASE_URL}/${this.prefix}/${this.table}/register-device`;
-    return this.fireBaseHttp.post(url, JSON.stringify(data)).pipe((res: any) => { return res });
+  registerDevice(data: any): Observable<TDSSafeAny> {
+    let url = `${this._BASE_URL}/${this.prefix}}/register-device`;
+    return this.fireBaseHttp.post(url, JSON.stringify(data)).pipe(res => res);
   }
 
-  registerTopics(data: any) {
-    let url = `${this._BASE_URL}/${this.prefix}/${this.table}/register-topics`;
-    return this.fireBaseHttp.post(url, JSON.stringify(data)).pipe((res: any) => { return res });
+  registerTopics(data: any): Observable<TDSSafeAny> {
+    let url = `${this._BASE_URL}/${this.prefix}/register-topics`;
+    return this.fireBaseHttp.post(url, JSON.stringify(data)).pipe(res => res);
   }
 
-  topics() {
-    let url = `${this._BASE_URL}/${this.prefix}/${this.table}/topics`;
-    return this.fireBaseHttp.get(url).pipe((res: any) => { return res });
+  topics(): Observable<TDSSafeAny> {
+    let url = `${this._BASE_URL}/${this.prefix}/topics`;
+    return this.fireBaseHttp.get(url).pipe(res => res);
   }
 }

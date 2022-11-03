@@ -17,7 +17,8 @@ export class FireBaseHttpService {
       this.options = {};
       this.options.headers = new HttpHeaders();
       this.options.headers = this.options.headers.append('Content-Type', 'application/json');
-      this.options.headers = this.options.headers.append('Access-Control-Allow-Origin', '*');
+      this.options.headers = this.options.headers.append('Accept', 'application/json, text/plain');
+      this.options.headers = this.options.headers.append('Access-Control-Allow-Origin', 'true');
   }
 
   public request(method: string, url: string, options?: any): Observable<any> {
