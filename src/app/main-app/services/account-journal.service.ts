@@ -24,12 +24,4 @@ export class AccountJournalService extends BaseSevice {
 
     return this.apiService.getData<ODataResponsesDTO<AccountJournalDTO>>(api, null);
   }
-
-  topics() {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/api/v2/0/notification/topics`,
-      method: CoreApiMethodType.get
-    }
-    return this.apiService.getData<any>(api, null);
-  }
 }
