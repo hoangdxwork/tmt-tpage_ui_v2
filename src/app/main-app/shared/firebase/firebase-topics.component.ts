@@ -19,19 +19,26 @@ export class FirebaseTopicsComponent implements OnInit {
     topics: FireBaseTopicDto[] = [];
 
     constructor(private message: TDSMessageService,
-
-    private tagService: TagService,
-      private accountJournalService: AccountJournalService,
+      private tagService: TagService,
       private firebaseRegisterService: FirebaseRegisterService){
     }
 
     ngOnInit(){
       this.loadTopics();
+      this.loadRegisterTopics();
       this.tagService.get().subscribe()
     }
 
-    loadTopics() {debugger
-      this.accountJournalService.topics().subscribe((res: any) => {debugger})
+    loadTopics() {
+      this.firebaseRegisterService.topics().subscribe((res: any) => {})
+    }
+
+    loadRegisterTopics() {
+      let model = {
+        TopicIds: ["Partner:Created"]
+      }
+
+      this.firebaseRegisterService.registerTopics(model).subscribe(res => {})
     }
 
 }
