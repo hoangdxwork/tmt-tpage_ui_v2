@@ -57,7 +57,7 @@ import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentState } from '../../services/facebook-state/attachment.state';
 import { ModalAddCollectionComponent } from './components/modal-add-collection/modal-add-collection.component';
 import { PostOrderConfigComponent } from './components/config-post/order-config/post-order-config.component';
-import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { ProductIndexDBService } from '../../services/product-indexdb.service';
 import { ModalSelectAttachmentComponent } from './components/modal-select-attachment/modal-select-attachment.component';
 import { ModalAddAttachmentCollectionComponent } from './components/modal-add-attachment-collection/modal-add-attachment-collection.component';
 import { ModalSendMessageAllComponent } from './components/modal-send-message-all/modal-send-message-all.component';

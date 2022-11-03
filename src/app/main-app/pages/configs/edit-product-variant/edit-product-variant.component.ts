@@ -7,7 +7,7 @@ import { ProductService } from 'src/app/main-app/services/product.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';

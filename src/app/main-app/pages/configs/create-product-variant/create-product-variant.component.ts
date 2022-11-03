@@ -1,5 +1,5 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { IRAttachmentDTO } from './../../../dto/attachment/attachment.dto';
 import { ProductTemplateService } from './../../../services/product-template.service';
 import { ConfigAttributeLine } from './../../../dto/configs/product/config-product-default.dto';

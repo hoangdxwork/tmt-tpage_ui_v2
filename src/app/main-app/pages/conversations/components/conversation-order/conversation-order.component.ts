@@ -1,5 +1,5 @@
 import { KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ProductIndexDBService } from './../../../../services/product-indexDB.service';
+import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
@@ -1289,17 +1289,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     });
   }
 
-  selectProduct(model: DataPouchDBDTO) {
-    let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.ProductTmplId && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
-
-    if(items && items.length == 0) {
-      this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-      return;
-    }
-
-    let item = items[0];
-    
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId) as number;
+  selectProduct(item: DataPouchDBDTO) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId && item.Active) as number;
     if(Number(index) < 0) {
         let data = {...item} as ProductDTOV2;
         let x = this.mappingDetailQuickSaleOnlineOrder(data) ;

@@ -1,5 +1,5 @@
 import { CreateUnitComponent } from './../components/create-unit/create-unit.component';
-import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { UpdateInitInventoryComponent } from './../components/update-init-inventory/update-init-inventory.component';
 import { StockChangeProductQtyDTO } from './../../../dto/product/stock-change-product-qty.dto';
 import { StockChangeProductQtyService } from './../../../services/stock-change-product-qty.service';

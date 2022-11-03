@@ -1,4 +1,4 @@
-import { ProductIndexDBService } from './../../../../services/product-indexDB.service';
+import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';

@@ -13,7 +13,7 @@ import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-categ
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { SharedService } from '../../services/shared.service';
 import { map, takeUntil } from 'rxjs/operators';
-import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { ProductIndexDBService } from '../../services/product-indexdb.service';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
