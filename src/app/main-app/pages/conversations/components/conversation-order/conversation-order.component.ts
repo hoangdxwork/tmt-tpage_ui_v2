@@ -1216,8 +1216,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 return;
               }
 
-              let x =  items[0];
-              
+              let x = items[0] as DataPouchDBDTO;
+
               let data: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(x);
               this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[data]];
 
@@ -1230,9 +1230,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu
+    let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
+        ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
+
     //data sẽ là ProductDTOV2 | ProductTemplateV2DTO
-    let model : Detail_QuickSaleOnlineOrder = {
-      Quantity: 1,
+    let model: Detail_QuickSaleOnlineOrder = {
+      Quantity: qty,
       Price: data.Price,
       ProductId: data.Id,
       ProductName: data.Name,
