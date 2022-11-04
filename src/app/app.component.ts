@@ -11,6 +11,7 @@ import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socke
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { FirebasePushNotificationService } from '@app/services/firebase/firebase-notify.service';
 import { SharedService } from '@app/services/shared.service';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,7 @@ export class AppComponent {
     public router: Router,
     private route: ActivatedRoute,
     private sharedService: SharedService,
+    public afAuth: AngularFireAuth,
     private notification: TDSNotificationService,
     private tdsConfigService: TDSConfigService,
     private socketOnEventService: SocketOnEventService,

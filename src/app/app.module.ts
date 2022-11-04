@@ -26,11 +26,11 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
 import { TDSButtonModule } from "tds-ui/button";
 
+import { SETTINGS as AUTH_SETTINGS } from '@angular/fire/compat/auth';
+import { PERSISTENCE } from '@angular/fire/compat/auth';
+
 import "quill-mention";
 import { environment } from 'src/environments/environment';
-
-import { initializeApp } from 'firebase/app';
-initializeApp(environment.firebaseConfig);
 
 const atValues = [
   { id: 1, value: "Họ & tên" },
@@ -102,11 +102,18 @@ registerLocaleData(localeVi);
     AngularFireModule.initializeApp(environment.firebaseConfig),
   ],
   providers: [{ provide: TDS_I18N, useValue: vi_VN },
-    TAuthGuardService, {
+    TAuthGuardService,
+    {
       provide: HTTP_INTERCEPTORS,
-      useClass: TAuthInterceptorService, multi: true
+      useClass: TAuthInterceptorService,
+      multi: true
     },
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    },
+    { provide: AUTH_SETTINGS, useValue: { appVerificationDisabledForTesting: true } },
+    { provide: PERSISTENCE, useValue: 'session' }
   ],
 
   bootstrap: [AppComponent]

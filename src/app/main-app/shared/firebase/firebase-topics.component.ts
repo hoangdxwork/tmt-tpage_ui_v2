@@ -30,7 +30,9 @@ export class FirebaseTopicsComponent implements OnInit {
     }
 
     loadTopics() {
-      this.firebaseRegisterService.topics().subscribe((res: any) => {})
+      this.firebaseRegisterService.topics().subscribe((res: any) => {
+        this.topics = res;
+      })
     }
 
     loadRegisterTopics() {

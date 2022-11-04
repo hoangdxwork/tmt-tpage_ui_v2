@@ -17,23 +17,34 @@ export class FirebaseRegisterService extends BaseSevice {
   table: string = "";
   baseRestApi: string = "";
 
-  constructor(private apiService: TCommonService,
-    private fireBaseHttp: FireBaseHttpService) {
+  constructor(private apiService: TCommonService) {
     super(apiService)
   }
 
   registerDevice(data: any): Observable<TDSSafeAny> {
-    let url = `${this._BASE_URL}/${this.prefix}}/register-device`;
-    return this.fireBaseHttp.post(url, JSON.stringify(data)).pipe(res => res);
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/register-device`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, data);
   }
 
   registerTopics(data: any): Observable<TDSSafeAny> {
-    let url = `${this._BASE_URL}/${this.prefix}/register-topics`;
-    return this.fireBaseHttp.post(url, JSON.stringify(data)).pipe(res => res);
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/register-topics`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, data);
   }
 
-  topics(): Observable<TDSSafeAny> {
-    let url = `${this._BASE_URL}/${this.prefix}/topics`;
-    return this.fireBaseHttp.get(url).pipe(res => res);
+  topics():  Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/topics`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
   }
 }
