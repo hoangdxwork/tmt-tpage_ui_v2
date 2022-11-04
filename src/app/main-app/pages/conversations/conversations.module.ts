@@ -145,6 +145,7 @@ import { quillOptions } from 'src/app/app.module';
 import { ModalProductDefaultComponent } from './components/modal-product-default/modal-product-default.component';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
+import { ModalListPostComponent } from './components/modal-list-post/modal-list-post.component';
 import { DrawerEditLiveCampaignComponent } from './conversation-post/live-campaign-post/drawer-edit-livecampain.component';
 
 const SERVICES = [
@@ -255,8 +256,8 @@ const SERVICES = [
     LiveCampaignPostComponent,
     ModalAddAddressV2Component,
     ModalProductDefaultComponent,
+    ModalListPostComponent,
     DrawerEditLiveCampaignComponent
-
   ],
 
   imports: [

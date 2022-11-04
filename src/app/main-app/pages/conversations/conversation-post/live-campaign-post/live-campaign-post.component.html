@@ -14,33 +14,6 @@
           </button>
       </div>
 
-      <tds-tag *ngIf="currentLiveCampaign" status="bg-base-orange-50 text-base-orange-500 inline-flex"
-          style="border: 1px solid #f3deba; width: fit-content; border-radius: 5px;">
-          <span class="flex items-center py-0.5 cursor-pointer max-w-[450px]" >
-              <span class="text-body-2 font-regular flex-auto truncate mr-2">{{ currentLiveCampaign.Name }}</span>
-              <span class="text-neutral-1-400 font-regular text-sm w-fit">{{currentLiveCampaign.DateCreated | date : "dd/MM/yyyy HH:mm"}}</span>
-          </span>
-      </tds-tag>
-
-      <div *ngIf="currentLiveCampaign?.Id" class="flex gap-x-3">
-          <button tds-button color="info" size="md" class="flex items-center"
-              (click)="showModelOverViewLiveCampaign(currentLiveCampaign?.Id, currentLiveCampaign?.Name)">
-              <span class="flex items-center gap-x-2">
-                 <span class="tdsi-eye-open-fill text-lg"></span>
-                 <span>Tổng quan chiến dịch</span>
-              </span>
-          </button>
-
-          <button tds-button-icon color="primary" (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)" tds-tooltip tooltipTitle="Chỉnh sửa chiến dịch">
-              <span class="tdsi-edit-fill"></span>
-          </button>
-
-          <button tds-button-icon color="error" (click)="removeLiveCampaign()" tds-tooltip tooltipTitle="Bỏ chọn chiến dịch">
-              <span class="tdsi-close-fill"></span>
-          </button>
-
-      </div>
-
       <div class="pr-2 h-[calc(100vh-500px)] overflow-auto tds-custom-scroll">
         <virtual-scroller *ngIf="lstOfData && lstOfData.length > 0"
             #scroll [items]="lstOfData" class="tds-custom-scroll w-full h-full"

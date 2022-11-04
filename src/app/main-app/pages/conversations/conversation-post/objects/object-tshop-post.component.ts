@@ -34,15 +34,15 @@ export class ObjectTshopPostComponent  implements OnInit, OnChanges {
   }
 
   showModalLiveCampaign(item: ChatomniObjectsItemDto) {
-    const modal = this.modal.create({
-      title: 'Chiến dịch',
-      content: ListLiveCampaignComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        post: item
-      }
-    });
+    // const modal = this.modal.create({
+    //   title: 'Chiến dịch',
+    //   content: ListLiveCampaignComponent,
+    //   size: "lg",
+    //   viewContainerRef: this.viewContainerRef,
+    //   componentParams:{
+    //     post: item
+    //   }
+    // });
   }
 
   selectPost(item: ChatomniObjectsItemDto) {
