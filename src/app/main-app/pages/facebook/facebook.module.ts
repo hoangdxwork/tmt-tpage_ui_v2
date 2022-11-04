@@ -26,6 +26,11 @@ import { TDSBadgeModule } from 'tds-ui/badges';
 import { TDSAvatarModule } from 'tds-ui/avatar';
 import { TDSToolTipModule } from 'tds-ui/tooltip';
 import { TShopLoginComponent } from './components/tshop-login/tshop-login.component';
+import { TDSTabsModule } from 'tds-ui/tabs';
+import { FacebookChannelComponent } from './components/facebook-channel/facebook-channel.component';
+import { TshopChannelComponent } from './components/tshop-channel/tshop-channel.component';
+import { TDSEmptyModule } from 'tds-ui/empty';
+import { ConvertPageComponent } from './components/convert-page/convert-page.component';
 
 const SERVICES = [
   FacebookGraphService,
@@ -36,7 +41,10 @@ const SERVICES = [
   declarations: [
     FacebookComponent,
     AddPageComponent,
-    TShopLoginComponent
+    TShopLoginComponent,
+    FacebookChannelComponent,
+    TshopChannelComponent,
+    ConvertPageComponent
   ],
   imports: [
     CommonModule,
@@ -60,7 +68,9 @@ const SERVICES = [
     PipeModule,
     TDSSpinnerModule,
     UploadImageModule,
-    TDSToolTipModule
+    TDSToolTipModule,
+    TDSTabsModule,
+    TDSEmptyModule
   ],
   providers: [
     ...SERVICES,
