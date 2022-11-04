@@ -56,5 +56,4 @@ export class FacebookChannelComponent implements OnInit {
     });
   }
 
-
 }
