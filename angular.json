@@ -133,8 +133,7 @@
               "browserTarget": "source:build:staging"
             },
             "development": {
-              "browserTarget": "source:build:development",
-              "ssl": true
+              "browserTarget": "source:build:development"
             }
           },
           "defaultConfiguration": "development"
