@@ -27,6 +27,11 @@
                             </a>
                         </span>
                     </tds-tag>
+
+                    <div class="pl-4 flex gap-x-2 items-center" *ngIf="data.LiveCampaignId">
+                        <tds-switch size="md" [(ngModel)]="drawerEditLiveCampaign" (ngModelChange)="onChangeDrawerEditLive($event)"
+                        [ngModelOptions]="{standalone: true}"></tds-switch>
+                    </div>
                 </div>
 
                 <!-- tshop -->
@@ -232,3 +237,9 @@
     </div>
 
 </div>
+
+<tds-drawer [visible]="visibleDrawerEditLive" [width]="'430px'" [placement]="'left'" (onClose)="closeDrawerEditLiveCampaign()" [mask]="false" >
+    <ng-container *tdsDrawerContent>
+         <drawer-edit-livecampaign [liveCampaignId]="data.LiveCampaignId"></drawer-edit-livecampaign>
+    </ng-container>
+</tds-drawer>
