@@ -27,7 +27,7 @@ import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-pos
   providers: [ TDSDestroyService ]
 })
 
-export class LiveCampaignPostComponent implements OnInit, OnChanges{
+export class LiveCampaignPostComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
 

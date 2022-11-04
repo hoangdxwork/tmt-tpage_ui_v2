@@ -24,6 +24,7 @@ import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-sale
 import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { fromEvent } from 'rxjs';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
 
 @Component({
   selector: 'conversation-post-view',
@@ -80,11 +81,15 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   indClickTag: string = '';
   keyWords: string | TDSSafeAny = '' ;
 
+  drawerEditLiveCampaign: boolean = false;
+  visibleDrawerEditLive: boolean = false;
+
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private cdRef: ChangeDetectorRef,
+    private liveCampaignService: LiveCampaignService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private facebookCommentService: FacebookCommentService,
     private postEvent: ConversationPostEvent,
@@ -97,6 +102,18 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   ngOnInit() {
     this.loadDefaultProduct();
     this.eventEmitter();
+
+    if(this.data) {
+      let objectId = this.data.ObjectId;
+      let liveCampaignId = this.data.LiveCampaignId as string;
+      let data = this.liveCampaignService.getLocalStorageDrawer(objectId, liveCampaignId) as any; debugger
+
+      let exist = data && data.liveCampaignId && data.ObjectId;
+      if(exist) {
+        this.drawerEditLiveCampaign = true;
+        this.openDrawerEditLiveCampaign();
+      }
+    }
   }
 
   eventEmitter() {
@@ -161,18 +178,18 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
               this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}`, null, `comments-${this.data.ObjectId}`)
                 .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
               break;
-      
+
             case "excel_phone":
               this.excelExportService.exportPost(
                 `/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true`, null, `comments-${this.data.ObjectId}-with-phone`)
                 .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
               break;
-      
+
             case "excel_phone_distinct":
               this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true&isFilterPhone=true`, null, `comments-${this.data.ObjectId}-with-distinct-phone`)
                 .pipe(finalize(() => this.isProcessing = false)).pipe(takeUntil(this.destroy$)).subscribe();
               break;
-      
+
             default:
               break;
           }
@@ -182,7 +199,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
       }
     );
 
-    
+
   }
 
   onChangeFilter(event: any): any {
@@ -400,12 +417,32 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
         }) , debounceTime(750)
 
       ).subscribe({
-        next: (text: string) => { 
+        next: (text: string) => {
             this.keyWords = text.trim();
             this.cdRef.markForCheck();
         }
       })
     }
+  }
+
+  onChangeDrawerEditLive(event: any) {
+    this.visibleDrawerEditLive = event;
+
+    let liveCampaignId = this.data.LiveCampaignId as string;
+    if(event) {
+        this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId);
+    } else {
+        this.liveCampaignService.removeLocalStorageDrawer(this.data.ObjectId, liveCampaignId);
+    }
+  }
+
+  openDrawerEditLiveCampaign() {
+    this.visibleDrawerEditLive = true;
+  }
+
+  closeDrawerEditLiveCampaign(): void {
+    this.visibleDrawerEditLive = false;
+    this.drawerEditLiveCampaign = false;
   }
 
 }

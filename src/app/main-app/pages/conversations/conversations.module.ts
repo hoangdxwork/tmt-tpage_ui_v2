@@ -146,6 +146,7 @@ import { ModalProductDefaultComponent } from './components/modal-product-default
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
 import { ModalListPostComponent } from './components/modal-list-post/modal-list-post.component';
+import { DrawerEditLiveCampaignComponent } from './conversation-post/live-campaign-post/drawer-edit-livecampain.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -256,7 +257,7 @@ const SERVICES = [
     ModalAddAddressV2Component,
     ModalProductDefaultComponent,
     ModalListPostComponent,
-
+    DrawerEditLiveCampaignComponent
   ],
 
   imports: [
