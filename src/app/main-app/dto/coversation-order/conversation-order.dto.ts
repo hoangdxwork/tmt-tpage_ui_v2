@@ -106,6 +106,7 @@ export interface ConversationOrderDTO {
   CompanyName?: any;
   FormAction?: any;
   MessageCount: number;
+  PriorityStatus?: string;
 }
 
 export interface ConversationOrderProductDefaultDTO {

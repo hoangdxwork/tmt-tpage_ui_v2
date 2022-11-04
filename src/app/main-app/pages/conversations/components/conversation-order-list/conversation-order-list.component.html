@@ -67,8 +67,8 @@
                         [extra]="extraTpl1">
                         <!-- Header  -->
                         <ng-template #headerOrder>
-                        <div class="grid grid-cols-3 gap-x-2.5 items-center z-10 flex-auto pr-3">
-                            <div class="flex flex-col">
+                        <div class="flex gap-x-2.5 items-center z-10 flex-auto pr-3">
+                            <div class="w-1/4 flex flex-col">
                                 <div>
                                     <span class="text-info-500 font-semibold">#{{ order.Code || 'N/A' }}</span>
                                 </div>
@@ -76,7 +76,7 @@
                                     <span class="text-neutral-1-400 text-caption-2">{{ order.DateCreated | date:"HH:mm, dd/MM/yyyy" }}</span>
                                 </div>
                             </div>
-                            <div class="flex flex-col justify-between">
+                            <div class="w-1/4 flex flex-col justify-between">
                                 <div>
                                     <span class="">{{ order.Facebook_UserName }}</span>
                                 </div>
@@ -104,7 +104,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex justify-end">
+                            <div class="truncate w-1/4">
+                                <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>
+                                    {{order.PriorityStatus | priorityStatusName}}
+                                </tds-tag>
+                            </div>
+                           
+                            <div class="w-1/5 flex justify-end gap-x-2 ">
                                 <tds-badge status="secondary" text="{{ order.StatusText }}"></tds-badge>
                             </div>
                         </div>

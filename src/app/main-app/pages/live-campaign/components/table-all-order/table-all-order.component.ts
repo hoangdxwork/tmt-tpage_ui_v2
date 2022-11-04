@@ -538,9 +538,6 @@ export class TableAllOrderComponent implements OnInit {
       title: 'Lịch sử gửi tin nhắn',
       content: ModalHistoryChatComponent,
       size: "xl",
-      bodyStyle: {
-        padding: '0px',
-      },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         orderId: orderId,

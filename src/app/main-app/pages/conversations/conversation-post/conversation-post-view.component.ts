@@ -1,3 +1,4 @@
+import { OverviewLiveCampaignComponent } from './../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { SharedService } from './../../../services/shared.service';
 import { ModalProductDefaultComponent } from './../components/modal-product-default/modal-product-default.component';
 import { ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
@@ -230,16 +231,32 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
 
   }
 
-  showModalLiveCampaign(data: ChatomniObjectsItemDto) {
-    const modal = this.modalService.create({
-      title: 'Chiến dịch',
-      content: LiveCampaignPostComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-          data: data
-      }
-    });
+  showModalLiveCampaign(data: ChatomniObjectsItemDto, liveCampaignId?: string) {
+    if(liveCampaignId) {
+      const modal = this.modalService.create({
+        title: 'Tổng quan chiến dịch live',
+        content: OverviewLiveCampaignComponent,
+        size: "xl",
+        bodyStyle: {
+          padding: '0px'
+        },
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            liveCampaignId: liveCampaignId,
+            data: data
+        }
+      });
+    } else {
+      const modal = this.modalService.create({
+        title: 'Chiến dịch',
+        content: LiveCampaignPostComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            data: data
+        }
+      })
+    } 
   }
 
   openTag(item: ChatomniObjectsItemDto) {
