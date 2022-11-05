@@ -48,6 +48,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
   indClickTag: number = -1;
   modelTags: Array<string> = [];
   isLoadingSelect: boolean = false;
+  isLoadingTable: boolean = false;
 
   numberWithCommas =(value: TDSSafeAny) =>{
     if(value != null) {
@@ -457,6 +458,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
 
     let id = this.liveCampaignId as string;
     this.isLoading = true;
+    
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(!res) return;
@@ -464,10 +466,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
           this.initFormDetails(res.Details);
           this.livecampaignSimpleDetail = [...this.detailsForm.value];
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
