@@ -227,8 +227,7 @@
             <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
                 <div  class="flex w-full h-full overflow-hidden" *ngIf="data && !isLoading">
                     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
-                        <comment-filter-all [data]="data" [team]="team" [innerText]="keyWords">
-                        </comment-filter-all>
+                        <comment-filter-all [data]="data" [team]="team" [innerText]="keyWords"></comment-filter-all>
                     </div>
                 </div>
             </tds-spin>
