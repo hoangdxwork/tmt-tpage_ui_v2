@@ -185,10 +185,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
 
             this.isLoading = false;
             this.message.success('Thao tác thành công');
+            this.cdRef.detectChanges();
         },
         error: (err: any) => {
             this.isLoading = false;
-            this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
+            this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
         }
     })
   }
@@ -344,6 +346,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
         error: (err: any) => {
             this.isLoading = false;
             this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
         }
     })
   }
@@ -458,7 +461,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
 
     let id = this.liveCampaignId as string;
     this.isLoading = true;
-    
+
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(!res) return;
