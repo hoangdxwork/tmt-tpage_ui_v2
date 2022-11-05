@@ -100,6 +100,7 @@ export class TAuthService {
         // });
 
         this.cacheService.setItem(this.__keyBearerToken, token);
+        localStorage.setItem(this.__keyBearerToken, JSON.stringify(token));
     }
 
     //Thực thi xóa cache token và toàn bộ dữ liệu
