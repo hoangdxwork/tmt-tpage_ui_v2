@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, take, mergeMap } from "rxjs";
+import { BehaviorSubject, take, mergeMap, Observable } from "rxjs";
 import { TDSMessageService } from "tds-ui/message";
 import { FirebaseRegisterService } from "./firebase-register.service";
 import { FireBaseTopicDto } from "@app/dto/firebase/topics.dto";
@@ -35,30 +35,9 @@ export class FirebasePushNotificationService  {
         })
   }
 
-  requestPermission() {
-    this.angularFireMessaging.requestToken.subscribe({
-      next: (token: any) => {
-          console.log(token);
-          this.token = token;
-      },
-      error: (err: any) => {
-          console.error("Unable to get permission to notify", err);
-          this.message.error(err);
-      }
-    })
-  }
-
   deleteToken() {
-    this.angularFireMessaging.getToken
-      .pipe(mergeMap((token: any) => this.angularFireMessaging.deleteToken(token)))
-      .subscribe({
-        next: (token) => {
-            console.log('Xóa token nhận tin thành công', token);
-        },
-        error: (error) => {
-          console.error(error)
-        }
-      });
+    return this.angularFireMessaging.getToken
+      .pipe(mergeMap((token: any) => this.angularFireMessaging.deleteToken(token)));
   }
 
   // Thông báo và hiện thị tin nhắn mới

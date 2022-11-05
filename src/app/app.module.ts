@@ -24,11 +24,11 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
 import { TDSButtonModule } from "tds-ui/button";
 
-import { SETTINGS as AUTH_SETTINGS } from '@angular/fire/compat/auth';
-import { PERSISTENCE } from '@angular/fire/compat/auth';
-
 import "quill-mention";
 import { environment } from 'src/environments/environment';
+
+import { initializeApp } from "firebase/app";
+initializeApp(environment.firebaseConfig);
 
 const atValues = [
   { id: 1, value: "Họ & tên" },

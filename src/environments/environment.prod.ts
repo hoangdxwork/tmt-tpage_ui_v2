@@ -19,13 +19,13 @@ export const environment = {
     appVersion: 'v11.0',
   },
   firebaseConfig: {
-    apiKey: "AIzaSyAAnP3M-JqrBLr-AGoHTZ1Qtx7QR0MXGVQ",
-    authDomain: "tposmobile.firebaseapp.com",
-    databaseURL: "https://tposmobile.firebaseio.com",
-    projectId: "tposmobile",
-    storageBucket: "tposmobile.appspot.com",
-    messagingSenderId: "852209026200",
-    appId: "1:852209026200:web:ef6ad3d5d7573855a63ced",
-    measurementId: "G-XHX5BTL43H"
+    apiKey: "AIzaSyB13Zlrc54Xz2qZwBOsZN1cGwkWUV7RDiw",
+    authDomain: "propane-bebop-278706.firebaseapp.com",
+    projectId: "propane-bebop-278706",
+    storageBucket: "propane-bebop-278706.appspot.com",
+    messagingSenderId: "528073803166",
+    appId: "1:528073803166:web:ebd0d1f5d380cdd86c428f",
+    measurementId: "G-PMJ8HGCCT1",
+    vapidKey: "BJmSmdMKisyz_YsNNHWSXT8nLi5kgII9pcys9qwKQWU5FN7I5ESvqNx8ysWrwK9fvXPNhmjmOY8a_5LkaR9S0Rg"
   }
 };

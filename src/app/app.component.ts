@@ -36,12 +36,9 @@ export class AppComponent {
     public zone: NgZone,
     public router: Router,
     private route: ActivatedRoute,
-    private sharedService: SharedService,
-    public afAuth: AngularFireAuth,
     private notification: TDSNotificationService,
     private tdsConfigService: TDSConfigService,
     private socketOnEventService: SocketOnEventService,
-    private firebasePushNotificationService: FirebasePushNotificationService,
     private loader: PageLoadingService,
     private destroy$: TDSDestroyService) {
     this.loader.show();
@@ -52,6 +49,7 @@ export class AppComponent {
     if(!TDSHelperString.hasValueString(checkNotti)) {
         localStorage.setItem('_socketNotification', JSON.stringify("ON"));
     }
+
   }
 
   ngOnInit() {
@@ -110,16 +108,8 @@ export class AppComponent {
 
     this.tdsConfigService.set('notification', {
         maxStack: 3
-    });
+    })
 
-    this.firebasePushNotificationService.setReceiveMessage();
-    this.firebasePushNotificationService.getReceiveMessage().subscribe({
-      next: (payload: any) => {
-        if(payload) {
-            this.notification.info('Thông báo từ firebase', payload)
-        }
-      }
-    });
   }
 
   init(): Observable<boolean> {
