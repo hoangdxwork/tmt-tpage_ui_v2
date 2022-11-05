@@ -1,3 +1,4 @@
+import { OverviewLiveCampaignComponent } from './../../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { PrepareUpdateFacebookByLiveCampaign } from './../../../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-post/object-facebook-post.event';
 import { LiveCampaignPostComponent } from './../live-campaign-post/live-campaign-post.component';
@@ -87,16 +88,31 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   }
 
   showModalLiveCampaign(data?: ChatomniObjectsItemDto) {
-
-    const modal = this.modal.create({
-      title: 'Chiến dịch',
-      content: LiveCampaignPostComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-          data: data
-      }
-    });
+    if(data?.LiveCampaign?.Id) {
+      const modal = this.modal.create({
+        title: 'Tổng quan chiến dịch live',
+        content: OverviewLiveCampaignComponent,
+        size: "xl",
+        bodyStyle: {
+          padding: '0px'
+        },
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            liveCampaignId: data?.LiveCampaign?.Id,
+            data: data
+        }
+      });
+    } else {
+      const modal = this.modal.create({
+        title: 'Chiến dịch',
+        content: LiveCampaignPostComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            data: data
+        }
+      })
+    }
   }
 
   selectPost(item: ChatomniObjectsItemDto) {

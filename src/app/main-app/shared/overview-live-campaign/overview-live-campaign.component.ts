@@ -176,8 +176,9 @@ export class OverviewLiveCampaignComponent implements OnInit {
       next: (res: any) => {
         if(res) {
             // TODO: cập nhật object-facebook-post
-            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
-            // this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
+            this.loadOverviewReport(this.liveCampaignId);
+            this.loadLiveCampaign(this.liveCampaignId);
+            
             this.cdr.detectChanges();
         }
       }

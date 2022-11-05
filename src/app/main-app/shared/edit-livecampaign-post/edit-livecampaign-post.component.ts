@@ -693,7 +693,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       next: (res: any) => {
           this.isLoading = false;
           this.message.success('Cập nhật chiến dịch live thành công');
-          this.onCannel(res);
+          this.onCannel(true);
       },
       error: (error: any) => {
           this.isLoading = false;

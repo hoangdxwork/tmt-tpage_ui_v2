@@ -93,7 +93,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
     { value: 'TotalQuantity', name: 'Tổng SL', isChecked: true },
     { value: 'DateCreated', name: 'Ngày tạo', isChecked: false },
     { value: 'StatusText', name: 'Trạng thái', isChecked: true },
-    { value: 'PriorityStatus', name: 'Độ ưu tiên', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
   ];
 
