@@ -740,13 +740,19 @@ export class AddLivecampaignPostV2Component implements OnInit {
         title: 'Thêm mới trả lời nhanh',
         content: ModalAddQuickReplyComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'md'
+        size: 'md',
+        componentParams: {
+          isSaveSelect: true
+        }
     });
 
     modal.afterClose.subscribe({
       next:(res) => {
         if(res) {
           this.loadQuickReply();
+          if(res.type && res.type == 'select') {
+            this._form.controls['ConfirmedOrder_Template'].setValue(res.value);
+          }
         }
       }
     })

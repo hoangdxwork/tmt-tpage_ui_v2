@@ -6,7 +6,7 @@ import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service
 import { Validators } from '@angular/forms';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 
@@ -16,6 +16,8 @@ import { TDSMessageService } from 'tds-ui/message';
   providers: [TDSDestroyService]
 })
 export class ModalAddQuickReplyComponent implements OnInit {
+  @Input() isSaveSelect!: boolean;
+
   _form!: FormGroup;
   modelDefault!: CreateQuickReplyDTO;
   isLoading: boolean = false;
@@ -52,7 +54,7 @@ export class ModalAddQuickReplyComponent implements OnInit {
     this.modal.destroy(null);
   }
 
-  onSave() {
+  onSave(type?: string) {
     if(this._form.controls.subjectHtml.invalid){
       this.message.error('Vui lòng nhập tên mẫu');
       return;
@@ -80,7 +82,12 @@ export class ModalAddQuickReplyComponent implements OnInit {
         delete res['EventDatas'];
 
         this.quickReplyService.lstDataActive = [];
-        this.modal.destroy(res);
+          let item = {
+            type: type,
+            value: res
+          }
+          
+        this.modal.destroy(item);
         this.isLoading = false;
       },
       error: (error: any) => {
