@@ -1,4 +1,4 @@
-<div class="flex flex-col relative pr-1 py-1 h-full w-full text-body-2 text-neutral-1-900" *ngIf="data">
+<div class="flex flex-col pr-1 py-1 h-full w-full text-body-2 text-neutral-1-900" *ngIf="data">
     <div class="w-full h-full flex flex-col">
         <!-- Tổng quan bài viết-->
         <div class="post-view bg-white flex flex-col w-full mb-1">
@@ -236,10 +236,22 @@
         </div>
     </div>
 
+    <div class="absolute inset-0 pl-1 w-[363px] z-10" [ngClass]="visibleDrawerEditLive ? 'block': 'hidden'">
+        <tds-spin [spinning]="false">
+            <tds-drawer [visible]="visibleDrawerEditLive" [width]="'363px'" [placement]="'left'" [bodyStyle]="{ 'overflow':'hidden', 'display':'flex', 'flex-direction':'column', 'padding':0 }"
+                [closeIcon]="closeTmp" [mask]="false">
+                <ng-container *tdsDrawerContent>
+                    <drawer-edit-livecampaign [liveCampaignId]="data.LiveCampaignId"></drawer-edit-livecampaign>
+                </ng-container>
+            </tds-drawer>
+        </tds-spin>
+    </div>
+
+    <ng-template #closeTmp>
+        <div class="flex items-center justify-end p-2">
+            <span class="tdsi-close-fill text-lg leading-none cursor-pointer" (click)="closeDrawerEditLiveCampaign()"></span>
+        </div>
+    </ng-template>
 </div>
 
-<tds-drawer [visible]="visibleDrawerEditLive" [width]="'430px'" [placement]="'left'" (onClose)="closeDrawerEditLiveCampaign()" [mask]="false" >
-    <ng-container *tdsDrawerContent>
-         <drawer-edit-livecampaign [liveCampaignId]="data.LiveCampaignId"></drawer-edit-livecampaign>
-    </ng-container>
-</tds-drawer>
+

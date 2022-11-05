@@ -106,7 +106,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
     if(this.data) {
       let objectId = this.data.ObjectId;
       let liveCampaignId = this.data.LiveCampaignId as string;
-      let data = this.liveCampaignService.getLocalStorageDrawer(objectId, liveCampaignId) as any; debugger
+      let data = this.liveCampaignService.getLocalStorageDrawer(objectId, liveCampaignId) as any;
 
       let exist = data && data.liveCampaignId && data.ObjectId;
       if(exist) {
