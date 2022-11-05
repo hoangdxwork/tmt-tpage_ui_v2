@@ -90,7 +90,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
     private viewContainerRef: ViewContainerRef,
     private cdRef: ChangeDetectorRef,
     private liveCampaignService: LiveCampaignService,
-    private saleOnline_OrderService: SaleOnline_OrderService,
     private facebookCommentService: FacebookCommentService,
     private postEvent: ConversationPostEvent,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
@@ -106,13 +105,21 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
     if(this.data) {
       let objectId = this.data.ObjectId;
       let liveCampaignId = this.data.LiveCampaignId as string;
-      let data = this.liveCampaignService.getLocalStorageDrawer(objectId, liveCampaignId) as any;
+      let isOpenDrawer = this.drawerEditLiveCampaign;
+      let data = this.liveCampaignService.getLocalStorageDrawer() as any;
 
-      let exist = data && data.liveCampaignId && data.ObjectId;
+      let exist = data && data.liveCampaignId && data.objectId;
+
       if(exist) {
-        this.drawerEditLiveCampaign = true;
-        this.openDrawerEditLiveCampaign();
+        this.drawerEditLiveCampaign = data.isOpenDrawer;
+
+        if(data.isOpenDrawer) {
+          this.openDrawerEditLiveCampaign();
+        }
+      } else {
+        this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
+      this.cdRef.detectChanges();
     }
   }
 
@@ -430,9 +437,9 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
 
     let liveCampaignId = this.data.LiveCampaignId as string;
     if(event) {
-        this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId);
+        this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId, event);
     } else {
-        this.liveCampaignService.removeLocalStorageDrawer(this.data.ObjectId, liveCampaignId);
+        this.liveCampaignService.removeLocalStorageDrawer();
     }
   }
 
@@ -443,6 +450,9 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
   closeDrawerEditLiveCampaign(): void {
     this.visibleDrawerEditLive = false;
     this.drawerEditLiveCampaign = false;
+    let liveCampaignId = this.data.LiveCampaignId as string;
+
+    this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId, false);
   }
 
 }
