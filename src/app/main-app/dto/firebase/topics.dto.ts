@@ -2,6 +2,7 @@
 export interface Topic {
   id: string;
   name: string;
+  isActive?: boolean;
 }
 
 export interface FireBaseTopicDto {

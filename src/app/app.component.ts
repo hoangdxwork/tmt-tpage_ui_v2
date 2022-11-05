@@ -155,13 +155,4 @@ export class AppComponent {
     Object.assign(TGlobalConfig, objConfig);
   }
 
-  removeToken() {
-    this.firebasePushNotificationService.deleteToken();
-  }
-
-  applyFirebase() {
-    const userId = "admin";
-    this.firebasePushNotificationService.requestPermission(userId);
-  }
-
 }

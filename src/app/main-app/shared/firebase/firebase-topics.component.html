@@ -1,2 +1,35 @@
-{{topics | json}}
-aaa
+<div class="w-full h-full px-4 overflow-auto tds-custom-scroll">
+  <div class="w-full h-full flex flex-auto">
+      <div class="w-full h-full bg-white rounded-xl p-4 mb-4">
+          <div class="flex items-center justify-between mb-4">
+              <tds-label class="font-semibold ">Danh sách đăng ký nhận tin</tds-label>
+              <button tds-button size="md" color="primary" type="button" (click)="registerTopics()">Đăng kí</button>
+          </div>
+          <hr>
+          <div class="mt-4 mb-4">
+              <div class="block">
+                  <p class="font-semibold mb-3">Đăng ký nhận tin</p>
+                  <div class="flex item-center">
+                      <button type="button" class="mr-2" tds-button color="secondary" (click)="removeToken()">Xóa token</button>
+                      <button type="button" class="ml-2" tds-button color="info" (click)="applyFirebase()">Xác nhận thiết bị</button>
+                  </div>
+              </div>
+          </div>
+          <hr>
+          <div class="w-full h-full mb-4 mt-4">
+              <div *ngFor="let item of data">
+                  <div class="mb-2">
+                      <tds-label class="mb-2 block">{{item.group}}</tds-label>
+                      <div *ngFor="let topic of item.topics">
+                          <div class="flex gap-x-3 items-center">
+                            <tds-checkbox (ngModelChange)="onChecked($event, topic)" [(ngModel)]="topic.isActive" [ngModelOptions]="{standalone: true}"></tds-checkbox>
+                            <span>{{topic.name}}</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+    </div>
+  </div>
+</div>
+
