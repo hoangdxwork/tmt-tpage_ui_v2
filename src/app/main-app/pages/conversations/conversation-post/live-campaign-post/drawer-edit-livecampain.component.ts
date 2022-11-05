@@ -1,11 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { ProductIndexDBService } from './../../../../services/product-indexDB.service';
+import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
+import { SyncCreateProductTemplateDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
+import { ModalListPostComponent } from './../../components/modal-list-post/modal-list-post.component';
+import { GetAllFacebookPostDTO } from './../../../../dto/live-campaign/getall-facebook-post.dto';
+import { LiveCampaignDTO } from './../../../../dto/live-campaign/odata-live-campaign.dto';
+import { OverviewReportDTO } from './../../../../dto/live-campaign/report-livecampain-overview.dto';
+import { AddDrawerProductComponent } from './add-drawer-product.component';
+import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation } from "@angular/core";
 import { LiveCampaignService } from "@app/services/live-campaign.service";
 import { TDSDestroyService } from "tds-ui/core/services";
 import { takeUntil} from "rxjs";
 import { TDSMessageService } from "tds-ui/message";
 import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from "@app/dto/product-pouchDB/product-pouchDB.dto";
-import { ProductIndexDBService } from "@app/services/product-indexdb.service";
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from "@app/dto/live-campaign/livecampaign-simple.dto";
 import { TDSModalService } from "tds-ui/modal";
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
@@ -19,10 +26,12 @@ import { StringHelperV2 } from "@app/shared/helper/string.helper";
 @Component({
   selector: 'drawer-edit-livecampaign',
   templateUrl: './drawer-edit-livecampain.component.html',
+  styleUrls: ['./drawer-edit-livecampain.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   providers: [ TDSDestroyService ]
 })
 
-export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
+export class DrawerEditLiveCampaignComponent implements OnInit {
 
   @Input() liveCampaignId: any;
   _form!: FormGroup;
@@ -50,6 +59,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
   isLoadingSelect: boolean = false;
   isLoadingTable: boolean = false;
 
+  dataOverviewReport!: OverviewReportDTO;
+  facebookPosts: GetAllFacebookPostDTO[] = [];
+
   numberWithCommas =(value: TDSSafeAny) =>{
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -72,6 +84,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
     private sharedService: SharedService,
     private productService: ProductService,
     private notificationService: TDSNotificationService,
+    private viewContainerRef: ViewContainerRef,
     private fb: FormBuilder,
     private destroy$: TDSDestroyService) {
       this.createForm();
@@ -80,6 +93,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
   ngOnInit() {
     if(this.liveCampaignId) {
       this.loadData();
+      this.loadOverviewReport();
+      this.loadFacebookPost();
     }
 
     this.loadCurrentCompany();
@@ -99,12 +114,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
 
   loadData() {
     this.isLoading = true;
-    this.liveCampaignService.getById(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.liveCampaignService.getDetailById(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(!res) return;
           delete res['@odata.context'];
 
-          this.dataModel = res;
+          this.dataModel = {...res};
           this.updateForm(res);
 
           this.isLoading = false;
@@ -115,6 +130,39 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
           this.message.error(err?.error?.message);
           this.cdRef.detectChanges();
       }
+    })
+  }
+
+  loadOverviewReport () {
+    this.isLoading = true;
+    this.liveCampaignService.overviewReport(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res) => {
+          this.dataOverviewReport = {...res};
+
+          this.isLoading = false;
+          this.cdRef.detectChanges();
+        },
+        error:(err) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');
+          this.cdRef.detectChanges();
+        }
+      });
+  }
+
+  loadFacebookPost() {
+    this.isLoading = true;
+    this.liveCampaignService.getAllFacebookPost(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        if(res) {
+            this.facebookPosts = [...res];
+        }
+        this.isLoading = false;
+      },
+      error: error => {
+       this.isLoading = false
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+    }  
     })
   }
 
@@ -302,6 +350,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
     });
 
     this.isLoading = true;
+
     this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any[]) => {
           this.isLoading = false;
@@ -458,6 +507,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
 
     this.detailsForm.clear();
     this.livecampaignSimpleDetail = [];
+    this.isEditDetails = {};
 
     let id = this.liveCampaignId as string;
     this.isLoading = true;
@@ -597,7 +647,78 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  showCreateProductModal() {
+    const modal = this.modal.create({
+      title: 'Tạo mới sản phẩm',
+      content: AddDrawerProductComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+    });
+
+    modal.afterClose.subscribe((res: any) => {
+      if(!res) return;
+      res = {...res} as SyncCreateProductTemplateDto;
+      this.indexDbStorage = [...res.cacheDbStorage];
+
+      if(res.type === 'select' && res.productTmpl) {
+
+          const product = res.productTmpl as ProductTemplateV2DTO;
+          let items = this.indexDbStorage.filter(y => y.Id == product.VariantFirstId && y.UOMId == product.UOMId && y.Active) as any[];
+
+          if(items && items.length == 0) {
+            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+            return;
+          }
+
+          let x =  items[0];
+          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
+            ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+
+          let item = {
+              Quantity: qty,
+              RemainQuantity: 0,
+              ScanQuantity: 0,
+              QuantityCanceled: 0,
+              UsedQuantity: 0,
+              Price: x.ListPrice || x.Price || 0,
+              Note: null,
+              ProductId: x.Id,
+              LiveCampaign_Id: this.liveCampaignId,
+              ProductName: x.Name,
+              ProductNameGet: x.NameGet,
+              UOMId: x.UOMId,
+              UOMName: x.UOMName,
+
+              Tags: product.OrderTag,
+
+              LimitedQuantity: 0,
+              ProductCode: x.Barcode || x.DefaultCode,
+              ImageUrl: x.ImageUrl,
+              IsActive: true,
+          } as LiveCampaignSimpleDetail;
+
+          let name = item.ProductNameGet || item.ProductName;
+          if(x._attributes_length == undefined) x._attributes_length = 0;
+
+          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
+          item.Tags = tags.join(',');
+
+          this.addProductLiveCampaignDetails([item]);
+      }
+    });
   }
 
+  showModalLstPost () {
+    if(this.facebookPosts.length > 0){
+      const modal = this.modal.create({
+        title: `Danh sách bài viết (${this.facebookPosts.length})`,
+        content: ModalListPostComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef,
+        componentParams:{
+          facebookPosts: this.facebookPosts
+        }
+      })
+    }
+  }
 }

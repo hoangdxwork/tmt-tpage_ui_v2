@@ -321,28 +321,30 @@ export class LiveCampaignService extends BaseSevice {
   }
 
 
-  setLocalStorageDrawer(objectId: any, liveCampaignId: string) {
-    const key = `${this._keyCacheDrawerEdit}[${objectId}][${liveCampaignId}]`;
+  setLocalStorageDrawer(objectId: any, liveCampaignId: string, isOpenDrawer: boolean) {
+    const key = `${this._keyCacheDrawerEdit}`;
     let data = {
       liveCampaignId: liveCampaignId,
-      objectId: objectId
-    } as any;
+      objectId: objectId,
+      isOpenDrawer: isOpenDrawer
+    };
 
-    localStorage.setItem(key, data);
+    localStorage.setItem(key, JSON.stringify(data));
   }
 
-  getLocalStorageDrawer(objectId: any, liveCampaignId: string) {
-    const key = `${this._keyCacheDrawerEdit}[${objectId}][${liveCampaignId}]`;
+  getLocalStorageDrawer() {
+    const key = `${this._keyCacheDrawerEdit}`;
     let item = localStorage.getItem(key);
+
     if(item) {
-      return item;
+      return JSON.parse(item);
     } else {
       return null;
     }
   }
 
-  removeLocalStorageDrawer(objectId: any, liveCampaignId: string) {
-    const key = `${this._keyCacheDrawerEdit}[${objectId}][${liveCampaignId}]`;
+  removeLocalStorageDrawer() {
+    const key = `${this._keyCacheDrawerEdit}`;
     localStorage.removeItem(key);
   }
 }

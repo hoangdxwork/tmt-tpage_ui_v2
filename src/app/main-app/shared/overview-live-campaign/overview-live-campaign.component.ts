@@ -75,6 +75,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
         error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -91,6 +92,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
         error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Tải dữ liệu thất bại');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -100,13 +102,16 @@ export class OverviewLiveCampaignComponent implements OnInit {
     this.liveCampaignService.getAllFacebookPost(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: res => {
         if(res) {
-            this.facebookPosts = [...res];
-            this.isLoading = false;
+          this.facebookPosts = [...res];
         }
+
+        this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: error => {
-       this.isLoading = false
+       this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.cdr.markForCheck();
     }  
     })
   }
