@@ -35,26 +35,11 @@ export class FirebasePushNotificationService  {
         })
   }
 
-  updateToken(userId: string, token: string) {
-      this.angularFireAuth.authState.pipe(take(1)).subscribe({
-        next: (res: any) => {
-            const data = {} as any;
-            data[userId] = token;
-            // this.angularFireDb.object('/fcmTokens/').update(data);
-        },
-        error: (err: any) => {
-            console.error("updateToken", err);
-            this.message.error(err);
-        }
-      })
-  }
-
-  requestPermission(userId: string) {
+  requestPermission() {
     this.angularFireMessaging.requestToken.subscribe({
       next: (token: any) => {
           console.log(token);
           this.token = token;
-          this.updateToken(userId, token);
       },
       error: (err: any) => {
           console.error("Unable to get permission to notify", err);
