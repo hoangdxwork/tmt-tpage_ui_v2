@@ -166,12 +166,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res) {
-            this.currentLiveCampaign = res;
-
-            // TODO: cập nhật object-facebook-post
-            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
-            this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
-            this.cdRef.detectChanges();
+          this.loadData();
         }
       }
     })
