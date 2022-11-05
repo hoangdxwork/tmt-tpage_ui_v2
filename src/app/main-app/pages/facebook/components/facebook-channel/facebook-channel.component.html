@@ -1,55 +1,64 @@
-<div class="h-full w-full grid grid-cols-4 gap-x-4">
-  <div class="col-span-3 flex flex-col gap-y-4">
-    <div class="bg-white rounded-xl w-full border border-neutral-2-100">
+<div *ngIf="data && data.length > 0" class="h-full w-full grid grid-cols-4 gap-x-4 p-4">
+  <div class="col-span-3 h-full flex flex-col gap-y-4">
+    <div *ngFor="let team of (dataSearch || data); let index = index" @eventFadeState class="bg-white rounded-xl h-full w-full border border-neutral-2-100">
       <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
-        <tds-collapse-panel [header]="header" [active]="false" [disabled]="false" [expandedIcon]="expandedIcon" [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="'p-0'">
+        <tds-collapse-panel [header]="header" [active]="getIsIconCollapse(team.Id)" [disabled]="false" [expandedIcon]="expandedIcon"
+          [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="'p-0'">
           <!--TODO Header -->
           <ng-template #header>
             <div class="flex w-full h-full justify-between items-center pr-4">
               <div class="flex gap-4 items-center">
                 <div class="relative">
-                  <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                    <tpage-avatar-facebook [size]="'xl'" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg"></tpage-avatar-facebook>
+                  <div
+                    class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
+                    <tpage-avatar-facebook [size]="'xl'" [fbid]="team?.ChannelId" [token]="team?.ChannelToken">
+                    </tpage-avatar-facebook>
                   </div>
-                  <span class="absolute right-0 bottom-0">
-                    <span><img src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
+                    <span class="absolute right-0 bottom-0">
+                      <span *ngIf="!team.Active"><img style="filter: grayscale(1)" src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
+                      <span *ngIf="team.Active && team.Type == 'Facebook'"><img src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
                   </span>
                 </div>
                 <div class="flex flex-col gap-1">
-                  <div class="text-title-1 font-sans font-semibold"> Như Huy </div>
+                  <div class="text-title-1 font-sans font-semibold">  {{ team?.Name }} </div>
 
                   <!--TODO Đã kết nối trang -->
-                  <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
+                  <div *ngIf="team.Active">
+                    <div *ngIf="!lstData[team.Id]?.data || lstData[team.Id].data.length < 1" class="flex gap-x-2 items-center">
+                      <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
+                      <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
+                    </div>
                   </div>
 
-                  <!--TODO Chưa kết nối trang -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Chưa có trang nào được kết nối</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
-                  </div> -->
-
-                  <!--TODO Đang ẩn -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-neutral-1-400">Đang ẩn</span>
-                  </div> -->
+                  <div *ngIf="!team.Active">
+                      <!--TODO Chưa kết nối trang -->
+                    <div class="flex gap-x-2 items-center">
+                      <span class="text-caption-2 text-neutral-1-400">Chưa có trang nào được kết nối</span>
+                      <span class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
+                    </div>
+                     <!--TODO Đang ẩn -->
+                    <div *ngIf="!lstData[team.Id]?.data || lstData[team.Id].data.length < 1" class="flex gap-x-2 items-center">
+                      <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
+                      <span class="text-caption-2 font-semibold text-neutral-1-400">Đang ẩn</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="flex gap-x-3 items-center">
-                <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                    bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1" (click)="stopPropagation($event)">
+                <button tds-button color="c ustom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
+                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
                   <span class="flex items-center">
                     <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                   </span>
                 </button>
-                <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="stopPropagation($event)">
+                <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối"
+                  class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                      hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                   <i class="tdsi-eye-close-fill text-xl leading-none"></i>
                 </button>
-                <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="unConnected($event)">
+                <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối"
+                  class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                      hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                   <i class="tdsi-break-link-fill text-xl leading-none"></i>
                 </button>
               </div>
@@ -83,21 +92,22 @@
 
                     <!--TODO Chưa kết nối -->
                     <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                    </div> -->
+                        <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
+                        <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
+                      </div> -->
                   </div>
                 </div>
                 <!--TODO Đã kết nối -->
                 <div class="flex items-center">
                   <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
+                        bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
                     <span class="flex items-center">
                       <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                     </span>
                   </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
+                  <button tds-button color="custom" rounded="!rounded-full"
+                    class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
+                        focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
                     <span class="flex items-center">
                       <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
                     </span>
@@ -106,10 +116,10 @@
 
                 <!--TODO Chưa kết nối -->
                 <!-- <button tds-button color="primary">
-                  <span class="flex items-center">
-                    <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                  </span>
-                </button> -->
+                    <span class="flex items-center">
+                      <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
+                    </span>
+                  </button> -->
               </div>
               <div class="flex justify-between items-center px-10 py-4">
                 <div class="flex gap-4 items-center">
@@ -124,9 +134,9 @@
                     <div class="text-neutral-1-900 font-sans font-semibold text-body-2">Nhóc Tì Bá Đạo</div>
                     <!--TODO Đã kết nối -->
                     <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-success-fill text-primary-1 text-sm"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                    </div> -->
+                        <div class="tdsi-success-fill text-primary-1 text-sm"></div>
+                        <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
+                      </div> -->
 
                     <!--TODO Chưa kết nối -->
                     <div class="flex gap-2 items-center">
@@ -137,22 +147,22 @@
                 </div>
                 <!--TODO Đã kết nối -->
                 <!-- <div class="flex items-center">
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                    </span>
-                  </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
-                    <span class="flex items-center">
-                      <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
-                    </span>
-                  </button>
-                </div> -->
+                    <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
+                        bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
+                      <span class="flex items-center">
+                        <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
+                      </span>
+                    </button>
+                    <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
+                        focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
+                      <span class="flex items-center">
+                        <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
+                      </span>
+                    </button>
+                  </div> -->
 
                 <!--TODO Chưa kết nối -->
-                <button tds-button color="primary" (click)="showModalAddPage()">
+                <button tds-button color="primary">
                   <span class="flex items-center">
                     <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
                   </span>
@@ -162,559 +172,19 @@
 
             <!--TODO Chưa có page kết nối -->
             <!-- <div class="p-4">
-              <tds-empty notFoundImage="/assets/imagesv2/facebook/flag.png" [notFoundContent]="contentTpl">
-                  <ng-template #contentTpl>
-                      <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
-                  </ng-template>
-              </tds-empty>
-            </div> -->
+                <tds-empty notFoundImage="/assets/imagesv2/facebook/flag.png" [notFoundContent]="contentTpl">
+                    <ng-template #contentTpl>
+                        <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
+                    </ng-template>
+                </tds-empty>
+              </div> -->
           </div>
         </tds-collapse-panel>
       </tds-collapse>
       <!--TODO Page chưa kết nối -->
       <div class="p-4 border-t border-neutral-2-100">
         <!--TODO Xem thêm -->
-        <span class="cursor-pointer text-success-400 text-xs">Xem thêm Page chưa kết nối</span>
-        <!--TODO Ẩn  -->
-        <!-- <span class="cursor-pointer text-success-400 text-xs">Ẩn Page chưa kết nối</span> -->
-      </div>
-    </div>
-
-    <div class="bg-white rounded-xl w-full border border-neutral-2-100">
-      <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
-        <tds-collapse-panel [header]="header" [active]="false" [disabled]="false" [expandedIcon]="expandedIcon" [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="'p-0'">
-          <!--TODO Header -->
-          <ng-template #header>
-            <div class="flex w-full h-full justify-between items-center pr-4">
-              <div class="flex gap-4 items-center">
-                <div class="relative">
-                  <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                    <tpage-avatar-facebook [size]="'xl'" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg"></tpage-avatar-facebook>
-                  </div>
-                  <span class="absolute right-0 bottom-0">
-                    <span><img src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
-                  </span>
-                </div>
-                <div class="flex flex-col gap-1">
-                  <div class="text-title-1 font-sans font-semibold"> Như Huy </div>
-
-                  <!--TODO Đã kết nối trang -->
-                  <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
-                  </div>
-
-                  <!--TODO Chưa kết nối trang -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Chưa có trang nào được kết nối</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
-                  </div> -->
-
-                  <!--TODO Đang ẩn -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-neutral-1-400">Đang ẩn</span>
-                  </div> -->
-                </div>
-              </div>
-              <div class="flex gap-x-3 items-center">
-                <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                    bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1" (click)="stopPropagation($event)">
-                  <span class="flex items-center">
-                    <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                  </span>
-                </button>
-                <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="stopPropagation($event)">
-                  <i class="tdsi-eye-close-fill text-xl leading-none"></i>
-                </button>
-                <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="unConnected($event)">
-                  <i class="tdsi-break-link-fill text-xl leading-none"></i>
-                </button>
-              </div>
-            </div>
-          </ng-template>
-
-          <!--TODO Header Icon -->
-          <ng-template #expandedIcon>
-            <div class="tdsi-arrow-up-line text-xl text-neutral-1-500"></div>
-          </ng-template>
-
-          <div class="flex flex-col w-full gap-4 border-t border-neutral-2-100">
-            <!--TODO Page đã kết nối -->
-            <div class="px-4 grid grid-cols-1 divide-y">
-              <div class="flex justify-between items-center px-10 py-4">
-                <div class="flex gap-4 items-center">
-                  <div class="relative">
-                    <tpage-avatar-facebook [size]="'lg'">
-                    </tpage-avatar-facebook>
-                    <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
-                      <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-1.5 justify-center">
-                    <div class="text-neutral-1-900 font-sans font-semibold text-body-2">Mèo Siêu Quậy</div>
-                    <!--TODO Đã kết nối -->
-                    <div class="flex gap-2 items-center">
-                      <div class="tdsi-success-fill text-primary-1 text-sm"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                    </div>
-
-                    <!--TODO Chưa kết nối -->
-                    <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                    </div> -->
-                  </div>
-                </div>
-                <!--TODO Đã kết nối -->
-                <div class="flex items-center">
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                    </span>
-                  </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
-                    <span class="flex items-center">
-                      <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
-                    </span>
-                  </button>
-                </div>
-
-                <!--TODO Chưa kết nối -->
-                <!-- <button tds-button color="primary">
-                  <span class="flex items-center">
-                    <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                  </span>
-                </button> -->
-              </div>
-              <div class="flex justify-between items-center px-10 py-4">
-                <div class="flex gap-4 items-center">
-                  <div class="relative">
-                    <tpage-avatar-facebook [size]="'lg'">
-                    </tpage-avatar-facebook>
-                    <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
-                      <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-1.5 justify-center">
-                    <div class="text-neutral-1-900 font-sans font-semibold text-body-2">Nhóc Tì Bá Đạo</div>
-                    <!--TODO Đã kết nối -->
-                    <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-success-fill text-primary-1 text-sm"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                    </div> -->
-
-                    <!--TODO Chưa kết nối -->
-                    <div class="flex gap-2 items-center">
-                      <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                    </div>
-                  </div>
-                </div>
-                <!--TODO Đã kết nối -->
-                <!-- <div class="flex items-center">
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                    </span>
-                  </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
-                    <span class="flex items-center">
-                      <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
-                    </span>
-                  </button>
-                </div> -->
-
-                <!--TODO Chưa kết nối -->
-                <button tds-button color="primary" (click)="showModalAddPage()">
-                  <span class="flex items-center">
-                    <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <!--TODO Chưa có page kết nối -->
-            <!-- <div class="p-4">
-              <tds-empty notFoundImage="/assets/imagesv2/facebook/flag.png" [notFoundContent]="contentTpl">
-                  <ng-template #contentTpl>
-                      <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
-                  </ng-template>
-              </tds-empty>
-            </div> -->
-          </div>
-        </tds-collapse-panel>
-      </tds-collapse>
-      <!--TODO Page chưa kết nối -->
-      <div class="p-4 border-t border-neutral-2-100">
-        <!--TODO Xem thêm -->
-        <span class="cursor-pointer text-success-400 text-xs">Xem thêm Page chưa kết nối</span>
-        <!--TODO Ẩn  -->
-        <!-- <span class="cursor-pointer text-success-400 text-xs">Ẩn Page chưa kết nối</span> -->
-      </div>
-    </div>
-
-    <div class="bg-white rounded-xl w-full border border-neutral-2-100">
-      <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
-        <tds-collapse-panel [header]="header" [active]="false" [disabled]="false" [expandedIcon]="expandedIcon" [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="'p-0'">
-          <!--TODO Header -->
-          <ng-template #header>
-            <div class="flex w-full h-full justify-between items-center pr-4">
-              <div class="flex gap-4 items-center">
-                <div class="relative">
-                  <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                    <tpage-avatar-facebook [size]="'xl'" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg"></tpage-avatar-facebook>
-                  </div>
-                  <span class="absolute right-0 bottom-0">
-                    <span><img src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
-                  </span>
-                </div>
-                <div class="flex flex-col gap-1">
-                  <div class="text-title-1 font-sans font-semibold"> Như Huy </div>
-
-                  <!--TODO Đã kết nối trang -->
-                  <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
-                  </div>
-
-                  <!--TODO Chưa kết nối trang -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Chưa có trang nào được kết nối</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
-                  </div> -->
-
-                  <!--TODO Đang ẩn -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-neutral-1-400">Đang ẩn</span>
-                  </div> -->
-                </div>
-              </div>
-              <div class="flex gap-x-3 items-center">
-                <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                    bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1" (click)="stopPropagation($event)">
-                  <span class="flex items-center">
-                    <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                  </span>
-                </button>
-                <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="stopPropagation($event)">
-                  <i class="tdsi-eye-close-fill text-xl leading-none"></i>
-                </button>
-                <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="unConnected($event)">
-                  <i class="tdsi-break-link-fill text-xl leading-none"></i>
-                </button>
-              </div>
-            </div>
-          </ng-template>
-
-          <!--TODO Header Icon -->
-          <ng-template #expandedIcon>
-            <div class="tdsi-arrow-up-line text-xl text-neutral-1-500"></div>
-          </ng-template>
-
-          <div class="flex flex-col w-full gap-4 border-t border-neutral-2-100">
-            <!--TODO Page đã kết nối -->
-            <div class="px-4 grid grid-cols-1 divide-y">
-              <div class="flex justify-between items-center px-10 py-4">
-                <div class="flex gap-4 items-center">
-                  <div class="relative">
-                    <tpage-avatar-facebook [size]="'lg'">
-                    </tpage-avatar-facebook>
-                    <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
-                      <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-1.5 justify-center">
-                    <div class="text-neutral-1-900 font-sans font-semibold text-body-2">Mèo Siêu Quậy</div>
-                    <!--TODO Đã kết nối -->
-                    <div class="flex gap-2 items-center">
-                      <div class="tdsi-success-fill text-primary-1 text-sm"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                    </div>
-
-                    <!--TODO Chưa kết nối -->
-                    <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                    </div> -->
-                  </div>
-                </div>
-                <!--TODO Đã kết nối -->
-                <div class="flex items-center">
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                    </span>
-                  </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
-                    <span class="flex items-center">
-                      <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
-                    </span>
-                  </button>
-                </div>
-
-                <!--TODO Chưa kết nối -->
-                <!-- <button tds-button color="primary">
-                  <span class="flex items-center">
-                    <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                  </span>
-                </button> -->
-              </div>
-              <div class="flex justify-between items-center px-10 py-4">
-                <div class="flex gap-4 items-center">
-                  <div class="relative">
-                    <tpage-avatar-facebook [size]="'lg'">
-                    </tpage-avatar-facebook>
-                    <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
-                      <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-1.5 justify-center">
-                    <div class="text-neutral-1-900 font-sans font-semibold text-body-2">Nhóc Tì Bá Đạo</div>
-                    <!--TODO Đã kết nối -->
-                    <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-success-fill text-primary-1 text-sm"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                    </div> -->
-
-                    <!--TODO Chưa kết nối -->
-                    <div class="flex gap-2 items-center">
-                      <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                    </div>
-                  </div>
-                </div>
-                <!--TODO Đã kết nối -->
-                <!-- <div class="flex items-center">
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                    </span>
-                  </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
-                    <span class="flex items-center">
-                      <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
-                    </span>
-                  </button>
-                </div> -->
-
-                <!--TODO Chưa kết nối -->
-                <button tds-button color="primary" (click)="showModalAddPage()">
-                  <span class="flex items-center">
-                    <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <!--TODO Chưa có page kết nối -->
-            <!-- <div class="p-4">
-              <tds-empty notFoundImage="/assets/imagesv2/facebook/flag.png" [notFoundContent]="contentTpl">
-                  <ng-template #contentTpl>
-                      <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
-                  </ng-template>
-              </tds-empty>
-            </div> -->
-          </div>
-        </tds-collapse-panel>
-      </tds-collapse>
-      <!--TODO Page chưa kết nối -->
-      <div class="p-4 border-t border-neutral-2-100">
-        <!--TODO Xem thêm -->
-        <span class="cursor-pointer text-success-400 text-xs">Xem thêm Page chưa kết nối</span>
-        <!--TODO Ẩn  -->
-        <!-- <span class="cursor-pointer text-success-400 text-xs">Ẩn Page chưa kết nối</span> -->
-      </div>
-    </div>
-
-    <div class="bg-white rounded-xl w-full border border-neutral-2-100">
-      <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
-        <tds-collapse-panel [header]="header" [active]="false" [disabled]="false" [expandedIcon]="expandedIcon" [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="'p-0'">
-          <!--TODO Header -->
-          <ng-template #header>
-            <div class="flex w-full h-full justify-between items-center pr-4">
-              <div class="flex gap-4 items-center">
-                <div class="relative">
-                  <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                    <tpage-avatar-facebook [size]="'xl'" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg"></tpage-avatar-facebook>
-                  </div>
-                  <span class="absolute right-0 bottom-0">
-                    <span><img src="../../../assets/imagesv2/facebook/icon-facebook.svg"></span>
-                  </span>
-                </div>
-                <div class="flex flex-col gap-1">
-                  <div class="text-title-1 font-sans font-semibold"> Như Huy </div>
-
-                  <!--TODO Đã kết nối trang -->
-                  <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
-                  </div>
-
-                  <!--TODO Chưa kết nối trang -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Chưa có trang nào được kết nối</span>
-                    <span class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
-                  </div> -->
-
-                  <!--TODO Đang ẩn -->
-                  <!-- <div class="flex gap-x-2 items-center">
-                    <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                    <span class="text-caption-2 font-semibold text-neutral-1-400">Đang ẩn</span>
-                  </div> -->
-                </div>
-              </div>
-              <div class="flex gap-x-3 items-center">
-                <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                    bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1" (click)="stopPropagation($event)">
-                  <span class="flex items-center">
-                    <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                  </span>
-                </button>
-                <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="stopPropagation($event)">
-                  <i class="tdsi-eye-close-fill text-xl leading-none"></i>
-                </button>
-                <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                    hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700" (click)="unConnected($event)">
-                  <i class="tdsi-break-link-fill text-xl leading-none"></i>
-                </button>
-              </div>
-            </div>
-          </ng-template>
-
-          <!--TODO Header Icon -->
-          <ng-template #expandedIcon>
-            <div class="tdsi-arrow-up-line text-xl text-neutral-1-500"></div>
-          </ng-template>
-
-          <div class="flex flex-col w-full gap-4 border-t border-neutral-2-100">
-            <!--TODO Page đã kết nối -->
-            <div class="px-4 grid grid-cols-1 divide-y">
-              <div class="flex justify-between items-center px-10 py-4">
-                <div class="flex gap-4 items-center">
-                  <div class="relative">
-                    <tpage-avatar-facebook [size]="'lg'">
-                    </tpage-avatar-facebook>
-                    <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
-                      <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-1.5 justify-center">
-                    <div class="text-neutral-1-900 font-sans font-semibold text-body-2">Mèo Siêu Quậy</div>
-                    <!--TODO Đã kết nối -->
-                    <div class="flex gap-2 items-center">
-                      <div class="tdsi-success-fill text-primary-1 text-sm"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                    </div>
-
-                    <!--TODO Chưa kết nối -->
-                    <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                    </div> -->
-                  </div>
-                </div>
-                <!--TODO Đã kết nối -->
-                <div class="flex items-center">
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                    </span>
-                  </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
-                    <span class="flex items-center">
-                      <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
-                    </span>
-                  </button>
-                </div>
-
-                <!--TODO Chưa kết nối -->
-                <!-- <button tds-button color="primary">
-                  <span class="flex items-center">
-                    <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                  </span>
-                </button> -->
-              </div>
-              <div class="flex justify-between items-center px-10 py-4">
-                <div class="flex gap-4 items-center">
-                  <div class="relative">
-                    <tpage-avatar-facebook [size]="'lg'">
-                    </tpage-avatar-facebook>
-                    <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
-                      <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-1.5 justify-center">
-                    <div class="text-neutral-1-900 font-sans font-semibold text-body-2">Nhóc Tì Bá Đạo</div>
-                    <!--TODO Đã kết nối -->
-                    <!-- <div class="flex gap-2 items-center">
-                      <div class="tdsi-success-fill text-primary-1 text-sm"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                    </div> -->
-
-                    <!--TODO Chưa kết nối -->
-                    <div class="flex gap-2 items-center">
-                      <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                      <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                    </div>
-                  </div>
-                </div>
-                <!--TODO Đã kết nối -->
-                <!-- <div class="flex items-center">
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                    </span>
-                  </button>
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                      focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
-                    <span class="flex items-center">
-                      <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
-                    </span>
-                  </button>
-                </div> -->
-
-                <!--TODO Chưa kết nối -->
-                <button tds-button color="primary" (click)="showModalAddPage()">
-                  <span class="flex items-center">
-                    <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <!--TODO Chưa có page kết nối -->
-            <!-- <div class="p-4">
-              <tds-empty notFoundImage="/assets/imagesv2/facebook/flag.png" [notFoundContent]="contentTpl">
-                  <ng-template #contentTpl>
-                      <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
-                  </ng-template>
-              </tds-empty>
-            </div> -->
-          </div>
-        </tds-collapse-panel>
-      </tds-collapse>
-      <!--TODO Page chưa kết nối -->
-      <div class="p-4 border-t border-neutral-2-100">
-        <!--TODO Xem thêm -->
-        <span class="cursor-pointer text-success-400 text-xs">Xem thêm Page chưa kết nối</span>
+        <span class="cursor-pointer text-success-400 text-xs" (click)="loadPageNotConnect(team)">Xem thêm Page chưa kết nối</span>
         <!--TODO Ẩn  -->
         <!-- <span class="cursor-pointer text-success-400 text-xs">Ẩn Page chưa kết nối</span> -->
       </div>
@@ -734,8 +204,7 @@
         <tds-avatar tdsSrc="https://randomuser.me/api/portraits/women/67.jpg"></tds-avatar>
         <tds-avatar tdsSrc="https://randomuser.me/api/portraits/women/66.jpg"></tds-avatar>
         <tds-avatar tdsSrc="https://randomuser.me/api/portraits/women/65.jpg"></tds-avatar>
-        <tds-avatar
-            class="bg-primary-3 text-primary-1 text-caption-2 font-semibold" text="+5">
+        <tds-avatar class="bg-primary-3 text-primary-1 text-caption-2 font-semibold" text="+5">
         </tds-avatar>
       </tds-avatar-group>
       <button tds-button color="secondary" class="w-full mt-6">
@@ -747,46 +216,48 @@
 
     <!--TODO Chưa đăng nhập tài khoản -->
     <!-- <div class="bg-white rounded-xl p-4 flex flex-col">
-      <span class="text-header-2 font-semibold text-neutral-1-900">Kết nối tài khoản</span>
-      <div class="mt-4 w-full h-[254px] rounded-xl">
-        <img src="/assets/imagesv2/facebook/facebook-img.svg" alt="">
-      </div>
-      <span class="mt-4 text-body-2 font-regular text-neutral-1-900 text-center px-6">Kết nối tài khoản Facebook của bạn
-        để đồng bộ tin nhắn, bình luận, bài viết về TPage</span>
-      <button tds-button color="custom" class="w-full mt-4 text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1
-        bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1">
-        <span class="flex items-center">
-          <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với tài khoản Facebook
-        </span>
-      </button>
-    </div> -->
+        <span class="text-header-2 font-semibold text-neutral-1-900">Kết nối tài khoản</span>
+        <div class="mt-4 w-full h-[254px] rounded-xl">
+          <img src="/assets/imagesv2/facebook/facebook-img.svg" alt="">
+        </div>
+        <span class="mt-4 text-body-2 font-regular text-neutral-1-900 text-center px-6">Kết nối tài khoản Facebook của bạn
+          để đồng bộ tin nhắn, bình luận, bài viết về TPage</span>
+        <button tds-button color="custom" class="w-full mt-4 text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1
+          bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1">
+          <span class="flex items-center">
+            <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với tài khoản Facebook
+          </span>
+        </button>
+      </div> -->
 
     <!--TODO Chuyển đổi tài khoản -->
     <div class="pt-4">
-      <button tds-button class="w-full" color="primary" (click)="showModalConvertPage()">Chuyển đổi tài khoản</button>
+      <button tds-button class="w-full" color="primary">Chuyển đổi tài khoản</button>
     </div>
   </div>
 </div>
 
 <!--TODO Empty -->
-<!-- <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
-  <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl"
-    [notFoundFooter]="footerTpl">
-    <ng-template #contentTpl>
-      <div class="mt-3 flex flex-col items-center gap-y-2">
-        <span class="text-heading-3 font-semibold text-neutral-1-900">Chưa có kênh kết nối</span>
-        <span class="text-body-2 font-regular text-neutral-1-300">Kết nối tài khoản TShop của bạn để đồng bộ tin nhắn,
-          bình luận, bài viết về T-page</span>
-      </div>
-    </ng-template>
+<div *ngIf="!data || data.length < 1 && !isLoadChannel" class="p-4 w-full h-full">
+  <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
+    <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl"
+      [notFoundFooter]="footerTpl">
+      <ng-template #contentTpl>
+        <div class="mt-3 flex flex-col items-center gap-y-2">
+          <span class="text-heading-3 font-semibold text-neutral-1-900">Chưa có kênh kết nối</span>
+          <span class="text-body-2 font-regular text-neutral-1-300">Kết nối tài khoản TShop của bạn để đồng bộ tin nhắn,
+            bình luận, bài viết về T-page</span>
+        </div>
+      </ng-template>
 
-    <ng-template #footerTpl>
-      <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1
-      bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1 mt-3">
-        <span class="flex items-center">
-          <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với tài khoản Facebook
-        </span>
-      </button>
-    </ng-template>
-  </tds-empty>
-</div> -->
+      <ng-template #footerTpl>
+        <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1
+        bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1 mt-3">
+          <span class="flex items-center">
+            <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với tài khoản Facebook
+          </span>
+        </button>
+      </ng-template>
+    </tds-empty>
+  </div>
+</div>
