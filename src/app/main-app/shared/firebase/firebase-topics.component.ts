@@ -19,14 +19,12 @@ export class FirebaseTopicsComponent implements OnInit {
     topics: FireBaseTopicDto[] = [];
 
     constructor(private message: TDSMessageService,
-      private tagService: TagService,
       private firebaseRegisterService: FirebaseRegisterService){
     }
 
     ngOnInit(){
       this.loadTopics();
       this.loadRegisterTopics();
-      this.tagService.get().subscribe()
     }
 
     loadTopics() {

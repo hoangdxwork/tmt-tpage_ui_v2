@@ -20,8 +20,6 @@ import { TDSMessageModule } from 'tds-ui/message';
 import { QuillModule } from 'ngx-quill';
 
 import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
 import { TDSButtonModule } from "tds-ui/button";
@@ -96,8 +94,6 @@ registerLocaleData(localeVi);
     TDSButtonModule,
     QuillModule.forRoot(quillOptions),
     AngularFireAuthModule,
-    // AngularFireDatabaseModule,
-    // AngularFirestoreModule,
     AngularFireMessagingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
   ],
@@ -111,9 +107,7 @@ registerLocaleData(localeVi);
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy
-    },
-    { provide: AUTH_SETTINGS, useValue: { appVerificationDisabledForTesting: true } },
-    { provide: PERSISTENCE, useValue: 'session' }
+    }
   ],
 
   bootstrap: [AppComponent]

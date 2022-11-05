@@ -13,7 +13,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
     constructor(public auth: TAuthService, public libcommon: TCommonService) {}
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<TDSSafeAny>> {debugger
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<TDSSafeAny>> {
         let that = this;
 
         let lstUrlLogin = [
@@ -80,11 +80,11 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
                         return next.handle(that.auth.addAuthenticationToken(req));
                     },
-                    error => {
-                          that.auth.clearToken("AuthInterceptor");
-                        that.auth.redirectLogin();
-                        return throwError(error);
-                    });
+                        error => {
+                             that.auth.clearToken("AuthInterceptor");
+                            that.auth.redirectLogin();
+                            return throwError(error);
+                        });
                 }
 
                 return TGlobalConfig.Authen.refreshTokenSubject.pipe(
@@ -113,12 +113,21 @@ export class TAuthInterceptorService implements HttpInterceptor {
                 });
             }
         } else {
-          req = req.clone({
-              headers: new HttpHeaders({})
-          });
+            req = req.clone({
+                headers: new HttpHeaders({})
+            });
         }
 
         let accessToken = this.auth.getAccessToken();
+
+        // TODO: kiểm tra lại, khúc này chỉ fix tạm
+        if(!TDSHelperObject.hasValue(accessToken)) {
+          let tokenStorage = localStorage.getItem('TpageBearerToken') as any;
+          if(tokenStorage) {
+              let data = JSON.parse(tokenStorage) || null;
+              accessToken = data;
+          }
+        }
 
         if (TDSHelperObject.hasValue(this.auth.isLogin())
             && TDSHelperObject.hasValue(accessToken)
