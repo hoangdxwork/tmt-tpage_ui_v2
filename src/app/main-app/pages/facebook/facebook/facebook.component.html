@@ -314,14 +314,14 @@
   </div>
 </tds-spin> -->
 
-<div class="w-full h-full bg-neutral-3-200 flex flex-col flex-auto">
-  <div class="p-4 h-[60px] bg-white flex items-center overflow-hidden">
+<div class="w-full h-full bg-neutral-3-200 flex flex-col flex-auto overflow-hidden">
+  <div class="p-4 h-[60px] bg-white flex items-center verflow-hidden">
     <span class="text-header-1 font-semibold text-neutral-1-900">Kênh kết nối</span>
   </div>
 
-  <div class="text-body-2 flex-auto flex ng-tns-c381-4 overflow-hidden">
+  <div class="text-body-2 flex ng-tns-c381-4 overflow-hidden flex-auto ">
     <tds-tabset class="bg-white h-full" [clsTab]="'flex'">
-      <tds-tab [title]="titleItem1" clsContent="w-full h-full overflow-hidden overflow-y-auto tds-custom-scroll bg-neutral-3-200 -mt-px">
+      <tds-tab [title]="titleItem1" clsContent="w-full h-full bg-neutral-3-200 -mt-px">
         <ng-template #titleItem1 let-active="active">
           <div
             class="flex items-center font-semibold cursor-pointer text-body-2 px-4 py-1.5 ml-4 my-2.5 relative group gap-x-2"
@@ -330,8 +330,12 @@
             <span class="flex items-center">Facebook</span>
           </div>
         </ng-template>
-        <div class="w-full h-full">
-          <facebook-channel></facebook-channel>
+        <div class="w-full h-full pb-4">
+          <div class="w-full h-full relative">
+            <div class="absolute inset-0 tds-custom-scroll overflow-auto pb-4">
+              <facebook-channel></facebook-channel>
+            </div>
+          </div>
         </div>
       </tds-tab>
       <tds-tab [title]="titleItem2" clsContent="w-full h-full bg-neutral-3-200 -mt-px">

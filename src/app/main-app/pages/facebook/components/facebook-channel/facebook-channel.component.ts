@@ -554,20 +554,10 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     this.crmTeamService.onRefreshListFacebook();
   }
 
-  loadPageNotConnect(team: CRMTeamDTO) {
+  loadPageNotConnect(team: CRMTeamDTO, ev: TDSSafeAny) {
+    ev.stopPropagation();
     this.isLoading = true;
-
-    switch(team.Type) {
-      case 'Facebook':
-        {
-          this.verifyConnect(team);
-        }
-        break;
-      case 'TUser':
-        {
-          this.getTShopPages(team);
-        }
-    }
+    this.verifyConnect(team);
   }
 
   onChangeCollapse(id: number, event: TDSSafeAny) {
@@ -681,7 +671,6 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
                 } else {
                   this.message.info('Không tìm thấy kênh mới nào');
                 }
-
                 this.isLoading = false;
               },
               error: error => {
