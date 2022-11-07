@@ -1,3 +1,4 @@
+import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
 import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { TpageAddUOMComponent } from './../../../../shared/tpage-add-uom/tpage-add-uom.component';
 import { CreateVariantsModalComponent } from './../../../configs/components/create-variants-modal/create-variants-modal.component';
@@ -9,7 +10,7 @@ import { ProductCategoryService } from './../../../../services/product-category.
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { SharedService } from './../../../../services/shared.service';
 import { KeyCacheIndexDBDTO, SyncCreateProductTemplateDto, DataPouchDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from './../../../../dto/configs/product/config-product-default.dto';
+import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants, ConfigUOM, ConfigUOMPO, ConfigProductDefaultDTO } from './../../../../dto/configs/product/config-product-default.dto';
 import { ProductCategoryDTO } from './../../../../dto/product/product-category.dto';
 import { ProductTemplateDTO, ProductUOMDTO } from './../../../../dto/product/product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -333,20 +334,24 @@ export class AddDrawerProductComponent implements OnInit {
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.isLoading = true;
-          this.lstAttributes = result;
-          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
-          model.AttributeLines = result;
+          this.lstAttributes = [...result];
 
-          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
-            (res) => {
+          let model = this.prepareModel() as ConfigProductDefaultDTO;
+          let suggestModel = AddProductHandler.prepareSuggestModel(model);
+          suggestModel.AttributeLines = [...result];
+
+          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res) => {
               this.lstVariants = [...res.value];
               this.isLoading = false;
+              this.cdRef.detectChanges();
             },
-            (err) => {
+            error:(err) => {
               this.isLoading = false;
               this.message.error(err?.error?.message || Message.CanNotLoadData);
+              this.cdRef.detectChanges();
             }
-          )
+          })
         }
       });
     } else {
@@ -358,7 +363,8 @@ export class AddDrawerProductComponent implements OnInit {
     let name = this._form.controls["Name"].value;
 
     if (name) {
-      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+      let model = this.prepareModel() as ConfigProductDefaultDTO;
+      let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
       const modal = this.modal.create({
         title: 'Sửa biến thể sản phẩm',

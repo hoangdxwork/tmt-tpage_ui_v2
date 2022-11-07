@@ -1,3 +1,5 @@
+import { ConfigProductDefaultDTO } from './../../dto/configs/product/config-product-default.dto';
+import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { mergeMap } from 'rxjs';
@@ -336,11 +338,12 @@ export class ModalProductTemplateComponent implements OnInit {
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.isLoading = true;
-          this.lstAttributes = result;
-          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
-          model.AttributeLines = result;
+          this.lstAttributes = [...result];
+          let model = this.prepareModel() as ConfigProductDefaultDTO;
+          let suggestModel = AddProductHandler.prepareSuggestModel(model);
+          suggestModel.AttributeLines = [...result];
 
-          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
+          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
               this.isLoading = false;
@@ -361,7 +364,8 @@ export class ModalProductTemplateComponent implements OnInit {
     let name = this._form.controls["Name"].value;
 
     if (name) {
-      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+      let model = this.prepareModel() as ConfigProductDefaultDTO;
+      let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
       const modal = this.modal.create({
         title: 'Sửa biến thể sản phẩm',

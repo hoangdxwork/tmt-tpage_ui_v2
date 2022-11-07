@@ -399,11 +399,12 @@ export class ConfigAddProductComponent implements OnInit {
 
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperArray.hasListValue(result)) {
-          this.lstAttributes = result;
-          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
-          model.AttributeLines = result;
+          this.lstAttributes = [...result];
+          let model = this.prepareModel();
+          let suggestModel = AddProductHandler.prepareSuggestModel(model);
+          suggestModel.AttributeLines = [...result];
 
-          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
+          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe(
             {
               next: (res) => {
                 this.lstVariants = [...res.value];
@@ -430,7 +431,8 @@ export class ConfigAddProductComponent implements OnInit {
     let name = this._form.controls["Name"].value;
 
     if (name) {
-      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+      let model = this.prepareModel();
+      let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
       const modal = this.modalService.create({
         title: 'Sửa biến thể sản phẩm',
