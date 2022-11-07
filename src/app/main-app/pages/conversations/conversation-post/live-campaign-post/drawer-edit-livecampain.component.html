@@ -52,14 +52,14 @@
                                                     Bạn có muốn chọn tất cả {{ lstVariants.length }} biến thể cùng với sản phẩm này.
                                                 </div>
 
-                                                <!-- <div class="flex items-center justify-end gap-x-2 pt-4">
+                                                <div class="flex items-center justify-end gap-x-2 pt-4">
                                                     <button *ngIf="lstVariants.length > 1" tds-button size="sm" (click)="getVariant()" type="button">
                                                         Chọn tất cả
                                                     </button>
                                                     <button tds-button color="secondary" size="sm" (click)="getVariant(data)" type="button">
                                                         Chọn hiện tại
                                                     </button>
-                                                </div> -->
+                                                </div> 
                                             </tds-spin>
                                         </ng-template>
                                     </ng-template>
@@ -77,7 +77,7 @@
                         </ng-template>
                     </div>
 
-                    <button tds-button-icon color="primary" size="md" type="button" tds-tooltip="Tạo mới sản phẩm" (click)="showCreateProductModal()">
+                    <button tds-button-icon color="primary" size="md" type="button" tds-tooltip="Thêm mới sản phẩm" (click)="showCreateProductModal()">
                         <i class="tdsi-plus-fill text-lg leading-none"></i>
                     </button>
                 </div>
@@ -98,7 +98,7 @@
                                                     </span>
                                                 </button>
 
-                                                <span *ngIf="!visible" class="w-1/4 py-2 h-[34px]"> Sản phẩm </span>
+                                                <span *ngIf="!visible" class="w-full py-2 h-[34px]"> Sản phẩm ({{ detailsForm.value?.length || 0 }})</span>
                                             </div>
                                             
                                             <ng-template #menu>

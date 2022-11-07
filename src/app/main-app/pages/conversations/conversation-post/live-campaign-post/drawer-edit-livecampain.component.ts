@@ -460,7 +460,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   getVariant(data?: DataPouchDBDTO) {
     if(data && data.Id) {//chọn hiện tại
         let simpleDetail = [data];
-        this.addItemProduct(simpleDetail)
+        this.addItemProduct(simpleDetail);
         this.closeFilterIndexDB();
     } else {
         let simpleDetail = [...this.lstVariants];
@@ -663,47 +663,52 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       if(res.type === 'select' && res.productTmpl) {
 
           const product = res.productTmpl as ProductTemplateV2DTO;
-          let items = this.indexDbStorage.filter(y => y.Id == product.VariantFirstId && y.UOMId == product.UOMId && y.Active) as any[];
-
+          let items = this.indexDbStorage.filter(y => y.ProductTmplId == product.Id && y.UOMId == product.UOMId && y.Active) as any[];
+          
           if(items && items.length == 0) {
             this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
             return;
           }
 
-          let x =  items[0];
-          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
+          let lstItems = [] as LiveCampaignSimpleDetail[];
+
+          items.map(x =>{
+            let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
             ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
 
-          let item = {
-              Quantity: qty,
-              RemainQuantity: 0,
-              ScanQuantity: 0,
-              QuantityCanceled: 0,
-              UsedQuantity: 0,
-              Price: x.ListPrice || x.Price || 0,
-              Note: null,
-              ProductId: x.Id,
-              LiveCampaign_Id: this.liveCampaignId,
-              ProductName: x.Name,
-              ProductNameGet: x.NameGet,
-              UOMId: x.UOMId,
-              UOMName: x.UOMName,
+            let item = {
+                Quantity: qty,
+                RemainQuantity: 0,
+                ScanQuantity: 0,
+                QuantityCanceled: 0,
+                UsedQuantity: 0,
+                Price: x.ListPrice || x.Price || 0,
+                Note: null,
+                ProductId: x.Id,
+                LiveCampaign_Id: this.liveCampaignId,
+                ProductName: x.Name,
+                ProductNameGet: x.NameGet,
+                UOMId: x.UOMId,
+                UOMName: x.UOMName,
 
-              Tags: product.OrderTag,
+                Tags: product.OrderTag,
 
-              LimitedQuantity: 0,
-              ProductCode: x.Barcode || x.DefaultCode,
-              ImageUrl: x.ImageUrl,
-              IsActive: true,
-          } as LiveCampaignSimpleDetail;
+                LimitedQuantity: 0,
+                ProductCode: x.Barcode || x.DefaultCode,
+                ImageUrl: x.ImageUrl,
+                IsActive: true,
+            } as LiveCampaignSimpleDetail;
 
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 0;
+            let name = item.ProductNameGet || item.ProductName;
+            if(x._attributes_length == undefined) x._attributes_length = 0;
 
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags.join(',');
+            let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
+            item.Tags = tags.join(',');
 
-          this.addProductLiveCampaignDetails([item]);
+            lstItems = [...lstItems,...[item]];
+          });
+
+          this.addProductLiveCampaignDetails(lstItems);
       }
     });
   }

@@ -280,7 +280,7 @@ export class ListProductTmpV2Component implements OnInit {
         this.indexDbStorage = [...res.cacheDbStorage];
 
         if(res.type === 'select' && res.productTmpl) {
-            let model = res.productTmpl as ProductTemplateV2DTO;
+            const model = res.productTmpl as ProductTemplateV2DTO;
             let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
 
             if(items && items.length == 0) {
