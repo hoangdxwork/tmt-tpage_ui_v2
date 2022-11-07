@@ -1,3 +1,4 @@
+import { TextContentToOrderDTO } from '@app/dto/configs/post/post-order-config.dto';
 import { PrepareAddCampaignHandler } from './../../../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
 import { SharedService } from './../../../../services/shared.service';
@@ -92,7 +93,8 @@ export class EditLiveCampaignComponent implements OnInit {
     private productService: ProductService,
     private notificationService: TDSNotificationService,
     private sharedService: SharedService,
-    private prepareHandler: PrepareAddCampaignHandler) {
+    private prepareHandler: PrepareAddCampaignHandler,
+    private cdRef: ChangeDetectorRef) {
       this.createForm();
   }
 
@@ -624,8 +626,8 @@ export class EditLiveCampaignComponent implements OnInit {
         event.forEach(x => {
             this.datePicker.push(x);
         })
-        this._form.controls.StartDate.setValue(event[0]);
-        this._form.controls.EndDate.setValue(event[1]);
+        this._form.controls.StartDate.setValue(new Date(event[0]));
+        this._form.controls.EndDate.setValue(new Date(event[1]));
     }
   }
 
@@ -768,5 +770,44 @@ export class EditLiveCampaignComponent implements OnInit {
       this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
       this._form.controls['ResumeTime'].setValue(0);
     }
+  }
+
+  onChangeModelTag(event: string[], item: TextContentToOrderDTO) {
+    let fromDetail = this.detailsForm
+    let strs = [...this.checkInputMatch(event)];
+    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
+
+    if(Number(idx) >= 0) {
+      let details = this.detailsForm.at(idx).value;
+      details.Tags = strs?.join(',');
+      console.log(details.Tags)
+
+       //TODO: cập nhật vào formArray
+      this.detailsForm.at(idx).patchValue(details);
+      this.modelTags = [...strs];
+    }
+    this.cdRef.detectChanges();
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 }

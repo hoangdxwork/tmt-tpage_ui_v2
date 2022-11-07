@@ -8,7 +8,7 @@ import { SharedService } from './../../../../services/shared.service';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from './../../../../dto/live-campaign/livecampaign-simple.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -21,7 +21,6 @@ import { Observable, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray,TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { LiveCampaignProductDTO, LiveCampaignDTO } from '@app/dto/live-campaign/odata-live-campaign.dto';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 
@@ -90,7 +89,8 @@ export class AddLiveCampaignV2Component implements OnInit {
     private sharedService: SharedService,
     private productService: ProductService,
     private notificationService: TDSNotificationService,
-    private prepareHandler: PrepareAddCampaignHandler) {
+    private prepareHandler: PrepareAddCampaignHandler,
+    private cdRef: ChangeDetectorRef) {
       this.createForm();
   }
 
@@ -669,5 +669,44 @@ export class AddLiveCampaignV2Component implements OnInit {
       this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
       this._form.controls['ResumeTime'].setValue(0);
     }
+  }
+
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let fromDetail = this.detailsForm
+    let strs = [...this.checkInputMatch(event)];
+    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
+
+    if(Number(idx) >= 0) {
+      let details = this.detailsForm.at(idx).value;
+      details.Tags = strs?.join(',');
+      console.log(details.Tags)
+
+       //TODO: cập nhật vào formArray
+      this.detailsForm.at(idx).patchValue(details);
+      this.modelTags = [...strs];
+    }
+    this.cdRef.detectChanges();
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 }
