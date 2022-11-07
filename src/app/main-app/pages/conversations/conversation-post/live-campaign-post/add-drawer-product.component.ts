@@ -1,4 +1,4 @@
-import { ProductIndexDBService } from './../../../../services/product-indexDB.service';
+import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { TpageAddUOMComponent } from './../../../../shared/tpage-add-uom/tpage-add-uom.component';
 import { CreateVariantsModalComponent } from './../../../configs/components/create-variants-modal/create-variants-modal.component';
 import { ConfigAddAttributeProductModalComponent } from './../../../configs/components/config-attribute-modal/config-attribute-modal.component';

@@ -1,4 +1,4 @@
-import { ProductIndexDBService } from './../../../../services/product-indexDB.service';
+import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
 import { SyncCreateProductTemplateDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ModalListPostComponent } from './../../components/modal-list-post/modal-list-post.component';
