@@ -39,6 +39,7 @@ import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-c
   providers: [TDSDestroyService]
 })
 export class ConfigAddProductComponent implements OnInit {
+  //#region Declare
   _form!: FormGroup;
   productTypeList: Array<TDSSafeAny> = [];
   categoryList: Array<ConfigCateg> = [];
@@ -83,7 +84,9 @@ export class ConfigAddProductComponent implements OnInit {
     }
     return value;
   };
+  //#endregion Declare
 
+  //#region Initialization
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
@@ -125,7 +128,9 @@ export class ConfigAddProductComponent implements OnInit {
     this.loadUOMAddType();
     this.loadOriginCountry();
   }
+  //#endregion Initialization
 
+  //#region Api-request
   loadData(id: TDSSafeAny) {
     this.isLoading = true;
 
@@ -159,27 +164,19 @@ export class ConfigAddProductComponent implements OnInit {
     })
   }
 
-  loadDataIndexDBCache() {
-    this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
-  }
+  loadDefault() {
+    this.isLoading = true;
 
-  loadComboProducts(id: TDSSafeAny){
-    // TODO: lấy danh sách combo
-    this.productTemplateService.getComboProducts(id).pipe(takeUntil(this.destroy$)).subscribe(
+    this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$)).subscribe(
       {
-        next: (res) => {
+        next: (res: TDSSafeAny) => {
+          delete res['@odata.context'];
+          this.dataModel = { ...res };
 
-          this.lstProductCombo = res.value.map((item) => {
-            return {
-              Product: item.Product,
-              ProductId: item.ProductId,
-              Quantity: item.Quantity
-            }
-          });
+          this.formatProperty(res);
         },
-        error: err => {
-          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+        error: error => {
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
         }
       })
   }
@@ -208,44 +205,26 @@ export class ConfigAddProductComponent implements OnInit {
       })
   }
 
-  loadDefault() {
-    this.isLoading = true;
-
-    this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$)).subscribe(
+  loadComboProducts(id: TDSSafeAny){
+    // TODO: lấy danh sách combo
+    this.productTemplateService.getComboProducts(id).pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: (res: TDSSafeAny) => {
-          delete res['@odata.context'];
-          this.dataModel = { ...res };
+        next: (res) => {
 
-          this.formatProperty(res);
+          this.lstProductCombo = res.value.map((item) => {
+            return {
+              Product: item.Product,
+              ProductId: item.ProductId,
+              Quantity: item.Quantity
+            }
+          });
         },
-        error: error => {
-          this.message.error(error?.error?.message || Message.CanNotLoadData);
+        error: err => {
+          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
         }
       })
   }
-
-  formatProperty(data: ConfigProductDefaultDTO) {
-    //TODO: xử lý array form
-    if (TDSHelperArray.hasListValue(data.Images)) {
-      data.Images.forEach((x: WallPicturesDTO) => {
-        this.addImages(x);
-      });
-    }
-
-    if (TDSHelperArray.hasListValue(data.ProductVariants)) {
-      data.ProductVariants.forEach((x: ConfigProductVariant) => {
-        this.addProductVariants(x);
-      });
-    }
-
-    if (data.DateCreated) {
-      data.DateCreated = new Date(data.DateCreated);
-    }
-
-    this._form.patchValue(data);
-  }
-
+  
   loadProductTypeList() {
     this.productTypeList = [
       { value: 'product', text: 'Có thể lưu trữ' },
@@ -364,7 +343,208 @@ export class ConfigAddProductComponent implements OnInit {
       }
     )
   }
+  //#endregion Api-request
 
+  //#region Handle
+  formatProperty(data: ConfigProductDefaultDTO) {
+    //TODO: xử lý array form
+    if (TDSHelperArray.hasListValue(data.Images)) {
+      data.Images.forEach((x: WallPicturesDTO) => {
+        this.addImages(x);
+      });
+    }
+
+    if (TDSHelperArray.hasListValue(data.ProductVariants)) {
+      data.ProductVariants.forEach((x: ConfigProductVariant) => {
+        this.addProductVariants(x);
+      });
+    }
+
+    if (data.DateCreated) {
+      data.DateCreated = new Date(data.DateCreated);
+    }
+
+    this._form.patchValue(data);
+  }
+
+  loadDataIndexDBCache() {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
+  }
+
+  changeInitInventory(value: number){
+    this._form.controls["InitInventory"].setValue(value);
+  }
+
+  getAvatar(url: string) {
+    this._form.controls["ImageUrl"].setValue(url);
+  }
+
+  getBase64(base64: TDSSafeAny) {
+    this._form.controls["Image"].setValue(base64);
+  }
+
+  getImageList(images: any) {
+    if (TDSHelperArray.isArray(images.files)) {
+      let lstImages = images.files as WallPicturesDTO[];
+      this._form.controls["Images"] = this.fb.array([]);
+
+      if (TDSHelperArray.hasListValue(lstImages)) {
+        lstImages.forEach((x: WallPicturesDTO) => {
+          this.addImages(x);
+        });
+      }
+    }
+  }
+
+  initImages(data: WallPicturesDTO | null) {
+    if (data != null) {
+      return this.fb.group({
+        MineType: [null],
+        Name: [data.name],
+        ResModel: ['product.template'],
+        Type: ['url'],
+        Url: [data.url]
+      })
+    } else {
+      return this.fb.group({
+        MineType: [null],
+        Name: [null],
+        ResModel: ['product.template'],
+        Type: ['url'],
+        Url: [null]
+      })
+    }
+  }
+
+  initProductVariants(data: ConfigProductVariant | null) {
+    if (data != null) {
+      return this.fb.group(data)
+    } else {
+      return this.fb.group([null])
+    }
+  }
+
+  addImages(data: WallPicturesDTO) {
+    let control = <FormArray>this._form.controls['Images'];
+    control.push(this.initImages(data));
+  }
+
+  addProductVariants(data: ConfigProductVariant) {
+    let control = <FormArray>this._form.controls['ProductVariants'];
+    control.push(this.initProductVariants(data));
+  }
+
+  removeVariants(data: ConfigProductVariant) {
+    if (this.lstVariants.length > 1) {
+      let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
+      this.lstVariants = [...variants];
+    } else {
+      this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
+    }
+  }
+
+  removeComboProduct(index: number) {
+    this.lstProductCombo = this.lstProductCombo.filter((f,i)=> i != index);
+  }
+
+  removeUOM(index: number){
+    this.lstUOM = [...this.lstUOM.filter((x, i) => i != index)];
+  }
+
+  addProduct() {
+    let model = this.prepareModel();
+    if (model.Name) {
+      this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: TDSSafeAny) => {
+              this.message.success(Message.InsertSuccess);
+              this.loadDataIndexDBCache();
+              this.isLoading = false;
+
+              this.router.navigateByUrl('/configs/products');
+            },
+            error: err => {
+              this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
+              this.isLoading = false;
+            }
+          }
+        );
+    }
+  }
+
+  editProduct() {
+    let model = this.prepareModel();
+
+    if (model.Name) {
+      this.productTemplateService.updateProductTemplate(model)
+        .pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: TDSSafeAny) => {
+              this.message.success(Message.UpdatedSuccess);
+              this.loadDataIndexDBCache();
+              this.isLoading = false;
+
+              this.router.navigateByUrl('/configs/products');
+            },
+            error: err => {
+              this.message.error(err?.error?.message || Message.UpdatedFail);
+              this.isLoading = false;
+            }
+          }
+        );
+    }
+  }
+
+  prepareModel() {
+    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants, this.lstProductCombo, this.lstUOM);
+  }
+
+  backToMain() {
+    this.router.navigateByUrl('/configs/products');
+  }
+
+  onSave() {
+    if (!TDSHelperString.hasValueString(this.dataModel.Name || this._form.controls["Name"].value)) {
+      this.message.error('Vui lòng nhập tên');
+      return
+    }
+
+    if (!TDSHelperObject.hasValue(this.dataModel.UOM || this._form.controls["UOM"].value)) {
+      this.message.error('Vui lòng nhập đơn vị mặc định');
+      return
+    }
+
+    if (!TDSHelperObject.hasValue(this.dataModel.UOMPO || this._form.controls["UOMPO"].value)) {
+      this.message.error('Vui lòng nhập đơn vị mua');
+      return
+    }
+
+    this.isLoading = true;
+
+    if (this.id) {
+      this.editProduct();
+    } else {
+      if (this.dataModel) {
+        this.addProduct();
+      } else {
+        this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: TDSSafeAny) => {
+              delete res['@odata.context'];
+              this.dataModel = { ...res };
+              this.addProduct();
+            },
+            error: err => {
+              this.message.error(err?.error?.message || Message.CanNotLoadData);
+            }
+          });
+      }
+    }
+  }
+  //#endregion Handle
+
+  //#region Modal
   showUpdateInitInventoryModal(){
     const modal = this.modalService.create({
       title: 'Cập nhật số lượng thực tế',
@@ -461,15 +641,6 @@ export class ConfigAddProductComponent implements OnInit {
     }
   }
 
-  removeVariants(data: ConfigProductVariant) {
-    if (this.lstVariants.length > 1) {
-      let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
-      this.lstVariants = [...variants];
-    } else {
-      this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
-    }
-  }
-
   showCreateComboModal(data?: ComboProductDTO, index?:number){
     const modal = this.modalService.create({
       title: data ? 'Sửa thành phần' : 'Thêm thành phần',
@@ -490,10 +661,6 @@ export class ConfigAddProductComponent implements OnInit {
     });
   }
 
-  removeComboProduct(index: number) {
-    this.lstProductCombo = this.lstProductCombo.filter((f,i)=> i != index);
-  }
-
   addCategory() {
     const modal = this.modalService.create({
       title: 'Thêm nhóm sản phẩm',
@@ -503,7 +670,9 @@ export class ConfigAddProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadProductCategory();
+      if(result) {
+        this.loadProductCategory();
+      }
     });
   }
 
@@ -519,7 +688,9 @@ export class ConfigAddProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadUOMAddType();
+      if(result) {
+        this.loadUOMAddType();
+      }
     });
   }
 
@@ -535,7 +706,9 @@ export class ConfigAddProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadUOMAddType();
+      if(result) {
+        this.loadUOMAddType();
+      }
     });
   }
 
@@ -551,7 +724,9 @@ export class ConfigAddProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadUOMAddType();
+      if(result) {
+        this.loadUOMAddType();
+      }
     });
   }
 
@@ -564,66 +739,10 @@ export class ConfigAddProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadOriginCountry();
-    });
-  }
-
-  changeInitInventory(value: number){
-    this._form.controls["InitInventory"].setValue(value);
-  }
-
-  getAvatar(url: string) {
-    this._form.controls["ImageUrl"].setValue(url);
-  }
-
-  getBase64(base64: TDSSafeAny) {
-    this._form.controls["Image"].setValue(base64);
-  }
-
-  getImageList(images: any) {
-    if (TDSHelperArray.isArray(images.files)) {
-      let lstImages = images.files as WallPicturesDTO[];
-      this._form.controls["Images"] = this.fb.array([]);
-
-      if (TDSHelperArray.hasListValue(lstImages)) {
-        lstImages.forEach((x: WallPicturesDTO) => {
-          this.addImages(x);
-        });
+      if(result) {
+        this.loadOriginCountry();
       }
-    }
-  }
-
-  initImages(data: WallPicturesDTO | null) {
-    if (data != null) {
-      return this.fb.group({
-        MineType: [null],
-        Name: [data.name],
-        ResModel: ['product.template'],
-        Type: ['url'],
-        Url: [data.url]
-      })
-    } else {
-      return this.fb.group({
-        MineType: [null],
-        Name: [null],
-        ResModel: ['product.template'],
-        Type: ['url'],
-        Url: [null]
-      })
-    }
-  }
-
-  initProductVariants(data: ConfigProductVariant | null) {
-    if (data != null) {
-      return this.fb.group(data)
-    } else {
-      return this.fb.group([null])
-    }
-  }
-
-  addImages(data: WallPicturesDTO) {
-    let control = <FormArray>this._form.controls['Images'];
-    control.push(this.initImages(data));
+    });
   }
 
   createUOMModal(){
@@ -671,106 +790,5 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
   }
-
-  removeUOM(index: number){
-    this.lstUOM = [...this.lstUOM.filter((x, i) => i != index)];
-  }
-
-  addProductVariants(data: ConfigProductVariant) {
-    let control = <FormArray>this._form.controls['ProductVariants'];
-    control.push(this.initProductVariants(data));
-  }
-
-  addProduct() {
-    let model = this.prepareModel();
-    if (model.Name) {
-      this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: TDSSafeAny) => {
-              this.message.success(Message.InsertSuccess);
-              this.loadDataIndexDBCache();
-              this.isLoading = false;
-
-              this.router.navigateByUrl('/configs/products');
-            },
-            error: err => {
-              this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
-              this.isLoading = false;
-            }
-          }
-        );
-    }
-  }
-
-  editProduct() {
-    let model = this.prepareModel();
-
-    if (model.Name) {
-      this.productTemplateService.updateProductTemplate(model)
-        .pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: TDSSafeAny) => {
-              this.message.success(Message.UpdatedSuccess);
-              this.loadDataIndexDBCache();
-              this.isLoading = false;
-
-              this.router.navigateByUrl('/configs/products');
-            },
-            error: err => {
-              this.message.error(err?.error?.message || Message.UpdatedFail);
-              this.isLoading = false;
-            }
-          }
-        );
-    }
-  }
-
-  prepareModel() {
-    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants, this.lstProductCombo, this.lstUOM);
-  }
-
-  backToMain() {
-    this.router.navigateByUrl('/configs/products');
-  }
-
-  onSave() {
-    if (!TDSHelperString.hasValueString(this.dataModel.Name || this._form.controls["Name"].value)) {
-      this.message.error('Vui lòng nhập tên');
-      return
-    }
-
-    if (!TDSHelperObject.hasValue(this.dataModel.UOM || this._form.controls["UOM"].value)) {
-      this.message.error('Vui lòng nhập đơn vị mặc định');
-      return
-    }
-
-    if (!TDSHelperObject.hasValue(this.dataModel.UOMPO || this._form.controls["UOMPO"].value)) {
-      this.message.error('Vui lòng nhập đơn vị mua');
-      return
-    }
-
-    this.isLoading = true;
-
-    if (this.id) {
-      this.editProduct();
-    } else {
-      if (this.dataModel) {
-        this.addProduct();
-      } else {
-        this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: TDSSafeAny) => {
-              delete res['@odata.context'];
-              this.dataModel = { ...res };
-              this.addProduct();
-            },
-            error: err => {
-              this.message.error(err?.error?.message || Message.CanNotLoadData);
-            }
-          });
-      }
-    }
-  }
-
-
+  //#endregion Modal
 }
