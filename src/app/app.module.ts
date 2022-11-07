@@ -28,7 +28,7 @@ import "quill-mention";
 import { environment } from 'src/environments/environment';
 
 import * as firebase from 'firebase/app';
-firebase.initializeApp(environment.firebaseConfig)
+firebase.initializeApp(environment.firebaseConfig);
 
 const atValues = [
   { id: 1, value: "Họ & tên" },

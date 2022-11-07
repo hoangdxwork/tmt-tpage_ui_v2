@@ -43,6 +43,7 @@ import { SimpleSearchPipe, SimpleSearchV2Pipe, SimpleSearchLiveCampaignDetailPip
 import { ReduceSystemMessagePipe } from './reduce-system-message.pipe';
 import { SeenedMessagePipe } from './coversation-message.pipe';
 import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
+import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -101,7 +102,8 @@ const cmp =[
   ReduceSystemMessagePipe,
   SeenedMessagePipe,
   IndexSimpleDetailLiveCampainPipe,
-  FilterIndexDBLivePipe
+  FilterIndexDBLivePipe,
+  FirebaseSubscribedPipe
 ]
 
 @NgModule({

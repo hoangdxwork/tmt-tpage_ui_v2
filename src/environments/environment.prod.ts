@@ -19,13 +19,14 @@ export const environment = {
     appVersion: 'v11.0',
   },
   firebaseConfig: {
-    apiKey: "AIzaSyB6MbPLjt0r9NrCfasAs3aOA2zXZcAS1h4",
-    authDomain: "toanlefirebase.firebaseapp.com",
-    projectId: "toanlefirebase",
-    storageBucket: "toanlefirebase.appspot.com",
-    messagingSenderId: "743574831100",
-    appId: "1:743574831100:web:d26a6a84d7c3b8fc0f3c79",
-    measurementId: "G-87WC6HQ2F7",
-    vapidKey: "BIkenc_rHdoJHmQGv_qO7faaDRdrSPtWEAwjbHmgx62ugBW1zdihyOhT_qXnZRi1Q46nQ-VZzfxqKyrCWbb4GMM"
+    apiKey: "AIzaSyAAnP3M-JqrBLr-AGoHTZ1Qtx7QR0MXGVQ",
+    authDomain: "tposmobile.firebaseapp.com",
+    databaseURL: "https://tposmobile.firebaseio.com",
+    projectId: "tposmobile",
+    storageBucket: "tposmobile.appspot.com",
+    messagingSenderId: "852209026200",
+    appId: "1:852209026200:web:ef6ad3d5d7573855a63ced",
+    measurementId: "G-XHX5BTL43H",
+    vapidKey: "BFl9DB1f6V3J6u8SiJpSyEXJYORd2AWu-qndFYUrSZlhFdO0ClNMEcJzdZytA2yGOiqiOhPGVe3fUNTWZXT0qus"
   }
 };

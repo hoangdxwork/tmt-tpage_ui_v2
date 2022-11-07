@@ -3,7 +3,6 @@
       <div class="w-full h-full bg-white rounded-xl p-4 mb-4">
           <div class="flex items-center justify-between mb-4">
               <tds-label class="font-semibold ">Danh sách đăng ký nhận tin</tds-label>
-              <button tds-button size="md" color="primary" type="button" (click)="registerTopics()">Đăng kí nhận tin</button>
           </div>
           <hr>
           <div class="mt-4 mb-4">
@@ -11,11 +10,12 @@
                   <div class="block">
                       <p class="font-semibold mb-3">Đăng ký nhận tin</p>
                       <div class="flex item-center mb-3">
-                          <button type="button" class="mr-2" tds-button color="info" (click)="requestPermission()">Xác nhận thiết bị</button>
-                          <button type="button" class="" tds-button color="error" (click)="removeToken()">Xóa token</button>
+                          <button *ngIf="!isRegistered" type="button" class="mr-2" tds-button color="info" (click)="requestPermission()">Đăng ký thiết bị</button>
+                          <button *ngIf="isRegistered" class="mr-2" tds-button size="md" color="primary" type="button" (click)="registerTopics()">Đăng kí nhận tin</button>
+                          <button type="button" tds-button color="error" (click)="removeToken()">Hủy đăng ký</button>
                       </div>
 
-                      <div class="block" *ngIf="token" style="white-space: pre-line; word-break: break-word;">{{token}}</div>
+                      <div class="block" *ngIf="deviceToken" style="white-space: pre-line; word-break: break-word;">{{deviceToken}}</div>
                       <div class="block" *ngIf="error" style="white-space: pre-line; word-break: break-word;">{{error}}</div>
 
                       <div class="block mt-4">
@@ -33,10 +33,10 @@
               <div *ngFor="let item of data">
                   <div class="mb-2">
                       <tds-label class="mb-2 block">{{item.group}}</tds-label>
-                      <div *ngFor="let topic of item.topics">
+                      <div *ngFor="let x of item.topics">
                           <div class="flex gap-x-3 items-center">
-                            <tds-checkbox (ngModelChange)="onChecked($event, topic)" [(ngModel)]="topic.isActive" [ngModelOptions]="{standalone: true}"></tds-checkbox>
-                            <span>{{topic.name}}</span>
+                            <tds-checkbox (ngModelChange)="onChecked($event, x)" [ngModel]="x.isActive | firebaseSubscribed: ids : x" [ngModelOptions]="{standalone: true}"></tds-checkbox>
+                            <span>{{x.name}}</span>
                           </div>
                       </div>
                   </div>

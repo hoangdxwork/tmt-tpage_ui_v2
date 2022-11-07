@@ -11,16 +11,19 @@ import { AngularFireAuth } from "@angular/fire/compat/auth";
   providedIn: 'root'
 })
 
-export class FirebasePushNotificationService  {
+export class FirebaseMessagingService  {
 
-  _notificationFirebase: any;
-  currentMessage = new BehaviorSubject(null);
+  payload = new BehaviorSubject(null);
   token: any;
+  _notificationFirebase: any;
   topics!: FireBaseTopicDto[];
+
+  _firebaseDeviceToken: string = "_firebaseDeviceToken";
 
   constructor(private message: TDSMessageService,
       private angularFireMessaging: AngularFireMessaging,
       private firebaseRegisterService: FirebaseRegisterService,
+      private angularFireDatabase: AngularFireDatabase,
       private angularFireAuth: AngularFireAuth) {
   }
 
@@ -33,12 +36,34 @@ export class FirebasePushNotificationService  {
   setReceiveMessage() {
     this.angularFireMessaging.onMessage((payload: any) => {
         console.log('Message received. ', payload);
-        this.currentMessage.next(payload);
+        this.payload.next(payload);
     });
   }
 
-  getReceiveMessage() {
-      return this.currentMessage.asObservable();
+  getpayload() {
+      return this.payload.asObservable();
+  }
+
+  getDeviceTokenLocalStorage() {
+    const key = this._firebaseDeviceToken;
+    let token = localStorage.getItem(key) as any;
+    return token;
+  }
+
+  setDeviceTokenLocalStorage(token: string) {
+    const key = this._firebaseDeviceToken;
+    localStorage.setItem(key, token);
+  }
+
+  removeDeviceTokenLocalStorage() {
+    const key = this._firebaseDeviceToken;
+    localStorage.removeItem(key);
+  }
+
+  checkDeviceToken(): boolean {
+    let token = this.getDeviceTokenLocalStorage();
+    if(token) return true;
+    return false;
   }
 
 }
