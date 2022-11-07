@@ -421,4 +421,31 @@ export class ModalProductTemplateComponent implements OnInit {
   changeTags(event:any,i:number){
     this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
   }
+
+  onChangeModelTag(event: string[]) {
+    let strs = [...this.checkInputMatch(event)];
+    this._form.controls.OrderTag.setValue(strs);
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
+  }
 }

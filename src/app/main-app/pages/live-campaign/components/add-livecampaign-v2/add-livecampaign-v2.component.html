@@ -279,7 +279,7 @@
                                     <div class="w-[360px]">
                                         <tds-form-field>
                                             <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                              [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
+                                              [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" (selectChange)="onChangeModelTag($event, detail.value)"
                                               [data]="(detail.value.Tags | stringToStringArray)">
                                             </tds-select>
                                         </tds-form-field>
