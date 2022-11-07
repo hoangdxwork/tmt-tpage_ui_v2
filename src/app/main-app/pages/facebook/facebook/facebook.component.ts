@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { FacebookService } from './../../../services/facebook.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FacebookUser } from './../../../../lib/dto/facebook.dto';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { fromEvent, Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FacebookAuth, FacebookAuthResponse } from 'src/app/lib/dto/facebook.dto';
@@ -31,6 +31,7 @@ export interface PageNotConnectDTO {
   selector: 'app-facebook',
   templateUrl: './facebook.component.html',
   styleUrls: ['./facebook.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   animations: [eventFadeStateTrigger],
   providers: [ TDSDestroyService]
 })
