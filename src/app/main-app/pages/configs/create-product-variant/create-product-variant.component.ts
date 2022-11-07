@@ -1,3 +1,4 @@
+import { CreateFormProductVariantHandler } from './../../../handler-v2/product-variant/create-form.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { IRAttachmentDTO } from './../../../dto/attachment/attachment.dto';
@@ -29,6 +30,7 @@ import { PrepareCreateVariantHandler } from 'src/app/main-app/handler-v2/product
 })
 
 export class CreateProductVariantComponent implements OnInit {
+  //#region Declare
   _form!: FormGroup;
   lstProductCateg: Array<ProductCategoryDTO> = [];
   lstUOM: Array<ProductUOMDTO> = [];
@@ -65,12 +67,15 @@ export class CreateProductVariantComponent implements OnInit {
     }
     return value;
   };
+  //#endregion Declare
 
+  //#region Initallization
   constructor(private fb: FormBuilder,
     private router: Router,
     private message: TDSMessageService,
     private notification: TDSNotificationService,
     private destroy$: TDSDestroyService,
+    private createFormHandler : CreateFormProductVariantHandler,
     private CRMService: CRMTeamService,
     private productService: ProductService,
     private prepareCreateVariant: PrepareCreateVariantHandler,
@@ -90,82 +95,11 @@ export class CreateProductVariantComponent implements OnInit {
   }
 
   createForm() {
-    this._form = this.fb.group({
-      Active: [true], //hiệu lực
-      AmountTotal: [null],
-      AttributeValues: [null], //danh sách thuộc tính-giá trị của biến thể
-      AvailableInPOS: [true],//hiện trên điểm bán hàng
-      Barcode: [null],
-      Categ: [null],
-      CategId: [null],
-      CategName: [null],
-      CompanyId: [null],
-      CostMethod: [null],
-      DateCreated: [null],
-      DefaultCode: [null],
-      Description: [null],
-      DiscountPurchase: [null],
-      DiscountSale: [null],
-      DisplayAttributeValues: [null],
-      EAN13: [null],
-      Factor: [null],
-      Id: [null],
-      Image: [null],
-      ImageUrl: [null],
-      IncomingQty: [null],
-      InvoicePolicy: ['order'],//trên số lượng đặt hàng ,  delivery- trên số lượng đã giao
-      IsCombo: [null],
-      IsDiscount: [false],
-      LastUpdated: [null],
-      ListPrice: [0],
-      Name: [null, Validators.required],
-      NameCombos: [null],
-      NameGet: [null],
-      NameNoSign: [null],
-      NameTemplate: [null],
-      NameTemplateNoSign: [null],
-      OldPrice: [0],
-      OutgoingQty: [0],
-      POSCateg: [null],//nhóm pos
-      POSCategId: [null],
-      PosSalesCount: [null],
-      Price: [0],
-      PriceVariant: [0],//giá biến thể
-      Product_UOMId: [null],
-      ProductTmplEnableAll: [false],
-      ProductTmplId: [null],
-      PropertyCostMethod: [null],
-      PropertyValuation: [null],
-      PurchaseMethod: ['receive'], //trên số lượng nhận hàng,  purchase-trên số lượng đặt hàng
-      PurchaseOK: [true], //có thể mua
-      PurchasePrice: [0],
-      QtyAvailable: [0],
-      RewardName: [null],
-      SaleDelay: [null],//thời gian chờ
-      SaleOK: [true], // có thể bán
-      SaleValue: [null],
-      StandardPrice: [0],//giá vốn
-      StockValue: [null],
-      Tags: [null],
-      TaxesIds: [null],
-      Tracking: [null],
-      Type: ['product'],//consu//service
-      UOM: [null],//Đơn vị mặc định
-      UOMPO: [null],// UOMPO đơn vị mua
-      UOMPOId: [null],
-      Valuation: [null],
-      Variant_TeamId: [null],
-      Version: [null],
-      VirtualAvailable: [0],
-      Weight: [0], //tồn kho
-    });
+    this._form = this.createFormHandler.createForm(this._form, this.fb);
   }
+  //#endregion Initallization
 
-  loadDataIndexDBCache() {
-    this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
-  }
-
+  //#region Api-request
   loadDefault() {
     this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
       {
@@ -226,7 +160,9 @@ export class CreateProductVariantComponent implements OnInit {
         }
       });
   }
+  //#endregion Api-request
 
+  //#region Handle
   formatProperty(data: ProductDTO) {
     //TODO: xử lý array form
     if (TDSHelperArray.hasListValue(data.Images)) {
@@ -239,6 +175,11 @@ export class CreateProductVariantComponent implements OnInit {
       data.DateCreated = new Date(data.DateCreated);
     }
     this._form.patchValue(data);
+  }
+
+  loadDataIndexDBCache() {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
   }
 
   addImages(data: IRAttachmentDTO) {
@@ -341,4 +282,5 @@ export class CreateProductVariantComponent implements OnInit {
   onBack() {
     this.router.navigateByUrl('/configs/product-variant');
   }
+  //#endregion Handle
 }

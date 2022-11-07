@@ -1,3 +1,4 @@
+import { CreateFormProductVariantHandler } from './../../../handler-v2/product-variant/create-form.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductUOMDTO, ProductDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
@@ -22,7 +23,7 @@ import { PrepareEditVariantHandler } from 'src/app/main-app/handler-v2/product-v
 })
 
 export class EditProductVariantComponent implements OnInit {
-
+  //#region Declare
   @Input() id!: number;
 
   _form!: FormGroup;
@@ -48,9 +49,12 @@ export class EditProductVariantComponent implements OnInit {
     }
     return value;
   };
+  //#endregion Declare
 
+  //#region Initallization
   constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
+    private createFormHandler : CreateFormProductVariantHandler,
     private productIndexDBService: ProductIndexDBService,
     private destroy$: TDSDestroyService,
     private productService: ProductService,
@@ -71,27 +75,19 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   createForm() {
-    this._form = this.fb.group({
-      Name: [null, Validators.required],
-      PriceVariant: [0],
-      IsAvailableOnTPage: [null],
-      ImageUrl: [null],
-      Categ: [null, Validators.required],
-      UOM: [null, Validators.required],
-      UOMPO: [null, Validators.required],
-      Images: this.fb.array([])
-    })
+    this._form = this.createFormHandler.createEditForm(this._form, this.fb);
   }
+  //#endregion Initallization
 
+  //#region Api-request
   loadData() {
     this.isLoading = true;
-
     this.productService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe(
         {
           next: (res: any) => {
             if(res) {
               delete res['@odata.context'];
-              this.dataModel = res;
+              this.dataModel = {...res};
               
               this.updateForm(res);
             }
@@ -100,15 +96,11 @@ export class EditProductVariantComponent implements OnInit {
             this.cdRef.detectChanges();
           }, 
           error: error => {
-            this.message.error(error.error.message || 'Load dữ liệu thất bại');
             this.isLoading = false;
+            this.message.error(error.error.message || 'Load dữ liệu thất bại');
+            this.cdRef.detectChanges();
           }
         })
-  }
-
-  loadDataIndexDBCache() {
-    this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
   }
 
   loadProductCategory() {
@@ -134,7 +126,9 @@ export class EditProductVariantComponent implements OnInit {
         }
       })
   }
+  //#endregion Api-request
 
+  //#region Handle
   updateForm(data: TDSSafeAny) {
 
     this._form.controls['Categ'].setValue(data.Categ);
@@ -148,6 +142,11 @@ export class EditProductVariantComponent implements OnInit {
         this.addImages(x);
       })
     }
+  }
+
+  loadDataIndexDBCache() {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
   }
 
   onSubmit() {
@@ -258,5 +257,5 @@ export class EditProductVariantComponent implements OnInit {
         }
       });
   }
-
+  //#endregion Handle
 }
