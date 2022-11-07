@@ -5,6 +5,7 @@ import { FireBaseTopicDto } from '@app/dto/firebase/topics.dto';
 import { FirebasePushNotificationService } from '@app/services/firebase/firebase-notify.service';
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { environment } from 'src/environments/environment';
+import { initializeApp } from 'firebase/app';
 
 @Component({
   selector: 'firebase-topics',
@@ -121,6 +122,7 @@ export class FirebaseTopicsComponent implements OnInit {
 
           this.token = token;
           this.setStorageFirebase(token);
+          initializeApp(environment.firebaseConfig);
 
       }).catch((error) => {
           this.isLoading = false;

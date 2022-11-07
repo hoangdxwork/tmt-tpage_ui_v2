@@ -9,9 +9,7 @@ import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
-import { FirebasePushNotificationService } from '@app/services/firebase/firebase-notify.service';
-import { SharedService } from '@app/services/shared.service';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 @Component({
   selector: 'app-root',
@@ -49,7 +47,6 @@ export class AppComponent {
     if(!TDSHelperString.hasValueString(checkNotti)) {
         localStorage.setItem('_socketNotification', JSON.stringify("ON"));
     }
-
   }
 
   ngOnInit() {
@@ -109,7 +106,6 @@ export class AppComponent {
     this.tdsConfigService.set('notification', {
         maxStack: 3
     })
-
   }
 
   init(): Observable<boolean> {
@@ -144,5 +140,6 @@ export class AppComponent {
     };
     Object.assign(TGlobalConfig, objConfig);
   }
+
 
 }

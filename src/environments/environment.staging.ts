@@ -20,13 +20,13 @@ export const environment = {
     appVersion: 'v11.0',
   },
   firebaseConfig: {
-    apiKey: "AIzaSyB13Zlrc54Xz2qZwBOsZN1cGwkWUV7RDiw",
-    authDomain: "propane-bebop-278706.firebaseapp.com",
-    projectId: "propane-bebop-278706",
-    storageBucket: "propane-bebop-278706.appspot.com",
-    messagingSenderId: "528073803166",
-    appId: "1:528073803166:web:ebd0d1f5d380cdd86c428f",
-    measurementId: "G-PMJ8HGCCT1",
-    vapidKey: "BJmSmdMKisyz_YsNNHWSXT8nLi5kgII9pcys9qwKQWU5FN7I5ESvqNx8ysWrwK9fvXPNhmjmOY8a_5LkaR9S0Rg"
+    apiKey: "AIzaSyB6MbPLjt0r9NrCfasAs3aOA2zXZcAS1h4",
+    authDomain: "toanlefirebase.firebaseapp.com",
+    projectId: "toanlefirebase",
+    storageBucket: "toanlefirebase.appspot.com",
+    messagingSenderId: "743574831100",
+    appId: "1:743574831100:web:d26a6a84d7c3b8fc0f3c79",
+    measurementId: "G-87WC6HQ2F7",
+    vapidKey: "BIkenc_rHdoJHmQGv_qO7faaDRdrSPtWEAwjbHmgx62ugBW1zdihyOhT_qXnZRi1Q46nQ-VZzfxqKyrCWbb4GMM"
   }
 };

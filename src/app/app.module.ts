@@ -1,7 +1,7 @@
 import { OrderModule } from './main-app/pages/order/order.module';
 import { MainSharedModule } from './main-app/shared/shared.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
@@ -27,8 +27,8 @@ import { TDSButtonModule } from "tds-ui/button";
 import "quill-mention";
 import { environment } from 'src/environments/environment';
 
-import { initializeApp } from "firebase/app";
-initializeApp(environment.firebaseConfig);
+import * as firebase from 'firebase/app';
+firebase.initializeApp(environment.firebaseConfig)
 
 const atValues = [
   { id: 1, value: "Họ & tên" },
@@ -78,6 +78,7 @@ registerLocaleData(localeVi);
     AppComponent
   ],
   imports: [
+    AngularFireModule.initializeApp(environment.firebaseConfig),
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
@@ -94,8 +95,7 @@ registerLocaleData(localeVi);
     TDSButtonModule,
     QuillModule.forRoot(quillOptions),
     AngularFireAuthModule,
-    AngularFireMessagingModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireMessagingModule
   ],
   providers: [{ provide: TDS_I18N, useValue: vi_VN },
     TAuthGuardService,
