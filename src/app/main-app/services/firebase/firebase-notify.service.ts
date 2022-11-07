@@ -22,17 +22,6 @@ export class FirebasePushNotificationService  {
       private angularFireMessaging: AngularFireMessaging,
       private firebaseRegisterService: FirebaseRegisterService,
       private angularFireAuth: AngularFireAuth) {
-
-        this.angularFireMessaging.messages.subscribe({
-            next: (messagingContext: any) => {
-                messagingContext.onMessage = messagingContext.onMessage.bind(messagingContext);
-                messagingContext.onTokenRefresh = messagingContext.onTokenRefresh.bind(messagingContext);
-            },
-            error: (err: any) => {
-                console.error("Thông nhận tin", err);
-                this.message.error(err);
-            }
-        })
   }
 
   deleteToken() {
@@ -50,17 +39,6 @@ export class FirebasePushNotificationService  {
 
   getReceiveMessage() {
       return this.currentMessage.asObservable();
-  }
-
-  loadTopics() {
-    this.firebaseRegisterService.topics().subscribe({
-      next: (res: any) => {
-        this.topics = [...res];
-      },
-      error: (err) => {
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-      }
-    })
   }
 
 }
