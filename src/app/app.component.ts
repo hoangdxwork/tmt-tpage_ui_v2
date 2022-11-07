@@ -10,6 +10,7 @@ import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,7 @@ export class AppComponent {
   teamId!: number;
   isShowModal: boolean = false;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
+  @ViewChild('templateFirebase') templateFirebase!: TemplateRef<{}>;
 
   message: any;
   token: any;
@@ -34,6 +36,7 @@ export class AppComponent {
     public zone: NgZone,
     public router: Router,
     private route: ActivatedRoute,
+    private firebaseMessagingService: FirebaseMessagingService,
     private notification: TDSNotificationService,
     private tdsConfigService: TDSConfigService,
     private socketOnEventService: SocketOnEventService,
@@ -105,7 +108,7 @@ export class AppComponent {
 
     this.tdsConfigService.set('notification', {
         maxStack: 3
-    })
+    });
   }
 
   init(): Observable<boolean> {
@@ -141,5 +144,11 @@ export class AppComponent {
     Object.assign(TGlobalConfig, objConfig);
   }
 
+  checkDeviceToken() {
+    let token = this.firebaseMessagingService.checkDeviceToken() as boolean;
+    if(!token) {
+        this.notification.template(this.templateFirebase, { placement: 'bottomRight' , duration: 10 * 1000});
+    }
+  }
 
 }
