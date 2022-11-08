@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { EventEmitter, Inject, Injectable, Output } from '@angular/core';
+import { TAuthService } from '@core/services/auth.service';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -9,7 +10,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
   providedIn: 'root'
 })
 
-export class SocketService  {
+export class SocketService {
 
   @Output() isConnectedSocket = new EventEmitter<boolean>();
   socket!: Socket;
@@ -17,58 +18,71 @@ export class SocketService  {
   establishedConnected = true;
 
   constructor(private notificationService: TDSNotificationService,
+    private authService: TAuthService,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.initSocket();
+    this.authService.getAuthenIsLogin().subscribe((isLogin) => {
+      if (isLogin) {
+        this.initSocket();
+      }
+    });
   }
 
   initSocket(): void {
     let hostname = this.document.location.hostname;
 
     this.socket = io(environment.socketUrl, {
-        transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
-        query: {
-            room: `${hostname}` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
-        },
+      transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
+      query: {
+        room: `${hostname}` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
+      },
+      auth: {
+        token: this.authService.getAccessToken()?.access_token
+      }
+    });
+
+    this.socket.on("connect", () => {
+      console.log("Connected to socket.io server");
+      this.isConnectedSocket.emit(true);
     });
 
     this.socket.on("connect_error", (err) => {
-        console.log(`connect_error due to ${err.message}`);
+      console.log(`connect_error due to ${err.message}`);
 
-        if(this.retryNoti == 1) {
-          this.notificationService.error(
-              'Kết nối socket-io xảy ra lỗi',
-              `${err.message}`,
-              {placement: 'bottomLeft'})
-        }
+      if (this.retryNoti == 1) {
+        this.notificationService.error(
+          'Kết nối socket-io xảy ra lỗi',
+          `${err.message}`,
+          { placement: 'bottomLeft' })
+      }
 
-        this.establishedConnected = false;
-        this.retryNoti++;
+      this.establishedConnected = false;
+      this.retryNoti++;
     });
   }
 
   reconnecting() {
     this.socket.on('reconnect', () => {
-        console.log('The connection socket-io was successfully established');
-        this.establishedConnected = true;
+      console.log('The connection socket-io was successfully established');
+      this.establishedConnected = true;
     });
   }
 
   getSocketId = () => this.socket.id;
 
   disconnectSocket(): void {
-      this.socket.close();
+    this.socket.close();
   }
 
   listenEvent(eventName: any): Observable<any> {
     return new Observable((subscriber) => {
-        this.socket.on(eventName, (data: any) => {
-            subscriber.next(data);
-        });
+      this.socket.on(eventName, (data: any) => {
+        subscriber.next(data);
+      });
     });
   }
 
   emitEvent(eventName: any, data: any): void {
-      this.socket.emit(eventName, data);
+    this.socket.emit(eventName, data);
   }
 }
