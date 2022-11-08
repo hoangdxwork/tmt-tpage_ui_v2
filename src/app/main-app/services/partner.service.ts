@@ -328,7 +328,7 @@ export class PartnerService extends BaseSevice {
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getFileUpload(api, null);
+    return this.apiService.getData(api, null);
   }
 
 
