@@ -6,6 +6,7 @@ import { PackOfDataComponent } from './pack-of-data/pack-of-data.component';
 import { NotificationComponent } from './notification/notification.component';
 import { NotificationDetailComponent } from './components/notification-detail/notification-detail.component';
 import { FirebaseNotificationComponent } from './firebase-notification/firebase-notification.component';
+import { FirebaseNotificationDetailComponent } from './components/firebase-notification-detail/firebase-notification-detail.component';
 const routes: Routes = [
   {
     path: '',
@@ -35,6 +36,10 @@ const routes: Routes = [
       {
         path:'firebase-notification',
         component: FirebaseNotificationComponent
+      },
+      {
+        path:'firebase-notification/:id',
+        component: FirebaseNotificationDetailComponent
       },
     ]
   },

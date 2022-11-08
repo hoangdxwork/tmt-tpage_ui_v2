@@ -31,6 +31,8 @@ import { ModalEditInfoUserComponent } from './components/modal-edit-info-user/mo
 import { ModalChangePasswordComponent } from './components/modal-change-password/modal-change-password.component';
 import { FirebaseNotificationComponent } from './firebase-notification/firebase-notification.component';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { FirebaseNotificationListComponent } from './components/firebase-notification-list/firebase-notification-list.component';
+import { FirebaseNotificationDetailComponent } from './components/firebase-notification-detail/firebase-notification-detail.component';
 
 const SERVICES = [
   TenantService,
@@ -51,7 +53,9 @@ const SERVICES = [
     NotificationDetailComponent,
     ModalEditInfoUserComponent,
     ModalChangePasswordComponent,
-    FirebaseNotificationComponent
+    FirebaseNotificationComponent,
+    FirebaseNotificationListComponent,
+    FirebaseNotificationDetailComponent
   ],
   imports: [
     CommonModule,
