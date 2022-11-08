@@ -12,7 +12,7 @@ import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.ser
 import { ModalLiveCampaignBillComponent } from '../../pages/live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { ModalLiveCampaignOrderComponent } from '../../pages/live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { Component, Input, OnInit, ViewContainerRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 
@@ -23,7 +23,7 @@ import { TDSModalService } from 'tds-ui/modal';
     providers: [TDSDestroyService]
 })
 
-export class TableDetailReportComponent implements OnInit {
+export class TableDetailReportComponent implements OnInit, OnChanges {
 
     @Input() liveCampaignId!: string;
     @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
@@ -67,57 +67,81 @@ export class TableDetailReportComponent implements OnInit {
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
+      this.validateData();
+      this.loadCurrentCompany();
+      this.loadData(this.pageSize, this.pageIndex);
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+      if(changes['liveCampaignId'] && !changes['liveCampaignId'].firstChange) {
+        this.liveCampaignId = changes['liveCampaignId'].currentValue;
+
+        this.validateData();
         this.loadCurrentCompany();
         this.loadData(this.pageSize, this.pageIndex);
+      }
+    }
+
+    validateData() {
+      this.companyCurrents = {} as any;
+      this.lstDetails = [];
+      this.pageIndex = 1;
+      this.pageSize = 10;
+      this.count = 0;
+      this.indClickQuantity = '';
+      this.isLoading = false;
+      this.innerText = '';
+      this.idPopoverVisible = -1;
+      this.isShowAll = false;
     }
 
     loadData(pageSize: number, pageIndex: number, text?: string) {
-        this.isLoading = true;
-        let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
-        this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
-            next: res => {
-                this.lstDetails = [...this.lstDetails, ...res.Details];
-                this.lstDetails.map((x: any, i: number)=> { x.Index = i + 1; });
+      this.isLoading = true;
+      let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
+      this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
+          next: res => {
+              this.lstDetails = [...(this.lstDetails || []), ...res.Details];
+              this.lstDetails.map((x: any, i: number)=> { x.Index = i + 1; });
 
-                this.count = res.TotalCount;
-                this.isLoading = false;
+              this.count = res.TotalCount;
+              this.isLoading = false;
 
-                this.cdr.detectChanges();
-            },
-            error: error => {
-                this.isLoading = false;
-                this.message.error(error?.error?.message || 'Tải sản phẩm lỗi')
-            }
-        })
+              this.cdr.detectChanges();
+          },
+          error: error => {
+              this.isLoading = false;
+              this.message.error(error?.error?.message || 'Tải sản phẩm lỗi')
+          }
+      })
     }
 
     loadCurrentCompany() {
-        this.sharedService.setCurrentCompany();
-        this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: CompanyCurrentDTO) => {
-            this.companyCurrents = res || {};
-    
-            if(this.companyCurrents?.DefaultWarehouseId) {
-                this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
-            }
-          },
-          error: (error: any) => {
-              this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      this.sharedService.setCurrentCompany();
+      this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: CompanyCurrentDTO) => {
+          this.companyCurrents = res || {};
+
+          if(this.companyCurrents?.DefaultWarehouseId) {
+              this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
           }
-        });
-      }
-    
-      loadInventoryWarehouseId(warehouseId: number) {
-        this.productService.setInventoryWarehouseId(warehouseId);
-        this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: any) => {
-              this.inventories = res;
-          },
-          error: (err: any) => {
-              this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
-          }
-        });
-      }
+        },
+        error: (error: any) => {
+            this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+        }
+      });
+    }
+
+    loadInventoryWarehouseId(warehouseId: number) {
+      this.productService.setInventoryWarehouseId(warehouseId);
+      this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.inventories = res;
+        },
+        error: (err: any) => {
+            this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+        }
+      });
+    }
 
     showModalLiveCampaignOrder(id: string, index: number) {
         if(index){
@@ -155,10 +179,6 @@ export class TableDetailReportComponent implements OnInit {
     changeQuantity(value: number) {
         this.currentQuantity = value;
     }
-
-    // onChangeShowMore(isShow: boolean) {
-    //     this.isShowAll = isShow;
-    // }
 
     saveChangeQuantity(id: string) {
         this.isLoading = true;
@@ -198,7 +218,7 @@ export class TableDetailReportComponent implements OnInit {
         this.resfeshScroll = false;
         this.loadData(this.pageSize, this.pageIndex, text);
     }
-    
+
     nextData() {
         this.pageIndex += 1;
         this.loadData(this.pageSize, this.pageIndex, this.innerText);
