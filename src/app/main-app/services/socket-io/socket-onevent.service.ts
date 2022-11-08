@@ -45,18 +45,23 @@ export class SocketOnEventService {
     private saleOnline_OrderService: SaleOnline_OrderService,
     private modalService: TDSModalService,
     private message: TDSMessageService) {
-      this.initialize();
+    this.socketService.isConnectedSocket.subscribe({
+      next: (res: any) => {
+        if (res) {
+          this.initialize();
+        }
+      }
+    });
   }
 
   // TODO: event socket
   initialize() {
     this.socketService.listenEvent("on-events").pipe(
       map((res: any) => {
-          let socketData = JSON.parse(res) as any;
-          return socketData;
+        let socketData = JSON.parse(res) as any;
+        return socketData;
       }),
       mergeMap((socketData: SocketioOnMessageDto) => {
-
         let channelId = null;
         switch (socketData.EventName) {
           case ChatmoniSocketEventName.chatomniOnUpdate:
@@ -70,84 +75,84 @@ export class SocketOnEventService {
             break;
           default:
             channelId = socketData.Conversation?.ChannelId;
-          break;
+            break;
         }
 
         return this.crmTeamService.getActiveByPageIds$([channelId]).pipe((map((teams: CRMTeamDTO[]) => {
-            let team = teams[0] as CRMTeamDTO;
-            return [(socketData || {}), (team || {})];
+          let team = teams[0] as CRMTeamDTO;
+          return [(socketData || {}), (team || {})];
         })))
       }))
       .subscribe({
         next: ([socketData, team]: any) => {
           if (!(team && team.Id)) {
-              return;
+            return;
           }
 
           switch (socketData.EventName) {
-              // TODO: thông báo tin nhắn, comment
-              case ChatmoniSocketEventName.chatomniOnMessage:
-                  socketData = { ...socketData } as SocketioOnMessageDto;
-                  let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
+            // TODO: thông báo tin nhắn, comment
+            case ChatmoniSocketEventName.chatomniOnMessage:
+              socketData = { ...socketData } as SocketioOnMessageDto;
+              let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
 
-                  this.socketEvent$.next({
-                      Notification: modelMesage,
-                      Data: socketData,
-                      Team: team,
-                      EventName: socketData.EventName
-                  });
-
-              break;
-
-              // TODO: cập nhật tin nhắn lỗi
-              case ChatmoniSocketEventName.chatomniOnUpdate:
-                  socketData = { ...socketData } as SocketioOnUpdateDto;
-
-                  // TODO: thông báo tin nhắn lỗi
-                  let modelUpdate = null as any;
-                  if(socketData && socketData.Data && socketData.Data.Status == 1) {
-                      modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
-                  }
-
-                  this.socketEvent$.next({
-                      Notification: modelUpdate,
-                      Data: socketData,
-                      Team: team,
-                      EventName: socketData.EventName
-                  });
+              this.socketEvent$.next({
+                Notification: modelMesage,
+                Data: socketData,
+                Team: team,
+                EventName: socketData.EventName
+              });
 
               break;
 
-              // TODO: update đơn hàng hội thoại
-              case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-                  socketData = { ...socketData } as OnSocketOnSaleOnline_OrderDto;
-                  let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
+            // TODO: cập nhật tin nhắn lỗi
+            case ChatmoniSocketEventName.chatomniOnUpdate:
+              socketData = { ...socketData } as SocketioOnUpdateDto;
 
-                  this.socketEvent$.next({
-                      Notification: modelOrder,
-                      Data: socketData,
-                      Team: team,
-                      EventName: socketData.EventName
-                  })
+              // TODO: thông báo tin nhắn lỗi
+              let modelUpdate = null as any;
+              if (socketData && socketData.Data && socketData.Data.Status == 1) {
+                modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
+              }
+
+              this.socketEvent$.next({
+                Notification: modelUpdate,
+                Data: socketData,
+                Team: team,
+                EventName: socketData.EventName
+              });
 
               break;
 
-              // TODO: user đang xem
-              case ChatmoniSocketEventName.chatomniMarkseen:
-                socketData = { ...socketData } as SocketioOnMarkseenDto;
+            // TODO: update đơn hàng hội thoại
+            case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
+              socketData = { ...socketData } as OnSocketOnSaleOnline_OrderDto;
+              let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
 
-                this.socketEvent$.next({
-                    Notification: null,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                });
+              this.socketEvent$.next({
+                Notification: modelOrder,
+                Data: socketData,
+                Team: team,
+                EventName: socketData.EventName
+              })
+
+              break;
+
+            // TODO: user đang xem
+            case ChatmoniSocketEventName.chatomniMarkseen:
+              socketData = { ...socketData } as SocketioOnMarkseenDto;
+
+              this.socketEvent$.next({
+                Notification: null,
+                Data: socketData,
+                Team: team,
+                EventName: socketData.EventName
+              });
 
               break;
           }
         },
         error: (error: any) => {
-            console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
+          console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
         }
       })
   }
@@ -215,10 +220,10 @@ export class SocketOnEventService {
   prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
-        Title: `${socketData.Message}`,
-        Message: `${socketData.Data.MessageError}`,
-        Attachments: {} as any,
-        Url: `/conversation/inbox?teamId=${team.Id}&type=message&csid=${socketData.Data?.UserId}`
+      Title: `${socketData.Message}`,
+      Message: `${socketData.Data.MessageError}`,
+      Attachments: {} as any,
+      Url: `/conversation/inbox?teamId=${team.Id}&type=message&csid=${socketData.Data?.UserId}`
     };
 
     return { ...model };
@@ -227,10 +232,10 @@ export class SocketOnEventService {
   prepareChatomniOnUpdateOrder(socketData: OnSocketOnSaleOnline_OrderDto) {
     let model: SocketEventNotificationDto = {} as any;
     model = {
-        Title: `${socketData.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
-        Message: `Mã đơn hàng ${socketData.Data?.Code}`,
-        Attachments: {} as any,
-        Url: ''
+      Title: `${socketData.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
+      Message: `Mã đơn hàng ${socketData.Data?.Code}`,
+      Attachments: {} as any,
+      Url: ''
     } as any;
 
     return { ...model };
