@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewContainerRef, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
-import { FireBaseDevice, FireBaseTopicDto } from '@app/dto/firebase/topics.dto';
+import { FireBaseDevice, FireBaseTopicDto, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { environment } from 'src/environments/environment';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
@@ -28,40 +28,42 @@ export class FirebaseTopicsComponent implements OnInit {
 
   deviceToken: any;
   payload: any;
-  error: any;
-
   isLoading: boolean = false;
-  isRegistered: boolean = false;
 
   constructor(private message: TDSMessageService,
     private firebaseMessagingService: FirebaseMessagingService,
     private destroy$: TDSDestroyService,
     private firebaseRegisterService: FirebaseRegisterService){
-      this.listen();
+      this.listenPayload();
   }
 
   ngOnInit(){
-    this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
-    this.isRegistered = this.firebaseMessagingService.checkDeviceToken();
     this.loadTopics();
-    this.loadSubscribedTopics();
+
+    this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+    if(this.deviceToken) {
+      this.loadSubscribedTopics();
+    }
   }
 
   loadTopics() {
-    this.firebaseRegisterService.topics().subscribe({
+    this.isLoading = true;
+    this.firebaseRegisterService.topics().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
-        this.data = [...data];
+          this.data = [...data];
+          this.isLoading = false;
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message);
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
       }
     });
   }
 
   loadSubscribedTopics() {
-    this.firebaseRegisterService.subscribedTopics().subscribe({
-      next: (data: any) => {debugger
-          this.ids = [...data];
+    this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.ids = [...res];
       },
       error: (error: any) => {
           this.message.error(error?.error?.message);
@@ -74,17 +76,22 @@ export class FirebaseTopicsComponent implements OnInit {
       TopicIds: this.ids
     }
 
-    this.firebaseRegisterService.registerTopics(model).subscribe({
+    this.isLoading = true;
+    this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
+          this.isLoading = false;
           this.message.success('Đăng kí nhận tin thành công');
       },
       error: (err: any) => {
+          this.isLoading = false;
           this.message.error(err?.error?.message);
       }
     })
   }
 
   onChecked(event: any, item: any) {
+    if(this.isLoading) return;
+
     if(event == true) {
         this.ids.push(item.id);
     } else {
@@ -92,45 +99,40 @@ export class FirebaseTopicsComponent implements OnInit {
     }
 
     this.ids = [...this.ids];
-    console.log(this.ids);
   }
 
   removeToken() {
-    if(this.isLoading) {
-      return;
-    }
+    if(this.isLoading) return;
 
-    this.validate();
     this.isLoading = true;
-
-    this.firebaseMessagingService.deleteToken()
-    .subscribe({
+    this.firebaseMessagingService.deleteToken().subscribe({
       next: (token) => {
+          this.isLoading = false;
+          this.message.success('Xóa token nhận tin thành công');
+
+          this.ids = [];
+          this.deviceToken = null;
           this.firebaseMessagingService.removeDeviceTokenLocalStorage();
-          this.isLoading = false;
-          this.error = 'Xóa token nhận tin thành công \n' + (token);
       },
-      error: (error) => {
+      error: (error) => {debugger
           this.isLoading = false;
-          this.error = 'Xóa token nhận tin thất bại \n' + (error);
+          this.message.error('Xóa token nhận tin thất bại')
       }
     });;
   }
 
   requestPermission() {
-    if(this.isLoading) {
-      return;
-    }
+    if(this.isLoading) return;
 
-    this.validate();
-    let messaging = getMessaging();
+    const messaging = getMessaging();
     this.isLoading = true;
 
     getToken(messaging, { vapidKey: environment.firebaseConfig.vapidKey })
-      .then((token) => {
+      .then((token: any) => {
+
           this.isLoading = false;
           if(!token)  {
-              this.message.info('No registration token available. Request permission to generate one.');
+              this.message.info('No registration token available. Request permission to generate one');
               return;
           }
 
@@ -138,29 +140,26 @@ export class FirebaseTopicsComponent implements OnInit {
 
       }).catch((error) => {
           this.isLoading = false;
-          this.error = 'An error occurred while retrieving token \n' + (error);
+          this.message.error('An error occurred while retrieving token');
     });
   }
 
   registerDevice(token: string) {
     let model = {
-      Platform: FireBaseDevice.Google,
-      DeviceToken: token
+        Platform: FireBaseDevice.Google,
+        DeviceToken: token
     };
 
     this.firebaseRegisterService.registerDevice(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-
             this.isLoading = false;
+            this.message.success('Đăng ký nhận tin thành công');
+
             this.deviceToken = token;
             this.firebaseMessagingService.setDeviceTokenLocalStorage(token);
 
-            if(!this.isRegistered) {
-              this.isRegistered = this.firebaseMessagingService.checkDeviceToken();
-            }
-
-            console.log(res);
-            this.message.success('Đăng ký nhận tin thành công');
+            this.mappingTopicIds();
+            this.registerTopics();
         },
         error: (err: any) => {
           this.isLoading = false;
@@ -169,18 +168,17 @@ export class FirebaseTopicsComponent implements OnInit {
     })
   }
 
-  listen() {
+  listenPayload() {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
         this.payload = payload;
-        console.log(payload);
     });
   }
 
-  validate() {
-    this.payload = null;
-    this.error = null;
-    this.deviceToken = null;
+  mappingTopicIds() {
+    let topics = this.data?.map(x => x.topics) as any as TopicDetailDto[];
+    let ids = topics?.map(x => x.id) as any[];
+    this.ids = ids;
   }
 
 }

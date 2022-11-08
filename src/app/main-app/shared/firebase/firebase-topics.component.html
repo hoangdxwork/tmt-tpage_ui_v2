@@ -10,18 +10,15 @@
                   <div class="block">
                       <p class="font-semibold mb-3">Đăng ký nhận tin</p>
                       <div class="flex item-center mb-3">
-                          <button *ngIf="!isRegistered" type="button" class="mr-2" tds-button color="info" (click)="requestPermission()">Đăng ký thiết bị</button>
-                          <button *ngIf="isRegistered" class="mr-2" tds-button size="md" color="primary" type="button" (click)="registerTopics()">Đăng kí nhận tin</button>
+                          <button *ngIf="!deviceToken" type="button" class="mr-2" tds-button color="info" (click)="requestPermission()">Đăng ký thiết bị</button>
+                          <button *ngIf="deviceToken" class="mr-2" tds-button size="md" color="primary" type="button" (click)="registerTopics()">Đăng kí nhận tin</button>
                           <button type="button" tds-button color="error" (click)="removeToken()">Hủy đăng ký</button>
                       </div>
 
                       <div class="block" *ngIf="deviceToken" style="white-space: pre-line; word-break: break-word;">{{deviceToken}}</div>
-                      <div class="block" *ngIf="error" style="white-space: pre-line; word-break: break-word;">{{error}}</div>
 
                       <div class="block mt-4">
                         <div *ngIf="payload">
-                            <h1>{{ payload.notification.title }}</h1>
-                            <h2>{{ payload.notification.body }}</h2>
                             {{ payload | json }}
                         </div>
                       </div>
@@ -35,7 +32,7 @@
                       <tds-label class="mb-2 block">{{item.group}}</tds-label>
                       <div *ngFor="let x of item.topics">
                           <div class="flex gap-x-3 items-center">
-                            <tds-checkbox (ngModelChange)="onChecked($event, x)" [ngModel]="x.isActive | firebaseSubscribed: ids : x" [ngModelOptions]="{standalone: true}"></tds-checkbox>
+                            <tds-checkbox (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: ids" [ngModelOptions]="{standalone: true}"></tds-checkbox>
                             <span>{{x.name}}</span>
                           </div>
                       </div>
