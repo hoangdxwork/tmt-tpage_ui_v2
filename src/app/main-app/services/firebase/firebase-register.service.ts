@@ -47,6 +47,8 @@ export class FirebaseRegisterService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+
+  // TODO: danh sách topic đã đăng kí
   subscribedTopics(): Observable<TDSSafeAny>  {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/subscribeds`,
@@ -56,6 +58,7 @@ export class FirebaseRegisterService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  // TODO: danh sách thông báo
   notifications(params?: any): Observable<any>{
     // /api/v2.0/notification/?cursor=6362a0d92f0566ce4b95e17d
     const api: CoreAPIDTO = {
