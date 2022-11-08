@@ -106,7 +106,14 @@
             <th *ngIf="isHidden('State')" [width]="'150px'" class="border-r">Trạng thái</th>
             <th *ngIf="isHidden('PrintDeliveryCount')" [width]="'150px'" [align]="'center'" class="border-r">Số lần in HĐ</th>
             <th *ngIf="isHidden('UserName')" [width]="'180px'" class="border-r">Nhân viên</th>
-            <th *ngIf="isHidden('DateInvoice')" [width]="'150px'" class="border-r" [align]="'center'">Ngày bán</th>
+            <th *ngIf="isHidden('DateInvoice')" [width]="'150px'" class="border-r" [align]="'center'">
+              <div class="flex gap-x-1">
+                <span>Ngày bán</span>
+                <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+                  <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                </span>
+              </div>
+            </th>
             <th [tdsRight]="true" [width]="'130px'">Thao tác</th>
           </tr>
         </thead>

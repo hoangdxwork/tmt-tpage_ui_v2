@@ -24,9 +24,16 @@
           <thead class="rounded">
             <tr>
               <th [width]="'48px'" class="text-center">STT</th>
-              <th [width]="'150px'">Số HĐ</th>
+              <th [width]="'140px'">Số HĐ</th>
               <th [width]="'150px'">Thông tin</th>
-              <th [width]="'123px'">Ngày tạo đơn</th>
+              <th [width]="'140px'">
+                <div class="flex gap-x-1">
+                  <span>Ngày tạo đơn</span>
+                  <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+                    <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                  </span>
+                </div>
+              </th>
               <th [width]="'150px'">Đối tác giao hàng</th>
               <th [width]="'120px'">Mã vận đơn</th>
               <th [width]="'113px'" [align]="'right'">Tổng tiền</th>

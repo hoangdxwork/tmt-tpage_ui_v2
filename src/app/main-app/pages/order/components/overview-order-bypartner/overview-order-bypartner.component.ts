@@ -34,6 +34,7 @@ export class OverviewOrderBypartnerComponent implements OnInit {
   tabIndex: number = 1;
   datePicker: any = [addDays(new Date(), -30), new Date()];
   public tabNavs: Array<any> = [];
+  filterDate: string = '';
 
   public filterObj: FilterObjFastSaleOrderModel = {
     state: '',
@@ -176,4 +177,25 @@ export class OverviewOrderBypartnerComponent implements OnInit {
     this.onSearch(event);
   }
 
+  onChangeFilterDate() {
+    let data = this.lstOrder;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: OdataGetOrderPartnerIdModal, b: OdataGetOrderPartnerIdModal) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: OdataGetOrderPartnerIdModal, b: OdataGetOrderPartnerIdModal) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOrder = [...data];
+  }
 }
