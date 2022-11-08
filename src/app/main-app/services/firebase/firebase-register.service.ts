@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { FireBaseNotificationDto } from "@app/dto/firebase/firebase-notification.dto";
 import { TCommonService } from "@core/services";
 import { CoreAPIDTO } from "omnichannel/core/dto";
 import { CoreApiMethodType } from "omnichannel/core/enum";
@@ -60,9 +61,14 @@ export class FirebaseRegisterService extends BaseSevice {
 
   // TODO: danh sách thông báo
   notifications(params?: any): Observable<any>{
-    // /api/v2.0/notification/?cursor=6362a0d92f0566ce4b95e17d
+
+    let url = `${this._BASE_URL}/${this.prefix}/`;
+    if(params){
+      url = `${url}?cursor=${params}`;
+    }
+
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/`,
+      url: url,
       method: CoreApiMethodType.get,
     }
 
