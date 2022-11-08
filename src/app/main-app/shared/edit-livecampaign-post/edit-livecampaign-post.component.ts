@@ -466,8 +466,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           }
 
           let x =  items[0];
-          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
-            ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+          let qty = product.InitInventory > 0 ? product.InitInventory : 1;
 
           let item = {
               Quantity: qty,
@@ -681,6 +680,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
 
     let model = this.prepareHandler.prepareModelSimple(this._form) as LiveCampaignSimpleDto;
+
+    let resumeTime = model.ResumeTime;
+    if(resumeTime > 0 && resumeTime < 10) {
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+        return;
+    }
+
     let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
 
     if(team && team?.Id && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
@@ -878,7 +884,6 @@ export class EditLiveCampaignPostComponent implements OnInit {
   onChangeResumeTime(event: any) {
     if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
       this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
-      this._form.controls['ResumeTime'].setValue(0);
     }
   }
 
@@ -890,9 +895,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
     if(Number(idx) >= 0) {
       let details = this.detailsForm.at(idx).value;
       details.Tags = strs?.join(',');
-      console.log(details.Tags)
 
-       //TODO: cập nhật vào formArray
+      //TODO: cập nhật vào formArray
       this.detailsForm.at(idx).patchValue(details);
       this.modelTags = [...strs];
     }
