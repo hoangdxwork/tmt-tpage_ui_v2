@@ -32,18 +32,6 @@ export class FirebaseMessagingService  {
       .pipe(mergeMap((token: any) => this.angularFireMessaging.deleteToken(token)));
   }
 
-  // Thông báo và hiện thị tin nhắn mới
-  setReceiveMessage() {
-    this.angularFireMessaging.onMessage((payload: any) => {
-        console.log('Message received. ', payload);
-        this.payload.next(payload);
-    });
-  }
-
-  getpayload() {
-      return this.payload.asObservable();
-  }
-
   getDeviceTokenLocalStorage() {
     const key = this._firebaseDeviceToken;
     let token = localStorage.getItem(key) as any;
@@ -58,12 +46,6 @@ export class FirebaseMessagingService  {
   removeDeviceTokenLocalStorage() {
     const key = this._firebaseDeviceToken;
     localStorage.removeItem(key);
-  }
-
-  checkDeviceToken(): boolean {
-    let token = this.getDeviceTokenLocalStorage();
-    if(token) return true;
-    return false;
   }
 
 }
