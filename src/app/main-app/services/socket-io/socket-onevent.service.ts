@@ -39,6 +39,7 @@ export class SocketOnEventService {
   private readonly socketEvent$ = new Subject<any>();
 
   private modalRef!: TDSModalRef;
+  public isRegisteredEvent: boolean = false;
 
   constructor(private crmTeamService: CRMTeamService,
     private socketService: SocketService,
@@ -47,8 +48,9 @@ export class SocketOnEventService {
     private message: TDSMessageService) {
     this.socketService.isConnectedSocket.subscribe({
       next: (res: any) => {
-        if (res) {
+        if (res && !this.isRegisteredEvent) {
           this.initialize();
+          this.isRegisteredEvent = true;
         }
       }
     });

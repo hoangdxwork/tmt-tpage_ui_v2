@@ -12,24 +12,31 @@ import { TDSNotificationService } from 'tds-ui/notification';
 
 export class SocketService {
 
-  @Output() isConnectedSocket = new EventEmitter<boolean>();
+  @Output()
+  isConnectedSocket = new EventEmitter<boolean>();
+
   socket!: Socket;
   retryNoti: number = 1;
   establishedConnected = true;
+  isInitialized: boolean = false;
 
   constructor(private notificationService: TDSNotificationService,
     private authService: TAuthService,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.authService.getAuthenIsLogin().subscribe((isLogin) => {
-      if (isLogin) {
-        this.initSocket();
+    this.authService.getAuthenIsLogin().subscribe({
+      next: (isLogin: any) => {
+        if (isLogin && !this.isInitialized) {
+          this.initSocket();
+          this.isInitialized = true;
+        }
       }
     });
   }
 
   initSocket(): void {
     let hostname = this.document.location.hostname;
+    hostname = 'tmt30.tpos.vn';
 
     this.socket = io(environment.socketUrl, {
       transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
