@@ -162,7 +162,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       error: error => {
        this.isLoading = false
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-    }  
+      }
     })
   }
 
@@ -212,6 +212,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   removeDetail(item: LiveCampaignSimpleDetail) {
+    if(this.checkIsEdit() == 0) return;
+
     let id = this.liveCampaignId as string;
     this.isLoading = true;
     this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
@@ -277,12 +279,15 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   onFilterIndexDB(event: any) {
+
     if(!this.innerText) {
       this.innerTextDebounce = '';
       return;
     };
 
-    this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.innerText.toLocaleLowerCase().trim());
+    if(this.innerText) {
+      this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.innerText.toLocaleLowerCase().trim());
+    }
   }
 
   closeFilterIndexDB(){
@@ -474,8 +479,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   selectProduct(model: DataPouchDBDTO, index: number){
     if(this.isLoadingSelect) return;
-    this.indClick = index;
+    if(this.checkIsEdit() == 0) return;
 
+    this.indClick = index;
     let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.ProductTmplId && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
 
     if(items && items.length == 0) {
@@ -484,11 +490,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
 
     items.map((x: DataPouchDBDTO) => {
-      x._attributes_length = 0;
-
-      let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
+      const qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
         ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
-      x.QtyAvailable =qty;
+
+      x.QtyAvailable = qty;
+      x._attributes_length = 0;
     });
 
     this.lstVariants = [...items];
@@ -599,6 +605,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   onEditDetails(item: LiveCampaignSimpleDetail) {
+    if(this.checkIsEdit() == 0) return;
+
     if(item && item.Id) {
         this.isEditDetails[item.Id] = true;
     }
@@ -648,6 +656,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   showCreateProductModal() {
+    if(this.checkIsEdit() == 0) return;
+
     const modal = this.modal.create({
       title: 'Tạo mới sản phẩm',
       content: AddDrawerProductComponent,
@@ -655,62 +665,79 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
     });
 
-    modal.afterClose.subscribe((res: any) => {
-      if(!res) return;
-      res = {...res} as SyncCreateProductTemplateDto;
-      this.indexDbStorage = [...res.cacheDbStorage];
+    modal.afterClose.subscribe((response: any) => {
+      if(!response) return;
 
-      if(res.type === 'select' && res.productTmpl) {
+      let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+      this.productService.setInventoryWarehouseId(warehouseId);
 
-          const product = res.productTmpl as ProductTemplateV2DTO;
-          let items = this.indexDbStorage.filter(y => y.ProductTmplId == product.Id && y.UOMId == product.UOMId && y.Active) as any[];
-          
-          if(items && items.length == 0) {
-            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-            return;
-          }
-
-          let lstItems = [] as LiveCampaignSimpleDetail[];
-
-          items.map(x =>{
-            let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
-            ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
-
-            let item = {
-                Quantity: qty,
-                RemainQuantity: 0,
-                ScanQuantity: 0,
-                QuantityCanceled: 0,
-                UsedQuantity: 0,
-                Price: x.ListPrice || x.Price || 0,
-                Note: null,
-                ProductId: x.Id,
-                LiveCampaign_Id: this.liveCampaignId,
-                ProductName: x.Name,
-                ProductNameGet: x.NameGet,
-                UOMId: x.UOMId,
-                UOMName: x.UOMName,
-
-                Tags: product.OrderTag,
-
-                LimitedQuantity: 0,
-                ProductCode: x.Barcode || x.DefaultCode,
-                ImageUrl: x.ImageUrl,
-                IsActive: true,
-            } as LiveCampaignSimpleDetail;
-
-            let name = item.ProductNameGet || item.ProductName;
-            if(x._attributes_length == undefined) x._attributes_length = 0;
-
-            let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-            item.Tags = tags.join(',');
-
-            lstItems = [...lstItems,...[item]];
-          });
-
-          this.addProductLiveCampaignDetails(lstItems);
-      }
+      this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.lstInventory = res;
+            this.mappingProductToLive(response);
+        },
+        error:(err) => {
+            this.message.error(err?.error?.message);
+            this.mappingProductToLive(response);
+        }
+      });
     });
+  }
+
+  mappingProductToLive(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
+
+    if(response.type === 'select' && response.productTmpl) {
+
+        const product = response.productTmpl as ProductTemplateV2DTO;
+        let items = this.indexDbStorage.filter(y => y.ProductTmplId == product.Id && y.UOMId == product.UOMId && y.Active) as any[];
+
+        if(items && items.length == 0) {
+          this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+          return;
+        }
+
+        let lstItems = [] as LiveCampaignSimpleDetail[];
+
+        items.map(x => {
+          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
+          ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+
+          let item = {
+              Quantity: qty,
+              RemainQuantity: 0,
+              ScanQuantity: 0,
+              QuantityCanceled: 0,
+              UsedQuantity: 0,
+              Price: x.ListPrice || x.Price || 0,
+              Note: null,
+              ProductId: x.Id,
+              LiveCampaign_Id: this.liveCampaignId,
+              ProductName: x.Name,
+              ProductNameGet: x.NameGet,
+              UOMId: x.UOMId,
+              UOMName: x.UOMName,
+
+              Tags: product.OrderTag,
+
+              LimitedQuantity: 0,
+              ProductCode: x.Barcode || x.DefaultCode,
+              ImageUrl: x.ImageUrl,
+              IsActive: true,
+          } as LiveCampaignSimpleDetail;
+
+          let name = item.ProductNameGet || item.ProductName;
+          if(x._attributes_length == undefined) x._attributes_length = 0;
+
+          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
+          item.Tags = tags.join(',');
+
+          lstItems = [...lstItems,...[item]];
+        });
+
+        this.addProductLiveCampaignDetails(lstItems);
+    }
   }
 
   showModalLstPost () {
@@ -725,5 +752,20 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         }
       })
     }
+  }
+
+  checkIsEdit() {
+    let exist = Object.keys(this.isEditDetails);
+    if(exist && exist.length > 0) {
+
+      let key = exist[0];
+      let formDetails = this.detailsForm.value as any[];
+      let product = formDetails.filter(f => f.Id == key)[0];
+
+      this.message.info(`Sản phẩm ${product.ProductName} chưa được lưu`, { duration: 3000 });
+      return 0;
+    }
+
+    return 1;
   }
 }

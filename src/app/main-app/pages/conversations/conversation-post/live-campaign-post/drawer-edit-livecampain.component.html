@@ -59,7 +59,7 @@
                                                     <button tds-button color="secondary" size="sm" (click)="getVariant(data)" type="button">
                                                         Chọn hiện tại
                                                     </button>
-                                                </div> 
+                                                </div>
                                             </tds-spin>
                                         </ng-template>
                                     </ng-template>
@@ -100,7 +100,7 @@
 
                                                 <span *ngIf="!visible" class="w-full py-2 h-[34px]"> Sản phẩm ({{ detailsForm.value?.length || 0 }})</span>
                                             </div>
-                                            
+
                                             <ng-template #menu>
                                                 <div class="flex-auto">
                                                     <tds-form-field class="w-full font-normal">
@@ -129,10 +129,10 @@
                                 <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index"
                                     [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsForm.controls"
                                     [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id] && liveCampaignId)}" class="p-2 border-t block hover:bg-neutral-3-50 hover:cursor-pointer">
-                                    
+
                                     <div class="mb-1 col-span-2 block">
                                         <div class="flex-auto flex flex-col gap-y-1">
-                                            <span class="font-semibold text-[13px] max-w-[80%] truncate" tds-tooltip="{{ detail?.value.ProductNameGet || detail?.value.ProductName }}"> 
+                                            <span class="font-semibold text-[13px] max-w-[80%] truncate" tds-tooltip="{{ detail?.value.ProductNameGet || detail?.value.ProductName }}">
                                                 {{ detail?.value.ProductNameGet || detail?.value.ProductName }}
                                             </span>
 
@@ -218,8 +218,8 @@
                                                         </tds-input-number>
                                                     </tds-form-field>
 
-                                                    <div *ngIf="!isEditDetails[detail.value.Id]" class="text-body-2 text-center flex items-center"> 
-                                                        {{ detail.value.Quantity || 0 | numberCustom }} 
+                                                    <div *ngIf="!isEditDetails[detail.value.Id]" class="text-body-2 text-center flex items-center">
+                                                        {{ detail.value.Quantity || 0 | numberCustom }}
                                                     </div>
                                                 </div>
 
@@ -283,12 +283,12 @@
 
                                         <!-- Thao tác -->
                                         <div class="w-[20%] text-center flex justify-end gap-x-1">
-                                            <span *ngIf="!isEditDetails[detail.value.Id]" class="flex items-center" 
+                                            <span *ngIf="!isEditDetails[detail.value.Id]" class="flex items-center"
                                                 tds-tooltip="Chỉnh sửa" (click)="onEditDetails(detail.value)">
                                                 <i class="tdsi-edit-2-fill text-info-500 text-2xl"></i>
                                             </span>
 
-                                            <span *ngIf="isEditDetails[detail.value.Id]" class="flex items-center" 
+                                            <span *ngIf="isEditDetails[detail.value.Id]" class="flex items-center"
                                                 tds-tooltip="Áp dụng" (click)="onSaveDetails(detail.value)">
                                                 <i class="tdsi-checkbox-check-fill text-success-400 text-2xl"></i>
                                             </span>
@@ -318,19 +318,19 @@
                         <span class="text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
                         <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.OrderSummary.OrderQuantity || 0 }}</span>
                     </div>
-                    
+
                     <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
                         <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.OrderSummary.ProductQuantity || 0 }}</span>
                     </div>
-        
+
                     <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
                         <span class="text-header-1 font-semibold text-right text-info-500">{{ (dataOverviewReport.OrderSummary.TotalAmount || 0) | numberCustom  }}</span>
                     </div>
                     </div>
                 </div>
-        
+
                 <div class="flex flex-col bg-white p-4 rounded-xl gap-y-3" *ngIf="dataOverviewReport?.BillSummary">
                     <div class="flex flex-col flex-auto">
                     <span class="text-header-1 font-semibold">Chờ thanh toán</span>
@@ -339,20 +339,20 @@
                         <span class="w- text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
                         <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.BillSummary.OrderQuantity || 0 }}</span>
                         </div>
-                        
+
                         <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
                         <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.BillSummary.ProductQuantity || 0 }}</span>
                         </div>
-        
+
                         <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-                        <span class="text-header-1 font-semibold text-right text-info-500">{{ (dataOverviewReport.BillSummary.TotalAmount || 0) | numberCustom  }}</span>            
+                        <span class="text-header-1 font-semibold text-right text-info-500">{{ (dataOverviewReport.BillSummary.TotalAmount || 0) | numberCustom  }}</span>
                         </div>
                     </div>
                     </div>
                 </div>
-        
+
                 <div class="flex flex-col bg-white p-4 rounded-xl gap-y-3" *ngIf="dataOverviewReport?.PaySummary">
                     <div class="flex flex-col flex-auto">
                     <span class="text-header-1 font-semibold">Thanh toán</span>
@@ -361,12 +361,12 @@
                         <span class="text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
                         <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.PaySummary.OrderQuantity || 0 }}</span>
                         </div>
-                        
+
                         <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
                         <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.PaySummary.ProductQuantity || 0 }}</span>
                         </div>
-                        
+
                         <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
                         <span class="text-header-1 font-semibold text-right text-info-500">{{ (dataOverviewReport.PaySummary.TotalAmount || 0) | numberCustom  }}</span>
@@ -374,7 +374,7 @@
                     </div>
                     </div>
                 </div>
-        
+
                 <div class="flex flex-col bg-white p-4 rounded-xl gap-y-3" *ngIf="dataOverviewReport?.BillSummary">
                     <div class="flex flex-col flex-auto">
                     <span class="text-header-1 font-semibold">Tổng hoá đơn</span>
@@ -383,12 +383,12 @@
                         <span class="text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
                         <span class="text-header-1 font-semibold text-right">{{  dataOverviewReport.TotalOrderBillSummary?.OrderQuantity | numberCustom }}</span>
                         </div>
-                        
+
                         <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
                         <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.TotalOrderBillSummary?.ProductQuantity | numberCustom }}</span>
                         </div>
-                    
+
                         <div class="flex w-full justify-between items-center gap-x-2">
                         <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
                         <span class="text-header-1 font-semibold text-right text-info-500">{{ dataOverviewReport.TotalOrderBillSummary?.TotalAmount | numberCustom }}</span>
@@ -402,7 +402,7 @@
                     <div class="font-semibold text-xl rounded-t-xl pb-4">
                         <span>Thông tin</span>
                     </div>
-            
+
                     <div class="flex flex-col justify-center gap-y-2">
                         <div class="flex gap-x-4">
                         <span class="w-1/2 text-sm font-normal">Tên chiến dịch</span>
@@ -415,12 +415,12 @@
                             {{user.Name}}
                             <span *ngIf="dataModel.Users.length > (i + 1)">,</span>
                             </span>
-                
+
                             <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="dataModel.Users.length - 3 > 0" tds-popover
                                 [popoverContent]="popoverContentTag" popoverPlacement="topRight">
                                 +{{dataModel.Users.length - 3}}
                             </div>
-                
+
                             <ng-template #popoverContentTag>
                                 <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
                                     <div *ngFor="let item of dataModel.Users | slice:3:dataModel.Users!.length; let i = index" class="relative group flex items-center font-semibold text-body-2 text-neutral-1-900 rounded truncate">
