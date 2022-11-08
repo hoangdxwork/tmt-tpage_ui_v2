@@ -145,10 +145,10 @@ export class AppComponent {
   }
 
   checkDeviceToken() {
-    let token = this.firebaseMessagingService.checkDeviceToken() as boolean;
-    if(!token) {
+    // let token = this.firebaseMessagingService.checkDeviceToken() as boolean;
+    // if(!token) {
         this.notification.template(this.templateFirebase, { placement: 'bottomRight' , duration: 10 * 1000});
-    }
+    // }
   }
 
 }

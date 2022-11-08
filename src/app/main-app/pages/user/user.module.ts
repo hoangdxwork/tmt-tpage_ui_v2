@@ -29,9 +29,12 @@ import { TDSTabsModule } from 'tds-ui/tabs';
 import { TDSSelectModule } from 'tds-ui/select';
 import { ModalEditInfoUserComponent } from './components/modal-edit-info-user/modal-edit-info-user.component';
 import { ModalChangePasswordComponent } from './components/modal-change-password/modal-change-password.component';
+import { FirebaseNotificationComponent } from './firebase-notification/firebase-notification.component';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 
 const SERVICES = [
-  TenantService
+  TenantService,
+  FirebaseRegisterService
 ]
 
 @NgModule({
@@ -47,7 +50,8 @@ const SERVICES = [
     NotificationListComponent,
     NotificationDetailComponent,
     ModalEditInfoUserComponent,
-    ModalChangePasswordComponent
+    ModalChangePasswordComponent,
+    FirebaseNotificationComponent
   ],
   imports: [
     CommonModule,
