@@ -110,6 +110,21 @@
                                 </tds-input-number>
                             </div>
                         </div>
+                        <div class="flex items-center gap-x-2">
+                            <tds-label class="w-1/3">Số lượng thực tế</tds-label>
+                            <div class="w-2/3">
+                                <tds-form-field class="w-full">
+                                    <tds-input-number
+                                    formControlName="InitInventory"
+                                    [formatter]="numberWithCommas" [parser]="parserComas"
+                                    [min]="0"
+                                    class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                    <tds-error>
+                                    Vui lòng nhập số lượng thực tế
+                                    </tds-error>
+                                </tds-form-field>
+                            </div>
+                        </div>
                         <div class="col-start-2 flex items-center gap-x-2">
                             <tds-label class="w-1/3">Đơn vị mặc định</tds-label>
                             <div class="w-2/3 flex gap-x-2">

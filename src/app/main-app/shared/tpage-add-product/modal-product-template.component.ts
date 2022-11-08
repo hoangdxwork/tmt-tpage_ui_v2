@@ -150,6 +150,7 @@ export class ModalProductTemplateComponent implements OnInit {
       PurchasePrice: [0],
       DiscountPurchase: [0],
       StandardPrice: [0],
+      InitInventory: [0],
       ImageUrl: [null],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
@@ -194,6 +195,7 @@ export class ModalProductTemplateComponent implements OnInit {
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
     this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
     this.defaultGet["StandardPrice"] = formModel.StandardPrice;
+    this.defaultGet["InitInventory"] = formModel.InitInventory;
     this.defaultGet["OrderTag"] = formModel.OrderTag ? formModel.OrderTag.toString(): null;
 
     if (formModel.UOM) {

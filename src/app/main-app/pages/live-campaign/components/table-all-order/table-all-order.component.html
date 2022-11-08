@@ -18,7 +18,14 @@
             <th [width]="'120px'" class="w-full text-center border-r">Tổng số lượng</th>
             <th [width]="'130px'" class="border-r">Trạng thái</th>
             <th [width]="'120px'" class="border-r">Nhân viên</th>
-            <th [width]="'170px'" [align]="'center'" class="border-r">Thời gian</th>
+            <th [width]="'170px'" [align]="'center'" class="border-r">
+              <div class="flex gap-x-1">
+                <span>Thời gian</span>
+                <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+                  <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                </span>
+              </div>
+            </th>
             <th [width]="'130px'" [align]="'center'" [tdsRight]="true">Thao tác</th>
           </tr>
         </thead>

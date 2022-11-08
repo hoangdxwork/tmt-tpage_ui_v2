@@ -13,7 +13,14 @@
         <th [width]="'150px'">Tên khách hàng</th>
         <th [width]="'140px'">Người xóa</th>
         <th [width]="'250px'">Địa chỉ</th>
-        <th [width]="'150px'">Ngày tạo</th>
+        <th [width]="'150px'">
+          <div class="flex gap-x-1">
+            <span>Ngày tạo</span>
+            <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+              <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+            </span>
+          </div>
+        </th>
         <th [width]="'100px'" class="w-full text-center">Tổng số lượng</th>
         <th [width]="'100px'" class="w-full text-right">Tổng tiền</th>
       </tr>

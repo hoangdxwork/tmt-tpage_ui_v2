@@ -38,6 +38,7 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
   destroy$ = new Subject<void>();
   lstStatusTypeExt!: Array<any>;
   indClickTag = "";
+  filterDate: string = '';
 
   public modelTags: Array<TDSSafeAny> = [];
   public tabNavs: Array<TabNavsDTO> = [];
@@ -183,6 +184,28 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
     if(ev == this.orderId) {
       this.checkedClick.emit(!this.checked);
     }
+  }
+
+  onChangeFilterDate() {
+    let data = this.lstOrder;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: OdataGetOrderPartnerIdModal, b: OdataGetOrderPartnerIdModal) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: OdataGetOrderPartnerIdModal, b: OdataGetOrderPartnerIdModal) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOrder = [...data];
   }
 
 }

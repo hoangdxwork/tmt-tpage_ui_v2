@@ -26,7 +26,14 @@
                     <th [width]="'150px'">Kênh kết nối</th>
                     <th [width]="'150px'">Tổng tiền</th>
                     <th [width]="'100px'">Tổng SL</th>
-                    <th [width]="'150px'">Ngày tạo đơn</th>
+                    <th [width]="'150px'">
+                        <div class="flex gap-x-1">
+                            <span>Ngày tạo đơn</span>
+                            <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+                              <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                            </span>
+                          </div>
+                    </th>
                     <th [width]="'150px'">Trạng thái</th>
                     <!-- <th [width]="'150px'">Nhân viên</th> -->
                 </tr>

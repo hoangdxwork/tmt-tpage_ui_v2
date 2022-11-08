@@ -92,6 +92,8 @@ export class DetailBillComponent implements OnInit {
     { value: 'DateInvoice', name: 'Ngày bán', isChecked: true },
   ];
 
+  filterDate: string = '';
+
   constructor(
     private message: TDSMessageService,
     private tagService: TagService,
@@ -686,5 +688,27 @@ export class DetailBillComponent implements OnInit {
     
     this.indeterminate = false;
     this.checked = false;
+  }
+
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: FastSaleOrderModelDTO, b: FastSaleOrderModelDTO) => new Date(a.DateInvoice || '').getTime() - new Date(b.DateInvoice|| '').getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: FastSaleOrderModelDTO, b: FastSaleOrderModelDTO) => new Date(b.DateInvoice|| '').getTime() - new Date(a.DateInvoice|| '').getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
   }
 }
