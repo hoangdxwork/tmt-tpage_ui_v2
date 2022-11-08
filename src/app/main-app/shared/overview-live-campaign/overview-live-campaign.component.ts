@@ -59,8 +59,8 @@ export class OverviewLiveCampaignComponent implements OnInit {
 
   loadData() {
     this.loadOverviewReport(this.liveCampaignId);
-      this.loadLiveCampaign(this.liveCampaignId);
-      this.loadFacebookPost(this.liveCampaignId);
+    this.loadLiveCampaign(this.liveCampaignId);
+    this.loadFacebookPost(this.liveCampaignId);
   }
 
   loadLiveCampaign(id: string) {
@@ -112,7 +112,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
         this.cdr.markForCheck();
-    }  
+    }
     })
   }
 
@@ -183,7 +183,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
             // TODO: cập nhật object-facebook-post
             this.loadOverviewReport(this.liveCampaignId);
             this.loadLiveCampaign(this.liveCampaignId);
-            
+
             this.cdr.detectChanges();
         }
       }
