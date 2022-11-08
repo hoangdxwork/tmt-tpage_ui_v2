@@ -1,9 +1,7 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from './../../dto/live-campaign/livecampaign-simple.dto';
-import { ProductTemplateService } from './../../services/product-template.service';
 import { ProductDTOV2 } from '../../dto/product/odata-product.dto';
-import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
@@ -106,15 +104,13 @@ export class AddLivecampaignPostV2Component implements OnInit {
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private notificationService: TDSNotificationService,
-    private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productService: ProductService,
     private sharedService: SharedService,
     private message: TDSMessageService,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef,
-    private productTemplateService: ProductTemplateService) {
+    private cdRef: ChangeDetectorRef) {
       this.createForm();
    }
 
@@ -141,7 +137,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
       ConfigObject: [null],// xóa khi lưu
       Name: [null, Validators.required],
       Note: [null],
-      ResumeTime: [0],
+      ResumeTime: [10],
       StartDate: [new Date()],
       EndDate: [new Date()],
       Users: [null],
@@ -450,8 +446,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
         }
 
         let x =  items[0];
-        let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
-          ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+        let qty = product.InitInventory > 0 ? product.InitInventory : 1;
 
         let item = {
             Quantity: qty,
@@ -609,6 +604,12 @@ export class AddLivecampaignPostV2Component implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModel(this._form);
+
+      let resumeTime = model.ResumeTime;
+      if(resumeTime > 0 && resumeTime < 10) {
+          this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+          return;
+      }
 
       let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
       if(team?.Id && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
@@ -777,7 +778,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
   onChangeResumeTime(event: any) {
     if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
       this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
-      this._form.controls['ResumeTime'].setValue(0);
     }
   }
 
