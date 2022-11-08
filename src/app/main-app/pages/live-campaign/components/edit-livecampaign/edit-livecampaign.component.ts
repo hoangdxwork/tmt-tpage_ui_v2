@@ -139,27 +139,27 @@ export class EditLiveCampaignComponent implements OnInit {
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
-            if(!res) return;
-            delete res['@odata.context'];
+          if(!res) return;
+          delete res['@odata.context'];
 
-            if(res.StartDate) {
-                res.StartDate = new Date(res.StartDate)
-            }
-            if(res.EndDate) {
-                res.EndDate = new Date(res.EndDate)
-            }
+          if(res.StartDate) {
+              res.StartDate = new Date(res.StartDate)
+          }
+          if(res.EndDate) {
+              res.EndDate = new Date(res.EndDate)
+          }
 
-            this.dataModel = res;
-            if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
-                this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
-            }
+          this.dataModel = res;
+          if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
+              this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
+          }
 
-            if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
-                this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
-            }
+          if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
+              this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
+          }
 
-            this.updateForm(this.dataModel);
-            this.isLoading = false;
+          this.updateForm(this.dataModel);
+          this.isLoading = false;
 
       },
       error:(error) => {
@@ -307,11 +307,8 @@ export class EditLiveCampaignComponent implements OnInit {
     listData.forEach((x: DataPouchDBDTO) => {
       let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
       if(!exist){
-          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable)) > 0
-          ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
-
           let item = {
-              Quantity: qty,
+              Quantity: x.QtyAvailable || 1,
               RemainQuantity: 0,
               ScanQuantity: 0,
               QuantityCanceled: 0,
@@ -578,6 +575,13 @@ export class EditLiveCampaignComponent implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModelSimple(this._form) as LiveCampaignSimpleDto;
+
+      let resumeTime = model.ResumeTime;
+      if(resumeTime > 0 && resumeTime < 10) {
+          this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+          return;
+      }
+
       let id = this.liveCampaignId as string;
 
       let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
@@ -740,6 +744,12 @@ export class EditLiveCampaignComponent implements OnInit {
     if(this.isCheckValue() === 0) return;
     let model = this.prepareHandler.prepareModelSimple(this._form) as LiveCampaignSimpleDto;
 
+    let resumeTime = model.ResumeTime;
+    if(resumeTime > 0 && resumeTime < 10) {
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+        return;
+    }
+
     let formValue = this._form.value;
     formValue.Details?.forEach((x: any, index: number) => {
         x["Index"] = index;
@@ -767,13 +777,12 @@ export class EditLiveCampaignComponent implements OnInit {
 
   onChangeResumeTime(event: any) {
     if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
-      this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
-      this._form.controls['ResumeTime'].setValue(0);
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
     }
   }
 
   onChangeModelTag(event: string[], item: TextContentToOrderDTO) {
-    let fromDetail = this.detailsForm
+    let fromDetail = this.detailsForm;
     let strs = [...this.checkInputMatch(event)];
     let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
 

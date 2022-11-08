@@ -273,34 +273,49 @@ export class ListProductTmpV2Component implements OnInit {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        if(!res) return;
+      next: (response: any) => {
+        if(!response) return;
 
-        res = {...res} as SyncCreateProductTemplateDto;
-        this.indexDbStorage = [...res.cacheDbStorage];
-
-        if(res.type === 'select' && res.productTmpl) {
-            const model = res.productTmpl as ProductTemplateV2DTO;
-            let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
-
-            if(items && items.length == 0) {
-                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-                return;
-            }
-
-            items.map((x: DataPouchDBDTO) => {
-                x.Tags = model?.OrderTag || null;
-                if(this.inventories && this.inventories[x.Id]) {
-                    x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
-                }
-
-                x._attributes_length = model._attributes_length || 0;
-            });
-
-            this.onLoadProductToLiveCampaign.emit([...items]);
-        }
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = inventories;
+              this.mappingProductToLive(response);
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              this.mappingProductToLive(response);
+          }
+        });
       }
     })
+  }
+
+  mappingProductToLive(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
+
+    if(response.type === 'select' && response.productTmpl) {
+        const model = response.productTmpl as ProductTemplateV2DTO;
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
+
+        if(items && items.length == 0) {
+            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+            return;
+        }
+
+        items.map((x: DataPouchDBDTO) => {
+            x.Tags = model?.OrderTag || null;
+
+            const qty = (this.inventories && this.inventories[x.Id] && Number(this.inventories[x.Id].QtyAvailable) > 0)
+                ? Number(this.inventories[x.Id].QtyAvailable) : 1;
+
+            x.QtyAvailable = qty;
+            x._attributes_length = model._attributes_length || 0;
+        });
+
+        this.onLoadProductToLiveCampaign.emit([...items]);
+    }
   }
 
   reloadIndexDB() {
@@ -360,25 +375,26 @@ export class ListProductTmpV2Component implements OnInit {
     }
 
     items.map((x: DataPouchDBDTO) => {
-      x._attributes_length = 0;
-      if(this.inventories && this.inventories[x.Id]) {
-          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
-      }
+        const qty = (this.inventories && this.inventories[x.Id] && Number(this.inventories[x.Id].QtyAvailable) > 0)
+        ? Number(this.inventories[x.Id].QtyAvailable) : 1;
+
+        x.QtyAvailable = qty;
+        x._attributes_length = 0;
     });
 
     this.lstVariants = [...items];
 
     if(this.lstVariants && this.lstVariants.length == 1) {
-      this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
-      this.indClick = -1;
+        this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
+        this.indClick = -1;
     }
   }
 
   getVariant(data?: DataPouchDBDTO) {
     if(data && data.Id) {//chọn hiện tại
-      this.onLoadProductToLiveCampaign.emit([data]);
+        this.onLoadProductToLiveCampaign.emit([data]);
     } else {
-      this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
+        this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
     }
 
     this.lstVariants = [];
@@ -395,7 +411,7 @@ export class ListProductTmpV2Component implements OnInit {
     }
   }
 
-  
+
   loadProductCategory() {
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
       {
@@ -420,7 +436,7 @@ export class ListProductTmpV2Component implements OnInit {
   onFilterCategId() {
     if(this.categIdFilter){
         let data = this.indexDbStorage || [];
-        
+
         data = data.filter((x: DataPouchDBDTO)=>(x.CategId == this.categIdFilter.Id))
 
         this.lstOfData = [...data];
