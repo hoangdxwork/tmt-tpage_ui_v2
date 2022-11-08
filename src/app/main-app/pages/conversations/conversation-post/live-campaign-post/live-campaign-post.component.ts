@@ -59,36 +59,20 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    let id = this.data?.LiveCampaignId as string;
     this.loadData();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['data'] && !changes['data'].firstChange) {
-        let id = this.currentLiveCampaign.Id as string;
         this.loadData();
     }
   }
-
-  // loadById(id: string): void {
-  //   this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
-  //     next: (res: any) => {
-  //         delete res['@odata.context'];
-  //         this.currentLiveCampaign = res;
-  //         this.cdRef.detectChanges();
-  //     },
-  //     error: (error: any) => {
-  //         this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-  //     }
-  //   })
-  // }
 
   loadData() {
     this.isLoading = true;
     this.liveCampaignService.getAvailablesV2(this.pageIndex, this.pageSize, this.innerText).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
-
           this.count = res['@odata.count'];
           this.lstOfData = [...res.value];
 
@@ -114,6 +98,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges {
     if(TDSHelperString.hasValueString(this.innerText)) {
         this.innerText = TDSHelperString.stripSpecialChars(this.innerText.toLocaleLowerCase()).trim();
     }
+
     this.loadData();
   }
 

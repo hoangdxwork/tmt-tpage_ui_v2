@@ -1714,7 +1714,7 @@ export class AddBillComponent implements OnInit {
       this._form.controls['Ship_Receiver'].patchValue({
         District: district
       });
-      
+
       this.loadWards(district.code);
     }
     this.mappingStreet();

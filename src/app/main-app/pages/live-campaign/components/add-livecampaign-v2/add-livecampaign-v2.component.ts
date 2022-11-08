@@ -101,7 +101,7 @@ export class AddLiveCampaignV2Component implements OnInit {
       ConfigObject: [null],// xóa khi lưu
       Name: [null],
       Note: [null],
-      ResumeTime: [0],
+      ResumeTime: [10],
       Users: [null],
       StartDate: [new Date()],
       EndDate: [new Date()],
@@ -352,11 +352,8 @@ export class AddLiveCampaignV2Component implements OnInit {
 
       // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
       if(!exist){
-          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
-          ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
-
           let item = {
-              Quantity: qty,
+              Quantity: x.QtyAvailable || 1,
               LiveCampaign_Id: null,
               LimitedQuantity: 0,
               Price: x.Price,
@@ -546,6 +543,11 @@ export class AddLiveCampaignV2Component implements OnInit {
         return 0;
     }
 
+    if(formValue.ResumeTime > 0 && formValue.ResumeTime < 10) {
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+        return 0;
+    }
+
     return 1;
   }
 
@@ -666,8 +668,7 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   onChangeResumeTime(event: any) {
     if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
-      this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
-      this._form.controls['ResumeTime'].setValue(0);
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
     }
   }
 
