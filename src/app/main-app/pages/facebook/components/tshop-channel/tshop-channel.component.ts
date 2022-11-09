@@ -112,6 +112,8 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
           if (res) {
             // TOD0: gán lại danh sách team
             this.data = [...res];
+            console.log(this.data);
+
 
             res.sort((a: any, b: any) => {
               if (a.Active) return -1;

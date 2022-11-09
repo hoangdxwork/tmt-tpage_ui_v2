@@ -37,10 +37,10 @@ const routes: Routes = [
         path:'firebase-notification',
         component: FirebaseNotificationComponent
       },
-      {
-        path:'firebase-notification/:id',
-        component: FirebaseNotificationDetailComponent
-      },
+      // {
+      //   path:'firebase-notification/',
+      //   component: FirebaseNotificationDetailComponent
+      // },
     ]
   },
 ];
