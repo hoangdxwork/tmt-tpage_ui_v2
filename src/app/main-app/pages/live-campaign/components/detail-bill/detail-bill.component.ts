@@ -716,6 +716,17 @@ export class DetailBillComponent implements OnInit {
   mergeOrder() {
     if (this.checkValueMergeOrder() == 0) return;
 
+    this.modal.success({
+        title: 'Xác nhận gộp đơn',
+        content: 'Bạn có chắc muốn gộp các đơn đã chọn thành 1 đơn duy nhất',
+        onOk: () => { this.apiMergeOrders() },
+        onCancel:() => {},
+        okText: "Xác nhận",
+        cancelText: "Hủy bỏ"
+    });
+  }
+
+  apiMergeOrders() {
     let model = {
       OrderIds: this.idsModel
     }
@@ -730,7 +741,7 @@ export class DetailBillComponent implements OnInit {
 
           this.setOfCheckedId.add(res.Id);
           this.isLoading = false;
-          this.notification.success('Gộp đơn thành công', `Mã hóa đơn là ${res.Number}`);
+          this.notification.success('Gộp đơn thành công', `Mã hóa đơn là ${res.Number}`,  { duration: 3000 });
       },
       error: (error: any) => {
           this.isLoading = false;
