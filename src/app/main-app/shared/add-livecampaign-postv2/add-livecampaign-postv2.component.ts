@@ -457,7 +457,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
             Quantity: qty,
             LiveCampaign_Id: null,
             LimitedQuantity: 0,
-            Price: x.ListPrice || 0,
+            Price: x.Price || 0,
             Note: null,
             ProductId: x.VariantFirstId,
             ProductName: x.Name,

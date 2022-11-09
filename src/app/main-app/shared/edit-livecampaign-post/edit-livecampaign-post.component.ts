@@ -475,7 +475,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
               ScanQuantity: 0,
               QuantityCanceled: 0,
               UsedQuantity: 0,
-              Price: x.ListPrice || 0,
+              Price: x.Price || 0,
               Note: null,
               ProductId: x.Id,
               LiveCampaign_Id: this.id,
