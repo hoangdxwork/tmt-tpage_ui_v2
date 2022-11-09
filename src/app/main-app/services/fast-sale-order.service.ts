@@ -570,4 +570,13 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData(api, null);
   }
+
+  mergeOrders(data: any): Observable<boolean> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/shared/mergeorders`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData(api, data);
+  }
 }
