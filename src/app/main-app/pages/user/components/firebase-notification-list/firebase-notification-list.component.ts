@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FireBaseNotificationDto, NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
+import { Component, Input, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
-import { takeUntil, pipe } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { TDSMessageService } from 'tds-ui/message';
 import { Router } from '@angular/router';
+import { TDSModalService } from 'tds-ui/modal';
+import { FirebaseNotificationDetailComponent } from '../firebase-notification-detail/firebase-notification-detail.component';
 
 @Component({
   selector: 'firebase-notification-list',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
 })
 export class FirebaseNotificationListComponent implements OnInit {
 
-  @Input() isRead!: boolean
+  @Input() data!: NotificationItemDto[];
 
   isLoading: boolean = false;
   items!: NotificationItemDto[];
@@ -22,38 +23,45 @@ export class FirebaseNotificationListComponent implements OnInit {
   constructor(
     private router: Router,
     private firebaseRegisterService: FirebaseRegisterService,
-    private message: TDSMessageService,
-    private destroy$: TDSDestroyService) { }
+    private destroy$: TDSDestroyService,
+    private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
+    private cdRef : ChangeDetectorRef
+    ) { }
 
-  ngOnInit(): void {
-    this.loadData();
-  }
+  ngOnInit(): void { }
 
-  loadData(params?: any) {
-    this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data: FireBaseNotificationDto) => {
-        this.items = [...(this.items || []), ...data.items];
-        this.cursor = data.cursor;
-        if (this.isRead == false) {
-          this.items = this.items.filter(a => a.dateRead == null)
-        }
-        console.log(this.items);
+  onDetail(item : NotificationItemDto) {
+    // this.firebaseRegisterService.makeRead(id).pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res: any) => {
+    //   }
+    // });
+    const modal = this.modalService.create({
+      content: FirebaseNotificationDetailComponent,
+      viewContainerRef: this.viewContainerRef,
+      footer: null,
+      closable: false,
+      centered: true,
+      bodyStyle: {
+        padding: '0px',
       },
-      error: (err: any) => {
-        this.message.error(err?.error?.message);
+      size: 'xl',
+      componentParams: {
+        data: item.id
       }
-    })
-  }
+    });
+    modal.afterClose.subscribe(() => {
+      this.firebaseRegisterService.makeRead(item.id).pipe(takeUntil(this.destroy$)).subscribe();
+      let index = this.data.findIndex(x => x.id == item.id);
+      if(Number(index) >= 0) {
+        this.data[index].dateRead = new Date();
+        this.data[index] = {...this.data[index]};
+        this.data = [...this.data];
 
-  onNext() {
-    if (this.cursor) {
-      this.loadData(this.cursor)
-    }
-  }
+        this.cdRef.detectChanges();
+      }
+    });
 
-  onDetail(id: string) {
-    this.firebaseRegisterService.makeRead(id).pipe(takeUntil(this.destroy$)).subscribe();
-    this.router.navigateByUrl(`user/firebase-notification/${id}`);
   }
 
 }
