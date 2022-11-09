@@ -120,15 +120,6 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
         let accessToken = this.auth.getAccessToken();
 
-        // TODO: kiểm tra lại, khúc này chỉ fix tạm
-        if(!TDSHelperObject.hasValue(accessToken)) {
-          let tokenStorage = localStorage.getItem('TpageBearerToken') as any;
-          if(tokenStorage) {
-              let data = JSON.parse(tokenStorage) || null;
-              accessToken = data;
-          }
-        }
-
         if (TDSHelperObject.hasValue(this.auth.isLogin())
             && TDSHelperObject.hasValue(accessToken)
             && TDSHelperString.hasValueString(accessToken?.access_token)) {
