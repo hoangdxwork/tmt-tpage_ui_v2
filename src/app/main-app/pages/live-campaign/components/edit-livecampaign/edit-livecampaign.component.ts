@@ -1,3 +1,4 @@
+import { TextContentToOrderDTO } from '@app/dto/configs/post/post-order-config.dto';
 import { PrepareAddCampaignHandler } from './../../../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
 import { SharedService } from './../../../../services/shared.service';
@@ -92,7 +93,8 @@ export class EditLiveCampaignComponent implements OnInit {
     private productService: ProductService,
     private notificationService: TDSNotificationService,
     private sharedService: SharedService,
-    private prepareHandler: PrepareAddCampaignHandler) {
+    private prepareHandler: PrepareAddCampaignHandler,
+    private cdRef: ChangeDetectorRef) {
       this.createForm();
   }
 
@@ -137,27 +139,27 @@ export class EditLiveCampaignComponent implements OnInit {
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
-            if(!res) return;
-            delete res['@odata.context'];
+          if(!res) return;
+          delete res['@odata.context'];
 
-            if(res.StartDate) {
-                res.StartDate = new Date(res.StartDate)
-            }
-            if(res.EndDate) {
-                res.EndDate = new Date(res.EndDate)
-            }
+          if(res.StartDate) {
+              res.StartDate = new Date(res.StartDate)
+          }
+          if(res.EndDate) {
+              res.EndDate = new Date(res.EndDate)
+          }
 
-            this.dataModel = res;
-            if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
-                this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
-            }
+          this.dataModel = res;
+          if(!res.ConfirmedOrder_TemplateId && res.ConfirmedOrder_Template?.Id) {
+              this.dataModel.ConfirmedOrder_TemplateId = res.ConfirmedOrder_Template?.Id;
+          }
 
-            if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
-                this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
-            }
+          if(!res.Preliminary_TemplateId && res.Preliminary_Template?.Id) {
+              this.dataModel.Preliminary_TemplateId = res.Preliminary_Template?.Id;
+          }
 
-            this.updateForm(this.dataModel);
-            this.isLoading = false;
+          this.updateForm(this.dataModel);
+          this.isLoading = false;
 
       },
       error:(error) => {
@@ -305,11 +307,8 @@ export class EditLiveCampaignComponent implements OnInit {
     listData.forEach((x: DataPouchDBDTO) => {
       let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
       if(!exist){
-          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable)) > 0
-          ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
-
           let item = {
-              Quantity: qty,
+              Quantity: x.QtyAvailable || 1,
               RemainQuantity: 0,
               ScanQuantity: 0,
               QuantityCanceled: 0,
@@ -576,6 +575,13 @@ export class EditLiveCampaignComponent implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModelSimple(this._form) as LiveCampaignSimpleDto;
+
+      let resumeTime = model.ResumeTime;
+      if(resumeTime > 0 && resumeTime < 10) {
+          this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+          return;
+      }
+
       let id = this.liveCampaignId as string;
 
       let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
@@ -624,8 +630,8 @@ export class EditLiveCampaignComponent implements OnInit {
         event.forEach(x => {
             this.datePicker.push(x);
         })
-        this._form.controls.StartDate.setValue(event[0]);
-        this._form.controls.EndDate.setValue(event[1]);
+        this._form.controls.StartDate.setValue(new Date(event[0]));
+        this._form.controls.EndDate.setValue(new Date(event[1]));
     }
   }
 
@@ -648,12 +654,20 @@ export class EditLiveCampaignComponent implements OnInit {
         title: 'Thêm mới trả lời nhanh',
         content: ModalAddQuickReplyComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'md'
+        size: 'md',
+        componentParams: {
+          isSaveSelect: true
+        }
     });
 
     modal.afterClose.subscribe({
       next:(res) => {
-          this.lstQuickReplies = [...[res], ...this.lstQuickReplies];
+        if(res && res.value) {
+          this.lstQuickReplies = [...[res.value], ...this.lstQuickReplies];
+          if(res.type && res.type == 'select') {
+            this._form.controls['ConfirmedOrder_Template'].setValue(res.value);
+          }
+        }
       }
     })
   }
@@ -730,6 +744,12 @@ export class EditLiveCampaignComponent implements OnInit {
     if(this.isCheckValue() === 0) return;
     let model = this.prepareHandler.prepareModelSimple(this._form) as LiveCampaignSimpleDto;
 
+    let resumeTime = model.ResumeTime;
+    if(resumeTime > 0 && resumeTime < 10) {
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+        return;
+    }
+
     let formValue = this._form.value;
     formValue.Details?.forEach((x: any, index: number) => {
         x["Index"] = index;
@@ -757,8 +777,46 @@ export class EditLiveCampaignComponent implements OnInit {
 
   onChangeResumeTime(event: any) {
     if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
-      this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
-      this._form.controls['ResumeTime'].setValue(0);
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
     }
+  }
+
+  onChangeModelTag(event: string[], item: TextContentToOrderDTO) {
+    let fromDetail = this.detailsForm;
+    let strs = [...this.checkInputMatch(event)];
+    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
+
+    if(Number(idx) >= 0) {
+      let details = this.detailsForm.at(idx).value;
+      details.Tags = strs?.join(',');
+      console.log(details.Tags)
+
+       //TODO: cập nhật vào formArray
+      this.detailsForm.at(idx).patchValue(details);
+      this.modelTags = [...strs];
+    }
+    this.cdRef.detectChanges();
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 }

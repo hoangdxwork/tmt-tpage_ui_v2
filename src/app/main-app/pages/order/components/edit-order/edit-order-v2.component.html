@@ -105,7 +105,7 @@
                           class="p-3 border-b border-neutral-2-200 flex justify-between w-full cursor-pointer hover:bg-neutral-3-50"
                           (click)="addComment(comment.message)">
                           <div>
-                            <span [innerHTML]="comment.message"></span><span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy hh:mm:ss" }}</span>
+                            <span [innerHTML]="comment.message"></span><span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy HH:mm:ss" }}</span>
                           </div>
                           <span *ngIf="quickOrderModel?.Note?.includes(comment.message)" class="tdsi-success-fill text-primary-1"></span>
                         </div>

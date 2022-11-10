@@ -198,26 +198,26 @@ export class ListLiveCampaignComponent implements OnInit {
   }
 
   showModelOverViewLiveCampaign(id?: string, name?: string) {
-    if(!id) {
-      this.message.info(Message.SelectOneLine);
-      return;
-    }
+    // if(!id) {
+    //   this.message.info(Message.SelectOneLine);
+    //   return;
+    // }
 
-    this.liveCampaignService.getReport(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.modal.create({
-          title: `${name}`,
-          content: OverviewLiveCampaignComponent,
-          size: "xl",
-          viewContainerRef: this.viewContainerRef,
-          componentParams:{
-            lstOfData: res as ReportLiveCampaignDTO
-          }
-        });
-      },
-      err => {
-        this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kế');
-      })
+    // this.liveCampaignService.getReport(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+    //   .subscribe(res => {
+    //     this.modal.create({
+    //       title: `${name}`,
+    //       content: OverviewLiveCampaignComponent,
+    //       size: "xl",
+    //       viewContainerRef: this.viewContainerRef,
+    //       componentParams:{
+    //         lstOfData: res as ReportLiveCampaignDTO
+    //       }
+    //     });
+    //   },
+    //   err => {
+    //     this.message.error(err?.error?.message || 'Không tải được dữ liệu thống kế');
+    //   })
   }
 
   onCannel() {

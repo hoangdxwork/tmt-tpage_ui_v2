@@ -540,7 +540,7 @@ export class FastSaleOrderService extends BaseSevice {
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getFileUpload(api, null);
+    return this.apiService.getData(api, null);
   }
 
   checkPermissionCreateFSO(): Observable<boolean> {
@@ -549,7 +549,7 @@ export class FastSaleOrderService extends BaseSevice {
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getFileUpload(api, null);
+    return this.apiService.getData(api, null);
   }
 
   checkPermissionQuickCreateFSO(): Observable<boolean> {
@@ -558,6 +558,25 @@ export class FastSaleOrderService extends BaseSevice {
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getFileUpload(api, null);
+    return this.apiService.getData(api, null);
+  }
+
+  checkTrackingRefIsExisted(tracking_ref: string): Observable<boolean> {
+    let status = 'Đã tiếp nhận';
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/FastSaleOrder/ODataService.CheckTrackingRefIsExisted?tracking_ref=${tracking_ref}&status=${status}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData(api, null);
+  }
+
+  mergeOrders(data: any): Observable<boolean> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/shared/mergeorders`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData(api, data);
   }
 }

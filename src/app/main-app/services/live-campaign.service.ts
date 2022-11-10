@@ -15,6 +15,7 @@ export class LiveCampaignService extends BaseSevice {
   table: string = "SaleOnline_LiveCampaign";
   baseRestApi: string = "rest/v1.0/saleonine_livecampaign";
   public _keyCacheGrid: string = 'livecampaign-page:grid_livecampaign:settings';
+  _keyCacheDrawerEdit: string = '_keyCacheDrawer';
 
   constructor(private apiService: TCommonService) {
     super(apiService);
@@ -317,5 +318,33 @@ export class LiveCampaignService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
     return this.apiService.getData<any>(api, null);
+  }
+
+
+  setLocalStorageDrawer(objectId: any, liveCampaignId: string, isOpenDrawer: boolean) {
+    const key = `${this._keyCacheDrawerEdit}`;
+    let data = {
+      liveCampaignId: liveCampaignId,
+      objectId: objectId,
+      isOpenDrawer: isOpenDrawer
+    };
+
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  getLocalStorageDrawer() {
+    const key = `${this._keyCacheDrawerEdit}`;
+    let item = localStorage.getItem(key);
+
+    if(item) {
+      return JSON.parse(item);
+    } else {
+      return null;
+    }
+  }
+
+  removeLocalStorageDrawer() {
+    const key = `${this._keyCacheDrawerEdit}`;
+    localStorage.removeItem(key);
   }
 }

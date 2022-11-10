@@ -1,3 +1,4 @@
+import { AddDrawerProductComponent } from './conversation-post/live-campaign-post/add-drawer-product.component';
 import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
 import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
@@ -145,6 +146,8 @@ import { quillOptions } from 'src/app/app.module';
 import { ModalProductDefaultComponent } from './components/modal-product-default/modal-product-default.component';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
+import { ModalListPostComponent } from './components/modal-list-post/modal-list-post.component';
+import { DrawerEditLiveCampaignComponent } from './conversation-post/live-campaign-post/drawer-edit-livecampain.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -254,7 +257,9 @@ const SERVICES = [
     LiveCampaignPostComponent,
     ModalAddAddressV2Component,
     ModalProductDefaultComponent,
-
+    ModalListPostComponent,
+    DrawerEditLiveCampaignComponent,
+    AddDrawerProductComponent
   ],
 
   imports: [

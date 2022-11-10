@@ -48,8 +48,8 @@ export class SocketService {
     });
 
     this.socket.on("connect", () => {
-      console.log("Connected to socket.io server");
-      this.isConnectedSocket.emit(true);
+        console.log("Connected to socket.io server");
+        this.isConnectedSocket.emit(true);
     });
 
     this.socket.on("connect_error", (err) => {
@@ -65,13 +65,7 @@ export class SocketService {
       this.establishedConnected = false;
       this.retryNoti++;
     });
-  }
 
-  reconnecting() {
-    this.socket.on('reconnect', () => {
-      console.log('The connection socket-io was successfully established');
-      this.establishedConnected = true;
-    });
   }
 
   getSocketId = () => this.socket.id;

@@ -1,4 +1,4 @@
-<div class="flex flex-col relative pr-1 py-1 h-full w-full text-body-2 text-neutral-1-900" *ngIf="data">
+<div class="flex flex-col pr-1 py-1 h-full w-full text-body-2 text-neutral-1-900" *ngIf="data">
     <div class="w-full h-full flex flex-col">
         <!-- Tổng quan bài viết-->
         <div class="post-view bg-white flex flex-col w-full mb-1">
@@ -27,6 +27,11 @@
                             </a>
                         </span>
                     </tds-tag>
+
+                    <!-- <div class="pl-4 flex gap-x-2 items-center" *ngIf="data.LiveCampaignId">
+                        <tds-switch size="md" [(ngModel)]="drawerEditLiveCampaign" (ngModelChange)="onChangeDrawerEditLive($event)"
+                        [ngModelOptions]="{standalone: true}"></tds-switch>
+                    </div> -->
                 </div>
 
                 <!-- tshop -->
@@ -126,7 +131,7 @@
                         </div>
 
                         <div *ngIf="data.LiveCampaign">
-                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data)">
+                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data, data.LiveCampaign.Id)">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
                                     <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
@@ -222,8 +227,7 @@
             <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
                 <div  class="flex w-full h-full overflow-hidden" *ngIf="data && !isLoading">
                     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
-                        <comment-filter-all [data]="data" [team]="team" [innerText]="keyWords">
-                        </comment-filter-all>
+                        <comment-filter-all [data]="data" [team]="team" [innerText]="keyWords"></comment-filter-all>
                     </div>
                 </div>
             </tds-spin>
@@ -231,4 +235,20 @@
         </div>
     </div>
 
+    <div class="absolute inset-0 pl-1 w-[363px] z-10" [ngClass]="visibleDrawerEditLive ? 'block': 'hidden'">
+        <tds-spin [spinning]="false">
+            <tds-drawer [visible]="visibleDrawerEditLive" [width]="'363px'" [placement]="'left'" [bodyStyle]="{ 'overflow':'hidden', 'display':'flex', 'flex-direction':'column', 'padding':0 }"
+                [closeIcon]="closeTmp" [mask]="false" [title]="'Thông tin chiến dịch'">
+                <ng-container *tdsDrawerContent>
+                    <drawer-edit-livecampaign [liveCampaignId]="data.LiveCampaignId"></drawer-edit-livecampaign>
+                </ng-container>
+            </tds-drawer>
+        </tds-spin>
+    </div>
+
+    <ng-template #closeTmp>
+        <div class="flex items-center justify-end p-2">
+            <span class="tdsi-close-fill text-lg leading-none cursor-pointer" (click)="closeDrawerEditLiveCampaign()"></span>
+        </div>
+    </ng-template>
 </div>

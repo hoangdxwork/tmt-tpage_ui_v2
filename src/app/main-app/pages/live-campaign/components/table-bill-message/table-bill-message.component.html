@@ -12,27 +12,29 @@
     (queryParams)="onQueryParamsChange($event)">
     <thead>
       <tr>
-        <th [width]="'13%'">Số hóa đơn</th>
-        <th [width]="'13%'">Tên khách hàng</th>
-        <th [width]="'13%'">Số điện thoại</th>
-        <th [width]="'21%'">Địa chỉ</th>
-        <th [width]="'13%'">Tổng tiền</th>
-        <th [width]="'13%'">Tổng tin nhắn</th>
+        <th [width]="'64px'" class="border-r" [align]="'center'">STT</th>
+        <th [width]="'13%'" class="border-r">Số hóa đơn</th>
+        <th [width]="'13%'" class="border-r">Tên khách hàng</th>
+        <th [width]="'13%'" class="border-r">Số điện thoại</th>
+        <th [width]="'21%'" class="border-r">Địa chỉ</th>
+        <th [width]="'13%'" class="border-r">Tổng tiền</th>
+        <th [width]="'13%'" class="border-r">Tổng tin nhắn</th>
         <th [width]="'13%'">Thao tác</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let bill of tableMessage.data; let index=index">
-        <td>
+        <td class="border-r text-center">{{ index | numericalOrder:pageSize:pageIndex }}</td>
+        <td class="border-r">
           <span class="text-info-400">
             {{bill.Number}}
           </span>
         </td>
-        <td>{{bill.PartnerName}}</td>
-        <td>{{bill.PhoneNumber}}</td>
-        <td>{{bill.Address}}</td>
-        <td>{{bill.TotalAmount || 0 | numberCustom}}</td>
-        <td>
+        <td class="border-r">{{bill.PartnerName}}</td>
+        <td class="border-r">{{bill.PhoneNumber}}</td>
+        <td class="border-r">{{bill.Address}}</td>
+        <td class="border-r">{{bill.TotalAmount || 0 | numberCustom}}</td>
+        <td class="border-r">
           <div class="flex gap-x-4 items-center">
             <div class="flex items-center gap-x-1">
               <span>{{bill.MessageCount}}</span>

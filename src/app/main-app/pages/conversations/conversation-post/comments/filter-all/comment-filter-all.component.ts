@@ -133,6 +133,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       this.loadTags();
       this.loadCommentsOrderByPost();
       this.loadOrderPartnerbylLivecampaign();
+      this.reloadDataCommentsOrder();
     }
 
     this.onEventSocket();
@@ -583,6 +584,14 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     });
+  }
+
+  reloadDataCommentsOrder() {
+    let m = 10;
+    setTimeout(() => {
+      this.loadCommentsOrderByPost();
+      this.reloadDataCommentsOrder();
+    }, m * 60 * 1000);
   }
 
   loadCommentsOrderByPost() {

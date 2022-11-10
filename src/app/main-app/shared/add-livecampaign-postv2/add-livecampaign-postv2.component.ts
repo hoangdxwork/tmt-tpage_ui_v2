@@ -1,11 +1,7 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
-import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from './../../dto/live-campaign/livecampaign-simple.dto';
-import { ProductTemplateService } from './../../services/product-template.service';
-import { LiveCampaignDTO } from './../../dto/live-campaign/odata-live-campaign.dto';
-import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
-import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
+import { ProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
@@ -17,7 +13,6 @@ import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { Observable, takeUntil } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
-import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -109,15 +104,13 @@ export class AddLivecampaignPostV2Component implements OnInit {
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private notificationService: TDSNotificationService,
-    private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productService: ProductService,
     private sharedService: SharedService,
     private message: TDSMessageService,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef,
-    private productTemplateService: ProductTemplateService) {
+    private cdRef: ChangeDetectorRef) {
       this.createForm();
    }
 
@@ -144,7 +137,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
       ConfigObject: [null],// xóa khi lưu
       Name: [null, Validators.required],
       Note: [null],
-      ResumeTime: [0],
+      ResumeTime: [10],
       StartDate: [new Date()],
       EndDate: [new Date()],
       Users: [null],
@@ -453,14 +446,13 @@ export class AddLivecampaignPostV2Component implements OnInit {
         }
 
         let x =  items[0];
-        let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
-          ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+        let qty = product.InitInventory > 0 ? product.InitInventory : 1;
 
         let item = {
             Quantity: qty,
             LiveCampaign_Id: null,
             LimitedQuantity: 0,
-            Price: x.ListPrice || 0,
+            Price: x.Price || 0,
             Note: null,
             ProductId: x.VariantFirstId,
             ProductName: x.Name,
@@ -613,6 +605,12 @@ export class AddLivecampaignPostV2Component implements OnInit {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModel(this._form);
 
+      let resumeTime = model.ResumeTime;
+      if(resumeTime > 0 && resumeTime < 10) {
+          this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+          return;
+      }
+
       let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
       if(team?.Id && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
           model.Facebook_UserId = team.ChannelId;
@@ -740,13 +738,19 @@ export class AddLivecampaignPostV2Component implements OnInit {
         title: 'Thêm mới trả lời nhanh',
         content: ModalAddQuickReplyComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'md'
+        size: 'md',
+        componentParams: {
+          isSaveSelect: true
+        }
     });
 
     modal.afterClose.subscribe({
       next:(res) => {
         if(res) {
           this.loadQuickReply();
+          if(res.type && res.type == 'select') {
+            this._form.controls['ConfirmedOrder_Template'].setValue(res.value);
+          }
         }
       }
     })
@@ -774,7 +778,45 @@ export class AddLivecampaignPostV2Component implements OnInit {
   onChangeResumeTime(event: any) {
     if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
       this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
-      this._form.controls['ResumeTime'].setValue(0);
     }
+  }
+
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let fromDetail = this.detailsForm
+    let strs = [...this.checkInputMatch(event)];
+    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
+
+    if(Number(idx) >= 0) {
+      let details = this.detailsForm.at(idx).value;
+      details.Tags = strs?.join(',');
+      console.log(details.Tags)
+
+       //TODO: cập nhật vào formArray
+      this.detailsForm.at(idx).patchValue(details);
+      this.modelTags = [...strs];
+    }
+    this.cdRef.detectChanges();
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 }

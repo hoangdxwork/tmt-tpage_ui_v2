@@ -19,7 +19,8 @@
         </div>
         <div class="w-full flex justify-end" >
             <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Hủy</button>
-            <button tds-button type="submit" color="primary" (click)="onSave()">Thêm</button>
+            <button tds-button class="mr-2" type="submit" color="primary" (click)="onSave()">Lưu</button>
+            <button *ngIf="isSaveSelect" tds-button type="submit" color="primary" (click)="onSave('select')">Lưu và chọn</button>
         </div>
     </form>
     <div *tdsModalFooter></div>

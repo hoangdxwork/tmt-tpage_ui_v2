@@ -17,9 +17,15 @@
             <th [width]="'150px'" class="text-right border-r">Tổng tiền</th>
             <th [width]="'120px'" class="w-full text-center border-r">Tổng số lượng</th>
             <th [width]="'130px'" class="border-r">Trạng thái</th>
-            <th width="130px"  class="border-r">Độ ưu tiên</th>
             <th [width]="'120px'" class="border-r">Nhân viên</th>
-            <th [width]="'170px'" [align]="'center'" class="border-r">Thời gian</th>
+            <th [width]="'170px'" [align]="'center'" class="border-r">
+              <div class="flex gap-x-1">
+                <span>Thời gian</span>
+                <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+                  <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                </span>
+              </div>
+            </th>
             <th [width]="'130px'" [align]="'center'" [tdsRight]="true">Thao tác</th>
           </tr>
         </thead>
@@ -125,9 +131,14 @@
                 </td>
               <!-- Kênh kết nối -->
               <td  class="border-r">
-                <div class="w-full flex">
-                  <span *ngIf="order.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                  <span class="ml-1 ">{{order.CRMTeamName}}</span>
+                <div class="flex flex-col gap-y-2">
+                  <div class="w-full flex">
+                    <span *ngIf="order.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span class="ml-1 ">{{order.CRMTeamName}}</span>
+                  </div>
+                  <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>
+                    {{order.PriorityStatus | priorityStatusName}}
+                  </tds-tag>
                 </div>
               </td>
 
@@ -191,13 +202,6 @@
                     </div>
                   </div>
                 </tds-dropdown-menu>
-              </td>
-
-              <!-- Độ ưu tiên -->
-              <td  class="border-r">
-                <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>
-                  {{order.PriorityStatus | priorityStatusName}}
-                </tds-tag>
               </td>
 
               <!-- Nhân viên -->

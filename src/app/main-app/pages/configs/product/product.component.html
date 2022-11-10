@@ -169,7 +169,7 @@
                                         </div>
                                     </ng-template>
                                 </td>
-                                <td *ngIf="!isHiddenColumn('DateCreated')">{{ data.DateCreated | date:'dd/MM/yyyy hh:mm' }}</td>
+                                <td *ngIf="!isHiddenColumn('DateCreated')">{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
                                 <td *ngIf="!isHiddenColumn('Active')" [tdsRight]="true">
                                     <span class="flex items-center justify-center">
                                         <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>

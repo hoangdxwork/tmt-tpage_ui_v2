@@ -24,7 +24,8 @@ export class TableDeletedOrderComponent implements OnInit {
   setOfCheckedId = new Set<string>();
   expandSet = new Set<string>();
 
-  lstDeletedOrder!: DeletedOrderDTO[]
+  lstDeletedOrder!: DeletedOrderDTO[];
+  filterDate: string = '';
 
   constructor(
     private message: TDSMessageService,
@@ -94,5 +95,25 @@ export class TableDeletedOrderComponent implements OnInit {
     this.refreshCheckedStatus();
   }
 
+  onChangeFilterDate() {
+    let data = this.lstDeletedOrder;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: DeletedOrderDTO, b: DeletedOrderDTO) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
 
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: DeletedOrderDTO, b: DeletedOrderDTO) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstDeletedOrder = [...data];
+  }
 }

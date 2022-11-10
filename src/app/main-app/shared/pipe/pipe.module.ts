@@ -44,6 +44,7 @@ import { ReduceSystemMessagePipe } from './reduce-system-message.pipe';
 import { SeenedMessagePipe } from './coversation-message.pipe';
 import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
 import { PriorityStatusColorPipe, PriorityStatusNamePipe } from './priority-status.pipe';
+import { SortDateClassPipe, SortDateNamePipe } from './sort-date.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -104,7 +105,9 @@ const cmp =[
   IndexSimpleDetailLiveCampainPipe,
   FilterIndexDBLivePipe,
   PriorityStatusColorPipe,
-  PriorityStatusNamePipe
+  PriorityStatusNamePipe,
+  SortDateNamePipe,
+  SortDateClassPipe
 ]
 
 @NgModule({

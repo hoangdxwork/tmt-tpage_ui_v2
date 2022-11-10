@@ -1,7 +1,5 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
-import { ProductTemplateService } from '../../services/product-template.service';
-import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
@@ -468,8 +466,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           }
 
           let x =  items[0];
-          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
-            ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+          let qty = product.InitInventory > 0 ? product.InitInventory : 1;
 
           let item = {
               Quantity: qty,
@@ -477,7 +474,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
               ScanQuantity: 0,
               QuantityCanceled: 0,
               UsedQuantity: 0,
-              Price: x.ListPrice || 0,
+              Price: x.Price || 0,
               Note: null,
               ProductId: x.Id,
               LiveCampaign_Id: this.id,
@@ -602,13 +599,20 @@ export class EditLiveCampaignPostComponent implements OnInit {
         title: 'Thêm mới trả lời nhanh',
         content: ModalAddQuickReplyComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'md'
+        size: 'md',
+        componentParams: {
+          isSaveSelect: true
+        }
+
     });
 
     modal.afterClose.subscribe({
       next:(res) => {
         if(res) {
           this.loadQuickReply();
+          if(res.type && res.type == 'select') {
+            this._form.controls['ConfirmedOrder_Template'].setValue(res.value);
+          }
         }
       }
     })
@@ -676,6 +680,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
 
     let model = this.prepareHandler.prepareModelSimple(this._form) as LiveCampaignSimpleDto;
+
+    let resumeTime = model.ResumeTime;
+    if(resumeTime > 0 && resumeTime < 10) {
+        this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+        return;
+    }
+
     let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
 
     if(team && team?.Id && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
@@ -693,7 +704,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       next: (res: any) => {
           this.isLoading = false;
           this.message.success('Cập nhật chiến dịch live thành công');
-          this.onCannel(res);
+          this.onCannel(true);
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -873,7 +884,44 @@ export class EditLiveCampaignPostComponent implements OnInit {
   onChangeResumeTime(event: any) {
     if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
       this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
-      this._form.controls['ResumeTime'].setValue(0);
     }
+  }
+
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let fromDetail = this.detailsForm
+    let strs = [...this.checkInputMatch(event)];
+    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
+
+    if(Number(idx) >= 0) {
+      let details = this.detailsForm.at(idx).value;
+      details.Tags = strs?.join(',');
+
+      //TODO: cập nhật vào formArray
+      this.detailsForm.at(idx).patchValue(details);
+      this.modelTags = [...strs];
+    }
+    this.cdRef.detectChanges();
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 }

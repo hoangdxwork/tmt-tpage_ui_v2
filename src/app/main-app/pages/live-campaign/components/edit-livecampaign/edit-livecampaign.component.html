@@ -122,8 +122,9 @@
               <div class="grid grid-cols-4 gap-x-4 items-center">
                 <tds-label>Thời gian tổng hợp (phút)</tds-label>
                 <tds-form-field class="col-span-3">
-                    <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" 
-                    [tdsInputDebounce]="350" (inputKeyup)="onChangeResumeTime($event)" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                    <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
+                        [tdsInputDebounce]="350" (inputKeyup)="onChangeResumeTime($event)" [formatter]="numberWithCommas" [parser]="parserComas">
+                    </tds-input-number>
                 </tds-form-field>
               </div>
 
@@ -278,7 +279,7 @@
                                   <div class="w-[360px]">
                                       <tds-form-field>
                                           <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                            [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
+                                            [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" (selectChange)="onChangeModelTag($event, detail.value)"
                                             [data]="(detail.value.Tags | stringToStringArray)">
                                           </tds-select>
                                       </tds-form-field>

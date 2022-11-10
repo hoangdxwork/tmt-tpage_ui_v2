@@ -93,7 +93,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
     { value: 'TotalQuantity', name: 'Tổng SL', isChecked: true },
     { value: 'DateCreated', name: 'Ngày tạo', isChecked: false },
     { value: 'StatusText', name: 'Trạng thái', isChecked: true },
-    { value: 'PriorityStatus', name: 'Độ ưu tiên', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
   ];
 
@@ -123,6 +122,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   widthCollapse: number = 0;
   isTabNavs: boolean = false;
   isProcessing: boolean = false;
+  filterDate: string = '';
 
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
@@ -493,9 +493,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
       title: 'Lịch sử gửi tin nhắn',
       content: ModalHistoryChatComponent,
       size: "xl",
-      bodyStyle: {
-        padding: '0px',
-      },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         orderId: orderId,
@@ -909,5 +906,27 @@ export class OrderComponent implements OnInit, AfterViewInit {
         livecampaignId: livecampaignId
       }
   });
+  }
+
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: ODataSaleOnline_OrderModel, b: ODataSaleOnline_OrderModel) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: ODataSaleOnline_OrderModel, b: ODataSaleOnline_OrderModel) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
   }
 }
