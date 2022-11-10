@@ -206,11 +206,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         link: `/bill`,
         hidden: hidden,
       },
-      {
-        name: "Chatbot",
-        icon: "tdsi-callcenter-fill",
-        link: `/chatbot`,
-      },
+      // {
+      //   name: "Chatbot",
+      //   icon: "tdsi-callcenter-fill",
+      //   link: `/chatbot`,
+      // },
       {
         name: "Khách hàng",
         icon: "tdsi-user-fill",
