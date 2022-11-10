@@ -1230,12 +1230,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu
-    let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
-        ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
+    // let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
+    //     ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
 
     //data sẽ là ProductDTOV2 | ProductTemplateV2DTO
     let model: Detail_QuickSaleOnlineOrder = {
-      Quantity: qty,
+      Quantity: 1,
       Price: data.Price,
       ProductId: data.Id,
       ProductName: data.Name,
@@ -1477,7 +1477,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
         this.quickOrderModel.Details[index].Quantity += 1;
 
-    } else{
+    } else {
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
         this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
     }
