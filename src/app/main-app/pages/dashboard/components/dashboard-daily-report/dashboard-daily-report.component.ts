@@ -112,7 +112,7 @@ export class DashboardDailyReportComponent implements OnInit {
   loadAxisData(data: SummaryDailyDTO) {
     let messageData = data.Current?.Messages?.Data;
     let maxTime = messageData[messageData.length - 1]?.Time;
-    let maxHour = new Date(maxTime).getUTCHours();
+    let maxHour = new Date(maxTime).getHours();
     maxHour = Number(maxHour) + 1;
     this.axisData = [];
 
@@ -148,14 +148,14 @@ export class DashboardDailyReportComponent implements OnInit {
     this.interval = this.getYInterval(maxInterval);
     
     this.axisData.forEach((hour) => {
-      let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      let findMessage = data.Current.Messages?.Data?.find((x:any) => new Date(x.Time).getHours() === Number(hour));
       if(findMessage){
         lstMessages.push(findMessage.MessageCount + findMessage.CommentCount);
       }else{
         lstMessages.push(0);
       }
 
-      let findConversation = data.Current.Conversations?.Data?.find((x:any) => new Date(x.Time).getUTCHours() === Number(hour));
+      let findConversation = data.Current.Conversations?.Data?.find((x:any) => new Date(x.Time).getHours() === Number(hour));
       if(findConversation){
         lstConversations.push(findConversation?.Count);
       }else{

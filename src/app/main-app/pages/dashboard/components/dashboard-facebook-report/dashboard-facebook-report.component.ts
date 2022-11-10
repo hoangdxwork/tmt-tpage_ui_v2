@@ -84,7 +84,7 @@ export class DashboardFacebookReportComponent implements OnInit {
     lstDataMesage.map((x) => {
       if(x.Time){
         // TODO: lấy time bằng cách trừ timezone
-        let time = new Date(x.Time).getTime() + new Date(x.Time).getTimezoneOffset()*60*1000;
+        let time = new Date(x.Time);
 
         this.axisData = [...this.axisData,...[time]];
         this.axisLabel = [...this.axisLabel,...[formatDate(time, 'dd/MM HH:mm', 'vi_VN')]];
@@ -112,7 +112,7 @@ export class DashboardFacebookReportComponent implements OnInit {
 
     // TODO: tính message data
     this.axisData.map((x) => {
-      let find = lstDataMesage.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
+      let find = lstDataMesage.find(f => Number(new Date(f.Time)) == Number(x));
       if(find){
         lstMessage.push(find.MessageCount);
       }else{
@@ -122,7 +122,7 @@ export class DashboardFacebookReportComponent implements OnInit {
 
     // TODO: tính comment data
     this.axisData.map((x) => {
-      let find = lstDataMesage.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
+      let find = lstDataMesage.find(f => Number(new Date(f.Time)) == Number(x));
       if(find){
         lstComment.push(find.CommentCount);
       }else{
@@ -132,7 +132,7 @@ export class DashboardFacebookReportComponent implements OnInit {
 
     // TODO: tính conversation data
     this.axisData.map((x) => {
-      let find = lstDataConversation.find(f => Number(new Date(f.Time).getTime() + new Date(f.Time).getTimezoneOffset()*60*1000) == Number(x));
+      let find = lstDataConversation.find(f => Number(new Date(f.Time)) == Number(x));
       if(find){
         lstConversation.push(find.Count);
       }else{
