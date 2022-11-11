@@ -19,7 +19,7 @@
                         <div *ngIf="innerText && indexDbStorage && indexDbStorage.length > 0; else noDataProduct"
                             class="absolute left-0 right-0 -bottom-2 top-full h-[400px] z-10 bg-white shadow-md">
                             <tds-table #basicTable [listData]="indexDbStorage | filterindexdblive: innerTextDebounce"
-                                [scroll]="{y:'100%',x:'hidden'}" [showPagination]="false" [frontPagination]="false"
+                                [scroll]="{ y:'100%', x:'hidden' }" [showPagination]="false" [frontPagination]="false"
                                 [virtualItemSize]="20" [loading]="isLoadingProduct" [virtualForTrackBy]="trackByIndex">
                                 <tbody>
                                     <ng-template tds-virtual-scroll let-data let-index="index">
@@ -91,10 +91,9 @@
                                     <th class="flex flex-row items-center justify-between">
                                         <div customFilter class="flex justify-between items-center w-full">
                                             <div class="flex-auto flex items-center gap-x-2">
-                                                <button *ngIf="!visible; else menu"
-                                                    (click)="onOpenSearchvalue()">
+                                                <button *ngIf="!visible; else menu" (click)="onOpenSearchvalue()">
                                                     <span class="tdsi-search-fill p-1 rounded text-neutral-1-500 text-base leading-none relative flex items-center"
-                                                        tds-tooltip tooltipTitle="Tìm kiếm sản phẩm trong danh sách">
+                                                        tds-tooltip="Tìm kiếm sản phẩm trong danh sách">
                                                     </span>
                                                 </button>
 
@@ -211,7 +210,7 @@
                                                     <span class="flex items-center pr-2">Số lượng:</span>
 
                                                     <tds-form-field *ngIf="isEditDetails[detail.value.Id]" class="w-[88px]">
-                                                        <tds-input-number [min]="0" [step]="1" size="sm" class="w-[88px]"
+                                                        <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
                                                             formControlName="Quantity"
                                                             (ngModelChange)="onChangeQuantity($event, detail.value)"
                                                             [formatter]="numberWithCommas" [parser]="parserComas">
@@ -228,7 +227,7 @@
                                                     <span class="flex items-center pr-2">Giá:</span>
 
                                                     <tds-form-field *ngIf="isEditDetails[detail.value.Id]" class="w-[128px]">
-                                                        <tds-input-number [min]="0" [step]="1000" size="sm" class="w-[128px]"
+                                                        <tds-input-number [min]="0" [step]="1000" size="sm" class="w-full"
                                                             formControlName="Price"
                                                             (ngModelChange)="onChangePrice($event, detail.value)"
                                                             [formatter]="numberWithCommas" [parser]="parserComas">
@@ -268,15 +267,15 @@
                                             <!-- Số lượng chốt -->
                                             <div class="flex item-center gap-x-2 mb-2">
                                                 <div class="text-neutral-1-400 text-caption-2 flex items-center">
-                                                    Chờ chốt: {{ (detail.value.QueueQuantity | numberCustom ) || 0 }}
+                                                    Chờ chốt: {{ (detail.value.QueueQuantity || 0) | numberCustom }}
                                                 </div>
                                                 <div>/</div>
                                                 <div class="text-neutral-1-400 text-caption-2 flex items-center">
-                                                    Đã chốt: {{ (detail.value.UsedQuantity | numberCustom ) || 0 }}
+                                                    Đã chốt: {{ (detail.value.UsedQuantity || 0) | numberCustom }}
                                                 </div>
                                                 <div>/</div>
                                                 <div class="text-caption-2 font-semibold flex items-center" [ngClass]="detail.value.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
-                                                    Còn lại: {{ ((detail.value.Quantity - detail.value.UsedQuantity) | numberCustom ) || 0 }}
+                                                    Còn lại: {{ (((detail.value.Quantity - detail.value.UsedQuantity) || 0) | numberCustom) }}
                                                 </div>
                                             </div>
                                         </div>

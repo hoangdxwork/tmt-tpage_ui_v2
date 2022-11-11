@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -5,16 +6,17 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { ProductCategoryService } from '../../services/product-category.service';
 
 @Component({
   selector: 'tpage-add-category',
-  templateUrl: './tpage-add-category.component.html'
+  templateUrl: './tpage-add-category.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class TpageAddCategoryComponent implements OnInit, OnDestroy {
+export class TpageAddCategoryComponent implements OnInit {
 
   categoryList: ProductCategoryDTO[] = [];
   costMethodList: TDSSafeAny[] = [
@@ -24,8 +26,7 @@ export class TpageAddCategoryComponent implements OnInit, OnDestroy {
   ];
   modelDefault!: ProductCategoryDTO;
   _form!: FormGroup;
-
-  private destroy$ = new Subject<void>();
+  isLoading: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -46,7 +47,8 @@ export class TpageAddCategoryComponent implements OnInit, OnDestroy {
   constructor(private modal: TDSModalRef,
     private message: TDSMessageService,
     private formBuilder: FormBuilder,
-    private productCategoryService: ProductCategoryService
+    private productCategoryService: ProductCategoryService,
+    private destroy$: TDSDestroyService
   ) {
     this.createForm();
   }
@@ -67,26 +69,37 @@ export class TpageAddCategoryComponent implements OnInit, OnDestroy {
   }
 
   loadDefault() {
-    this.productCategoryService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
+    this.isLoading = true;
+
+    this.productCategoryService.getDefault().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
         delete res['@odata.context'];
-        this.modelDefault = res;
+        this.modelDefault = {...res};
+        this.isLoading = false;
       },
-      err => {
+      error: (err) => {
+        this.isLoading = false;
         this.message.error(err.error.message);
       }
-    );
+    });
   }
 
   loadCateg() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        this.categoryList = res.value;
+    this.isLoading = true;
+
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        if(res && TDSHelperArray.hasListValue(res.value)){
+          this.categoryList = [...res.value];
+        }
+        
+        this.isLoading = false;
       },
-      err => {
+      error: (err) => {
+        this.isLoading = false;
         this.message.error(err.error.message || Message.CanNotLoadData);
       }
-    );
+    });
   }
 
   prepareModel() {
@@ -123,23 +136,21 @@ export class TpageAddCategoryComponent implements OnInit, OnDestroy {
   save() {
     if (!this._form.invalid) {
       let model = this.prepareModel();
+      this.isLoading = true;
 
-      this.productCategoryService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(
-        (res: TDSSafeAny) => {
+      this.productCategoryService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
+          this.isLoading = false;
           this.message.success(Message.InsertSuccess);
-          this.modal.destroy(null);
+          this.modal.destroy(model);
         },
-        err => {
+        error: (err) => {
+          this.isLoading = false;
           this.message.error(err?.error?.message || Message.InsertFail);
         }
-      );
+      });
     } else {
       this.message.error('Vui lòng nhập tên nhóm');
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

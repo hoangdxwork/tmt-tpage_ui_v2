@@ -97,10 +97,12 @@ export class AddDrawerProductComponent implements OnInit {
 
           this.updateForm(res);
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(error: any) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -111,10 +113,12 @@ export class AddDrawerProductComponent implements OnInit {
       next:(res: any) => {
           this.lstCategory = [...res?.value];
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(error) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -125,10 +129,12 @@ export class AddDrawerProductComponent implements OnInit {
       next:res => {
           this.lstUOMCategory = [...res?.value];
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -147,6 +153,7 @@ export class AddDrawerProductComponent implements OnInit {
       DiscountPurchase: [0],
       StandardPrice: [0],
       ImageUrl: [null],
+      InitInventory: [0],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
       OrderTag: [null]
@@ -175,7 +182,7 @@ export class AddDrawerProductComponent implements OnInit {
   }
 
   prepareModel() {
-    const formModel = this._form.value;
+    const formModel = this._form.value as ProductTemplateDTO;
 
     this.defaultGet["Name"] = formModel.Name;
     this.defaultGet["Type"] = formModel.Type;
@@ -185,6 +192,7 @@ export class AddDrawerProductComponent implements OnInit {
     this.defaultGet["CategId"] = formModel.Categ.Id;
 
     this.defaultGet["Weight"] = formModel.Weight;
+    this.defaultGet["InitInventory"] = formModel.InitInventory;
     this.defaultGet["ListPrice"] = formModel.ListPrice;
     this.defaultGet["DiscountSale"] = formModel.DiscountSale;
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
@@ -239,10 +247,12 @@ export class AddDrawerProductComponent implements OnInit {
 
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
+            this.cdRef.detectChanges();
         },
         error: (error: any) => {
             this.isLoading = false;
             this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
         }
       })
   }
@@ -256,16 +266,17 @@ export class AddDrawerProductComponent implements OnInit {
       title: 'Thêm nhóm sản phẩm',
       content: TpageAddCategoryComponent,
       size: 'lg',
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {}
+      viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadCategory();
+      if(result) {
+        this.lstCategory = [...[result],...this.lstCategory];
+      }
     });
   }
 
-  onSearchUOM() {
+  onSearchUOM(type: string) {
     const modal = this.modal.create({
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
@@ -274,7 +285,15 @@ export class AddDrawerProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadUOMCateg();
+      if(result) {
+        if(type == 'UOM') {
+          this._form.controls["UOM"].setValue(result.Name);
+        }
+
+        if(type == 'UOMPO') {
+          this._form.controls["UOMPO"].setValue(result.Name);
+        }
+      }
     });
   }
 
@@ -402,7 +421,7 @@ export class AddDrawerProductComponent implements OnInit {
     }
   }
 
-  onAddUOM() {
+  showCreateUOMModal() {
     const modal = this.modal.create({
       title: 'Thêm đơn vị tính',
       content: TpageAddUOMComponent,
@@ -411,8 +430,8 @@ export class AddDrawerProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      if(TDSHelperObject.hasValue(result)) {
-        this.loadUOMCateg();
+      if(result) {
+        this.lstUOMCategory = [...[result],...this.lstUOMCategory];
       }
     });
   }
