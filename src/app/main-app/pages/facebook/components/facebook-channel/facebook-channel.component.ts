@@ -131,14 +131,14 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
 
   ngOnInit(): void {
     this.loadListTeam(false);
-    this.getTShopAuthentication();
+    // this.getTShopAuthentication();
 
-    this.tShopService.onChangeUser().pipe(takeUntil(this._destroy$)).subscribe({
-      next: (res => {
-        this.userTShopLogin = res;
-        this.sortByTShopLogin(res?.Id);
-      })
-    });
+    // this.tShopService.onChangeUser().pipe(takeUntil(this._destroy$)).subscribe({
+    //   next: (res => {
+    //     this.userTShopLogin = res;
+    //     this.sortByTShopLogin(res?.Id);
+    //   })
+    // });
   }
 
   getTShopAuthentication() {
@@ -234,9 +234,8 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
 
           if(res ) {
             // TOD0: gán lại danh sách team
-            this.data = [...res];
-            console.log(res);
-
+            this.data = res.filter((x: any) => x.Type != 'TikTok')
+            console.log(this.data);
 
 
             res.sort((a: any, b: any) => {

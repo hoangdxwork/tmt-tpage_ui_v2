@@ -1,7 +1,7 @@
 <tds-spin [spinning]="isLoading">
   <div *ngIf="data && data.length > 0" class="h-full w-full flex gap-x-4 p-4">
     <div class="w-3/4 h-full flex flex-col gap-y-4">
-      <div *ngFor="let team of (dataSearch || data); let index = index" @eventFadeState
+      <div *ngFor="let team of (dataSearch || data); let index = index"
         class="bg-white rounded-xl h-full w-full border border-neutral-2-100">
         <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
           <tds-collapse-panel [header]="header" [active]="getIsIconCollapse(team.Id)" [disabled]="false"
@@ -50,12 +50,12 @@
                   </div>
                 </div>
                 <div class="flex gap-x-3 items-center">
-                  <button tds-button color="c ustom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
+                  <!-- <button tds-button color="c ustom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
                         bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
                     <span class="flex items-center">
                       <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                     </span>
-                  </button>
+                  </button> -->
                   <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối"
                     class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                         hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
@@ -105,12 +105,12 @@
                   </div>
                   <!--TODO Đã kết nối -->
                   <div class="flex items-center">
-                    <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
+                    <!-- <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
                           bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
                       <span class="flex items-center">
                         <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                       </span>
-                    </button>
+                    </button> -->
                     <button tds-button color="custom" (click)="unConnected(team.Id, team.Name, $event)" rounded="!rounded-full"
                       class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
                           focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
@@ -229,7 +229,7 @@
   </div>
 
   <!--TODO Empty -->
-  <div *ngIf="!data || data.length < 1 && !isLoadChannel" class="p-4 w-full h-full">
+  <div *ngIf="!data || data.length < 1 && !isLoadChannel" class="px-4 pt-4 w-full h-full">
     <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
       <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl"
         [notFoundFooter]="footerTpl">

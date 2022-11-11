@@ -132,15 +132,15 @@ export class FacebookComponent extends TpageBaseComponent implements OnInit, Aft
   }
 
   ngOnInit(): void {
-    this.loadListTeam(false);
-    this.getTShopAuthentication();
+    // this.loadListTeam(false);
+    // this.getTShopAuthentication();
 
-    this.tShopService.onChangeUser().pipe(takeUntil(this._destroy$)).subscribe({
-      next: (res => {
-        this.userTShopLogin = res;
-        this.sortByTShopLogin(res?.Id);
-      })
-    });
+    // this.tShopService.onChangeUser().pipe(takeUntil(this._destroy$)).subscribe({
+    //   next: (res => {
+    //     this.userTShopLogin = res;
+    //     this.sortByTShopLogin(res?.Id);
+    //   })
+    // });
   }
 
   getTShopAuthentication() {

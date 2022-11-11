@@ -7,7 +7,7 @@
           <div class="flex gap-4 items-center">
             <div class="relative">
               <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                <tpage-avatar-facebook [size]="'xl'" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg"></tpage-avatar-facebook>
+                <tpage-avatar-facebook [size]="'xl'" [fbid]="team?.ChannelId" [token]="team?.ChannelToken"></tpage-avatar-facebook>
               </div>
               <span class="absolute right-0 bottom-0">
                 <span><img src="../../../assets/imagesv2/facebook/icon-tshop.svg"></span>
@@ -105,7 +105,7 @@
   </div>
 
   <!--TODO: Empty -->
-  <div *ngIf="!data || data.length < 1 && !isLoadChannel" class="h-full w-full p-4">
+  <div *ngIf="!data || data.length < 1 && !isLoadChannel" class="h-full w-full px-4 pt-4">
     <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
       <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl"
       [notFoundFooter]="footerTpl">
@@ -117,7 +117,7 @@
       </ng-template>
 
       <ng-template #footerTpl>
-        <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-orange-500/20 border-orange-500
+        <button tds-button color="custom" (click)="tShopSignIn()" class="text-white focus:ring-2 focus:ring-orange-500/20 border-orange-500
           bg-orange-500 hover:bg-orange-600 focus:bg-orange-500 focus:border-orange-500 mt-3">
           <span class="flex items-center">
             <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với TShop
