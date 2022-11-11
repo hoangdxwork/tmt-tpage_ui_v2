@@ -76,6 +76,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   countUOMLine: number = 0;
   isLoadingNextdata: boolean = false;
   indexDbStorage!: DataPouchDBDTO[];
+  changedData: boolean = false
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
@@ -399,6 +400,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
             this.searchValue = this.innerTextValue;
             delete this.isEditDetails[item.Id];
 
+            this.changedData = true;
             this.isLoading = false;
             this.message.success('Thao tác thành công');
         },
@@ -661,6 +663,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
                       <span>Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
                   </div>`);
               }
+              this.changedData = true;
 
               delete this.isEditDetails[x.Id];
           })
