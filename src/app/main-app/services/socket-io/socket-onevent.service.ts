@@ -15,6 +15,7 @@ import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
 import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
+import { SocketLiveCampaignCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -66,15 +67,19 @@ export class SocketOnEventService {
       mergeMap((socketData: SocketioOnMessageDto) => {
         let channelId = null;
         switch (socketData.EventName) {
+
           case ChatmoniSocketEventName.chatomniOnUpdate:
             channelId = socketData.Data.ChannelId;
             break;
+
           case ChatmoniSocketEventName.chatomniMarkseen:
             channelId = socketData.Data?.Conversation?.ChannelId;
             break;
+
           case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
             channelId = socketData.Data?.Facebook_PageId;
             break;
+
           default:
             channelId = socketData.Conversation?.ChannelId;
             break;
@@ -87,70 +92,99 @@ export class SocketOnEventService {
       }))
       .subscribe({
         next: ([socketData, team]: any) => {
-          if (!(team && team.Id)) {
+
+          let existTeam = team && team?.Id;
+          let existLive = socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
+              || socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout;
+
+          if(existLive) {
+              existTeam = true;
+          }
+
+          if (!existTeam) {
             return;
           }
 
           switch (socketData.EventName) {
             // TODO: thông báo tin nhắn, comment
             case ChatmoniSocketEventName.chatomniOnMessage:
-              socketData = { ...socketData } as SocketioOnMessageDto;
-              let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
+                socketData = { ...socketData } as SocketioOnMessageDto;
+                let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
 
-              this.socketEvent$.next({
-                Notification: modelMesage,
-                Data: socketData,
-                Team: team,
-                EventName: socketData.EventName
-              });
-
-              break;
+                this.socketEvent$.next({
+                    Notification: modelMesage,
+                    Data: socketData,
+                    Team: team,
+                    EventName: socketData.EventName
+                });
+            break;
 
             // TODO: cập nhật tin nhắn lỗi
             case ChatmoniSocketEventName.chatomniOnUpdate:
-              socketData = { ...socketData } as SocketioOnUpdateDto;
+                socketData = { ...socketData } as SocketioOnUpdateDto;
 
-              // TODO: thông báo tin nhắn lỗi
-              let modelUpdate = null as any;
-              if (socketData && socketData.Data && socketData.Data.Status == 1) {
-                modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
-              }
+                // TODO: thông báo tin nhắn lỗi
+                let modelUpdate = null as any;
+                if (socketData && socketData.Data && socketData.Data.Status == 1) {
+                    modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
+                }
 
-              this.socketEvent$.next({
-                Notification: modelUpdate,
-                Data: socketData,
-                Team: team,
-                EventName: socketData.EventName
-              });
-
-              break;
+                this.socketEvent$.next({
+                    Notification: modelUpdate,
+                    Data: socketData,
+                    Team: team,
+                    EventName: socketData.EventName
+                });
+            break;
 
             // TODO: update đơn hàng hội thoại
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-              socketData = { ...socketData } as OnSocketOnSaleOnline_OrderDto;
-              let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
+                socketData = { ...socketData } as OnSocketOnSaleOnline_OrderDto;
+                let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
 
-              this.socketEvent$.next({
-                Notification: modelOrder,
-                Data: socketData,
-                Team: team,
-                EventName: socketData.EventName
-              })
-
-              break;
+                this.socketEvent$.next({
+                    Notification: modelOrder,
+                    Data: socketData,
+                    Team: team,
+                    EventName: socketData.EventName
+                })
+            break;
 
             // TODO: user đang xem
             case ChatmoniSocketEventName.chatomniMarkseen:
               socketData = { ...socketData } as SocketioOnMarkseenDto;
 
               this.socketEvent$.next({
-                Notification: null,
-                Data: socketData,
-                Team: team,
-                EventName: socketData.EventName
+                  Notification: null,
+                  Data: socketData,
+                  Team: team,
+                  EventName: socketData.EventName
               });
+            break;
 
-              break;
+              // Thông báo Số lượng sản phẩm chiến dịch chờ chốt
+            case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
+              socketData = { ...socketData } as SocketLiveCampaignCheckoutDto;
+
+              this.socketEvent$.next({
+                  Notification: null,
+                  Data: socketData,
+                  Team: team,
+                  EventName: socketData.EventName
+              });
+            break;
+
+            // Thông báo Số lượng sản phẩm chiến dịch có thểm mua
+            case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
+              socketData = { ...socketData } as SocketLiveCampaignCheckoutDto;
+
+              this.socketEvent$.next({
+                  Notification: null,
+                  Data: socketData,
+                  Team: team,
+                  EventName: socketData.EventName
+              });
+            break;
           }
         },
         error: (error: any) => {
