@@ -436,7 +436,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
                       <span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
                   </div>`);
               } else {
-                  formDetails = [...[x], ...formDetails];
+                this.lstDetail = [...[x], ...formDetails];
 
                   this.notificationService.info(`Thêm mới sản phẩm`,
                   `<div class="flex flex-col">
@@ -701,12 +701,13 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     const modal = this.modal.create({
       title: 'Thêm mới sản phẩm',
       content: AddDrawerProductComponent,
-      size: "xl",
+      size: "lg",
       viewContainerRef: this.viewContainerRef,
     });
 
     modal.afterClose.subscribe((response: any) => {
       if(!response) return;
+      this.mappingProductToLive(response);
 
       let warehouseId = this.companyCurrents?.DefaultWarehouseId;
       this.productService.setInventoryWarehouseId(warehouseId);
@@ -714,11 +715,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.lstInventory = res;
-            this.mappingProductToLive(response);
         },
         error:(err) => {
             this.message.error(err?.error?.message);
-            this.mappingProductToLive(response);
         }
       });
     });
@@ -740,17 +739,17 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
         let lstItems = [] as ReportLiveCampaignDetailDTO[];
 
-        items.map(x => {
-          let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
-          ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+        items.map((x: DataPouchDBDTO) => {debugger
+          // let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
+          // ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
 
           let item = {
-              Quantity: qty,
+              Quantity: x.QtyAvailable,
               RemainQuantity: 0,
               ScanQuantity: 0,
               QuantityCanceled: 0,
               UsedQuantity: 0,
-              Price: x.ListPrice || x.Price || 0,
+              Price: x.Price || 0,
               Note: null,
               ProductId: x.Id,
               LiveCampaign_Id: this.liveCampaignId,
@@ -758,9 +757,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-
               Tags: product.OrderTag,
-
               LimitedQuantity: 0,
               ProductCode: x.Barcode || x.DefaultCode,
               ImageUrl: x.ImageUrl,
