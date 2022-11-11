@@ -64,7 +64,7 @@ export class TpageNotificationDropdownComponent implements OnInit {
   onDetail(id: string) {
     this.visible = false;
     this.firebaseRegisterService.makeRead(id).pipe(takeUntil(this.destroy$)).subscribe();
-    this.router.navigateByUrl(`user/firebase-notification/${id}`);
+    this.router.navigateByUrl(`user/firebase-notification`);
   }
 
   onAll() {

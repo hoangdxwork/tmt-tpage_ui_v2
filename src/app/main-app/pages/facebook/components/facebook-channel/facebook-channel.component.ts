@@ -131,14 +131,14 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
 
   ngOnInit(): void {
     this.loadListTeam(false);
-    this.getTShopAuthentication();
+    // this.getTShopAuthentication();
 
-    this.tShopService.onChangeUser().pipe(takeUntil(this._destroy$)).subscribe({
-      next: (res => {
-        this.userTShopLogin = res;
-        this.sortByTShopLogin(res?.Id);
-      })
-    });
+    // this.tShopService.onChangeUser().pipe(takeUntil(this._destroy$)).subscribe({
+    //   next: (res => {
+    //     this.userTShopLogin = res;
+    //     this.sortByTShopLogin(res?.Id);
+    //   })
+    // });
   }
 
   getTShopAuthentication() {
@@ -168,20 +168,20 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     )
   }
 
-  tShopSignIn()
-  {
-    let windowSize = {
-      width: 600,
-      height: 700,
-    };
+  // tShopSignIn()
+  // {
+  //   let windowSize = {
+  //     width: 600,
+  //     height: 700,
+  //   };
 
-    let windowLocation = {
-      left: (window.screen.width/2) - (windowSize.width / 2),
-      top: (window.screen.height/2) - (windowSize.height / 2) - 50
-    };
+  //   let windowLocation = {
+  //     left: (window.screen.width/2) - (windowSize.width / 2),
+  //     top: (window.screen.height/2) - (windowSize.height / 2) - 50
+  //   };
 
-    window.open(this.tShopAuthentication, "", 'width=' + windowSize.width + ', height=' + windowSize.height + ', left=' + windowLocation.left + ', top=' + windowLocation.top);
-  }
+  //   window.open(this.tShopAuthentication, "", 'width=' + windowSize.width + ', height=' + windowSize.height + ', left=' + windowLocation.left + ', top=' + windowLocation.top);
+  // }
 
   facebookSignOut() {
     this.isLoading = true;
@@ -199,11 +199,11 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
       })
   }
 
-  tShopSignOut() {
-    this.isLoading = true;
-    this.tShopService.logout();
-    this.isLoading = false;
-  }
+  // tShopSignOut() {
+  //   this.isLoading = true;
+  //   this.tShopService.logout();
+  //   this.isLoading = false;
+  // }
 
   getMe() {
     this.facebookLoginService.getMe().pipe(takeUntil(this._destroy$)).subscribe(
@@ -234,9 +234,8 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
 
           if(res ) {
             // TOD0: gán lại danh sách team
-            this.data = [...res];
-            console.log(res);
-
+            this.data = res.filter((x: any) => x.Type != 'TikTok')
+            console.log(this.data);
 
 
             res.sort((a: any, b: any) => {

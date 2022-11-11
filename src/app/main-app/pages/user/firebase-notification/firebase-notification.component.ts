@@ -14,6 +14,7 @@ export class FirebaseNotificationComponent implements OnInit {
   data!: NotificationItemDto[];
   isRead!: NotificationItemDto[];
   cursor: any;
+  isDetail: boolean = false
 
   constructor(
     private firebaseRegisterService: FirebaseRegisterService,
@@ -45,6 +46,14 @@ export class FirebaseNotificationComponent implements OnInit {
     if (this.cursor) {
       this.loadData(this.cursor)
     }
+  }
+
+  onBack() {
+    this.isDetail = false
+  }
+
+  onDetail(id : any) {
+    this.isDetail = true
   }
 
 }
