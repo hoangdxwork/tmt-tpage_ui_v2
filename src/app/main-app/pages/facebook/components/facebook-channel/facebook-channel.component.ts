@@ -234,7 +234,7 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
 
           if(res ) {
             // TOD0: gán lại danh sách team
-            this.data = res.filter((x: any) => x.Type != 'TikTok')
+            this.data = res.filter((x: any) => x.Type != 'TShop')
             console.log(this.data);
 
 
