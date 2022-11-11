@@ -269,23 +269,22 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   loadSummaryStatus() {
-    let startDate = new Date(this.filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
-    let endDate = new Date(this.filterObj?.dateRange.endDate).toISOString();
-
-    let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
-    let date2 = formatDate(this.filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
-    if(date1 != date2) {
-      endDate = new Date(this.filterObj?.dateRange.endDate.setHours(23, 59, 59, 59)).toISOString();
+    let startDate = this.filterObj?.dateRange.startDate as any;
+    if(startDate) {
+        startDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddT00:00:00+00:00');
     }
 
+    let endDate = this.filterObj?.dateRange.endDate as any;
+    if(endDate) {
+        endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
+    }
 
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddThh:mm:ss.SSSZZZ'),
-      DateEnd: this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddThh:mm:ss.SSSZZZ'),
+      DateStart: startDate,
+      DateEnd: endDate,
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
-
 
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
