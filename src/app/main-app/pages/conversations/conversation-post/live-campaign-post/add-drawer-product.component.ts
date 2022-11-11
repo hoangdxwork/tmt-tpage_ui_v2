@@ -10,13 +10,13 @@ import { ProductCategoryService } from './../../../../services/product-category.
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { SharedService } from './../../../../services/shared.service';
 import { KeyCacheIndexDBDTO, SyncCreateProductTemplateDto, DataPouchDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants, ConfigUOM, ConfigUOMPO, ConfigProductDefaultDTO } from './../../../../dto/configs/product/config-product-default.dto';
+import { ConfigAttributeLine, ConfigProductVariant, ConfigProductDefaultDTO } from './../../../../dto/configs/product/config-product-default.dto';
 import { ProductCategoryDTO } from './../../../../dto/product/product-category.dto';
 import { ProductTemplateDTO, ProductUOMDTO } from './../../../../dto/product/product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { mergeMap } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { map, takeUntil } from 'rxjs/operators';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
@@ -31,8 +31,6 @@ import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte
   providers: [TDSDestroyService]
 })
 export class AddDrawerProductComponent implements OnInit {
-  @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
-
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
 
@@ -41,7 +39,7 @@ export class AddDrawerProductComponent implements OnInit {
   lstAttributes: Array<ConfigAttributeLine> = [];
   lstVariants: Array<ConfigProductVariant> = [];
   productTypeList: Array<TDSSafeAny> = [];
-
+  hasVariants: boolean = false;
   cacheObject!: KeyCacheIndexDBDTO;
 
   numberWithCommas =(value:TDSSafeAny) =>{
@@ -190,7 +188,6 @@ export class AddDrawerProductComponent implements OnInit {
     this.defaultGet["Barcode"] = formModel.Barcode;
     this.defaultGet["Categ"] = formModel.Categ;
     this.defaultGet["CategId"] = formModel.Categ.Id;
-
     this.defaultGet["Weight"] = formModel.Weight;
     this.defaultGet["InitInventory"] = formModel.InitInventory;
     this.defaultGet["ListPrice"] = formModel.ListPrice;
@@ -236,18 +233,25 @@ export class AddDrawerProductComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-            // TODO: chỉ dùng cho chiến dịch live
-            product._attributes_length = model.AttributeLines?.length;
+          let items = [...indexDB.cacheDbStorage] as DataPouchDBDTO[];
 
-            const data: SyncCreateProductTemplateDto = {
-              type: type,
-              productTmpl: product as ProductTemplateV2DTO,
-              cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
-            };
+          items.map((x: DataPouchDBDTO) => {
+            let qty = model.InitInventory && model.InitInventory > 0 ? model.InitInventory : 1;
+            x.QtyAvailable = qty;
+          });
 
-            this.modalRef.destroy(type ? data : null);
-            this.isLoading = false;
-            this.cdRef.detectChanges();
+          product._attributes_length = model.AttributeLines?.length || 0;
+          product.InitInventory = model.InitInventory;
+          
+          const data: SyncCreateProductTemplateDto = {
+            type: type,
+            productTmpl: product as ProductTemplateV2DTO,
+            cacheDbStorage: [...items]
+          };
+
+          this.modalRef.destroy(data.type ? data : null);
+          this.isLoading = false;
+          this.cdRef.detectChanges();
         },
         error: (error: any) => {
             this.isLoading = false;
@@ -358,10 +362,11 @@ export class AddDrawerProductComponent implements OnInit {
           let model = this.prepareModel() as ConfigProductDefaultDTO;
           let suggestModel = AddProductHandler.prepareSuggestModel(model);
           suggestModel.AttributeLines = [...result];
-
+          
           this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res) => {
               this.lstVariants = [...res.value];
+              
               this.isLoading = false;
               this.cdRef.detectChanges();
             },
@@ -381,7 +386,7 @@ export class AddDrawerProductComponent implements OnInit {
   showEditVariantsModal(data: ConfigProductVariant) {
     let name = this._form.controls["Name"].value;
 
-    if (name) {
+    if(name) {
       let model = this.prepareModel() as ConfigProductDefaultDTO;
       let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
