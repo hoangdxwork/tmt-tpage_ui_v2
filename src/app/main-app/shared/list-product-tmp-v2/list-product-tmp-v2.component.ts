@@ -275,16 +275,15 @@ export class ListProductTmpV2Component implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: any) => {
         if(!response) return;
+        this.mappingProductToLive(response);
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
           next: (inventories: any) => {
               this.inventories = inventories;
-              this.mappingProductToLive(response);
           },
           error: (err: any) => {
               this.message.error(err?.error?.message);
-              this.mappingProductToLive(response);
           }
         });
       }
@@ -307,10 +306,9 @@ export class ListProductTmpV2Component implements OnInit {
         items.map((x: DataPouchDBDTO) => {
             x.Tags = model?.OrderTag || null;
 
-            const qty = (this.inventories && this.inventories[x.Id] && Number(this.inventories[x.Id].QtyAvailable) > 0)
-                ? Number(this.inventories[x.Id].QtyAvailable) : 1;
-
+            let qty = model.InitInventory > 0 ? model.InitInventory : 1;
             x.QtyAvailable = qty;
+
             x._attributes_length = model._attributes_length || 0;
         });
 
