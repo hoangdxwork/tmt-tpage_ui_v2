@@ -1,3 +1,4 @@
+import { formatDate, DatePipe } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
@@ -143,7 +144,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     private crmMatchingService: CRMMatchingService,
     private modalService: TDSModalService,
     private chatomniMessageFacade: ChatomniMessageFacade,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private datePipe : DatePipe) {
   }
 
   ngOnInit(): void {
@@ -267,9 +269,19 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   loadSummaryStatus() {
+    let startDate = new Date(this.filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
+    let endDate = new Date(this.filterObj?.dateRange.endDate).toISOString();
+
+    let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
+    let date2 = formatDate(this.filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
+    if(date1 != date2) {
+      endDate = new Date(this.filterObj?.dateRange.endDate.setHours(23, 59, 59, 59)).toISOString();
+    }
+
+
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange?.startDate,
-      DateEnd: this.filterObj.dateRange?.endDate,
+      DateStart: this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddThh:mm:ss.SSSZZZ'),
+      DateEnd: this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddThh:mm:ss.SSSZZZ'),
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
