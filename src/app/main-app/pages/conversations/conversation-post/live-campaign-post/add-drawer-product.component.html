@@ -32,7 +32,7 @@
                                 <tds-form-field>
                                     <tds-select placeholder='Chọn loại sản phẩm' formControlName="Type"
                                         valueField="value" textField="text" [allowClear]="false"
-                                        disabledField="isActive" [required]='true' [data]="lstProductType">
+                                        [required]='true' [data]="lstProductType">
                                     </tds-select>
                                 </tds-form-field>
                             </div>
@@ -80,7 +80,7 @@
                                 <div class="w-full">
                                     <tds-form-field>
                                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm' formControlName="Categ"
-                                            disabledField="isActive" [required]='true' [data]="lstCategory" [allowClear]="true" [valuePrimitive]="false">
+                                            [required]='true' [data]="lstCategory" [allowClear]="true" [valuePrimitive]="false">
                                         </tds-select>
                                     </tds-form-field>
                                 </div>
@@ -110,22 +110,29 @@
                                 </tds-input-number>
                             </div>
                         </div>
-                        <div class="col-start-2 flex items-center gap-x-2">
+                        <div class="flex items-center gap-x-2">
+                            <tds-label class="w-1/3">Số lượng thực tế</tds-label>
+                            <div class="w-2/3">
+                                <tds-input-number [min]="0" [step]="1" formControlName="InitInventory" [formatter]="numberWithCommas" [parser]="parserComas">
+                                </tds-input-number>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-x-2">
                             <tds-label class="w-1/3">Đơn vị mặc định</tds-label>
                             <div class="w-2/3 flex gap-x-2">
                                 <div class="w-full">
                                     <tds-form-field>
                                         <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mặc định' formControlName="UOM"
-                                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
+                                            [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
                                         </tds-select>
                                     </tds-form-field>
                                 </div>
-                                <button tds-button-icon type="button" color="secondary" size="md"  (click)="onSearchUOM()">
+                                <button tds-button-icon type="button" color="secondary" size="md"  (click)="onSearchUOM('UOM')">
                                     <span class="flex items-center">
                                         <i class="tdsi-search-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon type="button" color="secondary" (click)="onAddUOM()">
+                                <button tds-button-icon type="button" color="secondary" (click)="showCreateUOMModal()">
                                     <i class="tdsi-plus-circle-fill text-primary-1"></i>
                                 </button>
                             </div>
@@ -136,11 +143,11 @@
                                 <div class="w-full">
                                     <tds-form-field>
                                         <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua' formControlName="UOMPO"
-                                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
+                                            [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
                                         </tds-select>
                                     </tds-form-field>
                                 </div>
-                                <button tds-button-icon type="button" color="secondary" size="md" (click)="onSearchUOM()">
+                                <button tds-button-icon type="button" color="secondary" size="md" (click)="onSearchUOM('UOMPO')">
                                     <span class="flex items-center">
                                         <i class="tdsi-search-fill text-neutral-1-500"></i>
                                     </span>
