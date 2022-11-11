@@ -188,19 +188,15 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
       this.currentQuantity = value;
   }
 
-  saveChangeQuantity(id: string) {
+  saveChangeQuantity(data: ReportLiveCampaignDetailDTO) {
       this.isLoading = true;
-      this.liveCampaignService.updateProductQuantity(id, this.currentQuantity, this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      this.liveCampaignService.updateProductQuantity(data.Id, this.currentQuantity, this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
-            this.lstDetails.map((item) => {
-                if (item.Id == id) {
-                    item.Quantity = this.currentQuantity;
-                    item.RemainQuantity = item.Quantity - item.UsedQuantity;
+            data.Quantity = this.currentQuantity;
+            data.RemainQuantity = data.Quantity - data.UsedQuantity;
 
-                    this.message.success(Message.UpdateQuantitySuccess);
-                    this.indClickQuantity = '';
-                }
-            })
+            this.message.success(Message.UpdateQuantitySuccess);
+            this.indClickQuantity = '';
 
             this.isLoading = false;
             this.cdr.detectChanges();
@@ -392,52 +388,6 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
     }
 
     return datas;
-  }
-
-  onChangeIsActive(event: any, item: LiveCampaignSimpleDetail) {
-  }
-  
-  onChangeQuantity(event: any, item: LiveCampaignSimpleDetail) {
-  }
-
-  onChangeLimitedQuantity(event: any, item: LiveCampaignSimpleDetail) {
-  }
-
-  onChangePrice(event: any, item: LiveCampaignSimpleDetail) {
-
-  }
-
-  removeAllDetail() {
-    // let formDetails = this.detailsForm.value as LiveCampaignSimpleDetail[];
-    // let ids = formDetails?.map(x => x.Id) as any[];
-
-    // this.modal.warning({
-    //     title: 'Xóa tất cả sản phẩm',
-    //     content: 'Xác nhận xóa tất cả sản phẩm trong chiến dịch',
-    //     onOk: () => {
-    //         this.isLoading = true;
-    //         let id = this.id as string;
-
-    //         this.liveCampaignService.deleteDetails(id, ids).pipe(takeUntil(this.destroy$)).subscribe({
-    //           next: (res: any) => {
-
-    //               this.isEditDetails = {};
-    //               this.detailsForm.clear();
-    //               this.livecampaignSimpleDetail = [];
-
-    //               this.isLoading = false;
-    //               this.message.success('Thao tác thành công');
-    //           },
-    //           error: (err: any) => {
-    //               this.isLoading = false;
-    //               this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-    //           }
-    //         })
-    //     },
-    //     onCancel:() => {},
-    //     okText:"Xác nhận",
-    //     cancelText:"Hủy bỏ"
-    // });
   }
 
   refreshData() {
