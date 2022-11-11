@@ -1,3 +1,5 @@
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { THelperDataRequest } from './../../../../../lib/services/helper-data.service';
 import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
 import { SyncCreateProductTemplateDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
@@ -30,19 +32,21 @@ import { LiveCampaignCheckoutDataDto } from '@app/dto/socket-io/livecampaign-che
   templateUrl: './drawer-edit-livecampain.component.html',
   styleUrls: ['./drawer-edit-livecampain.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  providers: [ TDSDestroyService ]
+  providers: [ TDSDestroyService ],
+  host: {
+    class: 'h-full w-full flex'
+  }
 })
 
 export class DrawerEditLiveCampaignComponent implements OnInit {
 
   @Input() liveCampaignId: any;
-  _form!: FormGroup;
 
   dataModel!: LiveCampaignSimpleDto;
   isLoading: boolean = false;
   indexDbStorage!: DataPouchDBDTO[];
   isLoadingProduct: boolean = false;
-  countProduct: number = 0;
+  count: number = 0;
 
   lstDetail: ReportLiveCampaignDetailDTO[] = [];
   isEditDetails: { [id: string] : boolean } = {};
@@ -64,6 +68,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   dataOverviewReport!: OverviewReportDTO;
   facebookPosts: GetAllFacebookPostDTO[] = [];
+
+  pageSize: number = 10;
+  pageIndex: number = 1;
+  resfeshScroll: boolean = false;
+  countItemDeleted = 0;
 
   numberWithCommas =(value: TDSSafeAny) =>{
     if(value != null) {
@@ -91,13 +100,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     private socketOnEventService: SocketOnEventService,
     private fb: FormBuilder,
     private destroy$: TDSDestroyService) {
-      this.createForm();
   }
 
   ngOnInit() {
     if(this.liveCampaignId) {
       this.loadData(); //TODO: load thông tin chiến dịch
-      this.loadOverviewDetails(); //TODO: load dữ liệu danh sách sản phẩm
+      this.loadOverviewDetails(this.pageSize, this.pageIndex); //TODO: load dữ liệu danh sách sản phẩm
       this.loadOverviewReport(); //TODO: load dữ liệu thống kê tổng quan
       this.loadFacebookPost(); //TODO: load dữ liệu bài viết fb
     }
@@ -151,17 +159,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-  createForm() {
-    this._form = this.fb.group({
-        Id: [null],
-        Details: this.fb.array([]),
-    })
-  }
-
-  get detailsForm() {
-    return (this._form?.get("Details")) as FormArray;
-  }
-
   loadData() {
     this.isLoading = true;
 
@@ -171,7 +168,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           delete res['@odata.context'];
 
           this.dataModel = {...res};
-          this.updateForm(res);
 
           this.isLoading = false;
           this.cdRef.detectChanges();
@@ -184,16 +180,15 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-  loadOverviewDetails(){
+  loadOverviewDetails(pageSize: number, pageIndex: number, text?: string){
     this.isLoading = true;
+    let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
 
-    this.liveCampaignService.overviewDetailsReport(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if(res && TDSHelperArray.hasListValue(res.Details)) {
-          this.countProduct = res.TotalCount || 0;
-          this.lstDetail = [...res.Details];
-
-          this.initFormDetails(res.Details);
+          this.count = res.TotalCount || 0;
+          this.lstDetail = [...this.lstDetail, ...res.Details];
         }
 
         this.isLoading = false;
@@ -240,16 +235,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-  updateForm(data: LiveCampaignSimpleDto) {
-    this._form.patchValue(data);
-    this._form.controls['Id'].setValue(this.liveCampaignId);
-  }
-
-  initFormDetails(details: any[]) {
-    details?.forEach(x => {
-        this.detailsForm.push(this.initDetail(x));
-    });
-  }
 
   initDetail(x?: ReportLiveCampaignDetailDTO | null) {
     let item = this.fb.group({
@@ -294,15 +279,13 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
 
-            let formDetails = this.detailsForm.value as any[];
+            let formDetails = this.lstDetail as any[];
             let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
-            this.detailsForm.removeAt(index);
+            this.lstDetail.splice(index, 1);
 
-            let newFormDetails = this.detailsForm.value as any[];
+            let newFormDetails = this.lstDetail as any[];
             this.lstDetail = [];
-            this.detailsForm.clear();
 
-            this.initFormDetails(newFormDetails);
             this.lstDetail = [...newFormDetails];
 
             this.searchValue = this.innerTextValue;
@@ -321,7 +304,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   removeAllDetail() {
-    let formDetails = this.detailsForm.value as ReportLiveCampaignDetailDTO[];
+    let formDetails = this.lstDetail as ReportLiveCampaignDetailDTO[];
     let ids = formDetails?.map(x => x.Id) as any[];
 
     this.modal.warning({
@@ -335,7 +318,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               next: (res: any) => {
 
                   this.isEditDetails = {};
-                  this.detailsForm.clear();
                   this.lstDetail = [];
 
                   this.isLoading = false;
@@ -373,7 +355,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   addItemProduct(listData: DataPouchDBDTO[]) {
-    let formDetails = this.detailsForm.value as any[];
+    let formDetails = this.lstDetail as any[];
     let simpleDetail: ReportLiveCampaignDetailDTO[] = [];
 
     listData.forEach((x: DataPouchDBDTO) => {
@@ -442,12 +424,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               x.ProductNameGet = items[idx].ProductNameGet;
               x.ImageUrl = items[idx].ImageUrl;
 
-              let formDetails = this.detailsForm.value as any[];
+              let formDetails = this.lstDetail as any[];
               let index = formDetails.findIndex(f => f.Id == x.Id && f.ProductId == x.ProductId);
 
               if(Number(index) >= 0) {
                   index = Number(index);
-                  this.detailsForm.at(index).patchValue(x);
 
                   this.notificationService.info(`Cập nhật sản phẩm`,
                   `<div class="flex flex-col ">
@@ -456,9 +437,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
                   </div>`);
               } else {
                   formDetails = [...[x], ...formDetails];
-                  this.detailsForm.clear();
 
-                  this.initFormDetails(formDetails);
                   this.notificationService.info(`Thêm mới sản phẩm`,
                   `<div class="flex flex-col">
                       <span class="mb-1">Sản phẩm: <span class="font-semibold">[${x.ProductCode}] ${x.ProductName}</span></span>
@@ -469,7 +448,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               delete this.isEditDetails[x.Id];
           })
 
-          this.lstDetail = [...this.detailsForm.value];
+          this.lstDetail = [...this.lstDetail];
           this.cdRef.detectChanges();
         },
         error: (err: any) => {
@@ -528,13 +507,16 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.innerTextValue = '';
     this.visible = false;
     this.indClickTag = -1;
-    this.detailsForm.clear();
-    this.initFormDetails(this.lstDetail);
   }
 
-  onSearch(): void {
+  onSearch(event: TDSSafeAny): void {
     this.indClickTag = -1;
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+    let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
+    this.lstDetail = [];
+    this.pageIndex = 1;
+    this.resfeshScroll = false;
+    this.loadOverviewDetails(this.pageSize, this.pageIndex, text);
   }
 
   getVariant(data?: DataPouchDBDTO) {
@@ -586,37 +568,21 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.innerTextValue = '';
     this.dataModel = null as any;
 
-    this.detailsForm.clear();
     this.lstDetail = [];
     this.isEditDetails = {};
 
-    let id = this.liveCampaignId as string;
     this.isLoading = true;
-
-    this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          if(!res) return;
-
-          this.initFormDetails(res.Details);
-          this.lstDetail = [...this.detailsForm.value];
-          this.isLoading = false;
-          this.cdRef.detectChanges();
-      },
-      error:(err) => {
-          this.isLoading = false;
-          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-          this.cdRef.detectChanges();
-      }
-    });
+    this.pageIndex = 1; 
+    this.loadOverviewDetails(this.pageSize, this.pageIndex)
   }
 
 
   openTag(item: ReportLiveCampaignDetailDTO) {
-    let formDetails = this.detailsForm.value as any[];
+    let formDetails = this.lstDetail as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
     this.indClickTag = index;
-    let data = this.detailsForm.at(index).value;
+    let data = formDetails[index];
 
     if(data && TDSHelperArray.isArray(data.Tags)){
         this.modelTags = data.Tags;
@@ -631,35 +597,34 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   onSaveTag(item: any) {
-    let formDetails = this.detailsForm.value as any[];
+    let formDetails = this.lstDetail as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
     //TODO: dữ liệu từ formArray
-    let details = this.detailsForm.at(index).value;
+    let details = formDetails[index];
     details.Tags = this.modelTags;
 
     //TODO: cập nhật vào formArray
-    this.detailsForm.at(index).patchValue(details);
-    this.lstDetail = [...this._form.controls["Details"].value];
+    this.lstDetail[index] = {...details};
+
 
     this.modelTags = [];
     this.indClickTag = -1;
   }
 
-  onChangeIsActive(event: any, item: ReportLiveCampaignDetailDTO) {
-    this.lstDetail = [...this._form.controls["Details"].value];
-  }
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let lstDetails = this.lstDetail as any[];
+    let strs = [...this.checkInputMatch(event)];
+    let idx = lstDetails.findIndex((x: any) => x.Index == item.Index) as number;
 
-  onChangeQuantity(event: any, item: ReportLiveCampaignDetailDTO) {
-    this.lstDetail = [...this._form.controls["Details"].value];
-  }
+    if(Number(idx) >= 0) {
+      let details = lstDetails[idx];
+      details.Tags = strs?.join(',');
 
-  onChangeLimitedQuantity(event: any, item: ReportLiveCampaignDetailDTO) {
-    this.lstDetail = [...this._form.controls["Details"].value];
-  }
-
-  onChangePrice(event: any, item: ReportLiveCampaignDetailDTO) {
-    this.lstDetail = [...this._form.controls["Details"].value];
+      this.lstDetail[idx] = {...details};
+      this.modelTags = [...strs];
+    }
+    this.cdRef.detectChanges();
   }
 
   productLastV2() {
@@ -834,7 +799,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     if(exist && exist.length > 0) {
 
       let key = exist[0];
-      let formDetails = this.detailsForm.value as any[];
+      let formDetails = this.lstDetail as any[];
       let product = formDetails.filter(f => f.Id == key)[0];
 
       this.message.info(`Sản phẩm ${product.ProductName} chưa được lưu`, { duration: 3000 });
@@ -842,5 +807,47 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
 
     return 1;
+  }
+
+  nextData() {
+    this.pageIndex += 1;
+    this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerText);
+  }
+
+  vsEnd(event: NgxVirtualScrollerDto) {
+    if(this.isLoading) {
+      return;
+    }
+    let exisData = this.lstDetail && this.lstDetail.length > 0 && event && event.scrollStartPosition > 0;
+    if(exisData) {
+      console.log('lenght',Number(this.lstDetail.length - this.countItemDeleted - 1))
+      console.log(event.endIndex)
+      const vsEnd = Number(this.lstDetail.length - this.countItemDeleted - 1) == Number(event.endIndex) && this.pageIndex >= 1 &&  Number(this.lstDetail.length) < this.count;
+      if(vsEnd) {
+          this.nextData();
+      }
+    }
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 }
