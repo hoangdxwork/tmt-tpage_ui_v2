@@ -94,7 +94,7 @@
                                                 </span>
                                             </button>
 
-                                            <span *ngIf="!visible" class="w-full py-2 h-[34px]"> Sản phẩm ({{ lstDetail.length || 0 }})</span>
+                                            <span *ngIf="!visible" class="w-full py-2 h-[34px]"> Sản phẩm ({{ count || 0 }})</span>
                                         </div>
 
                                         <ng-template #menu>
@@ -104,7 +104,7 @@
                                                         [tdsInputDebounce]="500" (inputKeyup)="onSearch($event)"
                                                         autocomplete="off" [(ngModel)]="innerTextValue"
                                                         [ngModelOptions]="{standalone: true}" />
-                                                    <span tdsSuffix (click)="onReset()"><i
+                                                    <span tdsSuffix (click)="refreshData()"><i
                                                             class="tdsi-close-fill"></i></span>
                                                 </tds-form-field>
                                             </div>
@@ -396,70 +396,6 @@
                     </div>
                     </div>
                 </div>
-
-                <!-- Thông tin -->
-                <!-- <div class="flex flex-col bg-white rounded-xl p-4">
-                    <div class="font-semibold text-xl rounded-t-xl pb-4">
-                        <span>Thông tin</span>
-                    </div>
-
-                    <div class="flex flex-col justify-center gap-y-2">
-                        <div class="flex gap-x-4">
-                        <span class="w-1/2 text-sm font-normal">Tên chiến dịch</span>
-                        <span class="font-semibold text-sm">{{ dataModel?.Name }}</span>
-                        </div>
-                        <div class="flex gap-x-4">
-                        <span class="w-1/2 text-sm font-normal">Nhân viên chốt đơn</span>
-                        <div *ngIf="dataModel?.Users" class="text-body-2 font-semibold flex gap-x-2">
-                            <span *ngFor="let user of dataModel.Users | slice: 0: 3; let i = index" >
-                            {{user.Name}}
-                            <span *ngIf="dataModel.Users.length > (i + 1)">,</span>
-                            </span>
-
-                            <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="dataModel.Users.length - 3 > 0" tds-popover
-                                [popoverContent]="popoverContentTag" popoverPlacement="topRight">
-                                +{{dataModel.Users.length - 3}}
-                            </div>
-
-                            <ng-template #popoverContentTag>
-                                <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
-                                    <div *ngFor="let item of dataModel.Users | slice:3:dataModel.Users!.length; let i = index" class="relative group flex items-center font-semibold text-body-2 text-neutral-1-900 rounded truncate">
-                                    {{item.Name }}
-                                    <span *ngIf="dataModel.Users.length > (i + 4)">,</span>
-                                    </div>
-                                </div>
-                            </ng-template>
-                        </div>
-                        </div>
-                        <div class="flex gap-x-4">
-                        <span class="w-1/2 text-sm font-normal">Facebook</span>
-                        <span class="font-semibold text-sm text-info-500">{{ dataModel?.Facebook_UserName }}</span>
-                        </div>
-                        <div class="flex gap-x-4">
-                        <span class="w-1/2 text-sm font-normal">Trạng thái xác nhận chốt đơn</span>
-                        <div>
-                            <div class="flex items-center gap-x-2">
-                            <tds-badge *ngIf="dataModel" [status]="dataModel!.ShowConfig | getColorShowConfig"></tds-badge>
-                            <span class="font-semibold text-sm">{{ dataModel?.ShowConfig }}</span>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="flex gap-x-4">
-                        <span class="w-1/2 text-sm font-normal">Danh sách bài viết</span>
-                        <div class="flex items-center gap-x-2">
-                            <span (click)="showModalLstPost()" class="font-semibold text-sm text-info-400 cursor-pointer">{{facebookPosts.length + ' bài viết'}} </span>
-                        </div>
-                        </div>
-                        <div class="flex gap-x-4">
-                        <span class="w-1/2 text-sm font-normal">Ghi chú</span>
-                        <span class="font-semibold text-sm">{{ dataModel?.Note }}</span>
-                        </div>
-                        <div class="flex gap-x-4">
-                        <span class="w-1/2 text-sm font-normal">Ngày tạo</span>
-                        <span class="font-semibold text-sm">{{ dataModel?.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</span>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </tds-tab>

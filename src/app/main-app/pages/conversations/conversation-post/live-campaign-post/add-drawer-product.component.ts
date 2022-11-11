@@ -233,20 +233,12 @@ export class AddDrawerProductComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-          let items = [...indexDB.cacheDbStorage] as DataPouchDBDTO[];
-
-          items.map((x: DataPouchDBDTO) => {
-            let qty = model.InitInventory && model.InitInventory > 0 ? model.InitInventory : 1;
-            x.QtyAvailable = qty;
-          });
-
           product._attributes_length = model.AttributeLines?.length || 0;
-          product.InitInventory = model.InitInventory;
-          
+
           const data: SyncCreateProductTemplateDto = {
             type: type,
             productTmpl: product as ProductTemplateV2DTO,
-            cacheDbStorage: [...items]
+            cacheDbStorage: [...indexDB.cacheDbStorage]
           };
 
           this.modalRef.destroy(data.type ? data : null);
@@ -362,11 +354,11 @@ export class AddDrawerProductComponent implements OnInit {
           let model = this.prepareModel() as ConfigProductDefaultDTO;
           let suggestModel = AddProductHandler.prepareSuggestModel(model);
           suggestModel.AttributeLines = [...result];
-          
+
           this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res) => {
               this.lstVariants = [...res.value];
-              
+
               this.isLoading = false;
               this.cdRef.detectChanges();
             },
