@@ -6,8 +6,8 @@ import { PartnerDTO, PartnerStatus } from '../partner/partner.dto';
 import { StockWarehouseDTO } from '../product/warehouse.dto';
 
 export interface SaleOnlineOrderSummaryStatusDTO {
-  DateStart?: Date;
-  DateEnd?: Date;
+  DateStart?: Date | any;
+  DateEnd?: Date | any;
   TagIds: string;
   SearchText: string;
   PostId?: string;

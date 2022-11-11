@@ -18,7 +18,7 @@ import { TDSDrawerModule } from 'tds-ui/drawer';
 import { CRMMatchingService } from './../../services/crm-matching.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { OrderRoutingModule } from './order-routing.module';
 import { OrderComponent } from './order/order.component';
@@ -192,6 +192,8 @@ const SERVICES = [
   ],
   providers: [
     ...SERVICES,
+    DatePipe
   ],
+  
 })
 export class OrderModule { }

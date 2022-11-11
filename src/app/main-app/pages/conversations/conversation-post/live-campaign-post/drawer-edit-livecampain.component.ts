@@ -23,6 +23,9 @@ import { CompanyCurrentDTO } from "@app/dto/configs/company-current.dto";
 import { ProductService } from "@app/services/product.service";
 import { TDSNotificationService } from "tds-ui/notification";
 import { StringHelperV2 } from "@app/shared/helper/string.helper";
+import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { LiveCampaignCheckoutDataDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
 
 @Component({
   selector: 'drawer-edit-livecampaign',
@@ -94,6 +97,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     private productService: ProductService,
     private notificationService: TDSNotificationService,
     private viewContainerRef: ViewContainerRef,
+    private socketOnEventService: SocketOnEventService,
     private fb: FormBuilder,
     private destroy$: TDSDestroyService) {
   }
@@ -108,6 +112,51 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.loadCurrentCompany(); //TODO: load dữ liệu tồn kho
     this.productLastV2(); //TODO: load danh sách sản phẩm từ cache
+
+    this.onEventSocket();
+  }
+
+  onEventSocket() {
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+
+          if(!this.liveCampaignId) return;
+
+          switch(res && res.EventName) {
+              // Số lượng sản phẩm chiến dịch chờ chốt
+              case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
+
+                  let pCheckout = res.Data.Data as LiveCampaignCheckoutDataDto;
+                  if(pCheckout && pCheckout.LiveCampaignId != this.liveCampaignId) break;
+
+                  const iCheckout = this.lstDetail.findIndex(x => x.ProductId == pCheckout.ProductId && x.UOMId == pCheckout.ProductUOMId);
+                  if(Number(iCheckout) < 0) break;
+
+                  this.lstDetail[iCheckout].QueueQuantity = pCheckout.Quantity;
+                  this.lstDetail[iCheckout] = {...this.lstDetail[iCheckout]};
+
+                  this.lstDetail = [...this.lstDetail];
+                  this.cdRef.detectChanges();
+              break;
+
+              // Số lượng sản phẩm chiến dịch có thểm mua
+              case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
+
+                  let toBuy = res.Data?.Data as LiveCampaignCheckoutDataDto;
+                  if(toBuy && toBuy.LiveCampaignId != this.liveCampaignId) break;
+
+                  const iToBuy = this.lstDetail.findIndex(x => x.ProductId == toBuy.ProductId && x.UOMId == toBuy.ProductUOMId);
+                  if(Number(iToBuy) < 0) break;
+
+                  this.lstDetail[iToBuy].UsedQuantity = toBuy.Quantity;
+                  this.lstDetail[iToBuy] = {...this.lstDetail[iToBuy]};
+
+                  this.lstDetail = [...this.lstDetail];
+                  this.cdRef.detectChanges();
+              break;
+          }
+      }
+    })
   }
 
   loadData() {
@@ -140,9 +189,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         if(res && TDSHelperArray.hasListValue(res.Details)) {
           this.count = res.TotalCount || 0;
           this.lstDetail = [...this.lstDetail, ...res.Details];
-          
         }
-        
+
         this.isLoading = false;
         this.cdRef.detectChanges();
       },
