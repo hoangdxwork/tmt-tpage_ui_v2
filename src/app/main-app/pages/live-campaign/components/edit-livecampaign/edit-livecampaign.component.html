@@ -369,7 +369,7 @@
                         </button>
 
                         <button *ngIf="isEditDetails[detail.value.Id]" tds-button-icon color="success" type="button" size="sm"
-                            tds-tooltip tooltipTitle="Áp dụng" (click)="onSaveDetails(detail.value)" type="button">
+                            tds-tooltip tooltipTitle="Áp dụng" (click)="onSaveDetails(detail.value, 'iclick')" type="button">
                             <span class="flex items-center">
                                 <i class="tdsi-checkbox-check-fill"></i>
                             </span>

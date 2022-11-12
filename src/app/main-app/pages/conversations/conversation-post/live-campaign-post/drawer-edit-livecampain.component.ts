@@ -124,7 +124,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           switch(res && res.EventName) {
               // Số lượng sản phẩm chiến dịch chờ chốt
               case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
-                debugger
 
                   let pCheckout = res.Data.Data as LiveCampaigntPendingCheckoutDto;
                   if(pCheckout && pCheckout.LiveCampaignId != this.liveCampaignId) break;
@@ -380,7 +379,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
   }
 
-  addProductLiveCampaignDetails(items: ReportLiveCampaignDetailDTO[]) {
+  addProductLiveCampaignDetails(items: ReportLiveCampaignDetailDTO[], type?: string) {
     let id = this.liveCampaignId as string;
     items.map(x => {
       if(x && x.Tags) {
@@ -389,7 +388,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     });
 
     this.isLoading = true;
-    this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
+    this.liveCampaignService.updateDetails(id, items, type).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any[]) => {
           this.isLoading = false;
           if(!res) return;
@@ -627,9 +626,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
   }
 
-  onSaveDetails(item: ReportLiveCampaignDetailDTO) {
+  onSaveDetails(item: ReportLiveCampaignDetailDTO, type: string,) {
     if(item && item.Id) {
-      this.addProductLiveCampaignDetails([item]);
+      this.addProductLiveCampaignDetails([item], type);
     }
   }
 
