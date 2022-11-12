@@ -1,0 +1,74 @@
+<div class="w-full h-full">
+    <tds-table #basicTable [listData]="lstPartners" [loading]="isLoading" [scroll]="{ y:'500px' }" [frontPagination]="false" [showPagination]="false">
+        <thead>
+            <tr>
+                <th width="3%"></th>
+                <th width="5%">STT</th>
+                <th width="24%">Tên khách hàng</th>
+                <th width="18%">Điện thoại</th>
+                <th width="40%">Địa chỉ</th>
+                <th width="10%" [align]="'center'">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-template ngFor let-data [ngForOf]="basicTable.data" let-i="index">
+                <tr class="text-body-2 text-neutral-900 font-regular">
+                    <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)"></td>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ data.DisplayName || data.Name }}</td>
+                    <td>{{ data.Phone }}</td>
+                    <td>{{ data.Street }}</td>
+                    <td class="text-center">
+                        <button tds-button-icon color="secondary" size="sm" tds-tooltip="Gộp đơn" (click)="mergeOrder(data)">
+                            <span class="flex items-center text-neutral-1-500">
+                              <i class="tdsi-reload-fill leading-none"></i>
+                            </span>
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- expand details -->
+                <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
+                    <div class="w-full p-3 block" *ngIf="expandSet.has(data.Id)">
+                        <div class="bg-white border rounded-xl p-4">
+                            <tds-table #basicTable [listData]="lstOrders" [loading]="isLoadingCollapse" [frontPagination]="false" [showPagination]="false">
+                                <thead>
+                                    <tr>
+                                        <th width="8%">STT</th>
+                                        <th width="15%">Mã hóa đơn</th>
+                                        <th width="15%">Kênh kết nối</th>
+                                        <th width="15%" [align]="'right'">Tổng tiền</th>
+                                        <th width="15%">Trạng thái</th>
+                                        <th width="15%">Nhân viên</th>
+                                        <th width="17%">Ngày tạo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-template ngFor let-data [ngForOf]="basicTable.data" let-i="index">
+                                        <tr class="text-body-2 text-neutral-900 font-regular">
+                                            <td>{{ i + 1 }}</td>
+                                            <td>{{ data.Number }}</td>
+                                            <td>{{ data.CRMTeamName }}</td>
+                                            <td class="text-right">{{ data.AmountTotal | numberCustom }} đ</td>
+                                            <td>
+                                                <tds-tag [status]="data.State | getColorStatusState" size="sm" type="outline">
+                                                    {{ data.ShowState }}
+                                                </tds-tag>
+                                            </td>
+                                            <td>{{ data.UserName }}</td>
+                                            <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </tds-table>
+                        </div>                    
+                    </div>
+                </tr>
+            </ng-template>
+        </tbody>
+    </tds-table>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+</div>

@@ -1,3 +1,4 @@
+import { ModalMergeOrderComponent } from './components/detail-bill/modal-merge-order.component';
 import { TDSImageModule } from 'tds-ui/image';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { DirectivesModule } from './../../shared/directives/directives.module';
@@ -134,7 +135,10 @@ const cmp =[
   ExpandOrderLivecampaignComponent,
   EditLiveCampaignComponent,
   AddLiveCampaignV2Component,
-  ImportProductLivecampaignComponent
+  ImportProductLivecampaignComponent,
+  TableAllOrderComponent,
+  TableDeletedOrderComponent,
+  ModalMergeOrderComponent
 ]
 
 const SERVICES = [
@@ -175,8 +179,6 @@ const SERVICES = [
 @NgModule({
   declarations: [
     ...cmp,
-    TableAllOrderComponent,
-    TableDeletedOrderComponent
   ],
   imports: [
     CommonModule,

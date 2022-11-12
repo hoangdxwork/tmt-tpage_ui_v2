@@ -1,3 +1,5 @@
+import { PartnerCanMergeOrdersDto } from './../../../../dto/live-campaign/sale-order-livecampaign.dto';
+import { ModalMergeOrderComponent } from './modal-merge-order.component';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
 import { TDSModalService } from 'tds-ui/modal';
@@ -26,6 +28,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ColumnTableDTO } from '@app/dto/common/table.dto';
 import { FastSaleOrder_DefaultDTOV2 } from '@app/dto/fastsaleorder/fastsaleorder-default.dto';
+import _, { Dictionary } from 'lodash';
 
 @Component({
   selector: 'detail-bill',
@@ -726,6 +729,42 @@ export class DetailBillComponent implements OnInit {
     });
   }
 
+  mergeOrder2() {
+    if (this.isLoading) return;
+    if (this.isProcessing) return;
+
+    this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        let exist = res && res.value.length == 0;
+
+        if(exist) {
+          this.notification.error('Không thể gộp đơn', 'Không có đơn nào hợp lệ');
+          return;
+        }
+
+        let modal =  this.modal.create({
+          title: 'Xác nhận gộp đơn',
+          content: ModalMergeOrderComponent,
+          size: "xl",
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            liveCampaignId: this.liveCampaignId,
+            lstPartners: [...res.value]
+          }
+        });
+    
+        modal.afterClose.subscribe({
+          next: (res) => {
+            this.loadData(this.pageSize, this.pageIndex);
+          }
+        })
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
   apiMergeOrders() {
     let model = {
       OrderIds: this.idsModel
@@ -758,10 +797,12 @@ export class DetailBillComponent implements OnInit {
     this.idsModel = [...ids];
 
     let idsVal = [] as any[];
+
     this.idsModel.map((id: any) => {
-      let exist = this.lstOfData.filter(a => a.Id == id && (TDSHelperString.hasValueString(a.TrackingRef) || a.State == 'cancel'))[0];
-      if(exist) {
-        idsVal.push(id);
+      let exist = this.lstOfData.filter(a => a.Id == id && (TDSHelperString.hasValueString(a.TrackingRef) || a.State == 'cancel'));
+
+      if(TDSHelperArray.hasListValue(exist)) {
+        idsVal = [...idsVal,...exist];
       }
     })
 
@@ -777,5 +818,4 @@ export class DetailBillComponent implements OnInit {
 
     return 1;
   }
-
 }
