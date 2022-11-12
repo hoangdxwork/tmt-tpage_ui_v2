@@ -31,6 +31,10 @@ export  class PrepareEditVariantHandler {
           dataModel.Images = images;
         }
 
+        if(formModel.OrderTag) {
+          dataModel.OrderTag = formModel.OrderTag.toString();
+        }
+
         return dataModel;
       }
 }
