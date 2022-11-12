@@ -162,11 +162,10 @@ export class DetailBillComponent implements OnInit {
     this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if(res) {
-          this.countCanMergeOrder = res.value.length || 0;
+          this.countCanMergeOrder = res?.value?.length || 0;
         }
       },
       error: (err) => {
-        this.countCanMergeOrder = 0;
         this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     })
@@ -768,7 +767,7 @@ export class DetailBillComponent implements OnInit {
             lstPartners: [...res.value]
           }
         });
-    
+
         modal.afterClose.subscribe({
           next: (res) => {
             if(res) {
