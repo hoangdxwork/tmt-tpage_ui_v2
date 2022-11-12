@@ -80,6 +80,7 @@ export class DetailBillComponent implements OnInit {
   indeterminate = false;
   setOfCheckedId = new Set<number>();
   idsModel: any = [];
+  countCanMergeOrder: number = 0;
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
@@ -120,6 +121,7 @@ export class DetailBillComponent implements OnInit {
     this.setFilter();
     this.loadTags();
     this.loadGridConfig();
+    this.loadCheckMergeOrderData();
   }
 
   setFilter() {
@@ -154,6 +156,20 @@ export class DetailBillComponent implements OnInit {
     return this.oDataLiveCampaignBillService
         .getView(params, this.filterObj)
         .pipe(finalize(() => {this.isLoading = false }));
+  }
+
+  loadCheckMergeOrderData() {
+    this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res) {
+          this.countCanMergeOrder = res.value.length || 0;
+        }
+      },
+      error: (err) => {
+        this.countCanMergeOrder = 0;
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   onLoadOption(event: any): void {
@@ -755,7 +771,10 @@ export class DetailBillComponent implements OnInit {
     
         modal.afterClose.subscribe({
           next: (res) => {
-            this.loadData(this.pageSize, this.pageIndex);
+            if(res) {
+              this.loadData(this.pageSize, this.pageIndex);
+              this.loadCheckMergeOrderData();
+            }
           }
         })
       },
