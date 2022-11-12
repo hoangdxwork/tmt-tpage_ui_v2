@@ -22,6 +22,9 @@ export class ModalMergeOrderComponent implements OnInit {
   isLoadingCollapse: boolean = false;
 
   expandSet = new Set<number>();
+  ids: any = [];
+  isMerge: boolean = false;
+  key: any = 0;
 
   constructor(private fastSaleOrderService: FastSaleOrderService,
     private modal: TDSModalRef,
@@ -42,7 +45,7 @@ export class ModalMergeOrderComponent implements OnInit {
           this.lstPartners = [...res.value];
         } else {
           this.lstPartners = [];
-          this.notification.error('Thông báo', 'Không còn đơn nào hợp lệ');
+          this.notification.error('Không thể gộp đơn', 'Không còn đơn nào hợp lệ');
         }
 
         this.isLoading = false;
@@ -63,6 +66,7 @@ export class ModalMergeOrderComponent implements OnInit {
           this.lstOrders = [...res.value];
         }
 
+        this.ids = this.lstOrders.map(x => x.Id);
         this.isLoadingCollapse = false;
       },
       error: (err) => {
@@ -76,8 +80,10 @@ export class ModalMergeOrderComponent implements OnInit {
     if (checked) {
       this.expandSet = new Set<number>();
       this.expandSet.add(id);
+      this.key = id;
       // TODO: cập nhật danh sách đơn hàng có thể gộp theo khách hàng
       this.lstOrders = [];
+      this.ids = [];
       this.loadOrderCanMergeByPartnerId(id);
     } else {
       this.expandSet.delete(id);
@@ -86,30 +92,16 @@ export class ModalMergeOrderComponent implements OnInit {
 
   mergeOrder(data: PartnerCanMergeOrdersDto) {
     this.isLoading = true;
+    let model = {
+      OrderIds: this.ids
+    }
 
-    this.fastSaleOrderService.getOrderLiveCampaignCanMergeByPartner(this.liveCampaignId, data.Id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        if(res && res.value) {
-          let orders = [...res.value] as OrderLiveCampaignCanMergeDto[];
-
-          let model = {
-            OrderIds: orders.map(x => { return x.Id })
-          }
-
-          this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: FastSaleOrderModelDTO) => {
-              this.message.success('Gộp đơn thành công');
-              // TODO: cập nhật lại danh sách partner
-              this.loadPartner();
-            },
-            error: (err) => {
-              this.isLoading = false;
-              this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-            }
-          })
-        } else {
-          this.isLoading = false;
-        }
+    this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: FastSaleOrderModelDTO) => {
+        this.message.success('Gộp đơn thành công');
+        this.isMerge = true;
+        
+        this.loadPartner();
       },
       error: (err) => {
         this.isLoading = false;
@@ -119,6 +111,10 @@ export class ModalMergeOrderComponent implements OnInit {
   }
 
   onCancel() {
-    this.modal.destroy(null);
+    if(this.isMerge) {
+      this.modal.destroy(true);
+    } else {
+      this.modal.destroy(null);
+    }
   }
 }

@@ -39,6 +39,12 @@
       </div>
       <!-- TODO: Thao tác -->
       <div class="flex flex-row items-center justify-end gap-x-2 pr-4">
+        <button tds-button color="info" class="min-w-[100px]" *ngIf="countCanMergeOrder > 0" (click)="mergeOrder2()">
+          <span class="flex items-center">
+            Gộp đơn ({{ countCanMergeOrder }})
+          </span>
+        </button>
+
         <button tds-button color="info" class="min-w-[100px]" (click)="approveOrder()">
           <span class="flex items-center">
             Xác nhận

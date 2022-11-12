@@ -19,10 +19,8 @@
                     <td>{{ data.Phone }}</td>
                     <td>{{ data.Street }}</td>
                     <td class="text-center">
-                        <button tds-button-icon color="secondary" size="sm" tds-tooltip="Gộp đơn" (click)="mergeOrder(data)">
-                            <span class="flex items-center text-neutral-1-500">
-                              <i class="tdsi-reload-fill leading-none"></i>
-                            </span>
+                        <button tds-button color="primary" size="sm" class="text-white" (click)="mergeOrder(data)" [disabled]="key != data.Id">
+                            Gộp đơn
                         </button>
                     </td>
                 </tr>
@@ -37,10 +35,10 @@
                                         <th width="8%">STT</th>
                                         <th width="15%">Mã hóa đơn</th>
                                         <th width="15%">Kênh kết nối</th>
-                                        <th width="15%" [align]="'right'">Tổng tiền</th>
                                         <th width="15%">Trạng thái</th>
                                         <th width="15%">Nhân viên</th>
                                         <th width="17%">Ngày tạo</th>
+                                        <th width="15%" [align]="'right'">Tổng tiền</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -49,7 +47,6 @@
                                             <td>{{ i + 1 }}</td>
                                             <td>{{ data.Number }}</td>
                                             <td>{{ data.CRMTeamName }}</td>
-                                            <td class="text-right">{{ data.AmountTotal | numberCustom }} đ</td>
                                             <td>
                                                 <tds-tag [status]="data.State | getColorStatusState" size="sm" type="outline">
                                                     {{ data.ShowState }}
@@ -57,6 +54,7 @@
                                             </td>
                                             <td>{{ data.UserName }}</td>
                                             <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
+                                            <td class="text-right">{{ data.AmountTotal | numberCustom }} đ</td>
                                         </tr>
                                     </ng-template>
                                 </tbody>
