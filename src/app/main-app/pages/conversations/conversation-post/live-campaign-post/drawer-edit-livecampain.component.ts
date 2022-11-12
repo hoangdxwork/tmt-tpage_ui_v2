@@ -25,7 +25,7 @@ import { TDSNotificationService } from "tds-ui/notification";
 import { StringHelperV2 } from "@app/shared/helper/string.helper";
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
-import { LiveCampaignCheckoutDataDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
+import { LiveCampaigntAvailableToBuyDto, LiveCampaigntPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
 
 @Component({
   selector: 'drawer-edit-livecampaign',
@@ -124,8 +124,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           switch(res && res.EventName) {
               // Số lượng sản phẩm chiến dịch chờ chốt
               case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
+                debugger
 
-                  let pCheckout = res.Data.Data as LiveCampaignCheckoutDataDto;
+                  let pCheckout = res.Data.Data as LiveCampaigntPendingCheckoutDto;
                   if(pCheckout && pCheckout.LiveCampaignId != this.liveCampaignId) break;
 
                   const iCheckout = this.lstDetail.findIndex(x => x.ProductId == pCheckout.ProductId && x.UOMId == pCheckout.ProductUOMId);
@@ -141,13 +142,13 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               // Số lượng sản phẩm chiến dịch có thểm mua
               case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
 
-                  let toBuy = res.Data?.Data as LiveCampaignCheckoutDataDto;
+                  let toBuy = res.Data?.Data as LiveCampaigntAvailableToBuyDto;
                   if(toBuy && toBuy.LiveCampaignId != this.liveCampaignId) break;
 
                   const iToBuy = this.lstDetail.findIndex(x => x.ProductId == toBuy.ProductId && x.UOMId == toBuy.ProductUOMId);
                   if(Number(iToBuy) < 0) break;
 
-                  this.lstDetail[iToBuy].UsedQuantity = toBuy.Quantity;
+                  this.lstDetail[iToBuy].UsedQuantity = (this.lstDetail[iToBuy].Quantity - toBuy.QuantityAvailableToBuy);
                   this.lstDetail[iToBuy] = {...this.lstDetail[iToBuy]};
 
                   this.lstDetail = [...this.lstDetail];
@@ -661,7 +662,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   onOpenSearchvalue(){
     this.visible = true;
-  
+
     setTimeout(() => {
       if(this.viewChildInnerText)
         this.viewChildInnerText.nativeElement.focus();
