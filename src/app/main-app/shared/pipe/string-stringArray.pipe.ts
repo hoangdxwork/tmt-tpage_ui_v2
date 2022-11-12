@@ -9,6 +9,9 @@ export class StringToStringArrayPipe implements PipeTransform {
     transform(value: string): any {
 
         if(TDSHelperString.isString(value)){
+            if(!value.includes(',')) {
+                return [value];
+            }
             return (value as string).split(",");
         }
 
