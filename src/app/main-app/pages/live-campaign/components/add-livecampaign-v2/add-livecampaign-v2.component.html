@@ -250,11 +250,11 @@
 
                               <!-- Tags -->
                               <div class="flex items-center gap-x-1">
-                                <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
+                                <span *ngIf="detail?.value.Tags?.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
                                     (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)" popoverTrigger="click"
                                     [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
-                                  <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
+                                  <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags?.length > 0">
                                       <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
                                           <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='primary'>{{ (item || '') | truncateString }}</tds-tag>
                                       </div>
