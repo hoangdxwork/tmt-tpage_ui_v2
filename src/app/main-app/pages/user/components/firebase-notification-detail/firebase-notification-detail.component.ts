@@ -1,8 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { takeUntil } from 'rxjs';
-import { TDSModalRef } from 'tds-ui/modal';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'firebase-notification-detail',
@@ -10,21 +12,44 @@ import { TDSModalRef } from 'tds-ui/modal';
 })
 export class FirebaseNotificationDetailComponent implements OnInit {
 
-  @Input() data!: any
-
-  isLoading: boolean = false;
+  data!: NotificationItemDto[];
+  firebaseId: any;
+  detailItem!: any;
 
   constructor(
-    private modal: TDSModalRef,
+    private route: ActivatedRoute,
+    private router: Router,
     private firebaseRegisterService: FirebaseRegisterService,
+    private destroy$: TDSDestroyService,
+    private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.firebaseId = this.route.snapshot.paramMap.get("id");
+      if (this.firebaseId) {
+        this.loadData();
+      }
+    });
+  }
+
+  loadData(params?: any) {
+    this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.data = res.items;
+        this.detailItem = this.data.filter((a: any) => a.id == this.firebaseId)[0]
+
+        this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   onBack() {
-    // this.router.navigateByUrl(`user/firebase-notification`);
-    this.modal.destroy(null);
+    this.router.navigateByUrl(`user/firebase-notification`);
   }
 
 }
