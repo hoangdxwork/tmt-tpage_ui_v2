@@ -587,13 +587,13 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   onChangeModelTag(event: string[], item: TDSSafeAny) {
     let lstDetails = this.lstDetail as any[];
     let strs = [...this.checkInputMatch(event)];
-    let idx = lstDetails.findIndex((x: any) => x.Index == item.Index) as number;
+    let index = lstDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
-    if(Number(idx) >= 0) {
-      let details = lstDetails[idx];
+    if(Number(index) >= 0) {
+      let details = lstDetails[index];
       details.Tags = strs?.join(',');
 
-      this.lstDetail[idx] = {...details};
+      this.lstDetail[index] = {...details};
       this.modelTags = [...strs];
     }
     this.cdRef.detectChanges();

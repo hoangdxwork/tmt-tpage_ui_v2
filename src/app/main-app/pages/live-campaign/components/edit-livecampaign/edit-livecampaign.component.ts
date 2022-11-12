@@ -781,20 +781,20 @@ export class EditLiveCampaignComponent implements OnInit {
     }
   }
 
-  onChangeModelTag(event: string[], item: TextContentToOrderDTO) {
-    let fromDetail = this.detailsForm;
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let formDetails = this.detailsForm.value as any[];
     let strs = [...this.checkInputMatch(event)];
-    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
-    if(Number(idx) >= 0) {
-      let details = this.detailsForm.at(idx).value;
+    if(Number(index) >= 0) {
+      let details = this.detailsForm.at(index).value;
       details.Tags = strs?.join(',');
-      console.log(details.Tags)
 
-       //TODO: cập nhật vào formArray
-      this.detailsForm.at(idx).patchValue(details);
+      //TODO: cập nhật vào formArray
+      this.detailsForm.at(index).patchValue(details);
       this.modelTags = [...strs];
     }
+
     this.cdRef.detectChanges();
   }
 

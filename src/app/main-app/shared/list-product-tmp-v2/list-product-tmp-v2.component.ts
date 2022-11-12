@@ -409,7 +409,6 @@ export class ListProductTmpV2Component implements OnInit {
     }
   }
 
-
   loadProductCategory() {
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
       {
