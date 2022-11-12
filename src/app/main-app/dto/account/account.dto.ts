@@ -64,6 +64,40 @@ export interface AccountJournalDTO {
   DedicatedRefund?: boolean;
 }
 
+export interface PaymentJournalDto {
+  Id: number;
+  Code?: any;
+  Name: string;
+  Type: string;
+  TypeGet: string;
+  SequenceId?: any;
+  Sequence?: any;
+  RefundSequenceId?: any;
+  RefundSequence?: any;
+  UpdatePosted: boolean;
+  CurrencyId?: any;
+  DefaultDebitAccountId?: any;
+  DefaultDebitAccount?: any;
+  DefaultCreditAccountId?: any;
+  DefaultCreditAccount?: any;
+  InboundPaymentMethods: any[];
+  OutboundPaymentMethods: any[];
+  CompanyId: number;
+  Company?: any;
+  CompanyName?: any;
+  JournalUser: boolean;
+  ProfitAccountId?: any;
+  ProfitAccount?: any;
+  LossAccountId?: any;
+  LossAccount?: any;
+  AmountAuthorizedDiff: number;
+  MerchantId?: any;
+  MerchantCode?: any;
+  DedicatedRefund: boolean;
+  Description?: any;
+  Currency?: any;
+}
+
 export interface AccountPaymentDTO {
   Id: number;
   Name: string;

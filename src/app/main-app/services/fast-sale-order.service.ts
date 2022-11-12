@@ -571,12 +571,30 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData(api, null);
   }
 
-  mergeOrders(data: any): Observable<boolean> {
+  mergeOrders(data: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/api/shared/mergeorders`,
       method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData(api, data);
+  }
+
+  getPartnerCanMergeOrders(liveCampaignId: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetPartnerCanMergeOrders?liveCampaignId=${liveCampaignId}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData(api, null);
+  }
+
+  getOrderLiveCampaignCanMergeByPartner(liveCampaignId:any, partnerId: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrderLiveCampaignCanMergeByPartner?liveCampaignId=${liveCampaignId}&partnerId=${partnerId}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData(api, null);
   }
 }

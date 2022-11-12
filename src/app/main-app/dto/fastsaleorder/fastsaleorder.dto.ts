@@ -1,3 +1,4 @@
+import { PaymentJournalDto } from './../account/account.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { AccountDTO, AccountJournalDTO, AccountTaxDTO } from '../account/account.dto';
 import { ApplicationUserDTO } from '../account/application-user.dto';
@@ -103,6 +104,8 @@ export interface FastSaleOrderLineDTO {
   PartnerId?: number;
   PriceSubTotalSigned?: number;
   PromotionProgramComboId?: number;
+  LiveCampaign_DetailId: string;
+  LiveCampaignQtyChange: number;
 }
 
 export interface SaleOrderDTO {
@@ -545,6 +548,154 @@ export interface FastSaleOrderModelDTO {
   Ship_Extras?: DeliveryCarrier_ExtraDTO;
   PaymentInfo: PaymentInfoContentDTO[];
   Search?: SearchStaffReportDTO;
+  PartnerFacebookLink: string;
+  PriceList: PriceList;
+  TotalDiscountAmount: number;
+  MoveId?: any;
+  Move?: any;
+  User: ApplicationUserDTO;
+  Company: CompanyDTO;
+  Warehouse: StockWarehouseDTO;
+  OrderLines: FastSaleOrderLineDTO[];
+  SaleCouponProgram: any[];
+  RefundOrder?: any;
+  Account: AccountDTO;
+  Journal: AccountJournalDTO;
+  Carrier: DeliveryCarrierDTO;
+  HistoryDeliveryDetails: any[];
+  TrackingUrlTEST?: any;
+  TrackingUrl: string;
+  FullAddress: string;
+  PartnerShipping?: any;
+  PaymentJournal: PaymentJournalDto;
+  SaleOrder?: any;
+  GeneratedCoupons: any[];
+  PaymentTotal: number;
+  Team: Team;
+  OutstandingInfo?: any;
+  Lines: any[];
+  Source: string;
+  ShipmentDetailsAship: ShipmentDetailsAship;
+  ExtraProperties: ExtraProperties;
+  Error?: any;
+}
+
+export interface PartnerCategory {
+  Id: number;
+  Name: string;
+  ParentId?: any;
+  Parent?: any;
+  CompleteName: string;
+  Active: boolean;
+  ParentLeft: number;
+  ParentRight: number;
+  Discount: number;
+}
+
+export interface PriceList {
+  Id: number;
+  Name: string;
+  CurrencyId: number;
+  CurrencyName: string;
+  Active: boolean;
+  CompanyId?: any;
+  Items: any[];
+  PartnerCategories: PartnerCategory[];
+  PartnerCateName?: any;
+  Sequence: number;
+  DateStart: Date;
+  DateEnd: Date;
+  NameGet: string;
+}
+
+export interface ConfigsValue2 {
+  Id: string;
+  Name: string;
+}
+
+export interface ConfigsProvider2 {
+  ConfigName: string;
+  Type: string;
+  InputType: string;
+  IsRequried: boolean;
+  IsHidden: boolean;
+  Description: string;
+  DisplayName: string;
+  ConfigValue: string;
+  ConfigsValue: ConfigsValue2[];
+}
+
+export interface Aship {
+  ConfigsProvider: ConfigsProvider2[];
+}
+
+export interface ExtraProperties {
+  Aship: Aship;
+}
+
+export interface Team {
+  Id: number;
+  Name: string;
+  OwnerId?: any;
+  OwnerToken?: any;
+  OwnerAvatar?: any;
+  OwnerUrl?: any;
+  ChannelId?: any;
+  ChannelToken?: any;
+  ChannelAvatar?: any;
+  ShopToken?: any;
+  Active?: any;
+  CompanyId?: any;
+  Type?: any;
+  CountPage: number;
+  CountGroup: number;
+  Facebook_UserId?: any;
+  Facebook_ASUserId?: any;
+  Facebook_UserName?: any;
+  Facebook_UserAvatar?: any;
+  Facebook_UserCover?: any;
+  Facebook_UserToken?: any;
+  Facebook_UserPrivateToken?: any;
+  Facebook_UserPrivateToken2?: any;
+  Facebook_PagePrivateToken?: any;
+  Facebook_PageId?: any;
+  Facebook_PageName?: any;
+  Facebook_PageLogo?: any;
+  Facebook_PageCover?: any;
+  Facebook_PageToken?: any;
+  Facebook_Link?: any;
+  IsDefault: boolean;
+  IsConverted: boolean;
+  Facebook_TokenExpired?: any;
+  Facebook_TypeId: number;
+  ParentId?: any;
+  ParentName?: any;
+  Facebook_Configs?: any;
+  Childs: any[];
+  ShopId?: any;
+  Facebook_AccountId?: any;
+}
+
+export interface ConfigsValue {
+  Id: string;
+  Name: string;
+}
+
+export interface ConfigsProvider {
+  ConfigName: string;
+  Type: string;
+  InputType: string;
+  IsRequried: boolean;
+  IsHidden: boolean;
+  Description: string;
+  DisplayName: string;
+  ConfigValue: string;
+  ConfigsValue: ConfigsValue[];
+}
+
+export interface ShipmentDetailsAship {
+  ConfigsProvider: ConfigsProvider[];
+  InsuranceInfo?: any;
 }
 
 export interface ListUpdateDepositDTO {
