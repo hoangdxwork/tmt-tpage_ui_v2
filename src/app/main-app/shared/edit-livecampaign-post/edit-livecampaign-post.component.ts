@@ -529,6 +529,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       if(!exist){
           let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
             ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+
           let item = {
               Quantity: qty,
               RemainQuantity: 0,
@@ -543,18 +544,12 @@ export class EditLiveCampaignPostComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              Tags: x.Tags,
+              Tags: x.DefaultCode,
               LimitedQuantity: 0,
-              ProductCode: x.Barcode || x.DefaultCode,
+              ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
               IsActive: true,
           } as LiveCampaignSimpleDetail;
-
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 1;
-
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags?.join(',');
 
           simpleDetail = [...simpleDetail, ...[item]];
 
@@ -581,10 +576,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
 
     items.map((x: DataPouchDBDTO) => {
-      x._attributes_length = 0;
-
       let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
         ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+
       x.QtyAvailable =qty;
     });
 
@@ -756,7 +750,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   onSaveDetails(item: LiveCampaignSimpleDetail) {
     if(item && item.Id) {
-        this.addProductLiveCampaignDetails([item]);
+      this.addProductLiveCampaignDetails([item]);
     }
   }
 

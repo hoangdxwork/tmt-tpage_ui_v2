@@ -19,6 +19,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
 
 @Component({
   selector: 'list-product-tmp-v2',
@@ -91,6 +92,7 @@ export class ListProductTmpV2Component implements OnInit {
       public apiService: TCommonService,
       private cdRef : ChangeDetectorRef,
       private destroy$: TDSDestroyService,
+      private liveCampaignService: LiveCampaignService,
       private viewContainerRef: ViewContainerRef,
       private productTemplateService: ProductTemplateService,
       private productCategoryService: ProductCategoryService) {
@@ -304,12 +306,10 @@ export class ListProductTmpV2Component implements OnInit {
         }
 
         items.map((x: DataPouchDBDTO) => {
-            x.Tags = model?.OrderTag || null;
+            x.Tags = model?.OrderTag || '';// mã chốt đơn
 
             let qty = model.InitInventory > 0 ? model.InitInventory : 1;
             x.QtyAvailable = qty;
-
-            x._attributes_length = model._attributes_length || 1;
         });
 
         this.onLoadProductToLiveCampaign.emit([...items]);
@@ -377,7 +377,6 @@ export class ListProductTmpV2Component implements OnInit {
         ? Number(this.inventories[x.Id].QtyAvailable) : 1;
 
         x.QtyAvailable = qty;
-        x._attributes_length = 0;
     });
 
     this.lstVariants = [...items];
