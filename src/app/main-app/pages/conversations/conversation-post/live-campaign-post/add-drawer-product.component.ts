@@ -233,17 +233,17 @@ export class AddDrawerProductComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-          product._attributes_length = model.AttributeLines?.length || 0;
+            product._attributes_length = model.ProductVariants?.length || 1;
 
-          const data: SyncCreateProductTemplateDto = {
-            type: type,
-            productTmpl: product as ProductTemplateV2DTO,
-            cacheDbStorage: [...indexDB.cacheDbStorage]
-          };
+            const data: SyncCreateProductTemplateDto = {
+              type: type,
+              productTmpl: product as ProductTemplateV2DTO,
+              cacheDbStorage: [...indexDB.cacheDbStorage]
+            };
 
-          this.modalRef.destroy(data.type ? data : null);
-          this.isLoading = false;
-          this.cdRef.detectChanges();
+            this.modalRef.destroy(data.type ? data : null);
+            this.isLoading = false;
+            this.cdRef.detectChanges();
         },
         error: (error: any) => {
             this.isLoading = false;

@@ -358,7 +358,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           } as ReportLiveCampaignDetailDTO;
 
           let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 0;
+          if(x._attributes_length == undefined) x._attributes_length = 1;
 
           let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
           item.Tags = tags?.join(',');
@@ -457,7 +457,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       result.push(wordNameNoSpace);
     }
 
-    if(TDSHelperString.hasValueString(code) && code && _attributes_length == 0) {
+    if(TDSHelperString.hasValueString(code) && code && Number(_attributes_length) <= 1) {
       result.push(code);
     }
 
@@ -725,7 +725,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           } as ReportLiveCampaignDetailDTO;
 
           let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 0;
+          if(x._attributes_length == undefined) x._attributes_length = 1;
 
           let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
           item.Tags = tags.join(',');
@@ -775,11 +775,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     if(this.isLoading) {
       return;
     }
+
     let exisData = this.lstDetail && this.lstDetail.length > 0 && event && event.scrollStartPosition > 0;
+
     if(exisData) {
-      console.log('lenght',Number(this.lstDetail.length - this.countItemDeleted - 1))
-      console.log(event.endIndex)
-      const vsEnd = Number(this.lstDetail.length - this.countItemDeleted - 1) == Number(event.endIndex) && this.pageIndex >= 1 &&  Number(this.lstDetail.length) < this.count;
+      const vsEnd = Number(this.lstDetail.length - 1) == Number(event.endIndex) && this.pageIndex >= 1 &&  Number(this.lstDetail.length) < this.count;
       if(vsEnd) {
           this.nextData();
       }

@@ -235,7 +235,7 @@ export class ModalProductTemplateComponent implements OnInit {
         next: ([product, indexDB]) => {
 
             // TODO: chỉ dùng cho chiến dịch live
-            product._attributes_length = model.AttributeLines?.length;
+            product._attributes_length = model.ProductVariants?.length || 1;
 
             const data: SyncCreateProductTemplateDto = {
               type: type,
