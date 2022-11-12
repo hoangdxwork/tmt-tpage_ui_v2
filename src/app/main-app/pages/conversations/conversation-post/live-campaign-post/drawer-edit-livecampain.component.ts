@@ -211,7 +211,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-
   initDetail(x?: ReportLiveCampaignDetailDTO | null) {
     let item = this.fb.group({
         Id: [null],
@@ -350,18 +349,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              Tags: x.Tags,
+              Tags: x.DefaultCode,
               LimitedQuantity: 0,
-              ProductCode: x.Barcode || x.DefaultCode,
+              ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
               IsActive: true,
           } as ReportLiveCampaignDetailDTO;
-
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 1;
-
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags?.join(',');
 
           simpleDetail = [...simpleDetail, ...[item]];
 
@@ -385,7 +378,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     });
 
     this.isLoading = true;
-
     this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any[]) => {
           this.isLoading = false;
@@ -525,7 +517,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
 
       x.QtyAvailable = qty;
-      x._attributes_length = 0;
     });
 
     this.lstVariants = [...items];
@@ -626,7 +617,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   onSaveDetails(item: ReportLiveCampaignDetailDTO) {
     if(item && item.Id) {
-        this.addProductLiveCampaignDetails([item]);
+      this.addProductLiveCampaignDetails([item]);
     }
   }
 
@@ -701,7 +692,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
         items.map((x: DataPouchDBDTO) => {
           let qty = product.InitInventory > 0 ? product.InitInventory : 1;
-          x._attributes_length = product._attributes_length;
 
           let item = {
               Quantity: qty,
@@ -717,18 +707,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              Tags: product.OrderTag,
+              Tags: x.DefaultCode,
               LimitedQuantity: 0,
-              ProductCode: x.Barcode || x.DefaultCode,
+              ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
               IsActive: true,
           } as ReportLiveCampaignDetailDTO;
-
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 1;
-
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags.join(',');
 
           lstItems = [...lstItems,...[item]];
         });

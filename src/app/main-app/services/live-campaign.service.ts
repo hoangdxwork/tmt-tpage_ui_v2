@@ -256,6 +256,15 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  getOrderTagbyIds(ids: any): Observable<any> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/product/getordertagbyids`,
+        method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, ids);
+  }
+
   updateSimple(id: string, data: any): Observable<any> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatesimple`,
