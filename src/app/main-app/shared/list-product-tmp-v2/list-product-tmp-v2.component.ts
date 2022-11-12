@@ -309,7 +309,7 @@ export class ListProductTmpV2Component implements OnInit {
             let qty = model.InitInventory > 0 ? model.InitInventory : 1;
             x.QtyAvailable = qty;
 
-            x._attributes_length = model._attributes_length || 0;
+            x._attributes_length = model._attributes_length || 1;
         });
 
         this.onLoadProductToLiveCampaign.emit([...items]);

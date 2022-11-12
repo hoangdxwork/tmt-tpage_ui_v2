@@ -554,7 +554,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
           } as LiveCampaignSimpleDetail;
 
           let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 0;
+          if(x._attributes_length == undefined) x._attributes_length = 1;
 
           let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
           item.Tags = tags?.join(',');
@@ -678,7 +678,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
       result.push(wordNameNoSpace);
     }
 
-    if(TDSHelperString.hasValueString(code) && code  && _attributes_length == 0) {
+    if(TDSHelperString.hasValueString(code) && code  && Number(_attributes_length) <= 1) {
       result.push(code);
     }
 
