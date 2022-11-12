@@ -15,7 +15,7 @@ import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
 import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
-import { SocketLiveCampaignCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
+import { SocketLiveCampaignAvailableToBuyDto, SocketLiveCampaignPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -164,7 +164,7 @@ export class SocketOnEventService {
 
               // Thông báo Số lượng sản phẩm chiến dịch chờ chốt
             case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
-              socketData = { ...socketData } as SocketLiveCampaignCheckoutDto;
+              socketData = { ...socketData } as SocketLiveCampaignPendingCheckoutDto;
 
               this.socketEvent$.next({
                   Notification: null,
@@ -176,7 +176,7 @@ export class SocketOnEventService {
 
             // Thông báo Số lượng sản phẩm chiến dịch có thểm mua
             case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
-              socketData = { ...socketData } as SocketLiveCampaignCheckoutDto;
+              socketData = { ...socketData } as SocketLiveCampaignAvailableToBuyDto;
 
               this.socketEvent$.next({
                   Notification: null,
