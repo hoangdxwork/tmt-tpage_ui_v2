@@ -13,16 +13,17 @@
                                 </tds-upload>
                             </div>
                             <div class="w-5/6 flex flex-col gap-y-4">
-                                <tds-form-field>
+                                <tds-form-field >
                                     <tds-label>Tên sản phẩm</tds-label>
                                     <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" [required]='true' formControlName="Name" />
-                                    <tds-error>Vui lòng nhập tên sản phẩm</tds-error>
+                                    <tds-error *ngIf="_form.invalid">Vui lòng nhập tên sản phẩm</tds-error>
                                 </tds-form-field>
-                                <tds-form-field>
+                                <tds-form-field [color]="_form.controls.OrderTag.invalid && _form.controls.OrderTag.touched? 'error': 'default'">    
                                     <tds-label>Mã chốt đơn</tds-label>
-                                    <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" formControlName="OrderTag"
+                                    <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" formControlName="OrderTag" [required]='true'
                                         [allowClear]="true" [data]="" mode="tags" (selectChange)="onChangeModelTag($event)">
                                     </tds-select>
+                                    <tds-error *ngIf="_form.controls.OrderTag.invalid && _form.controls.OrderTag.touched">Vui lòng nhập mã chốt đơn</tds-error>
                                 </tds-form-field>
                             </div>
                         </div>
@@ -179,7 +180,7 @@
                         <tr>
                           <th width="6%">STT</th>
                           <th width="24%">Tên</th>
-                          <!-- <th width="30%">Mã chốt đơn</th> -->
+                          <th width="30%">Mã chốt đơn</th>
                           <th width="20%">Giá</th>
                           <th width="10%">Hoạt động</th>
                           <th width="10%">Thao tác</th>
@@ -199,12 +200,12 @@
                               </div>
                             </div>
                           </td>
-                          <!-- <td>
-                            <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [ngModel]="data.Tags|stringToStringArray" [ngModelOptions]="{standalone: true}"
+                          <td>
+                            <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [ngModel]="data.OrderTag|stringToStringArray" [ngModelOptions]="{standalone: true}"
                                 (ngModelChange)="changeTags($event,i)"
                                 [allowClear]="true" [data]="" mode="tags" class="w-full">
                             </tds-select>
-                          </td> -->
+                          </td>
                           <td>
                             <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
                               [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">

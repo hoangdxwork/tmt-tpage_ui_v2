@@ -154,7 +154,7 @@ export class ModalProductTemplateComponent implements OnInit {
       ImageUrl: [null],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
-      OrderTag: [null]
+      OrderTag: [null, Validators.required]
     });
   }
 
@@ -421,7 +421,9 @@ export class ModalProductTemplateComponent implements OnInit {
   }
 
   changeTags(event:any,i:number){
-    this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
+    let strs = [...this.checkInputMatch(event)];
+
+    this.lstVariants[i].OrderTag = TDSHelperArray.hasListValue(strs) ? strs.join(',') : null;
   }
 
   onChangeModelTag(event: string[]) {

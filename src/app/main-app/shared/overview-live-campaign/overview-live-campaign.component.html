@@ -129,7 +129,7 @@
             </div>
           </div>
   
-          <div class="flex flex-col bg-white p-4 rounded-xl gap-y-3" *ngIf="dataOverviewReport.BillSummary">
+          <div class="flex flex-col bg-white p-4 rounded-xl gap-y-3" *ngIf="dataOverviewReport.TotalOrderBillSummary">
             <div>
               <tds-avatar tdsSrc="../../../assets/imagesv2/live-campaign/order.svg" [size]="48" [shape]="'square'" [isAvatar]="false"></tds-avatar>
             </div>
@@ -139,17 +139,17 @@
               <div class="flex flex-col items-end gap-2 w-full pt-3">
                 <div class="flex w-full justify-between items-center gap-x-2">
                   <span class="text-body-2 text-neutral-1-500 text-left">Số lượng đơn</span>
-                  <span class="text-header-1 font-semibold text-right">{{  dataOverviewReport.TotalOrderBillSummary?.OrderQuantity | numberCustom }}</span>
+                  <span class="text-header-1 font-semibold text-right">{{  dataOverviewReport.TotalOrderBillSummary.OrderQuantity | numberCustom }}</span>
                 </div>
                 
                 <div class="flex w-full justify-between items-center gap-x-2">
                   <span class="text-body-2 text-neutral-1-500 text-left">Số lượng sản phẩm</span>
-                  <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.TotalOrderBillSummary?.ProductQuantity | numberCustom }}</span>
+                  <span class="text-header-1 font-semibold text-right">{{ dataOverviewReport.TotalOrderBillSummary.ProductQuantity | numberCustom }}</span>
                 </div>
                
                 <div class="flex w-full justify-between items-center gap-x-2">
                   <span class="text-body-2 text-neutral-1-500 text-left">Tổng tiền</span>
-                  <span class="text-header-1 font-semibold text-right text-info-500">{{ dataOverviewReport.TotalOrderBillSummary?.TotalAmount | numberCustom }}</span>
+                  <span class="text-header-1 font-semibold text-right text-info-500">{{ dataOverviewReport.TotalOrderBillSummary.TotalAmount | numberCustom }}</span>
                 </div>
               </div>
             </div>

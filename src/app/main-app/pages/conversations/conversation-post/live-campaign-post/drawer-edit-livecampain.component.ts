@@ -7,7 +7,7 @@ import { ModalListPostComponent } from './../../components/modal-list-post/modal
 import { GetAllFacebookPostDTO } from './../../../../dto/live-campaign/getall-facebook-post.dto';
 import { OverviewReportDTO, ReportLiveCampaignDetailDTO } from './../../../../dto/live-campaign/report-livecampain-overview.dto';
 import { AddDrawerProductComponent } from './add-drawer-product.component';
-import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation } from "@angular/core";
+import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, ViewChild, ElementRef } from "@angular/core";
 import { LiveCampaignService } from "@app/services/live-campaign.service";
 import { TDSDestroyService } from "tds-ui/core/services";
 import { takeUntil} from "rxjs";
@@ -41,6 +41,7 @@ import { LiveCampaignCheckoutDataDto } from '@app/dto/socket-io/livecampaign-che
 export class DrawerEditLiveCampaignComponent implements OnInit {
 
   @Input() liveCampaignId: any;
+  @ViewChild('innerText') viewChildInnerText!: ElementRef;
 
   isLoading: boolean = false;
   indexDbStorage!: DataPouchDBDTO[];
@@ -157,9 +158,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-  loadOverviewDetails(pageSize: number, pageIndex: number, text?: string){
+  loadOverviewDetails(pageSize: number, pageIndex: number, text?: string, countItemDeleted?: number){
     this.isLoading = true;
-    let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
+    let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text, countItemDeleted);
 
     this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
@@ -258,7 +259,16 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
             this.lstDetail = [...this.lstDetail];
 
             this.count = this.count - 1;
+            this.countItemDeleted = this.countItemDeleted + 1;
             delete this.isEditDetails[item.Id];
+
+            if(this.lstDetail.length == 5 &&  Number(this.lstDetail.length) < this.count) {
+              this.nextData();
+            }
+            if(this.countItemDeleted == this.pageSize &&  Number(this.lstDetail.length) < this.count) {
+              this.countItemDeleted = 0;
+              this.pageIndex = this.pageIndex - 1;
+            }
 
             this.isLoading = false;
             this.message.success('Thao tác thành công');
@@ -408,9 +418,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
                       <span class="mb-1">Sản phẩm: <span class="font-semibold">[${x.ProductCode}] ${x.ProductName}</span></span>
                       <span>Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
                   </div>`);
+                this.count = this.count + 1;
               }
 
-              this.count = this.count + 1;
               delete this.isEditDetails[x.Id];
           })
 
@@ -477,9 +487,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   onSearch(event: TDSSafeAny): void {
     this.indClickTag = -1;
-    this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
     let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
     this.lstDetail = [];
+    this.countItemDeleted = 0;
     this.pageIndex = 1;
     this.resfeshScroll = false;
     this.loadOverviewDetails(this.pageSize, this.pageIndex, text);
@@ -534,6 +544,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.lstDetail = [];
     this.isEditDetails = {};
+    this.countItemDeleted = 0;
 
     this.isLoading = true;
     this.pageIndex = 1;
@@ -650,6 +661,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   onOpenSearchvalue(){
     this.visible = true;
+  
+    setTimeout(() => {
+      if(this.viewChildInnerText)
+        this.viewChildInnerText.nativeElement.focus();
+    }, 300);
   }
 
   onPopoverVisibleChange(ev: boolean) {
@@ -752,7 +768,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   nextData() {
     this.pageIndex += 1;
-    this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerText);
+    this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerTextValue, this.countItemDeleted);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
