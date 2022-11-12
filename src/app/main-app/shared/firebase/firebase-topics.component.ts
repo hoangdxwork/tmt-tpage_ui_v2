@@ -114,7 +114,7 @@ export class FirebaseTopicsComponent implements OnInit {
           this.deviceToken = null;
           this.firebaseMessagingService.removeDeviceTokenLocalStorage();
       },
-      error: (error) => {debugger
+      error: (error) => {
           this.isLoading = false;
           this.message.error('Xóa token nhận tin thất bại')
       }

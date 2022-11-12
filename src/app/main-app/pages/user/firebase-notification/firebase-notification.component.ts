@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { takeUntil } from 'rxjs';
@@ -10,8 +10,10 @@ import { TDSMessageService } from 'tds-ui/message';
   templateUrl: './firebase-notification.component.html'
 })
 export class FirebaseNotificationComponent implements OnInit {
+  @ViewChild('tabContent') TabContent!: TemplateRef<{}>;
 
   data!: NotificationItemDto[];
+  dataDetail!: any;
   isRead!: NotificationItemDto[];
   cursor: any;
   isDetail: boolean = false
@@ -32,9 +34,6 @@ export class FirebaseNotificationComponent implements OnInit {
             this.data = [...(this.data || []), ...res.items];
             this.isRead = this.data.filter((a : any) => a.dateRead == null);
             this.cursor = res.cursor;
-            console.log(this.data);
-            console.log(this.isRead);
-
         },
         error: (err: any) => {
             this.message.error(err?.error?.message);
@@ -52,8 +51,9 @@ export class FirebaseNotificationComponent implements OnInit {
     this.isDetail = false
   }
 
-  onDetail(id : any) {
+  onDetail(item : any) {
     this.isDetail = true
+    this.dataDetail = item
   }
 
 }

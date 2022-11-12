@@ -4,7 +4,6 @@
       <tds-tabset class="bg-white h-full rounded-xl">
         <tds-tab [title]="'Tất cả'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
           <ng-template tds-tab>
-            <!-- <firebase-notification-list [data]="data" class="h-full"></firebase-notification-list> -->
             <div class="w-full h-full">
               <div class="flex flex-col gap-y-4 h-full">
                 <div class="h-full w-full relative">
@@ -15,16 +14,16 @@
 
                         <div class="text-neutral-1-400 relative w-full">
                           <div class="flex flex-col flex-auto gap-y-1 absolute inset-0" *ngIf="item.dateRead else notRead">
-                            <span class="text-base font-semibold w-full">{{item.notification.title}}</span>
-                            <span class="truncate w-full">{{item.notification.shortContent}}</span>
-                            <span class="text-[13px] font-semibold w-full">{{item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy'}}</span>
+                            <span class="text-base font-semibold w-full">{{ item.notification.title }}</span>
+                            <span class="truncate w-full">{{ item.notification.shortContent }}</span>
+                            <span class="text-[13px] font-semibold w-full">{{ item.dateCreated | yiDiffDateTime }} - {{ item.dateCreated | date: 'dd/MM/yyyy' }}</span>
                           </div>
 
                           <ng-template #notRead>
                             <div class="flex flex-col flex-auto gap-y-1 absolute inset-0">
-                              <span class="text-base font-semibold text-neutral-1-900">{{item.notification.title}}</span>
-                              <span class="text-neutral-1-900 truncate">{{item.notification.shortContent}}</span>
-                              <span class="text-[13px] font-semibold text-info-400">{{item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy'}}</span>
+                              <span class="text-base font-semibold text-neutral-1-900">{{ item.notification.title }}</span>
+                              <span class="text-neutral-1-900 truncate">{{ item.notification.shortContent }}</span>
+                              <span class="text-[13px] font-semibold text-info-400">{{ item.dateCreated | yiDiffDateTime }} - {{ item.dateCreated | date: 'dd/MM/yyyy' }}</span>
                             </div>
                             <span class="tdsi-radio-circle-fill text-info-400 absolute top-0 right-0 text-xs"></span>
                           </ng-template>
@@ -40,7 +39,6 @@
 
         <tds-tab [title]="'Chưa đọc'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
           <ng-template tds-tab>
-            <!-- <firebase-notification-list [data]="isRead" class="h-full"></firebase-notification-list> -->
             <div class="w-full h-full">
               <div class="flex flex-col gap-y-4 h-full">
                 <div class="h-full w-full relative">
@@ -48,11 +46,12 @@
                     <div class="divide-y mx-4">
                       <div class="flex gap-x-4 p-4 relative w-full cursor-pointer" *ngFor="let item of isRead" (click)="onDetail(item)">
                         <tds-avatar [shape]="'square'" [size]="80" tdsSrc="{{ item.notification.thumbnail }}" [isAvatar]="false" class="rounded min-w-[80px]"></tds-avatar>
+
                         <div class="text-neutral-1-400 relative w-full">
                           <div class="flex flex-col flex-auto gap-y-1 absolute inset-0">
-                            <span class="text-base font-semibold text-neutral-1-900">{{item.notification.title}}</span>
-                            <span class="text-neutral-1-900 truncate">{{item.notification.shortContent}}</span>
-                            <span class="text-[13px] font-semibold text-info-400">{{item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy'}}</span>
+                            <span class="text-base font-semibold text-neutral-1-900">{{ item.notification.title }}</span>
+                            <span class="text-neutral-1-900 truncate">{{ item.notification.shortContent }}</span>
+                            <span class="text-[13px] font-semibold text-info-400">{{ item.dateCreated | yiDiffDateTime }} - {{ item.dateCreated | date: 'dd/MM/yyyy' }}</span>
                           </div>
                           <span class="tdsi-radio-circle-fill text-info-400 absolute top-0 right-0 text-xs"></span>
                         </div>
@@ -64,8 +63,8 @@
             </div>
           </ng-template>
         </tds-tab>
-
       </tds-tabset>
+
       <div class="px-4 pb-4 w-full">
         <button type="button" [ngClass]="cursor == null ? 'hidden': ''" tds-button color="secondary"
           rounded="!rounded-full" class="w-full flex justify-center bg-light-50 border-0" (click)="onNext()">
@@ -77,19 +76,20 @@
     <div class="h-full w-full rounded-xl flex flex-col p-4 " [ngClass]="!isDetail ? 'hidden' : ''">
       <div class="w-full">
         <div class="flex gap-x-4 w-full items-center">
-          <button type="button" (click)="onBack()"
-            class="bg-neutral-3-50 justify-center flex !rounded-full h-[38px] w-[38px] items-center text-xl">
+          <button type="button" (click)="onBack()" class="bg-neutral-3-50 justify-center flex !rounded-full h-[38px] w-[38px] items-center text-xl">
             <i class="tdsi-sort-arrow-down-fill rotate-90"></i>
           </button>
           <div class="flex flex-col gap-y-2">
-            <span class="font-semibold text-xl">Title</span>
-            <span class="text-neutral-1-700">DateCreated</span>
+            <span class="font-semibold text-xl Ttext-neutral-1-900">{{ dataDetail?.notification?.title }}</span>
+            <span class="text-[13px] text-neutral-1-700 w-full">{{ dataDetail?.dateCreated | yiDiffDateTime }} - {{ dataDetail?.dateCreated | date: 'dd/MM/yyyy' }}</span>
           </div>
         </div>
       </div>
 
       <div class="py-4 w-full h-full">
-        ádfghádfghádfgh
+        <div class="border-t border-neutral-2-200 py-4">
+          {{ dataDetail?.notification?.shortContent }}
+        </div>
       </div>
 
     </div>
