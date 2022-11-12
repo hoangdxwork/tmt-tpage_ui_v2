@@ -136,6 +136,7 @@ export class FirebaseTopicsComponent implements OnInit {
               return;
           }
 
+          this.deviceToken = token;
           this.registerDevice(token);
 
       }).catch((error) => {
@@ -155,15 +156,13 @@ export class FirebaseTopicsComponent implements OnInit {
             this.isLoading = false;
             this.message.success('Đăng ký nhận tin thành công');
 
-            this.deviceToken = token;
             this.firebaseMessagingService.setDeviceTokenLocalStorage(token);
-
             this.mappingTopicIds();
             this.registerTopics();
         },
         error: (err: any) => {
           this.isLoading = false;
-          this.message.error(err?.error?.message);
+          this.message.error('Đăng kí nhận tin thất bại');
         }
     })
   }
