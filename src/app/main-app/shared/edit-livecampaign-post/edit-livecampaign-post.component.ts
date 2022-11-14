@@ -620,7 +620,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     })
   }
 
-  addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[], type?: string) {
+  addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[]) {
     let id = this.id as string;
     items.map(x => {
       if(x && x.Tags) {
@@ -629,7 +629,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     });
 
     this.isLoading = true;
-    this.liveCampaignService.updateDetails(id, items, type).pipe(takeUntil(this.destroy$)).subscribe({
+    this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any[]) => {
           this.isLoading = false;
           if(!res) return;
@@ -754,9 +754,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
   }
 
-  onSaveDetails(item: LiveCampaignSimpleDetail, type: string) {
+  onSaveDetails(item: LiveCampaignSimpleDetail) {
     if(item && item.Id) {
-      this.addProductLiveCampaignDetails([item], type);
+      this.addProductLiveCampaignDetails([item]);
     }
   }
 
