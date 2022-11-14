@@ -6,8 +6,9 @@
                     <tds-label>Tên đơn vị</tds-label>
                 </div>
                 <div class="col-span-3 mt-1">
-                    <tds-form-field class="w-full">
-                        <input tdsInput placeholder="Nhập tên" formControlName="Name" />
+                    <tds-form-field class="w-full" [color]="!_form.controls['Name'].valid && _form.controls['Name'].touched ? 'error':'default'">
+                        <input tdsInput placeholder="Nhập tên" formControlName="Name" [required]="true"/>
+                        <tds-error>Vui lòng nhập tên đơn vị</tds-error>
                     </tds-form-field>
                 </div>
             </div>
@@ -16,10 +17,11 @@
                     <tds-label>Nhóm đơn vị</tds-label>
                 </div>
                 <div class="col-span-3 mt-1">
-                    <tds-form-field>
-                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm đơn vị' formControlName="Category"
-                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
+                    <tds-form-field [color]="!_form.controls['Category'].valid && _form.controls['Category'].touched ? 'error':'default'">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm đơn vị' formControlName="Category" [required]="true"
+                            [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
                         </tds-select>
+                        <tds-error>Vui lòng nhập nhóm đơn vị</tds-error>
                     </tds-form-field>
                 </div>
             </div>
@@ -28,10 +30,11 @@
                     <tds-label>Loại</tds-label>
                 </div>
                 <div class="col-span-3 mt-1">
-                  <tds-form-field>
+                  <tds-form-field [color]="!_form.controls['UOMType'].valid && _form.controls['UOMType'].touched ? 'error':'default'">
                     <tds-select valueField="type" textField="text" placeholder='Chọn nhóm đơn vị' formControlName="UOMType"
-                        disabledField="isActive" [required]='true' [data]="lstUOMType" [allowClear]="true">
+                        [required]='true' [data]="lstUOMType" [allowClear]="true" [required]="true">
                     </tds-select>
+                    <tds-error>Vui lòng nhập loại đơn vị</tds-error>
                 </tds-form-field>
                 </div>
             </div>

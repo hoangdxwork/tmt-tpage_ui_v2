@@ -267,11 +267,13 @@ export class ModalProductTemplateComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadCategory();
+      if(result) {
+        this.lstCategory = [...[result],...this.lstCategory];
+      }
     });
   }
 
-  onSearchUOM() {
+  onSearchUOM(type: string) {
     const modal = this.modal.create({
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
@@ -280,7 +282,16 @@ export class ModalProductTemplateComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadUOMCateg();
+      if(result) {
+        switch(type) {
+          case 'UOM':
+            this._form.controls["UOM"].setValue(result);
+            break;
+          case 'UOMPO':
+            this._form.controls["UOMPO"].setValue(result);
+            break;
+        }
+      }
     });
   }
 
@@ -405,7 +416,7 @@ export class ModalProductTemplateComponent implements OnInit {
     }
   }
 
-  onAddUOM() {
+  showCreateUOMModal() {
     const modal = this.modal.create({
       title: 'Thêm đơn vị tính',
       content: TpageAddUOMComponent,
@@ -415,7 +426,9 @@ export class ModalProductTemplateComponent implements OnInit {
 
     modal.afterClose.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
-        this.loadUOMCateg();
+        if(result) {
+          this.lstUOMCategory = [...[result],...this.lstUOMCategory];
+        }
       }
     });
   }

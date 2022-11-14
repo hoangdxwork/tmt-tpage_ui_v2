@@ -52,12 +52,17 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   loadData() {
     this.isLoading = true;
 
-    this.fSOService.getOrderLineData(this.dataItem.Id)
-      .pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false))
-      .subscribe({
+    this.fSOService.getOrderLineData(this.dataItem.Id).pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: OdataFSOrderLinesV2) => {
-          this.lstOfData = res.value;
+          if(res) {
+            this.lstOfData = [...res.value];
+            console.log((this.lstOfData));
+            
+          }
+
+          this.isLoading = false;
         }, error: (error) => {
+          this.isLoading = false;
           this.message.error(`${error?.error?.message}` || 'Tải dữ liệu thất bại');
         }
       });

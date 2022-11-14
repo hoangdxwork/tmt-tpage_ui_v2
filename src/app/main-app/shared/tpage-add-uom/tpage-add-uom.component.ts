@@ -76,7 +76,7 @@ export class TpageAddUOMComponent implements OnInit {
     this._form = this.fb.group({
       Name: [null, Validators.required],
       Category: [null, Validators.required],
-      UOMType: ["reference"],
+      UOMType: ["reference", Validators.required],
       Factor: [1],
       FactorInv: [1],
       Active: [true],
@@ -90,8 +90,8 @@ export class TpageAddUOMComponent implements OnInit {
     let model = {
       Active: formModel.Active,
       Category: formModel.Category,
-      CategoryId: formModel.Category.Id,
-      CategoryName: formModel.Category.Name,
+      CategoryId: formModel.Category?.Id,
+      CategoryName: formModel.Category?.Name,
       Factor: formModel.Factor,
       FactorInv: formModel.FactorInv,
       Name: formModel.Name,
@@ -103,12 +103,21 @@ export class TpageAddUOMComponent implements OnInit {
   }
 
   onSave() {
+    if(this.isLoading) {
+      return;
+    }
+    
+    if(!this._form.valid) {
+      this._form.markAllAsTouched(); //TODO: set touched cho toàn bộ formcontrol
+      this.message.error('Dữ liệu không hợp lệ');
+      return;
+    }
+
     let model = this.prepareModel();
     this.isLoading = true;
 
     this.productUOMService.insert(model).subscribe({
       next:(res) => {
-        this.isLoading = false;
 
         if(res) {
           delete res['@odata.context'];
@@ -117,6 +126,7 @@ export class TpageAddUOMComponent implements OnInit {
           this.onCancel(res);
         }
         
+        this.isLoading = false;
       },
       error:(err) => {
         this.isLoading = false;

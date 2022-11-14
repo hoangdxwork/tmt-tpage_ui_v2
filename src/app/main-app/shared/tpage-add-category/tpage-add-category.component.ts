@@ -63,7 +63,7 @@ export class TpageAddCategoryComponent implements OnInit {
       Name: [null, Validators.required],
       Parent: [null],
       Sequence: [null],
-      PropertyCostMethod: ['average'],
+      PropertyCostMethod: ['average', Validators.required],
       IsPos: [true]
     });
   }
@@ -134,23 +134,29 @@ export class TpageAddCategoryComponent implements OnInit {
   }
 
   save() {
-    if (!this._form.invalid) {
-      let model = this.prepareModel();
-      this.isLoading = true;
-
-      this.productCategoryService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: TDSSafeAny) => {
-          this.isLoading = false;
-          this.message.success(Message.InsertSuccess);
-          this.modal.destroy(model);
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.message.error(err?.error?.message || Message.InsertFail);
-        }
-      });
-    } else {
-      this.message.error('Vui lòng nhập tên nhóm');
+    if(this.isLoading) {
+      return;
     }
+
+    if (!this._form.valid) {
+      this._form.markAllAsTouched(); //TODO: set touched cho toàn bộ formcontrol
+      this.message.error('Dữ liệu không hợp lệ');
+      return;
+    }
+
+    let model = this.prepareModel();
+    this.isLoading = true;
+
+    this.productCategoryService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.isLoading = false;
+        this.message.success(Message.InsertSuccess);
+        this.modal.destroy(model);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message || Message.InsertFail);
+      }
+    });
   }
 }
