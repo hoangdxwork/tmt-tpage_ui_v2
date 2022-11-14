@@ -133,7 +133,7 @@ export class EditProductVariantComponent implements OnInit {
     this._form.controls['UOM'].setValue(data.UOM);
     this._form.controls['UOMPO'].setValue(data.UOMPO);
     this._form.patchValue(data);
-    this._form.controls['OrderTag'].setValue(this.stringToStringArray(data.OrderTag) || []);
+    this._form.controls['OrderTag'].setValue(this.stringToStringArray(data.OrderTag) || null);
 
 
     if (TDSHelperArray.hasListValue(data.Images)) {
@@ -285,7 +285,7 @@ export class EditProductVariantComponent implements OnInit {
 
   stringToStringArray(value: string): any {
 
-    if(TDSHelperString.isString(value)){
+    if(TDSHelperString.isString(value) && TDSHelperString.hasValueString(value)){
         if(!value.includes(',')) {
             return [value];
         }
@@ -295,5 +295,7 @@ export class EditProductVariantComponent implements OnInit {
     if(TDSHelperArray.isArray(value)){
         return value;
     }
+
+    return null;
 }
 }

@@ -154,7 +154,7 @@ export class ModalProductTemplateComponent implements OnInit {
       ImageUrl: [null],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
-      OrderTag: [null, Validators.required]
+      OrderTag: [null]
     });
   }
 
