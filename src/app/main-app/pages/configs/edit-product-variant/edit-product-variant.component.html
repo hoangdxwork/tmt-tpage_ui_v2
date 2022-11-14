@@ -31,6 +31,14 @@
                     </tds-form-field>
 
                     <tds-form-field class="mb-4">
+                        <tds-label>Mã chốt đơn:</tds-label>
+                        <tds-select placeholder='Nhập mã vận đơn' [valuePrimitive]="false" formControlName="OrderTag"
+                            [allowClear]="true" [data]="_form.controls['OrderTag'].value | stringToStringArray" mode="tags" 
+                            (selectChange)="onChangeOrderTag($event)">
+                        </tds-select>
+                    </tds-form-field>
+
+                    <tds-form-field class="mb-4">
                         <tds-label>Đơn vị mua:</tds-label>
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua'
                             disabledField="isActive" formControlName="UOM" [data]="lstProductUOM" [valuePrimitive]="false" [allowClear]="true">

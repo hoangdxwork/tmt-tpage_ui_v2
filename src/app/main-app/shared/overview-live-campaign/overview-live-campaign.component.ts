@@ -1,3 +1,5 @@
+import { TableDetailReportComponent } from './../table-detail-report/table-detail-report.component';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ModalListPostComponent } from './../../pages/conversations/components/modal-list-post/modal-list-post.component';
 import { GetAllFacebookPostDTO } from './../../dto/live-campaign/getall-facebook-post.dto';
 import { LiveCampaignModel } from './../../dto/live-campaign/odata-live-campaign-model.dto';
@@ -11,7 +13,7 @@ import { LiveCampaignDTO } from './../../dto/live-campaign/odata-live-campaign.d
 import { LiveCampaignService } from './../../services/live-campaign.service';
 import { ReportLiveCampaignDTO, OverviewReportDTO } from './../../dto/live-campaign/report-livecampain-overview.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { Component, Input, OnInit, ChangeDetectorRef, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { Message } from '@core/consts/message.const';
 import { EditLiveCampaignPostComponent } from '../edit-livecampaign-post/edit-livecampaign-post.component';
@@ -24,6 +26,7 @@ import { EditLiveCampaignPostComponent } from '../edit-livecampaign-post/edit-li
 
 export class OverviewLiveCampaignComponent implements OnInit {
 
+  @ViewChild(TableDetailReportComponent) tableDetailReportComponent !: TDSSafeAny;
   @Input() liveCampaignId!: string;
   @Input() data!: ChatomniObjectsItemDto;
   @Input() isNoPost!: boolean;
@@ -168,6 +171,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
       title: 'Chỉnh sửa chiến dịch',
       content: EditLiveCampaignPostComponent,
       size: "xl",
+      closable: false,
       bodyStyle: {
         padding: '0px',
       },
@@ -183,6 +187,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
             // TODO: cập nhật object-facebook-post
             this.loadOverviewReport(this.liveCampaignId);
             this.loadLiveCampaign(this.liveCampaignId);
+            this.tableDetailReportComponent?.refreshData();
 
             this.cdr.detectChanges();
         }

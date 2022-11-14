@@ -18,7 +18,6 @@ import { PrepareEditVariantHandler } from 'src/app/main-app/handler-v2/product-v
 @Component({
   selector: 'edit-product-variant',
   templateUrl: './edit-product-variant.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TDSDestroyService]
 })
 
@@ -33,7 +32,7 @@ export class EditProductVariantComponent implements OnInit {
   imageList: Array<TDSSafeAny> = [];
   imageModel: Array<TDSSafeAny> = [];
   isLoading: boolean = false;
-  
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -93,7 +92,6 @@ export class EditProductVariantComponent implements OnInit {
             }
             
             this.isLoading = false;
-            this.cdRef.detectChanges();
           }, 
           error: error => {
             this.isLoading = false;
@@ -135,6 +133,7 @@ export class EditProductVariantComponent implements OnInit {
     this._form.controls['UOM'].setValue(data.UOM);
     this._form.controls['UOMPO'].setValue(data.UOMPO);
     this._form.patchValue(data);
+    this._form.controls['OrderTag'].setValue(this.stringToStringArray(data.OrderTag) || null);
 
 
     if (TDSHelperArray.hasListValue(data.Images)) {
@@ -257,5 +256,46 @@ export class EditProductVariantComponent implements OnInit {
         }
       });
   }
-  //#endregion Handle
+  onChangeOrderTag(event: string[]) {
+    let strs = [...this.checkInputMatch(event)];
+    this._form.controls.OrderTag.setValue(strs);
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
+  }
+
+  stringToStringArray(value: string): any {
+
+    if(TDSHelperString.isString(value) && TDSHelperString.hasValueString(value)){
+        if(!value.includes(',')) {
+            return [value];
+        }
+        return (value as string).split(",");
+    }
+
+    if(TDSHelperArray.isArray(value)){
+        return value;
+    }
+
+    return null;
+}
 }

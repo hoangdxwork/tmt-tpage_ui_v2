@@ -19,6 +19,8 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { StringHelperV2 } from '../helper/string.helper';
 
 @Component({
   selector: 'list-product-tmp-v2',
@@ -91,6 +93,7 @@ export class ListProductTmpV2Component implements OnInit {
       public apiService: TCommonService,
       private cdRef : ChangeDetectorRef,
       private destroy$: TDSDestroyService,
+      private liveCampaignService: LiveCampaignService,
       private viewContainerRef: ViewContainerRef,
       private productTemplateService: ProductTemplateService,
       private productCategoryService: ProductCategoryService) {
@@ -275,16 +278,15 @@ export class ListProductTmpV2Component implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: any) => {
         if(!response) return;
+        this.mappingProductToLive(response);
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
           next: (inventories: any) => {
               this.inventories = inventories;
-              this.mappingProductToLive(response);
           },
           error: (err: any) => {
               this.message.error(err?.error?.message);
-              this.mappingProductToLive(response);
           }
         });
       }
@@ -296,25 +298,49 @@ export class ListProductTmpV2Component implements OnInit {
     this.indexDbStorage = [...response.cacheDbStorage];
 
     if(response.type === 'select' && response.productTmpl) {
-        const model = response.productTmpl as ProductTemplateV2DTO;
-        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
+        const product = response.productTmpl as ProductTemplateV2DTO;
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
 
         if(items && items.length == 0) {
             this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
             return;
         }
 
-        items.map((x: DataPouchDBDTO) => {
-            x.Tags = model?.OrderTag || null;
+        let ids = items.map((x: DataPouchDBDTO) => x.Id);
+        this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (tags: any) => {
 
-            const qty = (this.inventories && this.inventories[x.Id] && Number(this.inventories[x.Id].QtyAvailable) > 0)
-                ? Number(this.inventories[x.Id].QtyAvailable) : 1;
+              items.map((x: DataPouchDBDTO) => {
+                  // TODO: kiểm tra số lượng
+                  const qty = product.InitInventory > 0 ? product.InitInventory : 1;
+                  x.QtyAvailable = qty;
 
-            x.QtyAvailable = qty;
-            x._attributes_length = model._attributes_length || 0;
-        });
+                  // TODO: kiểm tra mã sp từ api
+                  const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
-        this.onLoadProductToLiveCampaign.emit([...items]);
+                  // TODO: lọc sp trùng mã code để tạo tags
+                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+                  let uomName = '';
+                  if(exist && exist.length > 1) {
+                      uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
+                  }
+
+                  // TODO: nếu có 2 biến thể trở lên thì ko lấy orderTag
+                  let orderTag = product.OrderTag;
+                  if(items && items.length > 1) {
+                      orderTag = '';
+                  }
+
+                  let gTags = this.generateTagDetail(x.DefaultCode, vTag, orderTag, uomName);
+                  x.Tags = gTags.join(',');
+              })
+
+              this.onLoadProductToLiveCampaign.emit([...items]);
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message);
+          }
+        })
     }
   }
 
@@ -374,20 +400,95 @@ export class ListProductTmpV2Component implements OnInit {
       return;
     }
 
-    items.map((x: DataPouchDBDTO) => {
+    this.lstVariants = [...items];
+    this.apiOrderTagbyIds(this.lstVariants);
+  }
+
+  apiOrderTagbyIds(model: DataPouchDBDTO[]) {
+    let listData = [...(model || [])];
+    let ids = listData.map(x => x.Id);
+
+    this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.validateOrderTagbyIds(listData, res);
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  validateOrderTagbyIds(listData: DataPouchDBDTO[], tags: any) {
+    listData.map((x: DataPouchDBDTO) => {
+        // TODO: kiểm tra số lượng
         const qty = (this.inventories && this.inventories[x.Id] && Number(this.inventories[x.Id].QtyAvailable) > 0)
         ? Number(this.inventories[x.Id].QtyAvailable) : 1;
-
         x.QtyAvailable = qty;
-        x._attributes_length = 0;
+
+        // TODO: kiểm tra mã sp từ api
+        const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
+
+        // TODO: lọc sp trùng mã code để tạo tags
+        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        let uomName = '';
+        if(exist && exist.length > 1) {
+            uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
+        }
+
+        const orderTag = '';
+        let gTags = this.generateTagDetail(x.DefaultCode, vTag, orderTag, uomName);
+        x.Tags = gTags.join(',');
     });
 
-    this.lstVariants = [...items];
-
-    if(this.lstVariants && this.lstVariants.length == 1) {
+    this.lstVariants = [...listData];
+    if(listData && this.lstVariants.length == 1) {
         this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
         this.indClick = -1;
     }
+  }
+
+  generateTagDetail(defaultCode: string, vTag: string, orderTag: string, uomName: string) {
+    let result: string[] = [];
+
+    if(TDSHelperString.hasValueString(defaultCode)) {
+        defaultCode = defaultCode.toLocaleLowerCase();
+
+        if(TDSHelperString.hasValueString(uomName)) {
+            let x = `${defaultCode} ${uomName}`
+            result.push(x);
+        } else {
+            result.push(defaultCode);
+        }
+    }
+
+    if(vTag) {
+        let tagArr1 = vTag.split(',');
+        tagArr1?.map((x: any) => {
+          if(!result.find(y => y == x)) {
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+          }
+        })
+    }
+
+    if(orderTag) {
+        let tagArr2 = orderTag.split(',');
+        tagArr2?.map((x: any) => {
+          if(!result.find(y => y == x))
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+        })
+    }
+
+    return [...result];
   }
 
   getVariant(data?: DataPouchDBDTO) {
@@ -411,10 +512,8 @@ export class ListProductTmpV2Component implements OnInit {
     }
   }
 
-
   loadProductCategory() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: TDSSafeAny) => {
           this.categoryList = [...res.value];
         },

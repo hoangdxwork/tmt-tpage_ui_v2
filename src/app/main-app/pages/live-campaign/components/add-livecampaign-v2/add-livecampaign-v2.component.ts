@@ -363,20 +363,14 @@ export class AddLiveCampaignV2Component implements OnInit {
               ProductNameGet: x.NameGet,
               RemainQuantity: 0,
               ScanQuantity: 0,
-              Tags: x.Tags,
+              Tags: x.Tags,//mã chốt đơn sp
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              ProductCode: x.Barcode || x.DefaultCode,
+              ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
               IsActive: true,
               UsedQuantity: 0
           } as LiveCampaignSimpleDetail;
-
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 0;
-
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags?.join(',');
 
           simpleDetail = [...simpleDetail, ...[item]];
       } else {
@@ -386,7 +380,7 @@ export class AddLiveCampaignV2Component implements OnInit {
     })
 
     if(simpleDetail && simpleDetail.length > 0){
-        this.pushItemToFormArray(simpleDetail)
+        this.pushItemToFormArray(simpleDetail);
     }
   }
 
@@ -394,58 +388,46 @@ export class AddLiveCampaignV2Component implements OnInit {
     let formDetails = this.detailsForm.value as any[];
 
     items.forEach((item: LiveCampaignSimpleDetail) => {
-        let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
-        if(Number(index) >= 0) {
-            index = Number(index);
-            this.detailsForm.at(index).patchValue(item);
+      let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+      if(Number(index) >= 0) {
+          index = Number(index);
+          this.detailsForm.at(index).patchValue(item);
 
-            this.notificationService.info(`Cập nhật sản phẩm`,
-            `<div class="flex flex-col ">
-                <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${item.ProductName}</span></span>
-                <span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span>
-            </div>`);
-        } else {
-            formDetails = [...[item], ...formDetails]
-            this.detailsForm.clear();
-            this.initFormDetails(formDetails);
+          this.notificationService.info(`Cập nhật sản phẩm`,
+          `<div class="flex flex-col ">
+              <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${item.ProductName}</span></span>
+              <span> Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span>
+          </div>`);
+      } else {
+          formDetails = [...[item], ...formDetails]
+          this.detailsForm.clear();
+          this.initFormDetails(formDetails);
 
-            this.notificationService.info(`Thêm mới sản phẩm`,
-            `<div class="flex flex-col">
-                <span class="mb-1">Sản phẩm: <span class="font-semibold">[${item.ProductCode}] ${item.ProductName}</span></span>
-                <span>Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span>
-            </div>`);
-        }
+          this.notificationService.info(`Thêm mới sản phẩm`,
+          `<div class="flex flex-col">
+              <span class="mb-1">Sản phẩm: <span class="font-semibold">[${item.ProductCode}] ${item.ProductName}</span></span>
+              <span>Số lượng: <span class="font-semibold text-secondary-1">${item.Quantity}</span></span>
+          </div>`);
+      }
     })
 
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
 
-  generateTagDetail(productName: string, code: string, tags: string, _attributes_length?: number) {
-    productName = productName.replace(`[${code}]`, "");
-    productName = productName.trim();
-
+  generateTagDetail(tags: string, orderTag: string) {
     let result: string[] = [];
-    let word = StringHelperV2.removeSpecialCharacters(productName);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
 
-    result.push(word);
-
-    if(!result.includes(wordNoSignCharacters)) {
-      result.push(wordNoSignCharacters);
+    if(tags) {
+        let tagArr1 = tags.split(',');
+        tagArr1?.map((x: any) => {
+          if(!result.find(y => y == x))
+              result.push(x);
+        })
     }
 
-    if(!result.includes(wordNameNoSpace)) {
-      result.push(wordNameNoSpace);
-    }
-
-    if(TDSHelperString.hasValueString(code) && code && _attributes_length == 0) {
-      result.push(code);
-    }
-
-    if(TDSHelperString.hasValueString(tags)) {
-        let tagArr = tags.split(',');
-        tagArr.map(x => {
+    if(orderTag) {
+        let tagArr2 = orderTag.split(',');
+        tagArr2?.map((x: any) => {
           if(!result.find(y => y == x))
               result.push(x);
         })
@@ -673,19 +655,20 @@ export class AddLiveCampaignV2Component implements OnInit {
   }
 
   onChangeModelTag(event: string[], item: TDSSafeAny) {
-    let fromDetail = this.detailsForm
+    let formDetails = this.detailsForm.value as any[];
     let strs = [...this.checkInputMatch(event)];
-    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
 
-    if(Number(idx) >= 0) {
-      let details = this.detailsForm.at(idx).value;
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    if(Number(index) >= 0) {
+      let details = this.detailsForm.at(index).value;
       details.Tags = strs?.join(',');
-      console.log(details.Tags)
 
-       //TODO: cập nhật vào formArray
-      this.detailsForm.at(idx).patchValue(details);
+      //TODO: cập nhật vào formArray
+      this.detailsForm.at(index).patchValue(details);
       this.modelTags = [...strs];
     }
+
     this.cdRef.detectChanges();
   }
 

@@ -90,7 +90,8 @@ export class CreateFormProductVariantHandler {
       Categ: [null, Validators.required],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
-      Images: fb.array([])
+      Images: fb.array([]),
+      OrderTag: [null],
     })
 
     return _form;

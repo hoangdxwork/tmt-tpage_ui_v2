@@ -8,7 +8,7 @@ import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 export interface FilterProductTemplateObjDTO  {
     searchText: string,
-    active?:boolean
+    active?: boolean | null
 }
 
 @Injectable()
@@ -38,7 +38,7 @@ export class OdataProductTemplateService extends BaseSevice {
         filters: []
     }
 
-    if (filterObj.active || filterObj.active == false) {
+    if (filterObj.active == true || filterObj.active == false) {
       dataFilter.filters.push({
           filters: [
             { field: "Active", operator: OperatorEnum.eq, value: filterObj.active },

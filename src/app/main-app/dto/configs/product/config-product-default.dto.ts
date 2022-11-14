@@ -172,6 +172,7 @@ export interface ConfigProductVariant {
     UOMPO?: any;
     POSCateg?: any;
     AttributeValues: ConfigAttributeValue[];
+    OrderTag?: any;
 }
 
 export interface ConfigProductDefaultDTO {

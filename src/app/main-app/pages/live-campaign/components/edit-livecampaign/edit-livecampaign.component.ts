@@ -323,16 +323,10 @@ export class EditLiveCampaignComponent implements OnInit {
               UOMName: x.UOMName,
               Tags: x.Tags,
               LimitedQuantity: 0,
-              ProductCode: x.Barcode || x.DefaultCode,
+              ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
               IsActive: true,
           } as LiveCampaignSimpleDetail;
-
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 0;
-
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags?.join(',');
 
           simpleDetail = [...simpleDetail, ...[item]];
 
@@ -422,7 +416,7 @@ export class EditLiveCampaignComponent implements OnInit {
       result.push(wordNameNoSpace);
     }
 
-    if(TDSHelperString.hasValueString(code) && code && _attributes_length == 0) {
+    if(TDSHelperString.hasValueString(code) && code && Number(_attributes_length) <= 1) {
       result.push(code);
     }
 
@@ -781,20 +775,20 @@ export class EditLiveCampaignComponent implements OnInit {
     }
   }
 
-  onChangeModelTag(event: string[], item: TextContentToOrderDTO) {
-    let fromDetail = this.detailsForm;
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let formDetails = this.detailsForm.value as any[];
     let strs = [...this.checkInputMatch(event)];
-    let idx = fromDetail.value.findIndex((x: any) => x.Index == item.Index) as number;
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
 
-    if(Number(idx) >= 0) {
-      let details = this.detailsForm.at(idx).value;
+    if(Number(index) >= 0) {
+      let details = this.detailsForm.at(index).value;
       details.Tags = strs?.join(',');
-      console.log(details.Tags)
 
-       //TODO: cập nhật vào formArray
-      this.detailsForm.at(idx).patchValue(details);
+      //TODO: cập nhật vào formArray
+      this.detailsForm.at(index).patchValue(details);
       this.modelTags = [...strs];
     }
+
     this.cdRef.detectChanges();
   }
 

@@ -42,6 +42,7 @@ export interface ReportLiveCampaignDetailDTO {
   IsActive: boolean;
   TotalFastSaleOrder?: number;
   TotalSaleOnlineOrder?: number;
+  ProductTmlpId: number;
 }
 
 export interface OrderSummaryDTO {

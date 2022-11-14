@@ -17,9 +17,9 @@
             [noResult]="NoResultTable">
             <thead>
                 <tr>
-                    <th [width]="'33.33%'">Tên thuộc tính</th>
-                    <th [width]="'33.33%'">Giá trị thuộc tính</th>
-                    <th [width]="'33.33%'">Thao tác</th>
+                    <th [width]="'20%'">Tên thuộc tính</th>
+                    <th [width]="'60%'">Giá trị thuộc tính</th>
+                    <th [width]="'20%'" [align]="'center'">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,7 +39,7 @@
                                 </tds-error>
                             </tds-form-field>
                         </td>
-                        <td>
+                        <td class="text-center">
                             <button tds-button-flat-icon type="button" size="sm" tds-tooltip="Xóa"
                                 (click)="deleteAttribute(data.AttributeId)">
                                 <span class="flex items-center">

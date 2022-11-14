@@ -6,11 +6,18 @@ export interface StockWarehouseDTO {
   Code: string;
   Name: string;
   CompanyId: number;
-  Company: CompanyDTO;
-
+  Company?: CompanyDTO;
+  ReceptionSteps?: any;
+  DeliverySteps?: any;
+  LocationId: number;
+  ViewLocationId: number;
+  InTypeId?: any;
+  OutTypeId?: any;
+  IntTypeId?: any;
+  BuyPullId?: any;
+  PartnerId?: any;
   NameGet: string;
-
-  CompanyName: string;
+  CompanyName?: any;
 }
 
 export interface StockLocationDTO {

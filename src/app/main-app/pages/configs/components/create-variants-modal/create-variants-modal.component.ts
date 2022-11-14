@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
@@ -13,9 +14,10 @@ import { CreateVariantsHandler } from './create-variants.handler';
 @Component({
   selector: 'app-create-variants-modal',
   templateUrl: './create-variants-modal.component.html',
+  providers: [TDSDestroyService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateVariantsModalComponent implements OnInit, OnDestroy {
+export class CreateVariantsModalComponent implements OnInit {
 
   @Input() listType!: TDSSafeAny[];
   @Input() attributeLines!: ConfigAttributeLine[];
@@ -45,13 +47,12 @@ export class CreateVariantsModalComponent implements OnInit, OnDestroy {
     return value;
   };
 
-  private destroy$ = new Subject<void>();
-
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
     private productTemplateService: ProductTemplateService,
     private message: TDSMessageService,
-    private cdRef: ChangeDetectorRef) {
+    private cdRef: ChangeDetectorRef,
+    private destroy$: TDSDestroyService) {
     this.createForm();
   }
 
@@ -141,7 +142,7 @@ export class CreateVariantsModalComponent implements OnInit, OnDestroy {
   save() {
     if (this.checkValidate()) {
       if (this.suggestModel) {
-        this.suggestModel.AttributeLines = this.attributeModel;
+        this.suggestModel.AttributeLines = [...this.attributeModel];
       }
 
       if (this.editModel) {
@@ -149,16 +150,22 @@ export class CreateVariantsModalComponent implements OnInit, OnDestroy {
         this.modal.destroy(this.prepareModel(this.editModel));
       } else {
         this.isLoading = true;
-        this.productTemplateService.suggestVariants({ model: this.suggestModel })
-          .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false }))
-          .subscribe(
-            (res) => {
-              this.modal.destroy(this.prepareModel(res.value[0]));
+
+        this.productTemplateService.suggestVariants({ model: this.suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res) => {
+              if(res && TDSHelperArray.hasListValue(res.value)) {
+                this.modal.destroy(this.prepareModel(res.value[0]));
+              } else {
+                this.message.error('Không có dữ liệu trả về');
+              }
+
+              this.isLoading = false;
             },
-            (err) => {
+            error: (err) => {
+              this.isLoading = false;
               this.message.error(err?.error?.message || 'Không thể tải dữ liệu biến thể');
             }
-          )
+          })
       }
     } else {
       this.message.error('Lỗi dữ liệu');
@@ -167,10 +174,5 @@ export class CreateVariantsModalComponent implements OnInit, OnDestroy {
 
   cancel() {
     this.modal.destroy(null);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

@@ -10,13 +10,13 @@ import { ProductCategoryService } from './../../../../services/product-category.
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { SharedService } from './../../../../services/shared.service';
 import { KeyCacheIndexDBDTO, SyncCreateProductTemplateDto, DataPouchDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants, ConfigUOM, ConfigUOMPO, ConfigProductDefaultDTO } from './../../../../dto/configs/product/config-product-default.dto';
+import { ConfigAttributeLine, ConfigProductVariant, ConfigProductDefaultDTO } from './../../../../dto/configs/product/config-product-default.dto';
 import { ProductCategoryDTO } from './../../../../dto/product/product-category.dto';
 import { ProductTemplateDTO, ProductUOMDTO } from './../../../../dto/product/product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { mergeMap } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { map, takeUntil } from 'rxjs/operators';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
@@ -31,8 +31,6 @@ import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte
   providers: [TDSDestroyService]
 })
 export class AddDrawerProductComponent implements OnInit {
-  @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
-
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
 
@@ -41,7 +39,7 @@ export class AddDrawerProductComponent implements OnInit {
   lstAttributes: Array<ConfigAttributeLine> = [];
   lstVariants: Array<ConfigProductVariant> = [];
   productTypeList: Array<TDSSafeAny> = [];
-
+  hasVariants: boolean = false;
   cacheObject!: KeyCacheIndexDBDTO;
 
   numberWithCommas =(value:TDSSafeAny) =>{
@@ -97,10 +95,12 @@ export class AddDrawerProductComponent implements OnInit {
 
           this.updateForm(res);
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(error: any) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -111,10 +111,12 @@ export class AddDrawerProductComponent implements OnInit {
       next:(res: any) => {
           this.lstCategory = [...res?.value];
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(error) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -125,10 +127,12 @@ export class AddDrawerProductComponent implements OnInit {
       next:res => {
           this.lstUOMCategory = [...res?.value];
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -147,6 +151,7 @@ export class AddDrawerProductComponent implements OnInit {
       DiscountPurchase: [0],
       StandardPrice: [0],
       ImageUrl: [null],
+      InitInventory: [0],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
       OrderTag: [null]
@@ -175,7 +180,7 @@ export class AddDrawerProductComponent implements OnInit {
   }
 
   prepareModel() {
-    const formModel = this._form.value;
+    const formModel = this._form.value as ProductTemplateDTO;
 
     this.defaultGet["Name"] = formModel.Name;
     this.defaultGet["Type"] = formModel.Type;
@@ -183,8 +188,8 @@ export class AddDrawerProductComponent implements OnInit {
     this.defaultGet["Barcode"] = formModel.Barcode;
     this.defaultGet["Categ"] = formModel.Categ;
     this.defaultGet["CategId"] = formModel.Categ.Id;
-
     this.defaultGet["Weight"] = formModel.Weight;
+    this.defaultGet["InitInventory"] = formModel.InitInventory;
     this.defaultGet["ListPrice"] = formModel.ListPrice;
     this.defaultGet["DiscountSale"] = formModel.DiscountSale;
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
@@ -228,21 +233,22 @@ export class AddDrawerProductComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-            // TODO: chỉ dùng cho chiến dịch live
-            product._attributes_length = model.AttributeLines?.length;
+            product._attributes_length = model.ProductVariants?.length || 1;
 
             const data: SyncCreateProductTemplateDto = {
               type: type,
               productTmpl: product as ProductTemplateV2DTO,
-              cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
+              cacheDbStorage: [...indexDB.cacheDbStorage]
             };
 
-            this.modalRef.destroy(type ? data : null);
+            this.modalRef.destroy(data.type ? data : null);
             this.isLoading = false;
+            this.cdRef.detectChanges();
         },
         error: (error: any) => {
             this.isLoading = false;
             this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
         }
       })
   }
@@ -256,16 +262,17 @@ export class AddDrawerProductComponent implements OnInit {
       title: 'Thêm nhóm sản phẩm',
       content: TpageAddCategoryComponent,
       size: 'lg',
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {}
+      viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadCategory();
+      if(result) {
+        this.lstCategory = [...[result],...this.lstCategory];
+      }
     });
   }
 
-  onSearchUOM() {
+  onSearchUOM(type: string) {
     const modal = this.modal.create({
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
@@ -274,7 +281,15 @@ export class AddDrawerProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadUOMCateg();
+      if(result) {
+        if(type == 'UOM') {
+          this._form.controls["UOM"].setValue(result.Name);
+        }
+
+        if(type == 'UOMPO') {
+          this._form.controls["UOMPO"].setValue(result.Name);
+        }
+      }
     });
   }
 
@@ -343,6 +358,7 @@ export class AddDrawerProductComponent implements OnInit {
           this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res) => {
               this.lstVariants = [...res.value];
+
               this.isLoading = false;
               this.cdRef.detectChanges();
             },
@@ -362,7 +378,7 @@ export class AddDrawerProductComponent implements OnInit {
   showEditVariantsModal(data: ConfigProductVariant) {
     let name = this._form.controls["Name"].value;
 
-    if (name) {
+    if(name) {
       let model = this.prepareModel() as ConfigProductDefaultDTO;
       let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
@@ -402,7 +418,7 @@ export class AddDrawerProductComponent implements OnInit {
     }
   }
 
-  onAddUOM() {
+  showCreateUOMModal() {
     const modal = this.modal.create({
       title: 'Thêm đơn vị tính',
       content: TpageAddUOMComponent,
@@ -411,8 +427,8 @@ export class AddDrawerProductComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      if(TDSHelperObject.hasValue(result)) {
-        this.loadUOMCateg();
+      if(result) {
+        this.lstUOMCategory = [...[result],...this.lstUOMCategory];
       }
     });
   }

@@ -4,7 +4,6 @@
             <label class="font-semibold">Đối tác giao hàng</label>
             <tds-form-field class="w-full col-span-3">
                 <tds-select formControlName="carrierId" valueField="Id" textField="Name" placeholder='Đối tác giao hàng'
-                    disabledField="isActive"
                     [data]="(lstCarriers | async) || []" [allowClear]="true">
                 </tds-select>
                 <tds-error>
@@ -16,8 +15,7 @@
             <label class="font-semibold text-right">Trạng thái</label>
             <tds-form-field class="w-full col-span-2">
                 <tds-select formControlName="shipStatus" valueField="value" textField="text" placeholder='Chọn trạng thái'
-                    disabledField="isActive" [valuePrimitive]="false"
-                    [data]="lstShipStatus" [allowClear]="true">
+                    [valuePrimitive]="false" [data]="lstShipStatus" [allowClear]="true">
                 </tds-select>
                 <tds-error>
                     Vui lòng chọn trạng thái
@@ -49,8 +47,8 @@
                   </button>
             </div>
         </div>
-        <div class="w-full">
-            <tds-table #basicTable [listData]="listTempOfData" [showPagination]="false">
+        <div #listenerArea tabindex="{{tabIndex}}" class="w-full">
+            <tds-table #basicTable [listData]="listTempOfData" [showPagination]="false" [frontPagination]="false" [scroll]="{ y: '300px' }">
                 <thead>
                       <tr>
                             <th width="80px" [align]="'center'">STT</th>
@@ -68,44 +66,39 @@
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data" >
                         <tr>
-                            <td class="text-center">{{ i + 1 }}</td>
-                            <td>
-                                <tds-form-field
-                                    tds-tooltip
-                                    [tooltipTrigger]="'click'"
-                                    [tooltipVisible]="data.hasError ? true : false"
-                                    [tooltipColor]="'warning'"
-                                    [tooltipTitle]="data.hasError ? titleTemplateWarning : '' ">
+                            <td class="text-center align-top">{{ i + 1 }}</td>
+                            <td class="align-top">
+                                <tds-form-field [color]="data.hasError ? 'warning' : 'default'">
                                     <input tdsInput autocomplete="off" placeholder="Nhập mã vận đơn" [ngModelOptions]="{standalone: true}"
-                                        [(ngModel)]="data.TrackingRef" (change)="checkExistTrackingRef($event.target,i)"/>
+                                        [(ngModel)]="data.TrackingRef" (ngModelChange)="checkExistTrackingRef($event, i)"/>
+                                    <tds-warning>{{data.hasError}}</tds-warning>
                                 </tds-form-field>
-
+                                
                                 <ng-template #titleTemplateWarning>
                                     <span class="tdsi-warning-fill mr-2"></span>
                                     <span>{{data.hasError}}</span>
                                 </ng-template>
                             </td>
-                            <td>
+                            <td class="align-top">
                                 <tds-input-number [formatter]="numberWithCommas" [parser]="parserComas"
                                     [ngModelOptions]="{standalone: true}"
                                     [(ngModel)]="data.CoDAmount"
                                     [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                             </td>
-                            <td>
+                            <td class="align-top">
                                 <tds-select [ngModelOptions]="{standalone: true}"
                                     [(ngModel)]="data.ShipStatus" valueField="text" textField="text" placeholder='Chọn trạng thái'
-                                    disabledField="isActive"
                                     [data]="lstShipStatus" [allowClear]="true">
                                 </tds-select>
                             </td>
-                            <td>
+                            <td class="align-top">
                                 <tds-form-field>
                                     <input tdsInput autocomplete="off" placeholder="Ghi chú"
                                         [ngModelOptions]="{standalone: true}"
                                         [(ngModel)]="data.Note"/>
                                 </tds-form-field>
                             </td>
-                            <td>
+                            <td class="align-top">
                                 <button tds-button-icon color="secondary" tds-tooltip="Xóa" (click)="removeCrossChecking(i)">
                                     <i class="tdsi-trash-fill text-error-400"></i>
                                 </button>

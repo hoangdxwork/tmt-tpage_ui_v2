@@ -1,3 +1,4 @@
+import { formatDate, DatePipe } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
@@ -143,7 +144,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     private crmMatchingService: CRMMatchingService,
     private modalService: TDSModalService,
     private chatomniMessageFacade: ChatomniMessageFacade,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private datePipe : DatePipe) {
   }
 
   ngOnInit(): void {
@@ -267,13 +269,22 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   loadSummaryStatus() {
+    let startDate = this.filterObj?.dateRange.startDate as any;
+    if(startDate) {
+        startDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddT00:00:00+00:00');
+    }
+
+    let endDate = this.filterObj?.dateRange.endDate as any;
+    if(endDate) {
+        endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
+    }
+
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange?.startDate,
-      DateEnd: this.filterObj.dateRange?.endDate,
+      DateStart: startDate,
+      DateEnd: endDate,
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
-
 
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),

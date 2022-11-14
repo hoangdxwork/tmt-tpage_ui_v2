@@ -110,15 +110,15 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
 
       let exist = data && data.liveCampaignId && data.objectId;
 
-      if(exist) {
-        this.drawerEditLiveCampaign = data.isOpenDrawer;
+      // if(exist) {
+      //   this.drawerEditLiveCampaign = data.isOpenDrawer;
 
-        if(data.isOpenDrawer) {
-          this.openDrawerEditLiveCampaign();
-        }
-      } else {
-        this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
-      }
+      //   if(data.isOpenDrawer) {
+      //     this.openDrawerEditLiveCampaign();
+      //   }
+      // } else {
+      //   this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
+      // }
       this.cdRef.detectChanges();
     }
   }
@@ -280,7 +280,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
             data: data
         }
       })
-    } 
+    }
   }
 
   openTag(item: ChatomniObjectsItemDto) {
