@@ -247,14 +247,9 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.deleteData<any>(api, null, ids);
   }
 
-  updateDetails(id: string, data: any, type?: string): Observable<any> {
-    let url = `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails?includeordertag=true`;
-    if(type == 'iclick') {
-        url = `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails`;
-    }
-
+  updateDetails(id: string, data: any): Observable<any> {
     const api: CoreAPIDTO = {
-        url: url,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails`,
         method: CoreApiMethodType.post,
     }
 

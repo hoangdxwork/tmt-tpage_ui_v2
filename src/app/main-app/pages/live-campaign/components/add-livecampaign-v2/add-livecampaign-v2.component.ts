@@ -344,24 +344,10 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   onLoadProduct(model: DataPouchDBDTO[]) {
     let listData = [...(model|| [])];
-    let ids = listData.map(x => x.Id);
-
-    this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.orderTagbyIds(listData, res);
-      },
-      error: (error: any) => {
-          this.message.error(error?.error?.message);
-      }
-    })
-  }
-
-  orderTagbyIds(listData: DataPouchDBDTO[], tags: any) {
     let formDetails = this.detailsForm.value as any[];
     let simpleDetail: LiveCampaignSimpleDetail[] = [];
 
     listData.forEach((x: DataPouchDBDTO) => {
-      const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
       let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
 
       // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
@@ -385,9 +371,6 @@ export class AddLiveCampaignV2Component implements OnInit {
               IsActive: true,
               UsedQuantity: 0
           } as LiveCampaignSimpleDetail;
-
-          let gTags = this.generateTagDetail(item.Tags, vTag);
-          item.Tags = gTags.join(',');
 
           simpleDetail = [...simpleDetail, ...[item]];
       } else {

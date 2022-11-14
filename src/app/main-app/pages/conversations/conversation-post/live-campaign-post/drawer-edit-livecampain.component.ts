@@ -379,7 +379,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
   }
 
-  addProductLiveCampaignDetails(items: ReportLiveCampaignDetailDTO[], type?: string) {
+  addProductLiveCampaignDetails(items: ReportLiveCampaignDetailDTO[]) {
     let id = this.liveCampaignId as string;
     items.map(x => {
       if(x && x.Tags) {
@@ -388,7 +388,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     });
 
     this.isLoading = true;
-    this.liveCampaignService.updateDetails(id, items, type).pipe(takeUntil(this.destroy$)).subscribe({
+    this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any[]) => {
           this.isLoading = false;
           if(!res) return;
@@ -626,9 +626,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
   }
 
-  onSaveDetails(item: ReportLiveCampaignDetailDTO, type: string,) {
+  onSaveDetails(item: ReportLiveCampaignDetailDTO) {
     if(item && item.Id) {
-      this.addProductLiveCampaignDetails([item], type);
+      this.addProductLiveCampaignDetails([item]);
     }
   }
 
