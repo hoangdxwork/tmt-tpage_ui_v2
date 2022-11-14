@@ -449,7 +449,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: 'xl',
-        viewContainerRef: this.viewContainerRef
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          type: 'liveCampaign'
+        }
     });
 
     modal.afterClose.subscribe((res: any) => {
