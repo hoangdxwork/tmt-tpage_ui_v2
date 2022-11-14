@@ -508,7 +508,7 @@ export class PostOrderConfigComponent implements OnInit {
       productName = productName.replace(`[${code}]`, "");
     }
 
-    productName = productName.trim();
+    productName = productName.toLocaleLowerCase().trim();
 
     let word = StringHelperV2.removeSpecialCharacters(productName);
     let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
