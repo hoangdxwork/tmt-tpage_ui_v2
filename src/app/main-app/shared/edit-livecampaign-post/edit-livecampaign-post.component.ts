@@ -3,7 +3,7 @@ import { ModalAddQuickReplyComponent } from './../../pages/conversations/compone
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ViewChild, ChangeDetectorRef, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -28,6 +28,7 @@ import { Message } from '@core/consts/message.const';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '@app/services/product-indexdb.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'edit-livecampaign-post',
@@ -40,6 +41,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   _form!: FormGroup;
   @Input() id?: string;
+  @Input() itemProduct!: LiveCampaignSimpleDetail;
 
   selectedIndex: number = 0;
   searchValue = '';
@@ -107,7 +109,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
     private message: TDSMessageService,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    @Inject(DOCUMENT) private document: Document) {
       this.createForm();
   }
 
@@ -267,6 +270,12 @@ export class EditLiveCampaignPostComponent implements OnInit {
           }
 
           this.updateForm(res);
+
+          if(this.itemProduct) {
+            this.selectedIndex = 1;
+            this.onEditDetails(this.itemProduct);
+            this.srcollBehavior(this.itemProduct);
+          }
           this.isLoading = false;
       },
       error:(err) => {
@@ -921,5 +930,24 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
 
     return datas;
+  }
+
+  srcollBehavior(item: LiveCampaignSimpleDetail) {
+    setTimeout(() => {
+      let element = this.document.getElementsByClassName('tds-table-body')[0] as any;
+
+      let formDetails = this.detailsForm.value as any[];
+      let idxItem = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+      let idxScroll = this.document.getElementById(`dataSourceScroll${idxItem}`) as any;
+
+      if(element && idxScroll) {
+        let top = idxScroll.offsetTop;
+
+        element?.scroll({
+            top: top,
+            behavior: 'smooth',
+        })
+      }
+    }, 500)
   }
 }
