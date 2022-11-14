@@ -34,11 +34,11 @@
                                     <tr>
                                         <th width="8%">STT</th>
                                         <th width="15%">Mã hóa đơn</th>
-                                        <th width="15%">Kênh kết nối</th>
-                                        <th width="15%">Trạng thái</th>
-                                        <th width="15%">Nhân viên</th>
                                         <th width="17%">Ngày tạo</th>
                                         <th width="15%" [align]="'right'">Tổng tiền</th>
+                                        <th width="15%" [align]="'right'">Đặt cọc</th>
+                                        <th width="15%" [align]="'right'">Còn nợ</th>
+                                        <th width="15%">Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -46,15 +46,15 @@
                                         <tr class="text-body-2 text-neutral-900 font-regular">
                                             <td>{{ i + 1 }}</td>
                                             <td>{{ data.Number }}</td>
-                                            <td>{{ data.CRMTeamName }}</td>
+                                            <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
+                                            <td class="text-right">{{ data.AmountTotal | numberCustom }} đ</td>
+                                            <td class="text-right">{{ data.AmountDeposit | numberCustom }} đ</td>
+                                            <td class="text-right">{{ data.Residual | numberCustom }} đ</td>
                                             <td>
                                                 <tds-tag [status]="data.State | getColorStatusState" size="sm" type="outline">
                                                     {{ data.ShowState }}
                                                 </tds-tag>
                                             </td>
-                                            <td>{{ data.UserName }}</td>
-                                            <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
-                                            <td class="text-right">{{ data.AmountTotal | numberCustom }} đ</td>
                                         </tr>
                                     </ng-template>
                                 </tbody>
