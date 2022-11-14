@@ -451,6 +451,8 @@ export class ListProductTmpV2Component implements OnInit {
     let result: string[] = [];
 
     if(TDSHelperString.hasValueString(defaultCode)) {
+        defaultCode = defaultCode.toLocaleLowerCase();
+
         if(TDSHelperString.hasValueString(uomName)) {
             let x = `${defaultCode} ${uomName}`
             result.push(x);
@@ -511,8 +513,7 @@ export class ListProductTmpV2Component implements OnInit {
   }
 
   loadProductCategory() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: TDSSafeAny) => {
           this.categoryList = [...res.value];
         },
