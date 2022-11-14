@@ -39,7 +39,7 @@
       </div>
       <!-- TODO: Thao tác -->
       <div class="flex flex-auto flex-row items-center justify-end gap-x-2 pr-4">
-        <div class="w-full flex items-center gap-x-2 pl-4" [ngClass]="setOfCheckedId.size > 0 ? 'justify-end' : 'justify-between'">
+        <div class="w-full flex items-center gap-x-2 pl-4" [ngClass]="setOfCheckedId.size > 0 || countCanMergeOrder == 0 ? 'justify-end' : 'justify-between'">
           <button tds-button color="primary" class="min-w-[100px]" *ngIf="countCanMergeOrder > 0" (click)="mergeOrder2()">
             <span class="flex items-center">
               Gộp đơn ({{ countCanMergeOrder }})

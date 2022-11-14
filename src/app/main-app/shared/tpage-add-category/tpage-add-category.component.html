@@ -4,7 +4,8 @@
             <div class="grid grid-cols-1 gap-y-4 gap-x-6">
                 <div class="grid grid-cols-4 gap-y-4 gap-x-6 items-center">
                     <tds-label>Tên:</tds-label>
-                    <tds-form-field class="w-full col-span-3">
+                    <tds-form-field class="w-full col-span-3" 
+                        [color]="!_form.controls['Name'].valid && _form.controls['Name'].touched ? 'error':'default'">
                         <input tdsInput formControlName="Name" placeholder="Nhập tên nhóm mới"
                             class="text-neutral-1-900 text-body-2 font-regular" />
                         <tds-error>
@@ -33,7 +34,8 @@
                     </tds-form-field>
     
                     <tds-label>Phương pháp giá:</tds-label>
-                    <tds-form-field class="w-full col-span-3">
+                    <tds-form-field class="w-full col-span-3" 
+                        [color]="!_form.controls['PropertyCostMethod'].valid && _form.controls['PropertyCostMethod'].touched ? 'error':'default'">
                         <tds-select valueField="value" textField="text" placeholder='Chọn phương pháp giá'
                             disabledField="isActive" formControlName="PropertyCostMethod" [valuePrimitive]="true"
                             [data]="costMethodList" [allowClear]="true">

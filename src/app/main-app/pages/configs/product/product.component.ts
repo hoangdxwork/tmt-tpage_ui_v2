@@ -62,12 +62,16 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
   pageIndex = 1;
   filterObj: FilterProductTemplateObjDTO = {
     searchText: '',
-    active: true
+    active: null //TODO: trường hợp null không lọc theo hiệu lực
   };
   sort: SortDataRequestDTO[] = [
     {
       field: 'DateCreated',
-      dir: SortEnum.desc // TODO: mặc định sắp xếp giảm dần theo ngày tạo
+      dir: SortEnum.desc, // TODO: mặc định sắp xếp giảm dần theo ngày tạo
+    },
+    {
+      field: 'Active',
+      dir: SortEnum.desc
     }
   ];
   sortByName:string = '';
