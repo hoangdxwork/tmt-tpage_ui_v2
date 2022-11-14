@@ -321,7 +321,7 @@ export class EditLiveCampaignComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              Tags: x.DefaultCode,
+              Tags: x.Tags,
               LimitedQuantity: 0,
               ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,

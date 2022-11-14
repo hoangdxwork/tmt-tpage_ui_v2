@@ -20,6 +20,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { StringHelperV2 } from '../helper/string.helper';
 
 @Component({
   selector: 'list-product-tmp-v2',
@@ -306,14 +307,44 @@ export class ListProductTmpV2Component implements OnInit {
         }
 
         items.map((x: DataPouchDBDTO) => {
-            x.Tags = model?.OrderTag || '';// mã chốt đơn
-
-            let qty = model.InitInventory > 0 ? model.InitInventory : 1;
+            const qty = model.InitInventory > 0 ? model.InitInventory : 1;
             x.QtyAvailable = qty;
+
+            // TODO: lọc sp trùng mã code để tạo tags
+            let uomName = '';
+            let exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+            if(exist && exist.length > 1) {
+                uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim());
+            }
+
+            let oTags = x.DefaultCode;
+            let gTags = this.generateTagDetail(oTags, uomName) as any;
+            x.Tags = gTags.join(','); // mã chốt đơn
         });
 
         this.onLoadProductToLiveCampaign.emit([...items]);
     }
+  }
+
+  generateTagDetail(oTags: string, uomName?: string) {
+    let result: string[] = [];
+
+    if(TDSHelperString.hasValueString(oTags)){
+        let tagArr = oTags.split(',');
+        tagArr.map((x: any) => {
+          if(!result.find(y => y == x)) {
+
+              if(TDSHelperString.hasValueString(uomName)) {
+                  x = `${x} ${uomName}`;
+                  result.push(x);
+              } else {
+                  result.push(x);
+              }
+          }
+        })
+    }
+
+    return [...result];
   }
 
   reloadIndexDB() {
@@ -373,10 +404,19 @@ export class ListProductTmpV2Component implements OnInit {
     }
 
     items.map((x: DataPouchDBDTO) => {
+        // TODO: kiểm tra số lượng
         const qty = (this.inventories && this.inventories[x.Id] && Number(this.inventories[x.Id].QtyAvailable) > 0)
         ? Number(this.inventories[x.Id].QtyAvailable) : 1;
-
         x.QtyAvailable = qty;
+
+        // TODO: lọc sp trùng mã code để tạo tags
+        let exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        if(exist && exist.length > 1) {
+            let uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim());
+            x.Tags = `${x.DefaultCode} ${uomName}`;
+        } else {
+            x.Tags = `${x.DefaultCode}`;
+        }
     });
 
     this.lstVariants = [...items];
