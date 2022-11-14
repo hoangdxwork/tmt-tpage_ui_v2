@@ -380,13 +380,13 @@ export class AddLiveCampaignV2Component implements OnInit {
               Tags: x.Tags,//mã chốt đơn sp
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              ProductCode:  x.DefaultCode,
+              ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
               IsActive: true,
               UsedQuantity: 0
           } as LiveCampaignSimpleDetail;
 
-          let gTags = this.generateTagDetail(item.ProductCode, item.Tags, vTag);
+          let gTags = this.generateTagDetail(item.Tags, vTag);
           item.Tags = gTags.join(',');
 
           simpleDetail = [...simpleDetail, ...[item]];
@@ -431,11 +431,8 @@ export class AddLiveCampaignV2Component implements OnInit {
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
 
-  generateTagDetail(code: string, tags: string, orderTag: string) {
+  generateTagDetail(tags: string, orderTag: string) {
     let result: string[] = [];
-    if(code) {
-        result.push(code);
-    }
 
     if(tags) {
         let tagArr1 = tags.split(',');

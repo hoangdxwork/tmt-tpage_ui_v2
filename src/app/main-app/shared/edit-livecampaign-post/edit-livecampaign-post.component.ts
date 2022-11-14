@@ -485,19 +485,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
               UOMId: x.UOMId,
               UOMName: x.UOMName,
 
-              Tags: product.OrderTag,
+              Tags: x.DefaultCode,
 
               LimitedQuantity: 0,
-              ProductCode: x.Barcode || x.DefaultCode,
+              ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
               IsActive: true,
           } as LiveCampaignSimpleDetail;
-
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 1;
-
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags.join(',');
 
           this.addProductLiveCampaignDetails([item]);
       }
@@ -544,7 +538,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              Tags: x.DefaultCode,
+              Tags: x.Tags,
               LimitedQuantity: 0,
               ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
@@ -576,10 +570,19 @@ export class EditLiveCampaignPostComponent implements OnInit {
     }
 
     items.map((x: DataPouchDBDTO) => {
-      let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
+      // TODO: kiểm tra số lượng
+      const qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
         ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+      x.QtyAvailable = qty;
 
-      x.QtyAvailable =qty;
+      // TODO: lọc sp trùng mã code để tạo tags
+      let exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+      if(exist && exist.length > 1) {
+          let uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim());
+          x.Tags = `${x.DefaultCode} ${uomName}`;
+      } else {
+          x.Tags = `${x.DefaultCode}`;
+      }
     });
 
     this.lstVariants = [...items];

@@ -449,6 +449,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
         items.map(x => {
             let qty = product.InitInventory > 0 ? product.InitInventory : 1;
             x.QtyAvailable = qty;
+
+            x.Tags = product.DefaultCode
         })
 
         this.onLoadProduct(items);
@@ -499,7 +501,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
                 UsedQuantity: 0
             } as LiveCampaignSimpleDetail;
 
-            let gTags = this.generateTagDetail(item.ProductCode, item.Tags, vTag);
+            let gTags = this.generateTagDetail(item.Tags, vTag);
             item.Tags = gTags.join(',');
 
             simpleDetail = [...simpleDetail, ...[item]];
@@ -639,38 +641,21 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.modalRef.destroy(data);
   }
 
-  generateTagDetail(productName: string, code: string, tags: string, _attributes_length?: number) {
+  generateTagDetail(tags: string, orderTag: string) {
     let result: string[] = [];
 
-    if(!TDSHelperString.hasValueString(productName)) {
-      return result;
+    if(tags) {
+        let tagArr1 = tags.split(',');
+        tagArr1?.map((x: any) => {
+          if(!result.find(y => y == x))
+              result.push(x);
+        })
     }
 
-    productName = productName.replace(`[${code}]`, "");
-    productName = productName.trim();
-
-    let word = StringHelperV2.removeSpecialCharacters(productName);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
-
-    result.push(word);
-
-    if(!result.includes(wordNoSignCharacters)) {
-      result.push(wordNoSignCharacters);
-    }
-
-    if(!result.includes(wordNameNoSpace)) {
-      result.push(wordNameNoSpace);
-    }
-
-    if(TDSHelperString.hasValueString(code) && code  && _attributes_length == 0) {
-      result.push(code);
-    }
-
-    if(TDSHelperString.hasValueString(tags)){
-        let tagArr = tags.split(',');
-        tagArr.map(x => {
-          if(!result.find(y=> y == x))
+    if(orderTag) {
+        let tagArr2 = orderTag.split(',');
+        tagArr2?.map((x: any) => {
+          if(!result.find(y => y == x))
               result.push(x);
         })
     }
