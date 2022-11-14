@@ -18,7 +18,7 @@
                                     <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" [required]='true' formControlName="Name" />
                                     <tds-error *ngIf="_form.invalid">Vui lòng nhập tên sản phẩm</tds-error>
                                 </tds-form-field>
-                                <tds-form-field [color]="_form.controls.OrderTag.invalid && _form.controls.OrderTag.touched? 'error': 'default'">    
+                                <tds-form-field *ngIf="type == 'liveCampaign'" [color]="_form.controls.OrderTag.invalid && _form.controls.OrderTag.touched? 'error': 'default'">    
                                     <tds-label>Mã chốt đơn</tds-label>
                                     <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" formControlName="OrderTag" [required]='true'
                                         [allowClear]="true" [data]="" mode="tags" (selectChange)="onChangeModelTag($event)">
