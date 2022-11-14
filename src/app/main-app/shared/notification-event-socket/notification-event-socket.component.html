@@ -59,7 +59,7 @@
 
         <!-- Tin nhắn nội dung -->
         <div *ngIf="data.Notification.Message">
-            <div class=" text-body-2 line-clamp font-semibold" [innerHTML]="data.Notification.Message | formatIconLike | bbcodeConvert | safeHtml"></div>
+            <div class=" text-body-2 line-clamp" [innerHTML]="data.Notification.Message | formatIconLike | bbcodeConvert | safeHtml"></div>
         </div>
 
     </div>

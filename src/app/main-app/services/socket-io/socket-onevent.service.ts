@@ -269,7 +269,7 @@ export class SocketOnEventService {
     let model: SocketEventNotificationDto = {} as any;
     model = {
       Title: `${socketData.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
-      Message: `Mã đơn hàng ${socketData.Data?.Code}`,
+      Message: `Mã đơn hàng <span class="font-semibold">${socketData.Data?.Code}</span>`,
       Attachments: {} as any,
       Url: ''
     } as any;
