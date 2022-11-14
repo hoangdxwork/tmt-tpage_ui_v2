@@ -758,7 +758,7 @@ export class DetailBillComponent implements OnInit {
         }
 
         let modal =  this.modal.create({
-          title: 'Xác nhận gộp đơn',
+          title: 'Danh sách có thể gộp đơn',
           content: ModalMergeOrderComponent,
           size: "xl",
           viewContainerRef: this.viewContainerRef,

@@ -772,7 +772,7 @@ export class AddBillComponent implements OnInit {
 
     if (TDSHelperArray.hasListValue(datas)) {
         datas.map((x: any, index: number) => {
-            if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+            if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
                 x[`${typeDiscount}`] = event;
             }
         });
@@ -803,15 +803,11 @@ export class AddBillComponent implements OnInit {
   }
 
   changeDiscount(event: any) {
-    if (event) {
       this.calcTotal();
-    }
   }
 
   changeDecreaseAmount(event: any) {
-    if (event) {
       this.calcTotal();
-    }
   }
 
   openPopoverDiscount() {
