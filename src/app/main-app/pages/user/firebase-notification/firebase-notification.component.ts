@@ -34,6 +34,9 @@ export class FirebaseNotificationComponent implements OnInit {
             this.data = [...(this.data || []), ...res.items];
             this.isRead = this.data.filter((a : any) => a.dateRead == null);
             this.cursor = res.cursor;
+
+            console.log(this.data);
+
         },
         error: (err: any) => {
             this.message.error(err?.error?.message);
@@ -52,7 +55,6 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   onDetail(item : any) {
-    this.isDetail = true
     this.dataDetail = item
   }
 
