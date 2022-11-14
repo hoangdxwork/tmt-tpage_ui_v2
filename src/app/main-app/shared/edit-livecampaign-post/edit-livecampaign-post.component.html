@@ -268,9 +268,9 @@
                                   </th>
                               </tr>
                           </thead>
-                          <tbody formArrayName="Details">
+                          <tbody formArrayName="Details" >
                               <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index" [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsForm.controls"
-                                  [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id] && id)}">
+                                  [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id] && id)}" id="dataSourceScroll{{index}}">
 
                                   <td>{{ (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls) + 1 }}</td>
 
