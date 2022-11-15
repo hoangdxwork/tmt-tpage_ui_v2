@@ -271,7 +271,7 @@ export class ModalProductTemplateComponent implements OnInit {
     });
   }
 
-  onSearchUOM() {
+  onSearchUOM(type: string) {
     const modal = this.modal.create({
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
@@ -279,8 +279,16 @@ export class ModalProductTemplateComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe(result => {
-      this.loadUOMCateg();
+    modal.afterClose.subscribe((result: ProductUOMDTO) => {
+      if(result) {
+        this.loadUOMCateg();
+        if(type == 'UOM') {
+          this._form.controls['UOM'].setValue(result.Id);
+        }
+        if(type == 'UOMPO') {
+          this._form.controls['UOMPO'].setValue(result.Id);
+        }
+      }
     });
   }
 
