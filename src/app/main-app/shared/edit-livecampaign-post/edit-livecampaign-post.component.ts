@@ -1007,7 +1007,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       let idxScroll = this.document.getElementById(`dataSourceScroll${idxItem}`) as any;
 
       if(element && idxScroll) {
-        let top = idxScroll.offsetTop;
+        let top = idxScroll.offsetTop - 170;
 
         element?.scroll({
             top: top,
