@@ -1,3 +1,4 @@
+import { formatDate, DatePipe } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
@@ -79,7 +80,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     },
     teamId: '',
     liveCampaignId: '',
-    IsHasPhone: null
+    IsHasPhone: null,
+    PriorityStatus: null
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -122,6 +124,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   widthCollapse: number = 0;
   isTabNavs: boolean = false;
   isProcessing: boolean = false;
+  filterDate: string = '';
 
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
@@ -142,6 +145,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     private crmMatchingService: CRMMatchingService,
     private modalService: TDSModalService,
     private chatomniMessageFacade: ChatomniMessageFacade,
+    private datePipe : DatePipe,
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService) {
   }
@@ -267,13 +271,22 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   loadSummaryStatus() {
+    let startDate = this.filterObj?.dateRange.startDate as any;
+    if(startDate) {
+        startDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddT00:00:00+00:00');
+    }
+
+    let endDate = this.filterObj?.dateRange.endDate as any;
+    if(endDate) {
+        endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
+    }
+
     let model: SaleOnlineOrderSummaryStatusDTO = {
-      DateStart: this.filterObj.dateRange?.startDate,
-      DateEnd: this.filterObj.dateRange?.endDate,
+      DateStart: startDate,
+      DateEnd: endDate,
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
-
 
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
@@ -386,7 +399,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               ids: ids
             }
           });
-    
+
           this.modal.afterAllClose.subscribe({
             next: (res: any) => {
               if(res) {
@@ -410,20 +423,20 @@ export class OrderComponent implements OnInit, AfterViewInit {
           let model = {
             ids: [...this.setOfCheckedId]
           }
-    
+
           this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res) => {
               delete res['@odata.context'];
               res = { ...res } as SaleOnlineOrderGetDetailsDto;
-    
+
               const keyCreateBill = this.saleOnline_OrderService._keyCreateBillOrder;
               let item = JSON.stringify(res);
               localStorage.setItem(keyCreateBill, item);
-    
+
               // TODO: lưu filter cache trước khi load trang add bill
               const key =  this.saleOnline_OrderService._keyCacheFilter;
               this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
-    
+
               this.router.navigateByUrl(`bill/create?isorder=true`);
             },
             error: (err) => {
@@ -493,9 +506,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
       title: 'Lịch sử gửi tin nhắn',
       content: ModalHistoryChatComponent,
       size: "xl",
-      bodyStyle: {
-        padding: '0px',
-      },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         orderId: orderId,
@@ -554,7 +564,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-      IsHasPhone: null
+      IsHasPhone: null,
+      PriorityStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -592,6 +603,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.liveCampaignId = event.liveCampaignId ? event.liveCampaignId : null;
 
     this.filterObj.teamId = event.teamId ? event.teamId : null;
+
+    this.filterObj.PriorityStatus = event.PriorityStatus ? event.PriorityStatus : null;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
@@ -917,5 +930,27 @@ export class OrderComponent implements OnInit, AfterViewInit {
         livecampaignId: livecampaignId
       }
   });
+  }
+
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: ODataSaleOnline_OrderModel, b: ODataSaleOnline_OrderModel) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: ODataSaleOnline_OrderModel, b: ODataSaleOnline_OrderModel) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
   }
 }

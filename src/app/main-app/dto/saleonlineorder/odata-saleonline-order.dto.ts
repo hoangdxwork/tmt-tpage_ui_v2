@@ -43,6 +43,7 @@ export interface ODataSaleOnline_OrderModel {
   HasTag: string;
   MessageCount: number;
   PartnerStatus?: any;  // TODO: dùng để hiển thị trạng thái của khách hàng, không có trong dữ liệu trả về
+  PriorityStatus?: any;
 }
 
 export interface ODataSaleOnline_OrderDTOV2 {

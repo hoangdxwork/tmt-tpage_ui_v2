@@ -1,3 +1,5 @@
+import { ConfigProductDefaultDTO } from './../../dto/configs/product/config-product-default.dto';
+import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { mergeMap } from 'rxjs';
@@ -13,7 +15,7 @@ import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-categ
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { SharedService } from '../../services/shared.service';
 import { map, takeUntil } from 'rxjs/operators';
-import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { ProductIndexDBService } from '../../services/product-indexdb.service';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -148,6 +150,7 @@ export class ModalProductTemplateComponent implements OnInit {
       PurchasePrice: [0],
       DiscountPurchase: [0],
       StandardPrice: [0],
+      InitInventory: [0],
       ImageUrl: [null],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
@@ -192,6 +195,7 @@ export class ModalProductTemplateComponent implements OnInit {
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
     this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
     this.defaultGet["StandardPrice"] = formModel.StandardPrice;
+    this.defaultGet["InitInventory"] = formModel.InitInventory;
     this.defaultGet["OrderTag"] = formModel.OrderTag ? formModel.OrderTag.toString(): null;
 
     if (formModel.UOM) {
@@ -231,7 +235,7 @@ export class ModalProductTemplateComponent implements OnInit {
         next: ([product, indexDB]) => {
 
             // TODO: chỉ dùng cho chiến dịch live
-            product._attributes_length = model.AttributeLines?.length;
+            product._attributes_length = model.ProductVariants?.length || 1;
 
             const data: SyncCreateProductTemplateDto = {
               type: type,
@@ -263,11 +267,13 @@ export class ModalProductTemplateComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadCategory();
+      if(result) {
+        this.lstCategory = [...[result],...this.lstCategory];
+      }
     });
   }
 
-  onSearchUOM() {
+  onSearchUOM(type: string) {
     const modal = this.modal.create({
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
@@ -276,7 +282,16 @@ export class ModalProductTemplateComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadUOMCateg();
+      if(result) {
+        switch(type) {
+          case 'UOM':
+            this._form.controls["UOM"].setValue(result);
+            break;
+          case 'UOMPO':
+            this._form.controls["UOMPO"].setValue(result);
+            break;
+        }
+      }
     });
   }
 
@@ -336,11 +351,12 @@ export class ModalProductTemplateComponent implements OnInit {
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.isLoading = true;
-          this.lstAttributes = result;
-          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
-          model.AttributeLines = result;
+          this.lstAttributes = [...result];
+          let model = this.prepareModel() as ConfigProductDefaultDTO;
+          let suggestModel = AddProductHandler.prepareSuggestModel(model);
+          suggestModel.AttributeLines = [...result];
 
-          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
+          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
               this.isLoading = false;
@@ -361,7 +377,8 @@ export class ModalProductTemplateComponent implements OnInit {
     let name = this._form.controls["Name"].value;
 
     if (name) {
-      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+      let model = this.prepareModel() as ConfigProductDefaultDTO;
+      let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
       const modal = this.modal.create({
         title: 'Sửa biến thể sản phẩm',
@@ -399,7 +416,7 @@ export class ModalProductTemplateComponent implements OnInit {
     }
   }
 
-  onAddUOM() {
+  showCreateUOMModal() {
     const modal = this.modal.create({
       title: 'Thêm đơn vị tính',
       content: TpageAddUOMComponent,
@@ -409,12 +426,43 @@ export class ModalProductTemplateComponent implements OnInit {
 
     modal.afterClose.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
-        this.loadUOMCateg();
+        if(result) {
+          this.lstUOMCategory = [...[result],...this.lstUOMCategory];
+        }
       }
     });
   }
 
   changeTags(event:any,i:number){
-    this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
+    let strs = [...this.checkInputMatch(event)];
+
+    this.lstVariants[i].OrderTag = TDSHelperArray.hasListValue(strs) ? strs.join(',') : null;
+  }
+
+  onChangeModelTag(event: string[]) {
+    let strs = [...this.checkInputMatch(event)];
+    this._form.controls.OrderTag.setValue(strs);
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 }

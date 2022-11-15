@@ -15,6 +15,7 @@ export class LiveCampaignService extends BaseSevice {
   table: string = "SaleOnline_LiveCampaign";
   baseRestApi: string = "rest/v1.0/saleonine_livecampaign";
   public _keyCacheGrid: string = 'livecampaign-page:grid_livecampaign:settings';
+  _keyCacheDrawerEdit: string = '_keyCacheDrawer';
 
   constructor(private apiService: TCommonService) {
     super(apiService);
@@ -248,11 +249,20 @@ export class LiveCampaignService extends BaseSevice {
 
   updateDetails(id: string, data: any): Observable<any> {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails?includeordertag=true`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatedetails`,
         method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<any>(api, data);
+  }
+
+  getOrderTagbyIds(ids: any): Observable<any> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/product/getordertagbyids`,
+        method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, ids);
   }
 
   updateSimple(id: string, data: any): Observable<any> {
@@ -295,9 +305,9 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  overviewDetailsReport(liveCampaignId: string, params: string): Observable<any> {
+  overviewDetailsReport(liveCampaignId: string, params?: string): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/overviewdetailsreport?${params}`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/overviewdetailsreport`+ (params ? `?${params}` : ``),
       method: CoreApiMethodType.get,
     }
     return this.apiService.getData<any>(api, null);
@@ -317,5 +327,33 @@ export class LiveCampaignService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
     return this.apiService.getData<any>(api, null);
+  }
+
+
+  setLocalStorageDrawer(objectId: any, liveCampaignId: string, isOpenDrawer: boolean) {
+    const key = `${this._keyCacheDrawerEdit}`;
+    let data = {
+      liveCampaignId: liveCampaignId,
+      objectId: objectId,
+      isOpenDrawer: isOpenDrawer
+    };
+
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  getLocalStorageDrawer() {
+    const key = `${this._keyCacheDrawerEdit}`;
+    let item = localStorage.getItem(key);
+
+    if(item) {
+      return JSON.parse(item);
+    } else {
+      return null;
+    }
+  }
+
+  removeLocalStorageDrawer() {
+    const key = `${this._keyCacheDrawerEdit}`;
+    localStorage.removeItem(key);
   }
 }

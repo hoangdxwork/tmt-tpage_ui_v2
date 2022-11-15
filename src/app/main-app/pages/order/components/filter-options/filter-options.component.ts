@@ -3,7 +3,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FilterObjSOOrderModel, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
+import { FilterObjSOOrderModel, PriorityStatus, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { AllFacebookChildTO } from '@app/dto/team/all-facebook-child.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
@@ -31,6 +31,9 @@ export class FilterOptionsComponent implements OnInit {
   selectTags: Array<TDSSafeAny> = [];
   selectTeams: TDSSafeAny;
   selectCampaign: TDSSafeAny;
+  selectPriorityStatus: TDSSafeAny;
+
+  lstPriorityStatus: Array<TDSSafeAny> = [];
   listStatus: Array<TDSSafeAny> = [];
   lstTeams!: Observable<AllFacebookChildTO[]>;
   lstCampaign!: LiveCampaignModel[];
@@ -48,6 +51,15 @@ export class FilterOptionsComponent implements OnInit {
   ngOnInit(): void {
     this.lstTeams = this.loadAllFacebookChilds();
     this.loadLiveCampaign();
+    this.loadPriorityStatus();
+  }
+
+  loadPriorityStatus() {
+    this.lstPriorityStatus = [
+      {value: PriorityStatus.PriorityAll, text: 'Ưu tiên'},
+      {value: PriorityStatus.PreliminaryAPart, text: 'Dự bị một phần'},
+      {value: PriorityStatus.PreliminaryAll, text: 'Dự bị toàn phần'}
+    ]
   }
 
   loadSummaryStatus() {
@@ -171,6 +183,7 @@ export class FilterOptionsComponent implements OnInit {
     this.selectTags = [];
     this.selectTeams = null;
     this.selectCampaign = null;
+    this.selectPriorityStatus = null;
 
     this.filterObj = {
       tags: [],
@@ -181,7 +194,8 @@ export class FilterOptionsComponent implements OnInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-      IsHasPhone: null
+      IsHasPhone: null,
+      PriorityStatus: null
     };
 
     this.isActive = false;
@@ -192,5 +206,13 @@ export class FilterOptionsComponent implements OnInit {
 
   closeMenu(): void {
     this.isVisible = false;
+  }
+
+  onChangePriorityStatus(event: string) {
+    if(event) {
+      this.filterObj.PriorityStatus = event;
+    } else {
+      this.filterObj.PriorityStatus = null;
+    }
   }
 }

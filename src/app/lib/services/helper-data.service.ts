@@ -79,11 +79,14 @@ export class THelperDataRequest {
         return result;
     }
 
-    public static convertDataRequestToStringShipTake(pageSize: number, pageIndex: number, q?: string): string {
+    public static convertDataRequestToStringShipTake(pageSize: number, pageIndex: number, q?: string, countItemDeleted?: number): string {
 
         let result = '';
         let maxResultCount: number = pageSize;
         let skipCount: number = (pageIndex - 1) * pageSize;
+        if(countItemDeleted && countItemDeleted > 0){
+            skipCount = skipCount - countItemDeleted;
+        }
 
         if (TDSHelperObject.hasValue(maxResultCount)) {
             result = `take=${maxResultCount}`

@@ -100,6 +100,14 @@ export class AppComponent {
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
 
+          // Thông báo Số lượng sản phẩm chiến dịch chờ chốt
+          case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
+          break;
+
+          // Thông báo Số lượng sản phẩm chiến dịch có thểm mua
+          case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
+          break;
+
           default:
           break;
         }
@@ -143,12 +151,4 @@ export class AppComponent {
     };
     Object.assign(TGlobalConfig, objConfig);
   }
-
-  checkDeviceToken() {
-    // let token = this.firebaseMessagingService.checkDeviceToken() as boolean;
-    // if(!token) {
-        this.notification.template(this.templateFirebase, { placement: 'bottomRight' , duration: 10 * 1000});
-    // }
-  }
-
 }

@@ -1,15 +1,14 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
-import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
 import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
-import { InitSaleDTO, SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
-import { Component, Input, OnInit, ViewContainerRef, ViewChild } from '@angular/core';
-import { takeUntil, map } from 'rxjs';
+import { SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { takeUntil } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -20,7 +19,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
-import { DataPouchDBDTO, SyncCreateProductTemplateDto } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
@@ -31,16 +30,14 @@ import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
 import { formatNumber } from '@angular/common';
-import { TAuthService, UserInitDTO } from 'src/app/lib';
+import { UserInitDTO } from 'src/app/lib';
 import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { GetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { ProductService } from 'src/app/main-app/services/product.service';
-import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CsOrder_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { CsOrder_PrepareModelHandler, InsertFromPostDto } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-order.handler';
 import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from '@app/dto/carrierV2/delivery-carrier-response.dto';
@@ -70,6 +67,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 
 @Component({
   selector: 'conversation-order',
@@ -80,7 +78,6 @@ import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-
 
 export class ConversationOrderComponent implements OnInit, OnChanges {
 
-  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() syncConversationInfo!: ChatomniConversationInfoDto;
   @Input() team!: CRMTeamDTO;
@@ -92,6 +89,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   isEnableInsuranceFee: boolean = false;
 
   textSearchProduct!: string;
+  innerTextDebounce!: string;
   isLoadingProduct: boolean = false;
 
   lstUser!: Array<ApplicationUserDTO>;
@@ -161,6 +159,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   disableSyncOrder: boolean = false; //dùng cho bài viết
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
 
+  indexDbStorage!: DataPouchDBDTO[];
+
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
     private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
@@ -196,7 +196,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private omniEventEmiter: ChatomniEventEmiterService,
     private socketOnEventService: SocketOnEventService,
-    private deliveryCarrierV2Service: DeliveryCarrierV2Service) {
+    private deliveryCarrierV2Service: DeliveryCarrierV2Service,
+    private productIndexDBService: ProductIndexDBService) {
   }
 
   ngOnInit(): void {
@@ -210,6 +211,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.loadUserLogged();
     this.loadCurrentCompany();
     this.loadCarrier();
+    this.productIndexDB();
 
     this.eventEmitter();
     this.onEventSocket();
@@ -992,23 +994,37 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     modal.afterClose.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(!res) return;
-
           res = {...res} as SyncCreateProductTemplateDto;
-          let data = res.productTmpl as ProductTemplateV2DTO;
+          this.indexDbStorage = [...res.cacheDbStorage];
 
-          let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data, 'template');
-          this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[x]];
+          if(res.type === 'select' && res.productTmpl) {
+              const product = res.productTmpl as ProductTemplateV2DTO;
+              let items = this.indexDbStorage.filter(y => y.Id == product.VariantFirstId && y.UOMId == product.UOMId && y.Active) as any[];
 
-          this.calcTotal();
-          this.coDAmount();
-          this.cdRef.detectChanges();
+              if(items && items.length == 0) {
+                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+                return;
+              }
+
+              let x = items[0] as DataPouchDBDTO;
+
+              let data: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(x);
+              this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[data]];
+
+              this.calcTotal();
+              this.coDAmount();
+              this.cdRef.detectChanges();
+          }
       }
     })
   }
 
   mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu
+    // let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
+    //     ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
+
     //data sẽ là ProductDTOV2 | ProductTemplateV2DTO
-    let model : Detail_QuickSaleOnlineOrder = {
+    let model: Detail_QuickSaleOnlineOrder = {
       Quantity: 1,
       Price: data.Price,
       ProductId: data.Id,
@@ -1067,7 +1083,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   selectProduct(item: DataPouchDBDTO) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId) as number;
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId && item.Active) as number;
     if(Number(index) < 0) {
         let data = {...item} as ProductDTOV2;
         let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
@@ -1199,21 +1215,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   closeSearchProduct(){
     this.textSearchProduct = '';
+    this.innerTextDebounce = '';
   }
 
   onSearchProduct(event: any) {
     if(!this.textSearchProduct) {
+      this.innerTextDebounce = '';
       return;
     }
 
-    if(this.virtualScroller) {
-      this.virtualScroller.refresh();
-      this.virtualScroller.scrollToPosition(0);
-    }
-
-    this.pageIndex = 1;
-    let text = this.textSearchProduct;
-    this.loadProduct(text);
+    this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
   }
 
   loadProduct(textSearch: string) {
@@ -1256,7 +1267,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
         this.quickOrderModel.Details[index].Quantity += 1;
 
-    } else{
+    } else {
         let item = this.mappingDetailQuickSaleOnlineOrder(data);
         this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[item]];
     }
@@ -1523,6 +1534,29 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.message.info('Chọn làm ghi chú thành công');
       break;
     }
+  }
+
+  productIndexDB() {
+    this.isLoadingProduct = true;
+    this.indexDbStorage = [];
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: KeyCacheIndexDBDTO) => {
+            if(!res) return;
+            this.indexDbStorage = [...res?.cacheDbStorage];
+            this.isLoadingProduct = false;
+            this.cdRef.detectChanges();
+        },
+        error:(err) => {
+            this.isLoadingProduct = false;
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+            this.cdRef.detectChanges();
+        }
+    })
+  }
+
+  trackByIndex(_: number, data: DataPouchDBDTO): number {
+    return data.Id;
   }
 
   onCreateFastSaleOrder(order: QuickSaleOnlineOrderModel, type?: string) {

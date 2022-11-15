@@ -4,7 +4,7 @@ import { SendDeliveryComponent } from './../../../bill/components/send-delivery/
 import { TDSModalService } from 'tds-ui/modal';
 import { PrinterService } from './../../../../services/printer.service';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
-import { takeUntil } from 'rxjs';
+import { takeUntil, map } from 'rxjs';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
@@ -26,6 +26,9 @@ import { TDSSafeAny, TDSHelperObject, TDSHelperString, TDSHelperArray } from 'td
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ColumnTableDTO } from '@app/dto/common/table.dto';
+import { FastSaleOrder_DefaultDTOV2 } from '@app/dto/fastsaleorder/fastsaleorder-default.dto';
+import _, { Dictionary } from 'lodash';
+import { ModalMergeOrderComponent } from './modal-merge-order.component';
 
 @Component({
   selector: 'detail-bill',
@@ -77,6 +80,7 @@ export class DetailBillComponent implements OnInit {
   indeterminate = false;
   setOfCheckedId = new Set<number>();
   idsModel: any = [];
+  countCanMergeOrder: number = 0;
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
@@ -92,6 +96,8 @@ export class DetailBillComponent implements OnInit {
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
     { value: 'DateInvoice', name: 'Ngày bán', isChecked: true },
   ];
+
+  filterDate: string = '';
 
   constructor(
     private message: TDSMessageService,
@@ -116,6 +122,7 @@ export class DetailBillComponent implements OnInit {
     this.setFilter();
     this.loadTags();
     this.loadGridConfig();
+    this.loadCheckMergeOrderData();
   }
 
   setFilter() {
@@ -137,7 +144,7 @@ export class DetailBillComponent implements OnInit {
     this.getViewData(params).subscribe({
       next:(res) => {
         this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
+        this.lstOfData = [...res.value];
       },
       error:(err) => {
         this.message.error(err?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
@@ -150,6 +157,19 @@ export class DetailBillComponent implements OnInit {
     return this.oDataLiveCampaignBillService
         .getView(params, this.filterObj)
         .pipe(finalize(() => {this.isLoading = false }));
+  }
+
+  loadCheckMergeOrderData() {
+    this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res) {
+          this.countCanMergeOrder = res?.value?.length || 0;
+        }
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   onLoadOption(event: any): void {
@@ -716,5 +736,133 @@ export class DetailBillComponent implements OnInit {
 
     this.indeterminate = false;
     this.checked = false;
+  }
+
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: FastSaleOrderModelDTO, b: FastSaleOrderModelDTO) => new Date(a.DateInvoice || '').getTime() - new Date(b.DateInvoice|| '').getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: FastSaleOrderModelDTO, b: FastSaleOrderModelDTO) => new Date(b.DateInvoice|| '').getTime() - new Date(a.DateInvoice|| '').getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
+  }
+
+  mergeOrder() {
+    if (this.checkValueMergeOrder() == 0) return;
+
+    this.modal.success({
+        title: 'Xác nhận gộp đơn',
+        content: 'Bạn có chắc muốn gộp các đơn đã chọn thành 1 đơn duy nhất',
+        onOk: () => { this.apiMergeOrders() },
+        onCancel:() => {},
+        okText: "Xác nhận",
+        cancelText: "Hủy bỏ"
+    });
+  }
+
+  mergeOrder2() {
+    if (this.isLoading) return;
+    if (this.isProcessing) return;
+
+    this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        let exist = res && res.value.length == 0;
+
+        if(exist) {
+          this.notification.error('Không thể gộp đơn', 'Không có đơn nào hợp lệ');
+          return;
+        }
+
+        let modal =  this.modal.create({
+          title: 'Danh sách có thể gộp đơn',
+          content: ModalMergeOrderComponent,
+          size: "xl",
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            liveCampaignId: this.liveCampaignId,
+            lstPartners: [...res.value]
+          }
+        });
+
+        modal.afterClose.subscribe({
+          next: (res) => {
+            if(res) {
+              this.loadData(this.pageSize, this.pageIndex);
+              this.loadCheckMergeOrderData();
+            }
+          }
+        })
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  apiMergeOrders() {
+    let model = {
+      OrderIds: this.idsModel
+    }
+
+    this.isLoading = true;
+    this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+
+          this.pageIndex = 1;
+          this.removeCheckedRow();
+          this.loadData(this.pageSize, this.pageIndex);
+
+          this.setOfCheckedId.add(res.Id);
+          this.isLoading = false;
+          this.notification.success('Gộp đơn thành công', `Mã hóa đơn là ${res.Number}`,  { duration: 3000 });
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  checkValueMergeOrder() {
+    if (this.isLoading) return 0;
+    if (this.isProcessing) return 0;
+
+    let ids: any[] = [...this.setOfCheckedId];
+    this.idsModel = [...ids];
+
+    let idsVal = [] as any[];
+
+    this.idsModel.map((id: any) => {
+      let exist = this.lstOfData.filter(a => a.Id == id && (TDSHelperString.hasValueString(a.TrackingRef) || a.State == 'cancel'));
+
+      if(TDSHelperArray.hasListValue(exist)) {
+        idsVal = [...idsVal,...exist];
+      }
+    })
+
+    if(idsVal.length > 0) {
+      this.message.error('Vui lòng không chọn đơn đã hủy hoặc đơn đã có mã vận đơn', { duration: 2000 });
+      return 0;
+    }
+
+    if (this.idsModel.length <= 1) {
+      this.message.error('Vui lòng chọn từ 2 đơn trở lên!');
+      return 0;
+    }
+
+    return 1;
   }
 }

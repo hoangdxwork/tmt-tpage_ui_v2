@@ -1,11 +1,7 @@
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
-import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from './../../dto/live-campaign/livecampaign-simple.dto';
-import { ProductTemplateService } from './../../services/product-template.service';
-import { LiveCampaignDTO } from './../../dto/live-campaign/odata-live-campaign.dto';
-import { ODataProductDTOV2, ProductDTOV2 } from '../../dto/product/odata-product.dto';
-import { ProductTemplateUOMLineService } from '../../services/product-template-uom-line.service';
+import { ProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
@@ -17,7 +13,6 @@ import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { Observable, takeUntil } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
-import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -35,7 +30,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
-import { ProductIndexDBService } from '@app/services/product-indexDB.service';
+import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 
 @Component({
   selector: 'app-add-livecampaign-postv2',
@@ -109,15 +104,13 @@ export class AddLivecampaignPostV2Component implements OnInit {
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private notificationService: TDSNotificationService,
-    private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productService: ProductService,
     private sharedService: SharedService,
     private message: TDSMessageService,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef,
-    private productTemplateService: ProductTemplateService) {
+    private cdRef: ChangeDetectorRef) {
       this.createForm();
    }
 
@@ -144,7 +137,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
       ConfigObject: [null],// xóa khi lưu
       Name: [null, Validators.required],
       Note: [null],
-      ResumeTime: [0],
+      ResumeTime: [10],
       StartDate: [new Date()],
       EndDate: [new Date()],
       Users: [null],
@@ -434,57 +427,175 @@ export class AddLivecampaignPostV2Component implements OnInit {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: 'xl',
-        viewContainerRef: this.viewContainerRef
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          type: 'liveCampaign'
+        }
     });
 
-    modal.afterClose.subscribe((res: any) => {
+    modal.afterClose.subscribe((response: any) => {
+      if(!response) return;
+      this.mappingProductToLive(response);
+    })
+  }
 
-      if(!res) return;
-      res = {...res} as SyncCreateProductTemplateDto;
-      this.indexDbStorage = [...res.cacheDbStorage];
+  mappingProductToLive(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
 
-      if(res.type === 'select' && res.productTmpl) {
-        const product = res.productTmpl as ProductTemplateV2DTO;
-        let items = this.indexDbStorage.filter(y => y.Id == product.VariantFirstId && y.UOMId == product.UOMId && y.Active) as any[];
+    if(response.type === 'select' && response.productTmpl) {
+        const product = response.productTmpl as ProductTemplateV2DTO;
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
 
         if(items && items.length == 0) {
-          this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-          return;
+            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+            return;
         }
 
-        let x =  items[0];
-        let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable)) > 0
-          ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+        let ids = items.map((x: DataPouchDBDTO) => x.Id);
+        this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (tags: any) => {
 
-        let item = {
-            Quantity: qty,
-            LiveCampaign_Id: null,
-            LimitedQuantity: 0,
-            Price: x.ListPrice || 0,
-            Note: null,
-            ProductId: x.VariantFirstId,
-            ProductName: x.Name,
-            ProductNameGet: x.NameGet,
-            RemainQuantity: 0,
-            ScanQuantity: 0,
+              let lstDetails = [] as any[];
+              items.map((x: DataPouchDBDTO) => {
+                  // TODO: kiểm tra số lượng
+                  const qty = product.InitInventory > 0 ? product.InitInventory : 1;
+                  x.QtyAvailable = qty;
 
-            Tags: product.OrderTag,
+                  // TODO: kiểm tra mã sp từ api
+                  const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
-            UOMId: x.UOMId,
-            UOMName: x.UOMName,
-            ProductCode: x.DefaultCode,
-            ImageUrl: x.ImageUrl,
-            IsActive: x.Active,
-            UsedQuantity: 0,
-        } as LiveCampaignProductDTO;
+                  // TODO: lọc sp trùng mã code để tạo tags
+                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+                  let uomName = '';
+                  if(exist && exist.length > 1) {
+                      uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
+                  }
 
-        let name = item.ProductNameGet || item.ProductName;
-        let tags = this.generateTagDetail(name, item.ProductCode, item.Tags);
-        item.Tags = tags.join(',');
+                  // TODO: nếu có 2 biến thể trở lên thì ko lấy orderTag
+                  let orderTag = product.OrderTag;
+                  if(items && items.length > 1) {
+                      orderTag = '';
+                  }
 
-        this.pushItemToFormArray([item]);
+                  let gTags = this.generateTagDetail(x.DefaultCode, vTag, orderTag, uomName);
+                  x.Tags = gTags.join(',');
+
+                  let item = {
+                      Quantity: x.QtyAvailable || 1,
+                      RemainQuantity: 0,
+                      ScanQuantity: 0,
+                      QuantityCanceled: 0,
+                      UsedQuantity: 0,
+                      Price: (x.Price || 0),
+                      Note: null,
+                      ProductId: x.Id,
+                      LiveCampaign_Id: this.id,
+                      ProductName: x.Name,
+                      ProductNameGet: x.NameGet,
+                      UOMId: x.UOMId,
+                      UOMName: x.UOMName,
+                      Tags: x.Tags,
+                      LimitedQuantity: 0,
+                      ProductCode: x.DefaultCode,
+                      ImageUrl: x.ImageUrl,
+                      IsActive: true,
+                  } as LiveCampaignSimpleDetail;
+
+                  lstDetails.push(item);
+              })
+
+              this.addItemProduct(lstDetails);
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message);
+          }
+        })
+    }
+  }
+
+  apiOrderTagbyIds(model: DataPouchDBDTO[]) {
+    let listData = [...(model|| [])];
+    let ids = listData.map(x => x.Id);
+
+    this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.validateOrderTagbyIds(listData, res);
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
       }
     })
+  }
+
+  validateOrderTagbyIds(listData: DataPouchDBDTO[], tags: any) {
+    listData.map((x: DataPouchDBDTO) => {
+        // TODO: kiểm tra số lượng
+        const qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable) > 0)
+           ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+        x.QtyAvailable = qty;
+
+        // TODO: kiểm tra mã sp từ api
+        const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
+
+        // TODO: lọc sp trùng mã code để tạo tags
+        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        let uomName = '';
+        if(exist && exist.length > 1) {
+            uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
+        }
+
+        const orderTag = '';
+        let gTags = this.generateTagDetail(x.DefaultCode, vTag, orderTag, uomName);
+        x.Tags = gTags.join(',');
+    });
+
+    this.lstVariants = [...listData];
+    if(listData && this.lstVariants.length == 1) {
+        let simpleDetail = [...this.lstVariants];
+        this.addItemProduct(simpleDetail);
+        this.closeFilterIndexDB();
+    }
+  }
+
+  addItemProduct(listData: DataPouchDBDTO[]) {
+    let formDetails = this.detailsForm.value as any[];
+    let simpleDetail: LiveCampaignSimpleDetail[] = [];
+
+    listData.forEach((x: DataPouchDBDTO) => {
+        let exist = formDetails.filter((f: LiveCampaignSimpleDetail) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
+        // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
+        if(!exist){
+            let item = {
+                Quantity: x.QtyAvailable || 1,
+                LiveCampaign_Id: null,
+                LimitedQuantity: 0,
+                Price: x.Price,
+                Note: null,
+                ProductId: x.Id,
+                ProductName: x.Name,
+                ProductNameGet: x.NameGet,
+                RemainQuantity: 0,
+                ScanQuantity: 0,
+                Tags: x.Tags,//mã chốt đơn sp
+                UOMId: x.UOMId,
+                UOMName: x.UOMName,
+                ProductCode: x.DefaultCode,
+                ImageUrl: x.ImageUrl,
+                IsActive: true,
+                UsedQuantity: 0
+            } as LiveCampaignSimpleDetail;
+
+            simpleDetail = [...simpleDetail, ...[item]];
+        } else {
+            exist.Quantity += 1;
+            simpleDetail = [...simpleDetail, ...[exist]];
+        }
+    });
+
+    if(simpleDetail && simpleDetail.length > 0){
+        this.pushItemToFormArray(simpleDetail);
+    }
   }
 
   onFilterIndexDB(event: any) {
@@ -506,7 +617,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
   selectProduct(model: DataPouchDBDTO, index: number){
     if(this.isLoadingSelect) return;
     this.indClick = index;
-
     let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.ProductTmplId && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
 
     if(items && items.length == 0) {
@@ -514,72 +624,11 @@ export class AddLivecampaignPostV2Component implements OnInit {
       return;
     }
 
-    items.map((x: DataPouchDBDTO) => {
-      x._attributes_length = 0;
-
-      let qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
-        ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
-      x.QtyAvailable =qty;
-    });
-
     this.lstVariants = [...items];
-    if(this.lstVariants && this.lstVariants.length == 1) {
-      let simpleDetail = [...this.lstVariants];
-      this.addItemProduct(simpleDetail)
-      this.closeFilterIndexDB();
-    }
+    this.apiOrderTagbyIds(this.lstVariants);
   }
 
-  addItemProduct(listData: DataPouchDBDTO[], isVariants?: boolean){
-    let formDetails = this.detailsForm.value as any[];
-    let simpleDetail: LiveCampaignSimpleDetail[] = [];
-
-    listData.forEach((x:DataPouchDBDTO) => {
-      let exist = formDetails.filter((f:LiveCampaignProductDTO) => f.ProductId == x.Id && f.UOMId == x.UOMId)[0];
-
-      // TODO: kiểm tra xem sản phẩm có tồn tại trong form array hay chưa
-      if(!exist){
-          let qty = this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0
-            ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
-          let item = {
-              Quantity: qty,
-              LiveCampaign_Id: null,
-              LimitedQuantity: 0,
-              Price: x.Price || 0,
-              Note: null,
-              ProductId: x.Id,
-              ProductName: x.Name,
-              ProductNameGet: x.NameGet,
-              RemainQuantity: 0,
-              ScanQuantity: 0,
-              Tags: x.Tags,
-              UOMId: x.UOMId,
-              UOMName: x.UOMName,
-              ProductCode: x.Barcode || x.DefaultCode,
-              ImageUrl: x.ImageUrl,
-              IsActive: true,
-              UsedQuantity: 0
-          } as LiveCampaignSimpleDetail;
-
-          let name = item.ProductNameGet || item.ProductName;
-          if(x._attributes_length == undefined) x._attributes_length = 0;
-
-          let tags = this.generateTagDetail(name, item.ProductCode, item.Tags, x._attributes_length);
-          item.Tags = tags?.join(',');
-
-          simpleDetail = [...simpleDetail, ...[item]];
-      } else {
-          exist.Quantity += 1;
-          simpleDetail = [...simpleDetail, ...[exist]];
-      }
-    })
-
-    if(simpleDetail && simpleDetail.length > 0){
-        this.pushItemToFormArray(simpleDetail, isVariants)
-    }
-  }
-
-  pushItemToFormArray(items: LiveCampaignProductDTO[], isVariants?: boolean) {
+  pushItemToFormArray(items: LiveCampaignProductDTO[]) {
     let formDetails = this.detailsForm.value as any[];
 
     items.forEach((item: LiveCampaignProductDTO) => {
@@ -612,6 +661,12 @@ export class AddLivecampaignPostV2Component implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       let model = this.prepareHandler.prepareModel(this._form);
+
+      let resumeTime = model.ResumeTime;
+      if(resumeTime > 0 && resumeTime < 10) {
+          this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+          return;
+      }
 
       let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
       if(team?.Id && !TDSHelperString.hasValueString(model.Facebook_UserId)) {
@@ -656,45 +711,49 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.modalRef.destroy(data);
   }
 
-  generateTagDetail(productName: string, code: string, tags: string, _attributes_length?: number) {
+  generateTagDetail(defaultCode: string, vTag: string, orderTag: string, uomName: string) {
     let result: string[] = [];
 
-    if(!TDSHelperString.hasValueString(productName)) {
-      return result;
+    if(TDSHelperString.hasValueString(defaultCode)) {
+        defaultCode = defaultCode.toLocaleLowerCase();
+
+        if(TDSHelperString.hasValueString(uomName)) {
+            let x = `${defaultCode} ${uomName}`
+            result.push(x);
+        } else {
+            result.push(defaultCode);
+        }
     }
 
-    productName = productName.replace(`[${code}]`, "");
-    productName = productName.trim();
-
-    let word = StringHelperV2.removeSpecialCharacters(productName);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
-
-    result.push(word);
-
-    if(!result.includes(wordNoSignCharacters)) {
-      result.push(wordNoSignCharacters);
+    if(vTag) {
+        let tagArr1 = vTag.split(',');
+        tagArr1?.map((x: any) => {
+          if(!result.find(y => y == x)) {
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+          }
+        })
     }
 
-    if(!result.includes(wordNameNoSpace)) {
-      result.push(wordNameNoSpace);
-    }
-
-    if(TDSHelperString.hasValueString(code) && code  && _attributes_length == 0) {
-      result.push(code);
-    }
-
-    if(TDSHelperString.hasValueString(tags)){
-        let tagArr = tags.split(',');
-        tagArr.map(x => {
-          if(!result.find(y=> y == x))
-              result.push(x);
+    if(orderTag) {
+        let tagArr2 = orderTag.split(',');
+        tagArr2?.map((x: any) => {
+          if(!result.find(y => y == x))
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
         })
     }
 
     return [...result];
   }
-
   onChangeIsActive(event: any, item: any) {
     this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
   }
@@ -740,13 +799,19 @@ export class AddLivecampaignPostV2Component implements OnInit {
         title: 'Thêm mới trả lời nhanh',
         content: ModalAddQuickReplyComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'md'
+        size: 'md',
+        componentParams: {
+          isSaveSelect: true
+        }
     });
 
     modal.afterClose.subscribe({
       next:(res) => {
         if(res) {
           this.loadQuickReply();
+          if(res.type && res.type == 'select') {
+            this._form.controls['ConfirmedOrder_Template'].setValue(res.value);
+          }
         }
       }
     })
@@ -757,13 +822,15 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   getVariant(data?: DataPouchDBDTO) {
-    if(data && data.Id) {//chọn hiện tại
+    if(data && data.Id) { //chọn hiện tại
         let simpleDetail = [data];
-        this.addItemProduct(simpleDetail)
+
+        this.addItemProduct(simpleDetail);
         this.closeFilterIndexDB();
     } else {
         let simpleDetail = [...this.lstVariants];
-        this.addItemProduct(simpleDetail)
+
+        this.addItemProduct(simpleDetail);
         this.closeFilterIndexDB();
     }
 
@@ -771,4 +838,49 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.indClick = -1;
   }
 
+  onChangeResumeTime(event: any) {
+    if(this._form.controls?.ResumeTime && this._form.controls?.ResumeTime.value < 10 && this._form.controls?.ResumeTime.value > 0) {
+      this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
+    }
+  }
+
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let formDetails = this.detailsForm.value as any[];
+    let strs = [...this.checkInputMatch(event)];
+
+    let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    if(Number(index) >= 0) {
+      let details = this.detailsForm.at(index).value;
+      details.Tags = strs?.join(',');
+      console.log(details.Tags)
+
+       //TODO: cập nhật vào formArray
+      this.detailsForm.at(index).patchValue(details);
+      this.modelTags = [...strs];
+    }
+    this.cdRef.detectChanges();
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
+  }
 }

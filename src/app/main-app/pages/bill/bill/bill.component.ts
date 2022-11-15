@@ -29,7 +29,7 @@ import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto'
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
-import { DOCUMENT } from '@angular/common';
+import { DatePipe, DOCUMENT } from '@angular/common';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
@@ -151,6 +151,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
+    private datePipe: DatePipe,
     private viewContainerRef: ViewContainerRef,
     private cacheApi: THelperCacheService,
     private message: TDSMessageService,
@@ -191,9 +192,19 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadSummaryStatus() {
+    let startDate = this.filterObj?.dateRange.startDate as any;
+    if(startDate) {
+        startDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddT00:00:00+00:00');
+    }
+
+    let endDate = this.filterObj?.dateRange.endDate as any;
+    if(endDate) {
+        endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
+    }
+
     let model = {
-      DateStart: this.filterObj.dateRange?.startDate,
-      DateEnd: this.filterObj.dateRange?.endDate,
+      DateStart: startDate,
+      DateEnd: endDate,
       SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()),
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
       TrackingRef: this.filterObj.hasTracking,

@@ -127,7 +127,7 @@
                 <div class="grid grid-cols-4 gap-x-4 items-center">
                   <tds-label>Thời gian tổng hợp (phút)</tds-label>
                   <tds-form-field class="col-span-3">
-                      <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                      <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime" [tdsInputDebounce]="350" (inputKeyup)="onChangeResumeTime($event)" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                   </tds-form-field>
                 </div>
 
@@ -250,11 +250,11 @@
 
                               <!-- Tags -->
                               <div class="flex items-center gap-x-1">
-                                <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
+                                <span *ngIf="detail?.value.Tags?.length <= 0" class="text-info-500 font-normal text-sm cursor-pointer"
                                     (click)="openTag(detail.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)" popoverTrigger="click"
                                     [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
-                                  <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
+                                  <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags?.length > 0">
                                       <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
                                           <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='primary'>{{ (item || '') | truncateString }}</tds-tag>
                                       </div>
@@ -279,7 +279,7 @@
                                     <div class="w-[360px]">
                                         <tds-form-field>
                                             <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                              [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
+                                              [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" (selectChange)="onChangeModelTag($event, detail.value)"
                                               [data]="(detail.value.Tags | stringToStringArray)">
                                             </tds-select>
                                         </tds-form-field>

@@ -1,0 +1,132 @@
+<tds-spin [spinning]="isLoading">
+    <form class="flex flex-col pt-4" [formGroup]="_form">
+        <div class="w-full text-body-2 text-neutral-1-900">
+            <div class="flex flex-col">
+                <div class="flex flex-row items-start gap-x-4">
+                    <div>
+                        <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
+                            <tds-avatar [isAvatar]="false" class="rounded-lg" [shape]="'square'" [size]="167"
+                                tdsSrc="{{ _form.controls['ImageUrl'].value }}">
+                            </tds-avatar>
+                        </tds-upload>
+                    </div>
+                    <div class="flex flex-auto flex-col gap-y-4">
+                        <tds-form-field>
+                            <tds-label>Tên sản phẩm</tds-label>
+                            <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" [required]='true' formControlName="Name" />
+                            <tds-error>Vui lòng nhập tên sản phẩm</tds-error>
+                        </tds-form-field>
+
+                        <tds-form-field>
+                            <tds-label>Mã chốt đơn</tds-label>
+                            <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" formControlName="OrderTag"
+                                [allowClear]="true" [data]="" mode="tags">
+                            </tds-select>
+                        </tds-form-field>
+                        <div class="grid grid-cols-2 items-center gap-x-4">
+                            <tds-form-field>
+                                <tds-label>Số lượng</tds-label>
+                                <tds-input-number [min]="0" [step]="1" formControlName="InitInventory" [formatter]="numberWithCommas" [parser]="parserComas">
+                                </tds-input-number>
+                            </tds-form-field>
+
+                            <tds-form-field>
+                                <tds-label>Giá bán</tds-label>
+                                <tds-input-number [min]="0" [step]="1000" formControlName="ListPrice" [formatter]="numberWithCommas" [parser]="parserComas">
+                                </tds-input-number>
+                            </tds-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex w-full gap-x-2 my-4">
+                    <tds-switch [(ngModel)]="hasVariants" [ngModelOptions]="{standalone: true}"></tds-switch>Biến thể sản phẩm
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="flex flex-col items-center rounded-md border border-neutral-2-200" *ngIf="hasVariants">
+        <div class="flex items-center justify-between w-full p-4">
+            <tds-label class="text-title-1">Biến thể sản phẩm</tds-label>
+            <button tds-button type="button" color="primary" (click)="showCreateAttributeModal()">
+                <span class="flex items-center ">
+                    <i class="tdsi-plus-fill mr-2"></i>Thêm biến thể
+                </span>
+            </button>
+        </div>
+        <div class="w-full h-[350px]">
+            <tds-table #variantsTable [widthConfig]="['6%','34%','20%','20%','20%']" [listData]="lstVariants" [showPagination]="false" 
+                [scroll]="{ y: 'auto' }">
+                <thead>
+                  <tr>
+                    <th width="6%">STT</th>
+                    <th width="24%">Tên</th>
+                    <!-- <th width="30%">Mã chốt đơn</th> -->
+                    <th width="20%">Giá</th>
+                    <th width="10%" [align]="'center'">Hoạt động</th>
+                    <th width="10%" [align]="'center'">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let data of lstVariants; let i = index">
+                    <td>{{ 1 + i }}</td>
+                    <td>
+                      <div class="flex flex-col">
+                        <span class="mb-2">{{ data.NameTemplate || data.Name }}</span>
+                        <div class="flex flex-wrap items-center gap-1">
+                          <tds-tag *ngFor="let item of data.AttributeValues" status='secondary' rounded="rounded-full">
+                            {{item.NameGet || (item.AttributeName + ': ' + item.Name)}}
+                          </tds-tag>
+                        </div>
+                      </div>
+                    </td>
+                    <!-- <td>
+                      <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [(ngModel)]="data.Tags" [ngModelOptions]="{standalone: true}"
+                          [allowClear]="true" [data]="" mode="tags" class="w-full">
+                      </tds-select>
+                    </td> -->
+                    <td>
+                      <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
+                        [formatter]="numberWithCommas" [parser]="parserComas"
+                        [min]="0" [step]="1000"
+                        class="text-neutral-1-900 text-body-2 font-regular">
+                      </tds-input-number>
+                    </td>
+                    <td class="text-center">
+                      <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
+                    </td>
+                    <td>
+                      <div class="flex flex-row items-center justify-center gap-x-1">
+                        <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                          (click)="showEditVariantsModal(data)">
+                          <span class="flex items-center">
+                            <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
+                          </span>
+                        </button>
+                        <button tds-button-icon color="secondary" type="button" size="sm"
+                          (click)="removeVariants(data)">
+                          <span class="flex items-center">
+                            <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
+                          </span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </tds-table>
+        </div>
+
+    </div>
+    <ng-template #noData>
+        <div class="flex flex-col gap-y-4 items-center">
+            <img src="../../assets/imagesv2/live-campaign/noData.svg" alt="">
+            <span class="text-neutral-1-400 text-body-2">Chưa có biến thể nào</span>
+        </div>
+    </ng-template>
+
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button type="button" class="mr-2 w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+        <button tds-button type="button" class="w-[100px] mr-2" color="primary" (click)="onSave()" [disabled]="!_form?.valid || isLoading">Lưu</button>
+        <button tds-button type="button" color="primary" class="min-w-[120px] text-white" (click)="onSave('select')" [disabled]="!_form?.valid || isLoading">Lưu và chọn</button>
+    </div>
+</tds-spin>

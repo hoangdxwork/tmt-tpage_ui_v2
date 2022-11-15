@@ -1,3 +1,4 @@
+import { CreateFormProductVariantHandler } from './../../../handler-v2/product-variant/create-form.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductUOMDTO, ProductDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
@@ -7,7 +8,7 @@ import { ProductService } from 'src/app/main-app/services/product.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -17,12 +18,11 @@ import { PrepareEditVariantHandler } from 'src/app/main-app/handler-v2/product-v
 @Component({
   selector: 'edit-product-variant',
   templateUrl: './edit-product-variant.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TDSDestroyService]
 })
 
 export class EditProductVariantComponent implements OnInit {
-
+  //#region Declare
   @Input() id!: number;
 
   _form!: FormGroup;
@@ -32,7 +32,7 @@ export class EditProductVariantComponent implements OnInit {
   imageList: Array<TDSSafeAny> = [];
   imageModel: Array<TDSSafeAny> = [];
   isLoading: boolean = false;
-  
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -48,9 +48,12 @@ export class EditProductVariantComponent implements OnInit {
     }
     return value;
   };
+  //#endregion Declare
 
+  //#region Initallization
   constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
+    private createFormHandler : CreateFormProductVariantHandler,
     private productIndexDBService: ProductIndexDBService,
     private destroy$: TDSDestroyService,
     private productService: ProductService,
@@ -71,44 +74,31 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   createForm() {
-    this._form = this.fb.group({
-      Name: [null, Validators.required],
-      PriceVariant: [0],
-      IsAvailableOnTPage: [null],
-      ImageUrl: [null],
-      Categ: [null, Validators.required],
-      UOM: [null, Validators.required],
-      UOMPO: [null, Validators.required],
-      Images: this.fb.array([])
-    })
+    this._form = this.createFormHandler.createEditForm(this._form, this.fb);
   }
+  //#endregion Initallization
 
+  //#region Api-request
   loadData() {
     this.isLoading = true;
-
     this.productService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe(
         {
           next: (res: any) => {
             if(res) {
               delete res['@odata.context'];
-              this.dataModel = res;
+              this.dataModel = {...res};
               
               this.updateForm(res);
             }
             
             this.isLoading = false;
-            this.cdRef.detectChanges();
           }, 
           error: error => {
-            this.message.error(error.error.message || 'Load dữ liệu thất bại');
             this.isLoading = false;
+            this.message.error(error.error.message || 'Load dữ liệu thất bại');
+            this.cdRef.detectChanges();
           }
         })
-  }
-
-  loadDataIndexDBCache() {
-    this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
   }
 
   loadProductCategory() {
@@ -134,13 +124,16 @@ export class EditProductVariantComponent implements OnInit {
         }
       })
   }
+  //#endregion Api-request
 
+  //#region Handle
   updateForm(data: TDSSafeAny) {
 
     this._form.controls['Categ'].setValue(data.Categ);
     this._form.controls['UOM'].setValue(data.UOM);
     this._form.controls['UOMPO'].setValue(data.UOMPO);
     this._form.patchValue(data);
+    this._form.controls['OrderTag'].setValue(this.stringToStringArray(data.OrderTag) || null);
 
 
     if (TDSHelperArray.hasListValue(data.Images)) {
@@ -148,6 +141,11 @@ export class EditProductVariantComponent implements OnInit {
         this.addImages(x);
       })
     }
+  }
+
+  loadDataIndexDBCache() {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
   }
 
   onSubmit() {
@@ -258,5 +256,46 @@ export class EditProductVariantComponent implements OnInit {
         }
       });
   }
+  onChangeOrderTag(event: string[]) {
+    let strs = [...this.checkInputMatch(event)];
+    this._form.controls.OrderTag.setValue(strs);
+  }
 
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
+  }
+
+  stringToStringArray(value: string): any {
+
+    if(TDSHelperString.isString(value) && TDSHelperString.hasValueString(value)){
+        if(!value.includes(',')) {
+            return [value];
+        }
+        return (value as string).split(",");
+    }
+
+    if(TDSHelperArray.isArray(value)){
+        return value;
+    }
+
+    return null;
+}
 }

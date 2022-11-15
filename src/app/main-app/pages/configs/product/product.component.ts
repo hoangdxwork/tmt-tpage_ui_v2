@@ -12,17 +12,17 @@ import { TagProductTemplateService } from '../../../services/tag-product-templat
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { TagDTO } from '../../../dto/tag/tag.dto';
 import { ODataProductTagDTO, ODataProductTemplateDTO } from '../../../dto/configs/product/config-odata-product.dto';
-import { Subject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { THelperDataRequest } from '../../../../lib/services/helper-data.service';
 import { Router } from '@angular/router';
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { SortEnum } from 'src/app/lib';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-product',
@@ -34,7 +34,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 })
 
 export class ConfigProductComponent implements OnInit, AfterViewInit {
-
+  //#region Declare
   @ViewChild('viewChildProductTable') parentElement!: ElementRef;
 
   lstOfData: Array<ProductTemplateDTO> = [];
@@ -62,12 +62,16 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
   pageIndex = 1;
   filterObj: FilterProductTemplateObjDTO = {
     searchText: '',
-    active: true
+    active: null //TODO: trường hợp null không lọc theo hiệu lực
   };
   sort: SortDataRequestDTO[] = [
     {
       field: 'DateCreated',
-      dir: SortEnum.desc // TODO: mặc định sắp xếp giảm dần theo ngày tạo
+      dir: SortEnum.desc, // TODO: mặc định sắp xếp giảm dần theo ngày tạo
+    },
+    {
+      field: 'Active',
+      dir: SortEnum.desc
     }
   ];
   sortByName:string = '';
@@ -80,7 +84,9 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
 
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
+  //#endregion Declare
 
+  //#region Initallization
   constructor(
     private router: Router,
     private modalService: TDSModalService,
@@ -103,9 +109,7 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.tableWidth = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse
 
-    this.resizeObserver
-      .observe(this.viewChildWidthTable)
-      .subscribe(() => {
+    this.resizeObserver.observe(this.viewChildWidthTable).subscribe(() => {
         this.tableWidth = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
         this.viewChildWidthTable?.nativeElement.click()
       });
@@ -118,30 +122,64 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
       });
     }, 500);
   }
+  //#endregion Initallization
 
-  onQueryParamsChange(params: TDSTableQueryParams) {
-    this.pageSize = params.pageSize;
-    this.loadData(params.pageSize, params.pageIndex);
-  }
-
+  //#region Api-request
   loadData(pageSize: number, pageIndex: number) {
     let filter = this.odataService.buildFilter(this.filterObj || null);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter || null, this.sort || null);
+    this.isLoading = true;
 
-    this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = res.value;
-    }, err => {
-      this.message.error(err?.error?.message || 'Tải dữ liệu sản phẩm thất bại!');
+    this.getViewData(params).subscribe({
+      next: (res: ODataProductTemplateDTO) => {
+        if(res && res.value && TDSHelperArray.isArray(res.value)) {
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = [...res.value];
+        }
+        this.isLoading = false;
+      }, 
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message || 'Tải dữ liệu sản phẩm thất bại!');
+      }
     });
   }
 
   private getViewData(params: string): Observable<ODataProductTemplateDTO> {
-    this.isLoading = true;
+    return this.odataService.getView(params).pipe(takeUntil(this.destroy$));
+  }
 
-    return this.odataService
-      .getView(params).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoading = false }));
+  loadGridConfig() {
+    const key = this.productTemplateService._keyCacheGrid;
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        if (res && res.value) {
+          var jsColumns = JSON.parse(res.value) as any;
+          this.columnList = jsColumns.value.data;
+        }
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  loadTagList() {
+    this.tagService.getProductTagList().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ODataProductTagDTO) => {
+        this.configTagDataList = res.value;
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+      }
+    })
+  }
+  //#endregion Api-request
+
+  //#region Handle
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
+    this.loadData(params.pageSize, params.pageIndex);
   }
 
   //store data on indexedDB
@@ -156,16 +194,6 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  loadGridConfig() {
-    const key = this.productTemplateService._keyCacheGrid;
-    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      if (res && res.value) {
-        var jsColumns = JSON.parse(res.value) as any;
-        this.columnList = jsColumns.value.data;
-      }
-    })
-  }
-
   onInputChange(ev: TDSSafeAny) {
     this.pageIndex = 1;
     this.indClickTag = -1;
@@ -174,29 +202,19 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  loadTagList() {
-    this.tagService.getProductTagList().pipe(takeUntil(this.destroy$)).subscribe(
-      (res: ODataProductTagDTO) => {
-        this.configTagDataList = res.value;
-      }
-    )
-  }
-
   setActive(active: boolean): TDSSafeAny {
     if (this.setOfCheckedId.size == 0) {
       return this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
     } else {
-      this.productTemplateService.setActive({ model: { Active: active, Ids: Array.from(this.setOfCheckedId) } })
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (res: TDSSafeAny) => {
+      this.productTemplateService.setActive({model:{Active: active, Ids: Array.from(this.setOfCheckedId)}}).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: TDSSafeAny) => {
             active ? this.message.success('Mở hiệu lực thành công!') : this.message.success('Đóng hiệu lực thành công!');
             this.loadData(this.pageSize, this.pageIndex);
           },
-          err => {
+          error: (err) => {
             this.message.error(err?.error?.message || 'Thao tác thất bại!');
           }
-        );
+        });
     }
   }
 
@@ -273,15 +291,15 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     } else {
-      this.productTemplateService.getRemoveIds({ ids: Array.from(this.setOfCheckedId) })
-        .pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      this.productTemplateService.getRemoveIds({ ids: Array.from(this.setOfCheckedId) }).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: TDSSafeAny) => {
             this.loadData(this.pageSize, this.pageIndex);
             this.message.success('Xóa dữ liệu thành công!');
           },
-          err => {
+          error: (err) => {
             this.message.error(err?.error?.message || 'Thao tác thất bại!');
           }
-        );
+        });
     }
   }
 
@@ -329,18 +347,21 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
       Tags: Tags,
     }
 
-    this.productTagService.assignTag(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      if (res && res.PartnerId) {
-        var exits = this.lstOfData.filter(x => x.Id == Id)[0] as TDSSafeAny;
-        if (exits) {
-          exits.Tags = JSON.stringify(Tags)
+    this.productTagService.assignTag(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        if (res && res.PartnerId) {
+          var exits = this.lstOfData.filter(x => x.Id == Id)[0] as TDSSafeAny;
+          if (exits) {
+            exits.Tags = JSON.stringify(Tags)
+          }
+          this.configModelTags = [];
+  
+          this.message.success('Gán nhãn thành công!');
         }
-        this.configModelTags = [];
-
-        this.message.success('Gán nhãn thành công!');
+      }, 
+      error: (err) => {
+        this.message.error(err?.error?.message || 'Gán nhãn thất bại!');
       }
-    }, error => {
-      this.message.error(error?.error?.message || 'Gán nhãn thất bại!');
     });
 
     this.indClickTag = -1;
@@ -377,7 +398,9 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
   editProduct(data: ProductTemplateDTO) {
     this.router.navigateByUrl(`/configs/products/edit/${data.Id}`);
   }
+  //#endregion Handle
 
+  //#region Modal
   removeProduct(data: ProductTemplateDTO) {
     const modal = this.modalService.error({
       title: 'Xác nhận xóa sản phẩm',
@@ -386,23 +409,29 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
       okText: "Xác nhận",
       cancelText: "Hủy bỏ",
       onOk: () => {
-        this.productTemplateService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
-          (res: TDSSafeAny) => {
+        this.isLoading = true;
+        
+        this.productTemplateService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: TDSSafeAny) => {
             this.message.success('Xóa thành công');
             if (this.lstOfData.length <= 1) {
               this.pageIndex = 1;
               this.filterObj.searchText = '';
             }
+
+            this.isLoading = false;
             this.loadData(this.pageSize, this.pageIndex);
           },
-          err => {
-            this.message.error(err?.error?.message ?? 'Xóa thất bại');
+          error: (err) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || 'Xóa thất bại');
           }
-        )
+        })
       },
       onCancel: () => {
         modal.close();
       },
     })
   }
+  //#endregion Modal
 }

@@ -76,11 +76,11 @@ export class QuickReplyButtonComponent implements OnInit, OnChanges {
 
     modal.afterClose.subscribe({
       next: res => {
-        if(res) {
-          this.lstquickReplyDefault = [...[res], ...this.lstquickReplyDefault];
+        if(res && res.value) {
+          this.lstquickReplyDefault = [...[res.value], ...this.lstquickReplyDefault];
           this.quickReplies = [...this.lstquickReplyDefault];
 
-          this.quickReplyService.onChangeQuickReply.emit(res);
+          this.quickReplyService.onChangeQuickReply.emit(res.value);
         }
       }
     })

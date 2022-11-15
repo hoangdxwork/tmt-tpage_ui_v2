@@ -4,7 +4,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '../../dto/product-pouchDB/product-pouchDB.dto';
-import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { ProductIndexDBService } from '../../services/product-indexdb.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { takeUntil } from 'rxjs/operators';
 import { orderBy as _orderBy } from 'lodash';
@@ -183,6 +183,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
           case 'CategId':
             this.isShowFilterCategId = true;
+            return
           break;
 
           default: break;
@@ -214,6 +215,9 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   selectType(item: any): void {
     this.currentType = item;
     this.isShowFilterCategId = false;
+    if(this.currentType.value != 'CategId') {
+      delete this.categIdFilter;
+    }
 
     this.loadDataTable();
   }
@@ -264,25 +268,34 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          if(!res) return;
+      next: (response: any) => {
+          if(!response) return;
 
-          res = {...res} as SyncCreateProductTemplateDto;
-          this.indexDbStorage = [...res.cacheDbStorage];
+          this.mappingProductToBill(response);
 
-          if(res.type === 'select' && res.productTmpl) {
-            let model = res.productTmpl;
-            let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active)[0] as DataPouchDBDTO;
-
-            if(!item) {
-                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-                return;
+          let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+          this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (inventories: any) => {
+                this.inventories = inventories;
+                this.cdRef.detectChanges();
+            },
+            error: (err: any) => {
+                this.message.error(err?.error?.message);
             }
-
-            this.addItem(item);
-          }
+          });
       }
     })
+  }
+
+  mappingProductToBill(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
+
+    if(response.type === 'select' && response.productTmpl) {
+      let model = response.productTmpl;
+      let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active)[0] as DataPouchDBDTO;
+      this.addItem(item);
+    }
   }
 
   reloadIndexDB() {
@@ -361,12 +374,15 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   onCloseFilter() {
     this.isShowFilterCategId = false;
     delete this.categIdFilter;
+
+    let data = this.indexDbStorage || [];
+    this.lstOfData = [...data];
   }
 
   onFilterCategId() {
     if(this.categIdFilter){
         let data = this.indexDbStorage || [];
-        
+
         data = data.filter((x: DataPouchDBDTO)=>(x.CategId == this.categIdFilter.Id))
 
         this.lstOfData = [...data];
@@ -379,6 +395,13 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   onChangePopover(event: boolean) {
     if(!event) {
       this.isShowFilterCategId = false;
+    }
+  }
+
+  onChangeCategId(event: string) {
+    if(!event) {
+      let data = this.indexDbStorage || [];
+      this.lstOfData = [...data];
     }
   }
 }

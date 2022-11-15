@@ -2,7 +2,7 @@ export const environment = {
   production: true,
   signalRAppend: "",
   urlLogin:'/account/login',
-  socketUrl: 'https://rt.tpos.app/chatomni',
+  socketUrl: 'https://rt-2.tpos.app/chatomni',
   tShopUrl: 'https://app.live.dev.tmtco.org/oauth',
   apiAccount:{
     signInPassword:"/token",

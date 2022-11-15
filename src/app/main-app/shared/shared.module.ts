@@ -22,7 +22,7 @@ import { TpageSearchUOMComponent } from './tpage-search-uom/tpage-search-uom.com
 import { TpageAddUOMComponent } from './tpage-add-uom/tpage-add-uom.component';
 import { ListProductTmpComponent } from './list-product-tmp/list-product-tmp.component';
 import { SharedService } from '../services/shared.service';
-import { ProductIndexDBService } from '../services/product-indexDB.service';
+import { ProductIndexDBService } from '../services/product-indexdb.service';
 import { SuggestAddressService } from '../services/suggest-address.service';
 import { ImageFacade } from '../services/facades/image.facade';
 import { TpageAvatarGroupFacebookComponent } from './tpage-avatar-group-facebook/tpage-avatar-group-facebook.component';

@@ -1,6 +1,6 @@
 <div class="w-full text-body-2 text-neutral-1-900 h-[473px]">
-  <tds-table #tableMessage 
-    [listData]="lstOfData" 
+  <tds-table #tableMessage
+    [listData]="lstOfData"
     [scroll]="{y:'auto'}"
     [loading]="isLoading"
     [showSizeChanger]="true"
@@ -13,7 +13,7 @@
       <tr>
         <th [width]="'5%'">STT</th>
         <th [width]="'16%'">Khách hàng</th>
-        <th [width]="'16%'">Mã đơn hàng</th>
+        <th [width]="'16%'">Mã hóa đơn</th>
         <th [width]="'16%'">Số lượng sản phẩm</th>
         <th [width]="'16%'">Ngày tạo</th>
         <th [width]="'16%'">Trạng thái</th>
@@ -32,7 +32,7 @@
           {{data.FacebookName}}
         </td>
 
-        <!-- Mã đơn hàng -->
+        <!-- Mã hóa đơn -->
         <td>
           {{data.Number || '---'}}
         </td>
@@ -44,7 +44,7 @@
 
         <!-- Ngày tạo -->
         <td>
-          Chưa có
+          {{data.DateInvoice | yiDateTimeFormat}}
         </td>
 
         <!-- Trạng thái -->

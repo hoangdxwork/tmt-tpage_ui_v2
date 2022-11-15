@@ -63,7 +63,8 @@ export class TableAllOrderComponent implements OnInit {
       endDate: new Date(),
     },
     liveCampaignId: null,
-    IsHasPhone: null
+    IsHasPhone: null,
+    PriorityStatus: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
@@ -91,6 +92,8 @@ export class TableAllOrderComponent implements OnInit {
   public tabNavs: Array<TabNavsDTO> = [];
   public lstOftabNavs: Array<TabNavsDTO> = [];
   public summaryStatus: Array<TabNavsDTO> = [];
+
+  filterDate: string = '';
 
   constructor(
     private message: TDSMessageService,
@@ -204,7 +207,8 @@ export class TableAllOrderComponent implements OnInit {
         endDate: event.dateRange.endDate,
       } : null,
       liveCampaignId: null,
-      IsHasPhone: event.IsHasPhone
+      IsHasPhone: event.IsHasPhone,
+      PriorityStatus: event.PriorityStatus
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -219,7 +223,8 @@ export class TableAllOrderComponent implements OnInit {
       searchText: '',
       dateRange: {} as any,
       liveCampaignId: null,
-      IsHasPhone: null
+      IsHasPhone: null,
+      PriorityStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -542,9 +547,6 @@ export class TableAllOrderComponent implements OnInit {
       title: 'Lịch sử gửi tin nhắn',
       content: ModalHistoryChatComponent,
       size: "xl",
-      bodyStyle: {
-        padding: '0px',
-      },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         orderId: orderId,
@@ -647,4 +649,25 @@ export class TableAllOrderComponent implements OnInit {
     });
   }
 
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: ODataSaleOnline_OrderModel, b: ODataSaleOnline_OrderModel) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: ODataSaleOnline_OrderModel, b: ODataSaleOnline_OrderModel) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
+  }
 }

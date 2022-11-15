@@ -7,7 +7,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '../../dto/product-pouchDB/product-pouchDB.dto';
-import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { ProductIndexDBService } from '../../services/product-indexdb.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { takeUntil } from 'rxjs/operators';
 import { orderBy as _orderBy } from 'lodash';
@@ -19,6 +19,8 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
+import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { StringHelperV2 } from '../helper/string.helper';
 
 @Component({
   selector: 'list-product-tmp-v2',
@@ -91,6 +93,7 @@ export class ListProductTmpV2Component implements OnInit {
       public apiService: TCommonService,
       private cdRef : ChangeDetectorRef,
       private destroy$: TDSDestroyService,
+      private liveCampaignService: LiveCampaignService,
       private viewContainerRef: ViewContainerRef,
       private productTemplateService: ProductTemplateService,
       private productCategoryService: ProductCategoryService) {
@@ -185,6 +188,7 @@ export class ListProductTmpV2Component implements OnInit {
 
           case 'CategId':
             this.isShowFilterCategId = true;
+            return;
           break;
 
           default: break;
@@ -216,6 +220,9 @@ export class ListProductTmpV2Component implements OnInit {
   selectType(item: any): void {
     this.currentType = item;
     this.isShowFilterCategId = false;
+    if(this.currentType.value != 'CategId') {
+      delete this.categIdFilter;
+    }
 
     this.loadDataTable();
   }
@@ -269,34 +276,72 @@ export class ListProductTmpV2Component implements OnInit {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        if(!res) return;
+      next: (response: any) => {
+        if(!response) return;
+        this.mappingProductToLive(response);
 
-        res = {...res} as SyncCreateProductTemplateDto;
-        this.indexDbStorage = [...res.cacheDbStorage];
-
-        if(res.type === 'select' && res.productTmpl) {
-            let model = res.productTmpl as ProductTemplateV2DTO;
-            let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
-
-            if(items && items.length == 0) {
-                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-                return;
-            }
-
-            items.map((x: DataPouchDBDTO) => {
-                x.Tags = model?.OrderTag || null;
-                if(this.inventories && this.inventories[x.Id]) {
-                    x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
-                }
-
-                x._attributes_length = model._attributes_length || 0;
-            });
-
-            this.onLoadProductToLiveCampaign.emit([...items]);
-        }
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = inventories;
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+          }
+        });
       }
     })
+  }
+
+  mappingProductToLive(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
+
+    if(response.type === 'select' && response.productTmpl) {
+        const product = response.productTmpl as ProductTemplateV2DTO;
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
+
+        if(items && items.length == 0) {
+            this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+            return;
+        }
+
+        let ids = items.map((x: DataPouchDBDTO) => x.Id);
+        this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (tags: any) => {
+
+              items.map((x: DataPouchDBDTO) => {
+                  // TODO: kiểm tra số lượng
+                  const qty = product.InitInventory > 0 ? product.InitInventory : 1;
+                  x.QtyAvailable = qty;
+
+                  // TODO: kiểm tra mã sp từ api
+                  const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
+
+                  // TODO: lọc sp trùng mã code để tạo tags
+                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+                  let uomName = '';
+                  if(exist && exist.length > 1) {
+                      uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
+                  }
+
+                  // TODO: nếu có 2 biến thể trở lên thì ko lấy orderTag
+                  let orderTag = product.OrderTag;
+                  if(items && items.length > 1) {
+                      orderTag = '';
+                  }
+
+                  let gTags = this.generateTagDetail(x.DefaultCode, vTag, orderTag, uomName);
+                  x.Tags = gTags.join(',');
+              })
+
+              this.onLoadProductToLiveCampaign.emit([...items]);
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message);
+          }
+        })
+    }
   }
 
   reloadIndexDB() {
@@ -355,26 +400,102 @@ export class ListProductTmpV2Component implements OnInit {
       return;
     }
 
-    items.map((x: DataPouchDBDTO) => {
-      x._attributes_length = 0;
-      if(this.inventories && this.inventories[x.Id]) {
-          x.QtyAvailable = Number(this.inventories[x.Id].QtyAvailable) > 0 ?  Number(this.inventories[x.Id].QtyAvailable) : 1;
+    this.lstVariants = [...items];
+    this.apiOrderTagbyIds(this.lstVariants);
+  }
+
+  apiOrderTagbyIds(model: DataPouchDBDTO[]) {
+    let listData = [...(model || [])];
+    let ids = listData.map(x => x.Id);
+
+    this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.validateOrderTagbyIds(listData, res);
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
       }
+    })
+  }
+
+  validateOrderTagbyIds(listData: DataPouchDBDTO[], tags: any) {
+    listData.map((x: DataPouchDBDTO) => {
+        // TODO: kiểm tra số lượng
+        const qty = (this.inventories && this.inventories[x.Id] && Number(this.inventories[x.Id].QtyAvailable) > 0)
+        ? Number(this.inventories[x.Id].QtyAvailable) : 1;
+        x.QtyAvailable = qty;
+
+        // TODO: kiểm tra mã sp từ api
+        const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
+
+        // TODO: lọc sp trùng mã code để tạo tags
+        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        let uomName = '';
+        if(exist && exist.length > 1) {
+            uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
+        }
+
+        const orderTag = '';
+        let gTags = this.generateTagDetail(x.DefaultCode, vTag, orderTag, uomName);
+        x.Tags = gTags.join(',');
     });
 
-    this.lstVariants = [...items];
-
-    if(this.lstVariants && this.lstVariants.length == 1) {
-      this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
-      this.indClick = -1;
+    this.lstVariants = [...listData];
+    if(listData && this.lstVariants.length == 1) {
+        this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
+        this.indClick = -1;
     }
+  }
+
+  generateTagDetail(defaultCode: string, vTag: string, orderTag: string, uomName: string) {
+    let result: string[] = [];
+
+    if(TDSHelperString.hasValueString(defaultCode)) {
+        defaultCode = defaultCode.toLocaleLowerCase();
+
+        if(TDSHelperString.hasValueString(uomName)) {
+            let x = `${defaultCode} ${uomName}`
+            result.push(x);
+        } else {
+            result.push(defaultCode);
+        }
+    }
+
+    if(vTag) {
+        let tagArr1 = vTag.split(',');
+        tagArr1?.map((x: any) => {
+          if(!result.find(y => y == x)) {
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+          }
+        })
+    }
+
+    if(orderTag) {
+        let tagArr2 = orderTag.split(',');
+        tagArr2?.map((x: any) => {
+          if(!result.find(y => y == x))
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+        })
+    }
+
+    return [...result];
   }
 
   getVariant(data?: DataPouchDBDTO) {
     if(data && data.Id) {//chọn hiện tại
-      this.onLoadProductToLiveCampaign.emit([data]);
+        this.onLoadProductToLiveCampaign.emit([data]);
     } else {
-      this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
+        this.onLoadProductToLiveCampaign.emit([...this.lstVariants]);
     }
 
     this.lstVariants = [];
@@ -391,10 +512,8 @@ export class ListProductTmpV2Component implements OnInit {
     }
   }
 
-  
   loadProductCategory() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: TDSSafeAny) => {
           this.categoryList = [...res.value];
         },
@@ -408,12 +527,15 @@ export class ListProductTmpV2Component implements OnInit {
   onCloseFilter() {
     this.isShowFilterCategId = false;
     delete this.categIdFilter;
+
+    let data = this.indexDbStorage || [];
+    this.lstOfData = [...data];
   }
 
   onFilterCategId() {
     if(this.categIdFilter){
         let data = this.indexDbStorage || [];
-        
+
         data = data.filter((x: DataPouchDBDTO)=>(x.CategId == this.categIdFilter.Id))
 
         this.lstOfData = [...data];
@@ -429,4 +551,10 @@ export class ListProductTmpV2Component implements OnInit {
     }
   }
 
+  onChangeCategId(event: string) {
+    if(!event) {
+      let data = this.indexDbStorage || [];
+      this.lstOfData = [...data];
+    }
+  }
 }

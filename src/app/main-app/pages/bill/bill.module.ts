@@ -26,7 +26,7 @@ import { QuickReplyService } from './../../services/quick-reply.service';
 import { DetailBillComponent } from './detail-bill/detail-bill.component';
 import { AddBillComponent } from './add-bill/add-bill.component';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { BillRoutingModule } from './bill-routing.module';
 import { BillComponent } from './bill/bill.component';
 import { MainSharedModule } from '../../shared/shared.module';
@@ -226,6 +226,7 @@ const SERVICES = [
   ],
   providers: [
    ...SERVICES,
+   DatePipe
   ],
 })
 

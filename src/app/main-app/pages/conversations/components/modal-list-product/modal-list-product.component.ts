@@ -1,3 +1,4 @@
+import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
@@ -12,9 +13,10 @@ import { orderBy as _orderBy } from 'lodash';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ProductService } from '@app/services/product.service';
+import { Message } from '@core/consts/message.const';
 
 @Component({
   selector: 'app-modal-list-product',
@@ -29,10 +31,6 @@ export class ModalListProductComponent implements OnInit {
   isLoading: boolean = false;
   keyFilter: string = '';
 
-  lstOfData!: DataPouchDBDTO[];
-  pageIndex: number = 1;
-  pageSize: number = 20;
-  count!: number;
   textSearchProduct: string = '';
 
   indexDbVersion: number = 0;
@@ -45,6 +43,9 @@ export class ModalListProductComponent implements OnInit {
   currentOption: any = { text: 'Tất cả', value: 'all'};
   currentType: any =  { text: "Bán chạy", value: "PosSalesCount" };
 
+  indexDbStorage!: DataPouchDBDTO[];
+  innerTextDebounce!: string;
+
   constructor(private modal: TDSModalRef,
     private sharedService: SharedService,
     private message: TDSMessageService,
@@ -54,18 +55,15 @@ export class ModalListProductComponent implements OnInit {
     private conversationOrderFacade: ConversationOrderFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private productIndexDBService: ProductIndexDBService) {
   }
 
   ngOnInit(): void {
     if(!this.defaultOrder) {
       this.loadCurrentCompany();
     }
-  }
-
-  onQueryParamsChange(params: TDSTableQueryParams) {
-    this.pageSize = params.pageSize;
-    this.loadData();
+    this.productIndexDB();
   }
 
   loadCurrentCompany() {
@@ -96,29 +94,13 @@ export class ModalListProductComponent implements OnInit {
     });
   }
 
-  loadData(): void {
-    this.isLoading = true;
-
-    this.productTemplateUOMLineService.getProductUOMLine(this.pageIndex - 1, this.pageSize, this.textSearchProduct)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res :any) => {
-            this.lstOfData = [...res.value];
-            this.count = res['@odata.count'] as number;
-
-            this.isLoading = false;
-            this.cdRef.detectChanges();
-        },
-        error: (error: any) => {
-          this.isLoading = false;
-          this.message.error(error.error || 'Tải dữ liệu thất bại')
-        }
-    })
-  }
-
   onSearchProduct(event: TDSSafeAny) {
-    this.isLoading = true;
-    this.pageIndex = 1;
-    this.loadData();
+    if(!this.textSearchProduct) {
+      this.innerTextDebounce = '';
+      return;
+    }
+
+    this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
   }
 
   addItem(item: any) {
@@ -127,12 +109,6 @@ export class ModalListProductComponent implements OnInit {
     } else {
       this.conversationOrderFacade.onAddProductOrder$.emit(item);
     }
-  }
-
-  refreshData(){
-    this.lstOfData = [];
-    this.pageIndex = 1;
-    this.loadData();
   }
 
   cancel(){
@@ -152,11 +128,11 @@ export class ModalListProductComponent implements OnInit {
         if(!res) return;
 
         res = {...res} as SyncCreateProductTemplateDto;
-        let indexDbStorage = [...res.cacheDbStorage];
+        this.indexDbStorage = [...res.cacheDbStorage];
 
         if(res.type === 'select' && res.productTmpl) {
           let model = res.productTmpl;
-          let item = indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId)[0] as DataPouchDBDTO;
+          let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active)[0] as DataPouchDBDTO;
 
           if(!item) return;
           this.addItem(item);
@@ -169,7 +145,26 @@ export class ModalListProductComponent implements OnInit {
     this.modal.destroy(null);
   }
 
-  trackByIndex(_: number, data: any): number {
-    return data.index;
+  productIndexDB() {
+    this.isLoading = true;
+    this.indexDbStorage = [];
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: KeyCacheIndexDBDTO) => {
+            if(!res) return;
+            this.indexDbStorage = [...res?.cacheDbStorage];
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+        },
+        error:(err) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+            this.cdRef.detectChanges();
+        }
+    })
+  }
+
+  trackByIndex(_: number, data: DataPouchDBDTO): number {
+    return data.Id;
   }
 }

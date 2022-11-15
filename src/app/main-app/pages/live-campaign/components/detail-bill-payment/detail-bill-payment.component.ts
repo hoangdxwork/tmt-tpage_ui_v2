@@ -81,6 +81,7 @@ export class DetailBillPaymentComponent implements OnInit {
 
   public lstTags: TagsPartnerDTO[] = [];
   public modelTags: Array<TDSSafeAny> = [];
+  filterDate: string = '';
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
@@ -399,5 +400,26 @@ export class DetailBillPaymentComponent implements OnInit {
         }
     })
   }
+  
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: FastSaleOrderModelDTO, b: FastSaleOrderModelDTO) => new Date(a.DateCreated || '').getTime() - new Date(b.DateCreated|| '').getTime());
+      break;
 
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: FastSaleOrderModelDTO, b: FastSaleOrderModelDTO) => new Date(b.DateCreated|| '').getTime() - new Date(a.DateCreated|| '').getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
+  }
 }

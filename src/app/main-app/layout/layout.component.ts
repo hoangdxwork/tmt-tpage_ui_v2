@@ -206,11 +206,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         link: `/bill`,
         hidden: hidden,
       },
-      {
-        name: "Chatbot",
-        icon: "tdsi-callcenter-fill",
-        link: `/chatbot`,
-      },
+      // {
+      //   name: "Chatbot",
+      //   icon: "tdsi-callcenter-fill",
+      //   link: `/chatbot`,
+      // },
       {
         name: "Khách hàng",
         icon: "tdsi-user-fill",
@@ -270,23 +270,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     }
   }
 
-  reconnectSocket() {
-    this.modalService.info({
-        title: 'Kết nối socket-io',
-        content: 'Thử kết nối lại',
-        onOk: () => { this.onConnectSocket() },
-        onCancel: () => { },
-        okText: "Kết nối",
-        cancelText: "Hủy",
-        confirmViewType: "compact",
-  });
-  }
-
-  onConnectSocket() {
-    this.socketService.reconnecting();
-    this.establishedConnected = this.socketService.establishedConnected;
-  }
-
   onProfile() {
     this.router.navigateByUrl(`user/info`);
   }
@@ -309,38 +292,4 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         }
       }
   }
-
-  // onSave() {
-  //   this.modalService.info({
-  //     title: 'Kết nối realtime',
-  //     content: 'Thử kết nối lại',
-  //     onOk: () => { this.onConnectSginalR() },
-  //     onCancel: () => { },
-  //     okText: "Kết nối",
-  //     cancelText: "Hủy",
-  //     confirmViewType: "compact",
-  //   });
-  // }
-
-  // onConnectSginalR(): any {
-  //   if (!this.isNetwork) {
-  //     return this.message.error("Không có kết nối mạng");
-  //   }
-
-  //   this.disabledSignalRConnect = true;
-  //   this.signalRConnectionService.refreshConnected();
-
-  //   this.signalRConnectionService._connectionEstablished$.pipe(take(1))
-  //     .pipe(finalize(() => { this.disabledSignalRConnect = false }))
-  //     .subscribe((res: any) => {
-  //       if (res == true) {
-  //         this.message.success("Kết nối thành công");
-  //       } else {
-  //         this.message.error("Kết nối thất bại");
-  //       }
-  //     }, error => {
-  //       this.message.error("Lỗi server");
-  //     });
-  // }
-
 }

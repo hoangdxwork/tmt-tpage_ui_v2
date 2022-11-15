@@ -107,7 +107,14 @@
               <th width="260px" *ngIf="isHidden('Address')" class="border-l">Địa chỉ</th>
               <th width="140px" *ngIf="isHidden('TotalAmount')" class="border-l text-right">Tổng tiền</th>
               <th width="100px" *ngIf="isHidden('TotalQuantity')" class="border-l text-center">Tổng SL</th>
-              <th width="155px" *ngIf="isHidden('DateCreated')" class="border-l">Ngày tạo đơn</th>
+              <th width="155px" *ngIf="isHidden('DateCreated')" class="border-l">
+                <div class="flex gap-x-1">
+                  <span>Ngày tạo đơn</span>
+                  <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+                    <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                  </span>
+                </div>
+              </th>
               <th width="160px" *ngIf="isHidden('StatusText')" class="border-l">Trạng thái</th>
               <th width="126px" *ngIf="isHidden('UserName')" class="border-l">Nhân viên</th>
               <th width="131px" [tdsRight]="true" class="border-l">Thao tác</th>
@@ -215,8 +222,13 @@
 
                 <!-- Chiến dịch live -->
                 <td *ngIf="isHidden('LiveCampaignName')" class="border-l">
-                  <div class="w-full flex justify-between items-center gx-2">
-                    <span class="ml-1">{{data.LiveCampaignName}}</span>
+                  <div class="flex flex-col gap-y-2">
+                    <div class="w-full flex justify-between items-center gx-2">
+                      <span class="ml-1">{{data.LiveCampaignName}}</span>
+                    </div>
+                    <tds-tag *ngIf="data.PriorityStatus" [status]='data.PriorityStatus | priorityStatusColor'>
+                      {{data.PriorityStatus | priorityStatusName}}
+                    </tds-tag>
                   </div>
                 </td>
 
@@ -271,13 +283,15 @@
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-l">
-                  <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
-                    tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
-                    popoverTrigger="click">
-                    <span class="flex items-center">
-                      {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
-                    </span>
-                  </tds-tag>
+                  <div class="flex flex-col gap-y-2">
+                    <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
+                      tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
+                      popoverTrigger="click">
+                      <span class="flex items-center">
+                        {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
+                      </span>
+                    </tds-tag>
+                  </div>
 
                   <tds-dropdown-menu #menu1="tdsDropdownMenu">
                     <div class="w-[160px] max-h-[300px] overflow-y-auto tds-panel-scroll">

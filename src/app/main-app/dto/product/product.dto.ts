@@ -94,6 +94,7 @@ export interface ProductDTO {
   TaxesIds: Array<number>;
   StockValue?: number;
   SaleValue?: number;
+  OrderTag: any;
 
   // Số lượng bán ở điểm bán hàng
   PosSalesCount?: number;

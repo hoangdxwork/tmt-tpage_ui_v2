@@ -27,7 +27,7 @@ import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-pos
   providers: [ TDSDestroyService ]
 })
 
-export class LiveCampaignPostComponent implements OnInit, OnChanges{
+export class LiveCampaignPostComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
 
@@ -59,34 +59,13 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
   }
 
   ngOnInit(): void {
-    let id = this.data?.LiveCampaignId as string;
-    if(id) {
-      this.loadById(id);
-    }
     this.loadData();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['data'] && !changes['data'].firstChange) {
-        let id = this.currentLiveCampaign.Id as string;
-        if(id) {
-          this.loadById(id);
-        }
         this.loadData();
     }
-  }
-
-  loadById(id: string): void {
-    this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          delete res['@odata.context'];
-          this.currentLiveCampaign = res;
-          this.cdRef.detectChanges();
-      },
-      error: (error: any) => {
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-      }
-    })
   }
 
   loadData() {
@@ -94,7 +73,6 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
     this.liveCampaignService.getAvailablesV2(this.pageIndex, this.pageSize, this.innerText).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
-
           this.count = res['@odata.count'];
           this.lstOfData = [...res.value];
 
@@ -120,6 +98,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
     if(TDSHelperString.hasValueString(this.innerText)) {
         this.innerText = TDSHelperString.stripSpecialChars(this.innerText.toLocaleLowerCase()).trim();
     }
+
     this.loadData();
   }
 
@@ -172,54 +151,9 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res) {
-            this.currentLiveCampaign = res;
-
-            // TODO: cập nhật object-facebook-post
-            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(res);
-            this.data = this.fbPostHandler.updateLiveCampaignPost(this.data, res);
-            this.cdRef.detectChanges();
+          this.loadData();
         }
       }
-    })
-  }
-
-  removeLiveCampaign(){
-    let id = this.currentLiveCampaign?.Id;
-    let exist = this.data && id == this.data.LiveCampaignId;
-    if(!exist) {
-        this.currentLiveCampaign = null;
-        return;
-    }
-
-    this.modal.info({
-      title: 'Xóa chiến dịch live',
-      content: `Bạn có chắc muốn xóa chiến dịch <span class="text-info-500 font-semibold">${this.currentLiveCampaign.Name}</span>`,
-      onOk: () => {
-          let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'cancel')};
-          this.isLoading = true;
-
-          this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-                this.currentLiveCampaign = null as any;
-                this.data.LiveCampaignId = null as any;
-                this.data.LiveCampaign = null as any;
-
-                // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-                this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
-
-                this.isLoading = false;
-                this.message.success('Bỏ chọn chiến dịch thành công');
-                this.cdRef.detectChanges();
-            },
-            error: (error: any) => {
-                this.isLoading = false;
-                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-                this.cdRef.detectChanges();
-            }
-          });
-      },
-      okText: "Xác nhận",
-      cancelText: "Hủy bỏ"
     })
   }
 
@@ -256,32 +190,19 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
         return;
     }
 
-    this.isLoading = true;
-    this.liveCampaignService.getReport(id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        this.modal.create({
-          title: `${name}`,
-          content: OverviewLiveCampaignComponent,
-          size: "xl",
-          bodyStyle: {
-            padding: '0px',
-          },
-          viewContainerRef: this.viewContainerRef,
-          componentParams:{
-            liveCampaignId: this.currentLiveCampaign?.Id,
-            lstOfData: res as ReportLiveCampaignDTO
-          }
-        });
-
-        this.isLoading = false;
-        this.cdRef.detectChanges();
+    let modal = this.modal.create({
+      title: `${name}`,
+      content: OverviewLiveCampaignComponent,
+      size: "xl",
+      bodyStyle: {
+        padding: '0px',
       },
-      error: (error: any) => {
-        this.isLoading = false;
-        this.message.error(error?.error?.message || 'Không tải được dữ liệu thống kê');
-        this.cdRef.detectChanges();
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        liveCampaignId: id,
+        isNoPost: true
       }
-    })
+    });
   }
 
   onCannel() {
@@ -309,7 +230,7 @@ export class LiveCampaignPostComponent implements OnInit, OnChanges{
 
             this.isLoading = false;
             this.message.success('Cập nhật chiến dịch thành công');
-            this.onCannel();
+            this.modalRef.destroy(this.currentLiveCampaign.Id);
         },
         error: (error: any) => {
             this.isLoading = false;

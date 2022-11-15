@@ -49,19 +49,26 @@ export class ModalHistoryChatComponent implements OnInit {
     if (this.partnerId) {
       model.partnerId = this.partnerId;
     }
-    model.skip = params.pageIndex - 1;
-    model.take = params.pageIndex * params.pageSize;
+    model.skip = (params.pageIndex - 1) * params.pageSize;
+    model.take = params.pageSize;
 
-    this.commonService.getHistoryMessageSent(model).pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false }))
-    .subscribe((res: orderHistoryChatDTO) => {
-      this.listOfData = res.Datas;
-      this.total = res.Total;
-    }, err => {
-      this.message.error(err.error ? err.error.message : Message.CanNotLoadData)
-    });
+    this.commonService.getHistoryMessageSent(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: orderHistoryChatDTO) => {
+        this.listOfData = res.Datas;
+        this.total = res.Total;
+        this.isLoading = false;
+      },
+      error: err => {
+        this.message.error(err.error ? err.error.message : Message.CanNotLoadData);
+        this.isLoading = false;
+      }
+    }
+      );
   }
 
   onQueryParamsChange(params: TDSTableQueryParams): void {
+    // this.pageIndex = params.pageSize;
+    // this.pageSize = params.pageSize;
     this.getHistoryMessageSent(params);
   }
 

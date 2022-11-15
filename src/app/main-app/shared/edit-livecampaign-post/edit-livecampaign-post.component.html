@@ -1,3 +1,20 @@
+<div *tdsModalTitle class="">
+  <div class="w-full pl-4 flex flex-row-reverse items-center justify-between">
+    <div class="tds-modal-close justify-self-end pl-2">
+        <span class="tds-modal-close-x flex">
+          <button (click)="onCannel(changedData)" class="border-0 box-border dark:hover:bg-d-neutral-3-300 dark:text-d-neutral-1-500 focus:outline-none h-7 hover:bg-neutral-3-50 hover:rounded-md inline-flex items-center justify-center leading-4 p-1.5 relative text-base text-neutral-1-500 whitespace-nowrap">
+            <i class="tdsi-close-fill"></i>
+          </button>
+        </span>
+      </div>
+    <div tds-modal-title="" class="tds-modal-header flex-auto tds-modal-title">
+        <div class="text-title-1 text-neutral-1-900 dark:text-d-neutral-1-900 font-semibold break-words">
+            Chỉnh sửa chiến dịch
+        </div>
+    </div>
+  </div>
+</div>
+
 <tds-spin [spinning]="isLoading" class="w-full h-full">
   <form [formGroup]="_form">
     <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
@@ -61,7 +78,7 @@
               <tds-label>Thời gian tổng hợp (phút)</tds-label>
               <tds-form-field class="col-span-2 w-full">
                     <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
-                      [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                    [tdsInputDebounce]="350" (inputKeyup)="onChangeResumeTime($event)" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
               </tds-form-field>
 
               <tds-label>Ngày bắt đầu</tds-label>
@@ -251,9 +268,9 @@
                                   </th>
                               </tr>
                           </thead>
-                          <tbody formArrayName="Details">
+                          <tbody formArrayName="Details" >
                               <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index" [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsForm.controls"
-                                  [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id] && id)}">
+                                  [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id] && id)}" id="dataSourceScroll{{index}}">
 
                                   <td>{{ (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls) + 1 }}</td>
 
@@ -271,11 +288,11 @@
 
                                           <!-- Tags -->
                                           <div class="flex items-center gap-x-1">
-                                              <span *ngIf="detail?.value.Tags.length <= 0 && isEditDetails[detail.value.Id]" class="text-info-500 font-normal text-sm cursor-pointer"
+                                              <span *ngIf="detail?.value.Tags?.length <= 0 && isEditDetails[detail.value.Id]" class="text-info-500 font-normal text-sm cursor-pointer"
                                               (click)="openTag(detail?.value)" tds-popover [popoverVisible]="indClickTag == (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls)" popoverTrigger="click"
                                               [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left">+Thêm cú pháp chốt đơn</span>
 
-                                            <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags.length > 0">
+                                            <div class="flex flex-wrap items-center" *ngIf="detail?.value.Tags?.length > 0">
                                                 <div *ngFor="let item of (detail.value.Tags | stringToStringArray)" tds-tooltip [tooltipTitle]="item">
                                                     <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='primary'>{{ (item || '') | truncateString }}</tds-tag>
                                                 </div>
@@ -301,7 +318,7 @@
                                                 <div class="w-[360px]">
                                                     <tds-form-field>
                                                         <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                                          [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
+                                                          [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" (selectChange)="onChangeModelTag($event, detail.value)"
                                                           [data]="(detail.value.Tags | stringToStringArray)" >
                                                         </tds-select>
                                                     </tds-form-field>
@@ -413,7 +430,7 @@
     </tds-tabset>
 
     <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
-        <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()" type="button">Đóng</button>
+        <button tds-button class="w-[100px]" color="secondary" (click)="onCannel(changedData)" type="button">Đóng</button>
         <button *ngIf="(selectedIndex == 0 && id)" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
     </div>
 

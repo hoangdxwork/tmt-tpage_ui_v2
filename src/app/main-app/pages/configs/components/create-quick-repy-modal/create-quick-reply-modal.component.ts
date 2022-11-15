@@ -182,16 +182,16 @@ export class CreateQuickReplyModalComponent implements OnInit {
         next: dataTeam => {
           if (dataTeam && TDSHelperObject.hasValue(dataTeam)) {
             this.dataMeidaRes = dataTeam;
-  
+
             this.dataMeidaRes.forEach(data => {
-  
+
               if (data.Childs!.length == 0) {
                   data.Active = true;
                   data.Facebook_UserName = data.Name
                   this.mediaChannelList.push(data)
               } else {
                 data.Active = false;
-  
+
                 data.Childs!.forEach(dataChilds => {
                   dataChilds.Active = false;
                   dataChilds.Facebook_UserName = data.Name
@@ -201,7 +201,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
             })
           }
           this.isLoading = false
-        }, 
+        },
         error: err => {
           this.isLoading = false
           this.message.error('Lấy dữ liệu page Facebook thất bại !')
@@ -223,7 +223,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
           this.formQuickReply.controls.advancedTemplateRadio.setValue(true);
           this.createMessageForm.controls.title.setValue(templateAd.Title);
           this.createMessageForm.controls.subTitle.setValue(templateAd.SubTitle);
-          this.createMessageForm.controls.text.setValue(templateAd.Text);    
+          this.createMessageForm.controls.text.setValue(templateAd.Text);
           this.createImageForm.controls.image.setValue(templateAd.Url);
 
           this.templateType = templateAd.TemplateType;
@@ -240,7 +240,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
 
       } catch (error) {
     }
-   
+
     this.isLoading = false
 
   }
@@ -344,7 +344,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
             this.isLoading = false;
             this.message.success('Cập nhật trả lời nhanh thành công!');
             this.modal.destroy(true);
-          }, 
+          },
           error: error => {
             this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Cập nhật trả lời nhanh thất bại!');
@@ -359,7 +359,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
             this.isLoading = false;
             this.message.success('Thêm mới trả lời nhanh thành công!');
             this.modal.destroy(true);
-          }, 
+          },
           error: error => {
             this.isLoading = false;
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thêm mới trả lời nhanh thất bại!');
@@ -386,11 +386,11 @@ export class CreateQuickReplyModalComponent implements OnInit {
       this.data.SubjectHtml = formModelQuickReply.subjectHtml;
     }
     if (!TDSHelperString.hasValueString(this.data.SubjectHtml)) {
-      this.message.error('Vui lòng nhập tiêu đề');
+      this.message.error('Vui lòng nhập tên mẫu');
       return
     }
     if (!TDSHelperString.hasValueString(this.data.BodyHtml) && !formModelQuickReply.advancedTemplateRadio) {
-      this.message.error('Vui lòng nội dung');
+      this.message.error('Vui lòng nhập nội dung');
       return
     }
     if (formModelQuickReply.advancedTemplateRadio) {

@@ -61,7 +61,7 @@
               <tds-label>Thời gian tổng hợp (phút)</tds-label>
               <tds-form-field class="col-span-2 w-full">
                     <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
-                      [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                    [tdsInputDebounce]="350" (inputKeyup)="onChangeResumeTime($event)" [formatter]="numberWithCommas" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
               </tds-form-field>
 
               <tds-label>Ngày bắt đầu</tds-label>
@@ -231,7 +231,7 @@
                               </th>
 
                               <th width="10%">Trạng thái</th>
-                              <th width="13%" class="text-center">Số lượng</th>
+                              <th width="13%" class="text-left">Số lượng</th>
                               <th width="13%" class="text-center">Giới hạn trên đơn</th>
                               <th width="13%" class="text-center">Giá bán</th>
 
@@ -296,7 +296,7 @@
                                             <div class="w-[360px]">
                                                 <tds-form-field>
                                                     <tds-select [(ngModel)]="modelTags" [ngModelOptions]="{standalone: true}" placeholder='Nhập và chọn Tag' mode="tags"
-                                                      [allowClear]="true" [autoClose]="true" [valuePrimitive]="false"
+                                                      [allowClear]="true" [autoClose]="true" [valuePrimitive]="false" (selectChange)="onChangeModelTag($event, detail.value)"
                                                       [data]="(detail.value.Tags | stringToStringArray)" >
                                                     </tds-select>
                                                 </tds-form-field>

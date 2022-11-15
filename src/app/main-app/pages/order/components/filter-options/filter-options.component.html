@@ -86,6 +86,18 @@
       </div>
     </div>
 
+    <div class="w-full mb-4">
+      <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI ĐƠN HÀNG CHIẾN DỊCH</p>
+      <div class="w-full">
+        <tds-form-field>
+          <tds-select valueField="value" textField="text" (selectChange)="onChangePriorityStatus($event)"
+            placeholder='Chọn trạng thái' [(ngModel)]="selectPriorityStatus"
+            [data]="(lstPriorityStatus) || []" [allowClear]="true">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+
     <div class="w-full flex align-center justify-between">
       <button tds-button color="primary" size="sm" (click)="onCancel()">
           <span class="flex items-center">

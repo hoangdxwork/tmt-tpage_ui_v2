@@ -5,16 +5,23 @@
     (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
     <thead>
       <tr>
-        <th [align]="'center'" [width]="'33px'" [tdsLeft]="true"></th>
+        <th [align]="'center'" [width]="'33px'" [tdsLeft]="true" class="border-r"></th>
         <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)"
-          [width]="'42px'" [align]="'center'" [tdsLeft]="true"></th>
-        <th [width]="'60px'" class="text-center">STT</th>
-        <th [width]="'100px'">Mã</th>
-        <th [width]="'150px'">Tên khách hàng</th>
-        <th [width]="'140px'">Người xóa</th>
-        <th [width]="'250px'">Địa chỉ</th>
-        <th [width]="'150px'">Ngày tạo</th>
-        <th [width]="'100px'" class="w-full text-center">Tổng số lượng</th>
+          [width]="'42px'" [align]="'center'" [tdsLeft]="true" class="border-r"></th>
+        <th [width]="'60px'" class="text-center border-r">STT</th>
+        <th [width]="'100px'" class="border-r">Mã</th>
+        <th [width]="'150px'" class="border-r">Tên khách hàng</th>
+        <th [width]="'140px'" class="border-r">Người xóa</th>
+        <th [width]="'250px'" class="border-r">Địa chỉ</th>
+        <th [width]="'150px'" class="border-r">
+          <div class="flex gap-x-1">
+            <span>Ngày tạo</span>
+            <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+              <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+            </span>
+          </div>
+        </th>
+        <th [width]="'100px'" class="w-full text-center border-r">Tổng số lượng</th>
         <th [width]="'100px'" class="w-full text-right">Tổng tiền</th>
       </tr>
     </thead>
@@ -23,28 +30,28 @@
         <tr [ngClass]="{'tds-row-selected':setOfCheckedId.has(order.OrderId)}">
 
           <!-- Detail -->
-          <td [expand]="expandSet.has(order.OrderId)" class="text-center"
+          <td [expand]="expandSet.has(order.OrderId)" class="text-center border-r"
             (expandChange)="onExpandChange(order.OrderId, $event)" [tdsLeft]="true">
           </td>
 
           <!-- Checked -->
           <td [checked]="setOfCheckedId.has(order.OrderId)" (checkedChange)="onItemChecked(order.OrderId, $event)"
-            class="text-center" [tdsLeft]="true">
+            class="text-center border-r" [tdsLeft]="true">
           </td>
 
           <!-- STT -->
-          <td [tdsLeft]="true" class="text-center"> {{index | numericalOrder :pageSize: pageIndex}} </td>
+          <td [tdsLeft]="true" class="text-center border-r"> {{index | numericalOrder :pageSize: pageIndex}} </td>
 
           <!-- Mã -->
-          <td [tdsLeft]="true">{{ order.Code }}</td>
+          <td [tdsLeft]="true" class="border-r">{{ order.Code }}</td>
 
           <!-- Tên khách hàng -->
-          <td>
+          <td class="border-r">
             <p class="truncate max-w-[200px]">{{order.PartnerName}}</p>
           </td>
 
           <!-- Người xóa -->
-          <td >
+          <td class="border-r">
             <span *ngIf="order.UserName && !order.IsCancelCheckout; else isUserName">
               {{order.UserName}}
             </span>
@@ -54,13 +61,13 @@
           </td>
 
           <!-- Địa chỉ -->
-          <td>{{ order.Address }}</td>
+          <td class="border-r">{{ order.Address }}</td>
 
           <!-- Ngày tạo -->
-          <td>{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
+          <td class="border-r">{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
 
           <!-- Tổng số lượng -->
-          <td class="text-center">{{ order.TotalQuantity }}</td>
+          <td class="text-center border-r">{{ order.TotalQuantity }}</td>
 
           <!-- Tổng tiền -->
           <td class="text-right">{{ (order.Total | numberCustom) || 0 }} đ</td>

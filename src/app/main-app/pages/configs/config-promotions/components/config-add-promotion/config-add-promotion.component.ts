@@ -17,7 +17,7 @@ import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
 import { CompanyService } from 'src/app/main-app/services/company.service';
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
 import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
-import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';

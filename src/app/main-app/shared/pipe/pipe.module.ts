@@ -27,7 +27,7 @@ import { NameNetWorkPipe } from './name-network.pipe';
 import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
-import { TagStatusColorPipe } from './tag-status-color.pipe';
+import { TagStatusColorPipe} from './tag-status-color.pipe';
 import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe, IndexSimpleDetailLiveCampainPipe } from './check-tag-selected.pipe';
 import { ConverseTimePipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
@@ -43,6 +43,8 @@ import { SimpleSearchPipe, SimpleSearchV2Pipe, SimpleSearchLiveCampaignDetailPip
 import { ReduceSystemMessagePipe } from './reduce-system-message.pipe';
 import { SeenedMessagePipe } from './coversation-message.pipe';
 import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
+import { PriorityStatusColorPipe, PriorityStatusNamePipe } from './priority-status.pipe';
+import { SortDateClassPipe, SortDateNamePipe } from './sort-date.pipe';
 import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
 
 const cmp =[
@@ -103,6 +105,10 @@ const cmp =[
   SeenedMessagePipe,
   IndexSimpleDetailLiveCampainPipe,
   FilterIndexDBLivePipe,
+  PriorityStatusColorPipe,
+  PriorityStatusNamePipe,
+  SortDateNamePipe,
+  SortDateClassPipe,
   FirebaseSubscribedPipe
 ]
 
