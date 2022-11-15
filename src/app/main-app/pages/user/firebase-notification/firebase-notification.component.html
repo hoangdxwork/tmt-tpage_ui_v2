@@ -98,7 +98,7 @@
 
 
 <div *ngIf="data" class="h-full w-full flex p-4 gap-x-4">
-  <div class="w-[384px] h-full flex flex-col bg-white rounded-xl">
+  <div class="w-1/4 h-full flex flex-col bg-white rounded-xl">
     <div class="flex justify-between items-center p-4">
       <span class="text-title-1 font-semibold">Thông báo</span>
       <button tds-button-icon color="custom"
@@ -106,39 +106,28 @@
         <i class="tdsi-gear-2-fill"></i>
       </button>
     </div>
-    <div class="w-full h-full">
-      <div class="flex flex-col gap-y-4 h-full">
-        <div class="h-full w-full relative">
+    <div class="w-full h-full pb-3">
+      <div class="flex flex-col h-full w-full">
           <tds-spin [spinning]="isLoadingNextdata" class="h-full w-full">
             <virtual-scroller #scroll [items]="data" (vsEnd)="vsEnd($event)" [enableUnequalChildrenSizes]="true" [scrollAnimationTime]="750"
-            class="h-full p-2 text-caption-1 overflow-hidden overflow-y-auto no-scrollbar bg-white flex flex-col gap-y-2 shadow-md">
-              <div class="hover:bg-secondary-3" *ngFor="let item of scroll.viewPortItems" (click)="onDetail(item)">
-                <div [ngClass]="item.id == dataDetail.id ? 'absolute w-1 h-[96px] left-0 bg-blue-500 z-10' : ''"></div>
-                <div [ngClass]="item.id == dataDetail.id ? 'bg-secondary-3':'bg-white'" class="flex gap-x-4 p-4 relative w-full cursor-pointer group border-b border-neutral-2-200">
-                  <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item.notification.thumbnail }}" [isAvatar]="false" class="rounded min-w-[80px]"></tds-avatar>
-
-                  <div class="text-neutral-1-400 relative w-full">
-                    <div class="flex flex-col flex-auto gap-y-1 absolute inset-0" *ngIf="item.dateRead else notRead">
-                      <span class="text-base font-semibold pr-4 w-full truncate">{{ item.notification.title }}</span>
-                      <span class="truncate w-full">{{ item.notification.shortContent }}</span>
-                      <span class="text-[13px] font-semibold w-full">{{ item.dateCreated | yiDiffDateTime }} - {{ item.dateCreated | date: 'dd/MM/yyyy' }}</span>
+            class="h-full w-full p-2 text-caption-1 overflow-hidden overflow-y-auto no-scrollbar bg-white flex flex-col gap-y-2">
+              <div *ngFor="let item of scroll.viewPortItems" (click)="onDetail(item)" class="flex flex-auto justify-between items-start overflow-hidden cursor-pointer hover:bg-neutral-3-50 border-l-3" [ngClass]="item.id == dataDetail.id ? 'border-blue-500 bg-secondary-3': 'border-transparent bg-white'">
+                <div class="flex gap-x-4 p-4 justify-between w-full overflow-hidden">
+                  <div class="w-full flex gap-x-4" [ngClass]="item.dateRead ? 'text-neutral-1-400' : ''">
+                    <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item.notification.thumbnail }}" [isAvatar]="false" class="rounded min-w-[63px]"></tds-avatar>
+                    <div class="w-full flex flex-col flex-auto overflow-hidden">
+                      <span class="text-base font-semibold truncate break-words">{{ item.notification.title }}</span>
+                      <span class="truncate break-words">{{ item.notification.shortContent }}</span>
+                      <span class="text-[13px] font-semibold" [ngClass]="item.dateRead ? '' : 'text-info-400'">{{ item.dateCreated | yiDiffDateTime }} - {{ item.dateCreated | date: 'dd/MM/yyyy' }}</span>
                     </div>
-
-                    <ng-template #notRead>
-                      <div class="flex flex-col flex-auto gap-y-1 absolute inset-0">
-                        <span class="text-base font-semibold text-neutral-1-900 pr-4 w-full truncate">{{ item.notification.title }}</span>
-                        <span class="truncate w-full">{{ item.notification.shortContent }}</span>
-                        <span class="text-[13px] font-semibold text-info-400">{{ item.dateCreated | yiDiffDateTime }} - {{ item.dateCreated | date: 'dd/MM/yyyy' }}</span>
-                      </div>
-                      <span class="tdsi-radio-circle-fill text-info-400 absolute top-0 right-0 text-xs"></span>
-                    </ng-template>
                   </div>
-
+                </div>
+                <div class="pt-2 pr-2" [ngClass]="item.dateRead ? 'hidden' : ''">
+                  <span class="tdsi-radio-circle-fill text-info-400 text-xs"></span>
                 </div>
               </div>
             </virtual-scroller>
           </tds-spin>
-        </div>
       </div>
     </div>
   </div>

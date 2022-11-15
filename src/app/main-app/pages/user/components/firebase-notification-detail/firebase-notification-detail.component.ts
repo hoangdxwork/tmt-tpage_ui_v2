@@ -48,8 +48,4 @@ export class FirebaseNotificationDetailComponent implements OnInit {
     })
   }
 
-  onBack() {
-    this.router.navigateByUrl(`user/firebase-notification`);
-  }
-
 }
