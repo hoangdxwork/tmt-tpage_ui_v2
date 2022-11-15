@@ -1,3 +1,4 @@
+import { CommentOrderPost } from './../../../../dto/conversation/post/comment-order-post.dto';
 import { KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
@@ -68,6 +69,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { MapOrderNumberCommentDTO, MapOrderCodeCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -773,8 +775,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.isUpdated = false;
             }
 
-            // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
+            // TODO: đẩy sự kiện qua conversation-order-list
             this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
+
+            // TODO: đẩy sự kiện qua comment-filter-all
+            let orderCode = {
+              asuid : this.insertFromPostModel.Facebook_ASUserId,
+              id: this.insertFromPostModel.Facebook_ASUserId,
+              type: 'create',
+              orders : [{
+                code: res.Code
+              }]
+            } as MapOrderCodeCommentDTO;
+            this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
+
             this.cdRef.detectChanges();
         },
         error: (error: any) => {
@@ -1085,6 +1099,23 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
               this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
 
+              // TODO: đẩy sự kiện qua comment-filter-all
+              let orderCode = {
+                asuid : this.insertFromPostModel.Facebook_ASUserId,
+                id: this.insertFromPostModel.Facebook_ASUserId,
+                LiveCampaignId: fs_model.LiveCampaignId,
+                type: 'done',
+              } as MapOrderCodeCommentDTO;
+              this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
+
+              // TODO: đẩy sự kiện qua comment-filter-all
+              let orderNumber = {
+                PartnerId: fs_model.PartnerId,
+                LiveCampaignId: fs_model.LiveCampaignId,
+                Data: res.Data
+              } as MapOrderNumberCommentDTO;
+              this.conversationOrderFacade.onMapOrderNumberComment$.emit(orderNumber)
+              
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
