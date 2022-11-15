@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TAuthService } from 'src/app/lib';
@@ -8,6 +8,8 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +27,8 @@ export class LoginComponent implements OnInit {
   isShowPass: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
+    private ngZone: NgZone,
+    public afAuth: AngularFireAuth,
     private router: Router,
     private authen: TAuthService,
     private route: ActivatedRoute,

@@ -51,7 +51,7 @@ export class AddPageComponent implements OnInit {
           this.message.success(Message.SaveSuccess);
           this.isLoading = false;
           this.onCancel(true);
-      }, 
+      },
         error: error => {
           if(error?.error?.message) {
             this.message.error(error?.error?.message);
@@ -65,6 +65,20 @@ export class AddPageComponent implements OnInit {
   }
 
   prepareModel() {
+    let model = {};
+
+    if(this.user.Type == "Facebook") {
+      model = this.prepareModelFacebook();
+    }
+    else if(this.user.Type == "TUser")
+    {
+      model = this.prepareModelTShop();
+    }
+
+    return model;
+  }
+
+  prepareModelFacebook() {
     let formValue = this.addPageForm.value;
 
     let model = {
@@ -83,6 +97,25 @@ export class AddPageComponent implements OnInit {
       Name: formValue["name"],
       ParentId: this.user.Id,
       Type: "Facebook"
+    };
+
+    return model;
+  }
+
+  prepareModelTShop()
+  {
+    let formValue = this.addPageForm.value;
+
+    let model = {
+      Id: 0,
+      OwnerId: this.user.OwnerId,
+      Name: formValue["name"],
+      Type: "TShop",
+      ParentId: this.user.Id,
+      ShopId: this.data.id,
+      ChannelId: this.data.id,
+      ChannelToken: this.data.access_token,
+      ChannelAvatar: this.data.picture?.data?.url
     };
 
     return model;

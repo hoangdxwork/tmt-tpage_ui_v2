@@ -38,7 +38,6 @@ export interface SocketEventSubjectDto {
 export class SocketOnEventService {
 
   private readonly socketEvent$ = new Subject<any>();
-
   private modalRef!: TDSModalRef;
   public isRegisteredEvent: boolean = false;
 

@@ -1,0 +1,131 @@
+<tds-spin [spinning]="isLoading">
+  <div *ngIf="data && data.length > 0" class="h-full w-full flex gap-x-4 p-4">
+    <div class="w-3/4 h-full flex flex-col gap-y-4">
+
+      <div *ngFor="let team of (dataSearch || data); let index = index" class="bg-white rounded-xl w-full border border-neutral-2-100 px-4 py-3">
+        <div class="flex w-full h-full justify-between items-center pr-4">
+          <div class="flex gap-4 items-center">
+            <div class="relative">
+              <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
+                <tpage-avatar-facebook [size]="'xl'" [fbid]="team?.ChannelId" [token]="team?.ChannelToken"></tpage-avatar-facebook>
+              </div>
+              <span class="absolute right-0 bottom-0">
+                <span><img src="../../../assets/imagesv2/facebook/icon-tshop.svg"></span>
+              </span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-title-1 font-sans font-semibold">  {{ team?.Name }}  </div>
+
+              <!--TODO: Đã kết nối trang -->
+              <div class="flex gap-x-2 items-center">
+                <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
+                <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
+              </div>
+
+            </div>
+          </div>
+          <div class="flex gap-x-3 items-center">
+            <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+              <i class="tdsi-eye-close-fill text-xl leading-none"></i>
+            </button>
+            <!--TODO: Hủy kết nối -->
+            <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+              <i class="tdsi-break-link-fill text-xl leading-none"></i>
+            </button>
+            <!--TODO: Đăng xuất -->
+            <!-- <button tds-button-icon color="custom" tds-tooltip="Đăng xuất" class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+              <i class="tdsi-log-out-fill text-xl leading-none"></i>
+            </button> -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="w-1/4">
+      <!--TODO: Chưa đăng nhập tài khoản -->
+      <div class="bg-white rounded-xl p-4 flex flex-col" *ngIf="!userTShopLogin || !userTShopLogin.Id; else userLoggedTShop">
+        <span class="text-header-2 font-semibold text-neutral-1-900">Kết nối tài khoản</span>
+        <div class="mt-4 w-full h-[254px] rounded-xl">
+          <img src="/assets/imagesv2/facebook/tshop-img.svg" alt="">
+        </div>
+        <span class="mt-4 text-body-2 font-regular text-neutral-1-900 text-center px-6">Kết nối tài khoản Facebook của bạn
+          để đồng bộ tin nhắn, bình luận, bài viết về TPage</span>
+          <button tds-button color="custom" class="w-full mt-4 text-white focus:ring-2 focus:ring-orange-500/20 border-orange-500
+          bg-orange-500 hover:bg-orange-600 focus:bg-orange-500 focus:border-orange-500" (click)="tShopSignIn()">
+          <span class="flex items-center">
+            <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với TShop
+          </span>
+        </button>
+      </div>
+
+       <!--TODO: Đã đăng nhập tài khoản -->
+       <ng-template #userLoggedTShop class="bg-white rounded-xl p-4 pt-10 flex flex-col items-center">
+        <div class="h-[136px] w-[136px] rounded-full bg-white border-2 border-info-500 flex items-center justify-center">
+          <tds-avatar [size]="126" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg"></tds-avatar>
+        </div>
+        <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">Xin chào, Shop TShop!</span>
+        <span class="mt-2 text-body-2 text-neutral-1-400">tmt30.tpos.vn</span>
+        <button tds-button color="secondary" class="w-full mt-6">
+          <span class="flex items-center">
+            <i class="tdsi-log-out-fill text-lg text-neutral-1-500 leading-none mr-2"></i>Đăng xuất
+          </span>
+        </button>
+      </ng-template>
+
+      <!-- <ng-template #userLoggedTShop>
+        <div class="bg-white rounded-xl w-full p-4">
+          <div class="bg-neutral-3-500 w-full flex items-center flex-wrap">
+              <div class="flex items-center w-full">
+                 <div class="relative">
+                    <tds-avatar [size]="'xl'" [tdsSrc]="userTShopLogin?.Avatar" [shape]="'circle'"></tds-avatar>
+                    <span class="absolute bottom-0 right-0 w-[24px] h-[24px] block">
+                        <img src="../../../assets/imagesv2/tshop/liveapp.svg" class="rounded-full">
+                    </span>
+                 </div>
+                 <div class="text-title-1 font-sans font-semibold ml-4">{{userTShopLogin?.Name}}</div>
+              </div>
+              <div class="w-full" style="margin-top: 30px">
+                <div *ngIf="!isUserTShopConnectChannel" class="w-full grid ">
+                    <button  type="button" tds-button color="primary" (click)="onTShopConnected()"
+                    tds-tooltip tooltipTitle="Thêm page vào kênh kết nối">Thêm vào TPage</button>
+                </div>
+                <div class="w-full grid mt-2">
+                    <button type="button" tds-button color="info" (click)="tShopSignOut()"
+                    tds-tooltip tooltipTitle="Đăng xuất khỏi TShop">Đăng xuất</button>
+                </div>
+              </div>
+          </div>
+        </div>
+      </ng-template> -->
+
+    </div>
+  </div>
+
+  <!--TODO: Empty -->
+  <div *ngIf="!data || data.length < 1 && !isLoadChannel" class="h-full w-full px-4 pt-4">
+    <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
+      <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl"
+      [notFoundFooter]="footerTpl">
+      <ng-template #contentTpl>
+        <div class="mt-3 flex flex-col items-center gap-y-2">
+          <span class="text-heading-3 font-semibold text-neutral-1-900">Chưa có kênh kết nối</span>
+          <span class="text-body-2 font-regular text-neutral-1-300">Kết nối tài khoản TShop của bạn để đồng bộ tin nhắn, bình luận, bài viết về T-page</span>
+        </div>
+      </ng-template>
+
+      <ng-template #footerTpl>
+        <button tds-button color="custom" (click)="tShopSignIn()" class="text-white focus:ring-2 focus:ring-orange-500/20 border-orange-500
+          bg-orange-500 hover:bg-orange-600 focus:bg-orange-500 focus:border-orange-500 mt-3">
+          <span class="flex items-center">
+            <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với TShop
+          </span>
+        </button>
+      </ng-template>
+    </tds-empty>
+    </div>
+  </div>
+
+</tds-spin>

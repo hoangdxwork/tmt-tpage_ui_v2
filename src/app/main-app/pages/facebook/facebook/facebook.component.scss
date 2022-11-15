@@ -5,3 +5,9 @@
     font-weight: 600;
   }
 }
+
+.avatar-fb {
+  img {
+    @apply h-full
+  }
+}

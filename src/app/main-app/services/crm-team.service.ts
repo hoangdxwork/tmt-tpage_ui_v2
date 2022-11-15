@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
+import { TShopDto, TUserDto } from '@core/dto/tshop.dto';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -43,6 +44,22 @@ export class CRMTeamService extends BaseSevice {
       method: CoreApiMethodType.get
     }
     return this.apiService.getData<Array<CRMTeamDTO>>(api, null);
+  }
+
+  getTShopUser(accessToken: string): Observable<TUserDto> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/user?accessToken=${accessToken}`,
+      method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<TUserDto>(api, null);
+  }
+
+  getTShop(accessToken: string): Observable<Array<TShopDto>> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/shop?accessToken=${accessToken}`,
+      method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<Array<TShopDto>>(api, null);
   }
 
   insert(data: TDSSafeAny): Observable<Array<CRMTeamDTO>> {

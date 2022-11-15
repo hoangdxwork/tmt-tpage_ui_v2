@@ -3,6 +3,7 @@ import { DeletedOrderHistoriesDTO } from "@app/dto/order/order-deletedHistories.
 import { paramsOrderDeteledHistoriesDTO } from "@app/dto/order/order-order-deleted.dto";
 import { FilterObjDTO, OrderStatusDTO, OrderStatusModalDTO } from "@app/dto/order/order-status.dto";
 import { QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
+import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { FilterDataRequestDTO } from "@core/dto/dataRequest.dto";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, OperatorEnum, TCommonService } from "src/app/lib";
@@ -146,7 +147,7 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  insertFromChannelMessage (data: any): Observable<any> {
+  insertFromChannelMessage(data: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromChannelMessage?$expand=Details,User`,
       method: CoreApiMethodType.post,
@@ -162,6 +163,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<any>(api, data);
+  }
+
+  insertFromChannelComment(data: any, isIncrease: boolean = false): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromChannelComment?IsIncrease=${isIncrease}&$expand=Details,User`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, { model: data });
   }
 
   createUpdatePartner(data: any): Observable<any> {
