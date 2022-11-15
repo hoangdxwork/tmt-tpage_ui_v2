@@ -32,6 +32,8 @@ import { ModalChangePasswordComponent } from './components/modal-change-password
 import { FirebaseNotificationComponent } from './firebase-notification/firebase-notification.component';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { FirebaseNotificationDetailComponent } from './components/firebase-notification-detail/firebase-notification-detail.component';
+import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { TDSSkeletonModule } from 'tds-ui/skeleton';
 
 const SERVICES = [
   TenantService,
@@ -74,6 +76,8 @@ const SERVICES = [
     TDSPopoverModule,
     TDSTabsModule,
     PipeModule,
+    VirtualScrollerModule,
+    TDSSkeletonModule,
     TDSModalModule
   ],
   providers: [
