@@ -188,7 +188,6 @@ export class ListProductTmpV2Component implements OnInit {
 
           case 'CategId':
             this.isShowFilterCategId = true;
-            return;
           break;
 
           default: break;
@@ -319,7 +318,7 @@ export class ListProductTmpV2Component implements OnInit {
                   const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
                   // TODO: lọc sp trùng mã code để tạo tags
-                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => TDSHelperString.hasValueString(x.DefaultCode) && x.DefaultCode == f.DefaultCode) as any[];
                   let uomName = '';
                   if(exist && exist.length > 1) {
                       uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
@@ -429,7 +428,7 @@ export class ListProductTmpV2Component implements OnInit {
         const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
         // TODO: lọc sp trùng mã code để tạo tags
-        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => TDSHelperString.hasValueString(x.DefaultCode) && x.DefaultCode == f.DefaultCode) as any[];
         let uomName = '';
         if(exist && exist.length > 1) {
             uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
