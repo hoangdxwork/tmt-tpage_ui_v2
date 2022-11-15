@@ -11,14 +11,19 @@ export const UserMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-order-fill",
         link: '/user/pack-of-data',
     },
+    // {
+    //     name: "Thông báo",
+    //     icon: "tdsi-notification-fill",
+    //     link: '/user/notification',
+    // },
     {
         name: "Thông báo",
         icon: "tdsi-notification-fill",
-        link: '/user/notification',
+        link: '/user/firebase-notification',
     },
     {
-      name: "Firebase",
-      icon: "tdsi-notification-fill",
-      link: '/user/firebase-notification',
-  },
+        name: "Hoạt động",
+        icon: "tdsi-restore-fill",
+        link: '/user/activities',
+    },
 ]

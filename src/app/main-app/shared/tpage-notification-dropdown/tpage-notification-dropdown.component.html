@@ -35,15 +35,15 @@
 
                 <div class=" w-full relative">
                  <div class="flex flex-col flex-auto gap-y-1 inset-0 absolute" *ngIf="item.dateRead; else notRead">
-                    <span class="text-body-2 font-semibold w-full text-neutral-1-900">{{item.notification.title}}</span>
-                    <span class="text-caption-2 w-full text-neutral-1-900">{{item.notification.shortContent}}</span>
+                    <span class="text-body-2 font-semibold w-full text-neutral-1-900 truncate">{{item.notification.title}}</span>
+                    <span class="text-caption-2 w-full text-neutral-1-900 truncate">{{item.notification.shortContent}}</span>
                     <span class="text-caption-2 font-semibold w-full text-neutral-1-400">{{item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy'}}</span>
                  </div>
 
                  <ng-template #notRead>
                   <div class="flex flex-col flex-auto gap-y-1 inset-0 absolute">
-                    <span class="text-body-2 font-semibold w-full text-neutral-1-900">{{item.notification.title}}</span>
-                    <span class="text-caption-2 w-full text-neutral-1-900">{{item.notification.shortContent}}</span>
+                    <span class="text-body-2 font-semibold w-full text-neutral-1-900 truncate">{{item.notification.title}}</span>
+                    <span class="text-caption-2 w-full text-neutral-1-900 truncate">{{item.notification.shortContent}}</span>
                     <span class="text-caption-2 font-semibold w-full text-info-400">{{ item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy' }}</span>
                   </div>
                  </ng-template>
