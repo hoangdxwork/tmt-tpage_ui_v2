@@ -319,12 +319,11 @@
     <span class="text-header-1 font-semibold text-neutral-1-900">Kênh kết nối</span>
   </div>
 
-  <div class="text-body-2 flex ng-tns-c381-4 overflow-hidden flex-auto ">
-    <tds-tabset class="bg-white h-full" [clsTab]="'flex'">
+  <div class="text-body-2 flex ng-tns-c381-4 overflow-hidden flex-auto">
+    <tds-tabset [(selectedIndex)]="currentTab" class="bg-white h-full" [clsTab]="'flex'" (selectChange)="onChangeTab($event)">
       <tds-tab [title]="titleItem1" clsContent="w-full h-full bg-neutral-3-200 -mt-px">
         <ng-template #titleItem1 let-active="active">
-          <div
-            class="flex items-center font-semibold cursor-pointer text-body-2 px-4 py-1.5 ml-4 my-2.5 relative group gap-x-2"
+          <div class="flex items-center font-semibold cursor-pointer text-body-2 px-4 py-1.5 ml-4 my-2.5 relative group gap-x-2"
             [ngClass]='{"text-white bg-primary-1 rounded-2xl":active,"text-neutral-1-700 dark:text-d-neutral-1-600 hover:text-white hover:bg-primary-1 hover:rounded-2xl":!active}'>
             <i class="tdsi-facebook-2-fill text-body-1 leading-none"></i>
             <span class="flex items-center">Facebook</span>
@@ -340,8 +339,7 @@
       </tds-tab>
       <tds-tab [title]="titleItem2" clsContent="w-full h-full bg-neutral-3-200 -mt-px">
         <ng-template #titleItem2 let-active="active">
-          <div
-            class="flex items-center font-semibold cursor-pointer text-body-2 px-4 py-1.5 ml-2 my-2.5 relative group gap-x-2"
+          <div class="flex items-center font-semibold cursor-pointer text-body-2 px-4 py-1.5 ml-2 my-2.5 relative group gap-x-2"
             [ngClass]='{"text-white bg-primary-1 rounded-2xl":active,"text-neutral-1-600 dark:text-d-neutral-1-600 hover:text-white hover:bg-primary-1 hover:rounded-2xl":!active}'>
             <i class="tdsi-facebook-2-fill text-body-1 leading-none"></i>
             <span class="flex items-center">TShop</span>

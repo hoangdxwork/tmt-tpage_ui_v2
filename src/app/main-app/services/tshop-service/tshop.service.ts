@@ -1,4 +1,4 @@
-import { TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Message } from '@core/consts/message.const';
@@ -13,9 +13,10 @@ import { TDSMessageService } from 'tds-ui/message';
 
 export class TShopService  {
 
-  private _currentToken!: string | undefined;
-  private _userTShopLogin!: TUserDto | undefined;
-  private readonly currentUser$ = new ReplaySubject<TUserDto | undefined>(1);
+  private _currentToken!: string | null;
+  private _userTShopLogin!: TUserDto | null;
+  private readonly currentUser$ = new ReplaySubject<TUserDto | null>(1);
+  private readonly cacheTShopUser = '_cache_TShop_user';
 
   constructor(
     private message: TDSMessageService
@@ -23,24 +24,25 @@ export class TShopService  {
       this.eventLogin();
   }
 
-  eventLogin()
-  {
+  eventLogin() {
     window.addEventListener("message", (event: MessageEvent<any>) => {
-      if(TDSHelperObject.hasValue(event?.data))
-      {
-        let data = JSON.parse(event.data);
+      let data = event?.data;
+
+      if(data) {
+        let checkString = TDSHelperString.isString(data);
+        let model = checkString ? JSON.parse(data) : data;
 
         this.message.success(Message.TShop.LoginSuccess);
 
-        if(data?.access_token && data?.user) {
-          this.setCurrentToken(data?.access_token);
-          this.onUpdateUser(data?.user);
+        if(model?.access_token && model?.user) {
+          this.setCurrentToken(model?.access_token);
+          this.onUpdateUser(model?.user);
         }
       }
     });
   }
 
-  getCurrentToken(): string | undefined {
+  getCurrentToken(): string | null {
     return this._currentToken;
   }
 
@@ -48,7 +50,7 @@ export class TShopService  {
     this._currentToken = token;
   }
 
-  getCurrentUser(): TUserDto | undefined {
+  getCurrentUser(): TUserDto | null {
     return this._userTShopLogin;
   }
 
@@ -61,11 +63,11 @@ export class TShopService  {
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
   }
 
-  onUpdateUser(data: TUserDto | undefined) {
+  onUpdateUser(data: TUserDto | null) {
     this._userTShopLogin = data;
 
     if(data == null)
-      this._currentToken = undefined;
+      this._currentToken = null;
 
     this.currentUser$.next(data);
   }
@@ -75,7 +77,26 @@ export class TShopService  {
   }
 
   logout() {
-    this.onUpdateUser(undefined);
+    this.onUpdateUser(null);
   }
 
+  setCacheTShopUser(user: TUserDto) {
+    let data = JSON.stringify(user);
+    localStorage.setItem(this.cacheTShopUser, data);
+  }
+
+  getCacheTShopUser(): TUserDto | null {
+    let data = localStorage.getItem(this.cacheTShopUser);
+
+    if(data) {
+      let user = JSON.parse(data);
+      return user;
+    } else {
+      return null;
+    }
+  }
+
+  removeCacheTshopUser() {
+    localStorage.removeItem(this.cacheTShopUser);
+  }
 }

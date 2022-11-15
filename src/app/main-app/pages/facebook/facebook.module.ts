@@ -1,3 +1,4 @@
+import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -70,7 +71,8 @@ const SERVICES = [
     UploadImageModule,
     TDSToolTipModule,
     TDSTabsModule,
-    TDSEmptyModule
+    TDSEmptyModule,
+    TDSFilterStatusModule
   ],
   providers: [
     ...SERVICES,
