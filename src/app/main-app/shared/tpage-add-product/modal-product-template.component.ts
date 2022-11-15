@@ -267,7 +267,9 @@ export class ModalProductTemplateComponent implements OnInit {
     });
 
     modal.afterClose.subscribe(result => {
-      this.loadCategory();
+      if(result) {
+        this.lstCategory = [...[result],...this.lstCategory];
+      }
     });
   }
 
@@ -279,14 +281,16 @@ export class ModalProductTemplateComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe((result: ProductUOMDTO) => {
+
+    modal.afterClose.subscribe(result => {
       if(result) {
-        this.loadUOMCateg();
-        if(type == 'UOM') {
-          this._form.controls['UOM'].setValue(result.Id);
-        }
-        if(type == 'UOMPO') {
-          this._form.controls['UOMPO'].setValue(result.Id);
+        switch(type) {
+          case 'UOM':
+            this._form.controls["UOM"].setValue(result);
+            break;
+          case 'UOMPO':
+            this._form.controls["UOMPO"].setValue(result);
+            break;
         }
       }
     });
@@ -413,7 +417,7 @@ export class ModalProductTemplateComponent implements OnInit {
     }
   }
 
-  onAddUOM() {
+  showCreateUOMModal() {
     const modal = this.modal.create({
       title: 'Thêm đơn vị tính',
       content: TpageAddUOMComponent,
@@ -423,7 +427,9 @@ export class ModalProductTemplateComponent implements OnInit {
 
     modal.afterClose.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
-        this.loadUOMCateg();
+        if(result) {
+          this.lstUOMCategory = [...[result],...this.lstUOMCategory];
+        }
       }
     });
   }

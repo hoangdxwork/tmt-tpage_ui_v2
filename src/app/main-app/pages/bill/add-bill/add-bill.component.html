@@ -744,7 +744,7 @@
                               popoverPlacement="left">
                               <i class="tdsi-edit-fill mr-2"></i> {{ data.Note || 'Chưa có ghi chú' }}
                             </span>
-                            <a class="inline-block">
+                            <a class="inline-block" *ngIf="saleConfig?.SaleSetting?.GroupAddStaffInvoiceDetail == true">
                               <span class="text-info-500 font-semibold">
                                 <i class="tdsi-user-fill mr-2 "></i> {{ data.User?.Name || 'Chưa chọn nhân viên' }}
                               </span>
@@ -845,8 +845,7 @@
                     <th [width]="'100px'">Thành tiền</th>
                     <th [width]="'100px'" [tdsRight]="true">
                       <div class="flex items-center justify-end">
-                        <button tds-button-icon color="error" tds-tooltip="Xóa hết" size="sm" type="button"
-                          (click)="removeAllOrderLines()">
+                        <button tds-button-icon color="error" tds-tooltip="Xóa hết" size="sm" type="button" (click)="removeAllOrderLines()">
                           <span class="flex items-center">
                             <i class="tdsi-trash-fill"></i>
                           </span>
@@ -869,7 +868,7 @@
                           <div class="w-[100px]" showMore [length]="30" [text]="data.Note ||'Nhập ghi chú'">
                           </div>
                         </span>
-                        <a class="inline-block">
+                        <a class="inline-block" *ngIf="saleConfig?.SaleSetting?.GroupAddStaffInvoiceDetail == true">
                           <span class="text-info-500 font-semibold" tds-popover popoverTrigger="click"
                             [popoverContent]="popoverAddUser" [popoverAutoClose]="true" [popoverBackdrop]="true"
                             popoverPlacement="left">

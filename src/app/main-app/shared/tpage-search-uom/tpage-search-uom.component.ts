@@ -73,7 +73,7 @@ export class TpageSearchUOMComponent implements OnInit {
     });
   }
 
-  onSearch(event: TDSSafeAny) {debugger
+  onSearch(event: TDSSafeAny) {
     this.lstSearch = [...this.lstProductUOM];
     let text = event.value.toLowerCase();
 

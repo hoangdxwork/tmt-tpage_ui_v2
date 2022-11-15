@@ -141,7 +141,7 @@
                                         <i class="tdsi-search-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon type="button" color="secondary" (click)="onAddUOM()">
+                                <button tds-button-icon type="button" color="secondary" (click)="showCreateUOMModal()">
                                     <i class="tdsi-plus-circle-fill text-primary-1"></i>
                                 </button>
                             </div>
@@ -182,8 +182,8 @@
                           <th width="24%">Tên</th>
                           <th width="30%">Mã chốt đơn</th>
                           <th width="20%">Giá</th>
-                          <th width="10%">Hoạt động</th>
-                          <th width="10%">Thao tác</th>
+                          <th width="10%" [align]="'center'">Hoạt động</th>
+                          <th width="10%" [align]="'center'">Thao tác</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -211,10 +211,10 @@
                               [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
                             </tds-input-number>
                           </td>
-                          <td>
+                          <td class="w-full text-center">
                             <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
                           </td>
-                          <td>
+                          <td class="w-full text-center">
                             <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
                               (click)="showEditVariantsModal(data)">
                               <span class="flex items-center">
