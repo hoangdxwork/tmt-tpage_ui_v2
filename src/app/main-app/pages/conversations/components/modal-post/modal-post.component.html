@@ -65,8 +65,8 @@
 
       <!-- post của TShop -->
       <div *ngIf="data && data.Data && currentTeam!.Type == 'TShop'">
-          
-      </div> 
+
+      </div>
 
     </tds-tab>
     <tds-tab title="Bình luận" clsContent="h-[calc(60vh)] overflow-hidden flex">
@@ -100,8 +100,7 @@
         <div class="flex w-full flex-auto overflow-hidden">
             <div  class="flex w-full h-full overflow-hidden">
                 <div class="h-full w-full">
-                    <comment-filter-all [data]="data" [team]="currentTeam" [isShowModal]="true">
-                    </comment-filter-all>
+                    <facebook-comment [data]="data" [team]="currentTeam" [isShowModal]="true"></facebook-comment>
                 </div>
             </div>
         </div>

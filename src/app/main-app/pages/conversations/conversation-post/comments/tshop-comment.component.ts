@@ -1,20 +1,20 @@
-import { OdataCommentOrderPostDTO, CommentOrderPost, CommentOrder } from './../../../../../dto/conversation/post/comment-order-post.dto';
-import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
-import { ChatmoniSocketEventName } from './../../../../../services/socket-io/soketio-event';
-import { CRMTagService } from './../../../../../services/crm-tag.service';
-import { CreateTagModalComponent } from './../../../../configs/components/create-tag-modal/create-tag-modal.component';
+import { OdataCommentOrderPostDTO, CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
+import { FacebookCommentService } from '../../../../services/facebook-comment.service';
+import { ChatmoniSocketEventName } from '../../../../services/socket-io/soketio-event';
+import { CRMTagService } from '../../../../services/crm-tag.service';
+import { CreateTagModalComponent } from '../../../configs/components/create-tag-modal/create-tag-modal.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
-import { ChatomniSendMessageModelDto } from './../../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
-import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade/chatomni-message.facade';
-import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
-import { CRMTeamType } from './../../../../../dto/team/chatomni-channel.dto';
-import { ChatomniStatus } from './../../../../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
+import { ChatomniSendMessageModelDto } from '../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
+import { ChatomniMessageFacade } from '../../../../services/chatomni-facade/chatomni-message.facade';
+import { ChatomniSendMessageService } from '../../../../services/chatomni-service/chatomni-send-message.service';
+import { CRMTeamType } from '../../../../dto/team/chatomni-channel.dto';
+import { ChatomniStatus } from '../../../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ResponseAddMessCommentDtoV2 } from '../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniConversationItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
-import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
+import { SocketEventSubjectDto } from '../../../../services/socket-io/socket-onevent.service';
 import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, AfterViewInit, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -48,13 +48,13 @@ import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-obj
 import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 
 @Component({
-  selector: 'comment-filter-all',
-  templateUrl: './comment-filter-all.component.html',
+  selector: 'tshop-comment',
+  templateUrl: './tshop-comment.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnChanges {
+export class TShopCommentComponent implements OnInit, OnChanges {
 
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
@@ -250,7 +250,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
               return;
             }
             let model = {...res.Data} as OrderPartnerByLivecampaignDto;
-            
+
             if(this.invoiceDict[res.PartnerId]) {
               this.invoiceDict[res.PartnerId].push(model);
             } else {

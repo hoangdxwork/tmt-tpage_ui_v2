@@ -1,10 +1,10 @@
-import { OverviewLiveCampaignComponent } from './../../../shared/overview-live-campaign/overview-live-campaign.component';
-import { SharedService } from './../../../services/shared.service';
-import { ModalProductDefaultComponent } from './../components/modal-product-default/modal-product-default.component';
+import { OverviewLiveCampaignComponent } from '../../../shared/overview-live-campaign/overview-live-campaign.component';
+import { SharedService } from '../../../services/shared.service';
+import { ModalProductDefaultComponent } from '../components/modal-product-default/modal-product-default.component';
 import { ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
-import { ModalListProductComponent } from './../components/modal-list-product/modal-list-product.component';
-import { ConversationPostEvent } from './../../../handler-v2/conversation-post/conversation-post.event';
-import { ObjectFacebookPostEvent } from './../../../handler-v2/conversation-post/object-facebook-post.event';
+import { ModalListProductComponent } from '../components/modal-list-product/modal-list-product.component';
+import { ConversationPostEvent } from '../../../handler-v2/conversation-post/conversation-post.event';
+import { ObjectFacebookPostEvent } from '../../../handler-v2/conversation-post/object-facebook-post.event';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { takeUntil, finalize, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -19,21 +19,20 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
-import { LiveCampaignPostComponent } from './live-campaign-post/live-campaign-post.component';
+import { FacebookLiveCampaignPostComponent } from './facebook-livecampaign-post/facebook-livecampaign-post.component';
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { fromEvent } from 'rxjs';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 
 @Component({
-  selector: 'conversation-post-view',
-  templateUrl: './conversation-post-view.component.html',
+  selector: 'conversation-post-overview',
+  templateUrl: './conversation-post-overview.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostViewComponent implements OnInit, OnChanges, AfterViewInit {
+export class ConversationPostOverViewComponent implements OnInit, OnChanges, AfterViewInit {
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
@@ -273,7 +272,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, AfterVi
     } else {
       const modal = this.modalService.create({
         title: 'Chiến dịch',
-        content: LiveCampaignPostComponent,
+        content: FacebookLiveCampaignPostComponent,
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
