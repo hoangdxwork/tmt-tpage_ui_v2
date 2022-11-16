@@ -45,7 +45,7 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { MapOrderNumberCommentDTO, MapOrderCodeCommentDTO, CommentOrderDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
+import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 
 @Component({
   selector: 'comment-filter-all',
@@ -243,8 +243,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       }
     })
 
-    this.conversationOrderFacade.onMapOrderNumberComment$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MapOrderNumberCommentDTO) => {
+    this.conversationOrderFacade.onMapInvoiceNumberComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: MapInvoiceNumberCommentDTO) => {
         setTimeout(() => {
             if(!res.LiveCampaignId) {
               return;

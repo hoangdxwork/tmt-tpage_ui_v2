@@ -69,7 +69,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
-import { MapOrderNumberCommentDTO, MapOrderCodeCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
+import { MapOrderCodeCommentDTO, MapInvoiceNumberCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -1109,12 +1109,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
 
               // TODO: đẩy sự kiện qua comment-filter-all
-              let orderNumber = {
+              let numberInvoice  = {
                 PartnerId: fs_model.PartnerId,
                 LiveCampaignId: fs_model.LiveCampaignId,
                 Data: res.Data
-              } as MapOrderNumberCommentDTO;
-              this.conversationOrderFacade.onMapOrderNumberComment$.emit(orderNumber)
+              } as MapInvoiceNumberCommentDTO;
+              this.conversationOrderFacade.onMapInvoiceNumberComment$.emit(numberInvoice)
+        
               
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
