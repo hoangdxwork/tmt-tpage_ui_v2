@@ -30,7 +30,7 @@
           <div class="w-full py-1.5">
             <ng-container *ngIf="items">
               <div class="flex gap-x-4 py-2.5 px-4 relative w-full cursor-pointer hover:bg-neutral-3-200" *ngFor="let item of items"
-                (click)="onDetail(item.id)">
+                (click)="onDetail(item)">
                 <tds-avatar [shape]="'square'" [size]="60" tdsSrc="{{ item.notification.thumbnail }}" [isAvatar]="false" class="rounded min-w-[60px]"></tds-avatar>
 
                 <div class=" w-full relative">

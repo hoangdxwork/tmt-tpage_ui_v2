@@ -11,11 +11,6 @@ export const UserMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-order-fill",
         link: '/user/pack-of-data',
     },
-    // {
-    //     name: "Thông báo",
-    //     icon: "tdsi-notification-fill",
-    //     link: '/user/notification',
-    // },
     {
         name: "Thông báo",
         icon: "tdsi-notification-fill",
@@ -25,5 +20,10 @@ export const UserMenu: Array<TDSMenuDTO> = [
         name: "Hoạt động",
         icon: "tdsi-restore-fill",
         link: '/user/activities',
+    },
+    {
+        name: "Thông báo 2",
+        icon: "tdsi-notification-fill",
+        link: '/user/notification',
     },
 ]
