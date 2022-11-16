@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit} from '@angular/core';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
@@ -13,13 +13,11 @@ import { TDSHelperString } from 'tds-ui/shared/utility';
   templateUrl: './firebase-notification.component.html'
 })
 export class FirebaseNotificationComponent implements OnInit {
-  @ViewChild('tabContent') TabContent!: TemplateRef<{}>;
 
   data!: NotificationItemDto[];
   dataDetail!: any;
   isRead!: NotificationItemDto[];
   cursor: any;
-  isDetail: boolean = false
   isLoadingProduct: boolean = false;
   isLoadingNextdata: boolean = false;
   id!: string;
@@ -32,7 +30,7 @@ export class FirebaseNotificationComponent implements OnInit {
     public router: Router,
   ) { }
 
-  ngOnInit(): void {debugger
+  ngOnInit(): void {
     let id = this.route.snapshot.queryParams?.id;
     let paramsNoti = this.router.url.includes('firebase-notification');
 
@@ -41,6 +39,7 @@ export class FirebaseNotificationComponent implements OnInit {
     }
 
     this.loadData();
+    this.loadUrl();
   }
 
   loadData(params?: any) {
@@ -71,6 +70,41 @@ export class FirebaseNotificationComponent implements OnInit {
         this.message.error(`${err?.error?.message}`);
       }
     })
+  }
+
+  loadUrl() {
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      if (res instanceof NavigationStart){
+        setTimeout(() => {
+          let id = this.route.snapshot.queryParams?.id;
+          let paramsNoti = this.router.url.includes('firebase-notification');
+
+          let item: NotificationItemDto = null as any;
+          if(TDSHelperString.hasValueString(id) && this.data) {
+              let exist = this.data.filter(x => x && x.id == id)[0];
+              if(exist) {
+                  item = exist;
+              }
+          }
+
+          if(item == null) {
+              item = this.data[0];
+          }
+
+          if(id != this.id) {
+            this.dataDetail = item;
+          }
+
+          if(id && paramsNoti) {
+            this.id = id;
+          }
+        }, 350);
+      }
+    });
+  }
+
+  changeUrl(url: string) {
+    console.log(url);
   }
 
   onDetail(item: any) {
