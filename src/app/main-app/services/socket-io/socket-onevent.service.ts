@@ -86,7 +86,8 @@ export class SocketOnEventService {
 
           let existTeam = team && team?.Id;
           let existLive = socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
-              || socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout;
+              || socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout
+              || socketData?.EventName == ChatmoniSocketEventName.chatomniPostLiveEnd;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
@@ -129,6 +130,11 @@ export class SocketOnEventService {
             case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
                 this.pubSocketEvent(null, socketData, team); //SocketLiveCampaignAvailableToBuyDto
               break;
+
+            // Thông báo kết thúc live TShop
+            case ChatmoniSocketEventName.chatomniPostLiveEnd:
+                this.pubSocketEvent(null, socketData, team); //SocketioChatomniPostLiveEndDto
+              break;
           }
         },
         error: (error: any) => {
@@ -152,9 +158,7 @@ export class SocketOnEventService {
     switch (socketData.Message.MessageType) {
 
       case ChatomniMessageType.FacebookMessage:
-        let fbMess = {} as ChatomniFacebookDataDto;
-        fbMess = Object.assign(fbMess, socketData.Message?.Data);
-
+        let fbMess = {...socketData.Message?.Data} as ChatomniFacebookDataDto;
         model = {
             Title: `Facebook: <span class="font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa nhắn tin`,
             Message: `${socketData.Message?.Message}`,
@@ -164,9 +168,7 @@ export class SocketOnEventService {
         break;
 
       case ChatomniMessageType.FacebookComment:
-        let fbComment = {} as ChatomniFacebookDataDto;
-        fbMess = Object.assign(fbComment, socketData.Message?.Data);
-
+        let fbComment = {...socketData.Message?.Data} as ChatomniFacebookDataDto;
         model = {
             Title: `Facebook: <span class="font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa bình luận`,
             Message: `${socketData.Message?.Message}`,
@@ -176,9 +178,7 @@ export class SocketOnEventService {
         break;
 
       case ChatomniMessageType.TShopMessage:
-        let mTShop = {} as ChatomniTShopDataDto;
-        mTShop = Object.assign(mTShop, socketData.Message?.Data);
-
+        let mTShop = {...socketData.Message?.Data} as ChatomniTShopDataDto;
         model = {
             Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || mTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa nhắn tin`,
             Message: `${socketData.Message?.Message}`,
@@ -188,9 +188,7 @@ export class SocketOnEventService {
         break;
 
       case ChatomniMessageType.TShopComment:
-        let cTShop = {} as ChatomniTShopDataDto;
-        mTShop = Object.assign(cTShop, socketData.Message?.Data);
-
+        let cTShop = {...socketData.Message?.Data} as ChatomniTShopDataDto;
         model = {
             Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || cTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa binh luận`,
             Message: `${socketData.Message?.Message}`,
@@ -213,9 +211,6 @@ export class SocketOnEventService {
   }
 
   prepareOnUpdateMessageError(socketData: any, team: CRMTeamDTO) {
-    let model = {} as SocketioOnUpdateDto;
-    model = Object.assign(model, socketData);
-
     let notification = {
         Title: `${socketData.Message}`,
         Message: `${socketData.Data.MessageError}`,
@@ -227,9 +222,7 @@ export class SocketOnEventService {
   }
 
   prepareOnUpdateOrder(socketData: any) {
-    let model = {} as OnSocketOnSaleOnline_OrderDto;
-    model = Object.assign(model, socketData);
-
+    let model = {...socketData} as OnSocketOnSaleOnline_OrderDto;
     let notification = {
         Title: `${model.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
         Message: `Mã đơn hàng <span class="font-semibold">${model.Data?.Code}</span>`,

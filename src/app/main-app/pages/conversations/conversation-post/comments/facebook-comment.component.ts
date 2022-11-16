@@ -8,7 +8,7 @@ import { ChatomniSendMessageModelDto } from '../../../../dto/conversation-all/ch
 import { ChatomniMessageFacade } from '../../../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniSendMessageService } from '../../../../services/chatomni-service/chatomni-send-message.service';
 import { CRMTeamType } from '../../../../dto/team/chatomni-channel.dto';
-import { ChatomniStatus } from '../../../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniMessageType, ChatomniStatus } from '../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ResponseAddMessCommentDtoV2 } from '../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
@@ -45,6 +45,7 @@ import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-li
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 
 @Component({
   selector: 'facebook-comment',
@@ -169,41 +170,44 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+        if(!res) return;
+
         switch(res.EventName) {
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-            let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId && this.dataSource;
-            if(exist) {
-                let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
+            let fbComment = {...res.Data?.Message} as MessageSocketioDto;
 
-                // TODO: nếu là comment child thì cũng push thẳng xóa parentId
-                if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
-                    itemNewComment.ParentId = null;
-                }
+            let exist = fbComment && fbComment.MessageType == ChatomniMessageType.FacebookComment
+                && this.team?.ChannelId == res.Data?.Conversation?.ChannelId
+                && this.data.ObjectId == fbComment?.ObjectId && this.dataSource;
 
-                if(this.vsStartIndex <= 1) {
-                    this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
-                    this.dataSource.Items = [...this.dataSource.Items];
+            if(!exist) break;
 
-                    this.lengthDataSource = this.dataSource.Items.length;
+            let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
 
-                    if(this.virtualScroller) {
-                      this.virtualScroller.scrollToPosition(0);
-                    }
-                } else {
-                    this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
-                    this.vsSocketImports = [...this.vsSocketImports];
-
-                    this.lengthDataSource = this.lengthDataSource + 1;
-                }
-
-                this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+            // TODO: nếu là comment child thì cũng push thẳng xóa parentId
+            if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
+                itemNewComment.ParentId = null;
             }
 
-            this.cdRef.detectChanges();
-          break;
+            if(this.vsStartIndex <= 1) {
+                this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
+                this.dataSource.Items = [...this.dataSource.Items];
 
-          case ChatmoniSocketEventName.chatomniOnUpdate:
+                this.lengthDataSource = this.dataSource.Items.length;
+
+                if(this.virtualScroller) {
+                  this.virtualScroller.scrollToPosition(0);
+                }
+            } else {
+                this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
+                this.vsSocketImports = [...this.vsSocketImports];
+
+                this.lengthDataSource = this.lengthDataSource + 1;
+            }
+
+            this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+            this.cdRef.detectChanges();
           break;
 
           default:
