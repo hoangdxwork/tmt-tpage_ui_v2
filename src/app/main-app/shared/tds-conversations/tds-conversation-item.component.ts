@@ -415,7 +415,7 @@ export class TDSConversationItemComponent implements OnInit  {
       this.gallery.map(item => {
         if(item.Data?.attachments){
 
-          item.Data?.attachments.data.map(attachment=>{
+          item.Data?.attachments.data.map((attachment: any) =>{
               if(attachment.mime_type != 'audio/mpeg'){
 
                   let image_url = attachment.image_data?.url ? attachment.image_data?.url : attachment.video_data?.url;

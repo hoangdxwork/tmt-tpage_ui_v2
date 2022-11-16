@@ -1,3 +1,4 @@
+import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { addDays } from 'date-fns';
 import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { TIDictionary } from './../../../../../lib/dto/dictionary.dto';
@@ -111,7 +112,8 @@ export class TableAllOrderComponent implements OnInit {
     private resizeObserver: TDSResizeObserver,
     private tagService: TagService,
     private cdRef: ChangeDetectorRef,
-    private commonService: CommonService,) { }
+    private commonService: CommonService,
+    private chatomniConversationService: ChatomniConversationService) { }
 
   ngOnInit(): void {
     this.loadTags();
@@ -318,6 +320,7 @@ export class TableAllOrderComponent implements OnInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -361,37 +364,41 @@ export class TableAllOrderComponent implements OnInit {
 
             if (this.mappingTeams.length > 0) {
               this.currentMappingTeam = this.mappingTeams[0];
-              this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+              this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+            } else {
+              this.isLoading = false;
             }
           }
         });
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: MDBByPSIdDTO) => {
-          if (res) {
-            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-            this.currentConversation = { ...model };
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
+        if (res) {
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-            this.psid = res.psid;
+            this.psid = psid;
             this.isOpenDrawer = true;
-          }
-        },
-        error: (error) => {
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+            this.isLoading = false;
         }
-      })
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   selectMappingTeam(item: any) {
