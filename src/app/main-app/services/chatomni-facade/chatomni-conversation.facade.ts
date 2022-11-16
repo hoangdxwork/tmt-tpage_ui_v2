@@ -47,7 +47,7 @@ export class ChatomniConversationFacade extends BaseSevice  {
         Source: null,
         Type: socket.Message?.MessageType,
         UserId: socket.Message?.UserId,
-        Status: ChatomniStatus.Done, 
+        Status: ChatomniStatus.Done,
         IsSystem: false, // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
         CreatedById: null,
         CreatedBy: socket.Message?.CreatedBy,
