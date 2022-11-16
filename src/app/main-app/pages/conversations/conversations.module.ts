@@ -1,11 +1,11 @@
-import { AddDrawerProductComponent } from './conversation-post/live-campaign-post/add-drawer-product.component';
+import { DrawerAddProductComponent } from './conversation-post/facebook-livecampaign-post/drawer-add-product.component';
 import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
 import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { PrepareUpdateFacebookByLiveCampaign } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { FaceBookPostItemHandler } from './../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ObjectFacebookPostEvent } from './../../handler-v2/conversation-post/object-facebook-post.event';
-import { LiveCampaignPostComponent } from './conversation-post/live-campaign-post/live-campaign-post.component';
+import { FacebookLiveCampaignPostComponent } from './conversation-post/facebook-livecampaign-post/facebook-livecampaign-post.component';
 import { OdataSaleCouponProgramService } from 'src/app/main-app/services/mock-odata/odata-sale-coupon-program.service';
 import { AccountRegisterPaymentService } from './../../services/account-register-payment.service';
 import { NgModule } from '@angular/core';
@@ -130,10 +130,10 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { ConversationPostViewComponent } from './conversation-post/conversation-post-view.component';
+import { ConversationPostOverViewComponent } from './conversation-post/conversation-post-overview.component';
 import { ObjectFacebookPostComponent } from './conversation-post/objects/object-facebook-post.component';
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
-import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
+import { FacebookCommentComponent } from './conversation-post/comments/facebook-comment.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { SO_PrepareFastSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 import { CsOrder_FromConversationHandler } from '@app/handler-v2/chatomni-csorder/order-from-conversation.handler';
@@ -147,7 +147,8 @@ import { ModalProductDefaultComponent } from './components/modal-product-default
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
 import { ModalListPostComponent } from './components/modal-list-post/modal-list-post.component';
-import { DrawerEditLiveCampaignComponent } from './conversation-post/live-campaign-post/drawer-edit-livecampain.component';
+import { DrawerEditLiveCampaignComponent } from './conversation-post/facebook-livecampaign-post/drawer-edit-livecampain.component';
+import { TShopCommentComponent } from './conversation-post/comments/tshop-comment.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -250,16 +251,17 @@ const SERVICES = [
     ConversationAllComponent,
     CurrentConversationItemV2Component,
     ConversationPostComponent,
-    ConversationPostViewComponent,
+    ConversationPostOverViewComponent,
     ObjectFacebookPostComponent,
     ObjectTshopPostComponent,
-    CommentFilterAllComponent,
-    LiveCampaignPostComponent,
+    FacebookCommentComponent,
+    FacebookLiveCampaignPostComponent,
     ModalAddAddressV2Component,
     ModalProductDefaultComponent,
     ModalListPostComponent,
     DrawerEditLiveCampaignComponent,
-    AddDrawerProductComponent
+    DrawerAddProductComponent,
+    TShopCommentComponent
   ],
 
   imports: [

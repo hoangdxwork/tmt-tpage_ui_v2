@@ -1,10 +1,8 @@
-import { ReportLiveCampaignDTO } from './../../../../dto/live-campaign/report-livecampain-overview.dto';
-import { FaceBookPostItemHandler } from './../../../../handler-v2/conversation-post/facebook-post-item.handler';
-import { ChatomniObjectsItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
+import { FaceBookPostItemHandler } from '../../../../handler-v2/conversation-post/facebook-post-item.handler';
+import { ChatomniObjectsItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { LiveCampaignModel } from '../../../../dto/live-campaign/odata-live-campaign-model.dto';
-import { OverviewLiveCampaignComponent } from './../../../../shared/overview-live-campaign/overview-live-campaign.component';
-import { AddLiveCampaignPostComponent } from '../../../../shared/add-live-campaign/add-livecampaign-post.component';
-import { LiveCampaignService } from './../../../../services/live-campaign.service';
+import { OverviewLiveCampaignComponent } from '../../../../shared/overview-live-campaign/overview-live-campaign.component';
+import { LiveCampaignService } from '../../../../services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
@@ -21,13 +19,13 @@ import { AddLivecampaignPostV2Component } from '@app/shared/add-livecampaign-pos
 import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-post/edit-livecampaign-post.component';
 
 @Component({
-  selector: 'live-campaign-post',
-  templateUrl: './live-campaign-post.component.html',
+  selector: 'facebook-livecampaign-post',
+  templateUrl: './facebook-livecampaign-post.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class LiveCampaignPostComponent implements OnInit, OnChanges {
+export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
 
