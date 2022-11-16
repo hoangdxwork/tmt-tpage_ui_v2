@@ -219,10 +219,10 @@
             <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
                 <div  class="flex w-full h-full overflow-hidden" *ngIf="data && !isLoading">
                     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
-                        <div *ngIf="team && team.Type == 'Facebook'">
+                        <div *ngIf="team && team.Type == 'Facebook'" class="h-full w-full">
                             <facebook-comment [data]="data" [team]="team" [innerText]="keyWords"></facebook-comment>
                         </div>
-                        <div *ngIf="team && team.Type == 'TShop'">
+                        <div *ngIf="team && team.Type == 'TShop'" class="h-full w-full">
                             <tshop-comment [data]="data" [team]="team" [innerText]="keyWords"></tshop-comment>
                         </div>
                     </div>
