@@ -1,26 +1,19 @@
-import { TDSMessageService } from 'tds-ui/message';
-import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
-import { TDSModalService, TDSModalRef } from 'tds-ui/modal';
-import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { DataComentTShop, DataMessageTshop } from './../../dto/socket-io/chatomni-on-message.dto';
 import { Injectable } from "@angular/core";
-import { Attachments, ChatomniMessageType } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
+import { ChatomniFacebookDataDto, ChatomniMessageType, ChatomniTShopDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
-import { map, Subject, tap, mergeMap } from "rxjs";
+import { map, Subject, mergeMap } from "rxjs";
 import { CRMTeamService } from "../crm-team.service";
 import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
-import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
-import { SocketLiveCampaignAvailableToBuyDto, SocketLiveCampaignPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
   Message: string;
-  Attachments: Attachments,
+  Attachments: any,
   Url: string;
 }
 
@@ -38,21 +31,17 @@ export interface SocketEventSubjectDto {
 export class SocketOnEventService {
 
   private readonly socketEvent$ = new Subject<any>();
-
-  private modalRef!: TDSModalRef;
   public isRegisteredEvent: boolean = false;
 
   constructor(private crmTeamService: CRMTeamService,
-    private socketService: SocketService,
-    private saleOnline_OrderService: SaleOnline_OrderService,
-    private modalService: TDSModalService,
-    private message: TDSMessageService) {
+    private socketService: SocketService) {
+
     this.socketService.isConnectedSocket.subscribe({
       next: (res: any) => {
-        if (res && !this.isRegisteredEvent) {
-          this.initialize();
-          this.isRegisteredEvent = true;
-        }
+          if (res && !this.isRegisteredEvent) {
+              this.initialize();
+              this.isRegisteredEvent = true;
+          }
       }
     });
   }
@@ -61,8 +50,8 @@ export class SocketOnEventService {
   initialize() {
     this.socketService.listenEvent("on-events").pipe(
       map((res: any) => {
-        let socketData = JSON.parse(res) as any;
-        return socketData;
+          let socketData = JSON.parse(res) as any;
+          return socketData;
       }),
       mergeMap((socketData: SocketioOnMessageDto) => {
         let channelId = null;
@@ -86,223 +75,169 @@ export class SocketOnEventService {
         }
 
         return this.crmTeamService.getActiveByPageIds$([channelId]).pipe((map((teams: CRMTeamDTO[]) => {
-          let team = teams[0] as CRMTeamDTO;
-          return [(socketData || {}), (team || {})];
+            let team = teams[0] as CRMTeamDTO;
+            return [(socketData || {}), (team || {})];
         })))
       }))
       .subscribe({
         next: ([socketData, team]: any) => {
 
+          if(!socketData) return;
+
           let existTeam = team && team?.Id;
           let existLive = socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
               || socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout;
 
-          if(existLive) {
-              existTeam = true;
-          }
-
-          if (!existTeam) {
-            return;
-          }
+          if(existLive) existTeam = true;
+          if (!existTeam) return;
 
           switch (socketData.EventName) {
+
             // TODO: thông báo tin nhắn, comment
             case ChatmoniSocketEventName.chatomniOnMessage:
-                socketData = { ...socketData } as SocketioOnMessageDto;
-                let modelMesage = { ...this.prepareChatomniOnMessage(socketData, team) };
-
-                this.socketEvent$.next({
-                    Notification: modelMesage,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                });
+                let notificationMessage = this.prepareOnMessage(socketData, team);
+                this.pubSocketEvent(notificationMessage, socketData, team); //SocketioOnMessageDto
             break;
 
             // TODO: cập nhật tin nhắn lỗi
             case ChatmoniSocketEventName.chatomniOnUpdate:
-                socketData = { ...socketData } as SocketioOnUpdateDto;
-
-                // TODO: thông báo tin nhắn lỗi
-                let modelUpdate = null as any;
-                if (socketData && socketData.Data && socketData.Data.Status == 1) {
-                    modelUpdate = { ...this.prepareChatomniOnUpdateMessageError(socketData, team) };
+                let notificationUpdate = null as any;
+                let status = socketData && socketData.Data && socketData.Data.Status == 1;
+                if (status) {
+                    notificationUpdate = this.prepareOnUpdateMessageError(socketData, team);
                 }
-
-                this.socketEvent$.next({
-                    Notification: modelUpdate,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                });
+                this.pubSocketEvent(notificationUpdate, socketData, team); //SocketioOnUpdateDto
             break;
 
             // TODO: update đơn hàng hội thoại
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-                socketData = { ...socketData } as OnSocketOnSaleOnline_OrderDto;
-                let modelOrder = { ...this.prepareChatomniOnUpdateOrder(socketData) };
-
-                this.socketEvent$.next({
-                    Notification: modelOrder,
-                    Data: socketData,
-                    Team: team,
-                    EventName: socketData.EventName
-                })
+                let notificationOrder = this.prepareOnUpdateOrder(socketData);
+                this.pubSocketEvent(notificationOrder, socketData, team); //SocketioOnMarkseenDto
             break;
 
             // TODO: user đang xem
             case ChatmoniSocketEventName.chatomniMarkseen:
-              socketData = { ...socketData } as SocketioOnMarkseenDto;
-
-              this.socketEvent$.next({
-                  Notification: null,
-                  Data: socketData,
-                  Team: team,
-                  EventName: socketData.EventName
-              });
-            break;
+                this.pubSocketEvent(null, socketData, team); //SocketioOnMarkseenDto
+              break;
 
               // Thông báo Số lượng sản phẩm chiến dịch chờ chốt
             case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
-              socketData = { ...socketData } as SocketLiveCampaignPendingCheckoutDto;
-
-              this.socketEvent$.next({
-                  Notification: null,
-                  Data: socketData,
-                  Team: team,
-                  EventName: socketData.EventName
-              });
-            break;
+                this.pubSocketEvent(null, socketData, team); //SocketLiveCampaignPendingCheckoutDto
+              break;
 
             // Thông báo Số lượng sản phẩm chiến dịch có thểm mua
             case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
-              socketData = { ...socketData } as SocketLiveCampaignAvailableToBuyDto;
-
-              this.socketEvent$.next({
-                  Notification: null,
-                  Data: socketData,
-                  Team: team,
-                  EventName: socketData.EventName
-              });
-            break;
+                this.pubSocketEvent(null, socketData, team); //SocketLiveCampaignAvailableToBuyDto
+              break;
           }
         },
         error: (error: any) => {
-          console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
+            console.log(`Thông báo đến từ kênh chưa được kết nối: \n ${error}`)
         }
       })
   }
 
-  prepareChatomniOnMessage(socketData: SocketioOnMessageDto, team: CRMTeamDTO) {
-    let model: SocketEventNotificationDto = {} as any;
+  pubSocketEvent(notification: SocketEventNotificationDto | any, socketData: any, team: CRMTeamDTO) {
+    this.socketEvent$.next({
+        Notification: notification,
+        Data: socketData,
+        Team: team,
+        EventName: socketData.EventName
+    });
+  }
+
+  prepareOnMessage(socketData: SocketioOnMessageDto, team: CRMTeamDTO) {
+    let model = {} as SocketEventNotificationDto;
 
     switch (socketData.Message.MessageType) {
-      case ChatomniMessageType.FacebookMessage:
-        model = {
-          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa nhắn tin`,
-          Message: `${socketData.Message?.Message}`,
-          Attachments: socketData.Message.Data?.attachments,
-          Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
-        };
 
+      case ChatomniMessageType.FacebookMessage:
+        let fbMess = {} as ChatomniFacebookDataDto;
+        fbMess = Object.assign(fbMess, socketData.Message?.Data);
+
+        model = {
+            Title: `Facebook: <span class="font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa nhắn tin`,
+            Message: `${socketData.Message?.Message}`,
+            Attachments: fbMess?.attachments,
+            Url: `/conversation/inbox?teamId=${team?.Id}&type=message&csid=${socketData.Conversation?.UserId}`
+        };
         break;
 
       case ChatomniMessageType.FacebookComment:
-        model = {
-          Title: `Facebook: <span class = "font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa bình luận`,
-          Message: `${socketData.Message?.Message}`,
-          Attachments: socketData.Message.Data?.attachments,
-          Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
-        };
+        let fbComment = {} as ChatomniFacebookDataDto;
+        fbMess = Object.assign(fbComment, socketData.Message?.Data);
 
+        model = {
+            Title: `Facebook: <span class="font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa bình luận`,
+            Message: `${socketData.Message?.Message}`,
+            Attachments: fbComment?.attachments,
+            Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
+        };
         break;
 
       case ChatomniMessageType.TShopMessage:
-        let message = { ...socketData.Message?.Data } as DataMessageTshop;
-        model = {
-          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || message?.Recipient?.Name || 'Người dùng TShop'} </span> vừa nhắn tin`,
-          Message: `${socketData.Message?.Message}`,
-          Attachments: socketData.Message.Data?.attachments,
-          Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
-        };
+        let mTShop = {} as ChatomniTShopDataDto;
+        mTShop = Object.assign(mTShop, socketData.Message?.Data);
 
+        model = {
+            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || mTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa nhắn tin`,
+            Message: `${socketData.Message?.Message}`,
+            Attachments: mTShop?.AttachmentDto,
+            Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+        };
         break;
 
       case ChatomniMessageType.TShopComment:
-        let comment = { ...socketData.Message?.Data } as DataComentTShop;
+        let cTShop = {} as ChatomniTShopDataDto;
+        mTShop = Object.assign(cTShop, socketData.Message?.Data);
+
         model = {
-          Title: `TShop: <span class = "font-semibold"> ${socketData.Conversation?.Name || comment?.Actor?.Name || 'Người dùng TShop'} </span> vừa binh luận`,
-          Message: `${socketData.Message?.Message}`,
-          Attachments: socketData.Message.Data?.attachments,
-          Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || cTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa binh luận`,
+            Message: `${socketData.Message?.Message}`,
+            Attachments: cTShop?.AttachmentDto,
+            Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
         };
         break;
 
       default:
         model = {
-          Title: `${socketData.Conversation?.Name || 'Người dùng'} vừa phản hồi`,
-          Message: `${socketData.Message?.Message}`,
-          Attachments: socketData.Message.Data?.attachments,
-          Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+            Title: `${socketData.Conversation?.Name || 'Người dùng'} vừa phản hồi`,
+            Message: `${socketData.Message?.Message}`,
+            Attachments: null,
+            Url: `/conversation/all?teamId=${team.Id}&type=all&csid=${socketData.Conversation?.UserId}`
         };
-
         break;
     }
 
-    return { ...model };
-
+    return {...model};
   }
 
-  prepareChatomniOnUpdateMessageError(socketData: SocketioOnUpdateDto, team: CRMTeamDTO) {
-    let model: SocketEventNotificationDto = {} as any;
-    model = {
-      Title: `${socketData.Message}`,
-      Message: `${socketData.Data.MessageError}`,
-      Attachments: {} as any,
-      Url: `/conversation/inbox?teamId=${team.Id}&type=message&csid=${socketData.Data?.UserId}`
-    };
+  prepareOnUpdateMessageError(socketData: any, team: CRMTeamDTO) {
+    let model = {} as SocketioOnUpdateDto;
+    model = Object.assign(model, socketData);
 
-    return { ...model };
+    let notification = {
+        Title: `${socketData.Message}`,
+        Message: `${socketData.Data.MessageError}`,
+        Attachments: null,
+        Url: `/conversation/inbox?teamId=${team.Id}&type=message&csid=${socketData.Data?.UserId}`
+    } as SocketEventNotificationDto;
+
+    return {...notification};
   }
 
-  prepareChatomniOnUpdateOrder(socketData: OnSocketOnSaleOnline_OrderDto) {
-    let model: SocketEventNotificationDto = {} as any;
-    model = {
-      Title: `${socketData.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
-      Message: `Mã đơn hàng <span class="font-semibold">${socketData.Data?.Code}</span>`,
-      Attachments: {} as any,
-      Url: ''
-    } as any;
+  prepareOnUpdateOrder(socketData: any) {
+    let model = {} as OnSocketOnSaleOnline_OrderDto;
+    model = Object.assign(model, socketData);
 
-    return { ...model };
-  }
+    let notification = {
+        Title: `${model.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
+        Message: `Mã đơn hàng <span class="font-semibold">${model.Data?.Code}</span>`,
+        Attachments: null,
+        Url: ''
+    } as SocketEventNotificationDto;
 
-  showModalSocketOrder(orderId: string) {
-    if (this.modalRef) {
-      this.modalRef.destroy(null);
-    }
-
-    this.saleOnline_OrderService.getById(orderId).subscribe({
-      next: (res: any) => {
-
-        if (res && res.Id) {
-          delete res['@odata.context'];
-
-          this.modalRef = this.modalService.create({
-            content: EditOrderV2Component,
-            title: res.Code ? `Thông tin đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>` : `Thông tin đơn hàng`,
-            size: 'xl',
-            componentParams: {
-              dataItem: { ...res }
-            },
-            autoClose: false
-          })
-        }
-      },
-      error: error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      }
-    });
+    return {...notification};
   }
 
   public onEventSocket() {
