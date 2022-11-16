@@ -4,7 +4,6 @@ export interface  MapInvoiceNumberCommentDTO {
     Data: Data
 }
 
-
 export interface Data {
     Number: string,
     Id: number,
@@ -14,8 +13,8 @@ export interface MapOrderCodeCommentDTO {
     id: string;
     asuid: string;
     uid: string;
-    LiveCampaignId: string,
-    type: string;
+    liveCampaignId: string,
+    type: fastSaleOrderSaveType;
     orders: CommentOrderDTO[];
 }
 
@@ -24,4 +23,9 @@ export interface CommentOrderDTO {
     index: number;
     code: string;
 }
-  
+
+
+export enum fastSaleOrderSaveType {
+    create = "create", // khi tạo đơn hàng insertFromPost 
+    remove = "remove", // khi lưu createFastSaleOrder
+}

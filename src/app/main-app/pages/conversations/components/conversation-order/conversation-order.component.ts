@@ -69,7 +69,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
-import { MapOrderCodeCommentDTO, MapInvoiceNumberCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
+import { MapOrderCodeCommentDTO, MapInvoiceNumberCommentDTO, fastSaleOrderSaveType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -780,9 +780,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             // TODO: đẩy sự kiện qua comment-filter-all
             let orderCode = {
-              asuid : this.insertFromPostModel.Facebook_ASUserId,
-              id: this.insertFromPostModel.Facebook_ASUserId,
-              type: 'create',
+              asuid : this.quickOrderModel.Facebook_ASUserId,
+              id: this.quickOrderModel.Facebook_ASUserId,
+              type: fastSaleOrderSaveType.create,
               orders : [{
                 code: res.Code
               }]
@@ -1101,17 +1101,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: đẩy sự kiện qua comment-filter-all
               let orderCode = {
-                asuid : this.insertFromPostModel.Facebook_ASUserId,
-                id: this.insertFromPostModel.Facebook_ASUserId,
-                LiveCampaignId: fs_model.LiveCampaignId,
-                type: 'done',
+                asuid : this.quickOrderModel.Facebook_ASUserId,
+                id: this.quickOrderModel.Facebook_ASUserId,
+                liveCampaignId: fs_model.LiveCampaignId,
+                type: fastSaleOrderSaveType.remove,
               } as MapOrderCodeCommentDTO;
               this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
 
               // TODO: đẩy sự kiện qua comment-filter-all
               let numberInvoice  = {
-                PartnerId: fs_model.PartnerId,
-                LiveCampaignId: fs_model.LiveCampaignId,
+                PartnerId: this.quickOrderModel.PartnerId,
+                LiveCampaignId: this.quickOrderModel.LiveCampaignId,
                 Data: res.Data
               } as MapInvoiceNumberCommentDTO;
               this.conversationOrderFacade.onMapInvoiceNumberComment$.emit(numberInvoice)

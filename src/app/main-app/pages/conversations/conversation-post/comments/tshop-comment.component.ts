@@ -45,9 +45,8 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
+import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO, fastSaleOrderSaveType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
-
 @Component({
   selector: 'tshop-comment',
   templateUrl: './tshop-comment.component.html',
@@ -225,7 +224,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         setTimeout(() => {
 
           switch(res.type) {
-            case 'create':
+            case fastSaleOrderSaveType.create:
               this.commentOrders[res.asuid] = [];
               this.commentOrders[res.uid] = [];
 
@@ -234,8 +233,8 @@ export class TShopCommentComponent implements OnInit, OnChanges {
               })
             break;
 
-            case 'done':
-              if(res.LiveCampaignId) {
+            case fastSaleOrderSaveType.remove:
+              if(res.liveCampaignId) {
                 delete this.commentOrders[res.asuid];
                 delete this.commentOrders[res.uid];
               }
