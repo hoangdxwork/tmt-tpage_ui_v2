@@ -466,4 +466,16 @@ export class ModalProductTemplateComponent implements OnInit {
 
     return datas;
   }
+  getUrl(event: string, index: number) {
+    this.lstVariants[index].ImageUrl = event;
+  }
+
+  getBase64(event: string, index: number) {
+    this.lstVariants[index].Image = event;
+  }
+
+  onRemoveImage(event: any, index: number) {
+    this.lstVariants[index].ImageUrl = '';
+    delete this.lstVariants[index].Image
+  }
 }

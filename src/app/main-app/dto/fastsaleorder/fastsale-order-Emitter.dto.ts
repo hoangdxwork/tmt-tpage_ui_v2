@@ -1,8 +1,9 @@
-export interface  MapOrderNumberCommentDTO {
+export interface  MapInvoiceNumberCommentDTO {
     PartnerId: number,
     LiveCampaignId: string,
     Data: Data
 }
+
 
 export interface Data {
     Number: string,

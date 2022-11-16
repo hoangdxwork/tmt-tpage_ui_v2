@@ -60,7 +60,7 @@ export class ConversationOrderFacade extends BaseSevice  {
   public onMapOrderCodeComment$ = new EventEmitter<any>();
 
   // TODO: output Number đơn hàng khi Lưu đơn hàng để cập nhật lại mã đơn hàng trên comment
-  public onMapOrderNumberComment$ = new EventEmitter<any>();
+  public onMapInvoiceNumberComment$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService,
       private partnerService: PartnerService,
