@@ -9,5 +9,6 @@ export enum ChatmoniSocketEventName {
   chatomniMarkseen = "chatomni.on-markseen",
   onUpdateSaleOnline_Order = "updated",
   livecampaign_Quantity_Order_Pending_Checkout = "livecampaign.quantity-order-pending-checkout",
-  livecampaign_Quantity_AvailableToBuy = "livecampaign.quantity-available-to-buy"
+  livecampaign_Quantity_AvailableToBuy = "livecampaign.quantity-available-to-buy",
+  chatomniPostLiveEnd = "chatomni.post-live-end"
 }

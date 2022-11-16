@@ -210,14 +210,6 @@
                                 <i class="{{item.icon}} text-xl"></i>
                             </span>
                         </div>
-                        <!-- <button *ngIf="currentSort.text == 'Mới nhất'; else cmtOld" class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận mới nhất nhất" (click)="onChangeSort(sortOptions[1])">
-                            <i class="tdsi-sort-arrow-up-fill text-xl text-primary-1"></i>
-                        </button>
-                        <ng-template #cmtOld>
-                            <button class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận cũ nhất" (click)="onChangeSort(sortOptions[0])">
-                                <i class="tdsi-sort-arrow-down-fill text-xl text-primary-1"></i>
-                            </button>
-                        </ng-template> -->
                     </div>
                 </div>
             </div>
@@ -227,11 +219,15 @@
             <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
                 <div  class="flex w-full h-full overflow-hidden" *ngIf="data && !isLoading">
                     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
-                        <comment-filter-all [data]="data" [team]="team" [innerText]="keyWords"></comment-filter-all>
+                        <div *ngIf="team && team.Type == 'Facebook'" class="h-full w-full">
+                            <facebook-comment [data]="data" [team]="team" [innerText]="keyWords"></facebook-comment>
+                        </div>
+                        <div *ngIf="team && team.Type == 'TShop'" class="h-full w-full">
+                            <tshop-comment [data]="data" [team]="team" [innerText]="keyWords"></tshop-comment>
+                        </div>
                     </div>
                 </div>
             </tds-spin>
-
         </div>
     </div>
 

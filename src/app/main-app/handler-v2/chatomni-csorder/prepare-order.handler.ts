@@ -163,7 +163,7 @@ export class CsOrder_PrepareModelHandler {
     item["attachment"] = comment.Data?.attachment;
 
     if (comment.Data.comments && comment.Data.comments.length > 0) {
-      item["comments"] = comment.Data.comments.map(x => this.prepareFacebookComment(x));
+      item["comments"] = comment.Data.comments.map((x: any) => this.prepareFacebookComment(x));
     }
 
     return {...item};

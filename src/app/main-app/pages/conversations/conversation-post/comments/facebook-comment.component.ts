@@ -1,20 +1,18 @@
-import { OdataCommentOrderPostDTO, CommentOrderPost, CommentOrder } from './../../../../../dto/conversation/post/comment-order-post.dto';
-import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
-import { ChatmoniSocketEventName } from './../../../../../services/socket-io/soketio-event';
-import { CRMTagService } from './../../../../../services/crm-tag.service';
-import { CreateTagModalComponent } from './../../../../configs/components/create-tag-modal/create-tag-modal.component';
+import { OdataCommentOrderPostDTO, CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
+import { FacebookCommentService } from '../../../../services/facebook-comment.service';
+import { ChatmoniSocketEventName } from '../../../../services/socket-io/soketio-event';
+import { CRMTagService } from '../../../../services/crm-tag.service';
+import { CreateTagModalComponent } from '../../../configs/components/create-tag-modal/create-tag-modal.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
-import { ChatomniSendMessageModelDto } from './../../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
-import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade/chatomni-message.facade';
-import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
-import { CRMTeamType } from './../../../../../dto/team/chatomni-channel.dto';
-import { ChatomniStatus } from './../../../../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
+import { ChatomniSendMessageModelDto } from '../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
+import { ChatomniMessageFacade } from '../../../../services/chatomni-facade/chatomni-message.facade';
+import { ChatomniSendMessageService } from '../../../../services/chatomni-service/chatomni-send-message.service';
+import { CRMTeamType } from '../../../../dto/team/chatomni-channel.dto';
+import { ChatomniMessageType, ChatomniStatus } from '../../../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ResponseAddMessCommentDtoV2 } from '../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
-import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
-import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
+import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, AfterViewInit, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -46,15 +44,17 @@ import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO, fastSaleOrderSaveType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 
 @Component({
-  selector: 'comment-filter-all',
-  templateUrl: './comment-filter-all.component.html',
+  selector: 'facebook-comment',
+  templateUrl: './facebook-comment.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnChanges {
+export class FacebookCommentComponent implements OnInit, OnChanges {
 
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
@@ -170,41 +170,44 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+        if(!res) return;
+
         switch(res.EventName) {
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-            let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId && this.dataSource;
-            if(exist) {
-                let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
+            let fbComment = {...res.Data?.Message} as MessageSocketioDto;
 
-                // TODO: nếu là comment child thì cũng push thẳng xóa parentId
-                if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
-                    itemNewComment.ParentId = null;
-                }
+            let exist = fbComment && fbComment.MessageType == ChatomniMessageType.FacebookComment
+                && this.team?.ChannelId == res.Data?.Conversation?.ChannelId
+                && this.data.ObjectId == fbComment?.ObjectId && this.dataSource;
 
-                if(this.vsStartIndex <= 1) {
-                    this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
-                    this.dataSource.Items = [...this.dataSource.Items];
+            if(!exist) break;
 
-                    this.lengthDataSource = this.dataSource.Items.length;
+            let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
 
-                    if(this.virtualScroller) {
-                      this.virtualScroller.scrollToPosition(0);
-                    }
-                } else {
-                    this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
-                    this.vsSocketImports = [...this.vsSocketImports];
-
-                    this.lengthDataSource = this.lengthDataSource + 1;
-                }
-
-                this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+            // TODO: nếu là comment child thì cũng push thẳng xóa parentId
+            if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
+                itemNewComment.ParentId = null;
             }
 
-            this.cdRef.detectChanges();
-          break;
+            if(this.vsStartIndex <= 1) {
+                this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
+                this.dataSource.Items = [...this.dataSource.Items];
 
-          case ChatmoniSocketEventName.chatomniOnUpdate:
+                this.lengthDataSource = this.dataSource.Items.length;
+
+                if(this.virtualScroller) {
+                  this.virtualScroller.scrollToPosition(0);
+                }
+            } else {
+                this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
+                this.vsSocketImports = [...this.vsSocketImports];
+
+                this.lengthDataSource = this.lengthDataSource + 1;
+            }
+
+            this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+            this.cdRef.detectChanges();
           break;
 
           default:
@@ -250,7 +253,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
               return;
             }
             let model = {...res.Data} as OrderPartnerByLivecampaignDto;
-            
+
             if(this.invoiceDict[res.PartnerId]) {
               this.invoiceDict[res.PartnerId].push(model);
             } else {
