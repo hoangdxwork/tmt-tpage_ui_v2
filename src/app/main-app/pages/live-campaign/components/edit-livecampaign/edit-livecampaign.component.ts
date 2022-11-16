@@ -65,6 +65,8 @@ export class EditLiveCampaignComponent implements OnInit {
   lstInventory!: GetInventoryDTO;
   companyCurrents!: CompanyCurrentDTO;
 
+  lstOrderTags!: string[];
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -258,6 +260,8 @@ export class EditLiveCampaignComponent implements OnInit {
     }
 
     this.initFormDetails(data.Details);
+    this.getLstOrderTags(data.Details)
+
     this.datePicker = [data.StartDate, data.EndDate];
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
@@ -389,6 +393,7 @@ export class EditLiveCampaignComponent implements OnInit {
           })
 
           this.livecampaignSimpleDetail = [...this.detailsForm.value];
+          this.getLstOrderTags(this.detailsForm.value);
         },
         error: (err: any) => {
             this.isLoading = false;
@@ -552,6 +557,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
             this.initFormDetails(newFormDetails);
             this.livecampaignSimpleDetail = [...newFormDetails];
+            this.getLstOrderTags(newFormDetails);
 
             this.searchValue = this.innerTextValue;
             delete this.isEditDetails[item.Id];
@@ -683,6 +689,7 @@ export class EditLiveCampaignComponent implements OnInit {
                 this.isEditDetails = {};
                 this.detailsForm.clear();
                 this.livecampaignSimpleDetail = [];
+                this.lstOrderTags = [];
 
                 this.isLoading = false;
                 this.message.success('Thao tác thành công');
@@ -813,4 +820,16 @@ export class EditLiveCampaignComponent implements OnInit {
 
     return datas;
   }
+
+  getLstOrderTags(data: LiveCampaignSimpleDetail[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }

@@ -28,13 +28,14 @@ import { StringHelperV2 } from '../helper/string.helper';
   providers: [TDSDestroyService]
 })
 
-export class ListProductTmpV2Component implements OnInit {
+export class ListProductTmpV2Component implements OnInit, OnChanges {
 
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
 
   @Input() priceListItems: any;
   @Input() isLoadingProduct: boolean = false;
   @Input() type!: string;
+  @Input() lstOrderTags!: string[];
 
   @Output() onLoadProductToLiveCampaign: EventEmitter<any> = new EventEmitter<DataPouchDBDTO[]>();
 
@@ -270,7 +271,8 @@ export class ListProductTmpV2Component implements OnInit {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-          type: this.type
+          type: this.type,
+          lstOrderTags: this.lstOrderTags
       }
     });
 
@@ -377,6 +379,10 @@ export class ListProductTmpV2Component implements OnInit {
 
     if(changes['isLoadingProduct'] && (changes['isLoadingProduct'].currentValue == true || changes['isLoadingProduct'].currentValue == false)) {
         this.isLoading = changes['isLoadingProduct'].currentValue;
+    }
+
+    if(changes["lstOrderTags"] && !changes["lstOrderTags"].firstChange) {
+      this.lstOrderTags = changes["lstOrderTags"].currentValue;
     }
   }
 
