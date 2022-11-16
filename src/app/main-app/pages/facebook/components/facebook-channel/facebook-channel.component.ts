@@ -232,11 +232,9 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
       {
         next: (res: TDSSafeAny) => {
 
-          if(res ) {
+          if(res) {
             // TOD0: gán lại danh sách team
-            this.data = res.filter((x: any) => x.Type != 'TShop')
-            console.log(this.data);
-
+            this.data = res.filter((x: any) => x.Type == 'Facebook');
 
             res.sort((a: any, b: any) => {
                 if (a.Active) return -1;
@@ -370,7 +368,7 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
       })
   }
 
-  insertUserTShop(accessToken: string | undefined) {
+  insertUserTShop(accessToken: string | null) {
     let team = {
       Id: 0,
       OwnerId: this.userTShopLogin?.Id,
@@ -696,40 +694,40 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     return model;
   }
 
-  getTShopPages(team: CRMTeamDTO) {
-    let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
+  // getTShopPages(team: CRMTeamDTO) {
+  //   let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
 
-    this.crmService.getTShop(team.OwnerToken).pipe(takeUntil(this._destroy$)).subscribe(
-      {
-        next: (res) => {
-          if(TDSHelperArray.hasListValue(res))
-          {
-            this.lstPageNotConnect[team.Id] = res.map(x => {
-              return {
-                access_token: '',
-                id: x.Id,
-                name: x.Name,
-                picture: {
-                  data : {
-                    url: x.Avatar
-                  }
-                }
-              } as UserPageDTO;
-            });
+  //   this.crmService.getTShop(team.OwnerToken).pipe(takeUntil(this._destroy$)).subscribe(
+  //     {
+  //       next: (res) => {
+  //         if(TDSHelperArray.hasListValue(res))
+  //         {
+  //           this.lstPageNotConnect[team.Id] = res.map(x => {
+  //             return {
+  //               access_token: '',
+  //               id: x.Id,
+  //               name: x.Name,
+  //               picture: {
+  //                 data : {
+  //                   url: x.Avatar
+  //                 }
+  //               }
+  //             } as UserPageDTO;
+  //           });
 
-            this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
-          }
+  //           this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
+  //         }
 
-          this.isLoading = false;
-        },
-        error: error => {
-          this.isLoading = false;
-          if(error?.error?.message)this.message.error(error?.error?.message);
-          else this.message.error(Message.ErrorOccurred);
-        }
-      }
-    );
-  }
+  //         this.isLoading = false;
+  //       },
+  //       error: error => {
+  //         this.isLoading = false;
+  //         if(error?.error?.message)this.message.error(error?.error?.message);
+  //         else this.message.error(Message.ErrorOccurred);
+  //       }
+  //     }
+  //   );
+  // }
 
   ngOnDestroy(): void {
     this._destroy$.next();
