@@ -281,6 +281,7 @@ export class ModalProductTemplateComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
+
     modal.afterClose.subscribe(result => {
       if(result) {
         switch(type) {

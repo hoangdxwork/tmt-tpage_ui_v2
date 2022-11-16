@@ -68,6 +68,7 @@ import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { ProductIndexDBService } from '@app/services/product-indexdb.service';
+import { MapOrderCodeCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -755,9 +756,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let model = Object.assign({}, model1, model2) as any;
     model.FormAction = formAction;
 
-    if(this.validateModelFastSalesOrder(model) == 0) {
-        return false;
-    }
+    if(this.validateModelFastSalesOrder(model) == 0) return;
 
     this.isLoading = true;
     let channelType = this.team.Type;
@@ -895,12 +894,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           if(this.type == 'post') {
             this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true); //đẩy sự kiện qua conversation-order-list, comment-filter-all
 
+            let orderCode = {
+              asuid : this.quickOrderModel.Facebook_ASUserId,
+              id: this.quickOrderModel.Facebook_ASUserId,
+              LiveCampaignId: this.quickOrderModel.LiveCampaignId,
+              type: 'done',
+            } as MapOrderCodeCommentDTO;
+            this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
+
             delete this.quickOrderModel.Id;
             delete this.quickOrderModel.Code;
             this.quickOrderModel.Details = [];
 
-            if(this.commentPost)
+            if(this.commentPost) {
               this.loadOrderByPostId(this.commentPost.ObjectId, this.commentPost.UserId);
+            }
 
           } else {
             this.quickOrderModel = null as any;
@@ -1590,6 +1598,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true); //đẩy sự kiện qua conversation-order-list, comment-filter-all
     this.chatomniConversationFacade.onSyncConversationInfo$.emit(order.Facebook_ASUserId); //gọi sự kiện đồng bộ dữ liệu qua conversation-all, conversation-post, đẩy xuống ngOnChanges
     this.postEvent.spinLoadingTab$.emit(false); //gán sự kiện loading cho tab conversation-post
+
+    // TODO: đẩy sự kiện qua comment-filter-all
+    let orderCode = {
+      asuid : order.Facebook_ASUserId,
+      id: order.Facebook_ASUserId,
+      type: 'create',
+      orders : [{
+        code: order.Code
+      }]
+    } as MapOrderCodeCommentDTO;
+    this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
 
     this.isLoading = false;
     if(order.IsCreated) {

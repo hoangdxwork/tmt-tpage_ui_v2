@@ -45,6 +45,7 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
+import { MapOrderNumberCommentDTO, MapOrderCodeCommentDTO, CommentOrderDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 
 @Component({
   selector: 'comment-filter-all',
@@ -215,10 +216,49 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
 
   eventEmitter() {
     // TODO: tạo đơn hàng, phiếu bán hàng ở conversation-order
-    this.chatomniObjectFacade.onLoadCommentOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
+    this.conversationOrderFacade.onMapOrderCodeComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: MapOrderCodeCommentDTO) => {
         setTimeout(() => {
-          this.loadCommentsOrderByPost();
+
+          switch(res.type) {
+            case 'create':
+              this.commentOrders[res.asuid] = [];
+              this.commentOrders[res.uid] = [];
+
+              res.orders?.map((a: CommentOrderDTO) => {
+                this.commentOrders![res.asuid].push(a);
+              })
+            break;
+
+            case 'done':
+              if(res.LiveCampaignId) {
+                delete this.commentOrders[res.asuid];
+                delete this.commentOrders[res.uid];
+              }
+            break;
+          }
+
+          this.cdRef.detectChanges();
+        }, 350);
+      }
+    })
+
+    this.conversationOrderFacade.onMapOrderNumberComment$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: MapOrderNumberCommentDTO) => {
+        setTimeout(() => {
+            if(!res.LiveCampaignId) {
+              return;
+            }
+            let model = {...res.Data} as OrderPartnerByLivecampaignDto;
+            
+            if(this.invoiceDict[res.PartnerId]) {
+              this.invoiceDict[res.PartnerId].push(model);
+            } else {
+              this.invoiceDict[res.PartnerId] = [];
+              this.invoiceDict[res.PartnerId].push(model);
+            }
+
+          this.cdRef.detectChanges();
         }, 350);
       }
     })
@@ -230,6 +270,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
         this.dataSource = null;
         this.filterObj = {};
         this.innerText = '';
+        this.partnerDict = {};
+        this.invoiceDict = {};
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -358,7 +400,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     let text = event.BodyPlain || event.BodyHtml || event.text;
 
     text = ReplaceHelper.quickReply(text, partner);
-    this.message = text;
+    this.messageModel = text;
   }
 
   onEnter(item: ChatomniDataItemDto, event: any) {

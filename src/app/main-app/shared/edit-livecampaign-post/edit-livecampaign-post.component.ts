@@ -497,7 +497,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
                   const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
                   // TODO: lọc sp trùng mã code để tạo tags
-                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => TDSHelperString.hasValueString(x.DefaultCode) &&  x.DefaultCode == f.DefaultCode) as any[];
                   let uomName = '';
                   if(exist && exist.length > 1) {
                       uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
@@ -641,7 +641,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
         // TODO: lọc sp trùng mã code để tạo tags
-        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => TDSHelperString.hasValueString(x.DefaultCode) && x.DefaultCode == f.DefaultCode) as any[];
         let uomName = '';
         if(exist && exist.length > 1) {
             uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
@@ -1007,7 +1007,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       let idxScroll = this.document.getElementById(`dataSourceScroll${idxItem}`) as any;
 
       if(element && idxScroll) {
-        let top = idxScroll.offsetTop;
+        let top = idxScroll.offsetTop - 170;
 
         element?.scroll({
             top: top,

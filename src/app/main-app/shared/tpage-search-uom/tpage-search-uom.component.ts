@@ -16,9 +16,10 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'td
 export class TpageSearchUOMComponent implements OnInit {
 
   lstProductUOM!: Array<ProductUOMDTO>;
-  lstSearch!: Array<ProductUOMDTO> | null;
+  lstSearch: Array<ProductUOMDTO> = [];
   searchText: string = '';
   isLoading: boolean = false;
+  pageSize: number = 20;
 
   constructor(private modal: TDSModalService,
     private modalRef: TDSModalRef,
@@ -40,6 +41,8 @@ export class TpageSearchUOMComponent implements OnInit {
       next: (res) => {
         if(res && TDSHelperArray.hasListValue(res.value)) {
           this.lstProductUOM = [...res.value];
+          this.lstSearch = [...this.lstProductUOM];
+          this.pageSize = this.lstProductUOM.length;
         }
         
         this.isLoading = false;
@@ -65,19 +68,22 @@ export class TpageSearchUOMComponent implements OnInit {
       if(result) {
         this.lstProductUOM = [...[result],...this.lstProductUOM];
         this.lstSearch = [...this.lstProductUOM];
+        this.pageSize = this.lstProductUOM.length;
       }
     });
   }
 
   onSearch(event: TDSSafeAny) {
-    let text = event.toLowerCase();
+    this.lstSearch = [...this.lstProductUOM];
+    let text = event.value.toLowerCase();
 
     if(!TDSHelperString.hasValueString(text)) {
-      this.lstSearch = null;
+      this.pageSize = this.lstSearch.length;
       return;
     }
     
     this.lstSearch = this.lstProductUOM.filter(x => (x.Name).toLowerCase().indexOf(text) !== -1 || (x.ShowUOMType).toLowerCase().indexOf(text) !== -1);
+    this.pageSize = this.lstSearch.length;
   }
 
   onCancel(result: TDSSafeAny) {
@@ -90,6 +96,6 @@ export class TpageSearchUOMComponent implements OnInit {
 
   resetSearch() {
     this.searchText = '';
-    this.lstSearch = null;
+    this.lstSearch = [];
   }
 }
