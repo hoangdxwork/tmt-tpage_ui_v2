@@ -1,4 +1,4 @@
-import { AddDrawerProductComponent } from './conversation-post/facebook-livecampaign-post/add-drawer-product.component';
+import { DrawerAddProductComponent } from './conversation-post/facebook-livecampaign-post/drawer-add-product.component';
 import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
 import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { PrepareAddCampaignHandler } from './../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
@@ -260,7 +260,7 @@ const SERVICES = [
     ModalProductDefaultComponent,
     ModalListPostComponent,
     DrawerEditLiveCampaignComponent,
-    AddDrawerProductComponent,
+    DrawerAddProductComponent,
     TShopCommentComponent
   ],
 

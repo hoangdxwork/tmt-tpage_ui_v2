@@ -6,7 +6,7 @@ import { SyncCreateProductTemplateDto } from '../../../../dto/product-pouchDB/pr
 import { ModalListPostComponent } from '../../components/modal-list-post/modal-list-post.component';
 import { GetAllFacebookPostDTO } from '../../../../dto/live-campaign/getall-facebook-post.dto';
 import { OverviewReportDTO, ReportLiveCampaignDetailDTO } from '../../../../dto/live-campaign/report-livecampain-overview.dto';
-import { AddDrawerProductComponent } from './add-drawer-product.component';
+import { DrawerAddProductComponent } from './drawer-add-product.component';
 import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, ViewChild, ElementRef } from "@angular/core";
 import { LiveCampaignService } from "@app/services/live-campaign.service";
 import { TDSDestroyService } from "tds-ui/core/services";
@@ -638,7 +638,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     const modal = this.modal.create({
       title: 'Thêm mới sản phẩm',
-      content: AddDrawerProductComponent,
+      content: DrawerAddProductComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
     });

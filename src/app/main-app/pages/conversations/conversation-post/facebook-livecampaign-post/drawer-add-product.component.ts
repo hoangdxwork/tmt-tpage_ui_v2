@@ -26,11 +26,11 @@ import { TDSMessageService } from 'tds-ui/message';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 
 @Component({
-  selector: 'app-add-drawer-product',
-  templateUrl: './add-drawer-product.component.html',
+  selector: 'drawer-add-product',
+  templateUrl: './drawer-add-product.component.html',
   providers: [TDSDestroyService]
 })
-export class AddDrawerProductComponent implements OnInit {
+export class DrawerAddProductComponent implements OnInit {
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
 
