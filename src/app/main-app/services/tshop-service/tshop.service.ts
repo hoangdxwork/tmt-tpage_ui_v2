@@ -32,8 +32,6 @@ export class TShopService  {
         let checkString = TDSHelperString.isString(data);
         let model = checkString ? JSON.parse(data) : data;
 
-        this.message.success(Message.TShop.LoginSuccess);
-
         if(model?.access_token && model?.user) {
           this.setCurrentToken(model?.access_token);
           this.onUpdateUser(model?.user);

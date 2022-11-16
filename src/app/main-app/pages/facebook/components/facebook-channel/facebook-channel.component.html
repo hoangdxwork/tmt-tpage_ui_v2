@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="w-full h-full">
   <div *ngIf="data && data.length > 0" class="h-full w-full flex gap-x-4 p-4">
     <div class="w-3/4 h-full flex flex-col gap-y-4">
       <div *ngFor="let team of (dataSearch || data); let index = index"
@@ -204,15 +204,13 @@
           </tds-avatar>
           <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">Xin chào, {{ userFBLogin?.name }}!</span>
           <span class="mt-2 text-body-2 text-neutral-1-400">tmt30.tpos.vn</span>
-          <span class="mt-6 text-title-1 font-semibold text-success-400">Số trang Facebook đang quản lí</span>
-          <tds-avatar-group class="mt-2">
-            <tds-avatar tdsSrc="https://randomuser.me/api/portraits/women/68.jpg"></tds-avatar>
-            <tds-avatar tdsSrc="https://randomuser.me/api/portraits/women/67.jpg"></tds-avatar>
-            <tds-avatar tdsSrc="https://randomuser.me/api/portraits/women/66.jpg"></tds-avatar>
-            <tds-avatar tdsSrc="https://randomuser.me/api/portraits/women/65.jpg"></tds-avatar>
-            <tds-avatar class="bg-primary-3 text-primary-1 text-caption-2 font-semibold" text="+5">
-            </tds-avatar>
-          </tds-avatar-group>
+          <div class="mt-6 text-title-1 font-semibold text-success-400" *ngIf="loginTeam?.Childs">Số trang Facebook đang quản lí</div>
+          <tpage-avatar-group-facebook *ngIf="loginTeam?.Childs">
+            <tpage-avatar-facebook *ngFor="let child of loginTeam?.Childs || []; let i=index" 
+              [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'sm'">
+            </tpage-avatar-facebook>
+          </tpage-avatar-group-facebook>
+          
           <button tds-button color="secondary" class="w-full mt-6" (click)="facebookSignOut()">
             <span class="flex items-center">
               <i class="tdsi-log-out-fill text-lg text-neutral-1-500 leading-none mr-2"></i>Đăng xuất
@@ -231,8 +229,7 @@
   <!--TODO Empty -->
   <div *ngIf="!data || data.length < 1 && !isLoadChannel" class="px-4 pt-4 w-full h-full">
     <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
-      <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl"
-        [notFoundFooter]="footerTpl">
+      <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl" [notFoundFooter]="footerTpl">
         <ng-template #contentTpl>
           <div class="mt-3 flex flex-col items-center gap-y-2">
             <span class="text-heading-3 font-semibold text-neutral-1-900">Chưa có kênh kết nối</span>

@@ -219,7 +219,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       {
         name: "Kênh kết nối",
         icon: "tdsi-facebook-2-fill",
-        link: `/facebook`,
+        link: `/connect-channel?page=fb`,
       },
       {
         name: "Bán hàng đa kênh",
