@@ -1,7 +1,7 @@
 import { OrderModule } from './main-app/pages/order/order.module';
 import { MainSharedModule } from './main-app/shared/shared.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
@@ -19,7 +19,16 @@ import { PipeModule } from '@app/shared/pipe/pipe.module';
 import { TDSMessageModule } from 'tds-ui/message';
 import { QuillModule } from 'ngx-quill';
 
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
+import { TDSButtonModule } from "tds-ui/button";
+
 import "quill-mention";
+import { environment } from 'src/environments/environment';
+
+import * as firebase from 'firebase/app';
+firebase.initializeApp(environment.firebaseConfig);
 
 const atValues = [
   { id: 1, value: "Họ & tên" },
@@ -69,6 +78,7 @@ registerLocaleData(localeVi);
     AppComponent
   ],
   imports: [
+    AngularFireModule.initializeApp(environment.firebaseConfig),
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
@@ -82,14 +92,22 @@ registerLocaleData(localeVi);
     TDSMessageModule,
     MainSharedModule,
     OrderModule,
-    QuillModule.forRoot(quillOptions)
+    TDSButtonModule,
+    QuillModule.forRoot(quillOptions),
+    AngularFireAuthModule,
+    AngularFireMessagingModule
   ],
   providers: [{ provide: TDS_I18N, useValue: vi_VN },
-    TAuthGuardService, {
+    TAuthGuardService,
+    {
       provide: HTTP_INTERCEPTORS,
-      useClass: TAuthInterceptorService, multi: true
+      useClass: TAuthInterceptorService,
+      multi: true
     },
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }
   ],
 
   bootstrap: [AppComponent]

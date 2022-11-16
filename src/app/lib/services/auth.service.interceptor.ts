@@ -118,7 +118,8 @@ export class TAuthInterceptorService implements HttpInterceptor {
             });
         }
 
-        let accessToken =this.auth.getAccessToken();
+        let accessToken = this.auth.getAccessToken();
+
         if (TDSHelperObject.hasValue(this.auth.isLogin())
             && TDSHelperObject.hasValue(accessToken)
             && TDSHelperString.hasValueString(accessToken?.access_token)) {
