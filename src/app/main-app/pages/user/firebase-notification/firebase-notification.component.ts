@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, ViewContainerRef} from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
@@ -6,7 +6,9 @@ import { FirebaseRegisterService } from '@app/services/firebase/firebase-registe
 import { takeUntil } from 'rxjs';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperString } from 'tds-ui/shared/utility';
+import { ModalGetNotificationComponent } from '../components/modal-get-notification/modal-get-notification.component';
 
 @Component({
   selector: 'firebase-notification',
@@ -28,6 +30,8 @@ export class FirebaseNotificationComponent implements OnInit {
     private destroy$: TDSDestroyService,
     private route: ActivatedRoute,
     public router: Router,
+    private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef
   ) { }
 
   ngOnInit(): void {
@@ -43,7 +47,7 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   loadData(params?: any) {
-    this.isLoadingNextdata = true;
+    // this.isLoadingNextdata = true;
     this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.data = [...res.items];
@@ -63,10 +67,10 @@ export class FirebaseNotificationComponent implements OnInit {
         }
 
         this.onDetail(item);
-        this.isLoadingNextdata = false;
+        // this.isLoadingNextdata = false;
       },
       error: (err: any) => {
-        this.isLoadingNextdata = false;
+        // this.isLoadingNextdata = false;
         this.message.error(`${err?.error?.message}`);
       }
     })
@@ -127,14 +131,16 @@ export class FirebaseNotificationComponent implements OnInit {
     if (exisData) {
       const vsEnd = Number(this.data.length - 1) == Number(event.endIndex);
       if (vsEnd) {
-        this.nextData();
+        this.isLoadingNextdata = true;
+        setTimeout(() => {
+          this.nextData();
+        }, 350)
       }
     }
   }
 
   nextData() {
     if (this.cursor) {
-      this.isLoadingNextdata = true;
       this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.data = [...(this.data || []), ...res.items];
@@ -149,6 +155,20 @@ export class FirebaseNotificationComponent implements OnInit {
         }
       })
     }
+  }
+
+
+  modalGetNotifications() {
+    const modal = this.modalService.create({
+      title: 'Danh sách đăng kí nhận tin',
+      content: ModalGetNotificationComponent,
+      size: "xl",
+      centered: true,
+      bodyStyle: {
+        padding: '0',
+      },
+      viewContainerRef: this.viewContainerRef,
+    });
   }
 
 }

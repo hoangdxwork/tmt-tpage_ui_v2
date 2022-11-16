@@ -2,17 +2,17 @@
   <div class="w-1/4 h-full flex flex-col bg-white rounded-xl">
     <div class="flex justify-between items-center p-4">
       <span class="text-title-1 font-semibold">Thông báo</span>
-      <button tds-button-icon color="custom"
+      <button tds-button-icon color="custom" (click)="modalGetNotifications()"
         class="text-neutral-1-500 border-0 border-transparent ring-0 ring-transparent bg-transparent hover:text-neutral-1-500 hover:bg-neutral-3-50 focus:text-neutral-1-500 focus:bg-neutral-3-50">
         <i class="tdsi-gear-2-fill"></i>
       </button>
     </div>
     <div class="w-full h-full pb-3">
       <div class="flex flex-col h-full w-full">
-          <tds-spin [spinning]="isLoadingNextdata" class="h-full w-full">
             <virtual-scroller #scroll [items]="data" (vsEnd)="vsEnd($event)" [enableUnequalChildrenSizes]="true" [scrollAnimationTime]="750"
             class="h-full w-full p-2 text-caption-1 overflow-hidden overflow-y-auto no-scrollbar bg-white flex flex-col gap-y-2">
-              <div *ngFor="let item of scroll.viewPortItems" (click)="onDetail(item)" class="flex flex-auto justify-between items-start overflow-hidden cursor-pointer hover:bg-neutral-3-50 border-l-3" [ngClass]="item.id == dataDetail.id ? 'border-blue-500 bg-secondary-3': 'border-transparent bg-white'">
+
+            <div *ngFor="let item of scroll.viewPortItems" (click)="onDetail(item)" class="flex flex-auto justify-between items-start overflow-hidden cursor-pointer hover:bg-neutral-3-50 border-l-3" [ngClass]="item.id == dataDetail.id ? 'border-blue-500 bg-secondary-3': 'border-transparent bg-white'">
                 <div class="flex gap-x-4 p-4 justify-between w-full overflow-hidden">
                   <div class="w-full flex gap-x-4" [ngClass]="item.dateRead ? 'text-neutral-1-400' : ''">
                     <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item.notification.thumbnail }}" [isAvatar]="false" class="rounded min-w-[63px]"></tds-avatar>
@@ -27,8 +27,10 @@
                   <span class="tdsi-radio-circle-fill text-info-400 text-xs"></span>
                 </div>
               </div>
+              <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
+                <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
+              </div>
             </virtual-scroller>
-          </tds-spin>
       </div>
     </div>
   </div>
