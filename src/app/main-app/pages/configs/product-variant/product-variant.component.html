@@ -74,13 +74,13 @@
                         <th width="44px" class="hover:bg-neutral-3-100" [checked]="checked" [tdsLeft]="true"
                             [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
                         </th>
-                        <th width="68px" [tdsLeft]="true">Ảnh</th>
-                        <th width="268px" [tdsLeft]="true">Tên</th>
+                        <th width="80px" [tdsLeft]="true">Ảnh</th>
+                        <th width="280px" [tdsLeft]="true">Tên</th>
                         <th width="168px">Đơn vị</th>
                         <th width="168px">Mã vạch</th>
-                        <th width="168px">Giá bán</th>
-                        <th width="168px">Hiệu lực</th>
-                        <th width="168px" [tdsRight]="true">Thao tác</th>
+                        <th width="168px" [align]="'right'">Giá bán</th>
+                        <th width="168px" [align]="'center'">Hiệu lực</th>
+                        <th width="150px" [tdsRight]="true">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -96,11 +96,10 @@
                             <td [tdsLeft]="true">{{ data.NameGet }}</td>
                             <td>{{ data.UOMName }}</td>
                             <td>{{ data.DefaultCode }}</td>
-                            <td>{{ data.PriceVariant | numberCustom  }}</td>
-                            <td>
-                                <span class="flex items-center">
-                                    <i
-                                        class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+                            <td [align]="'right'">{{ data.PriceVariant | numberCustom  }} đ</td>
+                            <td [align]="'center'">
+                                <span class="flex items-center justify-center">
+                                    <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                                 </span>
                             </td>
                             <td [tdsRight]="true">
