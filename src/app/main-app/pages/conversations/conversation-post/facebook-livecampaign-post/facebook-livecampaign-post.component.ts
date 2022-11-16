@@ -1,9 +1,7 @@
-import { ReportLiveCampaignDTO } from '../../../../dto/live-campaign/report-livecampain-overview.dto';
 import { FaceBookPostItemHandler } from '../../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ChatomniObjectsItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { LiveCampaignModel } from '../../../../dto/live-campaign/odata-live-campaign-model.dto';
 import { OverviewLiveCampaignComponent } from '../../../../shared/overview-live-campaign/overview-live-campaign.component';
-import { AddLiveCampaignPostComponent } from '../../../../shared/add-live-campaign/add-livecampaign-post.component';
 import { LiveCampaignService } from '../../../../services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';

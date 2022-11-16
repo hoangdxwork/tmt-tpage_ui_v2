@@ -27,7 +27,6 @@ import { QuickReplyService } from '../../services/quick-reply.service';
 import { LiveCampaignService } from '../../services/live-campaign.service';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { ApplicationUserService } from '../../services/application-user.service';
-import { AddLiveCampaignComponent } from './components/add-livecampaign/add-livecampaign.component';
 import { LiveCampaignComponent } from './live-campaign/live-campaign.component';
 import { LiveCampaignListComponent } from './components/live-campaign-list/live-campaign-list.component';
 import { ExpandLiveCampaignComponent } from './components/expand-live-campaign/expand-live-campaign.component';
@@ -104,7 +103,6 @@ import { TableDeletedOrderComponent } from './components/table-deleted-order/tab
 import { ImportProductLivecampaignComponent } from './components/import-product-livecampaign/import-product-livecampaign.component';
 
 const cmp =[
-  AddLiveCampaignComponent,
   LiveCampaignComponent,
   LiveCampaignListComponent,
   ExpandLiveCampaignComponent,
