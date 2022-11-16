@@ -1,11 +1,11 @@
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
-import { THelperDataRequest } from './../../../../../lib/services/helper-data.service';
-import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
-import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
-import { SyncCreateProductTemplateDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ModalListPostComponent } from './../../components/modal-list-post/modal-list-post.component';
-import { GetAllFacebookPostDTO } from './../../../../dto/live-campaign/getall-facebook-post.dto';
-import { OverviewReportDTO, ReportLiveCampaignDetailDTO } from './../../../../dto/live-campaign/report-livecampain-overview.dto';
+import { THelperDataRequest } from '../../../../../lib/services/helper-data.service';
+import { ProductIndexDBService } from '../../../../services/product-indexdb.service';
+import { ProductTemplateV2DTO } from '../../../../dto/product-template/product-tempalte.dto';
+import { SyncCreateProductTemplateDto } from '../../../../dto/product-pouchDB/product-pouchDB.dto';
+import { ModalListPostComponent } from '../../components/modal-list-post/modal-list-post.component';
+import { GetAllFacebookPostDTO } from '../../../../dto/live-campaign/getall-facebook-post.dto';
+import { OverviewReportDTO, ReportLiveCampaignDetailDTO } from '../../../../dto/live-campaign/report-livecampain-overview.dto';
 import { AddDrawerProductComponent } from './add-drawer-product.component';
 import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, ViewChild, ElementRef } from "@angular/core";
 import { LiveCampaignService } from "@app/services/live-campaign.service";
