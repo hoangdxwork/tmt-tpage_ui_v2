@@ -1,4 +1,4 @@
-<div class="w-full h-full bg-white rounded-md border border-neutral-2-100">
+<div class="w-full h-full bg-white rounded-md border border-neutral-2-100 text-body-2">
   <tds-tabset (selectedIndexChange)="onChangeTab($event)">
     <tds-tab [title]="titleItem1" clsContent="p-4 border-t">
       <ng-template #titleItem1 let-active="active">
@@ -10,12 +10,12 @@
           </div>
         </div>
       </ng-template>
-      <div class="flex 2xl:gap-x-8 xl:gap-x-4">
+      <div class="flex gap-x-6">
         <div>
           <tds-avatar [tdsSrc]="productTemplate.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg">
           </tds-avatar>
         </div>
-        <div class="grid 2xl:grid-cols-9 gap-x-8 gap-y-4 xl:grid-cols-6 items-center">
+        <div class="grid 2xl:grid-cols-9 gap-x-4 gap-y-4 xl:grid-cols-6 items-center">
           <span class="text-neutral-1-900 text-body-2 font-regular">Mã sản phẩm:</span>
           <div class="w-full col-span-2">
             <span class="text-neutral-1-900 text-body-2 font-semibold ">
@@ -166,6 +166,7 @@
         </div>
       </div>
     </tds-tab>
+
     <tds-tab [title]="titleItem2" clsContent="p-4 border-t">
       <ng-template #titleItem2 let-active="active">
         <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[90px]"
@@ -183,6 +184,7 @@
         </div>
       </div>
     </tds-tab>
+
     <tds-tab [title]="titleItem3" clsContent="pb-2.5 border-t">
       <ng-template #titleItem3 let-active="active">
         <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[84px]"
@@ -194,19 +196,19 @@
         </div>
       </ng-template>
       <tds-table [listData]="lstStockMove" [loading]="isLoading_stockMove" [frontPagination]="false"
-        [scroll]="{ x: 'auto' }" [showSizeChanger]="true" [(pageSize)]="pageSize_stockMove"
+        [showSizeChanger]="true" [(pageSize)]="pageSize_stockMove"
         [(pageIndex)]="pageIndex_stockMove" [total]="count_stockMove" (queryParams)="onQueryParamsStockMove($event)"
         (clickRefresh)="refreshStockMoveTable()">
         <thead>
           <tr>
-            <th [width]="'164px'" [tdsLeft]="true">Loại</th>
-            <th [width]="'164px'" [tdsLeft]="true">PickingName</th>
-            <th [width]="'164px'">Tham chiếu</th>
-            <th [width]="'164px'">Nguồn</th>
-            <th [width]="'164px'">Đến</th>
-            <th [width]="'164px'">ĐVT</th>
-            <th [width]="'164px'">Số lượng</th>
-            <th [width]="'164px'">Ngày tạo</th>
+            <th [width]="'160px'" [tdsLeft]="true">Loại</th>
+            <th [width]="'160px'" [tdsLeft]="true">PickingName</th>
+            <th [width]="'160px'">Tham chiếu</th>
+            <th [width]="'160px'">Nguồn</th>
+            <th [width]="'160px'">Đến</th>
+            <th [width]="'160px'" [align]="'center'">ĐVT</th>
+            <th [width]="'160px'" [align]="'center'">Số lượng</th>
+            <th [width]="'160px'">Ngày tạo</th>
           </tr>
         </thead>
         <tbody>
@@ -217,14 +219,15 @@
               <td>{{ data.OrderName }}</td>
               <td>{{ data.LocationNameGet }}</td>
               <td>{{ data.LocationDestNameGet }}</td>
-              <td>{{ data.ProductUOMName }}</td>
-              <td>{{ data.ProductQty | numberCustom }}</td>
+              <td [align]="'center'">{{ data.ProductUOMName }}</td>
+              <td [align]="'center'">{{ data.ProductQty | numberCustom }}</td>
               <td>{{ data.Date | date:'dd/MM/yyy HH:mm' }}</td>
             </tr>
           </ng-template>
         </tbody>
       </tds-table>
     </tds-tab>
+
     <tds-tab [title]="titleItem4" clsContent="pb-2.5 border-t">
       <ng-template #titleItem4 let-active="active">
         <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[84px]"
@@ -255,6 +258,7 @@
         </tbody>
       </tds-table>
     </tds-tab>
+
     <tds-tab [title]="titleItem5" clsContent="p-4 border-t">
       <ng-template #titleItem5 let-active="active">
         <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 px-3 py-4 relative group w-[70px]"
