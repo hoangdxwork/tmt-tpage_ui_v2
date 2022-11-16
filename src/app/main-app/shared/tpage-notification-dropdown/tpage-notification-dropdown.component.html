@@ -26,30 +26,30 @@
       </div>
 
       <div class="w-full">
-        <div class="w-[336px] max-h-[500px] overflow-hidden overflow-y-auto tds-custom-scroll">
-          <div class="w-full py-1">
-            <ng-container *ngIf="lstData">
-              <div class="flex gap-x-4 py-2 px-4 relative w-full cursor-pointer h-[120px] hover:bg-neutral-3-200" *ngFor="let item of lstData"
-                (click)="onDetail(item.Id)">
-                <tds-avatar [shape]="'square'" [size]="60" tdsSrc="{{item.Image}}" [isAvatar]="false" class="rounded min-w-[60px]"></tds-avatar>
+        <div class="w-[336px] max-h-[500px] overflow-hidden overflow-y-auto tds-panel-scroll">
+          <div class="w-full py-1.5">
+            <ng-container *ngIf="items">
+              <div class="flex gap-x-4 py-2.5 px-4 relative w-full cursor-pointer hover:bg-neutral-3-200" *ngFor="let item of items"
+                (click)="onDetail(item.id)">
+                <tds-avatar [shape]="'square'" [size]="60" tdsSrc="{{ item.notification.thumbnail }}" [isAvatar]="false" class="rounded min-w-[60px]"></tds-avatar>
 
                 <div class=" w-full relative">
-                 <div class="flex flex-col flex-auto gap-y-1 inset-0 absolute" *ngIf="item.DateRead; else notRead">
-                    <span class="text-sm font-semibold w-full webkit-line-clamp-2 text-neutral-1-900">{{item.Title}}</span>
-                    <span class="text-sm webkit-line-clamp-2 w-full text-neutral-1-900">{{item.Description}}</span>
-                    <span class="text-sm w-full text-neutral-1-400">{{item.DateCreated | yiDiffDateTime}} - {{item.DateCreated | date: 'dd/MM/yyyy'}}</span>
+                 <div class="flex flex-col flex-auto gap-y-1 inset-0 absolute" *ngIf="item.dateRead; else notRead">
+                    <span class="text-body-2 font-semibold w-full text-neutral-1-900 truncate">{{item.notification.title}}</span>
+                    <span class="text-caption-2 w-full text-neutral-1-900 truncate">{{item.notification.shortContent}}</span>
+                    <span class="text-caption-2 font-semibold w-full text-neutral-1-400">{{item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy'}}</span>
                  </div>
 
                  <ng-template #notRead>
                   <div class="flex flex-col flex-auto gap-y-1 inset-0 absolute">
-                    <span class="text-sm font-semibold w-full webkit-line-clamp-2 text-neutral-1-900">{{item.Title}}</span>
-                    <span class="text-sm webkit-line-clamp-2 w-full text-neutral-1-900">{{item.Description}}</span>
-                    <span class="text-sm w-full text-info-400">{{item.DateCreated | yiDiffDateTime}} - {{item.DateCreated | date: 'dd/MM/yyyy'}}</span>
+                    <span class="text-body-2 font-semibold w-full text-neutral-1-900 truncate">{{item.notification.title}}</span>
+                    <span class="text-caption-2 w-full text-neutral-1-900 truncate">{{item.notification.shortContent}}</span>
+                    <span class="text-caption-2 font-semibold w-full text-info-400">{{ item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy' }}</span>
                   </div>
                  </ng-template>
 
                 </div>
-                <span class="tdsi-radio-circle-fill text-info-400 absolute top-1 right-1 text-xs" *ngIf="!item.DateRead"></span>
+                <span class="tdsi-radio-circle-fill text-info-400 absolute top-1 right-1 text-xs" *ngIf="!item.dateRead"></span>
               </div>
             </ng-container>
           </div>

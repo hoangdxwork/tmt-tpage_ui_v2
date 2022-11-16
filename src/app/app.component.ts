@@ -9,6 +9,8 @@ import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +25,10 @@ export class AppComponent {
   teamId!: number;
   isShowModal: boolean = false;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
+  @ViewChild('templateFirebase') templateFirebase!: TemplateRef<{}>;
+
+  message: any;
+  token: any;
 
   constructor(public libCommon: TCommonService,
     public auth: TAuthService,
@@ -30,6 +36,7 @@ export class AppComponent {
     public zone: NgZone,
     public router: Router,
     private route: ActivatedRoute,
+    private firebaseMessagingService: FirebaseMessagingService,
     private notification: TDSNotificationService,
     private tdsConfigService: TDSConfigService,
     private socketOnEventService: SocketOnEventService,
@@ -49,8 +56,8 @@ export class AppComponent {
     let that = this;
     that.init().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.loader.hidden();
-        that.isLoaded = true;
+          this.loader.hidden();
+          that.isLoaded = true;
       }
     });
 
