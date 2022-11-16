@@ -13,7 +13,6 @@ export class FacebookService extends BaseSevice {
   prefix: string = "odata";
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/facebook";
-  // private readonly cacheFBTab = 'cache_FB_Tab';
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService)
@@ -63,16 +62,4 @@ export class FacebookService extends BaseSevice {
 
     return this.apiService.getData<ChannelFacebookConfigDTO>(api, model);
   }
-
-  // setCacheFBTab(page: string) {
-  //   localStorage.setItem(this.cacheFBTab, page);
-  // }
-
-  // getCacheFBTab(): string | null {
-  //   return localStorage.getItem(this.cacheFBTab);
-  // }
-
-  // removeCacheFBTab() {
-  //   localStorage.removeItem(this.cacheFBTab);
-  // }
 }
