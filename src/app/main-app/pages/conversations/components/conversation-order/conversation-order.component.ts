@@ -1,3 +1,4 @@
+import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { CommentOrderPost } from './../../../../dto/conversation/post/comment-order-post.dto';
 import { KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
@@ -69,6 +70,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'conversation-order',
@@ -238,6 +240,36 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+        if(!res) return;
+
+        switch(res.EventName) {
+             // Tạo đơn hàng
+            case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+              let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exit1 = res && fbCreated && fbCreated.Data?.Facebook_PostId == this.quickOrderModel.Facebook_PostId
+                && fbCreated.Data.Facebook_ASUserId == this.quickOrderModel?.Facebook_ASUserId;
+
+              if(!exit1) break;
+            // TODO: cập nhật mã đơn hàng sau khi tạo đơn hàng
+              this.conversationOrderFacade.hasValueOrderCode$.emit(fbCreated?.Data?.Code);
+            break;
+
+            // Xóa đơn hàng
+            case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
+              let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exist2 = res && fbDelete && fbDelete.Data?.Facebook_PostId == this.quickOrderModel.Facebook_PostId
+              && fbDelete.Data.Facebook_ASUserId == this.quickOrderModel?.Facebook_ASUserId;
+
+              if(!exist2) break;
+              // TODO: xóa mã đơn hàng sau khi tạo hóa đơn
+              this.conversationOrderFacade.hasValueOrderCode$.emit(null);
+            break;
+
+            default:
+            break;
+        }
+
+        this.cdRef.detectChanges();
       }
     })
   }
