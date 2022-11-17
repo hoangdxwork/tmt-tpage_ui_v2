@@ -17,7 +17,7 @@
       <div class="w-[120px] font-semibold">{{item.group}}</div>
       <div class="flex flex-col gap-y-4">
         <div *ngFor="let x of item.topics">
-          <tds-checkbox [checked]="true" (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: lstIds" [ngModelOptions]="{standalone: true}">{{ x.name }}</tds-checkbox>
+          <tds-checkbox [checked]="true" (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: ids" [ngModelOptions]="{standalone: true}">{{ x.name }}</tds-checkbox>
         </div>
       </div>
     </div>

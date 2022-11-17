@@ -14,6 +14,7 @@ import { TDSModalRef } from 'tds-ui/modal';
   templateUrl: './modal-request-permission.component.html'
 })
 export class ModalRequestPermissionComponent implements OnInit {
+
   @Input() lstIds: any[] = [];
   @Input() deviceToken: any;
 
@@ -28,6 +29,7 @@ export class ModalRequestPermissionComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.lstIds;
   }
 
   onCancel() {
