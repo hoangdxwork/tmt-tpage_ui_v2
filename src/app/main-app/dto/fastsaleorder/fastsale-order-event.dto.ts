@@ -14,7 +14,7 @@ export interface MapOrderCodeCommentDTO {
     asuid: string;
     uid: string;
     liveCampaignId: string,
-    type: fastSaleOrderSaveType;
+    type: SO_OrderType;
     orders: CommentOrderDTO[];
 }
 
@@ -25,7 +25,7 @@ export interface CommentOrderDTO {
 }
 
 
-export enum fastSaleOrderSaveType {
-    create = "create", // khi tạo đơn hàng insertFromPost 
-    remove = "remove", // khi lưu createFastSaleOrder
+export enum SO_OrderType {
+    _create = "create", // khi tạo đơn hàng insertFromPost
+    _remove = "remove", // khi lưu createFastSaleOrder
 }

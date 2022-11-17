@@ -43,7 +43,7 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO, fastSaleOrderSaveType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
+import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO, SO_OrderType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 
@@ -142,8 +142,11 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   loadOrderPartnerbylLivecampaign() {
-    if(this.data && this.data.LiveCampaignId) {
       let id = this.data.LiveCampaignId as string;
+      this.invoiceDict = {};
+
+      if(!id) return;
+
       this.liveCampaignService.orderPartnerbyLivecampaign(id).pipe(takeUntil(this.destroy$))
         .subscribe({
             next: (res: any) => {
@@ -153,7 +156,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
               }
             }
         })
-    }
   }
 
   loadPartnersByTimestamp(team: CRMTeamDTO) {
@@ -221,47 +223,50 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     // TODO: tạo đơn hàng, phiếu bán hàng ở conversation-order
     this.conversationOrderFacade.onMapOrderCodeComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: MapOrderCodeCommentDTO) => {
-        setTimeout(() => {
+          // if(!res) return;
 
-          switch(res.type) {
-            case fastSaleOrderSaveType.create:
-              this.commentOrders[res.asuid] = [];
-              this.commentOrders[res.uid] = [];
+          // switch(res.type) {
+          //   case SO_OrderType._create:
+          //       this.commentOrders[res.asuid] = [];
+          //       this.commentOrders[res.uid] = [];
 
-              res.orders?.map((a: CommentOrderDTO) => {
-                this.commentOrders![res.asuid].push(a);
-              })
-            break;
+          //       res.orders?.map((a: CommentOrderDTO) => {
+          //           this.commentOrders![res.asuid].push(a);
+          //       })
+          //   break;
 
-            case fastSaleOrderSaveType.remove:
-              if(res.liveCampaignId) {
-                delete this.commentOrders[res.asuid];
-                delete this.commentOrders[res.uid];
-              }
-            break;
-          }
+          //   case SO_OrderType._remove:
+          //       if(res.liveCampaignId == this.data.LiveCampaignId) {
+          //           delete this.commentOrders[res.asuid];
+          //           delete this.commentOrders[res.uid];
+          //       }
+          //   break;
+          // }
 
-          this.cdRef.detectChanges();
-        }, 350);
+          // this.cdRef.detectChanges();
+          setTimeout(() => {
+              this.loadCommentsOrderByPost();
+          }, 350);
       }
     })
 
     this.conversationOrderFacade.onMapInvoiceNumberComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: MapInvoiceNumberCommentDTO) => {
         setTimeout(() => {
-            if(!res.LiveCampaignId) {
-              return;
-            }
-            let model = {...res.Data} as OrderPartnerByLivecampaignDto;
+          //   if(!res.LiveCampaignId) {
+          //     return;
+          //   }
+          //   let model = {...res.Data} as OrderPartnerByLivecampaignDto;
 
-            if(this.invoiceDict[res.PartnerId]) {
-              this.invoiceDict[res.PartnerId].push(model);
-            } else {
-              this.invoiceDict[res.PartnerId] = [];
-              this.invoiceDict[res.PartnerId].push(model);
-            }
+          //   if(this.invoiceDict[res.PartnerId]) {
+          //     this.invoiceDict[res.PartnerId].push(model);
+          //   } else {
+          //     this.invoiceDict[res.PartnerId] = [];
+          //     this.invoiceDict[res.PartnerId].push(model);
+          //   }
 
-          this.cdRef.detectChanges();
+          // this.cdRef.detectChanges();
+          this.loadOrderPartnerbylLivecampaign();
         }, 350);
       }
     })

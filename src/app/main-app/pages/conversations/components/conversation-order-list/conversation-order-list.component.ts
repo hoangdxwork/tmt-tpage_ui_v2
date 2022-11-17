@@ -102,9 +102,11 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
     this.chatomniObjectFacade.onLoadCommentOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        if(this.currentPost && this.currentPost.ObjectId) {
+        setTimeout(() => {
+          if(this.currentPost && this.currentPost.ObjectId) {
             this.loadData(this.pageSize, this.pageIndex);
-        }
+          }
+        }, 350)
       }
     })
   }
