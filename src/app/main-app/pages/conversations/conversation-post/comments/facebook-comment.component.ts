@@ -47,6 +47,7 @@ import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-obj
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
+import { LiveCampaignFastSaleOrderDataDto, SocketLiveCampaignFastSaleOrderDto } from '@app/dto/socket-io/livecampain-fastsaleorder.dto';
 
 @Component({
   selector: 'facebook-comment',
@@ -216,6 +217,16 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
               this.setCommentDeleteOrderCode(fbDelete);
             break;
 
+            // Tạo hóa đơn
+            case ChatmoniSocketEventName.livecampaign_CartCheckout:
+              let fbInvoice = {...res?.Data?.Data} as LiveCampaignFastSaleOrderDataDto;
+              let exist5 = res && fbInvoice && this.data
+                    && fbInvoice.LiveCampaignId == this.data.LiveCampaignId;
+
+              if(!exist5) break;
+              this.setCommentNumberInvoice(fbInvoice);
+            break;
+
             default:
             break;
         }
@@ -268,6 +279,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       } else {
           orders.push(item);
       }
+
+      this.commentOrders[model.Data.Facebook_ASUserId] = [...orders];
     } else {
       this.commentOrders[model.Data.Facebook_ASUserId] = [item];
     }
@@ -296,6 +309,34 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     }
 
     this.commentOrders = {...this.commentOrders};
+    this.cdRef.detectChanges();
+  }
+
+  setCommentNumberInvoice(model: LiveCampaignFastSaleOrderDataDto) {
+    let item = {
+      Id: model.FastSaleOrderId,
+      Number: model.Number,
+      ShowState: '',
+      State: ''
+    } as OrderPartnerByLivecampaignDto;
+
+    let exist = this.invoiceDict[model.PartnerId] && Object.keys(this.invoiceDict[model.PartnerId]).length > 0;
+    if(exist) {
+        let invoices = this.invoiceDict[model.PartnerId] as any[];
+        let index = invoices.findIndex(x => x.Id == item.Id);
+
+        if(index >= 0) {
+            invoices[index] = {...item};
+        } else {
+            invoices.push(item);
+        }
+
+        this.invoiceDict[model.PartnerId] = [...invoices];
+    } else {
+        this.invoiceDict[model.PartnerId] = [item];
+    }
+
+    this.invoiceDict = {...this.invoiceDict};
     this.cdRef.detectChanges();
   }
 

@@ -92,7 +92,8 @@ export class SocketOnEventService {
           let existLive = socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout
               || socketData.EventName == ChatmoniSocketEventName.chatomniPostLiveEnd
-              || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order;
+              || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
+              || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
@@ -131,6 +132,11 @@ export class SocketOnEventService {
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
                 let notificationDelete = this.prepareDeleteOrder(socketData);
                 this.pubSocketEvent(notificationDelete, socketData, team); //OnSocketOnSaleOnline_OrderDto
+            break;
+
+            // TODO: tạo hóa đơn bài viết
+            case ChatmoniSocketEventName.livecampaign_CartCheckout:
+                this.pubSocketEvent(null, socketData, team); //OnSocketOnSaleOnline_OrderDto
             break;
 
             // TODO: user đang xem

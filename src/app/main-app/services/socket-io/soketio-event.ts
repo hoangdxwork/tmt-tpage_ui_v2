@@ -12,5 +12,6 @@ export enum ChatmoniSocketEventName {
   onDeleteSaleOnline_Order = "deleted",
   livecampaign_Quantity_Order_Pending_Checkout = "livecampaign.quantity-order-pending-checkout",
   livecampaign_Quantity_AvailableToBuy = "livecampaign.quantity-available-to-buy",
+  livecampaign_CartCheckout = "livecampaign.cart-checkout",
   chatomniPostLiveEnd = "chatomni.post-live-end"
 }
