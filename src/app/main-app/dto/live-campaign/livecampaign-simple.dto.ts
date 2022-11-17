@@ -15,7 +15,7 @@
     ProductNameGet?: any;
     UOMId: number;
     UOMName: string;
-    Tags: string;
+    Tags: string | any;
     LimitedQuantity: number;
     ProductCode: string;
     ImageUrl: string;

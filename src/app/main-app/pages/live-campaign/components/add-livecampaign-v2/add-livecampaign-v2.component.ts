@@ -62,6 +62,8 @@ export class AddLiveCampaignV2Component implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
   innerTextValue: string = '';
 
+  lstOrderTags!: string[];
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -246,6 +248,7 @@ export class AddLiveCampaignV2Component implements OnInit {
 
     if(data && data.Details) {
        this.initFormDetails(data.Details);
+       this.getLstOrderTags(data.Details);
     }
 
     this.datePicker = [data.StartDate, data.EndDate];
@@ -412,6 +415,7 @@ export class AddLiveCampaignV2Component implements OnInit {
     })
 
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
+    this.getLstOrderTags(this.detailsForm.value);
   }
 
   generateTagDetail(tags: string, orderTag: string) {
@@ -491,6 +495,7 @@ export class AddLiveCampaignV2Component implements OnInit {
 
     this.initFormDetails(newFormDetails);
     this.livecampaignSimpleDetail = [...newFormDetails];
+    this.getLstOrderTags(this.detailsForm.value);
 
     this.searchValue = this.innerTextValue;
   }
@@ -593,6 +598,7 @@ export class AddLiveCampaignV2Component implements OnInit {
       onOk: () => {
           (<FormArray>this._form.get('Details')).clear();
           this.livecampaignSimpleDetail = [];
+          this.lstOrderTags = [];
       },
       onCancel: () => { },
       okText: "Xác nhận",
@@ -669,6 +675,8 @@ export class AddLiveCampaignV2Component implements OnInit {
       this.modelTags = [...strs];
     }
 
+    this.getLstOrderTags(this.detailsForm.value);
+
     this.cdRef.detectChanges();
   }
 
@@ -693,4 +701,16 @@ export class AddLiveCampaignV2Component implements OnInit {
 
     return datas;
   }
+
+  getLstOrderTags(data: LiveCampaignSimpleDetail[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => TDSHelperArray.isArray(x.Tags)? x.Tags.join(',') : x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }

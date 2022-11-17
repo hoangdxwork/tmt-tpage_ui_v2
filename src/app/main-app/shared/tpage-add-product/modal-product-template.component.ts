@@ -1,3 +1,4 @@
+import { TDSNotificationService } from 'tds-ui/notification';
 import { ConfigProductDefaultDTO } from './../../dto/configs/product/config-product-default.dto';
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -71,6 +72,7 @@ export class ModalProductTemplateComponent implements OnInit {
   ];
 
   fileList: TDSUploadFile[] = [];
+  lstCheckOrderTags: string[] = [];
 
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,
@@ -83,6 +85,7 @@ export class ModalProductTemplateComponent implements OnInit {
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
+    private notificationService: TDSNotificationService,
     private destroy$: TDSDestroyService) {
        this.createForm();
   }
@@ -182,6 +185,10 @@ export class ModalProductTemplateComponent implements OnInit {
 
   prepareModel() {
     const formModel = this._form.value;
+    let ProductVariants = [...this.lstVariants];
+    ProductVariants.map(x=> {
+      x.OrderTag = (TDSHelperArray.isArray(x.OrderTag) && TDSHelperArray.hasListValue(x.OrderTag)) ? x.OrderTag.join(',') : x.OrderTag
+    });
 
     this.defaultGet["Name"] = formModel.Name;
     this.defaultGet["Type"] = formModel.Type;
@@ -210,7 +217,7 @@ export class ModalProductTemplateComponent implements OnInit {
     }
 
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
-    this.defaultGet["ProductVariants"] = [...this.lstVariants];
+    this.defaultGet["ProductVariants"] = [...ProductVariants];
 
     return this.defaultGet;
   }
@@ -222,7 +229,10 @@ export class ModalProductTemplateComponent implements OnInit {
       let lstCheck = this.checkOrderTags();
       if(TDSHelperArray.hasListValue(lstCheck)) {
         let mess = lstCheck.join(',');
-        this.message.error(`Mã chốt đơn ${mess} đã tồn tại trong danh sách`);
+        this.notificationService.warning(`Mã chốt đơn đã tồn tại`,
+                  `<div class="flex flex-col ">
+                      <span class="mb-1">Mã tồn tại: <span class="font-semibold"> ${mess}</span></span>
+                  </div>`);
         return;
       };
     }
@@ -448,7 +458,13 @@ export class ModalProductTemplateComponent implements OnInit {
   changeTags(event:any,i:number){
     let strs = [...this.checkInputMatch(event)];
 
-    this.lstVariants[i].OrderTag = TDSHelperArray.hasListValue(strs) ? strs.join(',') : null;
+    this.lstVariants[i].OrderTag = strs.length > 0 ? [...strs] : null;
+    this.lstVariants[i] = this.lstVariants[i];
+    this.lstVariants = [...this.lstVariants];
+    
+    this.lstCheckOrderTags = this.getOrderTagsVariants(this.lstVariants);
+
+    this.cdRef.detectChanges();
   }
 
   onChangeModelTag(event: string[]) {
@@ -472,6 +488,13 @@ export class ModalProductTemplateComponent implements OnInit {
     // TODO: check kí tự đặc biệt
     if(matchRex) {
         this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    let exist = pop ? this.lstCheckOrderTags.filter(x=>x.toLocaleLowerCase().trim() == pop.toLocaleLowerCase().trim())[0]: false;
+
+    if(exist) {
+        this.message.warning(`Mã chốt đơn ${pop} bị trùng trong danh sách sản phẩm vừa thêm.`);
         datas = datas.filter(x => x!= pop);
     }
 
@@ -514,8 +537,8 @@ export class ModalProductTemplateComponent implements OnInit {
   getOrderTagsVariants(data: ConfigProductVariant[]) {
       let tagsVariants: string[] = [];
 
-      data = data.filter(x => x.OrderTag);
-      let getTags = data.map(x => x.OrderTag.toLocaleLowerCase().trim());
+      let dataTags = data.filter(x => x.OrderTag);
+      let getTags = dataTags.map(x => TDSHelperArray.isArray(x.OrderTag) ? x.OrderTag.join(','): x.OrderTag);
       let tags = getTags.join(',');
 
       if(TDSHelperString.hasValueString(tags)) {
