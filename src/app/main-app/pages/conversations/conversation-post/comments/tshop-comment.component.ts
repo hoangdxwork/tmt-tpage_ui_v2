@@ -45,7 +45,7 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO, fastSaleOrderSaveType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
+import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO, SO_OrderType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 @Component({
   selector: 'tshop-comment',
@@ -147,7 +147,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
       this.liveCampaignService.orderPartnerbyLivecampaign(id).pipe(takeUntil(this.destroy$))
         .subscribe({
             next: (res: any) => {
-              if(res && Object.keys(res).length > 0){
+              if(res && Object.keys(res).length > 0) {
                 this.invoiceDict = res;
                 this.cdRef.markForCheck();
               }
@@ -223,25 +223,27 @@ export class TShopCommentComponent implements OnInit, OnChanges {
       next:(res: MapOrderCodeCommentDTO) => {
         setTimeout(() => {
 
-          switch(res.type) {
-            case fastSaleOrderSaveType.create:
-              this.commentOrders[res.asuid] = [];
-              this.commentOrders[res.uid] = [];
+          // switch(res.type) {
+          //   case SO_OrderType._create:
+          //     this.commentOrders[res.asuid] = [];
+          //     this.commentOrders[res.uid] = [];
 
-              res.orders?.map((a: CommentOrderDTO) => {
-                this.commentOrders![res.asuid].push(a);
-              })
-            break;
+          //     res.orders?.map((a: CommentOrderDTO) => {
+          //       this.commentOrders![res.asuid].push(a);
+          //     })
+          //   break;
 
-            case fastSaleOrderSaveType.remove:
-              if(res.liveCampaignId) {
-                delete this.commentOrders[res.asuid];
-                delete this.commentOrders[res.uid];
-              }
-            break;
-          }
+          //   case SO_OrderType._remove:
+          //     if(res.liveCampaignId) {
+          //       delete this.commentOrders[res.asuid];
+          //       delete this.commentOrders[res.uid];
+          //     }
+          //   break;
+          // }
 
-          this.cdRef.detectChanges();
+          // this.cdRef.detectChanges();
+
+          this.loadCommentsOrderByPost();
         }, 350);
       }
     })
@@ -249,19 +251,20 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.onMapInvoiceNumberComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: MapInvoiceNumberCommentDTO) => {
         setTimeout(() => {
-            if(!res.LiveCampaignId) {
-              return;
-            }
-            let model = {...res.Data} as OrderPartnerByLivecampaignDto;
+          //   if(!res.LiveCampaignId) {
+          //     return;
+          //   }
+          //   let model = {...res.Data} as OrderPartnerByLivecampaignDto;
 
-            if(this.invoiceDict[res.PartnerId]) {
-              this.invoiceDict[res.PartnerId].push(model);
-            } else {
-              this.invoiceDict[res.PartnerId] = [];
-              this.invoiceDict[res.PartnerId].push(model);
-            }
+          //   if(this.invoiceDict[res.PartnerId]) {
+          //     this.invoiceDict[res.PartnerId].push(model);
+          //   } else {
+          //     this.invoiceDict[res.PartnerId] = [];
+          //     this.invoiceDict[res.PartnerId].push(model);
+          //   }
 
-          this.cdRef.detectChanges();
+          // this.cdRef.detectChanges();
+          this.loadOrderPartnerbylLivecampaign();
         }, 350);
       }
     })

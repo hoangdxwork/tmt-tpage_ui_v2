@@ -69,7 +69,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
-import { MapOrderCodeCommentDTO, MapInvoiceNumberCommentDTO, fastSaleOrderSaveType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
+import { MapOrderCodeCommentDTO, MapInvoiceNumberCommentDTO, SO_OrderType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -782,7 +782,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             let orderCode = {
               asuid : this.quickOrderModel.Facebook_ASUserId,
               id: this.quickOrderModel.Facebook_ASUserId,
-              type: fastSaleOrderSaveType.create,
+              type: SO_OrderType._create,
               orders : [{
                 code: res.Code
               }]
@@ -881,8 +881,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
                 this.isUpdated = false;
                 this.chatomniConversationFacade.onSyncConversationInfo$.emit(res.Facebook_ASUserId);
-
-                // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
                 this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
             }
 
@@ -939,18 +937,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.ngZone.run(() => {
             this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: any) => {
-
                   delete res['@odata.context'];
-                  // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
-                  // if(TDSHelperArray.isArray(res.Details)){
-                  //   res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-                  //     let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
-
-                  //     if(exist) {
-                  //       x.Discount = exist.Discount;
-                  //     }
-                  //   })
-                  // }
 
                   this.quickOrderModel = {...res};
                   this.quickOrderModel.FormAction = formAction;
@@ -998,15 +985,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       case CRMTeamType._TShop:
         this.saleOnline_OrderService.insertFromChannelMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-
               delete res['@odata.context'];
-              // res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-              //   let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
-
-              //   if(exist) {
-              //     x.Discount = exist.Discount;
-              //   }
-              // })
 
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
@@ -1092,11 +1071,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: trường hợp bài viết và all xử lí khác nhau
           if(this.type == 'post') {
-              // TODO: nếu là bài viết sau khi thanh toán, sẽ load lại đơn hàng kế tiếp theo postid
-              // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
-              this.conversationOrderFacade.hasValueOrderCode$.emit(null);
 
-              // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
+              this.conversationOrderFacade.hasValueOrderCode$.emit(null);
               this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
 
               // TODO: đẩy sự kiện qua comment-filter-all
@@ -1104,8 +1080,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 asuid : this.quickOrderModel.Facebook_ASUserId,
                 id: this.quickOrderModel.Facebook_ASUserId,
                 liveCampaignId: fs_model.LiveCampaignId,
-                type: fastSaleOrderSaveType.remove,
+                type: SO_OrderType._remove,
               } as MapOrderCodeCommentDTO;
+
               this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
 
               // TODO: đẩy sự kiện qua comment-filter-all
@@ -1114,9 +1091,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 LiveCampaignId: this.quickOrderModel.LiveCampaignId,
                 Data: res.Data
               } as MapInvoiceNumberCommentDTO;
-              this.conversationOrderFacade.onMapInvoiceNumberComment$.emit(numberInvoice)
-        
-              
+              this.conversationOrderFacade.onMapInvoiceNumberComment$.emit(numberInvoice);
+
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
