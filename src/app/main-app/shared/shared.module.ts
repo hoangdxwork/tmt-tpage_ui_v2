@@ -68,6 +68,10 @@ import { ListProductTmpV2Component } from './list-product-tmp-v2/list-product-tm
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
 import { TrackingRefBlankComponent } from './trackingref-blank/trackingref-blank.component';
+import { FirebaseTopicsComponent } from './firebase/firebase-topics.component';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { AccountJournalService } from '@app/services/account-journal.service';
+import { TagService } from '@app/services/tag.service';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -96,7 +100,8 @@ const cmp =[
   EditLiveCampaignPostComponent,
   AddLivecampaignPostV2Component,
   ListProductTmpV2Component,
-  TrackingRefBlankComponent
+  TrackingRefBlankComponent,
+  FirebaseTopicsComponent
 ]
 
 const SERVICES = [
@@ -107,7 +112,10 @@ const SERVICES = [
   ProductPriceListService,
   ODataLiveCampaignService,
   FastSaleOrderLineService,
-  TDSMessageService
+  TDSMessageService,
+  FirebaseRegisterService,
+  AccountJournalService,
+  TagService
 ]
 
 @NgModule({

@@ -601,12 +601,15 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
-  loadPartnerTab(item: ChatomniDataItemDto, order?: any[]) {
+  loadPartnerTab(item: ChatomniDataItemDto, commentOrder?: any) {
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
         return;
     }
+
+    let orderCode = commentOrder?.[psid]?.[0]?.code || '';
+    let orderId = commentOrder?.[psid]?.[0]?.id || '';
 
     // TODO: gán sự kiện loading cho tab
     this.postEvent.spinLoadingTab$.emit(true);
@@ -623,10 +626,10 @@ export class TShopCommentComponent implements OnInit, OnChanges {
               this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
 
               // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
-              if(order && TDSHelperString.hasValueString(order[0]?.code)){
+              if(orderCode && TDSHelperString.hasValueString(orderCode)){
                   // Truyền sang coversation-post
-                  this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order[0].id, comment: item} );
-                  this.conversationOrderFacade.hasValueOrderCode$.emit(order[0]?.code);
+                  this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
+                  this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
               }
           }
         },
@@ -668,12 +671,14 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     })
   }
 
-  onInsertFromPost(item: ChatomniDataItemDto, order?: any[]) {
+  onInsertFromPost(item: ChatomniDataItemDto, commentOrder: any) {
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
         return;
     }
+
+    let orderCode = commentOrder[psid]?.[0]?.code;
 
     // TODO: gán sự kiện loading cho tab
     this.postEvent.spinLoadingTab$.emit(true);
@@ -690,7 +695,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
             this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
 
             // Truyền sang coversation-post
-            this.conversationOrderFacade.hasValueOrderCode$.emit(order?.[0]?.code);
+            this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
             this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
         }
       },
@@ -789,26 +794,29 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
-        this.loadMDBByPSId(this.team.ChannelId, data.UserId);
+        this.isLoading = true;
+        this.loadMDBByPSId(this.team.Id, data.UserId);
     }
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     delete this.currentConversation;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-            this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+            this.currentConversation = { ...res };
 
             this.isOpenDrawer = true;
+            this.isLoading = false;
             this.cdRef.detectChanges();
         }
       },
       error: (error: any) => {
+          this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })

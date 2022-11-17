@@ -14,7 +14,7 @@ export const Message = {
   EmptyData: 'Không có dữ liệu!',
   SelectOneLine: 'Vui lòng chọn tối thiểu 1 dòng!',
   ErrorOccurred: 'Đã có lỗi xảy ra',
-  PageNotExist: 'Không có kênh nào đang được kết nối',
+  PageNotExist: 'Không có kênh nào đang được kết nối.',
   FunctionNotWorking: 'Chức năng chưa hoạt động!',
   CanNotLoadData: 'Không thể tải dữ liệu',
   PartnerNotInfo: 'Không có thông tin khách hàng',
@@ -135,5 +135,9 @@ export const Message = {
   Inventory: {
     CanNotLoadData: 'Không thể tải danh sách kho',
     CanNotLoadInfo: 'Không thể tải thông tin kho'
+  },
+  TShop: {
+    LoginSuccess: 'Đăng nhập thành công.',
+    LoginFail: 'Đăng nhập thất bại.',
   }
 }
