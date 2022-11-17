@@ -6,64 +6,19 @@
         <tds-checkbox>Chọn tất cả</tds-checkbox>
       </div>
     </div>
-    <button tds-button-outline color="error" class="min-w-[135px]" (click)="openCancel()">
+    <button tds-button-outline color="error" class="min-w-[135px]" (click)="modalRemove()">
       <span class="flex items-center">
         <i class="tdsi-notifications-off-fill text-xl leading-none mr-2"></i>Hủy đăng kí
       </span>
     </button>
   </div>
   <div class="p-4 divide-y">
-    <div class="px-4 py-2 flex gap-x-4">
-      <div class="w-[120px] font-semibold">Khách hàng</div>
+    <div class="px-4 py-2 flex gap-x-4" *ngFor="let item of lstIds">
+      <div class="w-[120px] font-semibold">{{item.group}}</div>
       <div class="flex flex-col gap-y-4">
-        <tds-checkbox>Thêm mới</tds-checkbox>
-        <tds-checkbox>Cập nhật</tds-checkbox>
-        <tds-checkbox>Xóa</tds-checkbox>
-      </div>
-    </div>
-    <div class="px-4 py-2 flex gap-x-4">
-      <div class="w-[120px] font-semibold">Đơn hàng</div>
-      <div class="flex flex-col gap-y-4">
-        <tds-checkbox>Thêm mới</tds-checkbox>
-        <tds-checkbox>Cập nhật</tds-checkbox>
-        <tds-checkbox>Xóa</tds-checkbox>
-      </div>
-    </div>
-    <div class="px-4 py-2 flex gap-x-4">
-      <div class="w-[120px] font-semibold">Hóa đơn</div>
-      <div class="flex flex-col gap-y-4">
-        <tds-checkbox>Thêm mới</tds-checkbox>
-        <tds-checkbox>Cập nhật thông tin</tds-checkbox>
-        <tds-checkbox>Hủy</tds-checkbox>
-        <tds-checkbox>Xóa</tds-checkbox>
-      </div>
-    </div>
-    <div class="px-4 py-2 flex gap-x-4">
-      <div class="w-[120px] font-semibold">Giao hàng</div>
-      <div class="flex flex-col gap-y-4">
-        <tds-checkbox>Thay đổi trạng thái</tds-checkbox>
-      </div>
-    </div>
-    <div class="px-4 py-2 flex gap-x-4">
-      <div class="w-[120px] font-semibold">Hội thoại</div>
-      <div class="flex flex-col gap-y-4">
-        <tds-checkbox>Hội thoại được gán cho tôi</tds-checkbox>
-      </div>
-    </div>
-    <div class="px-4 py-2 flex gap-x-4">
-      <div class="w-[120px] font-semibold">Giỏ hàng</div>
-      <div class="flex flex-col gap-y-4">
-        <tds-checkbox>Thêm mới</tds-checkbox>
-        <tds-checkbox>Cập nhật</tds-checkbox>
-        <tds-checkbox>Hủy</tds-checkbox>
-      </div>
-    </div>
-    <div class="px-4 py-2 flex gap-x-4">
-      <div class="w-[120px] font-semibold">Hệ thống</div>
-      <div class="flex flex-col gap-y-4">
-        <tds-checkbox>Báo khóa</tds-checkbox>
-        <tds-checkbox>Hết hạn</tds-checkbox>
-        <tds-checkbox>Khuyến mãi & cập nhật</tds-checkbox>
+        <div *ngFor="let x of item.topics">
+          <tds-checkbox [checked]="true" (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: lstIds" [ngModelOptions]="{standalone: true}">{{ x.name }}</tds-checkbox>
+        </div>
       </div>
     </div>
   </div>
