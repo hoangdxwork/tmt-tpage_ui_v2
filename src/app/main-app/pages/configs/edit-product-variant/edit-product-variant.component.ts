@@ -40,7 +40,7 @@ export class EditProductVariantComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -87,12 +87,12 @@ export class EditProductVariantComponent implements OnInit {
             if(res) {
               delete res['@odata.context'];
               this.dataModel = {...res};
-              
+
               this.updateForm(res);
             }
-            
+
             this.isLoading = false;
-          }, 
+          },
           error: error => {
             this.isLoading = false;
             this.message.error(error.error.message || 'Load dữ liệu thất bại');
@@ -106,7 +106,7 @@ export class EditProductVariantComponent implements OnInit {
       {
         next: (res: any) => {
           this.lstProductCategory = [...res.value];
-        }, 
+        },
         error: error => {
           this.message.error(error.error.message || 'load dữ liệu nhóm sản phẩm thất bại');
         }
@@ -118,9 +118,9 @@ export class EditProductVariantComponent implements OnInit {
       {
         next: (res: any) => {
           this.lstProductUOM = [...res.value];
-        }, 
+        },
         error: error => {
-          this.message.error(error.error.message || 'Load dữ liệu thất bại');
+          this.message.error(error?.error?.message || 'Load dữ liệu thất bại');
         }
       })
   }
@@ -250,7 +250,7 @@ export class EditProductVariantComponent implements OnInit {
           this.message.success('Cập nhật thành công!');
           this.loadDataIndexDBCache();
           this.modal.destroy(true);
-        }, 
+        },
         error: error => {
           this.message.error(error?.error?.message || 'Thao tác thất bại');
         }

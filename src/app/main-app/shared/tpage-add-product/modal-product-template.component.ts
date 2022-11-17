@@ -36,6 +36,7 @@ export class ModalProductTemplateComponent implements OnInit {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
   @Input() type!: string;
+  @Input() lstOrderTags!: string[];
 
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
@@ -216,6 +217,16 @@ export class ModalProductTemplateComponent implements OnInit {
 
   onSave(type?: string) {
     if(this.isLoading) return;
+
+    if(type) {
+      let lstCheck = this.checkOrderTags();
+      if(TDSHelperArray.hasListValue(lstCheck)) {
+        let mess = lstCheck.join(',');
+        this.message.error(`Mã chốt đơn ${mess} đã tồn tại trong danh sách`);
+        return;
+      };
+    }
+    
     let model = this.prepareModel();
 
     this.isLoading = true;
@@ -478,4 +489,39 @@ export class ModalProductTemplateComponent implements OnInit {
     this.lstVariants[index].ImageUrl = '';
     delete this.lstVariants[index].Image
   }
+
+  checkOrderTags() {
+    let lstOrderTagsVariants: string[] = this.getOrderTagsVariants(this.lstVariants);
+    let exist: string[] = [];
+
+    if(!TDSHelperArray.hasListValue(this.lstOrderTags)) {
+      return exist;
+    }
+
+    if(TDSHelperArray.hasListValue(lstOrderTagsVariants)) {
+      lstOrderTagsVariants.map((x) => {
+          let tag = this.lstOrderTags.filter(y => y.toLocaleLowerCase().trim() == x.toLocaleLowerCase().trim())[0];
+          
+          if(tag){
+            exist = [...exist, tag];
+          }
+      })
+    }
+
+    return [...exist];
+  }
+
+  getOrderTagsVariants(data: ConfigProductVariant[]) {
+      let tagsVariants: string[] = [];
+
+      data = data.filter(x => x.OrderTag);
+      let getTags = data.map(x => x.OrderTag.toLocaleLowerCase().trim());
+      let tags = getTags.join(',');
+
+      if(TDSHelperString.hasValueString(tags)) {
+        tagsVariants = tags.split(',');
+      }
+
+      return [...tagsVariants];
+    }
 }

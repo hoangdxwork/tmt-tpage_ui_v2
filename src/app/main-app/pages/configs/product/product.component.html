@@ -76,49 +76,44 @@
                     (clickRefresh)="refreshData()">
                     <thead>
                         <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                            <th [width]="'44px'" [align]="'center'" [tdsLeft]="true"></th>
+                            <th [width]="'40px'" [align]="'center'" [tdsLeft]="true" class="border-r"></th>
                             <th [width]="'44px'" [align]="'center'" [tdsLeft]="true"
                                 [checked]="checked" [indeterminate]="indeterminate"
-                                (checkedChange)="onAllChecked($event)">
+                                (checkedChange)="onAllChecked($event)" class="border-r">
                             </th>
-                            <th *ngIf="!isHiddenColumn('ImageUrl')" [width]="'68px'" [tdsLeft]="true">Ảnh</th>
-                            <th *ngIf="!isHiddenColumn('DefaultCode')" [width]="'130px'" [tdsLeft]="true">Mã sản phẩm</th>
-                            <th *ngIf="!isHiddenColumn('Name')" [width]="'180px'">Tên sản phẩm</th>
-                            <th *ngIf="!isHiddenColumn('ListPrice')" [width]="'130px'" class="text-right">Giá bán</th>
-                            <th *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'130px'" class="text-center">SL thực tế</th>
-                            <th *ngIf="!isHiddenColumn('UOMName')" [width]="'120px'">Đơn vị</th>
-                            <th *ngIf="!isHiddenColumn('Tags')" [width]="'130px'">Nhãn</th>
-                            <th *ngIf="!isHiddenColumn('DateCreated')" [width]="'160px'">Ngày tạo</th>
-                            <th *ngIf="!isHiddenColumn('Active')" [width]="'100px'" [tdsRight]="true" class="text-center">Hiệu lực</th>
+                            <th *ngIf="!isHiddenColumn('ImageUrl')" [width]="'80px'" [tdsLeft]="true" class="border-r">Ảnh</th>
+                            <th *ngIf="!isHiddenColumn('DefaultCode')" [width]="'130px'" [tdsLeft]="true" class="border-r">Mã sản phẩm</th>
+                            <th *ngIf="!isHiddenColumn('Name')" [width]="'180px'" class="border-r">Tên sản phẩm</th>
+                            <th *ngIf="!isHiddenColumn('QtyAvailable')" [width]="'130px'" class="text-center border-r">SL thực tế</th>
+                            <th *ngIf="!isHiddenColumn('UOMName')" [width]="'120px'" class="border-r">Đơn vị</th>
+                            <th *ngIf="!isHiddenColumn('Tags')" [width]="'130px'" class="border-r">Nhãn</th>
+                            <th *ngIf="!isHiddenColumn('ListPrice')" [width]="'130px'" class="text-right border-r">Giá bán</th>
+                            <th *ngIf="!isHiddenColumn('DateCreated')" [width]="'160px'" class="border-r">Ngày tạo</th>
+                            <th *ngIf="!isHiddenColumn('Active')" [width]="'100px'" [tdsRight]="true" class="text-center border-r">Hiệu lực</th>
                             <th [width]="'100px'" [tdsRight]="true">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
-                            <tr
-                                class="text-neutral-1-900 text-body-2 font-regular"  [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                                <td class="" [tdsLeft]="true" [expand]="expandSet.has(data.Id)"
+                            <tr class="text-neutral-1-900 text-body-2 font-regular" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
+                                <td class="border-r" [tdsLeft]="true" [expand]="expandSet.has(data.Id)"
                                     (expandChange)="onExpandChange(data.Id, $event)"></td>
-                                <td [align]="'center'" [tdsLeft]="true"
+                                <td [align]="'center'" [tdsLeft]="true" class="border-r"
                                     [checked]="setOfCheckedId.has(data.Id)" [disabled]="false"
                                     (checkedChange)="onItemChecked(data.Id, $event)"></td>
-                                <td *ngIf="!isHiddenColumn('ImageUrl')" [tdsLeft]="true">
+                                <td *ngIf="!isHiddenColumn('ImageUrl')" [tdsLeft]="true" class="border-r">
                                     <tds-avatar [tdsSrc]="data.ImageUrl" [size]="44" [isAvatar]="false"
                                         class="rounded-lg"></tds-avatar>
                                 </td>
-                                <td *ngIf="!isHiddenColumn('DefaultCode')" [tdsLeft]="true">{{
-                                    data.DefaultCode }}
-                                </td>
-                                <td *ngIf="!isHiddenColumn('Name')">
+                                <td *ngIf="!isHiddenColumn('DefaultCode')" [tdsLeft]="true" class="border-r">{{ data.DefaultCode }}</td>
+                                <td *ngIf="!isHiddenColumn('Name')" class="border-r">
                                   <div class="w-full">
                                     {{ data.Name }}
                                   </div>
                                 </td>
-                                <td *ngIf="!isHiddenColumn('ListPrice')" class="text-right">{{ data.ListPrice | numberCustom }} đ
-                                </td>
-                                <td *ngIf="!isHiddenColumn('QtyAvailable')" class="text-center">{{ data.QtyAvailable | numberCustom }}</td>
-                                <td *ngIf="!isHiddenColumn('UOMName')">{{ data.UOMName }}</td>
-                                <td *ngIf="!isHiddenColumn('Tags')">
+                                <td *ngIf="!isHiddenColumn('QtyAvailable')" class="text-center border-r">{{ data.QtyAvailable | numberCustom }}</td>
+                                <td *ngIf="!isHiddenColumn('UOMName')" class="border-r">{{ data.UOMName }}</td>
+                                <td *ngIf="!isHiddenColumn('Tags')" class="border-r">
                                     <div class="flex flex-wrap items-center w-fit">
                                         <div *ngFor="let item of data.Tags | prettyjson">
                                             <tds-tag class="truncate mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
@@ -169,8 +164,10 @@
                                         </div>
                                     </ng-template>
                                 </td>
-                                <td *ngIf="!isHiddenColumn('DateCreated')">{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
-                                <td *ngIf="!isHiddenColumn('Active')" [tdsRight]="true">
+                                <td *ngIf="!isHiddenColumn('ListPrice')" class="text-right border-r">{{ data.ListPrice | numberCustom }} đ
+                                </td>
+                                <td *ngIf="!isHiddenColumn('DateCreated')" class="border-r">{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
+                                <td *ngIf="!isHiddenColumn('Active')" [tdsRight]="true" class="border-r">
                                     <span class="flex items-center justify-center">
                                         <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                                     </span>

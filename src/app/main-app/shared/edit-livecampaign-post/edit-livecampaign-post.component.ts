@@ -80,6 +80,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
   indexDbStorage!: DataPouchDBDTO[];
   changedData: boolean = false
 
+  lstOrderTags!: string[];
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -296,6 +298,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
     this.initFormDetails(data.Details);
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
+    this.getLstOrderTags(data.Details);
   }
 
   //TODO: disable các giá trị ngày không khả dụng
@@ -405,6 +408,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
             this.initFormDetails(newFormDetails);
             this.livecampaignSimpleDetail = [...newFormDetails];
+            this.getLstOrderTags(newFormDetails);
 
             this.searchValue = this.innerTextValue;
             delete this.isEditDetails[item.Id];
@@ -460,7 +464,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: 'liveCampaign'
+          type: 'liveCampaign',
+          lstOrderTags: this.lstOrderTags
         }
     });
 
@@ -777,6 +782,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           })
 
           this.livecampaignSimpleDetail = [...this.detailsForm.value];
+          this.getLstOrderTags(this.detailsForm.value);
         },
         error: (err: any) => {
             this.isLoading = false;
@@ -1016,4 +1022,16 @@ export class EditLiveCampaignPostComponent implements OnInit {
       }
     }, 500)
   }
+  
+  getLstOrderTags(data: LiveCampaignSimpleDetail[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }

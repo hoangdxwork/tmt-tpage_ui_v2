@@ -52,7 +52,8 @@
 </div>
 
 <!-- Notification cho đơn hàng -->
-<div *ngIf="data && data.Notification && data.EventName == 'updated'" class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer pr-4" >
+<div *ngIf="data && data.Notification && (data.EventName == 'created' || data.EventName == 'updated' || data.EventName == 'deleted')"
+    class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer pr-4" >
     <span class="tdsi-information-fill text-info-400 text-heading-4"></span>
     <div class="flex flex-col gap-y-2 whitespace-pre-line break-words">
         <div class="text-body-2" [innerHTML]="data.Notification.Title"></div>

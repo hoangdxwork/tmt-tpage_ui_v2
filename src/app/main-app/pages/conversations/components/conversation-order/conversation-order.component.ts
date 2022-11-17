@@ -68,7 +68,6 @@ import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { ProductIndexDBService } from '@app/services/product-indexdb.service';
-import { MapOrderCodeCommentDTO } from '@app/dto/fastsaleorder/fastsale-order-Emitter.dto';
 
 @Component({
   selector: 'conversation-order',
@@ -832,7 +831,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               },
               error: (error: any) => {
                   this.isLoading = false;
-                  this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+                  this.message.error(`${error?.error?.message}`);
                   this.cdRef.detectChanges();
               }
             })
@@ -865,12 +864,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: any) => {
           // TODO: Tạo hóa đơn thành công
           if(res?.Success && res.Message) {
-              this.notification.warning('Tạo hóa đơn thành công', res.Message);
+            this.notification.warning('Tạo hóa đơn thành công', res.Message);
           }
 
           // TODO: trường hợp gửi vận đơn lỗi
           if(!res?.Success && res.Message) {
-              this.notification.warning('Lỗi gửi vận đơn', res.Message);
+            this.notification.warning('Lỗi gửi vận đơn', res.Message);
           }
 
           if(res && !res.Message ) {
@@ -878,7 +877,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           if(type && res) {
-              this.printOrder(type, res);
+            this.printOrder(type, res);
           }
 
           this.shipServices = [];
@@ -892,15 +891,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: trường hợp bài viết và all xử lí khác nhau
           if(this.type == 'post') {
-            this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true); //đẩy sự kiện qua conversation-order-list, comment-filter-all
-
-            let orderCode = {
-              asuid : this.quickOrderModel.Facebook_ASUserId,
-              id: this.quickOrderModel.Facebook_ASUserId,
-              LiveCampaignId: this.quickOrderModel.LiveCampaignId,
-              type: 'done',
-            } as MapOrderCodeCommentDTO;
-            this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
 
             delete this.quickOrderModel.Id;
             delete this.quickOrderModel.Code;
@@ -1595,20 +1585,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     this.conversationOrderFacade.hasValueOrderCode$.emit(order.Code);
-    this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true); //đẩy sự kiện qua conversation-order-list, comment-filter-all
     this.chatomniConversationFacade.onSyncConversationInfo$.emit(order.Facebook_ASUserId); //gọi sự kiện đồng bộ dữ liệu qua conversation-all, conversation-post, đẩy xuống ngOnChanges
     this.postEvent.spinLoadingTab$.emit(false); //gán sự kiện loading cho tab conversation-post
-
-    // TODO: đẩy sự kiện qua comment-filter-all
-    let orderCode = {
-      asuid : order.Facebook_ASUserId,
-      id: order.Facebook_ASUserId,
-      type: 'create',
-      orders : [{
-        code: order.Code
-      }]
-    } as MapOrderCodeCommentDTO;
-    this.conversationOrderFacade.onMapOrderCodeComment$.emit(orderCode);
 
     this.isLoading = false;
     if(order.IsCreated) {
