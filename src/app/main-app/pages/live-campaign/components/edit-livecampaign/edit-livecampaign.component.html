@@ -168,7 +168,7 @@
 
       <div class="flex-auto flex gap-x-4">
         <div class="h-full w-1/3">
-            <list-product-tmp-v2 [type]="'liveCampaign'" (onLoadProductToLiveCampaign)="onLoadProduct($event)"></list-product-tmp-v2>
+            <list-product-tmp-v2 [type]="'liveCampaign'" [lstOrderTags]="lstOrderTags" (onLoadProductToLiveCampaign)="onLoadProduct($event)"></list-product-tmp-v2>
         </div>
 
         <div class="w-2/3">
