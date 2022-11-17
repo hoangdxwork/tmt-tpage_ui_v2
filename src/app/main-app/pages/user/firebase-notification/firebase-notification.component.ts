@@ -22,25 +22,26 @@ import { ModalRequestPermissionComponent } from '../components/modal-request-per
 export class FirebaseNotificationComponent implements OnInit {
 
   data!: NotificationItemDto[];
+  topicData: FireBaseTopicDto[] = [];
   dataDetail!: any;
   cursor: any;
   isLoadingProduct: boolean = false;
   isLoadingNextdata: boolean = false;
   id!: string;
+  isLoading: boolean = false;
 
   deviceToken: any;
   ids: any[] = [];
 
-  constructor(
-    private firebaseRegisterService: FirebaseRegisterService,
+  constructor(private firebaseRegisterService: FirebaseRegisterService,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
     private route: ActivatedRoute,
     public router: Router,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
-    private firebaseMessagingService: FirebaseMessagingService,
-  ) { }
+    private firebaseMessagingService: FirebaseMessagingService) {
+  }
 
   ngOnInit(): void {
     let id = this.route.snapshot.queryParams?.id;
@@ -57,9 +58,51 @@ export class FirebaseNotificationComponent implements OnInit {
     if(this.deviceToken) {
       this.loadSubscribedTopics();
     }
+
+    this.loadTopics();
+
+    this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        debugger
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    });
+  }
+
+  loadTopics() {
+    this.isLoading = true;
+    this.firebaseRegisterService.topics().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+          this.topicData = [...data];
+          this.mappingTopicIds();
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+      }
+    });
+  }
+
+  mappingTopicIds() {
+    let value = [] as TopicDetailDto[];
+
+    this.topicData?.map((x: any) => {
+      if(x && x.topics) {
+          x.topics.map((a: any) => {
+              value.push(a);
+          })
+      }
+    });
+
+    let ids = value?.map(x => x.id) as any[];
+    this.ids = ids;
   }
 
   loadData(params?: any) {
+    this.isLoading = true;
     this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.data = [...res.items];
@@ -78,8 +121,10 @@ export class FirebaseNotificationComponent implements OnInit {
         }
 
         this.onDetail(item);
+        this.isLoading = false;
       },
       error: (err: any) => {
+        this.isLoading = false;
         this.message.error(`${err?.error?.message}`);
       }
     })
@@ -161,21 +206,21 @@ export class FirebaseNotificationComponent implements OnInit {
     }
   }
 
-  modalPermission() {
+  modalPermission() {debugger
     const modal = this.modalService.create({
       title: 'Danh sách đăng kí nhận tin',
       content: ModalRequestPermissionComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        lstIds: this.ids,
-        deviceToken: this.deviceToken
+        lstIds: this.ids
       }
     });
   }
 
   modalGetNotifications() {
-    const modal = this.modalService.create({
+    let deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+    this.modalService.create({
       title: 'Danh sách đăng kí nhận tin',
       content: ModalGetNotificationComponent,
       size: "xl",
@@ -186,7 +231,8 @@ export class FirebaseNotificationComponent implements OnInit {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        lstIds: this.ids
+        lstIds: this.ids,
+        deviceToken: deviceToken
       }
     });
   }

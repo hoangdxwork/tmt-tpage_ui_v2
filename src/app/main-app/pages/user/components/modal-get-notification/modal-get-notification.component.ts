@@ -14,10 +14,11 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 export class ModalGetNotificationComponent implements OnInit {
 
   @Input() lstIds: any[] = []
-  deviceToken: any
+  @Input() deviceToken: any
 
   isLoading: boolean = false;
   payload: any;
+  ids: any = [];
 
   constructor(
     private modal: TDSModalRef,
@@ -25,12 +26,25 @@ export class ModalGetNotificationComponent implements OnInit {
     private firebaseMessagingService: FirebaseMessagingService,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
-    private firebaseRegisterService: FirebaseRegisterService
-  ) {
-    this.listenPayload();
+    private firebaseRegisterService: FirebaseRegisterService) {
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(this.deviceToken) {
+      this.loadSubscribedTopics();
+    }
+  }
+
+  loadSubscribedTopics() {
+    this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.ids = [...res];
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    });
+  }
 
   cancel() {
     this.modal.destroy(null);
@@ -99,13 +113,7 @@ export class ModalGetNotificationComponent implements OnInit {
           this.message.error('Xóa token nhận tin thất bại')
       }
     });;
-  }
 
-  listenPayload() {
-    const messaging = getMessaging();
-    onMessage(messaging, (payload) => {
-      this.payload = payload;
-    });
   }
 
 }
