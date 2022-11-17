@@ -80,6 +80,11 @@
                             <object-tshop-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
                             </object-tshop-post>
                         </div>
+
+                        <div *ngIf="item && currentTeam!.Type == 'UnofficialTikTok'">
+                            <object-tiktok-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
+                            </object-tiktok-post>
+                        </div>
                     </div>
 
                     <div *ngIf="isLoadingNextdata" class="p-4 bg-white">

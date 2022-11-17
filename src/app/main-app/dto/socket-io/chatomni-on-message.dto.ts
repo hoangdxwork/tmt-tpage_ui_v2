@@ -23,7 +23,7 @@ export interface MessageSocketioDto {
   ContentType?: any;
   ObjectId: string;
   ParentId?: any;
-  Data: any; // DataMessageTshop hoặc DataFacebook
+  Data: any; // DataMessageTshop hoặc DataFacebook hoặc Tiktok
   CreatedTime: Date;
   ChannelCreatedTime: Date;
   LatestMessage?: ChatomniConversationMessageDto | any;
@@ -37,3 +37,4 @@ export interface SocketioOnMessageDto {
   EventName: string;
   Data: any;
 }
+
