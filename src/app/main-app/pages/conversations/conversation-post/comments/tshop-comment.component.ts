@@ -45,8 +45,8 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { MapOrderCodeCommentDTO, CommentOrderDTO, MapInvoiceNumberCommentDTO, SO_OrderType } from '@app/dto/fastsaleorder/fastsale-order-event.dto';
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
+import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 @Component({
   selector: 'tshop-comment',
   templateUrl: './tshop-comment.component.html',
@@ -138,7 +138,6 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     }
 
     this.onEventSocket();
-    this.eventEmitter();
   }
 
   loadOrderPartnerbylLivecampaign() {
@@ -173,101 +172,129 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         if(!res) return;
 
         switch(res.EventName) {
+            // Cập nhật bình luận
+            case ChatmoniSocketEventName.chatomniOnMessage:
+              let fbComment = {...res.Data?.Message} as MessageSocketioDto;
 
-          case ChatmoniSocketEventName.chatomniOnMessage:
-            let tShopComment = {...res.Data?.Message} as MessageSocketioDto;
+              let exist1 = fbComment && fbComment.MessageType == ChatomniMessageType.FacebookComment
+                  && this.team?.ChannelId == res.Data?.Conversation?.ChannelId
+                  && this.data.ObjectId == fbComment?.ObjectId && this.dataSource;
 
-            let exist = tShopComment && tShopComment.MessageType == ChatomniMessageType.TShopComment
-                && this.team?.ChannelId == res.Data?.Conversation?.ChannelId
-                && this.data.ObjectId == res.Data?.Message?.ObjectId && this.dataSource;
+              if(!exist1) break;
+              this.setCommentRealtime(res);
+            break;
 
-            if(!exist) break;
+             // Tạo đơn hàng
+            case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+              let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exit2 = res && fbCreated && this.data
+                    && fbCreated.Data?.Facebook_PostId == this.data.ObjectId;
 
-            let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
+              if(!exit2) break;
+              this.setCommentUpdateOrderCode(fbCreated);
+            break;
 
-            // TODO: nếu là comment child thì cũng push thẳng xóa parentId
-            if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
-                itemNewComment.ParentId = null;
-            }
+            // Cập nhật đơn hàng
+            case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
+              let fbOrder = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exit3 = res && fbOrder && this.data
+                    && fbOrder.Data?.Facebook_PostId == this.data.ObjectId;
 
-            if(this.vsStartIndex <= 1) {
-                this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
-                this.dataSource.Items = [...this.dataSource.Items];
+              if(!exit3) break;
+              this.setCommentUpdateOrderCode(fbOrder);
+            break;
 
-                this.lengthDataSource = this.dataSource.Items.length;
+            // Xóa đơn hàng
+            case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
+              let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exist4 = res && fbDelete && this.data
+                    && fbDelete.Data?.Facebook_PostId == this.data.ObjectId;
 
-                if(this.virtualScroller) {
-                  this.virtualScroller.scrollToPosition(0);
-                }
-            } else {
-                this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
-                this.vsSocketImports = [...this.vsSocketImports];
+              if(!exist4) break;
+              this.setCommentDeleteOrderCode(fbDelete);
+            break;
 
-                this.lengthDataSource = this.lengthDataSource + 1;
-            }
-
-            this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
-            this.cdRef.detectChanges();
-          break;
-
-          default:
+            default:
             break;
         }
       }
     })
   }
 
-  eventEmitter() {
-    // TODO: tạo đơn hàng, phiếu bán hàng ở conversation-order
-    this.conversationOrderFacade.onMapOrderCodeComment$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res: MapOrderCodeCommentDTO) => {
-        setTimeout(() => {
+  setCommentRealtime(response: any) {
+    let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(response.Data, this.conversationItem) };
 
-          // switch(res.type) {
-          //   case SO_OrderType._create:
-          //     this.commentOrders[res.asuid] = [];
-          //     this.commentOrders[res.uid] = [];
+    // TODO: nếu là comment child thì cũng push thẳng xóa parentId
+    if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
+        itemNewComment.ParentId = null;
+    }
 
-          //     res.orders?.map((a: CommentOrderDTO) => {
-          //       this.commentOrders![res.asuid].push(a);
-          //     })
-          //   break;
+    if(this.vsStartIndex <= 1) {
+        this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
+        this.dataSource.Items = [...this.dataSource.Items];
 
-          //   case SO_OrderType._remove:
-          //     if(res.liveCampaignId) {
-          //       delete this.commentOrders[res.asuid];
-          //       delete this.commentOrders[res.uid];
-          //     }
-          //   break;
-          // }
+        this.lengthDataSource = this.dataSource.Items.length;
 
-          // this.cdRef.detectChanges();
+        if(this.virtualScroller) {
+          this.virtualScroller.scrollToPosition(0);
+        }
+    } else {
+        this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
+        this.vsSocketImports = [...this.vsSocketImports];
 
-          this.loadCommentsOrderByPost();
-        }, 350);
+        this.lengthDataSource = this.lengthDataSource + 1;
+    }
+
+    this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+    this.cdRef.detectChanges();
+  }
+
+  setCommentUpdateOrderCode(model: OnSocketOnSaleOnline_OrderDto) {
+    let item: CommentOrder = {
+      id: model.Data.Id,
+      session: model.Data.Session,
+      index: model.Data.SessionIndex,
+      code: model.Data.Code
+    };
+
+    let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
+    if(exist) {
+      let orders = this.commentOrders[model.Data.Facebook_ASUserId] as any[];
+      let index = orders.findIndex(x => x.id == item.id);
+      if(index >= 0) {
+          orders[index] = {...item};
+      } else {
+          orders.push(item);
       }
-    })
+    } else {
+      this.commentOrders[model.Data.Facebook_ASUserId] = [item];
+    }
 
-    this.conversationOrderFacade.onMapInvoiceNumberComment$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MapInvoiceNumberCommentDTO) => {
-        setTimeout(() => {
-          //   if(!res.LiveCampaignId) {
-          //     return;
-          //   }
-          //   let model = {...res.Data} as OrderPartnerByLivecampaignDto;
+    this.commentOrders = {...this.commentOrders};
+    this.cdRef.detectChanges();
+  }
 
-          //   if(this.invoiceDict[res.PartnerId]) {
-          //     this.invoiceDict[res.PartnerId].push(model);
-          //   } else {
-          //     this.invoiceDict[res.PartnerId] = [];
-          //     this.invoiceDict[res.PartnerId].push(model);
-          //   }
+  setCommentDeleteOrderCode(model: OnSocketOnSaleOnline_OrderDto) {
+    let item: CommentOrder = {
+      id: model.Data.Id,
+      session: model.Data.Session,
+      index: model.Data.SessionIndex,
+      code: model.Data.Code
+    };
 
-          // this.cdRef.detectChanges();
-          this.loadOrderPartnerbylLivecampaign();
-        }, 350);
+    let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
+    if(exist) {
+      let orders = this.commentOrders[model.Data.Facebook_ASUserId] as any[];
+      orders = orders.filter(x => x.id != item.id);
+      this.commentOrders[model.Data.Facebook_ASUserId] = [...orders];
+
+      if(orders && orders.length == 0) {
+          delete this.commentOrders[model.Data.Facebook_ASUserId];
       }
-    })
+    }
+
+    this.commentOrders = {...this.commentOrders};
+    this.cdRef.detectChanges();
   }
 
   ngOnChanges(changes: SimpleChanges) {
