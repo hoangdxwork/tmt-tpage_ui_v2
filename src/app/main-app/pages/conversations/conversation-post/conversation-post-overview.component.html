@@ -225,6 +225,10 @@
                         <div *ngIf="team && team.Type == 'TShop'" class="h-full w-full">
                             <tshop-comment [data]="data" [team]="team" [innerText]="keyWords"></tshop-comment>
                         </div>
+
+                        <div *ngIf="team && team.Type == 'UnofficialTikTok'" class="h-full w-full">
+                            <tiktok-comment [data]="data" [team]="team" [innerText]="keyWords"></tiktok-comment>
+                        </div>
                     </div>
                 </div>
             </tds-spin>
