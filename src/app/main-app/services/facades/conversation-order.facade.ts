@@ -56,12 +56,6 @@ export class ConversationOrderFacade extends BaseSevice  {
   // TODO: output có thông tin đơn hàng khi bấn thông tin khách hàng để Disable tab đơn hàng
   public hasValueOrderCode$ = new EventEmitter<any>();
 
-  // TODO: output Code đơn hàng khi tạo đơn hàng để cập nhật lại mã đơn hàng trên comment
-  public onMapOrderCodeComment$ = new EventEmitter<any>();
-
-  // TODO: output Number đơn hàng khi Lưu đơn hàng để cập nhật lại mã đơn hàng trên comment
-  public onMapInvoiceNumberComment$ = new EventEmitter<any>();
-
   constructor(private apiService: TCommonService,
       private partnerService: PartnerService,
       private sgRConnectionService: SignalRConnectionService,

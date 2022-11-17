@@ -40,7 +40,7 @@
                                   <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
                                       <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                           <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
-                                              <span *ngIf="!order.code.includes('#')">#</span>{{ order.code }}
+                                              <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
                                           </div>
                                       </div>
                                   </div>

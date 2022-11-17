@@ -1,4 +1,4 @@
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Injectable } from "@angular/core";
 import { ChatomniFacebookDataDto, ChatomniMessageType, ChatomniTShopDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
@@ -65,6 +65,10 @@ export class SocketOnEventService {
             channelId = socketData.Data?.Conversation?.ChannelId;
             break;
 
+          case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+            channelId = socketData.Data?.Facebook_PageId;
+            break;
+
           case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
             channelId = socketData.Data?.Facebook_PageId;
             break;
@@ -85,9 +89,10 @@ export class SocketOnEventService {
           if(!socketData) return;
 
           let existTeam = team && team?.Id;
-          let existLive = socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
-              || socketData?.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout
-              || socketData?.EventName == ChatmoniSocketEventName.chatomniPostLiveEnd;
+          let existLive = socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
+              || socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout
+              || socketData.EventName == ChatmoniSocketEventName.chatomniPostLiveEnd
+              || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
@@ -110,10 +115,22 @@ export class SocketOnEventService {
                 this.pubSocketEvent(notificationUpdate, socketData, team); //SocketioOnUpdateDto
             break;
 
-            // TODO: update đơn hàng hội thoại
+            // TODO: tạo đơn hàng bài viết
+            case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+                let notificationCreate = this.prepareOnCreatedOrder(socketData);
+                this.pubSocketEvent(notificationCreate, socketData, team); //OnSocketOnSaleOnline_OrderDto
+            break;
+
+            // TODO: update đơn hàng bài viết
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
                 let notificationOrder = this.prepareOnUpdateOrder(socketData);
-                this.pubSocketEvent(notificationOrder, socketData, team); //SocketioOnMarkseenDto
+                this.pubSocketEvent(notificationOrder, socketData, team); //OnSocketOnSaleOnline_OrderDto
+            break;
+
+            // TODO: delete đơn hàng bài viết
+            case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
+                let notificationDelete = this.prepareDeleteOrder(socketData);
+                this.pubSocketEvent(notificationDelete, socketData, team); //OnSocketOnSaleOnline_OrderDto
             break;
 
             // TODO: user đang xem
@@ -143,7 +160,7 @@ export class SocketOnEventService {
       })
   }
 
-  pubSocketEvent(notification: SocketEventNotificationDto | any, socketData: any, team: CRMTeamDTO) {
+  pubSocketEvent(notification: SocketEventNotificationDto | any, socketData: any, team: CRMTeamDTO | any) {
     this.socketEvent$.next({
         Notification: notification,
         Data: socketData,
@@ -221,11 +238,35 @@ export class SocketOnEventService {
     return {...notification};
   }
 
+  prepareOnCreatedOrder(socketData: any) {
+    let model = {...socketData} as OnSocketOnSaleOnline_OrderDto;
+    let notification = {
+        Title: `Tạo đơn hàng: ${model.Data?.Facebook_UserName}`,
+        Message: `Mã đơn hàng <span class="font-semibold">${model.Data?.Code}</span>`,
+        Attachments: null,
+        Url: ''
+    } as SocketEventNotificationDto;
+
+    return {...notification};
+  }
+
   prepareOnUpdateOrder(socketData: any) {
     let model = {...socketData} as OnSocketOnSaleOnline_OrderDto;
     let notification = {
-        Title: `${model.Data?.Facebook_UserName || 'Người dùng'} vừa cập nhật đơn hàng`,
+        Title: `Cập nhật đơn hàng: ${model.Data?.Facebook_UserName}`,
         Message: `Mã đơn hàng <span class="font-semibold">${model.Data?.Code}</span>`,
+        Attachments: null,
+        Url: ''
+    } as SocketEventNotificationDto;
+
+    return {...notification};
+  }
+
+  prepareDeleteOrder(socketData: any) {
+    let model = {...socketData} as OnSocketOnSaleOnline_OrderDto;
+    let notification = {
+        Title: `Xóa đơn hàng: ${model.Data?.Facebook_UserName}` ,
+        Message: `Đơn hàng <span class="font-semibold">${model.Data?.Code}</span> vừa được xóa`,
         Attachments: null,
         Url: ''
     } as SocketEventNotificationDto;
