@@ -77,7 +77,7 @@ export class AppComponent {
 
           // Thông báo tạo đơn hàng
           case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
-              let paramsCreated = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Facebook_PostId;
+              let paramsCreated = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
               let createdNoti = res && paramsCreated;
 
               if(createdNoti == true) break;
@@ -86,7 +86,7 @@ export class AppComponent {
 
           // Thông báo cập nhật đơn hàng
           case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-              let paramsPost = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Facebook_PostId;
+              let paramsPost = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
               let orderNoti = res && paramsPost;
 
               if(orderNoti == true) break;
@@ -95,7 +95,7 @@ export class AppComponent {
 
           // Thông báo xóa đơn hàng
           case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
-              let paramsDelete = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Facebook_PostId;
+              let paramsDelete = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
               let deleteNoti = res && paramsDelete;
 
               if(deleteNoti == true) break;
