@@ -65,14 +65,6 @@ export class SocketOnEventService {
             channelId = socketData.Data?.Conversation?.ChannelId;
             break;
 
-          case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
-            channelId = socketData.Data?.Facebook_PageId;
-            break;
-
-          case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-            channelId = socketData.Data?.Facebook_PageId;
-            break;
-
           default:
             channelId = socketData.Conversation?.ChannelId;
             break;
@@ -92,6 +84,8 @@ export class SocketOnEventService {
           let existLive = socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout
               || socketData.EventName == ChatmoniSocketEventName.chatomniPostLiveEnd
+              || socketData.EventName == ChatmoniSocketEventName.onCreatedSaleOnline_Order
+              || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout;
 
