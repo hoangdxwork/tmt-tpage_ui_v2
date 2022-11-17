@@ -232,8 +232,8 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     })
   }
 
-  setCommentRealtime(response: any) {
-    let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(response.Data, this.conversationItem) };
+  setCommentRealtime(response: SocketEventSubjectDto) {
+    let itemNewComment = {...this.chatomniConversationFacade.preapreCommentTshopOnEventSocket(response.Data)};
 
     // TODO: nếu là comment child thì cũng push thẳng xóa parentId
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
