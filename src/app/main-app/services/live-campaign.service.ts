@@ -330,6 +330,15 @@ export class LiveCampaignService extends BaseSevice {
   }
 
 
+  getContentToOrders(liveCampaignId: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/getcontenttoorders`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+
   setLocalStorageDrawer(objectId: any, liveCampaignId: string, isOpenDrawer: boolean) {
     const key = `${this._keyCacheDrawerEdit}`;
     let data = {
