@@ -1,3 +1,4 @@
+import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto } from './../../../../../dto/live-campaign/content-to-order.dto';
 import { UOM } from './../../../../../dto/product-template/product-tempalte.dto';
 import { Guid } from 'guid-typescript';
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
@@ -143,15 +144,14 @@ export class PostOrderConfigComponent implements OnInit {
     this.isLoading = true;
     this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
-          this.dataModel = res;
+          this.dataModel = {...res};
 
+          this.dataModel.TextContentToOrders = [];
           if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
               this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
-          } else {
-              this.dataModel.TextContentToOrders = [];
           }
 
-          if(res.LiveCampaignId && Guid.isGuid(res.LiveCampaignId)) {
+          if(res.LiveCampaignId && res.LiveCampaignId) {
               this.loadLiveCampaignById(res.LiveCampaignId);
           }
 
@@ -629,6 +629,44 @@ export class PostOrderConfigComponent implements OnInit {
       });
   }
 
+  loadConfigLiveCampaignV2(id: string) {
+    this.isLoading = true;
+    this.liveCampaignService.getContentToOrders(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          let model = {...res} as ApiContentToOrdersV2Dto;
+          model.TextContentToOrders = [...res.TextContentToOrders];
+          model.Users = [...res.Users];
+
+          if(model.TextContentToOrders && model.TextContentToOrders.length == 0) {
+              this.message.error('Không tìm thấy sản phẩm nào');
+              this.isLoading = false;
+              this.cdRef.detectChanges();
+              return;
+          }
+
+          this.dataModel.Users = [];
+          if(model.Users && model.Users.length > 0) {
+              this.dataModel.IsEnableAutoAssignUser = true;
+              this.dataModel!.Users = [...model.Users];
+          }
+
+          this.dataModel.TextContentToOrders = [];
+          model.TextContentToOrders?.map((x: TextContentToOrderV2Dto) => {
+              let item = {...x} as TextContentToOrderDTO;
+              this.dataModel.TextContentToOrders.push(item);
+          });
+
+          this.isLoading = false;
+          this.notificationService.success('Tải cấu hình thành công', `Đã đồng bộ sản phẩm từ chiến dịch ${res.LiveCampaignName}`);
+          this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
+      }
+    })
+  }
+
   prepareProduct(model: any) {
     const data = {} as AutoOrderProductDTO;
 
@@ -763,9 +801,9 @@ export class PostOrderConfigComponent implements OnInit {
       if(Number(findIndex) >= 0) {
         let product = model.TextContentToOrders[findIndex].Product;
         if(product) {
-          this.notificationService.info('Nội dung mẫu còn trống', `${product?.ProductName} dữ liệu không hợp lệ`);
+            this.notificationService.info('Mã chốt đơn không hợp lệ', `${product?.ProductName} dữ liệu không hợp lệ`, { duration: 3000});
         } else {
-          this.message.error('Vui lòng nhập nội dung mẫu đầy đủ');
+            this.message.error('Vui lòng nhập nội dung mẫu đầy đủ');
         }
         return 0;
       }
