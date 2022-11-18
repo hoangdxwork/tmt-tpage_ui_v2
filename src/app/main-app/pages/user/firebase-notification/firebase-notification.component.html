@@ -12,7 +12,7 @@
     <div class="w-1/4 h-full flex flex-col bg-white rounded-xl">
       <div class="flex justify-between items-center p-4">
         <span class="text-title-1 font-semibold">Thông báo</span>
-        <button tds-button-icon color="custom" [ngClass]="!deviceToken ? 'hidden' : '' " (click)="modalGetNotifications()"
+        <button tds-button-icon color="custom" (click)="modalGetNotifications()"
           class="text-neutral-1-500 border-0 border-transparent ring-0 ring-transparent bg-transparent hover:text-neutral-1-500 hover:bg-neutral-3-50 focus:text-neutral-1-500 focus:bg-neutral-3-50">
           <i class="tdsi-gear-2-fill"></i>
         </button>
@@ -27,17 +27,17 @@
               [ngClass]="item.id == dataDetail.id ? 'border-blue-500 bg-secondary-3': 'border-transparent bg-white'">
               <div class="flex gap-x-4 p-4 justify-between w-full overflow-hidden">
                 <div class="w-full flex gap-x-4" [ngClass]="item.dateRead ? 'text-neutral-1-400' : ''">
-                  <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item.notification.thumbnail }}"
+                  <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item?.notification?.thumbnail }}"
                     [isAvatar]="false" class="rounded min-w-[63px]"></tds-avatar>
                   <div class="w-full flex flex-col flex-auto overflow-hidden">
-                    <span class="text-base font-semibold truncate break-words">{{ item.notification.title }}</span>
-                    <span class="truncate break-words">{{ item.notification.shortContent }}</span>
-                    <span class="text-[13px] font-semibold" [ngClass]="item.dateRead ? '' : 'text-info-400'">{{
-                      item.dateCreated | yiDiffDateTime }} - {{ item.dateCreated | date: 'dd/MM/yyyy' }}</span>
+                    <span class="text-body-2 font-semibold truncate break-words">{{ item?.notification?.title }}</span>
+                    <span class="truncate text-body-2 break-words">{{ item?.notification?.shortContent }}</span>
+                    <span class="text-caption-2 font-semibold" [ngClass]="item.dateRead ? '' : 'text-info-400'">{{
+                      item?.dateCreated | yiDiffDateTime }} - {{ item?.dateCreated | date: 'dd/MM/yyyy' }}</span>
                   </div>
                 </div>
               </div>
-              <div class="pt-2 pr-2" [ngClass]="item.dateRead ? 'hidden' : ''">
+              <div class="pt-2 pr-2" [ngClass]="item?.dateRead ? 'hidden' : ''">
                 <span class="tdsi-radio-circle-fill text-info-400 text-xs"></span>
               </div>
             </div>
@@ -51,8 +51,8 @@
     <div class="h-full w-3/4 rounded-xl flex flex-col bg-white">
       <div class="w-full items-center flex p-4">
         <div class="flex flex-col gap-y-2">
-          <span class="font-semibold text-xl text-neutral-1-900">{{ dataDetail?.notification?.title }}</span>
-          <span class="text-[13px] text-neutral-1-700 w-full">{{ dataDetail?.dateCreated | yiDiffDateTime }} - {{
+          <span class="font-semibold text-header-2 text-neutral-1-900">{{ dataDetail?.notification?.title }}</span>
+          <span class="text-caption-2 text-neutral-1-700 w-full">{{ dataDetail?.dateCreated | yiDiffDateTime }} - {{
             dataDetail?.dateCreated | date: 'dd/MM/yyyy' }}</span>
         </div>
       </div>

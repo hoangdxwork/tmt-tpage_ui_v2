@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { FireBaseTopicDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { getMessaging, onMessage } from 'firebase/messaging';
@@ -13,8 +14,8 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 })
 export class ModalGetNotificationComponent implements OnInit {
 
-  @Input() lstIds: any[] = []
   @Input() deviceToken: any
+  @Input() topicData: FireBaseTopicDto[] = [];
 
   isLoading: boolean = false;
   payload: any;
@@ -56,7 +57,7 @@ export class ModalGetNotificationComponent implements OnInit {
 
   registerTopics() {
     let model = {
-      TopicIds: this.lstIds
+      TopicIds: this.ids
     }
 
     this.isLoading = true;
@@ -87,12 +88,12 @@ export class ModalGetNotificationComponent implements OnInit {
     if (this.isLoading) return;
 
     if (event == true) {
-      this.lstIds.push(item.id);
+      this.ids.push(item.id);
     } else {
-      this.lstIds = this.lstIds.filter(x => x != item.id);
+      this.ids = this.ids.filter((x : any) => x != item.id);
     }
 
-    this.lstIds = [...this.lstIds];
+    this.ids = [...this.ids];
   }
 
   removeToken() {
@@ -104,7 +105,7 @@ export class ModalGetNotificationComponent implements OnInit {
           this.isLoading = false;
           this.message.success('Xóa token nhận tin thành công');
 
-          this.lstIds = [];
+          this.ids = [];
           this.deviceToken = null;
           this.firebaseMessagingService.removeDeviceTokenLocalStorage();
       },
