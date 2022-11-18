@@ -16,8 +16,8 @@ import { ChatomniConversationItemDto } from '../../../../dto/conversation-all/ch
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from '../../../../services/socket-io/socket-onevent.service';
 import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, AfterViewInit, HostListener } from '@angular/core';
-import { Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, map } from 'rxjs';
+import { takeUntil, filter } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
@@ -234,6 +234,12 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   setCommentRealtime(response: SocketEventSubjectDto) {
     let itemNewComment = {...this.chatomniConversationFacade.preapreCommentTshopOnEventSocket(response.Data)};
+    let index = this.dataSource.Items.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
+
+    // TODO: nếu res phản hồi bình luận tra về trước, không add comment con vào danh sách
+    if(Number(index) >= 0) {
+      return;
+    }
 
     // TODO: nếu là comment child thì cũng push thẳng xóa parentId
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
@@ -494,6 +500,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
     if (!TDSHelperString.hasValueString(message)) {
       this.message.error('Hãy nhập nội dung cần gửi');
+      return;
     }
 
     this.replyComment(item, message);
@@ -503,13 +510,12 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   replyComment(item: ChatomniDataItemDto, msg:string){
     this.isReplyingComment = true;
     if(TDSHelperString.hasValueString(msg)) {
-        const model = this.prepareModel(item, msg);
+        let modelv2 = this.prepareModelV2(msg);
+        modelv2.RecipientId = item.Data?.Id as string;
 
         // TODO: gửi về tin nhắn
         if(item.Data.is_private_reply){
 
-          let modelv2 = this.prepareModelV2(msg);
-          modelv2.RecipientId = item.Data?.id || item.ObjectId || null;
           modelv2.MessageType = 2;
 
           this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
@@ -534,23 +540,22 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
       } else {
           // TODO: Trả lời bình luận
-          model.parent_id = item.ParentId || item.Data?.id || null;
-          model.fbid = item.UserId;
+          modelv2.ObjectId = item.Data?.ObjectId as string;
 
-          this.activityMatchingService.replyComment(this.team!.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
-              next:(res: any) => {
-
-                  res["status"] = ChatomniStatus.Done;
-                  res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
-                  res.name = this.team.Name;
-                  let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res);
+          this.chatomniCommentService.replyCommentTshop(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+              next:(res: ChatomniDataItemDto[]) => {
+                res.map((x: ChatomniDataItemDto)=> {
+                  x["Status"] = ChatomniStatus.Done;
+                  x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
+                  x.Data.Actor.Name = this.team.Name;
+                  let data = { ...x};
 
                   this.message.success("Trả lời bình luận thành công.");
-                  this.addReplyComment(item, model, data);
+                  this.addReplyComment(item, modelv2, data);
 
                   item.Data.is_reply = false;
                   this.isReplyingComment = false;
-
+                })
                   this.cdRef.detectChanges();
               },
               error: error => {
@@ -565,25 +570,6 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     }
   }
 
-  prepareModel(item: ChatomniDataItemDto, message: string): any {
-    const model = {} as SendMessageModelDTO;
-    model.from = {
-      id: this.team?.ChannelId,
-      name: this.team?.Facebook_PageName
-    }
-    model.to = {
-      id: item.UserId,
-      name: item.Data?.from?.name
-    }
-    model.to_id = item.UserId;
-    model.to_name = item.Data?.from?.name;
-    model.post_id = item.Data.object?.id || item.ObjectId;
-    model.message = message;
-    model.created_time = (new Date()).toISOString();
-
-    return model;
-  }
-
   prepareModelV2(message: string): any {
     const model = {} as ChatomniSendMessageModelDto;
     model.Message = message;
@@ -591,13 +577,15 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     return model;
   }
 
-  addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO, data: ChatomniDataItemDto) {
+  addReplyComment(item: ChatomniDataItemDto, model: any, data: ChatomniDataItemDto) {
     if(data){
-      data.ParentId = model.parent_id;
+      data.ParentId = model.RecipientId;
       data.ObjectId = item.ObjectId;
     }
 
-    this.dataSource.Items = [...this.dataSource.Items, ...[data]];
+    let datas = this.dataSource.Items.filter((x: ChatomniDataItemDto)=> x.Id != data.Id); // lọc lại vì nếu sokect trả về trước res
+    this.dataSource.Items = [...datas, ...[data]];
+
     this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
