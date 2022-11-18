@@ -96,6 +96,13 @@ export interface InputCreateChatbotDTO {
   Phone: string;
 }
 
+export interface VerifyTeamDto {
+  FacebookId: string;
+  FacebookName: string;
+  FacebookAvatar: string;
+  Token: string;
+}
+
 export enum Facebook_Type {
   User = 0,
   Page = 1,
