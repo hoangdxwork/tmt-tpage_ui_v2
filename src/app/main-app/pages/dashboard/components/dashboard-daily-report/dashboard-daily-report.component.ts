@@ -65,6 +65,7 @@ export class DashboardDailyReportComponent implements OnInit {
     this.eventSummaryService.getSummaryCurrentDay().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: SummaryDailyDTO) => {
           if(res && res.Current) {
+              this.emptyData = false;
               this.data = {...res};
 
               this.loadOverviewData(res);
@@ -72,14 +73,13 @@ export class DashboardDailyReportComponent implements OnInit {
               this.loadSeriesData(res);
               this.loadDataChart();
 
-              this.isLoading = false;
-              this.emptyData = false;
               this.cdr.detectChanges();
           } else {
               this.emptyData = true;
-              this.isLoading = false;
               this.cdr.detectChanges();
           }
+
+          this.isLoading = false;
         },
         error:(err) => {
           this.emptyData = true;
