@@ -24,7 +24,7 @@ export interface AutoOrderProductDTO {
     IsEnableOrderMultiple: boolean;
     AttributeValues: string[];
     DescriptionAttributeValues: string[];
-    Tags: string;
+    Tags?: string | any;
 }
 
 export interface TextContentToOrderDTO {
@@ -32,7 +32,7 @@ export interface TextContentToOrderDTO {
     Content: any;
     ContentWithAttributes?: any;
     IsActive: boolean;
-    Product: AutoOrderProductDTO | null;
+    Product: AutoOrderProductDTO | any;
 }
 
 export interface ConfigUserDTO {

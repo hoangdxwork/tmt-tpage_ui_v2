@@ -70,6 +70,10 @@ export class CsOrder_PrepareModelHandler {
           Quantity: obj.Quantity,
           UOMId: obj.UOMId,
           UOMName: obj.UOMName
+      } as any;
+
+      if(obj.Id) {
+        item.Id = obj.Id;
       }
 
       x.Details.push(item);

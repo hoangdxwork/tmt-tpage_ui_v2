@@ -81,6 +81,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
   countUOMLine: number = 0;
   indexDbStorage!: DataPouchDBDTO[];
 
+  lstOrderTags!: string[];
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -299,6 +301,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
     this.initFormDetails(data.Details);
     this.livecampaignSimpleDetail = [...data.Details];
+    this.getLstOrderTags(data.Details);
   }
 
   //TODO: disable các giá trị ngày không khả dụng
@@ -403,6 +406,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
     this.initFormDetails(newFormDetails);
     this.livecampaignSimpleDetail = [...newFormDetails];
+    this.getLstOrderTags(this.detailsForm.value);
 
     this.searchValue = this.innerTextValue;
   }
@@ -429,7 +433,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: 'liveCampaign'
+          type: 'liveCampaign',
+          lstOrderTags: this.lstOrderTags
         }
     });
 
@@ -656,6 +661,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
     })
 
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
+    this.getLstOrderTags(this.detailsForm.value);
   }
 
   onSave() {
@@ -859,6 +865,9 @@ export class AddLivecampaignPostV2Component implements OnInit {
       this.detailsForm.at(index).patchValue(details);
       this.modelTags = [...strs];
     }
+
+    this.getLstOrderTags(this.detailsForm.value);
+
     this.cdRef.detectChanges();
   }
 
@@ -883,4 +892,16 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
     return datas;
   }
+
+  getLstOrderTags(data: LiveCampaignSimpleDetail[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => TDSHelperArray.isArray(x.Tags)? x.Tags.join(',') : x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }

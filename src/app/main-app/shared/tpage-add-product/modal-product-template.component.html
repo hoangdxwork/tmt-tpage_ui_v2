@@ -208,7 +208,7 @@
                           
                           <td>
                             <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [ngModel]="data.OrderTag|stringToStringArray" [ngModelOptions]="{standalone: true}"
-                                (ngModelChange)="changeTags($event,i)"
+                                (selectChange)="changeTags($event,i)"
                                 [allowClear]="true" [data]="" mode="tags" class="w-full">
                             </tds-select>
                           </td>

@@ -24,7 +24,7 @@ export class ProductService extends BaseSevice {
 
   getById(key: number): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=UOM,Categ,UOMPO,POSCateg,Images`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=UOM,Categ,UOMPO,POSCateg,Images,AttributeValues`,
         method: CoreApiMethodType.get,
     }
 
