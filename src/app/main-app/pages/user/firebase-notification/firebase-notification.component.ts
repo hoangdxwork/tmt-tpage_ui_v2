@@ -31,7 +31,8 @@ export class FirebaseNotificationComponent implements OnInit {
   isLoading: boolean = false;
 
   deviceToken: any;
-  ids: any[] = [];
+  idsRegister: any[] = [];
+  idsTopic: any[] = [];
 
   constructor(private firebaseRegisterService: FirebaseRegisterService,
     private message: TDSMessageService,
@@ -54,9 +55,9 @@ export class FirebaseNotificationComponent implements OnInit {
     this.loadData();
     this.loadUrl();
 
-    // this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+    this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
     // if(this.deviceToken) {
-    //   this.loadSubscribedTopics();
+    this.loadSubscribedTopics();
     // }
 
     this.loadTopics();
@@ -91,7 +92,7 @@ export class FirebaseNotificationComponent implements OnInit {
     });
 
     let ids = value?.map(x => x.id) as any[];
-    this.ids = ids;
+    this.idsTopic = ids;
   }
 
   loadData(params?: any) {
@@ -200,19 +201,20 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   modalPermission() {
-    const modal = this.modalService.create({
-      title: 'Danh sách đăng kí nhận tin',
+    this.modalService.create({
+      title: 'Đăng kí nhận tin',
       content: ModalRequestPermissionComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        lstIds: this.ids
+        idsTopic: this.idsTopic
       }
     });
   }
 
   modalGetNotifications() {
     let deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+
     this.modalService.create({
       title: 'Danh sách đăng kí nhận tin',
       content: ModalGetNotificationComponent,
@@ -225,7 +227,9 @@ export class FirebaseNotificationComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         deviceToken: deviceToken,
-        topicData: this.topicData
+        topicData: this.topicData,
+        idsTopic: this.idsTopic,
+        idsRegister: this.idsRegister
       }
     });
   }
@@ -233,7 +237,7 @@ export class FirebaseNotificationComponent implements OnInit {
   loadSubscribedTopics() {
     this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          this.ids = [...res];
+          this.idsRegister = [...res];
       },
       error: (error: any) => {
           this.message.error(error?.error?.message);

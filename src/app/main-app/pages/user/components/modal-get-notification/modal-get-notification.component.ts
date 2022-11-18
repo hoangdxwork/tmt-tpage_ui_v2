@@ -16,10 +16,12 @@ export class ModalGetNotificationComponent implements OnInit {
 
   @Input() deviceToken: any
   @Input() topicData: FireBaseTopicDto[] = [];
+  @Input() idsTopic: any[] = [];
+  @Input() idsRegister: any[] = [];
 
   isLoading: boolean = false;
   payload: any;
-  ids: any = [];
+  checkAll: boolean = false;
 
   constructor(
     private modal: TDSModalRef,
@@ -31,24 +33,17 @@ export class ModalGetNotificationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(this.deviceToken) {
-      this.loadSubscribedTopics();
-    }
-  }
-
-  loadSubscribedTopics() {
-    this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.ids = [...res];
-      },
-      error: (error: any) => {
-          this.message.error(error?.error?.message);
-      }
-    });
   }
 
   cancel() {
     this.modal.destroy(null);
+  }
+
+  changeCheckAll(event: boolean) {
+    this.checkAll = event;
+    if(this.checkAll == true) {
+        this.idsRegister = this.idsTopic;
+    }
   }
 
   save() {
@@ -57,7 +52,7 @@ export class ModalGetNotificationComponent implements OnInit {
 
   registerTopics() {
     let model = {
-      TopicIds: this.ids
+      TopicIds: this.idsRegister
     }
 
     this.isLoading = true;
@@ -88,12 +83,12 @@ export class ModalGetNotificationComponent implements OnInit {
     if (this.isLoading) return;
 
     if (event == true) {
-      this.ids.push(item.id);
+      this.idsRegister.push(item.id);
     } else {
-      this.ids = this.ids.filter((x : any) => x != item.id);
+      this.idsRegister = this.idsRegister.filter((x : any) => x != item.id);
     }
 
-    this.ids = [...this.ids];
+    this.idsRegister = [...this.idsRegister];
   }
 
   removeToken() {
@@ -105,16 +100,18 @@ export class ModalGetNotificationComponent implements OnInit {
           this.isLoading = false;
           this.message.success('Xóa token nhận tin thành công');
 
-          this.ids = [];
+          this.idsRegister = [];
           this.deviceToken = null;
           this.firebaseMessagingService.removeDeviceTokenLocalStorage();
+          this.registerTopics();
       },
       error: (error) => {
           this.isLoading = false;
           this.message.error('Xóa token nhận tin thất bại')
       }
-    });;
-
+    });
   }
+
+
 
 }
