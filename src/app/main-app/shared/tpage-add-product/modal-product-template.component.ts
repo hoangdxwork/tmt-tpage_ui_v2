@@ -26,6 +26,7 @@ import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from
 import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
 import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
+import { StockChangeProductQtyDto } from '@app/dto/product-template/stock-change-productqty.dto';
 
 @Component({
   selector: 'modal-product-template',
@@ -236,7 +237,7 @@ export class ModalProductTemplateComponent implements OnInit {
         return;
       };
     }
-    
+
     let model = this.prepareModel();
 
     this.isLoading = true;
@@ -264,6 +265,9 @@ export class ModalProductTemplateComponent implements OnInit {
               cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
             };
 
+            // TODO: gọi cập nhật tồn kho
+            this.stockChangeProductQty(data);
+
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
         },
@@ -272,6 +276,47 @@ export class ModalProductTemplateComponent implements OnInit {
             this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       })
+  }
+
+  stockChangeProductQty(data: SyncCreateProductTemplateDto) {
+    let model = {
+        ProductTmplId: data.productTmpl.Id
+    }
+
+    this.productTemplateService.stockChangeProductQty({ model: model }).subscribe({
+      next: (res: any) => { debugger
+          delete res['@odata.context'];
+
+          let stockChange = [...res.value] as StockChangeProductQtyDto[];
+          stockChange.map(x => {
+              x.NewQuantity = data.productTmpl.InitInventory;
+          });
+
+          let modelPost = stockChange;
+          this.productTemplateService.postChangeQtyProduct({ model: modelPost}).subscribe({
+            next: (res1: any) => { debugger
+                let ids = {
+                  ids: [data.productTmpl.Id]
+                }
+
+                this.productTemplateService.changeProductQtyIds({ model: ids}).subscribe({
+                    next: (res2: any) => { debugger
+                        this.message.info('Cập nhật tồn kho thành công');
+                    },
+                    error: (error: any) => {
+                        this.message.error(error?.error?.message);
+                    }
+                })
+            },
+            error: (error: any) => {
+                this.message.error(error?.error?.message);
+            }
+          })
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    })
   }
 
   onCancel() {
@@ -461,7 +506,7 @@ export class ModalProductTemplateComponent implements OnInit {
     this.lstVariants[i].OrderTag = strs.length > 0 ? [...strs] : null;
     this.lstVariants[i] = this.lstVariants[i];
     this.lstVariants = [...this.lstVariants];
-    
+
     this.lstCheckOrderTags = this.getOrderTagsVariants(this.lstVariants);
 
     this.cdRef.detectChanges();
@@ -524,7 +569,7 @@ export class ModalProductTemplateComponent implements OnInit {
     if(TDSHelperArray.hasListValue(lstOrderTagsVariants)) {
       lstOrderTagsVariants.map((x) => {
           let tag = this.lstOrderTags.filter(y => y.toLocaleLowerCase().trim() == x.toLocaleLowerCase().trim())[0];
-          
+
           if(tag){
             exist = [...exist, tag];
           }
