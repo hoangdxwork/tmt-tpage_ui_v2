@@ -32,7 +32,7 @@ export interface TextContentToOrderDTO {
     Content: any;
     ContentWithAttributes?: any;
     IsActive: boolean;
-    Product: AutoOrderProductDTO | null;
+    Product: AutoOrderProductDTO | any;
 }
 
 export interface ConfigUserDTO {

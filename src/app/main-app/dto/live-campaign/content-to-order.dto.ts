@@ -1,5 +1,5 @@
 
-export interface Product {
+export interface ProductTextContentToOrderDto {
     ProductId: number;
     ProductCode: string;
     ProductName: string;
@@ -22,7 +22,7 @@ export interface TextContentToOrderV2Dto {
     Content: string;
     ContentWithAttributes: string;
     IsActive: boolean;
-    Product: Product;
+    Product: ProductTextContentToOrderDto;
 }
 
 export interface ApiContentToOrdersV2Dto {
