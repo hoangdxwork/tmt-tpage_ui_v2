@@ -54,21 +54,13 @@ export class FirebaseNotificationComponent implements OnInit {
     this.loadData();
     this.loadUrl();
 
-    this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
-    if(this.deviceToken) {
-      this.loadSubscribedTopics();
-    }
+    // this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+    // if(this.deviceToken) {
+    //   this.loadSubscribedTopics();
+    // }
 
     this.loadTopics();
-
-    this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        debugger
-      },
-      error: (error: any) => {
-          this.message.error(error?.error?.message);
-      }
-    });
+    this.loadSubscribedTopics();
   }
 
   loadTopics() {
@@ -77,6 +69,7 @@ export class FirebaseNotificationComponent implements OnInit {
       next: (data: any) => {
           this.topicData = [...data];
           this.mappingTopicIds();
+
           this.isLoading = false;
       },
       error: (error: any) => {
@@ -110,7 +103,7 @@ export class FirebaseNotificationComponent implements OnInit {
 
         let item: NotificationItemDto = null as any;
         if (TDSHelperString.hasValueString(this.id) && this.data) {
-          let exist = this.data.filter(x => x && x.id == this.id)[0];
+          let exist = this.data?.filter(x => x && x.id == this.id)[0];
           if (exist) {
             item = exist;
           }
@@ -139,7 +132,7 @@ export class FirebaseNotificationComponent implements OnInit {
 
           let item: NotificationItemDto = null as any;
           if (TDSHelperString.hasValueString(id) && this.data) {
-            let exist = this.data.filter(x => x && x.id == id)[0];
+            let exist = this.data?.filter(x => x && x.id == id)[0];
             if (exist) {
               item = exist;
             }
@@ -206,7 +199,7 @@ export class FirebaseNotificationComponent implements OnInit {
     }
   }
 
-  modalPermission() {debugger
+  modalPermission() {
     const modal = this.modalService.create({
       title: 'Danh sách đăng kí nhận tin',
       content: ModalRequestPermissionComponent,
@@ -231,8 +224,8 @@ export class FirebaseNotificationComponent implements OnInit {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        lstIds: this.ids,
-        deviceToken: deviceToken
+        deviceToken: deviceToken,
+        topicData: this.topicData
       }
     });
   }

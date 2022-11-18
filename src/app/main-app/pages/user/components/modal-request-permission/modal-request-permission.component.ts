@@ -29,7 +29,6 @@ export class ModalRequestPermissionComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.lstIds;
   }
 
   onCancel() {

@@ -13,11 +13,12 @@
     </button>
   </div>
   <div class="p-4 divide-y">
-    <div class="px-4 py-2 flex gap-x-4" *ngFor="let item of lstIds">
+    <div class="px-4 py-2 flex gap-x-4" *ngFor="let item of topicData">
       <div class="w-[120px] font-semibold">{{item.group}}</div>
       <div class="flex flex-col gap-y-4">
         <div *ngFor="let x of item.topics">
-          <tds-checkbox [checked]="true" (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: ids" [ngModelOptions]="{standalone: true}">{{ x.name }}</tds-checkbox>
+          <tds-checkbox (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: ids" [ngModelOptions]="{standalone: true}"></tds-checkbox>
+          <span class="ml-2 text-body-2">{{ x.name }}</span>
         </div>
       </div>
     </div>
