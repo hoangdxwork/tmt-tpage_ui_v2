@@ -1,0 +1,18 @@
+<tds-empty notFoundImage="/assets/imagesv2/no-notification.svg"
+    [notFoundContent]="contentTpl" [notFoundFooter]="footerTpl">
+    <ng-template #contentTpl>
+        <span class="text-body-2 font-regular text-neutral-1-400">Bạn chưa đăng kí trên thiết bị này!</span>
+    </ng-template>
+
+    <ng-template #footerTpl>
+      <button tds-button color="primary" class="mt-6" (click)="requestPermission()">
+        <span class="flex items-center">
+          <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Đăng kí thiết bị
+        </span>
+      </button>
+    </ng-template>
+</tds-empty>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button type="button" color="secondary" class="min-w-[100px]" (click)="onCancel()">Hủy bỏ</button>
+</div>

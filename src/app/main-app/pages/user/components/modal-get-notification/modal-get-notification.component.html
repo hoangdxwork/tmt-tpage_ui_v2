@@ -1,0 +1,35 @@
+<div class="h-full w-full flex flex-auto flex-col text-body-2">
+  <div class="p-4 border-b border-neutral-2-200 flex justify-between items-center">
+    <div class="px-4 py-2 flex gap-x-4">
+      <div class="w-[120px] font-semibold"></div>
+      <div class="flex flex-col gap-y-4">
+        <tds-checkbox>Chọn tất cả</tds-checkbox>
+      </div>
+    </div>
+    <button tds-button-outline color="error" class="min-w-[135px]" (click)="modalRemove()">
+      <span class="flex items-center">
+        <i class="tdsi-notifications-off-fill text-xl leading-none mr-2"></i>Hủy đăng kí
+      </span>
+    </button>
+  </div>
+  <div class="p-4 divide-y">
+    <div class="px-4 py-2 flex gap-x-4" *ngFor="let item of topicData">
+      <div class="w-[120px] font-semibold">{{item.group}}</div>
+      <div class="flex flex-col gap-y-4">
+        <div *ngFor="let x of item.topics">
+          <tds-checkbox (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: ids" [ngModelOptions]="{standalone: true}"></tds-checkbox>
+          <span class="ml-2 text-body-2">{{ x.name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="cancel()">
+    Hủy
+  </button>
+  <button tds-button type="submit" class="min-w-[100px]" color="primary" (click)="save()">
+    Lưu lại
+  </button>
+</div>
