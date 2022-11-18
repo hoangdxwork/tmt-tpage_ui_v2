@@ -15,20 +15,22 @@ import { TDSModalRef } from 'tds-ui/modal';
 })
 export class ModalRequestPermissionComponent implements OnInit {
 
-  @Input() lstIds: any[] = [];
-  @Input() deviceToken: any;
+  @Input() idsTopic: any[] = [];
 
+  deviceToken: any;
   isLoading: boolean = false;
 
-  constructor(
-    private modal: TDSModalRef,
+  constructor(private modal: TDSModalRef,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
     private firebaseMessagingService: FirebaseMessagingService,
-    private firebaseRegisterService: FirebaseRegisterService
-  ) { }
+    private firebaseRegisterService: FirebaseRegisterService) { }
 
   ngOnInit(): void {
+    let token = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+    if(token) {
+      this.deviceToken = token;
+    }
   }
 
   onCancel() {
@@ -36,21 +38,21 @@ export class ModalRequestPermissionComponent implements OnInit {
   }
 
   requestPermission() {
-    if(this.isLoading) return;
-
     const messaging = getMessaging();
     this.isLoading = true;
 
     getToken(messaging, { vapidKey: environment.firebaseConfig.vapidKey })
       .then((token: any) => {
 
-          this.isLoading = false;
           if(!token)  {
+              this.isLoading = false;
               this.message.info('No registration token available. Request permission to generate one');
               return;
           }
 
           this.deviceToken = token;
+          this.firebaseMessagingService.setDeviceTokenLocalStorage(token);
+
           this.registerDevice(token);
 
       }).catch((error) => {
@@ -67,10 +69,7 @@ export class ModalRequestPermissionComponent implements OnInit {
 
     this.firebaseRegisterService.registerDevice(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-            this.isLoading = false;
             this.message.success('Đăng ký nhận tin thành công');
-
-            this.firebaseMessagingService.setDeviceTokenLocalStorage(token);
             this.registerTopics();
         },
         error: (err: any) => {
@@ -82,7 +81,7 @@ export class ModalRequestPermissionComponent implements OnInit {
 
   registerTopics() {
     let model = {
-      TopicIds: this.lstIds
+      TopicIds: this.idsTopic
     }
 
     this.isLoading = true;

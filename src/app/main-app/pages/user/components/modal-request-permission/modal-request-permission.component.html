@@ -1,7 +1,11 @@
 <tds-empty notFoundImage="/assets/imagesv2/no-notification.svg"
     [notFoundContent]="contentTpl" [notFoundFooter]="footerTpl">
     <ng-template #contentTpl>
-        <span class="text-body-2 font-regular text-neutral-1-400">Bạn chưa đăng kí trên thiết bị này!</span>
+        <span class="text-body-2 font-regular text-neutral-1-400" *ngIf="!deviceToken">Bạn chưa đăng kí trên thiết bị này!</span>
+        <span class="text-body-2 font-regular text-neutral-1-400" *ngIf="deviceToken" style="white-space: pre-line;word-break: break-word;">
+          Mã Token:
+          <span class="font-semibold text-[18px]">{{deviceToken}}</span>
+        </span>
     </ng-template>
 
     <ng-template #footerTpl>
