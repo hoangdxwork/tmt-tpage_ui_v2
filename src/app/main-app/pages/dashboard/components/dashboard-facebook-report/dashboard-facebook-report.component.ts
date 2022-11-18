@@ -10,7 +10,6 @@ import { MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summ
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
-import { setHours } from 'date-fns';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
@@ -57,11 +56,12 @@ export class DashboardFacebookReportComponent implements OnInit {
     this.eventSummaryService.getSummaryByDay(this.currentDateRanges?.id || 0).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: SummaryDailyDTO) => {
         if(res && res?.Current){
+          this.emptyData = false;
+
           this.data = {...res};
           this.handlerAxisData(res);
           this.handlerSeriesData(res);
           this.loadDataChart();
-          this.emptyData = false;
         } else {
           this.emptyData = true;
         }

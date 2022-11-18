@@ -51,16 +51,17 @@ export class DashboardStaffReportComponent implements OnInit {
     this.reportFacebookService.getSummaryByStaffs(startDate, endDate).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           if(TDSHelperArray.hasListValue(res)){
+            
+            this.emptyData = false;
             this.lstSummaryActivityByStaff = [...res];
             this.lstSummaryActivityByStaff.sort((pre: any, cur: any)=> (pre.TotalCount > cur.TotalCount ? -1 : 1));
 
             this.loadDataChart(this.lstSummaryActivityByStaff);
-            this.isLoading = false;
-            this.emptyData = false;
-          }else{
+          } else {
             this.emptyData = true;
-            this.isLoading = false;
           }
+
+          this.isLoading = false;
         }, 
         error:(err) => {
           this.emptyData = true;
