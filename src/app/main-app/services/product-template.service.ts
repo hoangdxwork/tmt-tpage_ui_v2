@@ -229,4 +229,31 @@ export class ProductTemplateService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+  stockChangeProductQty(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/StockChangeProductQty/ODataService.DefaultGetAll?$expand=ProductTmpl,Product,Location`,
+      method: CoreApiMethodType.post,
+      }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  postChangeQtyProduct(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/StockChangeProductQty/ODataService.PostChangeQtyProduct`,
+      method: CoreApiMethodType.post,
+      }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  changeProductQtyIds(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/StockChangeProductQty/ODataService.ChangeProductQtyIds`,
+      method: CoreApiMethodType.post,
+      }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }
