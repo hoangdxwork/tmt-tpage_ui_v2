@@ -26,7 +26,7 @@ export class SortDataSourcePostPipe implements PipeTransform {
               let childitem: ChatomniDataItemDto[] = [];
 
               dataChild.map(child => { 
-                if(child && child.ParentId == x.Data?.id) {
+                if(child && (child.ParentId == x.Data?.id || child.ParentId == x.Data?.Id)) {
                   model = [...model, ...[child]];
                 } else {
                   childitem = [...childitem, ...[child]];
