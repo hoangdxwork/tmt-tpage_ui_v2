@@ -37,6 +37,7 @@ export class SortDataSourcePostPipe implements PipeTransform {
           }
       })
       dataChild.map(x=> { x.isNoPartnerId = true});
+      model.map(x=> { delete x.isNoPartnerId});
 
       model = [...model, ...dataChild];
     }

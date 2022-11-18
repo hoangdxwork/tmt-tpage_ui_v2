@@ -310,10 +310,14 @@
           <!-- Phản hồi bình luận -->
           <div *ngIf="children" class="chat-list" @eventReplyComment>
               <div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
-                  <div class="avatar mr-2">
-                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
+                  <div *ngIf="dataItem.Type == 12" class="avatar mr-2">
+                    <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
                         [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
+                  </div>
+        
+                  <div *ngIf="dataItem.Type == 91" class="avatar mr-2">
+                    <tds-avatar [size]="36" [tdsSrc]="(child.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
                   </div>
 
                   <div class="flex flex-col w-full">
@@ -322,7 +326,14 @@
                               tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
                                   <div class="border-activety-comment" *ngIf="child.Message">
-                                      <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                        <div *ngIf="dataItem.Type == 12">
+                                            <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                        </div>
+            
+                                        <div *ngIf="dataItem.Type == 91">
+                                            <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tShopDataMessage).Actor?.Name }} </div>
+                                        </div>
+                                      
                                       <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
                                       <div class="hidden" [innerHtml]="child.Message | bbcodeConvert" #contentMessageChild></div>
                                   </div>
