@@ -219,6 +219,7 @@ export class FilterOptionsComponent implements OnInit {
     this.filterObj = {
       tags: [],
       status: [],
+      carrierId: '',
       deliveryType: '',
       hasTracking: null,
       searchText: '',
