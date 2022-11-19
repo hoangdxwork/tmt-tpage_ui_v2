@@ -184,7 +184,7 @@
                             [dataSource]="dataSource" [index]="i"
                             [companyCurrents]="companyCurrents"
                             [searchText]="searchText"
-                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[item?.Data?.id]: []">
+                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
                         </tds-conversation-item>
                     </ng-container>
                   </div>

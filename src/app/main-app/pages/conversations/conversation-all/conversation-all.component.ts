@@ -92,6 +92,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   notificationRef!: TDSNotificationRef;
   totalConversations: number = 0;
   userLogged: any;
+  orderCode: any;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -270,9 +271,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
                 this.vsSocketImports[vsIndex].LatestMessage = {
-                  CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
-                  Message: itemNewMess.LatestMessage?.Message,
-                  MessageType: itemNewMess.LatestMessage?.MessageType
+                    CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                    Message: itemNewMess.LatestMessage?.Message,
+                    MessageType: itemNewMess.LatestMessage?.MessageType
                 } as any;
 
                 this.vsSocketImports[vsIndex].CountUnread = (this.vsSocketImports[vsIndex].CountUnread || 0) + 1;
@@ -291,6 +292,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   eventEmitter() {
+
     // TODO: cập nhật tags
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
@@ -384,6 +386,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                       this.lstConversation = [...this.lstConversation];
                   }
 
+                  // TODO: cập nhật mã đơn hàng
+                  if(this.conversationInfo && this.syncConversationInfo.Order) {
+                      this.orderCode = this.syncConversationInfo.Order.Code;
+                  }
+
                   this.cdRef.markForCheck();
               }
           })
@@ -418,7 +425,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
     if(this.isLoading || this.isProcessing){
-        return;
+      return;
     }
 
     this.isLoading = true;
@@ -427,35 +434,60 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           if (res && TDSHelperArray.hasListValue(res.Items)) {
               this.lstConversation = [...res.Items];
-
-              let currentOmni: ChatomniConversationItemDto;
-              let params_csid: string;
-
-              // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
-              params_csid = this.paramsUrl?.csid;
-              if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
-                  params_csid = this.getStorageConversationId();
-              }
-
-              currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
-
-              // TODO: nếu không tồn tại params_csid thì lấy item đầu tiên
-              if(!TDSHelperObject.hasValue(currentOmni) && !TDSHelperString.hasValueString(currentOmni?.ConversationId)) {
-                  currentOmni = this.lstConversation[0];
-              }
-
-              this.setCurrentConversationItem(currentOmni);
-
+              this.prepareParamsUrl();
           } else {
-              //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-              this.validateData();
+              this.validateData(); //lọc hội thoại data rỗng res.items = 0
+              this.isLoading = false;
           }
-
-          this.isLoading = false;
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  prepareParamsUrl() {
+    let currentOmni: ChatomniConversationItemDto;
+    let params_csid: string;
+
+    // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
+    params_csid = this.paramsUrl?.csid;
+    if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
+        params_csid = this.getStorageConversationId();
+    }
+
+    if(params_csid == null) {
+      currentOmni = this.lstConversation[0];
+      this.setCurrentConversationItem(currentOmni);
+
+      this.isLoading = false;
+      return;
+    }
+
+    currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
+    let exist = currentOmni && currentOmni?.ConversationId;
+    if(exist) {
+        this.setCurrentConversationItem(currentOmni);
+        this.isLoading = false;
+        return;
+    }
+
+    let teamId = this.currentTeam?.Id as number;
+    this.chatomniConversationService.getById(teamId, params_csid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
+          currentOmni = {...res};
+          this.lstConversation = [...[currentOmni], ...this.lstConversation];
+
+          this.setCurrentConversationItem(currentOmni);
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+
+          currentOmni = this.lstConversation[0];
+          this.setCurrentConversationItem(currentOmni);
       }
     })
   }
@@ -487,6 +519,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.chatomniConversationService.getInfo(this.currentTeam!.Id, item.ConversationId).pipe(takeUntil(this.destroy$)).subscribe({
               next: (info: ChatomniConversationInfoDto) => {
                   this.conversationInfo = {...info};
+
+                  if(this.conversationInfo && this.conversationInfo.Order) {
+                      this.orderCode = this.conversationInfo.Order.Code;
+                  }
+
                   this.isLoading = false;
                   this.cdRef.markForCheck();
               },
@@ -527,14 +564,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
-
           if(res && res.Items) {
               this.lstConversation = [...(res.Items || [])];
               this.lstConversation = [...this.lstConversation];
           } else {
               this.disableNextUrl = true;
           }
-
           this.isLoadingNextdata = false;
       },
       error: (error) => {
@@ -545,12 +580,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
-        this.disableNextUrl = false;
-        this.removeStorageConversationId();
+      this.disableNextUrl = false;
+      this.removeStorageConversationId();
 
-        let uri = this.router.url.split("?")[0];
-        let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
-        this.router.navigateByUrl(uriParams);
+      let uri = this.router.url.split("?")[0];
+      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+      this.router.navigateByUrl(uriParams);
     }
 
     this.crmService.onUpdateTeam(data);
@@ -857,6 +892,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.conversationInfo;
     delete this.conversationItem;
     delete this.dataSource$;
+    delete this.orderCode;
   }
 
   setStorageConversationId(id: string): any {

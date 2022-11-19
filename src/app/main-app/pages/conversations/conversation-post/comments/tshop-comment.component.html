@@ -12,40 +12,28 @@
 
            <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2">
               <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
-
-                  <div *ngIf="item.Type == 12" >
-                    <div (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" class="cursor-pointer" >
-                        <tpage-avatar-facebook [shape]="'circle'" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
-                        </tpage-avatar-facebook>
-                    </div>
+                  <div>
+                      <tds-avatar [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [tdsSrc]="(item.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
                   </div>
-
-                  <div *ngIf="item.Type == 91">
-                      <tds-avatar [tdsSrc]="(item.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
-                  </div>
-
                   <div class="ml-2 w-full h-full">
                       <div class="bg-white rounded-2xl px-4 py-3">
                           <div class="flex items-center justify-between">
                               <div class="flex gap-x-2 items-center">
-                                  <div *ngIf="item.Type == 12 && item.Data && item.Data?.from" class="min-w-[50px] max-w-[220px] truncate">
-                                      <span class="font-semibold cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip="{{item.Data.from.name}}">{{ item.Data.from.name }}</span>
-                                  </div>
 
-                                  <div *ngIf="item.Type == 91 && item.Data" class="min-w-[50px] max-w-[220px] truncate">
-                                      <span class="font-semibold" tds-tooltip="{{(item.Data | tShopDataMessage).Actor?.Name}}">{{ (item.Data | tShopDataMessage).Actor?.Name }}</span>
-                                  </div>
+                                    <div class="min-w-[50px] max-w-[220px] truncate">
+                                        <label class="font-semibold cursor-pointer" *ngIf="item.Data">{{ (item.Data | tShopDataMessage).Actor?.Name }} </label>
+                                    </div>
 
                                   <!-- Mã đơn hàng -->
-                                  <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
-                                      <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
+                                  <div *ngIf="commentOrders && item?.UserId && commentOrders[item?.UserId]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
+                                      <div *ngFor="let order of commentOrders[item?.UserId]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                           <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
                                               <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
                                           </div>
                                       </div>
                                   </div>
 
-                                  <!-- Mã hóa đơn -->
+                                    <!-- Mã hóa đơn -->
                                   <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
                                         <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
@@ -106,10 +94,11 @@
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">
-                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item, commentOrders[item.Data?.from!.id])">Tạo đơn hàng</button>
+                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm"
+                                  (click)="onInsertFromPost(item, commentOrders)">Tạo đơn hàng</button>
 
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
-                                  tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
+                                  tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders)" tds-tooltip>
                                   <span class="flex items-center justify-center">
                                       <i class="tdsi-information-fill text-neutral-1-500"></i>
                                   </span>
