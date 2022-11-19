@@ -402,40 +402,6 @@ export class EditLiveCampaignComponent implements OnInit {
     })
   }
 
-  generateTagDetail(productName: string, code: string, tags: string,  _attributes_length?: number) {
-    productName = productName.replace(`[${code}]`, "");
-    productName = productName.trim();
-
-    let result: string[] = [];
-    let word = StringHelperV2.removeSpecialCharacters(productName);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
-
-    result.push(word);
-
-    if(!result.includes(wordNoSignCharacters)) {
-      result.push(wordNoSignCharacters);
-    }
-
-    if(!result.includes(wordNameNoSpace)) {
-      result.push(wordNameNoSpace);
-    }
-
-    if(TDSHelperString.hasValueString(code) && code && Number(_attributes_length) <= 1) {
-      result.push(code);
-    }
-
-    if(TDSHelperString.hasValueString(tags)) {
-        let tagArr = tags.split(',');
-        tagArr.map(x => {
-          if(!result.find(y => y == x))
-              result.push(x);
-        })
-    }
-
-    return [...result];
-  }
-
   openTag(item: LiveCampaignSimpleDetail) {
     let formDetails = this.detailsForm.value as any[];
     let index = formDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
