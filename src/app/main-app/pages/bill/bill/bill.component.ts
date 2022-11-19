@@ -63,7 +63,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     tags: [],
     status: [],
     hasTracking: null,
-    carrierId: '',
+    carrierId: -1,
     deliveryType: '',
     searchText: '',
     dateRange: {
@@ -487,7 +487,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onLoadOption(event: FilterObjFastSaleModel): void {debugger
+  onLoadOption(event: FilterObjFastSaleModel): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.indClickTag = -1;
@@ -546,7 +546,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       tags: [],
       status: [],
       hasTracking: null,
-      carrierId: '',
+      carrierId: -1,
       deliveryType: '',
       searchText: '',
       dateRange: {
@@ -688,7 +688,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     if (event && event.Id) {
       this.filterObj.carrierId = event.Id;
     } else {
-      this.filterObj.carrierId = '';
+      this.filterObj.carrierId = -1;
     }
     this.loadData(this.pageSize, this.pageIndex);
   }

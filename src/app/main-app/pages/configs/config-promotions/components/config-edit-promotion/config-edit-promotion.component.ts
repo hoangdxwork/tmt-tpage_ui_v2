@@ -135,8 +135,6 @@ export class ConfigEditPromotionComponent implements OnInit {
   onSave() {
     this.isLoading = true;
     this.prepareModel();
-    console.log(this.prepareModel());
-
 
     if(this.checkValueForm(this.dataEdit) == 1) {
       this.saleCouponProgramService.update(this.promotionId, this.dataEdit)

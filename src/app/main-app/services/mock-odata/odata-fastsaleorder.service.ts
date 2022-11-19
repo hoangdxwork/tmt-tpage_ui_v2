@@ -11,7 +11,7 @@ export interface FilterObjFastSaleModel  {
     tags: string[];
     status: string[];
     hasTracking: string | null;
-    carrierId: '';
+    carrierId: -1;
     deliveryType: '';
     searchText: '';
     dateRange: {
@@ -126,7 +126,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
       })
     }
 
-    if(TDSHelperString.hasValueString(filterObj.carrierId)) {
+    if(filterObj.carrierId >= 0 ) {
       dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
         dataFilter.logic = "and";
     }

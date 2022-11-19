@@ -204,7 +204,7 @@ export class InfoPartnerComponent implements OnInit, OnDestroy {
         });
   }
 
-  refreshCreditDebit() {debugger
+  refreshCreditDebit() {
     this.loadCreditDebitCustomerDetail(this.pageSize, this.pageIndex);
   }
 
