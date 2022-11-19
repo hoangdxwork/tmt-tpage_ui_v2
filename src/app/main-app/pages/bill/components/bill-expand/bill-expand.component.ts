@@ -56,8 +56,6 @@ export class BillExpandComponent implements OnInit, OnDestroy {
         next: (res: OdataFSOrderLinesV2) => {
           if(res) {
             this.lstOfData = [...res.value];
-            console.log((this.lstOfData));
-            
           }
 
           this.isLoading = false;
@@ -163,7 +161,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
 
       case 1:
         break;
-        
+
       case 2:
         this.logOrder = [];
 
