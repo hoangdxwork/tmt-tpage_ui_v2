@@ -256,9 +256,6 @@ export class ModalProductTemplateComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-            // TODO: chỉ dùng cho chiến dịch live
-            product._attributes_length = model.ProductVariants?.length || 1;
-
             const data: SyncCreateProductTemplateDto = {
               type: type,
               productTmpl: product as ProductTemplateV2DTO,
