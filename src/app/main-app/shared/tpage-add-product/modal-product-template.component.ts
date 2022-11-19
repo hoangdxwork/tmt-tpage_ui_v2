@@ -1,3 +1,4 @@
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ConfigProductDefaultDTO } from './../../dto/configs/product/config-product-default.dto';
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
@@ -77,6 +78,7 @@ export class ModalProductTemplateComponent implements OnInit {
 
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,
+    private productTemplateFacade: ProductTemplateFacade,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
@@ -263,7 +265,8 @@ export class ModalProductTemplateComponent implements OnInit {
             };
 
             // TODO: gọi cập nhật tồn kho
-            this.stockChangeProductQty(data);
+            let id = data.productTmpl.Id;
+            this.productTemplateFacade.stockChangeProductQty(id);
 
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
@@ -273,49 +276,6 @@ export class ModalProductTemplateComponent implements OnInit {
             this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       })
-  }
-
-  stockChangeProductQty(data: SyncCreateProductTemplateDto) {
-    let model = {
-        ProductTmplId: data.productTmpl.Id
-    }
-
-    this.productTemplateService.stockChangeProductQty({ model: model }).subscribe({
-      next: (res: any) => {
-          delete res['@odata.context'];
-
-          let value = [...res.value] as StockChangeProductQtyDto[];
-          value.map(x => {
-              x.LocationId = x.Location?.Id;
-          });
-
-          this.productTemplateService.postChangeQtyProduct({ model: value }).subscribe({
-            next: (res1: any) => {
-
-                let value2 = [...res1.value];
-                let ids = value2.map(x => x.Id);
-                let model2 = {
-                    ids: ids
-                }
-
-                this.productTemplateService.changeProductQtyIds(model2).subscribe({
-                    next: (res2: any) => {
-                        this.message.info('Cập nhật tồn kho thành công');
-                    },
-                    error: (error: any) => {
-                        this.message.error(error?.error?.message);
-                    }
-                })
-            },
-            error: (error: any) => {
-                this.message.error(error?.error?.message);
-            }
-          })
-      },
-      error: (error: any) => {
-          this.message.error(error?.error?.message);
-      }
-    })
   }
 
   onCancel() {

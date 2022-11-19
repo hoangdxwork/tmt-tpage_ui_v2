@@ -149,12 +149,9 @@ import { TDSSkeletonModule } from 'tds-ui/skeleton';
 import { ModalListPostComponent } from './components/modal-list-post/modal-list-post.component';
 import { DrawerEditLiveCampaignComponent } from './conversation-post/facebook-livecampaign-post/drawer-edit-livecampain.component';
 import { TShopCommentComponent } from './conversation-post/comments/tshop-comment.component';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 const SERVICES = [
-  ConversationDataFacade,
-  ConversationEventFacade,
-  ConversationOrderFacade,
-  ActivityDataFacade,
   ConversationFacebookState,
   ConversationService,
   THelperCacheService,
@@ -175,7 +172,6 @@ const SERVICES = [
   CRMTagService,
   ExcelExportService,
   OdataSaleOnline_OrderService,
-  AttachmentDataFacade,
   AttachmentService,
   AttachmentState,
   ProductIndexDBService,
@@ -185,9 +181,7 @@ const SERVICES = [
   OdataSaleCouponProgramService,
   OdataProductService,
   FacebookCommentService,
-  ChatomniMessageFacade,
   CrmMatchingV2Service,
-  CrmMatchingV2Facade,
   ChatomniConversationService,
   CsPartner_SuggestionHandler,
   CsPartner_PrepareModelHandler,
@@ -202,10 +196,7 @@ const SERVICES = [
   SO_ComputeCaclHandler,
   CalculateFeeAshipHandler,
   ChatomniMessageService,
-  ChatomniConversationFacade,
   ChatomniObjectService,
-  ChatomniObjectFacade,
-  ChatomniCommentFacade,
   SO_PrepareFastSaleOrderHandler,
   ObjectFacebookPostEvent,
   FaceBookPostItemHandler,
@@ -213,6 +204,20 @@ const SERVICES = [
   PrepareAddCampaignHandler,
   CsOrder_FromConversationHandler,
   ConversationPostEvent
+]
+
+const FACADES = [
+  ConversationDataFacade,
+  ConversationEventFacade,
+  ConversationOrderFacade,
+  ActivityDataFacade,
+  AttachmentDataFacade,
+  CrmMatchingV2Facade,
+  ChatomniConversationFacade,
+  ChatomniObjectFacade,
+  ChatomniCommentFacade,
+  ChatomniMessageFacade,
+  ProductTemplateFacade
 ]
 
 @NgModule({
@@ -311,7 +316,10 @@ const SERVICES = [
     VirtualScrollerModule,
     TDSSkeletonModule,
   ],
-  providers: [...SERVICES]
+  providers: [
+    ...SERVICES,
+    ...FACADES
+  ]
 })
 
 export class ConversationsModule { }
