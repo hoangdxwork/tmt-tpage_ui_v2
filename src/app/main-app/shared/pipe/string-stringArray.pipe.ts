@@ -9,7 +9,7 @@ export class StringToStringArrayPipe implements PipeTransform {
     transform(value: string): any {
 
       let result: any = [];
-      if(TDSHelperString.isString(value)){
+      if(TDSHelperString.hasValueString(value)){
           if(!value.includes(',')) {
               result.push(value);
           } else {
