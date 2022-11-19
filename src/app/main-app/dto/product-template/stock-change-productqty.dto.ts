@@ -186,7 +186,7 @@ export interface StockChangeProductQtyDto {
     ProductVariantCount: number;
     ProductTmpl: ProductTmplStockChangeDto;
     Product: ProductStockChangeDto;
-    Location: Location;
+    Location: LocationStockChangeDto;
 }
 
 

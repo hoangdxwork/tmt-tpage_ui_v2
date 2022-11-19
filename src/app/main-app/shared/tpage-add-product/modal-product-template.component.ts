@@ -284,23 +284,25 @@ export class ModalProductTemplateComponent implements OnInit {
     }
 
     this.productTemplateService.stockChangeProductQty({ model: model }).subscribe({
-      next: (res: any) => { debugger
+      next: (res: any) => {
           delete res['@odata.context'];
 
-          let stockChange = [...res.value] as StockChangeProductQtyDto[];
-          stockChange.map(x => {
-              x.NewQuantity = data.productTmpl.InitInventory;
+          let value = [...res.value] as StockChangeProductQtyDto[];
+          value.map(x => {
+              x.LocationId = x.Location?.Id;
           });
 
-          let modelPost = stockChange;
-          this.productTemplateService.postChangeQtyProduct({ model: modelPost}).subscribe({
-            next: (res1: any) => { debugger
-                let ids = {
-                  ids: [data.productTmpl.Id]
+          this.productTemplateService.postChangeQtyProduct({ model: value }).subscribe({
+            next: (res1: any) => {
+
+                let value2 = [...res1.value];
+                let ids = value2.map(x => x.Id);
+                let model2 = {
+                    ids: ids
                 }
 
-                this.productTemplateService.changeProductQtyIds({ model: ids}).subscribe({
-                    next: (res2: any) => { debugger
+                this.productTemplateService.changeProductQtyIds(model2).subscribe({
+                    next: (res2: any) => {
                         this.message.info('Cập nhật tồn kho thành công');
                     },
                     error: (error: any) => {
