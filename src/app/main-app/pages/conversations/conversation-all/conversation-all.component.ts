@@ -66,8 +66,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   conversationInfo!: ChatomniConversationInfoDto | any;
   conversationItem!: ChatomniConversationItemDto | any;
 
-  syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
-
   isFastSend: boolean = false;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
@@ -292,7 +290,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   eventEmitter() {
-
     // TODO: cập nhật tags
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
@@ -367,35 +364,32 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
     })
 
-    // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
-    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          let teamId = this.currentTeam?.Id as any;
-          this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => {
-                  this.syncConversationInfo = {...data};
-                  this.conversationInfo.Order = {...data.Order};
+    // // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
+    // this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (info: ChatomniConversationInfoDto) => {
+    //       let teamId = this.currentTeam?.Id as any;
 
-                  let csid = this.syncConversationInfo.Conversation.ConversationId;
-                  let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
+    //       this.syncConversationInfo = {...info};
+    //       this.conversationInfo.Order = {...data.Order};
 
-                  if(Number(index) >= 0 && this.syncConversationInfo.Partner) {
-                      this.lstConversation[index].HasPhone = this.syncConversationInfo.Partner.Phone ? true : false;
-                      this.lstConversation[index].HasAddress = this.syncConversationInfo.Partner.Street ? true : false;
-                      this.lstConversation[index] = {...this.lstConversation[index]};
-                      this.lstConversation = [...this.lstConversation];
-                  }
+    //       let csid = this.syncConversationInfo.Conversation.ConversationId;
+    //       let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
 
-                  // TODO: cập nhật mã đơn hàng
-                  if(this.conversationInfo && this.syncConversationInfo.Order) {
-                      this.orderCode = this.syncConversationInfo.Order.Code;
-                  }
+    //       if(Number(index) >= 0 && this.syncConversationInfo.Partner) {
+    //           this.lstConversation[index].HasPhone = this.syncConversationInfo.Partner.Phone ? true : false;
+    //           this.lstConversation[index].HasAddress = this.syncConversationInfo.Partner.Street ? true : false;
+    //           this.lstConversation[index] = {...this.lstConversation[index]};
+    //           this.lstConversation = [...this.lstConversation];
+    //       }
 
-                  this.cdRef.markForCheck();
-              }
-          })
-      }
-    })
+    //       // TODO: cập nhật mã đơn hàng
+    //       if(this.conversationInfo && this.syncConversationInfo.Order) {
+    //           this.orderCode = this.syncConversationInfo.Order.Code;
+    //       }
+
+    //       this.cdRef.markForCheck();
+    //   }
+    // })
 
     // TODO Cập nhật đã gán nhân viên
     this.chatomniEventEmiterService.assignedToUser$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -416,7 +410,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   loadData(team: any) {
     this.validateData();
-
     this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type);
     if(this.dataSource$) {
         this.loadConversations(this.dataSource$);

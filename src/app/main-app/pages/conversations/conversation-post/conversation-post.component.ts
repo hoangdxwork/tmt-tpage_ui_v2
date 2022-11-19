@@ -207,17 +207,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       }
     })
 
-    // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
-    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (csid: string) => {
-          let teamId = this.currentTeam?.Id as any;
-          this.chatomniConversationService.syncConversationInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => {
-                  this.syncConversationInfo = {...data};
-              }
-          })
-      }
-    })
   }
 
   spinLoading() {
