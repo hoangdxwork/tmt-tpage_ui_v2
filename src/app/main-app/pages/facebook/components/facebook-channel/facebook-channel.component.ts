@@ -382,26 +382,26 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     );
   }
 
-  showModalAddPage(data: UserPageDTO, user: CRMTeamDTO): void {
-    const modal = this.modal.create({
-      title: 'Thêm Page',
-      content: AddPageComponent,
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        data: data,
-        user: user,
-      },
-    });
+  // showModalAddPage(data: UserPageDTO, user: CRMTeamDTO): void {
+  //   const modal = this.modal.create({
+  //     title: 'Thêm Page',
+  //     content: AddPageComponent,
+  //     viewContainerRef: this.viewContainerRef,
+  //     componentParams: {
+  //       data: data,
+  //       user: user,
+  //     },
+  //   });
 
-    modal.afterClose.subscribe((result) => {
-      if (TDSHelperObject.hasValue(result)) {
-        this.loadListTeam(true);
-        if (this.lstPageNotConnect[user.Id]) {
-          this.lstPageNotConnect[user.Id] = this.lstPageNotConnect[user.Id].filter((x) => x.id != data.id);
-        }
-      }
-    });
-  }
+  //   modal.afterClose.subscribe((result) => {
+  //     if (TDSHelperObject.hasValue(result)) {
+  //       this.loadListTeam(true);
+  //       if (this.lstPageNotConnect[user.Id]) {
+  //         this.lstPageNotConnect[user.Id] = this.lstPageNotConnect[user.Id].filter((x) => x.id != data.id);
+  //       }
+  //     }
+  //   });
+  // }
 
   onActive(id: number, isUser: boolean, ev: TDSSafeAny) {
     ev.stopPropagation();

@@ -15,13 +15,12 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 export class AddPageComponent implements OnInit {
 
-  @Input() data!: UserPageDTO;
-  @Input() user!: CRMTeamDTO;
+  @Input() data!: CRMTeamDTO;
 
-  addPageForm!: FormGroup;
+  _form!: FormGroup;
   isLoading: boolean = false;
 
-  constructor( private modal: TDSModalRef,
+  constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
     private message: TDSMessageService,
     private crmTeamService: CRMTeamService) {
@@ -32,112 +31,105 @@ export class AddPageComponent implements OnInit {
     this.updateForm();
   }
 
-  onSubmit(): void {
+  onSave() {
     if(this.isLoading) {
-      return
+      return;
     }
 
-    if(!this.addPageForm.value["name"]){
+    if(!this._form.valid){
       this.message.error("Vui lòng nhập tên page");
-      return
+      return;
     }
 
-    let model = this.prepareModel();
     this.isLoading = true;
+    let model = this.prepareFacebookModel();
 
     this.crmTeamService.insert(model).subscribe(
       {
-        next: res => {
+        next: (res : CRMTeamDTO[]) => {
+          console.log(res);
+          
           this.message.success(Message.SaveSuccess);
           this.isLoading = false;
-          this.onCancel(true);
+          this.onCancel(res);
       },
         error: error => {
-          if(error?.error?.message) {
-            this.message.error(error?.error?.message);
-          }
-          else {
-            this.message.error(Message.ErrorOccurred);
-          }
           this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       });
   }
 
-  prepareModel() {
-    let model = {};
+  // prepareModel() {
+  //   let model = {};
 
-    if(this.user.Type == "Facebook") {
-      model = this.prepareModelFacebook();
-    }
-    else if(this.user.Type == "TUser")
-    {
-      model = this.prepareModelTShop();
-    }
+  //   if(this.user.Type == "Facebook") {
+  //     model = this.prepareModelFacebook();
+  //   }
+  //   else if(this.user.Type == "TUser")
+  //   {
+  //     model = this.prepareModelTShop();
+  //   }
 
-    return model;
-  }
-
-  prepareModelFacebook() {
-    let formValue = this.addPageForm.value;
-
-    let model = {
-      Id: 0,
-      Facebook_ASUserId: this.user.OwnerId,
-      Facebook_Link: this.data.picture.data.url,
-      Facebook_PageId: this.data.id,
-      Facebook_PageLogo: null,
-      Facebook_PageName: this.data.name,
-      Facebook_PageToken: this.data.access_token,
-      Facebook_TypeId: "Page",
-      Facebook_UserAvatar: this.user.Facebook_UserAvatar,
-      Facebook_UserId: this.user.Facebook_UserId,
-      Facebook_UserName: this.user.Facebook_UserName,
-      Facebook_UserToken: this.user.OwnerToken,
-      Name: formValue["name"],
-      ParentId: this.user.Id,
-      Type: "Facebook"
-    };
-
-    return model;
-  }
-
-  prepareModelTShop()
-  {
-    let formValue = this.addPageForm.value;
-
-    let model = {
-      Id: 0,
-      OwnerId: this.user.OwnerId,
-      Name: formValue["name"],
-      Type: "TShop",
-      ParentId: this.user.Id,
-      ShopId: this.data.id,
-      ChannelId: this.data.id,
-      ChannelToken: this.data.access_token,
-      ChannelAvatar: this.data.picture?.data?.url
-    };
-
-    return model;
-  }
+  //   return model;
+  // }
 
   updateForm() {
     if(TDSHelperObject.hasValue(this.data)) {
-      this.addPageForm.controls["name"].setValue(this.data.name);
-      this.addPageForm.controls["pageName"].setValue(this.data.name);
-      this.addPageForm.controls["userName"].setValue(this.user.Name);
+      this._form.controls["Name"].setValue(this.data.Name);
+      this._form.controls["PageName"].setValue(this.data.Facebook_PageName);
+      this._form.controls["UserName"].setValue(this.data.Facebook_UserName);
     }
   }
 
   createForm() {
-    this.addPageForm = this.fb.group({
-      name :[''],
-      pageName : [{value: '', disabled: true}, Validators.required],
-      userName:[{value: '', disabled: true}, Validators.required],
+    this._form = this.fb.group({
+      Name :[null, Validators.required],
+      PageName : [{value: null, disabled: true}, Validators.required],
+      UserName:[{value: null, disabled: true}, Validators.required],
     });
   }
 
   onCancel(result: TDSSafeAny) {
     this.modal.destroy(result);
   }
+
+  prepareFacebookModel() {
+    return {
+      Facebook_ASUserId: this.data.Facebook_ASUserId,
+      Facebook_Link: this.data.Facebook_Link,
+      Facebook_PageId: this.data.Facebook_PageId,
+      Facebook_PageLogo: this.data.Facebook_PageLogo,
+      Facebook_PageName: this.data.Facebook_PageName,
+      Facebook_PageToken: this.data.Facebook_PageToken,
+      Facebook_TypeId: this.data.Facebook_TypeId,
+      Facebook_UserAvatar: this.data.Facebook_UserAvatar,
+      Facebook_UserId: this.data.Facebook_UserId,
+      Facebook_UserName: this.data.Facebook_UserName,
+      Facebook_UserToken: this.data.Facebook_UserToken,
+      Id: 0,
+      Name: this.data.Name,
+      ParentId: this.data.ParentId,
+      Type: this.data.Type
+    }
+  }
+
+  // prepareModelTShop()
+  // {
+  //   let formValue = this.addPageForm.value;
+
+  //   let model = {
+  //     Id: 0,
+  //     OwnerId: this.user.OwnerId,
+  //     Name: formValue["name"],
+  //     Type: "TShop",
+  //     ParentId: this.user.Id,
+  //     ShopId: this.data.id,
+  //     ChannelId: this.data.id,
+  //     ChannelToken: this.data.access_token,
+  //     ChannelAvatar: this.data.picture?.data?.url
+  //   };
+
+  //   return model;
+  // }
 }
