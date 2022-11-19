@@ -10,7 +10,7 @@ import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../
 import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
 import { finalize, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
@@ -38,7 +38,7 @@ import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
   providers: [ TDSDestroyService ]
 })
 
-export class TDSConversationItemComponent implements OnInit  {
+export class TDSConversationItemComponent implements OnInit, OnChanges  {
 
   @Input() dataItem!: ChatomniDataItemDto;
   @Input() csid!: string;
@@ -88,6 +88,12 @@ export class TDSConversationItemComponent implements OnInit  {
     private chatomniEventEmiter: ChatomniEventEmiterService,
     private chatomniSendMessageService: ChatomniSendMessageService,
     private chatomniCommentService: ChatomniCommentService) {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['children'] && !changes['children'].firstChange) {
+      this.children = changes['children'].currentValue;
+    }
   }
 
   ngOnInit(): void {
@@ -532,15 +538,20 @@ export class TDSConversationItemComponent implements OnInit  {
                   x.Data.Actor.Name = this.team.Name;
                   let data = { ...x};
 
-                  this.children = [ ...(this.children || []), data];
+                  let index = (this.children || []).findIndex(x=>x.Id == data.Id);
 
-                  //TODO: Đẩy qua tds-conversation
-                  this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
+                  // TODO: Nếu socker trả về trước thì không add item, chưa trả về thì add item
+                  if(Number(index) == -1) {
+                    this.children = [ ...(this.children || []), data];
 
-                  //TODO: Đẩy qua conversation-all
-                  let itemLast = {...data}
-                  let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.Type);
-                  this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+                    //TODO: Đẩy qua tds-conversation
+                    this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
+
+                    //TODO: Đẩy qua conversation-all
+                    let itemLast = {...data}
+                    let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.Type);
+                    this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+                  }
 
                   this.messageModel = null;
 
