@@ -72,6 +72,7 @@ import { FirebaseTopicsComponent } from './firebase/firebase-topics.component';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { AccountJournalService } from '@app/services/account-journal.service';
 import { TagService } from '@app/services/tag.service';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -108,7 +109,6 @@ const SERVICES = [
   ProductIndexDBService,
   SuggestAddressService,
   SharedService,
-  ImageFacade,
   ProductPriceListService,
   ODataLiveCampaignService,
   FastSaleOrderLineService,
@@ -116,6 +116,11 @@ const SERVICES = [
   FirebaseRegisterService,
   AccountJournalService,
   TagService
+]
+
+const FACADES = [
+  ProductTemplateFacade,
+  ImageFacade
 ]
 
 @NgModule({
@@ -166,6 +171,7 @@ const SERVICES = [
   ],
   providers: [
     ...SERVICES,
+    ...FACADES
    ],
 })
 export class MainSharedModule { }

@@ -2,7 +2,6 @@ import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToO
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
@@ -25,7 +24,7 @@ import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { SharedService } from '@app/services/shared.service';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
-import { ConfigProductVariant } from '@app/dto/configs/product/config-product-default.dto';
+import { ProductTmlpAttributesDto } from '@app/dto/product-template/product-attribute.dto';
 
 @Component({
   selector: 'post-order-config',
@@ -448,18 +447,19 @@ export class PostOrderConfigComponent implements OnInit {
 
   selectProduct(x: DataPouchDBDTO, index: number) {
     this.isLoading = true;
-    this.productService.getAttributeValuesById(x.Id).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productService.getAttributeValuesByIdV2(x.Id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
 
           delete res['@odata.context'];
-          const product = {...res} as ConfigProductVariant;
+          const product = {...res} as ProductTmlpAttributesDto;
           let item = {...this.prepareProduct(product)} as TextContentToOrderDTO;
 
           let content = this.generateTagDetail(product.DefaultCode, product.OrderTag, null, null);
           item.Content = content?.join(',');
 
-          if(product.AttributeValues && product.AttributeValues.length > 0) {
-              let attribute = this.generateAttributeDetail(product.Name);
+          let productTmpl = product.ProductTmpl;
+          if(product.AttributeValues && product.AttributeValues.length > 0 && productTmpl) {
+              let attribute = this.generateTagDetail(productTmpl.DefaultCode, productTmpl.OrderTag, null, null);
               item.ContentWithAttributes = attribute?.join(',');
           }
 
@@ -482,27 +482,6 @@ export class PostOrderConfigComponent implements OnInit {
           this.cdRef.detectChanges();
       }
     });
-  }
-
-  generateAttributeDetail(productName: string) {
-    let data: string[] = [];
-
-    let name = productName.toLocaleLowerCase().trim();
-    let word = StringHelperV2.removeSpecialCharacters(name);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
-
-    data.push(word);
-
-    if(!data.includes(wordNoSignCharacters)) {
-      data.push(wordNoSignCharacters);
-    }
-
-    if(!data.includes(wordNameNoSpace)) {
-      data.push(wordNameNoSpace);
-    }
-
-    return [...data];
   }
 
   generateTagDetail(defaultCode: string, vTag: any, orderTag: any, uomName: any) {
@@ -603,7 +582,7 @@ export class PostOrderConfigComponent implements OnInit {
     })
   }
 
-  prepareProduct(model: ConfigProductVariant) {
+  prepareProduct(model: ProductTmlpAttributesDto) {
     let indexs = this.dataModel.TextContentToOrders.map(x => x.Index);
     let item = {
         Index: Number(Math.max(...indexs)),

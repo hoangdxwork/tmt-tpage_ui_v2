@@ -1,3 +1,4 @@
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ConfigProductDefaultDTO } from './../../dto/configs/product/config-product-default.dto';
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
@@ -26,6 +27,7 @@ import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from
 import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
 import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
+import { StockChangeProductQtyDto } from '@app/dto/product-template/stock-change-productqty.dto';
 
 @Component({
   selector: 'modal-product-template',
@@ -76,6 +78,7 @@ export class ModalProductTemplateComponent implements OnInit {
 
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,
+    private productTemplateFacade: ProductTemplateFacade,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
@@ -236,7 +239,7 @@ export class ModalProductTemplateComponent implements OnInit {
         return;
       };
     }
-    
+
     let model = this.prepareModel();
 
     this.isLoading = true;
@@ -255,14 +258,15 @@ export class ModalProductTemplateComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-            // TODO: chỉ dùng cho chiến dịch live
-            product._attributes_length = model.ProductVariants?.length || 1;
-
             const data: SyncCreateProductTemplateDto = {
               type: type,
               productTmpl: product as ProductTemplateV2DTO,
               cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
             };
+
+            // TODO: gọi cập nhật tồn kho
+            let id = data.productTmpl.Id;
+            this.productTemplateFacade.stockChangeProductQty(id);
 
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
@@ -461,7 +465,7 @@ export class ModalProductTemplateComponent implements OnInit {
     this.lstVariants[i].OrderTag = strs.length > 0 ? [...strs] : null;
     this.lstVariants[i] = this.lstVariants[i];
     this.lstVariants = [...this.lstVariants];
-    
+
     this.lstCheckOrderTags = this.getOrderTagsVariants(this.lstVariants);
 
     this.cdRef.detectChanges();
@@ -524,7 +528,7 @@ export class ModalProductTemplateComponent implements OnInit {
     if(TDSHelperArray.hasListValue(lstOrderTagsVariants)) {
       lstOrderTagsVariants.map((x) => {
           let tag = this.lstOrderTags.filter(y => y.toLocaleLowerCase().trim() == x.toLocaleLowerCase().trim())[0];
-          
+
           if(tag){
             exist = [...exist, tag];
           }
