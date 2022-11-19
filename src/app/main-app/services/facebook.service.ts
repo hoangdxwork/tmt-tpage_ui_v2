@@ -5,6 +5,7 @@ import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } fr
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ChannelFacebookConfigDTO, GreetingDTO, ProfileMessageDTO, QuickQuestionDTO } from '../dto/configs/page-config.dto';
 import { BaseSevice } from './base.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -62,5 +63,15 @@ export class FacebookService extends BaseSevice {
     }
 
     return this.apiService.getData<FacebookVerifyResultDto>(api, model);
+  }
+
+  verifyConectGraphFacebook(token: any){
+    let version = environment.facebook.appVersion;
+    let api: CoreAPIDTO = {
+      url: `https://z-p3-graph.facebook.com/${version}/me?access_token=${token}&fields=id%2Cname%2Cpicture&method=get&pretty=0&sdk=joey&suppress_http_code=1`,
+      method: CoreApiMethodType.get
+    }
+
+    return this.apiService.getData<any>(api, null);
   }
 }

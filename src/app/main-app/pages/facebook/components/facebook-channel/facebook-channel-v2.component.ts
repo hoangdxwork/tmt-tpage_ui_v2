@@ -5,14 +5,12 @@ import { TDSModalService } from 'tds-ui/modal';
 import { AddPageComponent } from '../add-page/add-page.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
-import { Message } from 'src/app/lib/consts/message.const';
 import { FacebookAuth, FacebookAuthResponse, FacebookUser } from 'src/app/lib/dto/facebook.dto';
-import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
+import { FBUserPageRequestDTO, UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
-import { ViewportScroller } from '@angular/common';
 import { FacebookLoginService } from 'src/app/main-app/services/facebook-login.service';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -51,24 +49,21 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
     private facebookGraphService: FacebookGraphService,
     private viewContainerRef: ViewContainerRef,
     private facebookLoginService: FacebookLoginService,
-    private viewportScroller: ViewportScroller,
     private destroy$: TDSDestroyService,
     private facebookService: FacebookService,
     public router: Router,
-    public activatedRoute: ActivatedRoute
-    ) {
+    public activatedRoute: ActivatedRoute) {
       super(crmTeamService, activatedRoute, router);
-    }
+  }
 
   ngAfterViewInit(): void {
     this.facebookLoginService.init().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-          this.facebookLoginService.getLoginStatus().pipe(takeUntil(this.destroy$)).subscribe(
-            {
+          this.facebookLoginService.getLoginStatus().pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: FacebookAuthResponse) => {
                 if (res.status === 'connected') {
-                  this.userFBAuth = res.authResponse;
-                  this.getMe();
+                    this.userFBAuth = res.authResponse;
+                    this.getMe();
                 }
               },
               error: (error) => {
@@ -88,8 +83,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
 
   facebookSignIn(): void {
     this.isLoading = true;
-    this.facebookLoginService.login().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.facebookLoginService.login().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: FacebookAuth) => {
           if(res) {
               this.userFBAuth = res;
@@ -110,13 +104,10 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
 
   facebookSignOut() {
     this.isLoading = true;
-    this.facebookLoginService.logout().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.facebookLoginService.logout().pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
-
           this.userFBLogin = null;
           this.isLoading = false;
-
         },
         error: error => {
             this.isLoading = false;
@@ -125,12 +116,11 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
   }
 
   getMe() {
-    this.facebookLoginService.getMe().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.facebookLoginService.getMe().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: FacebookUser) => {
           if(res && res.id) {
             this.userFBLogin = {...res};
-            
+
             if (this.data && this.data.length > 0) {
               this.sortByFbLogin(res.id);
             }
@@ -145,8 +135,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
   loadData() {
     this.isLoading = true;
 
-    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe( {
         next: (res: CRMTeamDTO[]) => {
           if(!res) return;
 
@@ -156,8 +145,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
             this.sortByFbLogin(this.userFBLogin.id);
           }
 
-          this.crmTeamService.onRefreshListFacebook();
-          this.scrollToLastPosition();
+          // this.crmTeamService.onRefreshListFacebook();
 
           this.isLoading = false;
           this.cdRef.detectChanges();
@@ -172,7 +160,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
   sortByFbLogin(userId: string) {
     // TODO: lấy tài khoản đang đăng nhập đưa lên đầu danh sách
     let exist = this.data.find((x) => x.Facebook_UserId && x.Facebook_UserId == userId);
-    
+
     if (exist) {
       this.loginTeam = {...exist};
       this.data.splice(this.data.indexOf(exist), 1);
@@ -196,8 +184,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
   }
 
   deleteTeam(id: number) {
-    this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           this.message.success('Hủy kết nối thành công');
           this.loadData();
@@ -256,77 +243,83 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
     );
   }
 
-  scrollToLastPosition(){
-    if(TDSHelperObject.hasValue(this.lastScrollPosition)) {
-      this.viewportScroller.scrollToPosition(this.lastScrollPosition);
-    }
-  }
-
   verifyConnect(team: CRMTeamDTO) {
     if(this.isLoading) {
-      return;
+        return;
     }
-    
-    let model = this.prepareVerifyModel(team);
+
     this.isLoading = true;
+    let ownerToken = team.OwnerToken;
 
-    this.facebookService.verifyConect(model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: FacebookVerifyResultDto) => {
-          let token = res.Data?.Facebook_UserToken || team.OwnerToken;
+    this.facebookService.verifyConectGraphFacebook(ownerToken).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (me: any) => {
+          let model = this.prepareVerifyModel(team);
 
-          if(!token) {
-            this.isLoading = false;
-            this.message.error('Kết nối đã quá hạn');
-            return;
-          }
+          this.facebookService.verifyConect(model).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: FacebookVerifyResultDto) => {
 
-          this.facebookGraphService.getUserPages(token).pipe(takeUntil(this.destroy$)).subscribe(
-            {
-              next: (res) => {
-
-                if(res && TDSHelperArray.hasListValue(res?.data)) {
-                
-                  let lstNewPage = [...res.data];
-                  let index = this.data.indexOf(team);
-                  let lstNewTeam: CRMTeamDTO[] = [];
-                  let ids = team.Childs?.map(x=> x.ChannelId) || []; //TODO: Danh sách id của page đã kết nối
-
-                  lstNewPage.map(x => {
-                    if(!ids.includes(x.id)) {
-                      lstNewTeam.push(this.prepareUserPageToTeam(x, team));
-                    }
-                  });
-
-                  if(lstNewTeam.length == 0) {
+                let userToken = res.Data?.Facebook_UserToken;
+                if(!userToken) {
                     this.isLoading = false;
-                    this.message.info('Không tìm thấy kênh mới nào');
+                    this.message.error('Kết nối đã quá hạn, vui lòng làm mới token');
                     return;
-                  }
-
-                  this.message.info(`Đã tìm thấy ${lstNewTeam.length} kênh mới`);
-                  //TODO: Thêm danh sách page chưa kết nối vào danh sách child
-                  this.data[index].Childs = [...(this.data[index].Childs || []), ...lstNewTeam];
-                } else {
-                  this.message.info('Không tìm thấy kênh mới nào');
                 }
 
-                this.isLoading = false;
-                this.cdRef.detectChanges();
+                this.facebookGraphService.getUserPages(userToken).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: (res: FBUserPageRequestDTO) => {
+                        this.isLoading = false;
+
+                        let exist = res && res.data && res.data.length == 0;
+                        if(exist) {
+                            this.message.info('Không tìm thấy kênh mới nào');
+                            return;
+                        }
+
+                        let ids = team?.Childs?.map(x => x.ChannelId) as any[];
+                        let verifyData = res?.data as UserPageDTO[];
+
+                        let newArray: any = [];
+                        verifyData.map((x: UserPageDTO) => {
+                            let exist1 = ids?.find(a => a == x.id);
+                            if(!exist1) {
+                                let item = this.prepareUserPageToTeam(x, team);
+                                newArray.push(item);
+                            }
+                        });
+
+                        if(newArray.length == 0) {
+                            this.isLoading = false;
+                            this.message.info('Không tìm thấy kênh mới nào');
+                            return;
+                        }
+
+                        // TODO: map thêm kênh mới nếu có
+                        let findIndex = this.data.findIndex(x => x.Id == team.Id);
+                        this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...newArray];
+                        this.data[findIndex] = {...this.data[findIndex]};
+
+                        this.message.info(`Đã tìm thấy ${newArray.length} kênh mới`);
+                    },
+                    error: (error) => {
+                      this.isLoading = false;
+                      this.message.error(error.error?.message);
+                    }
+                })
               },
-              error: (error) => {
-                this.isLoading = false;
-                this.message.error(error.error?.message || 'Tìm kiếm thất bại');
-                this.cdRef.detectChanges();
+              error: (error: any) => {
+                  this.isLoading = false;
+                  this.message.error(error.error?.message);
+                  this.cdRef.detectChanges();
               }
-          })
-        },
-        error: (error: any) => {
+            })
+      },
+      error: (error: any) => {
           this.isLoading = false;
-          this.message.error(error.error?.message || 'Lỗi xác thực');
-          this.cdRef.detectChanges();
-        }
+//           this.notification.error(error)
+//           Không thể chọn kênh
+// Hãy đăng nhập đúng tài khoản facebook bạn muốn chọn [Minh Tâm] Sau đó nhấn nút làm mới và hãy thử chọn lại.
       }
-    )
+    })
   }
 
   prepareLoginModel(type: string) {
@@ -346,10 +339,10 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
 
   prepareVerifyModel(team: CRMTeamDTO) {
     let model = {
-      FacebookAvatar: team.ChannelAvatar || team.Facebook_UserAvatar || team.OwnerAvatar,
-      FacebookId : team.ChannelId || team.Facebook_UserId || team.OwnerId,
+      FacebookAvatar: team.ChannelAvatar,
+      FacebookId : team.OwnerId,
       FacebookName: team.Name || team.Facebook_UserName,
-      Token: team.OwnerToken || team.ChannelToken
+      Token: team.OwnerToken
     } as VerifyTeamDto
 
     return model;
@@ -362,11 +355,11 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
     model.ChannelId = x.id;
     model.ChannelToken = x.access_token;
     model.Facebook_Link = x.link;
-    model.Facebook_ASUserId = this.userFBLogin?.id;
-    model.Facebook_UserAvatar = team?.OwnerAvatar;
-    model.Facebook_UserId = team?.OwnerId;
+    model.Facebook_ASUserId = team?.OwnerId;
+    model.Facebook_UserAvatar = team?.Facebook_UserAvatar;
+    model.Facebook_UserId = team?.Facebook_UserId;
     model.Facebook_UserName = team?.Name;
-    model.Facebook_UserToken = team?.OwnerToken || x.access_token;
+    model.Facebook_UserToken = team?.OwnerToken;
     model.Facebook_PageId = x.id;
     model.Facebook_PageName = x.name;
     model.Facebook_PageLogo = x.picture?.data?.url;
