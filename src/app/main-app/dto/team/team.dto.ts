@@ -49,7 +49,7 @@ export interface CRMTeamDTO {
   IsDefault: boolean;
   IsConverted: boolean;
   Facebook_TokenExpired?: any;
-  Facebook_TypeId: number;
+  Facebook_TypeId: any;
   ParentId?: any;
   ParentName?: any;
   Facebook_Configs?: any;
