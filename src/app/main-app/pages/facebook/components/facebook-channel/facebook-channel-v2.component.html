@@ -28,14 +28,9 @@
 
                     <!--TODO: Kết nối trang -->
                     <div>
-                      <div *ngIf="team.Active" class="flex gap-x-2 items-center">
+                      <div class="flex gap-x-2 items-center">
                         <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                        <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
-                      </div>
-
-                      <div *ngIf="!team.Active" class="flex gap-x-2 items-center">
-                        <span class="text-caption-2 text-neutral-1-400">Chưa có trang nào được kết nối</span>
-                        <span (click)="showModalAddPage(team)" class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
+                        <span class="text-caption-2 font-semibold text-primary-1">{{ team.Active ? 'Đã kết nối' : 'Chưa kết nối' }}</span>
                       </div>
                     </div>
                   </div>
@@ -85,12 +80,13 @@
 
                   <!-- TODO: button đã kết nối -->
                   <div *ngIf="child.Active" class="flex items-center">
-                    <!-- <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                          bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
+                    <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
+                          bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1"
+                          (click)="refreshPageToken(team.Id, child.Id)">
                       <span class="flex items-center">
                         <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                       </span>
-                    </button> -->
+                    </button>
                     <button tds-button color="custom" (click)="unconnectTeam(child)" rounded="!rounded-full"
                       class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
                           focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
@@ -115,7 +111,14 @@
               <div *ngIf="!team.Childs || team.Childs.length == 0" class="w-full p-4">
                 <tds-empty notFoundImage="/assets/imagesv2/facebook/flag.png" [notFoundContent]="contentTpl">
                   <ng-template #contentTpl>
-                    <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
+                    <div class="flex flex-col items-center justify-center gap-y-2">
+                      <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
+                      <button tds-button color="primary" (click)="verifyConnect(team)">
+                        <span class="flex items-center">
+                          <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối trang
+                        </span>
+                      </button>
+                    </div>
                   </ng-template>
                 </tds-empty>
               </div>
@@ -123,7 +126,7 @@
           </tds-collapse-panel>
         </tds-collapse>
         <!--TODO Page chưa kết nối -->
-        <div class="p-4 border-t border-neutral-2-100">
+        <div class="p-4 border-t border-neutral-2-100" *ngIf="team.Childs && team.Childs.length > 0">
           <span class="cursor-pointer text-success-400 text-xs" (click)="verifyConnect(team)">Xem thêm Page chưa kết nối</span>
         </div>
       </div>
@@ -151,12 +154,15 @@
       <ng-template #userLoggedFacebook>
         <div class="bg-white rounded-xl p-4 pt-10 flex flex-col items-center">
           <div>
-            <img class="text-white avatar-fb w-[132px] h-[132px] rounded-full" src="{{ userFBLogin?.picture?.data.url || 'error-link'}}" 
+            <img class="text-white avatar-fb w-[132px] h-[132px] rounded-full" [src]="userFBLogin?.picture?.data.url" 
               [ngClass]="'border-3 border-white ring-2 ring-primary-1'">
           </div>
           <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">Xin chào, {{ userFBLogin?.name }}!</span>
           <span class="mt-2 text-body-2 text-neutral-1-400">tmt30.tpos.vn</span>
-          <div class="mt-6 text-title-1 font-semibold text-success-400" *ngIf="loginTeam?.Childs">Số trang Facebook đang quản lí</div>
+
+          <div class="mt-6 text-title-1 font-semibold text-success-400" 
+            *ngIf="loginTeam != null && loginTeam?.Childs">Số trang Facebook đang quản lí</div>
+
           <tpage-avatar-group-facebook *ngIf="loginTeam?.Childs">
             <tpage-avatar-facebook *ngFor="let child of loginTeam?.Childs || []; let i=index" 
               [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'sm'">
@@ -171,10 +177,10 @@
         </div>
       </ng-template>
 
-      <!--TODO Chuyển đổi tài khoản -->
-      <!-- <div class="pt-4">
-        <button tds-button class="w-full" color="primary">Chuyển đổi tài khoản</button>
-      </div> -->
+      <!--TODO: thêm tài khoản vào danh sách -->
+      <div class="pt-4" *ngIf="loginTeam == null && userFBLogin != null" (click)="onFacebookConnected()">
+        <button tds-button class="w-full" color="primary">Thêm vào TPage</button>
+      </div>
     </div>
 
   </div>

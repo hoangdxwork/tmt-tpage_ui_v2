@@ -78,10 +78,11 @@ export class AddPageComponent implements OnInit {
   }
 
   prepareFacebookModel(data: CRMTeamDTO) {
+    
     return {
         Id: 0,
         ParentId: data.ParentId,
-        Facebook_TypeId: 'Page',
+        Facebook_TypeId: data.Facebook_TypeId,
         Facebook_UserId: data.Facebook_UserId,
         Facebook_ASUserId: data.Facebook_ASUserId,
         Facebook_UserToken: data.Facebook_UserToken,
