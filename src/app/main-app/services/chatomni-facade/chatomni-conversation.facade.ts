@@ -32,6 +32,8 @@ export class ChatomniConversationFacade extends BaseSevice  {
 
   // TODO: sự kiên đồng bộ dữ liệu
   public onSyncConversationInfo$ = new EventEmitter<any | null>();
+  public onSyncConversationOrder$ = new EventEmitter<any | null>();
+  public onSyncConversationPartner$ = new EventEmitter<any | null>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

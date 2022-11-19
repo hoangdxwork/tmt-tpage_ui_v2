@@ -3,9 +3,10 @@ import { DeletedOrderHistoriesDTO } from "@app/dto/order/order-deletedHistories.
 import { paramsOrderDeteledHistoriesDTO } from "@app/dto/order/order-order-deleted.dto";
 import { FilterObjDTO, OrderStatusDTO, OrderStatusModalDTO } from "@app/dto/order/order-status.dto";
 import { QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
+import { CRMTeamType } from "@app/dto/team/chatomni-channel.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { FilterDataRequestDTO } from "@core/dto/dataRequest.dto";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, OperatorEnum, TCommonService } from "src/app/lib";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
@@ -138,6 +139,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  apiInsertFromMessage(data: any, type: string) {
+      switch(type) {
+        case CRMTeamType._TShop:
+          return this.insertFromChannelMessage(data);
+        default:
+          return this.insertFromMessage(data);
+      }
+  }
+
   insertFromMessage(data: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromMessage?$expand=Details,User`,
@@ -153,7 +163,16 @@ export class SaleOnline_OrderService extends BaseSevice {
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getData<any>(api, data);
+    return this.apiService.getData<any>(api, {model: data});
+  }
+
+  apiInsertFromComment(data: any, isIncrease: boolean = false, type: string) {
+    switch(type) {
+      case CRMTeamType._TShop:
+        return  this.insertFromChannelComment(data, isIncrease);
+      default:
+        return this.insertFromPost(data, isIncrease);
+    }
   }
 
   insertFromPost(data: any, isIncrease: boolean = false): Observable<any> {
