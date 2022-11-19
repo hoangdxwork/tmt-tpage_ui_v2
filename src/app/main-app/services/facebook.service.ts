@@ -1,3 +1,4 @@
+import { FacebookVerifyResultDto } from './../dto/team/team.dto';
 import { Injectable } from '@angular/core';
 import {  Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -60,6 +61,6 @@ export class FacebookService extends BaseSevice {
       method: CoreApiMethodType.post
     }
 
-    return this.apiService.getData<ChannelFacebookConfigDTO>(api, model);
+    return this.apiService.getData<FacebookVerifyResultDto>(api, model);
   }
 }

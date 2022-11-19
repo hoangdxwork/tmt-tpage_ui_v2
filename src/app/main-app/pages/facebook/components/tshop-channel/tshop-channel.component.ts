@@ -413,14 +413,14 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     return model;
   }
 
-  showModalAddPage(data: UserPageDTO, user: CRMTeamDTO): void {
+  showModalAddPage(data: CRMTeamDTO, user: CRMTeamDTO): void {
     const modal = this.modal.create({
       title: 'Thêm Page',
       content: AddPageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         data: data,
-        user: user,
+        // user: user,
       },
     });
 
