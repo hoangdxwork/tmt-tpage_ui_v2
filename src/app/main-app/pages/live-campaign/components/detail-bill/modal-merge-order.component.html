@@ -1,25 +1,32 @@
 <div class="w-full h-full">
-    <tds-table #basicTable [listData]="lstPartners" [loading]="isLoading" [scroll]="{ y:'500px' }" [frontPagination]="false" [showPagination]="false">
+    <tds-table #rowSelectionTable [listData]="lstPartners" [loading]="isLoading" [scroll]="{ y:'500px' }" [frontPagination]="false" [showPagination]="false">
         <thead>
             <tr>
-                <th width="3%"></th>
+                <th width="3%" [tdsLeft]="true"></th>
+                <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)"
+                    [width]="'5%'" [align]="'center'" [tdsLeft]="true"></th>
                 <th width="5%">STT</th>
                 <th width="24%">Tên khách hàng</th>
                 <th width="18%">Điện thoại</th>
-                <th width="40%">Địa chỉ</th>
+                <th width="35%">Địa chỉ</th>
                 <th width="10%" [align]="'center'">Thao tác</th>
             </tr>
         </thead>
         <tbody>
-            <ng-template ngFor let-data [ngForOf]="basicTable.data" let-i="index">
-                <tr class="text-body-2 text-neutral-900 font-regular">
-                    <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)"></td>
+            <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-i="index">
+                <tr class="text-body-2 text-neutral-900 font-regular" [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
+                    <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)" 
+                        [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' "></td>
+                    <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
+                        class="text-center" [tdsLeft]="true"
+                        [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                    </td>
                     <td>{{ i + 1 }}</td>
                     <td>{{ data.DisplayName || data.Name }}</td>
                     <td>{{ data.Phone }}</td>
                     <td>{{ data.Street }}</td>
                     <td class="text-center">
-                        <button tds-button color="primary" size="sm" class="text-white" (click)="mergeOrder(data)" [disabled]="key != data.Id">
+                        <button tds-button color="primary" size="sm" class="text-white" (click)="mergeOrder(data.Id)">
                             Gộp đơn
                         </button>
                     </td>
@@ -67,6 +74,7 @@
     </tds-table>
 </div>
 
-<div class="w-full flex justify-end p-4" *tdsModalFooter>
+<div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
+    <button tds-button class="min-w-[100px]" color="primary" (click)="mergeListOrders()" *ngIf="setOfCheckedId.size > 0">Gộp đơn</button>
     <button tds-button class="min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
 </div>
