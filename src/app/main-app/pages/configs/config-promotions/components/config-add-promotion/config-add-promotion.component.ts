@@ -196,7 +196,7 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
     this.dataDefault.DiscountPercentage = formValue.DiscountPercentage;
 
     this.dataDefault.DiscountApplyOn = formValue.DiscountApplyOn;
-    this.dataDefault.DiscountSpecificProductId = formValue.DiscountSpecificProduct?.Id;
+    this.dataDefault.DiscountSpecificProductId = formValue.DiscountSpecificProductId;
     this.dataDefault.DiscountMaxAmount = formValue.DiscountMaxAmount;
     this.dataDefault.DiscountFixedAmount = formValue.DiscountFixedAmount;
 
