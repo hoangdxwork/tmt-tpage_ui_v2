@@ -4,8 +4,8 @@
       <div *ngFor="let team of data; let index = index"
           class="bg-white rounded-xl w-full border border-neutral-2-100">
           <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
-            <tds-collapse-panel [header]="header" [active]="getIsIconCollapse(team.Id)" [disabled]="false"
-              [expandedIcon]="expandedIcon" [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="'p-0'">
+            <tds-collapse-panel [header]="header" [tdsClass]="'p-0'"
+              [active]="team.Childs && team.Childs?.length && team.Childs.length > 0 ? true : false">
               <!--TODO Header -->
               <ng-template #header>
                 <div class="flex w-full h-full justify-between items-center pr-4">
@@ -27,11 +27,11 @@
                       <div class="text-title-1 font-sans font-semibold"> {{ team?.Name }} </div>
   
                       <!--TODO Đã kết nối trang -->
-                      <div *ngIf="team.Active">
-                        <div *ngIf="(lstData[team.Id].data.length > 0); else connect"
-                          class="flex gap-x-2 items-center">
+                      <div>
+                        <div class="flex gap-x-2 items-center">
                           <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
-                          <span class="text-caption-2 font-semibold text-primary-1">Đã kết nối</span>
+                          <span class="text-caption-2 font-semibold"
+                            [ngClass]="team.Active ? 'text-primary-1' : 'text-error-400'">{{ team.Active ? 'Đã kết nối' : 'Chưa kết nối' }}</span>
                         </div>
                       </div>
   
@@ -39,7 +39,7 @@
                         <!--TODO Chưa kết nối trang -->
                         <div class="flex gap-x-2 items-center">
                           <span class="text-caption-2 text-neutral-1-400">Chưa có trang nào được kết nối</span>
-                          <span (click)="loadPageNotConnect(team, $event)" class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
+                          <span (click)="loadPageNotConnect(team)" class="text-caption-2 font-semibold text-primary-1">Kết nối trang</span>
                         </div>
                         <!--TODO Đang ẩn -->
                         <!-- <div class="flex gap-x-2 items-center">
@@ -61,7 +61,7 @@
                           hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                       <i class="tdsi-eye-close-fill text-xl leading-none"></i>
                     </button>
-                    <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" (click)="unConnected(team.Id, team.Name, $event)"
+                    <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" (click)="unConnected(team)"
                       class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                           hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                       <i class="tdsi-break-link-fill text-xl leading-none"></i>
@@ -70,16 +70,11 @@
                 </div>
               </ng-template>
   
-              <!--TODO Header Icon -->
-              <ng-template #expandedIcon>
-                <div class="tdsi-arrow-up-line text-xl text-neutral-1-500"></div>
-              </ng-template>
-  
               <div class="flex flex-col w-full gap-4 border-t border-neutral-2-100">
                 <!--TODO Page đã kết nối -->
-                <div *ngIf="((lstData[team.Id].data.length > 0) || (lstData[team.Id].notConnected.length > 0)); else notPageConnected"
+                <div *ngIf="team.Childs && team.Childs.length > 0; else notPageConnected"
                   class="px-4 grid grid-cols-1 divide-y">
-                  <div *ngFor="let child of lstData[team.Id].data" class="flex justify-between items-center px-10 py-4">
+                  <div *ngFor="let child of team.Childs" class="flex justify-between items-center px-10 py-4">
                     <div class="flex gap-4 items-center">
                       <div class="relative">
                         <tpage-avatar-facebook [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'lg'">
@@ -111,7 +106,7 @@
                           <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                         </span>
                       </button> -->
-                      <button tds-button color="custom" (click)="unConnected(team.Id, team.Name, $event)" rounded="!rounded-full"
+                      <button tds-button color="custom" (click)="unConnected(team)" rounded="!rounded-full"
                         class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
                             focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
                         <span class="flex items-center">
@@ -121,38 +116,14 @@
                     </div>
   
                     <!--TODO Chưa kết nối -->
-                    <!-- <button tds-button color="primary">
+                    <div *ngIf="!child.Active" class="flex items-center">
+                      <button tds-button color="primary" (click)="showModalAddPage(child)">
                         <span class="flex items-center">
                           <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
                         </span>
-                      </button> -->
-                  </div>
-                  <div *ngFor="let pageNot of lstData[team.Id].notConnected" class="flex justify-between items-center px-10 py-4">
-                    <div class="flex gap-4 items-center">
-                      <div class="relative">
-                        <tds-avatar size="lg" class="text-white" tdsSrc="{{ pageNot?.picture?.data?.url || 'error-link'}}">
-                        </tds-avatar>
-                        <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
-                          <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
-                        </div>
-                      </div>
-                      <div class="flex flex-col gap-1.5 justify-center">
-                        <div class="text-neutral-1-900 font-sans font-semibold text-body-2">{{ pageNot.name }}</div>
-  
-                        <!--TODO Chưa kết nối -->
-                        <div class="flex gap-2 items-center">
-                          <div class="tdsi-break-link-fill text-neutral-1-400 text-base"></div>
-                          <div class="text-body-2 text-neutral-1-900 font-regular">Chưa kết nối</div>
-                        </div>
-                      </div>
-                    </div>
-  
-                    <!--TODO Chưa kết nối -->
-                    <button tds-button color="primary" (click)="showModalAddPage(pageNot, team)">
-                      <span class="flex items-center">
-                        <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
-                      </span>
                     </button>
+                    </div>
+                    
                   </div>
                 </div>
   
@@ -170,9 +141,9 @@
             </tds-collapse-panel>
           </tds-collapse>
           <!--TODO Page chưa kết nối -->
-          <div *ngIf="lstData[team.Id].notConnected.length < 1" class="p-4 border-t border-neutral-2-100">
+          <div *ngIf="team.Childs && team.Childs.length > 0" class="p-4 border-t border-neutral-2-100">
             <!--TODO Xem thêm -->
-            <span class="cursor-pointer text-success-400 text-xs" (click)="loadPageNotConnect(team, $event)">Xem thêm Page chưa kết nối</span>
+            <span class="cursor-pointer text-success-400 text-xs" (click)="loadPageNotConnect(team)">Xem thêm Page chưa kết nối</span>
   
             <!--TODO Ẩn  -->
             <!-- <span class="cursor-pointer text-success-400 text-xs">Ẩn Page chưa kết nối</span> -->
@@ -224,7 +195,7 @@
   </div>
 
   <!--TODO: Empty -->
-  <div *ngIf="!data || data.length < 1 && !isLoadChannel" class="h-full w-full px-4 pt-4">
+  <div *ngIf="!userTShopLogin || !userTShopLogin.Id" class="h-full w-full px-4 pt-4">
     <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
       <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl"
       [notFoundFooter]="footerTpl">

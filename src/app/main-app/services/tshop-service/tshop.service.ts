@@ -16,7 +16,7 @@ export class TShopService  {
   private _currentToken!: string | null;
   private _userTShopLogin!: TUserDto | null;
   private readonly currentUser$ = new ReplaySubject<TUserDto | null>(1);
-  private readonly cacheTShopUser = '_cache_TShop_user';
+  // private readonly cacheTShopUser = '_cache_TShop_user';
 
   constructor(
     private message: TDSMessageService
@@ -78,23 +78,23 @@ export class TShopService  {
     this.onUpdateUser(null);
   }
 
-  setCacheTShopUser(user: TUserDto) {
-    let data = JSON.stringify(user);
-    localStorage.setItem(this.cacheTShopUser, data);
-  }
+  // setCacheTShopUser(user: TUserDto) {
+  //   let data = JSON.stringify(user);
+  //   localStorage.setItem(this.cacheTShopUser, data);
+  // }
 
-  getCacheTShopUser(): TUserDto | null {
-    let data = localStorage.getItem(this.cacheTShopUser);
+  // getCacheTShopUser(): TUserDto | null {
+  //   let data = localStorage.getItem(this.cacheTShopUser);
 
-    if(data) {
-      let user = JSON.parse(data);
-      return user;
-    } else {
-      return null;
-    }
-  }
+  //   if(data) {
+  //     let user = JSON.parse(data);
+  //     return user;
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
-  removeCacheTshopUser() {
-    localStorage.removeItem(this.cacheTShopUser);
-  }
+  // removeCacheTshopUser() {
+  //   localStorage.removeItem(this.cacheTShopUser);
+  // }
 }

@@ -17,7 +17,6 @@ export class CRMTeamService extends BaseSevice {
   prefix: string = "odata";
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/crmteam";
-  private readonly __keyCacheFacebook_PageId = 'nearestFacebookPageId';
   private readonly __keyCacheTeamId = 'nearestTeamId';
 
   private readonly listFaceBook$ = new ReplaySubject<Array<CRMTeamDTO> | null>(1);
