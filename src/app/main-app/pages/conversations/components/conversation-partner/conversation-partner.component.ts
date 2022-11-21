@@ -214,7 +214,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
               this.tempPartner = {...this.partner}
             }
 
-            let csid = res.FacebookPSId;
+            let csid = res.FacebookPSId || res.FacebookASIds;
             this.onSyncConversationOrder(csid);
 
             this.isLoading = false;
@@ -439,7 +439,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           delete res['@odata.context'];
           this.message.success('Cập nhật khách hàng thành công');
 
-          let csid = res.FacebookPSId;
+          let csid = res.FacebookPSId || res.FacebookASIds;
           this.onSyncConversationOrder(csid);
 
           this.isEditPartner = false;
@@ -457,16 +457,18 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   onSyncConversationOrder(csid: any) {
-    this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$))
-      .subscribe({
-          next: (info: any) => {
+    setTimeout(() => {
+      this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
           },
           error: (error: any) => {
               this.message.error(error?.error?.message);
           }
-    })
+      })
+    }, 350);
   }
 
   prepareModel() {

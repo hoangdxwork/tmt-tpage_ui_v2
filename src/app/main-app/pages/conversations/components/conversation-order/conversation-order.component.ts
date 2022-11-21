@@ -1540,9 +1540,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSyncConversationPartner(csid: any, type?: string) {
-    this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$))
-      .subscribe({
-          next: (info: any) => {
+    setTimeout(() => {
+      this.chatomniConversationService.getInfo(this.team.Id, csid).subscribe({
+          next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
               this.chatomniConversationFacade.onSyncConversationPartner$.emit(info);
 
@@ -1553,7 +1553,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           error: (error: any) => {
               this.message.error(error?.error?.message);
           }
-    })
+      })
+    }, 350);
   }
 
 }

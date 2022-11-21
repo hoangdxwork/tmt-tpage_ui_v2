@@ -603,13 +603,18 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
-  loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[]) {
+  loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-    let order = orders[0] as any;
+
+    let order = null as any;
+    if(orders && orders.length > 0) {
+      order = orders[0] as any;
+    }
+
     this.prepareLoadTab(item, order, null);
   }
 
-  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | null){
+  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
   }
