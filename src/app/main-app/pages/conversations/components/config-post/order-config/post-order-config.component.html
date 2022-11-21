@@ -51,7 +51,7 @@
               </div>
           </div>
 
-          <button tds-button color="primary" (click)="loadConfigLiveCampaign(dataModel.LiveCampaignId)">
+          <button tds-button color="primary" (click)="loadConfigLiveCampaignV2(dataModel.LiveCampaignId)">
               <span class="flex items-center">
                   <i class="tdsi-download-fill text-lg leading-none mr-2"></i>Tải cấu hình
               </span>
@@ -154,7 +154,7 @@
                   <div *ngIf="item" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
 
                     <div class="flex gap-2.5 items-center">
-                      <tds-badge [count]="iconTemplate" (click)="showModalListProduct(item.IsActive ? item : null)">
+                      <tds-badge [count]="iconTemplate" *ngIf="!item.Product" (click)="showModalListProduct(i)">
                           <a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
                       </tds-badge>
 
@@ -170,7 +170,7 @@
                       </div>
 
                       <ng-template #notProduct>
-                          <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(item)">Chưa gán sản phẩm
+                          <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(i)">Chưa gán sản phẩm
                           </div>
                       </ng-template>
                     </div>

@@ -8,8 +8,8 @@ export interface OnSocketOnSaleOnline_OrderDto {
 export interface DataOrder{
     Id: string,
     Code: string,
-    Session: string,
-    SessionIndex: string,
+    Session: number,
+    SessionIndex: number,
     Facebook_PostId: string,
     Facebook_UserName: string,
     Facebook_ASUserId: string,

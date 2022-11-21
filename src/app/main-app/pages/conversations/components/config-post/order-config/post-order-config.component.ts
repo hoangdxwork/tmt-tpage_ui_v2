@@ -1,9 +1,7 @@
-import { UOM } from './../../../../../dto/product-template/product-tempalte.dto';
-import { Guid } from 'guid-typescript';
+import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToOrderDto } from './../../../../../dto/live-campaign/content-to-order.dto';
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
@@ -21,11 +19,12 @@ import { AutoOrderConfigDTO, AutoOrderProductDTO, TextContentToOrderDTO } from '
 import * as XLSX from 'xlsx';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ProductService } from '@app/services/product.service';
-import { LiveCampainGetWithDetailAttributesDto, LiveCampainGetWithDetailsDto } from '@app/dto/live-campaign/livecampain-detail-attributes.dto';
 import { CommonService } from '@app/services/common.service';
 import { GetInventoryDTO } from '@app/dto/product/product.dto';
 import { SharedService } from '@app/services/shared.service';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
+import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
+import { ProductTmlpAttributesDto } from '@app/dto/product-template/product-attribute.dto';
 
 @Component({
   selector: 'post-order-config',
@@ -143,15 +142,14 @@ export class PostOrderConfigComponent implements OnInit {
     this.isLoading = true;
     this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
-          this.dataModel = res;
+          this.dataModel = {...res};
 
+          this.dataModel.TextContentToOrders = [];
           if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
               this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
-          } else {
-              this.dataModel.TextContentToOrders = [];
           }
 
-          if(res.LiveCampaignId && Guid.isGuid(res.LiveCampaignId)) {
+          if(res.LiveCampaignId && res.LiveCampaignId) {
               this.loadLiveCampaignById(res.LiveCampaignId);
           }
 
@@ -182,6 +180,12 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   addContentToOrders() {
+    let exist = this.dataModel.TextContentToOrders.find(x => x.Product == null);
+    if(exist) {
+        this.message.error('Vui lòng hoàn thiện mẫu trống trước khi thêm mới');
+        return;
+    }
+
     let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
     let item = {
       Index: idx++,
@@ -418,8 +422,7 @@ export class PostOrderConfigComponent implements OnInit {
     return null;
   }
 
-  showModalListProduct(item: TextContentToOrderDTO | null) {
-    if(item) {
+  showModalListProduct(index: number) {
       const modal = this.modalService.create({
         title: 'Danh sách sản phẩm',
         content: ModalListProductComponent,
@@ -434,101 +437,101 @@ export class PostOrderConfigComponent implements OnInit {
       });
 
       modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) =>{
+        next: (res: any) => {
           if(TDSHelperObject.hasValue(res)) {
-              this.selectProduct(res, item);
+              this.selectProduct(res, index);
           }
         }
       });
-    }
   }
 
-  selectProduct(product: any, item: TextContentToOrderDTO) {
+  selectProduct(x: DataPouchDBDTO, index: number) {
     this.isLoading = true;
-    this.productService.getAttributeValuesById(product.Id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+    this.productService.getAttributeValuesByIdV2(x.Id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
 
-        let productConfig = {...this.prepareProduct(res)};
-        let content = this.getContentString(productConfig);
+          delete res['@odata.context'];
+          const product = {...res} as ProductTmlpAttributesDto;
+          let item = {...this.prepareProduct(product)} as TextContentToOrderDTO;
 
-        // TODO: Attributes
-        let name = productConfig.ProductTemplateName;
-        let contentWithAttributes = this.getcontentWithAttributesString(name) as string;
+          let content = this.generateTagDetail(product.DefaultCode, product.OrderTag, null, null);
+          item.Content = content?.join(',');
 
-        let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
-        if(idx >= 0) {
-          this.dataModel.TextContentToOrders[idx].Product = productConfig;
-          this.dataModel.TextContentToOrders[idx].ContentWithAttributes = contentWithAttributes || null;
-
-          if(item.Content) {
-              this.dataModel.TextContentToOrders[idx].Content =`${item.Content},${content.join(',')}`;
-          } else {
-              this.dataModel.TextContentToOrders[idx].Content = content.join(',') || null;
+          let productTmpl = product.ProductTmpl;
+          if(product.AttributeValues && product.AttributeValues.length > 0 && productTmpl) {
+              let attribute = this.generateTagDetail(productTmpl.DefaultCode, productTmpl.OrderTag, null, null);
+              item.ContentWithAttributes = attribute?.join(',');
           }
-        }
 
-        this.dataModel.TextContentToOrders[idx] = {...this.dataModel.TextContentToOrders[idx]}
-        this.isLoading = false;
-        this.cdRef.detectChanges();
+          let findIndex = this.dataModel.TextContentToOrders.findIndex(x => x.Product &&
+              x.Product?.ProductId == item.Product?.ProductId && x.Product?.UOMId == item.Product?.UOMId);
+
+          if(findIndex >= 0) {
+              this.message.info('Sản phẩm này đã tồn tại trong cấu hình');
+          } else {
+              this.dataModel.TextContentToOrders[index] = {...item};
+          }
+
+          this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders];
+          this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error:(err) => {
-        this.isLoading = false;
-        this.message.error(err?.error?.message || Message.ConversationPost.CanNotGetProduct);
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
+          this.cdRef.detectChanges();
       }
     });
   }
 
-  //TODO: chỉ sử dụng khi thêm mẫu sản phẩm
-  getContentString(productConfig: AutoOrderProductDTO) {
+  generateTagDetail(defaultCode: string, vTag: any, orderTag: any, uomName: any) {
+    let result: string[] = [];
 
-    let name = productConfig.ProductNameGet || productConfig.ProductTemplateName;
-    let code = productConfig.ProductCode;
+    if(TDSHelperString.hasValueString(defaultCode)) {
+        defaultCode = defaultCode.toLocaleLowerCase();
 
-    return this.handleWord(name, code);
-  }
-
-  getcontentWithAttributesString(productName: string, code?: string, tags?: string) {
-    let attributeValues = this.handleWord(productName, code);
-
-    if(attributeValues && attributeValues.length > 0) {
-        return attributeValues.join(",");
-    } else {
-        return null;
-    }
-  }
-
-  handleWord(productName: string, code?: string, tags?: string): string[] {
-    const data: string[] = [];
-
-    if(!TDSHelperString.hasValueString(productName)) {
-      return data;
+        if(TDSHelperString.hasValueString(uomName)) {
+            let x = `${defaultCode} ${uomName}`
+            result.push(x);
+        } else {
+            result.push(defaultCode);
+        }
     }
 
-    if(code) {
-      productName = productName.replace(`[${code}]`, "");
+    if(vTag) {
+        let tagArr1 = vTag.split(',');
+        tagArr1?.map((x: any) => {
+          if(!result.find(y => y == x)) {
+            x = x.toLocaleLowerCase();
+
+            if(TDSHelperString.hasValueString(uomName)) {
+                uomName = uomName.toLocaleLowerCase();
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+          }
+        })
     }
 
-    productName = productName.toLocaleLowerCase().trim();
-
-    let word = StringHelperV2.removeSpecialCharacters(productName);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
-
-    data.push(word);
-
-    if(!data.includes(wordNoSignCharacters)) {
-      data.push(wordNoSignCharacters);
+    if(orderTag) {
+        let tagArr2 = orderTag.split(',');
+        tagArr2?.map((x: any) => {
+          if(!result.find(y => y == x)) {
+              x = x.toLocaleLowerCase();
+              if(TDSHelperString.hasValueString(uomName)) {
+                  uomName = uomName.toLocaleLowerCase();
+                  let a = `${x} ${uomName}`;
+                  result.push(a);
+              } else {
+                  result.push(x);
+              }
+          }
+        })
     }
 
-    if(!data.includes(wordNameNoSpace)) {
-      data.push(wordNameNoSpace);
-    }
-
-    if(TDSHelperString.hasValueString(code) && code) {
-      data.push(code);
-    }
-
-    return [...data];
+    return [...result];
   }
 
   loadLiveCampaignById(id: string) {
@@ -541,144 +544,89 @@ export class PostOrderConfigComponent implements OnInit {
     })
   }
 
-  loadConfigLiveCampaign(id: string) {
+  loadConfigLiveCampaignV2(id: string) {
     this.isLoading = true;
+    this.liveCampaignService.getContentToOrders(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          let model = {...res} as ApiContentToOrdersV2Dto;
+          model.TextContentToOrders = [...res.TextContentToOrders];
+          model.Users = [...res.Users];
 
-    this.liveCampaignService.getDetailAndAttributes(id).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: LiveCampainGetWithDetailAttributesDto) => {
-            this.isLoading = false;
+          if(model.TextContentToOrders && model.TextContentToOrders.length == 0) {
+              this.message.error('Không tìm thấy sản phẩm nào');
+              this.isLoading = false;
+              this.cdRef.detectChanges();
+              return;
+          }
 
-            let details = res.Details?.filter(x => x.IsActive == true) as LiveCampainGetWithDetailsDto[];
-            if(details?.length == 0) {
-                this.notificationService.info('Tải cấu hình thất bại', 'Chiến dịch không có sản phẩm nào hoạt động');
-                this.cdRef.detectChanges();
-                return;
-            }
+          this.dataModel.Users = [];
+          if(model.Users && model.Users.length > 0) {
+              this.dataModel.IsEnableAutoAssignUser = true;
+              this.dataModel!.Users = [...model.Users];
+          }
 
-            let liveCampaign = res.LiveCampaign || {};
-            let users: ConfigUserDTO[] | null = [];
+          this.dataModel.TextContentToOrders = [];
+          model.TextContentToOrders?.map((x: TextContentToOrderV2Dto) => {
+              let item = {...x} as TextContentToOrderDTO;
+              this.dataModel.TextContentToOrders.push(item);
+          });
 
-            if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
-                this.dataModel.IsEnableAutoAssignUser = true;
-            }
-
-            this.dataModel.Users = [...users];
-            this.dataModel.TextContentToOrders = [];
-
-            details.map((x: LiveCampainGetWithDetailsDto) => {
-              let productConfig: AutoOrderProductDTO = {
-                  ProductId: x.ProductId,
-                  ProductCode: x.ProductCode,
-                  ProductName: x.ProductName,
-                  ProductTemplateName: x.ProductTemplateName,
-                  ProductNameGet: x.ProductNameGet,
-                  Price: x.Price,
-                  UOMId: x.UOMId,
-                  UOMName: x.UOMName,
-                  Quantity: x.Quantity,
-                  QtyLimit: x.LimitedQuantity,
-                  QtyDefault: x.Quantity,
-                  IsEnableRegexQty: liveCampaign && liveCampaign.EnableQuantityHandling ? true : false,
-                  IsEnableRegexAttributeValues: true,
-                  IsEnableOrderMultiple: false,
-                  AttributeValues: [],
-                  DescriptionAttributeValues: [],
-                  Tags: x.Tags
-              } as any;
-
-              if(x.AttributeValues && x.AttributeValues.length > 0) {
-                  productConfig.DescriptionAttributeValues = x.AttributeValues.map(x => {
-                      return `${x.NameGet}`;
-                  });
-
-                  productConfig.AttributeValues = x.AttributeValues.map(x => {
-                      return `${x.Name}`;
-                  })
-
-                  if(productConfig.AttributeValues && productConfig.AttributeValues.length > 0) {
-                      productConfig.IsEnableRegexAttributeValues = true;
-                  } else {
-                      productConfig.IsEnableRegexAttributeValues = false;
-                  }
-              }
-
-              let content = productConfig.Tags;
-
-              // TODO: Attributes
-              let name = productConfig.ProductTemplateName;
-              let contentWithAttributes = this.getcontentWithAttributesString(name);
-              let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
-
-              this.dataModel.TextContentToOrders.push({
-                Index: idx++,
-                Content: content || null,
-                ContentWithAttributes: contentWithAttributes || null,
-                IsActive: true,
-                Product: productConfig || null
-              })
-            })
-
-            this.notificationService.success('Tải cấu hình thành công', `Đã đồng bộ sản phẩm từ chiến dịch ${res.LiveCampaign.Name}`);
-            this.cdRef.detectChanges();
-        },
-        error:(error) => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-            this.cdRef.detectChanges();
-        }
-      });
+          this.isLoading = false;
+          this.notificationService.success('Tải cấu hình thành công', `Đã đồng bộ sản phẩm từ chiến dịch ${res.LiveCampaignName}`);
+          this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
+      }
+    })
   }
 
-  prepareProduct(model: any) {
-    const data = {} as AutoOrderProductDTO;
+  prepareProduct(model: ProductTmlpAttributesDto) {
+    let indexs = this.dataModel.TextContentToOrders.map(x => x.Index);
+    let item = {
+        Index: Number(Math.max(...indexs)),
+        IsActive: true,
+        Content: '',
+        ContentWithAttributes: '',
+        Product: null
+    } as TextContentToOrderDTO;
 
-    data.ProductId = model.Id;
-    data.ProductCode = model.DefaultCode || model.Barcode;
-    data.ProductName = model.Name;
-    data.ProductNameGet = model.NameGet;
-    data.ProductTemplateName = model.NameTemplate;
-    data.Price = model.LstPrice || model.PriceVariant|| 0;
-    data.UOMId = model.UOMId;
-    data.UOMName = model.UOMName || model?.UOM?.Name;
+    let productModel = {
+        ProductId: model.Id,
+        ProductCode: model.DefaultCode,
+        ProductName: model.NameGet,
+        ProductNameGet: model.NameGet,
+        Price: model.ListPrice || model.Price,
+        UOMId: model.UOMId,
+        UOMName: model.UOMName,
+        Quantity: 1,
+        QtyLimit: 0,
+        QtyDefault: 0,
+        IsEnableRegexQty: false,
+        IsEnableRegexAttributeValues: true,
+        IsEnableOrderMultiple: false,
+        AttributeValues: [],
+        DescriptionAttributeValues: []
+    } as ProductTextContentToOrderDto;
 
-    data.Quantity = 1;
-    if(this.lstInventory && this.lstInventory[data.ProductId]) {
-        data.Quantity =  Number(this.lstInventory[data.ProductId]?.QtyAvailable) > 0 ? Number(this.lstInventory[data.ProductId]?.QtyAvailable) : 1;
+    if(this.lstInventory && productModel && this.lstInventory[model.Id]) {
+        productModel.Quantity =  Number(this.lstInventory[model.Id]?.QtyAvailable) > 0 ? Number(this.lstInventory[model.Id]?.QtyAvailable) : 1;
     }
 
-    data.QtyLimit = model.LimitedQuantity || 0;
-    data.QtyDefault = model.Quantity;
-
-    if(model.IsEnableRegexAttributeValues) {
-      data.IsEnableRegexAttributeValues = model.IsEnableRegexAttributeValues;
+    if(model.AttributeValues && model.AttributeValues.length > 0) {
+        model.AttributeValues.map((x: any) => {
+            if(x && x.Name) {
+                productModel.AttributeValues.push(x.Name);
+            }
+            if(x && x.NameGet) {
+                productModel.DescriptionAttributeValues.push(x.NameGet);
+            }
+        })
     }
 
-    if(model.IsEnableRegexQty) {
-      data.IsEnableRegexQty = model.IsEnableRegexQty;
-    }
-
-    if(model.IsEnableOrderMultiple){
-      data.IsEnableOrderMultiple = model.IsEnableOrderMultiple;
-    }
-
-    data.DescriptionAttributeValues = [];
-    data.AttributeValues = [];
-
-    if(TDSHelperArray.hasListValue(model.AttributeValues)) {
-      model.AttributeValues.forEach((x:any) => {
-          if(x.Name){
-            data.AttributeValues.push(x.Name);
-          }
-
-          if(x.NameGet){
-            data.DescriptionAttributeValues.push(x.NameGet);
-          }
-      });
-
-      data.IsEnableRegexAttributeValues = true;
-    }
-
-    return {...data};
+    item.Product = {...productModel};
+    return {...item};
   }
 
   prepareUser(data: ConfigUserDTO[] | null) {
@@ -763,9 +711,9 @@ export class PostOrderConfigComponent implements OnInit {
       if(Number(findIndex) >= 0) {
         let product = model.TextContentToOrders[findIndex].Product;
         if(product) {
-          this.notificationService.info('Nội dung mẫu còn trống', `${product?.ProductName} dữ liệu không hợp lệ`);
+            this.notificationService.info('Mã chốt đơn không hợp lệ', `${product?.ProductName} dữ liệu không hợp lệ`, { duration: 3000});
         } else {
-          this.message.error('Vui lòng nhập nội dung mẫu đầy đủ');
+            this.message.error('Vui lòng nhập nội dung mẫu đầy đủ');
         }
         return 0;
       }

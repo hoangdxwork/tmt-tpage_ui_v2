@@ -26,7 +26,10 @@ import { PrepareCreateVariantHandler } from 'src/app/main-app/handler-v2/product
 @Component({
   selector: 'create-product-variant',
   templateUrl: './create-product-variant.component.html',
-  providers: [TDSDestroyService]
+  providers: [TDSDestroyService],
+  host: {
+    class: 'w-full h-full flex'
+  },
 })
 
 export class CreateProductVariantComponent implements OnInit {

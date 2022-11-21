@@ -1,12 +1,12 @@
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
-import { THelperDataRequest } from './../../../../../lib/services/helper-data.service';
-import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
-import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
-import { SyncCreateProductTemplateDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ModalListPostComponent } from './../../components/modal-list-post/modal-list-post.component';
-import { GetAllFacebookPostDTO } from './../../../../dto/live-campaign/getall-facebook-post.dto';
-import { OverviewReportDTO, ReportLiveCampaignDetailDTO } from './../../../../dto/live-campaign/report-livecampain-overview.dto';
-import { AddDrawerProductComponent } from './add-drawer-product.component';
+import { THelperDataRequest } from '../../../../../lib/services/helper-data.service';
+import { ProductIndexDBService } from '../../../../services/product-indexdb.service';
+import { ProductTemplateV2DTO } from '../../../../dto/product-template/product-tempalte.dto';
+import { SyncCreateProductTemplateDto } from '../../../../dto/product-pouchDB/product-pouchDB.dto';
+import { ModalListPostComponent } from '../../components/modal-list-post/modal-list-post.component';
+import { GetAllFacebookPostDTO } from '../../../../dto/live-campaign/getall-facebook-post.dto';
+import { OverviewReportDTO, ReportLiveCampaignDetailDTO } from '../../../../dto/live-campaign/report-livecampain-overview.dto';
+import { DrawerAddProductComponent } from './drawer-add-product.component';
 import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, ViewChild, ElementRef } from "@angular/core";
 import { LiveCampaignService } from "@app/services/live-campaign.service";
 import { TDSDestroyService } from "tds-ui/core/services";
@@ -212,41 +212,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-  initDetail(x?: ReportLiveCampaignDetailDTO | null) {
-    let item = this.fb.group({
-        Id: [null],
-        Index: [null],
-        Quantity: [0],
-        QueueQuantity: [0],
-        RemainQuantity: [0],
-        RemainRealQuantity: [0],
-        QuantityCanceled: [0],
-        ScanQuantity: [0],
-        UsedQuantity: [0],
-        Price: [null],
-        Note: [null],
-        ProductId: [null],
-        LiveCampaign_Id: [null],
-        ProductName: [null],
-        ProductNameGet: [null],
-        UOMId: [null],
-        UOMName: [null],
-        Tags: [null],
-        LimitedQuantity: [0],
-        ProductCode: [null],
-        ImageUrl: [null],
-        IsActive: [false],
-        ProductTmlpId: [null]
-    });
-
-    if(x) {
-        x.LiveCampaign_Id = this.liveCampaignId;
-        item.patchValue(x);
-    }
-
-    return item;
-  }
-
   removeDetail(item: ReportLiveCampaignDetailDTO) {
     if(this.checkIsEdit() == 0) return;
 
@@ -359,7 +324,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
               UOMName: x.UOMName,
-              Tags: x.DefaultCode,
+              Tags: x.Tags,
               LimitedQuantity: 0,
               ProductCode: x.DefaultCode,
               ImageUrl: x.ImageUrl,
@@ -400,7 +365,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
               x.ImageUrl = items[idx].ImageUrl;
 
               let formDetails = this.lstDetail as any[];
-              let index = formDetails.findIndex(f => f.Id == x.Id && f.ProductId == x.ProductId);
+              let index = formDetails.findIndex(f => f.UOMId == x.UOMId && f.ProductId == x.ProductId);
 
               if(Number(index) >= 0) {
                   index = Number(index);
@@ -433,45 +398,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
             this.cdRef.detectChanges();
         }
     })
-  }
-
-  generateTagDetail(productName: string, code: string, tags: string,  _attributes_length?: number) {
-    let result: string[] = [];
-
-    if(!TDSHelperString.hasValueString(productName)) {
-      return result;
-    }
-
-    productName = productName.replace(`[${code}]`, "");
-    productName = productName.trim();
-
-    let word = StringHelperV2.removeSpecialCharacters(productName);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
-
-    result.push(word);
-
-    if(!result.includes(wordNoSignCharacters)) {
-      result.push(wordNoSignCharacters);
-    }
-
-    if(!result.includes(wordNameNoSpace)) {
-      result.push(wordNameNoSpace);
-    }
-
-    if(TDSHelperString.hasValueString(code) && code && Number(_attributes_length) <= 1) {
-      result.push(code);
-    }
-
-    if(TDSHelperString.hasValueString(tags)){
-        let tagArr = tags.split(',');
-        tagArr.map(x => {
-          if(x && !result.find(y => y == x))
-              result.push(x);
-        })
-    }
-
-    return [...result];
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -522,18 +448,51 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       return;
     }
 
-    items.map((x: DataPouchDBDTO) => {
-      const qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id]?.QtyAvailable) > 0)
-        ? Number(this.lstInventory[x.Id]?.QtyAvailable) : 1;
+    this.lstVariants = [...items];
+    this.apiOrderTagbyIds(this.lstVariants);
+  }
 
-      x.QtyAvailable = qty;
+  apiOrderTagbyIds(model: DataPouchDBDTO[]) {
+    let listData = [...(model || [])];
+    let ids = listData.map(x => x.Id);
+
+    this.liveCampaignService.getOrderTagbyIds(ids).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.validateOrderTagbyIds(listData, res);
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  validateOrderTagbyIds(listData: DataPouchDBDTO[], tags: any) {
+    listData.map((x: DataPouchDBDTO) => {
+        // TODO: kiểm tra số lượng
+        const qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable) > 0)
+           ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+        x.QtyAvailable = qty;
+
+        // TODO: kiểm tra mã sp từ api
+        const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
+
+        // TODO: lọc sp trùng mã code để tạo tags
+        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        let uomName = '';
+        if(exist && exist.length > 1) {
+            uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
+        }
+
+        const orderTag = '';
+        let gTags = this.generateTagDetail(x.DefaultCode, vTag, orderTag, uomName);
+        x.Tags = gTags.join(',');
     });
 
-    this.lstVariants = [...items];
-    if(this.lstVariants && this.lstVariants.length == 1) {
-      let simpleDetail = [...this.lstVariants];
-      this.addItemProduct(simpleDetail)
-      this.closeFilterIndexDB();
+    this.lstVariants = [...listData];
+    if(listData && this.lstVariants.length == 1) {
+        let simpleDetail = [...this.lstVariants];
+        this.addItemProduct(simpleDetail)
+        this.closeFilterIndexDB();
     }
   }
 
@@ -679,7 +638,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     const modal = this.modal.create({
       title: 'Thêm mới sản phẩm',
-      content: AddDrawerProductComponent,
+      content: DrawerAddProductComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
     });
@@ -806,5 +765,49 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
 
     return datas;
+  }
+
+  generateTagDetail(defaultCode: string, vTag: string, orderTag: string, uomName: string) {
+    let result: string[] = [];
+
+    if(TDSHelperString.hasValueString(defaultCode)) {
+        defaultCode = defaultCode.toLocaleLowerCase();
+
+        if(TDSHelperString.hasValueString(uomName)) {
+            let x = `${defaultCode} ${uomName}`
+            result.push(x);
+        } else {
+            result.push(defaultCode);
+        }
+    }
+
+    if(vTag) {
+        let tagArr1 = vTag.split(',');
+        tagArr1?.map((x: any) => {
+          if(!result.find(y => y == x)) {
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+          }
+        })
+    }
+
+    if(orderTag) {
+        let tagArr2 = orderTag.split(',');
+        tagArr2?.map((x: any) => {
+          if(!result.find(y => y == x))
+            if(TDSHelperString.hasValueString(uomName)) {
+                let a = `${x} ${uomName}`;
+                result.push(a);
+            } else {
+                result.push(x);
+            }
+        })
+    }
+
+    return [...result];
   }
 }

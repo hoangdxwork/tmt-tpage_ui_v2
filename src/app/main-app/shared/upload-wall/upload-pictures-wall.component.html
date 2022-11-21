@@ -11,8 +11,8 @@
           </span>
         </div>
         <!-- button close -->
-        <div
-          class="text-heading-4 leading-none absolute top-1 right-1 cursor-pointer bg-black rounded-full bg-opacity-25 flex items-center"
+        <div [ngClass]="size > 64 ? 'text-heading-4': 'text-caption-1'"
+          class="leading-none absolute top-1 right-1 cursor-pointer bg-black rounded-full bg-opacity-25 flex items-center"
           (click)="removeImage(item)">
           <i class="tdsi-error-line text-white"></i>
         </div>
@@ -50,7 +50,7 @@
           <div class="flex items-center justify-center">
             <span class="tdsi-images-fill text-xl leading-5"></span>
           </div>
-          <div class="mt-2 text-body-2 font-regular">Upload</div>
+          <div *ngIf="size > 64" class="mt-2 text-body-2 font-regular">Upload</div>
         </div>
       </div>
     </ng-template>

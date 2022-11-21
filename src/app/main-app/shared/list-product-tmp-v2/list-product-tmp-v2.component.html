@@ -61,7 +61,7 @@
                         </button>
                     </div>
                 </ng-template>
-    
+
                 <tds-button-group>
                     <button tds-button type="button" color="secondary" tds-dropdown trigger="click"
                         [tdsDropdownMenu]="menu2">
@@ -69,7 +69,7 @@
                             {{currentType.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                         </span>
                     </button>
-    
+
                     <tds-dropdown-menu #menu2="tdsDropdownMenu">
                         <div class="w-full">
                             <div tds-dropdown-item *ngFor="let item of types" (click)="selectType(item)">{{item.text}}</div>
@@ -97,9 +97,9 @@
             <thead>
                 <tr>
                     <th width="20%">Ảnh</th>
-                    <th width="40%">Tên sản phẩm</th>
+                    <th width="32%">Tên sản phẩm</th>
                     <th width="20%">Đơn vị</th>
-                    <th width="20%">Giá</th>
+                    <th width="28%" [align]="'right'">Giá</th>
                 </tr>
             </thead>
             <tbody>
@@ -114,7 +114,7 @@
                         </td>
                         <td>
                             <div class="flex flex-col">
-                                <span class="text-body-2 w-[130px] truncate" tds-tooltip
+                                <span class="text-body-2 w-full truncate" tds-tooltip
                                     tooltipTitle="{{ data.NameGet }}">{{ data.NameGet }}</span>
                                 <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
                                     <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{ inventories[data.Id].QtyAvailable }}</span>
@@ -125,7 +125,7 @@
                             </div>
                         </td>
                         <td class="text-body-2">{{ data.UOMName }}</td>
-                        <td class="text-body-2">{{ data.Price | numberCustom }} đ</td>
+                        <td class="text-body-2 text-right">{{ data.Price | numberCustom }} đ</td>
                     </tr>
 
                     <ng-template #contentTemplate >

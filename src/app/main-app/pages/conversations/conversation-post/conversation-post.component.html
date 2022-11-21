@@ -125,7 +125,7 @@
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[50%] flex flex-col h-full overflow-hidden" *ngIf="currentPost && currentTeam">
             <div class="h-full w-full">
-                <conversation-post-view [data]="currentPost" [team]="currentTeam"></conversation-post-view>
+                <conversation-post-overview [data]="currentPost" [team]="currentTeam"></conversation-post-overview>
             </div>
             <div *ngIf="!currentPost" class="h-full w-full flex items-center justify-center">
                 <p class="text-body-2"> Hãy chọn một bài viết</p>
@@ -146,7 +146,7 @@
                     </ng-template>
 
                     <div class="flex pt-1 w-full h-[calc(100vh-109px)]">
-                        <conversation-order-list class="w-full" [data]="currentPost"></conversation-order-list>
+                        <conversation-order-list class="w-full" [data]="currentPost" *ngIf="selectedIndex == 0"></conversation-order-list>
                     </div>
                 </tds-tab>
 

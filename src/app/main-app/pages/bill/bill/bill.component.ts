@@ -63,6 +63,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     tags: [],
     status: [],
     hasTracking: null,
+    carrierId: -1,
     deliveryType: '',
     searchText: '',
     dateRange: {
@@ -304,6 +305,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (res: ODataFastSaleOrderDTO) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = [...res.value];
+        this.setOfCheckedId.clear();
+        this.refreshCheckedStatus();
       },
       error: (error: any) => {
         this.message.error(`${error?.error?.message}` || 'Tải dữ liệu phiếu bán hàng thất bại!');
@@ -543,6 +546,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       tags: [],
       status: [],
       hasTracking: null,
+      carrierId: -1,
       deliveryType: '',
       searchText: '',
       dateRange: {
@@ -681,10 +685,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onChangeCarrier(event: any) {
-    if (event && event.DeliveryType) {
-      this.filterObj.deliveryType = event.DeliveryType;
+    if (event && event.Id) {
+      this.filterObj.carrierId = event.Id;
     } else {
-      this.filterObj.deliveryType = '';
+      this.filterObj.carrierId = -1;
     }
     this.loadData(this.pageSize, this.pageIndex);
   }

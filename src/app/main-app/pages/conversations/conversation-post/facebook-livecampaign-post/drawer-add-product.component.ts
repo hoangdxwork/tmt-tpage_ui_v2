@@ -1,18 +1,18 @@
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
-import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
-import { TpageAddUOMComponent } from './../../../../shared/tpage-add-uom/tpage-add-uom.component';
-import { CreateVariantsModalComponent } from './../../../configs/components/create-variants-modal/create-variants-modal.component';
-import { ConfigAddAttributeProductModalComponent } from './../../../configs/components/config-attribute-modal/config-attribute-modal.component';
-import { TpageSearchUOMComponent } from './../../../../shared/tpage-search-uom/tpage-search-uom.component';
-import { TpageAddCategoryComponent } from './../../../../shared/tpage-add-category/tpage-add-category.component';
-import { ProductUOMService } from './../../../../services/product-uom.service';
-import { ProductCategoryService } from './../../../../services/product-category.service';
-import { ProductTemplateService } from './../../../../services/product-template.service';
-import { SharedService } from './../../../../services/shared.service';
-import { KeyCacheIndexDBDTO, SyncCreateProductTemplateDto, DataPouchDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ConfigAttributeLine, ConfigProductVariant, ConfigProductDefaultDTO } from './../../../../dto/configs/product/config-product-default.dto';
-import { ProductCategoryDTO } from './../../../../dto/product/product-category.dto';
-import { ProductTemplateDTO, ProductUOMDTO } from './../../../../dto/product/product.dto';
+import { ProductIndexDBService } from '../../../../services/product-indexdb.service';
+import { TpageAddUOMComponent } from '../../../../shared/tpage-add-uom/tpage-add-uom.component';
+import { CreateVariantsModalComponent } from '../../../configs/components/create-variants-modal/create-variants-modal.component';
+import { ConfigAddAttributeProductModalComponent } from '../../../configs/components/config-attribute-modal/config-attribute-modal.component';
+import { TpageSearchUOMComponent } from '../../../../shared/tpage-search-uom/tpage-search-uom.component';
+import { TpageAddCategoryComponent } from '../../../../shared/tpage-add-category/tpage-add-category.component';
+import { ProductUOMService } from '../../../../services/product-uom.service';
+import { ProductCategoryService } from '../../../../services/product-category.service';
+import { ProductTemplateService } from '../../../../services/product-template.service';
+import { SharedService } from '../../../../services/shared.service';
+import { KeyCacheIndexDBDTO, SyncCreateProductTemplateDto, DataPouchDBDTO } from '../../../../dto/product-pouchDB/product-pouchDB.dto';
+import { ConfigAttributeLine, ConfigProductVariant, ConfigProductDefaultDTO } from '../../../../dto/configs/product/config-product-default.dto';
+import { ProductCategoryDTO } from '../../../../dto/product/product-category.dto';
+import { ProductTemplateDTO, ProductUOMDTO } from '../../../../dto/product/product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { mergeMap } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -24,13 +24,15 @@ import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
+import { StockChangeProductQtyDto } from '@app/dto/product-template/stock-change-productqty.dto';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 @Component({
-  selector: 'app-add-drawer-product',
-  templateUrl: './add-drawer-product.component.html',
+  selector: 'drawer-add-product',
+  templateUrl: './drawer-add-product.component.html',
   providers: [TDSDestroyService]
 })
-export class AddDrawerProductComponent implements OnInit {
+export class DrawerAddProductComponent implements OnInit {
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
 
@@ -72,6 +74,7 @@ export class AddDrawerProductComponent implements OnInit {
     private message: TDSMessageService,
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
+    private productTemplateFacade: ProductTemplateFacade,
     private productIndexDBService: ProductIndexDBService,
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
@@ -233,13 +236,15 @@ export class AddDrawerProductComponent implements OnInit {
       .subscribe({
         next: ([product, indexDB]) => {
 
-            product._attributes_length = model.ProductVariants?.length || 1;
-
             const data: SyncCreateProductTemplateDto = {
               type: type,
               productTmpl: product as ProductTemplateV2DTO,
               cacheDbStorage: [...indexDB.cacheDbStorage]
             };
+
+            // TODO: gọi cập nhật tồn kho
+            let id = data.productTmpl.Id;
+            this.productTemplateFacade.stockChangeProductQty(id);
 
             this.modalRef.destroy(data.type ? data : null);
             this.isLoading = false;

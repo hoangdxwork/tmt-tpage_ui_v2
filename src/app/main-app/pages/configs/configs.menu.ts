@@ -58,11 +58,11 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-box-fill",
         link: '/configs/products',
     },
-    {
-        name: "Hoạt động",
-        icon: "tdsi-restore-fill",
-        link: '/configs/activities',
-    },
+    // {
+    //     name: "Hoạt động",
+    //     icon: "tdsi-restore-fill",
+    //     link: '/configs/activities',
+    // },
     {
         name: "Chương trình khuyến mãi",
         icon: "tdsi-discount-fill",

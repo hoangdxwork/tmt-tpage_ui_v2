@@ -65,6 +65,8 @@ export class EditLiveCampaignComponent implements OnInit {
   lstInventory!: GetInventoryDTO;
   companyCurrents!: CompanyCurrentDTO;
 
+  lstOrderTags!: string[];
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -258,6 +260,8 @@ export class EditLiveCampaignComponent implements OnInit {
     }
 
     this.initFormDetails(data.Details);
+    this.getLstOrderTags(data.Details)
+
     this.datePicker = [data.StartDate, data.EndDate];
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
@@ -389,46 +393,13 @@ export class EditLiveCampaignComponent implements OnInit {
           })
 
           this.livecampaignSimpleDetail = [...this.detailsForm.value];
+          this.getLstOrderTags(this.detailsForm.value);
         },
         error: (err: any) => {
             this.isLoading = false;
             this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
         }
     })
-  }
-
-  generateTagDetail(productName: string, code: string, tags: string,  _attributes_length?: number) {
-    productName = productName.replace(`[${code}]`, "");
-    productName = productName.trim();
-
-    let result: string[] = [];
-    let word = StringHelperV2.removeSpecialCharacters(productName);
-    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
-    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
-
-    result.push(word);
-
-    if(!result.includes(wordNoSignCharacters)) {
-      result.push(wordNoSignCharacters);
-    }
-
-    if(!result.includes(wordNameNoSpace)) {
-      result.push(wordNameNoSpace);
-    }
-
-    if(TDSHelperString.hasValueString(code) && code && Number(_attributes_length) <= 1) {
-      result.push(code);
-    }
-
-    if(TDSHelperString.hasValueString(tags)) {
-        let tagArr = tags.split(',');
-        tagArr.map(x => {
-          if(!result.find(y => y == x))
-              result.push(x);
-        })
-    }
-
-    return [...result];
   }
 
   openTag(item: LiveCampaignSimpleDetail) {
@@ -552,6 +523,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
             this.initFormDetails(newFormDetails);
             this.livecampaignSimpleDetail = [...newFormDetails];
+            this.getLstOrderTags(newFormDetails);
 
             this.searchValue = this.innerTextValue;
             delete this.isEditDetails[item.Id];
@@ -683,6 +655,7 @@ export class EditLiveCampaignComponent implements OnInit {
                 this.isEditDetails = {};
                 this.detailsForm.clear();
                 this.livecampaignSimpleDetail = [];
+                this.lstOrderTags = [];
 
                 this.isLoading = false;
                 this.message.success('Thao tác thành công');
@@ -813,4 +786,16 @@ export class EditLiveCampaignComponent implements OnInit {
 
     return datas;
   }
+
+  getLstOrderTags(data: LiveCampaignSimpleDetail[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }

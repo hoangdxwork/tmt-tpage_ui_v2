@@ -24,7 +24,7 @@ export class ProductService extends BaseSevice {
 
   getById(key: number): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=UOM,Categ,UOMPO,POSCateg,Images`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=UOM,Categ,UOMPO,POSCateg,Images,AttributeValues`,
         method: CoreApiMethodType.get,
     }
 
@@ -160,6 +160,15 @@ export class ProductService extends BaseSevice {
     }
 
     return this.apiService.getData<ProductDTO>(api, null);
+  }
+
+  getAttributeValuesByIdV2(productId: number): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${productId})?$expand=AttributeValues,ProductTmpl`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
   }
 
   getProductsByPageFacebook(key: any, data: any): Observable<any>{

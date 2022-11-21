@@ -27,7 +27,7 @@ import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-obj
   providers: [TDSDestroyService]
 })
 
-export class ConversationOrderListComponent implements OnInit, OnChanges {
+export class ConversationOrderListComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
 
@@ -87,8 +87,6 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
       this.currentPost = this.data;
       this.loadData(this.pageSize, this.pageIndex);
     }
-
-    this.eventEmitter();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -96,17 +94,6 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
         this.currentPost = changes['data'].currentValue;
         this.loadData(this.pageSize, this.pageIndex);
     }
-  }
-
-  eventEmitter() {
-    // TODO: load lại danh sách đơn hàng khi tạo đơn hàng từ comments
-    this.chatomniObjectFacade.onLoadCommentOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        if(this.currentPost && this.currentPost.ObjectId) {
-            this.loadData(this.pageSize, this.pageIndex);
-        }
-      }
-    })
   }
 
   loadData(pageSize: number, pageIndex: number) {

@@ -320,6 +320,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     if (this.isProcessing) {
       return
     }
+
     if (this.checkValueEmpty() == 1) {
       let that = this;
       this.modal.success({

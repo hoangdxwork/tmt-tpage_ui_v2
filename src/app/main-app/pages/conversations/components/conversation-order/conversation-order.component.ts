@@ -1,3 +1,5 @@
+import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
+import { CommentOrderPost } from './../../../../dto/conversation/post/comment-order-post.dto';
 import { KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { DeliveryCarrierV2Service } from './../../../../services/delivery-carrier-v2.service';
@@ -68,6 +70,7 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { SaleSettingConfigDto_V2 } from '@app/dto/setting/sale-setting-config.dto';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'conversation-order',
@@ -237,6 +240,36 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+        if(!res) return;
+
+        switch(res.EventName) {
+             // Tạo đơn hàng
+            case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+              let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exit1 = res && fbCreated && fbCreated.Data?.Facebook_PostId == this.quickOrderModel?.Facebook_PostId
+                && fbCreated.Data.Facebook_ASUserId == this.quickOrderModel?.Facebook_ASUserId && this.type == 'post';
+
+              if(!exit1) break;
+            // TODO: cập nhật mã đơn hàng sau khi tạo đơn hàng
+              this.conversationOrderFacade.hasValueOrderCode$.emit(fbCreated?.Data?.Code);
+            break;
+
+            // Xóa đơn hàng
+            case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
+              let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exist2 = res && fbDelete && fbDelete.Data?.Facebook_PostId == this.quickOrderModel?.Facebook_PostId
+              && fbDelete.Data.Facebook_ASUserId == this.quickOrderModel?.Facebook_ASUserId && this.type == 'post';
+
+              if(!exist2) break;
+              // TODO: xóa mã đơn hàng sau khi tạo hóa đơn
+              this.conversationOrderFacade.hasValueOrderCode$.emit(null);
+            break;
+
+            default:
+            break;
+        }
+
+        this.cdRef.detectChanges();
       }
     })
   }
@@ -736,11 +769,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       this.saleOnline_OrderService.insertFromPost(model, true).pipe(takeUntil(this.destroy$)).subscribe({
           next:(res: any) => {
             delete res['@odata.context'];
+            this.isLoading = false;
 
             // TODO: gán sự kiện loading cho tab conversation-post
             this.postEvent.spinLoadingTab$.emit(false);
-
-            this.isLoading = false;
 
             this.quickOrderModel = {...res};
             this.mappingAddress(this.quickOrderModel);
@@ -750,13 +782,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 if(!this.saleOnlineSettings.isDisablePrint) {
                     this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
                 }
-
-                // TODO: cập nhật mã đơn hàng lên tab
-                this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
                 this.message.success('Tạo đơn hàng thành công');
 
             } else {
-
               if(!this.saleOnlineSettings.isDisablePrint && this.saleOnlineSettings.isPrintMultiTimes) {
                   this.orderPrintService.printId(res.Id, this.quickOrderModel, comment.Message);
                   this.message.success('Cập nhật đơn hàng thành công');
@@ -764,17 +792,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
               // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng, dùng ở conversation-post
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(comment.UserId);
-
-              // TODO: cập nhật mã đơn hàng lên tab
-              if(TDSHelperString.hasValueString(res.code)) {
-                this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
-              }
-
               this.isUpdated = false;
             }
 
-            // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
-            this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
             this.cdRef.detectChanges();
         },
         error: (error: any) => {
@@ -836,17 +856,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
             this.mappingAddress(this.quickOrderModel);
             this.quickOrderModel.FormAction = formAction;
 
-            // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
-            // if(TDSHelperArray.isArray(this.quickOrderModel.Details)){
-            //   this.quickOrderModel.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-            //     let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
-
-            //     if(exist) {
-            //       x.Discount = exist.Discount;
-            //     }
-            //   })
-            // }
-
             if(!this.isEnableCreateOrder && type == 'print') {
                 this.orderPrintService.printId(res.Id, this.quickOrderModel);
             }
@@ -867,8 +876,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                 // TODO: check gán lại cho partner các thông tin nếu có, không update lại đơn hàng
                 this.isUpdated = false;
                 this.chatomniConversationFacade.onSyncConversationInfo$.emit(res.Facebook_ASUserId);
-
-                // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
                 this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
             }
 
@@ -884,7 +891,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSave(formAction?: string, type?: string): any {
-
     let model = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
 
     if(TDSHelperString.hasValueString(formAction)) {
@@ -906,7 +912,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         }
 
         if (!TDSHelperString.hasValueString(model.CityCode) || !TDSHelperString.hasValueString(model.DistrictCode)) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Tỉnh/Thành phố là bắt buộc');
+            this.notification.warning('Không thể tạo hóa đơn', 'Tỉnh/Thành phố, Quận/Huyện là bắt buộc');
             return false;
         }
 
@@ -925,18 +931,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.ngZone.run(() => {
             this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: any) => {
-
                   delete res['@odata.context'];
-                  // TODO: gán trường discount cho trường hợp tạo phiếu bán hàng
-                  // if(TDSHelperArray.isArray(res.Details)){
-                  //   res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-                  //     let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
-
-                  //     if(exist) {
-                  //       x.Discount = exist.Discount;
-                  //     }
-                  //   })
-                  // }
 
                   this.quickOrderModel = {...res};
                   this.quickOrderModel.FormAction = formAction;
@@ -963,10 +958,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                           this.message.success('Tạo đơn hàng thành công');
                       }
 
-                      // TODO: cập nhật mã đơn hàng lên tab
                       this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
-
-                      // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
                       this.chatomniConversationFacade.onSyncConversationInfo$.emit();
                   }
 
@@ -974,7 +966,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               },
               error: (error: any) => {
                   this.isLoading = false;
-                  this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+                  this.message.error(`${error?.error?.message}`);
                   this.cdRef.detectChanges();
               }
             })
@@ -984,15 +976,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       case CRMTeamType._TShop:
         this.saleOnline_OrderService.insertFromChannelMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-
               delete res['@odata.context'];
-              // res.Details.map((x : Detail_QuickSaleOnlineOrder)=> {
-              //   let exist = this.quickOrderModel.Details.filter(a => a.ProductId == x.ProductId && a.UOMId == x.UOMId)[0];
-
-              //   if(exist) {
-              //     x.Discount = exist.Discount;
-              //   }
-              // })
 
               this.quickOrderModel = {...res};
               this.quickOrderModel.FormAction = formAction;
@@ -1019,10 +1003,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
                       this.message.success('Tạo đơn hàng thành công');
                   }
 
-                  // TODO: cập nhật mã đơn hàng lên tab
                   this.conversationOrderFacade.hasValueOrderCode$.emit(res.Code);
-
-                  // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
                   this.chatomniConversationFacade.onSyncConversationInfo$.emit();
               }
 
@@ -1030,7 +1011,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           },
           error: (error: any) => {
               this.isLoading = false;
-              this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+              this.message.error(`${error?.error?.message}`);
               this.cdRef.detectChanges();
           }
         })
@@ -1039,11 +1020,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
-
     // TODO check cấu hình ghi chú in
     let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
     if(!printNote) {
-      fs_model.Comment = '';
+        fs_model.Comment = '';
     }
 
     this.fastSaleOrderService.saveV2(fs_model).pipe(takeUntil(this.destroy$)).subscribe({
@@ -1051,12 +1031,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: Tạo hóa đơn thành công
           if(res?.Success && res.Message) {
-              this.notification.warning('Tạo hóa đơn thành công', res.Message);
+            this.notification.warning('Tạo hóa đơn thành công', res.Message);
           }
 
           // TODO: trường hợp gửi vận đơn lỗi
           if(!res?.Success && res.Message) {
-              this.notification.warning('Lỗi gửi vận đơn', res.Message);
+            this.notification.warning('Lỗi gửi vận đơn', res.Message);
           }
 
           if(res && !res.Message ) {
@@ -1064,7 +1044,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           if(type && res) {
-              this.printOrder(type, res);
+            this.printOrder(type, res);
           }
 
           this.shipServices = [];
@@ -1078,21 +1058,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
           // TODO: trường hợp bài viết và all xử lí khác nhau
           if(this.type == 'post') {
-              // TODO: nếu là bài viết sau khi thanh toán, sẽ load lại đơn hàng kế tiếp theo postid
-              // this.loadOrderByPostId(this.comment.ObjectId, this.comment.UserId);
-              this.conversationOrderFacade.hasValueOrderCode$.emit(null);
-
-              // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
-              this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
-
               delete this.quickOrderModel.Id;
               delete this.quickOrderModel.Code;
               this.quickOrderModel.Details = [];
               this.isLoading = false;
           } else {
-
               this.quickOrderModel = {} as any;
-              // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, đẩy xuống ngOnChanges
               this.chatomniConversationFacade.onSyncConversationInfo$.emit();
               this.isLoading = false;
           }
@@ -1104,13 +1075,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.isEnableCalcFee = false;
           this.isEqualAmountInsurance = false;
 
-          if(this.quickOrderModel.Id) {
-              this.message.success('Cập nhật đơn hàng thành công');
-          } else {
-              this.message.success('Tạo đơn hàng thành công');
-          }
-
-          this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
+          this.notification.error('Đã xảy ra lỗi', error.error?.message);
           this.cdRef.detectChanges();
       }
     });

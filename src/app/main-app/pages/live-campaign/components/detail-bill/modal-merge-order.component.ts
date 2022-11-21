@@ -45,7 +45,6 @@ export class ModalMergeOrderComponent implements OnInit {
           this.lstPartners = [...res.value];
         } else {
           this.lstPartners = [];
-          this.notification.error('Không thể gộp đơn', 'Không còn đơn nào hợp lệ');
         }
 
         this.isLoading = false;

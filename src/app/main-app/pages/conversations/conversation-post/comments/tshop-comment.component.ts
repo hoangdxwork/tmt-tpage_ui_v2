@@ -1,20 +1,20 @@
-import { OdataCommentOrderPostDTO, CommentOrderPost, CommentOrder } from './../../../../../dto/conversation/post/comment-order-post.dto';
-import { FacebookCommentService } from './../../../../../services/facebook-comment.service';
-import { ChatmoniSocketEventName } from './../../../../../services/socket-io/soketio-event';
-import { CRMTagService } from './../../../../../services/crm-tag.service';
-import { CreateTagModalComponent } from './../../../../configs/components/create-tag-modal/create-tag-modal.component';
+import { OdataCommentOrderPostDTO, CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
+import { FacebookCommentService } from '../../../../services/facebook-comment.service';
+import { ChatmoniSocketEventName } from '../../../../services/socket-io/soketio-event';
+import { CRMTagService } from '../../../../services/crm-tag.service';
+import { CreateTagModalComponent } from '../../../configs/components/create-tag-modal/create-tag-modal.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
-import { ChatomniSendMessageModelDto } from './../../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
-import { ChatomniMessageFacade } from './../../../../../services/chatomni-facade/chatomni-message.facade';
-import { ChatomniSendMessageService } from './../../../../../services/chatomni-service/chatomni-send-message.service';
-import { CRMTeamType } from './../../../../../dto/team/chatomni-channel.dto';
-import { ChatomniStatus } from './../../../../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { ResponseAddMessCommentDtoV2 } from './../../../../../dto/conversation-all/chatomni/response-mess.dto';
+import { ChatomniSendMessageModelDto } from '../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
+import { ChatomniMessageFacade } from '../../../../services/chatomni-facade/chatomni-message.facade';
+import { ChatomniSendMessageService } from '../../../../services/chatomni-service/chatomni-send-message.service';
+import { CRMTeamType } from '../../../../dto/team/chatomni-channel.dto';
+import { ChatomniMessageType, ChatomniStatus } from '../../../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ResponseAddMessCommentDtoV2 } from '../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { ChatomniConversationItemDto } from './../../../../../dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniConversationItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
-import { SocketEventSubjectDto } from './../../../../../services/socket-io/socket-onevent.service';
+import { SocketEventSubjectDto } from '../../../../services/socket-io/socket-onevent.service';
 import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, AfterViewInit, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -45,15 +45,17 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-livecampaign.dto';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-
+import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
+import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
+import { LiveCampaignFastSaleOrderDataDto } from '@app/dto/socket-io/livecampain-fastsaleorder.dto';
 @Component({
-  selector: 'comment-filter-all',
-  templateUrl: './comment-filter-all.component.html',
+  selector: 'tshop-comment',
+  templateUrl: './tshop-comment.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class CommentFilterAllComponent implements OnInit, OnChanges {
+export class TShopCommentComponent implements OnInit, OnChanges {
 
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
@@ -137,7 +139,6 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     }
 
     this.onEventSocket();
-    this.eventEmitter();
   }
 
   loadOrderPartnerbylLivecampaign() {
@@ -146,7 +147,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
       this.liveCampaignService.orderPartnerbyLivecampaign(id).pipe(takeUntil(this.destroy$))
         .subscribe({
             next: (res: any) => {
-              if(res && Object.keys(res).length > 0){
+              if(res && Object.keys(res).length > 0) {
                 this.invoiceDict = res;
                 this.cdRef.markForCheck();
               }
@@ -169,59 +170,172 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
+        if(!res) return;
+
         switch(res.EventName) {
+            // Cập nhật bình luận
+            case ChatmoniSocketEventName.chatomniOnMessage:
+              let fbComment = {...res.Data?.Message} as MessageSocketioDto;
 
-          case ChatmoniSocketEventName.chatomniOnMessage:
-            let exist = this.team?.ChannelId == res.Data?.Conversation?.ChannelId && this.data.ObjectId == res.Data?.Message?.ObjectId && this.dataSource;
-            if(exist) {
-                let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.conversationItem) };
+              let exist1 = fbComment && fbComment.MessageType == ChatomniMessageType.TShopComment
+                  && this.team?.ChannelId == res.Data?.Conversation?.ChannelId
+                  && this.data.ObjectId == fbComment?.ObjectId && this.dataSource;
 
-                // TODO: nếu là comment child thì cũng push thẳng xóa parentId
-                if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
-                    itemNewComment.ParentId = null;
-                }
+              if(!exist1) break;
+              this.setCommentRealtime(res);
+            break;
 
-                if(this.vsStartIndex <= 1) {
-                    this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
-                    this.dataSource.Items = [...this.dataSource.Items];
+             // Tạo đơn hàng
+            case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+              let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exit2 = res && fbCreated && this.data
+                    && fbCreated.Data?.Facebook_PostId == this.data?.ObjectId;
 
-                    this.lengthDataSource = this.dataSource.Items.length;
+              if(!exit2) break;
+              this.setCommentUpdateOrderCode(fbCreated);
+            break;
 
-                    if(this.virtualScroller) {
-                      this.virtualScroller.scrollToPosition(0);
-                    }
-                } else {
-                    this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
-                    this.vsSocketImports = [...this.vsSocketImports];
+            // Cập nhật đơn hàng
+            case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
+              let fbOrder = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exit3 = res && fbOrder && this.data
+                    && fbOrder.Data?.Facebook_PostId == this.data?.ObjectId;
 
-                    this.lengthDataSource = this.lengthDataSource + 1;
-                }
+              if(!exit3) break;
+              this.setCommentUpdateOrderCode(fbOrder);
+            break;
 
-                this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
-            }
+            // Xóa đơn hàng
+            case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
+              let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
+              let exist4 = res && fbDelete && this.data
+                    && fbDelete.Data?.Facebook_PostId == this.data?.ObjectId;
 
-            this.cdRef.detectChanges();
-          break;
+              if(!exist4) break;
+              this.setCommentDeleteOrderCode(fbDelete);
+            break;
 
-          case ChatmoniSocketEventName.chatomniOnUpdate:
-          break;
+            // Tạo hóa đơn
+            case ChatmoniSocketEventName.livecampaign_CartCheckout:
+              let fbInvoice = {...res?.Data?.Data} as LiveCampaignFastSaleOrderDataDto;
+              let exist5 = res && fbInvoice && this.data
+                    && fbInvoice.LiveCampaignId == this.data?.LiveCampaignId;
 
-          default:
+              if(!exist5) break;
+              this.setCommentNumberInvoice(fbInvoice);
+            break;
+
+            default:
             break;
         }
       }
     })
   }
 
-  eventEmitter() {
-    // TODO: tạo đơn hàng, phiếu bán hàng ở conversation-order
-    this.chatomniObjectFacade.onLoadCommentOrderByPost$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
-        setTimeout(() => {
-          this.loadCommentsOrderByPost();
-        }, 350);
+  setCommentRealtime(response: any) {
+    let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(response.Data, this.conversationItem) };
+
+    // TODO: nếu là comment child thì cũng push thẳng xóa parentId
+    if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
+        itemNewComment.ParentId = null;
+    }
+
+    if(this.vsStartIndex <= 1) {
+        this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
+        this.dataSource.Items = [...this.dataSource.Items];
+
+        this.lengthDataSource = this.dataSource.Items.length;
+
+        if(this.virtualScroller) {
+          this.virtualScroller.scrollToPosition(0);
+        }
+    } else {
+        this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
+        this.vsSocketImports = [...this.vsSocketImports];
+
+        this.lengthDataSource = this.lengthDataSource + 1;
+    }
+
+    this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+    this.cdRef.detectChanges();
+  }
+
+  setCommentUpdateOrderCode(model: OnSocketOnSaleOnline_OrderDto) {
+    let item: CommentOrder = {
+      id: model.Data.Id,
+      session: model.Data.Session,
+      index: model.Data.SessionIndex,
+      code: model.Data.Code
+    };
+
+    let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
+    if(exist) {
+      let orders = this.commentOrders[model.Data.Facebook_ASUserId] as any[];
+      let index = orders.findIndex(x => x.id == item.id);
+      if(index >= 0) {
+          orders[index] = {...item};
+      } else {
+          orders.push(item);
       }
-    })
+
+      this.commentOrders[model.Data.Facebook_ASUserId] = [...orders];
+    } else {
+      this.commentOrders[model.Data.Facebook_ASUserId] = [item];
+    }
+
+    this.commentOrders = {...this.commentOrders};
+    this.cdRef.detectChanges();
+  }
+
+  setCommentDeleteOrderCode(model: OnSocketOnSaleOnline_OrderDto) {
+    let item: CommentOrder = {
+      id: model.Data.Id,
+      session: model.Data.Session,
+      index: model.Data.SessionIndex,
+      code: model.Data.Code
+    };
+
+    let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
+    if(exist) {
+      let orders = this.commentOrders[model.Data.Facebook_ASUserId] as any[];
+      orders = orders.filter(x => x.id != item.id);
+      this.commentOrders[model.Data.Facebook_ASUserId] = [...orders];
+
+      if(orders && orders.length == 0) {
+          delete this.commentOrders[model.Data.Facebook_ASUserId];
+      }
+    }
+
+    this.commentOrders = {...this.commentOrders};
+    this.cdRef.detectChanges();
+  }
+
+  setCommentNumberInvoice(model: LiveCampaignFastSaleOrderDataDto) {
+    let item = {
+      Id: model.FastSaleOrderId,
+      Number: model.Number,
+      ShowState: '',
+      State: ''
+    } as OrderPartnerByLivecampaignDto;
+
+    let exist = this.invoiceDict[model.PartnerId] && Object.keys(this.invoiceDict[model.PartnerId]).length > 0;
+    if(exist) {
+        let invoices = this.invoiceDict[model.PartnerId] as any[];
+        let index = invoices.findIndex(x => x.Id == item.Id);
+
+        if(index >= 0) {
+            invoices[index] = {...item};
+        } else {
+            invoices.push(item);
+        }
+
+        this.invoiceDict[model.PartnerId] = [...invoices];
+    } else {
+        this.invoiceDict[model.PartnerId] = [item];
+    }
+
+    this.invoiceDict = {...this.invoiceDict};
+    this.cdRef.detectChanges();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -230,6 +344,8 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
         this.dataSource = null;
         this.filterObj = {};
         this.innerText = '';
+        this.partnerDict = {};
+        this.invoiceDict = {};
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -358,7 +474,7 @@ export class CommentFilterAllComponent implements OnInit, OnChanges {
     let text = event.BodyPlain || event.BodyHtml || event.text;
 
     text = ReplaceHelper.quickReply(text, partner);
-    this.message = text;
+    this.messageModel = text;
   }
 
   onEnter(item: ChatomniDataItemDto, event: any) {

@@ -6,7 +6,7 @@ import { LiveCampaignModel } from './../../dto/live-campaign/odata-live-campaign
 import { ChatomniObjectsItemDto } from './../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { PrepareUpdateFacebookByLiveCampaign } from './../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { ObjectFacebookPostEvent } from './../../handler-v2/conversation-post/object-facebook-post.event';
-import { LiveCampaignPostComponent } from './../../pages/conversations/conversation-post/live-campaign-post/live-campaign-post.component';
+import { FacebookLiveCampaignPostComponent } from '../../pages/conversations/conversation-post/facebook-livecampaign-post/facebook-livecampaign-post.component';
 import { TDSMessageService } from 'tds-ui/message';
 import { takeUntil } from 'rxjs';
 import { LiveCampaignDTO } from './../../dto/live-campaign/odata-live-campaign.dto';
@@ -198,7 +198,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
   showModalChangeLiveCampaign() {
     const modal = this.modalService.create({
       title: 'Chiến dịch',
-      content: LiveCampaignPostComponent,
+      content: FacebookLiveCampaignPostComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams:{

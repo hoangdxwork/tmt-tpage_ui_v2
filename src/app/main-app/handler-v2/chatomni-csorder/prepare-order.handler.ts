@@ -81,6 +81,10 @@ export class CsOrder_PrepareModelHandler {
           Quantity: obj.Quantity,
           UOMId: obj.UOMId,
           UOMName: obj.UOMName
+      } as any;
+
+      if(obj.Id) {
+        item.Id = obj.Id;
       }
 
       x.Details.push(item);
@@ -163,7 +167,7 @@ export class CsOrder_PrepareModelHandler {
     item["attachment"] = comment.Data?.attachment;
 
     if (comment.Data.comments && comment.Data.comments.length > 0) {
-      item["comments"] = comment.Data.comments.map(x => this.prepareFacebookComment(x));
+      item["comments"] = comment.Data.comments.map((x: any) => this.prepareFacebookComment(x));
     }
 
     return {...item};

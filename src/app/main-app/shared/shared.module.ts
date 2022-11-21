@@ -32,7 +32,6 @@ import { ProductPriceListService } from '../services/product-price-list.service'
 import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.component';
 import { ListLiveCampaignComponent } from './list-live-campaign/list-live-campaign.component';
 import { ODataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
-import { AddLiveCampaignPostComponent } from './add-live-campaign/add-livecampaign-post.component';
 import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
 import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
 import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-button.component';
@@ -69,6 +68,7 @@ import { ListProductTmpV2Component } from './list-product-tmp-v2/list-product-tm
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
 import { TrackingRefBlankComponent } from './trackingref-blank/trackingref-blank.component';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -85,7 +85,6 @@ const cmp =[
   TpageConfigProductComponent,
   UploadPicturesWallComponent,
   ListLiveCampaignComponent,
-  AddLiveCampaignPostComponent,
   QuickReplyButtonComponent,
   OverviewLiveCampaignComponent,
   BillFilterOptionsComponent,
@@ -105,11 +104,15 @@ const SERVICES = [
   ProductIndexDBService,
   SuggestAddressService,
   SharedService,
-  ImageFacade,
   ProductPriceListService,
   ODataLiveCampaignService,
   FastSaleOrderLineService,
-  TDSMessageService
+  TDSMessageService,
+]
+
+const FACADES = [
+  ProductTemplateFacade,
+  ImageFacade
 ]
 
 @NgModule({
@@ -160,6 +163,7 @@ const SERVICES = [
   ],
   providers: [
     ...SERVICES,
+    ...FACADES
    ],
 })
 export class MainSharedModule { }

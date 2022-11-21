@@ -68,6 +68,10 @@ export class SO_PrepareFastSaleOrderHandler {
       saleModel.FacebookId = quickOrderModel.Facebook_ASUserId;
       saleModel.FacebookName = quickOrderModel.Facebook_UserName;
 
+      if(quickOrderModel.Id) {
+          saleModel.SaleOnlineIds = [quickOrderModel.Id];
+      }
+
       saleModel.DateCreated = new Date();
 
       //TODO: gán địa chỉ giao hàng

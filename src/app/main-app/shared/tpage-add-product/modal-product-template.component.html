@@ -18,12 +18,11 @@
                                     <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" [required]='true' formControlName="Name" />
                                     <tds-error *ngIf="_form.invalid">Vui lòng nhập tên sản phẩm</tds-error>
                                 </tds-form-field>
-                                <tds-form-field *ngIf="type == 'liveCampaign'" [color]="_form.controls.OrderTag.invalid && _form.controls.OrderTag.touched? 'error': 'default'">    
+                                <tds-form-field *ngIf="type == 'liveCampaign'">    
                                     <tds-label>Mã chốt đơn</tds-label>
-                                    <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" formControlName="OrderTag" [required]='true'
+                                    <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" formControlName="OrderTag"
                                         [allowClear]="true" [data]="" mode="tags" (selectChange)="onChangeModelTag($event)">
                                     </tds-select>
-                                    <tds-error *ngIf="_form.controls.OrderTag.invalid && _form.controls.OrderTag.touched">Vui lòng nhập mã chốt đơn</tds-error>
                                 </tds-form-field>
                             </div>
                         </div>
@@ -179,7 +178,8 @@
                       <thead>
                         <tr>
                           <th width="6%">STT</th>
-                          <th width="24%">Tên</th>
+                          <th width="8%">Ảnh</th>
+                          <th width="16%">Tên</th>
                           <th width="30%">Mã chốt đơn</th>
                           <th width="20%">Giá</th>
                           <th width="10%" [align]="'center'">Hoạt động</th>
@@ -189,6 +189,11 @@
                       <tbody>
                         <tr *ngFor="let data of lstVariants; let i = index">
                           <td>{{ 1 + i }}</td>
+                          <td>
+                            <div tds-tooltip [tooltipTitle]="data.ImageUrl?'Xem ảnh':'Tải ảnh'"> 
+                                <upload-pictures-wall [data]="[data.ImageUrl]" [size]="64" (getResult)="getUrl($event, i)" (getBase64)="getBase64($event, i)" (onLoadImage)="onRemoveImage($event, i)"></upload-pictures-wall>
+                            </div>
+                          </td>
                           <td>
                             <div class="flex flex-col">
                               <span class="mb-2">{{ data.NameTemplate || data.Name }}</span>
@@ -200,9 +205,10 @@
                               </div>
                             </div>
                           </td>
+                          
                           <td>
                             <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [ngModel]="data.OrderTag|stringToStringArray" [ngModelOptions]="{standalone: true}"
-                                (ngModelChange)="changeTags($event,i)"
+                                (selectChange)="changeTags($event,i)"
                                 [allowClear]="true" [data]="" mode="tags" class="w-full">
                             </tds-select>
                           </td>

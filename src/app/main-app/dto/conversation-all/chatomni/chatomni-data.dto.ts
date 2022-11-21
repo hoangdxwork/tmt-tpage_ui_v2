@@ -122,7 +122,7 @@ export interface NlpEntityDto {
 }
 
 export interface ChatomniDataItemDto {
-  Data: ChatomniFacebookDataDto; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
+  Data: any; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
   Id: string;
   ObjectId: string;
   ParentId?: string | any;
@@ -139,7 +139,7 @@ export interface ChatomniDataItemDto {
   ChannelCreatedTime: Date | any;
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
-  NlpEntities?: NlpEntityDto[];
+  NlpEntities?: NlpEntityDto[] | any[];
   IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
   isNoPartnerId?:  boolean; // không có trong api trả về, dùng để phân biệt cmt child chưa tìm thấy cmt partner trong list api trả về
 }

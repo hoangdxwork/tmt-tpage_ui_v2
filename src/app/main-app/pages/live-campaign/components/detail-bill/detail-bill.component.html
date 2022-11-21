@@ -23,8 +23,8 @@
             <div tds-dropdown-item (click)="mergeOrder()"> Gộp đơn thủ công </div>
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
             <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
-            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In hóa đơn </div>
-            <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và In phiếu ship </div>
+            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và in hóa đơn </div>
+            <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và in phiếu ship </div>
             <div tds-dropdown-item (click)="print('print')">In hóa đơn</div>
             <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
             <hr/>
@@ -45,7 +45,7 @@
               Gộp đơn ({{ countCanMergeOrder }})
             </span>
           </button>
-  
+
           <button tds-button color="info" class="min-w-[100px]" (click)="approveOrder()">
             <span class="flex items-center">
               Xác nhận
@@ -53,15 +53,15 @@
           </button>
         </div>
 
-        <button tds-button color="secondary" (click)="print('print')">
+        <button tds-button color="secondary" (click)="approveOrder('print')">
           <span class="flex items-center">
-            <i class="tdsi-paper-fill text-lg leading-none mr-2 text-neutral-1-500"></i>In hóa đơn
+            <i class="tdsi-paper-fill text-lg leading-none mr-2 text-neutral-1-500"></i>Xác nhận và in hóa đơn
           </span>
         </button>
 
-        <button tds-button color="secondary" (click)="print('printShips')">
+        <button tds-button color="secondary" (click)="approveOrder('printShips')">
           <span class="flex items-center">
-            <i class="tdsi-transport-fill text-lg leading-none mr-2 text-neutral-1-500"></i>In phiếu ship
+            <i class="tdsi-transport-fill text-lg leading-none mr-2 text-neutral-1-500"></i>Xác nhận và in phiếu ship
           </span>
         </button>
 
@@ -78,8 +78,8 @@
             <div tds-dropdown-item (click)="mergeOrder()"> Gộp đơn thủ công </div>
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
             <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
-            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và In hóa đơn </div>
-            <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và In phiếu ship </div>
+            <div tds-dropdown-item (click)="approveOrder('print')"> Xác nhận và in hóa đơn </div>
+            <div tds-dropdown-item (click)="approveOrder('printShips')"> Xác nhận và in phiếu ship </div>
             <div tds-dropdown-item (click)="print('print')">In hóa đơn</div>
             <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
             <hr/>

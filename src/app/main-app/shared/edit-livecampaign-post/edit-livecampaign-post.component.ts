@@ -80,6 +80,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
   indexDbStorage!: DataPouchDBDTO[];
   changedData: boolean = false
 
+  lstOrderTags!: string[];
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -296,6 +298,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
     this.initFormDetails(data.Details);
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
+    this.getLstOrderTags(data.Details);
   }
 
   //TODO: disable các giá trị ngày không khả dụng
@@ -405,6 +408,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
             this.initFormDetails(newFormDetails);
             this.livecampaignSimpleDetail = [...newFormDetails];
+            this.getLstOrderTags(newFormDetails);
 
             this.searchValue = this.innerTextValue;
             delete this.isEditDetails[item.Id];
@@ -460,7 +464,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: 'liveCampaign'
+          type: 'liveCampaign',
+          lstOrderTags: this.lstOrderTags
         }
     });
 
@@ -497,7 +502,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
                   const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
                   // TODO: lọc sp trùng mã code để tạo tags
-                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+                  const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => TDSHelperString.hasValueString(x.DefaultCode) &&  x.DefaultCode == f.DefaultCode) as any[];
                   let uomName = '';
                   if(exist && exist.length > 1) {
                       uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
@@ -641,7 +646,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
 
         // TODO: lọc sp trùng mã code để tạo tags
-        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => x.DefaultCode == f.DefaultCode) as any[];
+        const exist = this.indexDbStorage.filter((f: DataPouchDBDTO) => TDSHelperString.hasValueString(x.DefaultCode) && x.DefaultCode == f.DefaultCode) as any[];
         let uomName = '';
         if(exist && exist.length > 1) {
             uomName = TDSHelperString.stripSpecialChars(x.UOMName.trim().toLocaleLowerCase());
@@ -777,6 +782,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           })
 
           this.livecampaignSimpleDetail = [...this.detailsForm.value];
+          this.getLstOrderTags(this.detailsForm.value);
         },
         error: (err: any) => {
             this.isLoading = false;
@@ -1007,7 +1013,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       let idxScroll = this.document.getElementById(`dataSourceScroll${idxItem}`) as any;
 
       if(element && idxScroll) {
-        let top = idxScroll.offsetTop;
+        let top = idxScroll.offsetTop - 170;
 
         element?.scroll({
             top: top,
@@ -1016,4 +1022,16 @@ export class EditLiveCampaignPostComponent implements OnInit {
       }
     }, 500)
   }
+  
+  getLstOrderTags(data: LiveCampaignSimpleDetail[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }
