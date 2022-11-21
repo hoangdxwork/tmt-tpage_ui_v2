@@ -67,7 +67,7 @@
 
           <!--Tin nhắn hình ảnh TShop-->
           <!-- 1 hình -->
-		      <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length == 1 && team!.Type == 'TShop'" class="flex flex-wrap max-w-[225px]">
+		    <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length == 1 && dataItem.Type == 92 && !dataItem.Message" class="flex flex-wrap max-w-[225px]">
                 <div *ngFor="let att of dataItem.Data.AttachmentDto" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
                     class="p-0.5 flex gap-x-2 justify-center items-center">
                     <a *ngIf="att.fileUrl" (click)="open_gallery(att)" class="relative">
@@ -78,7 +78,7 @@
             </div>
   
                 <!-- Nhiều hình -->
-            <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length > 1 && team!.Type == 'TShop'" class="flex flex-wrap w-[327px]">
+            <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length > 1 && dataItem.Type == 92 && !dataItem.Message" class="flex flex-wrap w-[327px]">
                 <div *ngFor="let att of dataItem.Data.AttachmentDto" class="p-0.5"  [ngClass]="dataItem.Data.AttachmentDto.length == 2 ? 'w-1/2' : 'w-1/3'">
                     <div class="w-full relative" [ngStyle]="{'padding-top.%': 100}">
   
@@ -97,12 +97,12 @@
           </div>
 
           <!-- Tin nhắn không tải được -->
-          <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments && team!.Type == 'Facebook'" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments && dataItem.Type == 11" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
               tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
 
-          <div *ngIf="!dataItem.Message && !dataItem.Data?.AttachmentDto && team!.Type == 'TShop'" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.AttachmentDto && dataItem.Type == 92" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
               tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
