@@ -1,10 +1,10 @@
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
-import { AddPageComponent } from './../add-page/add-page.component';
+import { AddPageComponent } from '../add-page/add-page.component';
 import { TDSModalService } from 'tds-ui/modal';
 import { ViewportScroller } from '@angular/common';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookService } from 'src/app/main-app/services/facebook.service';
-import { Message } from './../../../../../lib/consts/message.const';
+import { Message } from '../../../../../lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
@@ -19,34 +19,21 @@ import { TpageBaseComponent } from '@app/shared/tpage-base/tpage-base.component'
 import { TUserDto } from '@core/dto/tshop.dto';
 import { TShopService } from '@app/services/tshop-service/tshop.service';
 
-export interface PageNotConnectDTO {
-  [key: string]: Array<UserPageDTO>;
-}
-
 @Component({
-  selector: 'tshop-channel',
-  templateUrl: './tshop-channel.component.html',
-  animations: [eventFadeStateTrigger],
+  selector: 'tshop-channel-v2',
+  templateUrl: './tshop-channel-v2.component.html',
   providers: [TDSDestroyService]
 })
-export class TshopChannelComponent extends TpageBaseComponent implements OnInit {
-  @ViewChild('innerText') innerText!: ElementRef;
-
+export class TshopChannelComponentV2 extends TpageBaseComponent implements OnInit {
   data: CRMTeamDTO[] = [];
 
   userTShopLogin!: TUserDto | null;
   isUserTShopConnectChannel: boolean = false;
 
   isLoading: boolean = true;
-  isLoadChannel: boolean = false;
-  iconCollapse: TDSSafeAny = {};
-  fieldListFilter: any = {};
   loginTeam!: CRMTeamDTO;
 
   tShopAuthentication!: string;
-  lstPageNotConnect: PageNotConnectDTO = {};
-  lstData: TDSSafeAny = {};
-  lastScrollPosition: TDSSafeAny = null;
 
   constructor(
     private crmTeamService: CRMTeamService,
@@ -66,7 +53,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
   }
 
   ngOnInit(): void {
-    this.loadListTeam();
+    this.loadData();
     // this.userTShopLogin = this.tShopService.getCacheTShopUser();
 
     if(this.userTShopLogin) {
@@ -76,13 +63,13 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     }
   }
 
-  getTShopAuthentication() {
+  getTShopAuthentication() {debugger
     // this.tShopService.removeCacheTshopUser();
     let fragment = 'connect-channel/tshop-login';
     this.tShopAuthentication = this.tShopService.getAuthentication(fragment);
      
     this.tShopService.onChangeUser().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+      next: (res) => {debugger
         if(res) {
           this.userTShopLogin = {...res};
           // this.tShopService.setCacheTShopUser(this.userTShopLogin);
@@ -104,9 +91,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     const height = 600;
     const y = (window.top?.outerHeight || 0) / 2 + (window.top?.screenY || 0) - (width / 2);
     const x = (window.top?.outerWidth || 0) / 2 + (window.top?.screenX || 0) - (height / 2);
-    let a = window.open(this.tShopAuthentication, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
-    console.log(a);
-    
+    window.open(this.tShopAuthentication, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
   }
 
   tShopSignOut() {
@@ -124,8 +109,6 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     if (channel || !this.userTShopLogin) {
       this.message.error(Message.ConnectionChannel.ChannelExist);
     }
-
-    this.lastScrollPosition = this.viewportScroller.getScrollPosition();
 
     this.insertUserTShop(this.tShopService.getCurrentToken());
   }
@@ -145,7 +128,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
       next: (obs) => {
 
         this.message.success('Thêm page thành công');
-        this.loadListTeam(true);
+        this.loadData();
         this.isLoading = false;
         this.cdRef.detectChanges();
 
@@ -158,9 +141,8 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     })
   }
 
-  loadListTeam(isRefresh?: boolean) {
+  loadData() {
     this.isLoading = true;
-    this.isLoadChannel = true;
 
     // TODO load all data
     this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe(
@@ -170,35 +152,15 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
             this.data = res.filter((x: any) => x.Type == CRMTeamType._TUser);
           }
 
-          this.data.sort((a: any, b: any) => {
-            if (a.Active) return -1;
-            return 1;
-          });
-
-          this.data.forEach((item: any) => {
-              this.getListData(item.Id);
-
-              if(item.Childs.length > 0) {
-                this.onChangeCollapse(item.Id, true);
-              }
-          });
-
           if (this.userTShopLogin) {
             this.sortByTShopLogin(this.userTShopLogin.Id);
           }
 
-          if(isRefresh){
-            this.crmTeamService.onRefreshListFacebook();
-            this.scrollToLastPosition();
-        }
-
           this.isLoading = false;
-          this.isLoadChannel = false;
           this.cdRef.detectChanges();
         },
         error: error => {
           this.isLoading = false;
-          this.isLoadChannel = false
           this.cdRef.detectChanges();
         }
       })
@@ -214,23 +176,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
       this.data.unshift(exist);
 
       exist.OwnerToken = this.tShopService.getCurrentToken() || exist.OwnerToken;
-
-      this.onChangeCollapse(exist.Id, true);
-      this.isUserTShopConnectChannel = true;
     }
-    else {
-      this.isUserTShopConnectChannel = false;
-    }
-  }
-
-  getIsIconCollapse(id: number) {
-    if (this.iconCollapse[id] && this.iconCollapse[id] === true)
-      return true;
-    return false;
-  }
-
-  onChangeCollapse(id: number, event: TDSSafeAny) {
-    this.iconCollapse[id] = event;
   }
 
   getTShopPages(team: CRMTeamDTO) {
@@ -241,20 +187,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
         next: (res) => {
           if(TDSHelperArray.hasListValue(res))
           {
-            this.lstPageNotConnect[team.Id] = res.map(x => {
-              return {
-                access_token: '',
-                id: x.Id,
-                name: x.Name,
-                picture: {
-                  data : {
-                    url: x.Avatar
-                  }
-                }
-              } as UserPageDTO;
-            });
-
-            this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
+            
           }
 
           this.isLoading = false;
@@ -272,44 +205,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     );
   }
 
-  getFieldListFilter(teamId: number): number {
-    let id = this.fieldListFilter?.[teamId]?.id;
-    if (id) return id;
-    return 1;
-  }
-
-  getListData(teamId: number) {
-    let field = this.getFieldListFilter(teamId);
-    let channel = this.data.find((x) => x.Id == teamId);
-
-    if (!channel) {
-      this.message.error(Message.ConnectionChannel.NotFoundUserPage);
-      return;
-    }
-
-    let childIds = channel?.Childs!.map(x => x.ChannelId) || [];
-
-    if (field == 1) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs || [];
-      this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
-    } else if (field == 2) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs!.filter((x) => x.Active);
-      this.lstData[teamId]['notConnected'] = [];
-    } else if (field == 3) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs!.filter((x) => !x.Active);
-      this.lstData[teamId]['notConnected'] = [];
-    } else if (field == 4) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = [];
-      this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
-    }
-  }
-
-  loadPageNotConnect(team: CRMTeamDTO, ev: TDSSafeAny) {
-    ev.stopPropagation();
+  loadPageNotConnect(team: CRMTeamDTO) {
     this.isLoading = true;
     this.verifyConnect(team);
   }
@@ -327,14 +223,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
 
                 if(TDSHelperArray.hasListValue(res?.data)) {
 
-                  this.lstPageNotConnect[team.Id] = res.data;
-                  this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
-
-                  if(this.lstData[team.Id]['notConnected']?.length > 0) {
-                    this.message.success(`Tìm thấy ${this.lstData[team.Id]['notConnected']?.length} kênh mới`);
-                  } else {
-                    this.message.info('Không tìm thấy kênh mới nào');
-                  }
+                 
                 } else {
                   this.message.info('Không tìm thấy kênh mới nào');
                 }
@@ -353,19 +242,14 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     )
   }
 
-  unConnected(id: number, name: TDSSafeAny, ev: TDSSafeAny): void {
-    ev.stopPropagation();
-
-    this.lastScrollPosition = this.viewportScroller.getScrollPosition();
+  unConnected(team: CRMTeamDTO): void {
     this.modal.error({
       title: 'Hủy kết nối Facebook',
-      content: `Bạn có chắc muốn hủy kết nối với: ${name}.`,
+      content: `Bạn có chắc muốn hủy kết nối với: ${team.Name}.`,
       onOk: () => {
-        this.delete(id);
+        this.delete(team.Id);
       },
-      onCancel: () => {
-        this.lastScrollPosition = null;
-      },
+      onCancel: () => {},
       okText: 'Xác nhận',
       cancelText: 'Hủy bỏ',
     });
@@ -376,7 +260,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
       {
         next: (res) => {
           this.message.success('Hủy kết nối thành công');
-          this.loadListTeam(true);
+          this.loadData();
         },
         error: (error) => {
           if (error?.error?.message) {
@@ -387,12 +271,6 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
         }
       }
     );
-  }
-
-  scrollToLastPosition(){
-    if(TDSHelperObject.hasValue(this.lastScrollPosition)) {
-      this.viewportScroller.scrollToPosition(this.lastScrollPosition);
-    }
   }
 
   prepareModel(team: CRMTeamDTO) {
@@ -406,23 +284,19 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     return model;
   }
 
-  showModalAddPage(data: CRMTeamDTO, user: CRMTeamDTO): void {
+  showModalAddPage(data: CRMTeamDTO): void {
     const modal = this.modal.create({
       title: 'Thêm Page',
       content: AddPageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        data: data,
-        // user: user,
+        data: data
       },
     });
 
     modal.afterClose.subscribe((result) => {
       if (TDSHelperObject.hasValue(result)) {
-        this.loadListTeam(true);
-        // if (this.lstPageNotConnect[user.Id]) {
-        //   this.lstPageNotConnect[user.Id] = this.lstPageNotConnect[user.Id].filter((x) => x.id != data.id);
-        // }
+        this.loadData();
       }
     });
   }

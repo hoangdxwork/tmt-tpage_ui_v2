@@ -78,6 +78,14 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
             this.userFBLogin = null;
         }
       })
+    
+    // TODO: lấy page id hiện tại từ dropdown
+    // this.crmTeamService.getCacheTeamId().pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res) => {
+    //     console.log(res);
+        
+    //   }
+    // })
   }
 
   ngOnInit(): void {
@@ -91,12 +99,9 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
           if(res) {
               this.userFBAuth = res;
               this.getMe();
-
-              if(this.userFBLogin) {
-                this.sortByFbLogin(this.userFBLogin.id);
-              }
-              this.isLoading = false;
           }
+
+          this.isLoading = false;
         },
         error: error => {
           this.isLoading = false;
@@ -131,7 +136,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
           }
         },
         error: error => {
-            this.userFBLogin = null
+          this.userFBLogin = null;
         }
       });
   }
@@ -282,15 +287,15 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
     });
   }
 
-  refreshPageToken(teamId: number, pageId: number) {
+  refreshPageToken(team: CRMTeamDTO) {
     let model = {
-      access_token: '',
-      pageId: pageId,
+      access_token: team.ChannelToken,
+      pageId: team.ChannelId,
     };
 
     this.isLoading = true;
 
-    this.crmTeamService.refreshPageToken(teamId, model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.crmTeamService.refreshPageToken(team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           if (TDSHelperString.hasValueString(res)) {
             this.message.success('Cập nhật token thành công');
