@@ -7,9 +7,15 @@ import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/o
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSTableFilterFn, TDSTableFilterList, TDSTableQueryParams, TDSTableSortFn, TDSTableSortOrder } from 'tds-ui/table';
 import { TDSTagStatusType } from 'tds-ui/tag';
 import { ModalHistoryCartComponent } from '../modal-history-cart/modal-history-cart.component';
+
+
+interface ColumnItem {
+  listOfFilter: TDSTableFilterList;
+  filterFn: TDSTableFilterFn<any> | null;
+}
 
 @Component({
   selector: 'table-order-cancel',
@@ -21,6 +27,14 @@ export class TableOrderCancelComponent implements OnInit {
   @Input() productId!: number;
 
   lstOfData: any[] = [];
+
+  listOfColumns: ColumnItem = {
+      listOfFilter: [
+          { text: 'Xóa', value: 'Xóa' },
+          { text: 'Hủy', value: 'Hủy' }
+      ],
+      filterFn: (list: string[], item: any) => list.some(status => item.Status.indexOf(status) !== -1)
+  };
 
   pageSize = 20;
   pageIndex = 1;

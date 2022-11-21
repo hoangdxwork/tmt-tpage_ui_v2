@@ -556,7 +556,7 @@
           <live-order-bypartner *ngIf="selectedIndex == 3" (checkedClick)="onChecked($event)" [orderId]="quickOrderModel.Code" [partnerId]="quickOrderModel.PartnerId"></live-order-bypartner>
         </tds-tab>
 
-        <tds-tab title="Phiếu bán hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+        <tds-tab title="Lịch sử hóa đơn" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
             <overview-order-bypartner *ngIf="selectedIndex == 4" [quickOrderModel]="quickOrderModel" (routerEvent)="onRouterEvent($event)"></overview-order-bypartner>
         </tds-tab>
       </tds-tabset>
