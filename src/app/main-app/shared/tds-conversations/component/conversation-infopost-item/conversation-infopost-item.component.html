@@ -74,7 +74,14 @@
     <div class="post-body flex flex-row justify-between p-4">
         <div class="post-content flex flex-col">
             <div class="post-type flex flex-row items-center mb-3">
-                <tds-tag [status]="'info'" type="outline" rounded="rounded-full">
+                <tds-avatar
+                    [tdsSrc]="dataTshop.Kind =='LIVE'?'../../../assets/imagesv2/conversation/live-circle.svg':'../../../assets/imagesv2/conversation/facebook-circle.svg'"
+                    [size]="24"
+                    [shape]="'circle'"
+                    [isAvatar]="false"
+                    class="mr-1">
+                </tds-avatar>
+                <tds-tag [status]="dataTshop.Kind=='LIVE'?'error':'info'" type="outline" rounded="rounded-full">
                     <span class="flex items-center py-0.5">
                         <span>{{data.ChannelCreatedTime | date: "dd-MM-yyyy HH:mm"}}</span>
                     </span>
@@ -96,6 +103,28 @@
             <!-- <img (error)="errorPostPicture(item)"
                 [src]="data.Thumbnail?.Url"
                 alt="{{data.Title}}" class="rounded-xl"/> -->
+        </div>
+    </div>
+    <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
+        <div class="emotion-count flex flex-row items-center">
+            <div class="flex flex-row mr-1 sticky">
+                <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px"
+                    class="rounded-full z-50">
+                <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
+                    class="rounded-full z-40 -ml-2">
+            </div>
+        </div>
+        <div class="comment flex flex-row items-center">
+            <div class="comment-button">
+                <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
+                    (click)="openModalPost(item)">
+                    <i class="tdsi-chart-pie-fill"></i>
+                </button>
+                <button tds-button-flat-icon color="secondary" tds-tooltip tooltipTitle="Đi tới bình luận" tooltipPlacement="bottom"
+                    (click)="openPost(item, 'post')">
+                    <i class="tdsi-expand-line"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
