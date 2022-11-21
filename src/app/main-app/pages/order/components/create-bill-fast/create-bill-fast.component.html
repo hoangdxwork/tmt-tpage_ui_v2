@@ -91,12 +91,12 @@
               <!-- Thao tác -->
               <td class="align-top">
                 <div class="flex gap-x-2">
-                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="onEdit(index)">
+                  <button tds-button-icon type="button" tds-tooltip="Chỉnh sửa" color="secondary" size="sm" (click)="onEdit(index)">
                     <span class="flex items-center">
                       <i class="tdsi-edit-fill text-neutral-1-500"></i>
                     </span>
                   </button>
-                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="onRemoveLine(index)">
+                  <button tds-button-icon type="button" tds-tooltip="Xóa" color="secondary" size="sm" (click)="onRemoveLine(index)">
                     <span class="flex items-center">
                       <i class="tdsi-trash-fill text-neutral-1-500"></i>
                     </span>
@@ -171,7 +171,7 @@
                               <!-- Thao tác -->
                               <td >
                                 <div class="flex justify-center">
-                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="onRemoveProduct(index, i)">
+                                  <button tds-button-icon type="button" tds-tooltip="Xóa" color="secondary" size="sm" (click)="onRemoveProduct(index, i)">
                                     <span class="flex items-center">
                                       <i class="tdsi-trash-fill text-neutral-1-500"></i>
                                     </span>

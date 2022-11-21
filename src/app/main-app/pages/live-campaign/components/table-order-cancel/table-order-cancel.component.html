@@ -1,5 +1,5 @@
 <div class="w-full h-full pb-2">
-  <tds-table #table class="w-full h-full"
+  <tds-table #sortTable class="w-full h-full"
     [showSizeChanger]="true"
     [frontPagination]="false"
     [listData]="lstOfData"
@@ -14,12 +14,14 @@
         <th [width]="'200px'">Tên khách hàng</th>
         <th [width]="'200px'" class="text-center">Số lượng sản phẩm</th>
         <th [width]="'200px'">Ngày tạo</th>
-        <th [width]="'200px'">Trạng thái</th>
+        <th [width]="'200px'" [filters]="listOfColumns.listOfFilter" [filterFn]="listOfColumns.filterFn">
+            Trạng thái
+        </th>
         <th [width]="'200px'"></th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of table.data">
+      <tr *ngFor="let data of sortTable.data">
         <td>{{ data.OrderCode }}</td>
         <td>{{ data.PartnerName }}</td>
         <td class="text-center">{{ data.TotalQuantity }}</td>
