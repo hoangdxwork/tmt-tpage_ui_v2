@@ -191,7 +191,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
               let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit2 = res && fbCreated && this.data
-                    && fbCreated.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbCreated.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exit2) break;
               this.setCommentUpdateOrderCode(fbCreated);
@@ -201,7 +201,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
               let fbOrder = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit3 = res && fbOrder && this.data
-                    && fbOrder.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbOrder.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exit3) break;
               this.setCommentUpdateOrderCode(fbOrder);
@@ -211,7 +211,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
               let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exist4 = res && fbDelete && this.data
-                    && fbDelete.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbDelete.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exist4) break;
               this.setCommentDeleteOrderCode(fbDelete);
@@ -221,7 +221,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.livecampaign_CartCheckout:
               let fbInvoice = {...res?.Data?.Data} as LiveCampaignFastSaleOrderDataDto;
               let exist5 = res && fbInvoice && this.data
-                    && fbInvoice.LiveCampaignId == this.data.LiveCampaignId;
+                    && fbInvoice.LiveCampaignId == this.data?.LiveCampaignId;
 
               if(!exist5) break;
               this.setCommentNumberInvoice(fbInvoice);
@@ -270,7 +270,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       code: model.Data.Code
     };
 
-    let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
+    let exist = this.commentOrders[model.Data?.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data?.Facebook_ASUserId]).length > 0;
     if(exist) {
       let orders = this.commentOrders[model.Data.Facebook_ASUserId] as any[];
       let index = orders.findIndex(x => x.id == item.id);
@@ -297,7 +297,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       code: model.Data.Code
     };
 
-    let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
+    let exist = this.commentOrders[model.Data?.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data?.Facebook_ASUserId]).length > 0;
     if(exist) {
       let orders = this.commentOrders[model.Data.Facebook_ASUserId] as any[];
       orders = orders.filter(x => x.id != item.id);
