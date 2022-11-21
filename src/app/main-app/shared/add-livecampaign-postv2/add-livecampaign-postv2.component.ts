@@ -1,8 +1,9 @@
+import { ODataLiveCampaignService } from './../../services/mock-odata/odata-live-campaign.service';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from './../../dto/live-campaign/livecampaign-simple.dto';
 import { ProductDTOV2 } from '../../dto/product/odata-product.dto';
-import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
+import { LiveCampaignModel, ODataLiveCampaignModelDTO } from 'src/app/main-app/dto/live-campaign/odata-live-campaign-model.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
@@ -10,7 +11,7 @@ import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, ViewChil
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
-import { Observable, takeUntil } from 'rxjs';
+import { Observable, takeUntil, mergeMap, map } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -31,6 +32,9 @@ import { StringHelperV2 } from '../helper/string.helper';
 import { Message } from '@core/consts/message.const';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '@app/services/product-indexdb.service';
+import { THelperDataRequest } from '@core/services/helper-data.service';
+import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
+import { SortEnum } from '@core/enum';
 
 @Component({
   selector: 'app-add-livecampaign-postv2',
@@ -83,6 +87,11 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   lstOrderTags!: string[];
 
+  sort: Array<SortDataRequestDTO>= [{
+    field: "DateCreated",
+    dir: SortEnum.desc,
+  }];
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -112,7 +121,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef) {
+    private cdRef: ChangeDetectorRef,
+    private odataLiveCampaignService: ODataLiveCampaignService) {
       this.createForm();
    }
 
@@ -123,6 +133,8 @@ export class AddLivecampaignPostV2Component implements OnInit {
   ngOnInit(): void {
     if(this.id) {
         this.loadData(this.id);
+    } else {
+      this.loadCheckIsEnableAuto();
     }
 
     this.loadUser();
@@ -159,6 +171,34 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
     this._form.controls['ConfigObject'].patchValue(this.lstConfig[0]);
     this._form.controls['Config'].setValue('Draft');
+  }
+
+  loadCheckIsEnableAuto() {
+    let params = THelperDataRequest.convertDataRequestToString(1, 1, {} as any, this.sort);
+
+    this.isLoading = true;
+    this.odataLiveCampaignService.getView(params).pipe(
+      map((res: ODataLiveCampaignModelDTO) => {
+        return res.value[0]?.Id;
+      }),
+      mergeMap((liveCampaignId: string) => {
+        return this.liveCampaignService.getByLiveCampaignId(liveCampaignId).pipe(map((res: any) => {
+          return res.IsEnableAuto;
+        }))
+      }))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (IsEnableAuto: boolean) => {
+          if(IsEnableAuto) {
+            this._form.controls.IsEnableAuto.setValue(IsEnableAuto);
+          }
+          this.isLoading = false;
+        },
+        error: error=> {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+        }
+    })
   }
 
   productLastV2() {

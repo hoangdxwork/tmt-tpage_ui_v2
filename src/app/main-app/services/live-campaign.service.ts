@@ -365,4 +365,13 @@ export class LiveCampaignService extends BaseSevice {
     const key = `${this._keyCacheDrawerEdit}`;
     localStorage.removeItem(key);
   }
+
+  getByLiveCampaignId(id: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+	}
 }
