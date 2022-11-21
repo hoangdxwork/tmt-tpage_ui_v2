@@ -1,6 +1,6 @@
 import { TDSNotificationService } from 'tds-ui/notification';
 import { FastSaleOrderModelDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
-import { takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -21,8 +21,10 @@ export class ModalMergeOrderComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingCollapse: boolean = false;
 
+  setOfCheckedId = new Set<number>();
   expandSet = new Set<number>();
-  ids: any = [];
+  checked = false;
+  indeterminate = false;
   isMerge: boolean = false;
   key: any = 0;
 
@@ -51,7 +53,7 @@ export class ModalMergeOrderComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+        this.notification.error('Lỗi', err?.error?.message);
       }
     })
   }
@@ -65,7 +67,6 @@ export class ModalMergeOrderComponent implements OnInit {
           this.lstOrders = [...res.value];
         }
 
-        this.ids = this.lstOrders.map(x => x.Id);
         this.isLoadingCollapse = false;
       },
       error: (err) => {
@@ -75,6 +76,29 @@ export class ModalMergeOrderComponent implements OnInit {
     })
   }
 
+  updateCheckedSet(id: number, checked: boolean): void {
+    if (checked) {
+      this.setOfCheckedId.add(id);
+    } else {
+      this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: number, checked: boolean): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(value: boolean): void {
+    this.lstPartners.forEach(item => this.updateCheckedSet(item.Id, value));
+    this.refreshCheckedStatus();
+  }
+
+  refreshCheckedStatus(): void {
+    this.checked = this.lstPartners.every(item => this.setOfCheckedId.has(item.Id));
+    this.indeterminate = this.lstPartners.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
+  }
+
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {
       this.expandSet = new Set<number>();
@@ -82,30 +106,55 @@ export class ModalMergeOrderComponent implements OnInit {
       this.key = id;
       // TODO: cập nhật danh sách đơn hàng có thể gộp theo khách hàng
       this.lstOrders = [];
-      this.ids = [];
       this.loadOrderCanMergeByPartnerId(id);
     } else {
       this.expandSet.delete(id);
     }
   }
 
-  mergeOrder(data: PartnerCanMergeOrdersDto) {
-    this.isLoading = true;
-    let model = {
-      OrderIds: this.ids
+  mergeListOrders(){
+    if(this.isLoading) {
+      return;
     }
 
-    this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: FastSaleOrderModelDTO) => {
-        this.message.success('Gộp đơn thành công');
-        this.isMerge = true;
+    this.setOfCheckedId.forEach(x => {
+      this.mergeOrder(x);
+    })
+  }
+
+  mergeOrder(partnerId: number) {
+    this.isLoading = true;
+
+    this.fastSaleOrderService.getOrderLiveCampaignCanMergeByPartner(this.liveCampaignId, partnerId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if(res && res.value) {
+            let lstOrders = [...res.value];
+            let model = {
+              OrderIds: lstOrders.map(x => x.Id)
+            }
         
-        this.loadPartner();
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-      }
+            this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: FastSaleOrderModelDTO) => {
+                this.notification.success(`Mã khách hàng <span class="text-info-500">${partnerId}</span>`, `Gộp đơn thành công`);
+                this.isMerge = true;
+                this.setOfCheckedId.delete(partnerId);
+                this.loadPartner();
+              },
+              error: (err) => {
+                this.isLoading = false;
+                this.notification.error(`Lỗi: Mã khách hàng <span class="text-info-500">${partnerId}</span>`, `${err?.error?.message}`);
+              }
+            })
+          }
+
+          this.isLoadingCollapse = false;
+        },
+        error: (err) => {
+          this.isLoadingCollapse = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+        }
     })
   }
 
