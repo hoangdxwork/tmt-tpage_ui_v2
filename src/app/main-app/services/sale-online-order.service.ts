@@ -163,7 +163,7 @@ export class SaleOnline_OrderService extends BaseSevice {
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getData<any>(api, {model: data});
+    return this.apiService.getData<any>(api, data);
   }
 
   apiInsertFromComment(data: any, isIncrease: boolean = false, type: string) {

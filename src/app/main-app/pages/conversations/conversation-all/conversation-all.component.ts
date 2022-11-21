@@ -364,32 +364,25 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
     })
 
-    // // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
-    // this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
-    //   next: (info: ChatomniConversationInfoDto) => {
-    //       let teamId = this.currentTeam?.Id as any;
+    // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
+    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (info: ChatomniConversationInfoDto) => {
 
-    //       this.syncConversationInfo = {...info};
-    //       this.conversationInfo.Order = {...data.Order};
+          let csid = info?.Conversation?.ConversationId;
+          let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
 
-    //       let csid = this.syncConversationInfo.Conversation.ConversationId;
-    //       let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
+          if(Number(index) >= 0 && info?.Partner) {
+              this.lstConversation[index].HasPhone = info.Partner?.Phone ? true : false;
+              this.lstConversation[index].HasAddress = info.Partner?.Street ? true : false;
+              this.lstConversation[index] = {...this.lstConversation[index]};
+              this.lstConversation = [...this.lstConversation];
+          }
 
-    //       if(Number(index) >= 0 && this.syncConversationInfo.Partner) {
-    //           this.lstConversation[index].HasPhone = this.syncConversationInfo.Partner.Phone ? true : false;
-    //           this.lstConversation[index].HasAddress = this.syncConversationInfo.Partner.Street ? true : false;
-    //           this.lstConversation[index] = {...this.lstConversation[index]};
-    //           this.lstConversation = [...this.lstConversation];
-    //       }
-
-    //       // TODO: cập nhật mã đơn hàng
-    //       if(this.conversationInfo && this.syncConversationInfo.Order) {
-    //           this.orderCode = this.syncConversationInfo.Order.Code;
-    //       }
-
-    //       this.cdRef.markForCheck();
-    //   }
-    // })
+          // TODO: cập nhật mã đơn hàng
+          this.orderCode = info?.Order?.Code;
+          this.cdRef.markForCheck();
+      }
+    })
 
     // TODO Cập nhật đã gán nhân viên
     this.chatomniEventEmiterService.assignedToUser$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -518,12 +511,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   }
 
                   this.isLoading = false;
-                  this.cdRef.markForCheck();
+                  this.cdRef.detectChanges();
               },
               error: (error: any) => {
                   this.isLoading = false;
                   this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-                  this.cdRef.markForCheck();
+                  this.cdRef.detectChanges();
               }
           })
       }

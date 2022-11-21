@@ -336,7 +336,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     // TODO: đồng bộ dữ liệu khi lưu bên tab khách hàng
     this.chatomniConversationFacade.onSyncConversationOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (info: ChatomniConversationInfoDto) => {
-          this.loadData(info);
+          this.validateData();
+          this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(info, this.team, this.type)};
+          this.mappingAddress(this.quickOrderModel);
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -773,7 +776,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.isLoading = true;
 
     this.ngZone.run(() => {
-        this.saleOnline_OrderService.apiInsertFromMessage(model, channelType).pipe(takeUntil(this.destroy$)).subscribe({
+        this.saleOnline_OrderService.apiInsertFromMessage({model: model}, channelType).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
               delete res['@odata.context'];
               res.FormAction = formAction;
@@ -820,17 +823,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.isCalculateFeeAship = false;
           this.isEnableCalcFee = false;
           this.isEqualAmountInsurance = false;
+
+          let csid = this.quickOrderModel.Facebook_ASUserId;
+          this.onSyncConversationPartner(csid, 'FastSaleOrder');
+
           delete this.quickOrderModel.Id;
           delete this.quickOrderModel.Code;
           this.quickOrderModel.Details = [];
-
-          // let exist = this.type == 'post' && this.commentPost;
-          // if(exist) {
-          //   this.loadOrderByPostId(this.commentPost.ObjectId, this.commentPost.UserId);
-          // }
-
-          let csid = this.commentPost.UserId;
-          this.onSyncConversationPartner(csid);
 
           this.isLoading = false;
           this.cdRef.detectChanges();
@@ -891,27 +890,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
   }
 
-  // loadOrderByPostId(postId: string, userId: string) {
-  //   this.saleOnline_OrderService.getOrderByPostId(postId, userId).pipe(takeUntil(this.destroy$)).subscribe({
-  //     next: (res: QuickSaleOnlineOrderModel) => {
-  //         if(res && res.Id) {
-  //             this.quickOrderModel = {...res};
-  //             this.mappingAddress(this.quickOrderModel);
-  //             this.conversationOrderFacade.hasValueOrderCode$.emit(this.quickOrderModel.Code);
-  //             this.chatomniConversationFacade.onSyncConversationInfo$.emit(this.quickOrderModel.Facebook_ASUserId);
-  //         }
-
-  //         this.cdRef.detectChanges();
-  //     },
-  //     error: (error: any) => {
-  //         this.chatomniConversationFacade.onSyncConversationInfo$.emit(this.quickOrderModel.Facebook_ASUserId);
-  //         this.isLoading = false;
-  //         this.message.error(`${error?.error?.message}`);
-  //         this.cdRef.detectChanges();
-  //     }
-  //   })
-  // }
-
   showModalAddProduct() {
     const modal = this.modal.create({
         title: 'Thêm sản phẩm',
@@ -949,8 +927,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu
-    // let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
-    //     ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
 
     //data sẽ là ProductDTOV2 | ProductTemplateV2DTO
     let model: Detail_QuickSaleOnlineOrder = {
@@ -980,13 +956,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   showModalAddPromotion(){
-    // this.modal.create({
-    //   title: 'Chọn khuyến mãi',
-    //   content: ModalApplyPromotionComponent,
-    //   size: "lg",
-    //   viewContainerRef: this.viewContainerRef
-    // });
-
     this.message.info('Tính năng chưa khả dụng');
   }
 
@@ -1570,11 +1539,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     return 1;
   }
 
-  onSyncConversationPartner(csid: any) {
+  onSyncConversationPartner(csid: any, type?: string) {
     this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$))
       .subscribe({
           next: (info: any) => {
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
               this.chatomniConversationFacade.onSyncConversationPartner$.emit(info);
+
+              if(type == 'FastSaleOrder') {
+                  this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
+              }
           },
           error: (error: any) => {
               this.message.error(error?.error?.message);

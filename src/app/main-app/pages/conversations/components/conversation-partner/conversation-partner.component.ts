@@ -1,5 +1,4 @@
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
-import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
@@ -16,8 +15,6 @@ import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conve
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { TDSTagStatusType } from 'tds-ui/tag';
-import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
 import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -82,14 +79,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private cdRef: ChangeDetectorRef,
     private postEvent: ConversationPostEvent,
     private chatomniConversationFacade: ChatomniConversationFacade,
-    private conversationDataFacade: ConversationDataFacade,
     private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
     private csPartner_PrepareModelHandler: CsPartner_PrepareModelHandler,
     private conversationOrderFacade: ConversationOrderFacade,
     private destroy$: TDSDestroyService,
     private router: Router,
-    private chatomniConversationService: ChatomniConversationService,
-    private omniEventEmiter: ChatomniEventEmiterService) {
+    private chatomniConversationService: ChatomniConversationService) {
   }
 
   ngOnInit(): void  {
@@ -132,11 +127,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.validateData();
     this.conversationInfo = {...conversationInfo};
 
-    this.onSyncConversationInfo(this.conversationInfo);
+    this.prepareModelPartner(this.conversationInfo);
     this.cdRef.detectChanges();
   }
 
-  onSyncConversationInfo(conversationInfo: ChatomniConversationInfoDto) {
+  prepareModelPartner(conversationInfo: ChatomniConversationInfoDto) {
     if(this.team && conversationInfo) {
         this.partner = {...this.csPartner_PrepareModelHandler.getPartnerFromConversation(conversationInfo, this.team)};
         this.mappingAddress(this.partner);
@@ -466,6 +461,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       .subscribe({
           next: (info: any) => {
               this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
           },
           error: (error: any) => {
               this.message.error(error?.error?.message);
@@ -544,8 +540,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
       this.cdRef.detectChanges();
     }
-  })
-  }
+  })}
 
   checkAddressByPhone() {
     let phone = this.partner.Phone;
