@@ -159,7 +159,6 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
   sortByFbLogin(userId: string) {
     // TODO: lấy tài khoản đang đăng nhập đưa lên đầu danh sách
     let exist = this.data.find((x) => x.OwnerId && x.OwnerId == userId);
-console.log(this.userFBLogin);
 
     if (exist) {
       this.loginTeam = {...exist};
@@ -273,7 +272,8 @@ console.log(this.userFBLogin);
       content: AddPageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        data: child
+        data: child,
+        type: CRMTeamType._Facebook
       },
     });
 
