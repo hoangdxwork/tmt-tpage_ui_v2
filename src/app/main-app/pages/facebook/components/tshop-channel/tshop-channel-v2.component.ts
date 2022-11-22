@@ -311,7 +311,8 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
       content: AddPageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        data: data
+        data: data,
+        type: CRMTeamType._TShop
       },
     });
 
@@ -327,8 +328,8 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
     model.Name = x.Name;
     model.ChannelId = x.Id;
-    // model.ChannelToken = '';
-    // model.Facebook_Link = x.link;
+    model.ChannelToken = '';
+    model.Facebook_Link = '';
     model.Facebook_TypeId = 'Page';
     model.Facebook_ASUserId = team?.OwnerId;
     model.Facebook_UserAvatar = team?.Facebook_UserAvatar;
@@ -338,7 +339,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     model.Facebook_PageId = x.Id;
     model.Facebook_PageName = x.Name;
     model.Facebook_PageLogo = x.Avatar;
-    // model.Facebook_PageToken = x.access_token;
+    model.Facebook_PageToken = '';
     model.Active = false;
     model.ParentId = team?.Id;
     model.Type = CRMTeamType._TShop;
