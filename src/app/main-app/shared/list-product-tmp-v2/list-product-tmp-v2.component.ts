@@ -21,6 +21,7 @@ import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { StringHelperV2 } from '../helper/string.helper';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 @Component({
   selector: 'list-product-tmp-v2',
@@ -85,6 +86,8 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
   categoryList: ConfigCateg[] = [];
   categIdFilter!: ConfigCateg | TDSSafeAny;
 
+  response: any;
+
   constructor(private productIndexDBService: ProductIndexDBService,
       public cacheApi: THelperCacheService,
       private modalService: TDSModalService,
@@ -96,6 +99,7 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
       private destroy$: TDSDestroyService,
       private liveCampaignService: LiveCampaignService,
       private viewContainerRef: ViewContainerRef,
+      private productTemplateFacade: ProductTemplateFacade,
       private productTemplateService: ProductTemplateService,
       private productCategoryService: ProductCategoryService) {
   }
@@ -104,6 +108,8 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
     this.loadCurrentCompany();
     this.loadProductCategory();
     this.loadData();
+
+    this.eventEmitter();
   }
 
   loadData() {
@@ -126,6 +132,26 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
           this.disabledReload = false;
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
         }
+    })
+  }
+
+  eventEmitter() {
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+
+              this.mappingProductToLive(this.response);
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              this.mappingProductToLive(this.response);
+          }
+        });
+      }
     })
   }
 
@@ -278,18 +304,8 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: any) => {
-        if(!response) return;
-        this.mappingProductToLive(response);
-
-        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (inventories: any) => {
-              this.inventories = inventories;
-          },
-          error: (err: any) => {
-              this.message.error(err?.error?.message);
-          }
-        });
+          if(!response) return;
+          this.response = response;
       }
     })
   }
@@ -313,8 +329,8 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
 
               items.map((x: DataPouchDBDTO) => {
                   // TODO: kiểm tra số lượng
-                  const qty = product.InitInventory > 0 ? product.InitInventory : 1;
-                  x.QtyAvailable = qty;
+                  let existQty = this.inventories && this.inventories[x.Id] && this.inventories[x.Id].QtyAvailable > 0;
+                  x.QtyAvailable = existQty ? this.inventories[x.Id].QtyAvailable : 1;
 
                   // TODO: kiểm tra mã sp từ api
                   const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể

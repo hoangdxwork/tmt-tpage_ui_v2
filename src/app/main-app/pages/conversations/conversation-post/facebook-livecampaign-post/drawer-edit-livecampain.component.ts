@@ -26,6 +26,7 @@ import { StringHelperV2 } from "@app/shared/helper/string.helper";
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { LiveCampaigntAvailableToBuyDto, LiveCampaigntPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 @Component({
   selector: 'drawer-edit-livecampaign',
@@ -88,6 +89,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     return value;
   }
 
+  response: any;
+  inventories: any;
+
   constructor(private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
     private modal: TDSModalService,
@@ -99,6 +103,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private socketOnEventService: SocketOnEventService,
     private fb: FormBuilder,
+    private productTemplateFacade: ProductTemplateFacade,
     private destroy$: TDSDestroyService) {
   }
 
@@ -113,6 +118,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.productLastV2(); //TODO: load danh sách sản phẩm từ cache
 
     this.onEventSocket();
+    this.eventEmitter();
   }
 
   onEventSocket() {
@@ -154,6 +160,26 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
                   this.cdRef.detectChanges();
               break;
           }
+      }
+    })
+  }
+
+  eventEmitter() {
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+
+              this.mappingProductToLive(this.response);
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              this.mappingProductToLive(this.response);
+          }
+        });
       }
     })
   }
@@ -645,7 +671,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     modal.afterClose.subscribe((response: any) => {
       if(!response) return;
-      this.mappingProductToLive(response);
+      this.response = response;
     });
   }
 
@@ -666,10 +692,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         let lstItems = [] as ReportLiveCampaignDetailDTO[];
 
         items.map((x: DataPouchDBDTO) => {
-          let qty = product.InitInventory > 0 ? product.InitInventory : 1;
+          let existQty = this.inventories && this.inventories[x.Id] && this.inventories[x.Id].QtyAvailable > 0;
+          x.QtyAvailable = existQty ? this.inventories[x.Id].QtyAvailable : 1;
 
           let item = {
-              Quantity: qty,
+              Quantity: x.QtyAvailable,
               RemainQuantity: 0,
               ScanQuantity: 0,
               QuantityCanceled: 0,
