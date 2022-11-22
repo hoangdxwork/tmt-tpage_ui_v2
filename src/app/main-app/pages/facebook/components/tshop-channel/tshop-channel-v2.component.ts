@@ -341,7 +341,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     // model.Facebook_PageToken = x.access_token;
     model.Active = false;
     model.ParentId = team?.Id;
-    model.Type = CRMTeamType._Facebook;
+    model.Type = CRMTeamType._TShop;
 
     return model;
   }
