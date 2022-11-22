@@ -184,7 +184,7 @@
                             </div>
                             <div class="w-2/3 flex items-center gap-x-6">
                                 <span class="font-semibold">{{ dataModel.DeliveryPrice || 0 | numberCustom }} đ</span>
-                                <div class="rounded-full bg-info-200 px-2" *ngIf="dataModel.ShipWeight" 
+                                <div class="rounded-full bg-info-200 px-2" *ngIf="dataModel.ShipWeight"
                                     tds-tooltip tooltipTitle="Khối lượng: {{ dataModel.ShipWeight | numberCustom }} (g)">
                                     <span class="text-info-500 font-semibold flex items-center gap-x-1">
                                         <i class="tdsi-unit-fill text-base"></i>
@@ -262,7 +262,7 @@
                         </h1>
                     </div>
                     <div class="w-full">
-                        <tds-table #tableProduct [listData]="dataModel.OrderLines" [showPagination]="false" [noResult]="empty">
+                        <tds-table #tableProduct [listData]="dataModel.OrderLines" [showPagination]="false" [pageSize]="dataModel.OrderLines.length" [noResult]="empty">
                             <thead>
                                 <tr>
                                     <th>STT</th>
