@@ -159,27 +159,29 @@ export class AddLiveCampaignV2Component implements OnInit {
     let params = THelperDataRequest.convertDataRequestToString(1, 1, {} as any, this.sort);
 
     this.isLoading = true;
-    this.odataLiveCampaignService.getView(params).pipe(
-      map((res: ODataLiveCampaignModelDTO) => {
-        return res.value[0]?.Id;
-      }),
-      mergeMap((liveCampaignId: string) => {
-        return this.liveCampaignService.getByLiveCampaignId(liveCampaignId).pipe(map((res: any) => {
-          return res.IsEnableAuto;
-        }))
-      }))
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (IsEnableAuto: boolean) => {
-          if(IsEnableAuto) {
-            this._form.controls.IsEnableAuto.setValue(IsEnableAuto);
+    this.odataLiveCampaignService.getView(params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ODataLiveCampaignModelDTO) => {
+          if(res.value && res.value.length >=0 && res.value[0]?.Id) {
+            
+            let liveCampaignId = res.value[0]?.Id;
+            this.liveCampaignService.getByLiveCampaignId(liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: res => {
+                  if(res.IsEnableAuto) {
+                    this._form.controls.IsEnableAuto.setValue(res.IsEnableAuto);
+                  }
+                  this.isLoading = false;
+              },
+              error: error => {
+                  this.isLoading = false;
+              }
+            })
+          } else {
+            this.isLoading = false;
           }
+      },
+      error: error => {
           this.isLoading = false;
-        },
-        error: error=> {
-          this.isLoading = false;
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-        }
+      }
     })
   }
 
@@ -735,7 +737,7 @@ export class AddLiveCampaignV2Component implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex) {
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }

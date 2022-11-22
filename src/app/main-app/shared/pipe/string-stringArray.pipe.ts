@@ -8,7 +8,7 @@ export class StringToStringArrayPipe implements PipeTransform {
 
     transform(value: string): any {
 
-      if(TDSHelperString.isString(value) && value.length > 2){
+      if(TDSHelperString.isString(value) && value.length > 0){
         if(!value.includes(',')) {
             return [value];
         }
