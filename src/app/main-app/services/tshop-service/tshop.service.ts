@@ -1,27 +1,30 @@
-import { TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
-import { Message } from '@core/consts/message.const';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
+
+import { TDSHelperString } from 'tds-ui/shared/utility';
+import { Injectable } from '@angular/core';
 import { TUserDto } from '@core/dto/tshop.dto';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { TDSMessageService } from 'tds-ui/message';
+import { BaseSevice } from '../base.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class TShopService  {
+export class TShopService extends BaseSevice {
 
+  prefix: string = "odata";
+  table: string = "";
+  baseRestApi: string = "";
   private _currentToken!: string | null;
   private _userTShopLogin!: TUserDto | null;
   private readonly currentUser$ = new ReplaySubject<TUserDto | null>(1);
-  // private readonly cacheTShopUser = '_cache_TShop_user';
 
-  constructor(
-    private message: TDSMessageService
-  ) {
-      this.eventLogin();
+  constructor(private apiService: TCommonService,
+    private message: TDSMessageService) {
+    super(apiService)
+    this.eventLogin();
   }
 
   eventLogin() {
@@ -38,6 +41,15 @@ export class TShopService  {
         }
       }
     });
+  }
+
+  refreshUserToken(id: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshusertoken`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, null);
   }
 
   getCurrentToken(): string | null {
@@ -77,24 +89,4 @@ export class TShopService  {
   logout() {
     this.onUpdateUser(null);
   }
-
-  // setCacheTShopUser(user: TUserDto) {
-  //   let data = JSON.stringify(user);
-  //   localStorage.setItem(this.cacheTShopUser, data);
-  // }
-
-  // getCacheTShopUser(): TUserDto | null {
-  //   let data = localStorage.getItem(this.cacheTShopUser);
-
-  //   if(data) {
-  //     let user = JSON.parse(data);
-  //     return user;
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
-  // removeCacheTshopUser() {
-  //   localStorage.removeItem(this.cacheTShopUser);
-  // }
 }

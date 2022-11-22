@@ -18,3 +18,13 @@ export interface TShopDto {
   Address: string;
   DateOfBirth?: Date;
 }
+
+export interface ChatOmniTShopDto {
+  Id: string;
+  Name: string;
+  Phone: string;
+  Email: string;
+  Address: string;
+  OwnerId: string;
+  Avatar: string;
+}
