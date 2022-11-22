@@ -41,6 +41,16 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<ProductTemplateV2DTO>(api, null);
   }
 
+  getProductTemplateByIdV2(key: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+
   insert(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertV2`,

@@ -29,6 +29,7 @@ import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-c
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 import { DOCUMENT } from '@angular/common';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 @Component({
   selector: 'edit-livecampaign-post',
@@ -96,6 +97,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
     return value;
   }
 
+  response: any;
+  inventories: any;
+
   constructor(private crmTeamService: CRMTeamService,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
@@ -109,6 +113,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     private productService: ProductService,
     private sharedService: SharedService,
     private message: TDSMessageService,
+    private productTemplateFacade: ProductTemplateFacade,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
@@ -129,6 +134,28 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.loadQuickReply();
     this.loadCurrentCompany();
     this.productLastV2();
+
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+
+              this.mappingProductToLive(this.response);
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              this.mappingProductToLive(this.response);
+          }
+        });
+      }
+    })
   }
 
   createForm() {
@@ -471,7 +498,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
     modal.afterClose.subscribe((response: any) => {
       if(!response) return;
-      this.mappingProductToLive(response);
+      this.response = response;
     })
   }
 
@@ -495,8 +522,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
               let lstDetails = [] as any[];
               items.map((x: DataPouchDBDTO) => {
                   // TODO: kiểm tra số lượng
-                  const qty = product.InitInventory > 0 ? product.InitInventory : 1;
-                  x.QtyAvailable = qty;
+                  let existQty = this.inventories && this.inventories[x.Id] && this.inventories[x.Id].QtyAvailable > 0;
+                  x.QtyAvailable = existQty ? this.inventories[x.Id].QtyAvailable : 1;
 
                   // TODO: kiểm tra mã sp từ api
                   const vTag = tags && tags[x.Id] ? tags[x.Id] : ''; // mã chốt đơn của biến thể
@@ -1022,7 +1049,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       }
     }, 500)
   }
-  
+
   getLstOrderTags(data: LiveCampaignSimpleDetail[]) {
     if(data) {
         data = data.filter(x => x.Tags);
