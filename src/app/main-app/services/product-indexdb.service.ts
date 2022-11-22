@@ -113,7 +113,7 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
 
   getLastVersionV2(countIndex: number, version: number): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetLastVersionV2?$expand=Datas&countIndexDB=${countIndex}&Version=${version}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetLastVersionV2?$expand=Datas&countIndexDB=${countIndex}&Version=${version}&$skip=0&$top=20000`,
       method: CoreApiMethodType.get
     }
     return this.apiService.getData<ProductPouchDBDTO>(api, null);

@@ -1,6 +1,8 @@
+import { TUserDto } from '@core/dto/tshop.dto';
+import { FacebookUser } from './../../lib/dto/facebook.dto';
 import { FacebookVerifyResultDto } from './../dto/team/team.dto';
 import { Injectable } from '@angular/core';
-import {  Observable, ReplaySubject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ChannelFacebookConfigDTO, GreetingDTO, ProfileMessageDTO, QuickQuestionDTO } from '../dto/configs/page-config.dto';
@@ -15,6 +17,7 @@ export class FacebookService extends BaseSevice {
   prefix: string = "odata";
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/facebook";
+  private readonly cacheLoginUser = '_cache_login_user';
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService)
@@ -73,5 +76,30 @@ export class FacebookService extends BaseSevice {
     }
 
     return this.apiService.getData<any>(api, null);
+  }
+
+  setCacheLoginUser(user: TUserDto | FacebookUser, type: string) {
+    let model = {
+      data: user,
+      type: type
+    }
+
+    let data = JSON.stringify(model);
+    localStorage.setItem(this.cacheLoginUser, data);
+  }
+
+  getCacheLoginUser(): TUserDto | FacebookUser | null {
+    let data = localStorage.getItem(this.cacheLoginUser);
+
+    if(data) {
+      let model = JSON.parse(data);
+      return model;
+    } else {
+      return null;
+    }
+  }
+
+  removeCacheLoginUser() {
+    localStorage.removeItem(this.cacheLoginUser);
   }
 }

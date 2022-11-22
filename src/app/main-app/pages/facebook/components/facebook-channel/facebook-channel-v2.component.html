@@ -110,7 +110,7 @@
                   <ng-template #contentTpl>
                     <div class="flex flex-col items-center justify-center gap-y-2">
                       <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
-                      <button tds-button color="primary" (click)="verifyConnect(team)" *ngIf="team?.Facebook_ASUserId == userFBLogin?.id">
+                      <button tds-button color="primary" (click)="verifyConnect(team)">
                         <span class="flex items-center">
                           <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối trang
                         </span>
