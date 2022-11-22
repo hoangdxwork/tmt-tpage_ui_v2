@@ -244,7 +244,7 @@ export interface ChatomniTShopDataDto {
   ExtraProperties: ExtraProperties;
   ObjectKind: string;
   ObjectKindValue?: number;
-  ObjectId?: number;
+  ObjectId?: any;
   ParentCommentId?: any;
   UserId: string;
   Actor: Actor;
