@@ -1,3 +1,4 @@
+import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { Component, EventEmitter, Host, Input, OnDestroy, OnInit, Optional, Output } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { TDSHeaderComponent } from 'tds-ui/header';
@@ -23,7 +24,8 @@ export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
   @Input() isRefreshing!: boolean
 
   constructor(private crmTeamService: CRMTeamService,
-    @Optional() @Host() public headerCmp: TDSHeaderComponent) {
+    @Optional() @Host() public headerCmp: TDSHeaderComponent,
+    private liveCampaignService: LiveCampaignService) {
   }
 
   ngOnInit(): void {
@@ -47,6 +49,9 @@ export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
     } else {
       this.visible = false;
       this.tdsClickItem.emit(data);
+
+      // TODO: Xóa local chiến dịch live của bài viết
+      this.liveCampaignService.removeLocalStorageDrawer();
     }
   }
 
