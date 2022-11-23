@@ -1122,7 +1122,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
+    this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim())
   }
 
   loadProduct(textSearch: string) {
@@ -1151,7 +1151,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.cdRef.detectChanges();
       },
       error: (err: any) => {
-        this.message.error(err.error? err.error.message: Message);
+        this.message.error(err.error? err.error.message: 'Không thể tải dữ liệu tồn kho');
         this.cdRef.detectChanges();
       }
     });
@@ -1441,6 +1441,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         next:(res: KeyCacheIndexDBDTO) => {
             if(!res) return;
             this.indexDbStorage = [...res?.cacheDbStorage];
+
             this.isLoadingProduct = false;
             this.cdRef.detectChanges();
         },
@@ -1529,7 +1530,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     //TODO: trường hợp đối tác đã có mà chưa call lại hàm tính phí aship
-    if(!this.isCalculateFeeAship == false && this.saleModel.Carrier) {
+    if(this.isCalculateFeeAship == false && this.saleModel.Carrier) {
         this.notification.info(`Đối tác ${this.saleModel.Carrier.Name}`, 'Đang tính lại ship đối tác, vui lòng thao tác lại sau khi thành công');
         let carrier = this.saleModel.Carrier as any;
         this.calculateFeeAship(carrier);
