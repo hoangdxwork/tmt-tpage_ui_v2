@@ -667,7 +667,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     const modal = this.modal.create({
       title: 'Thêm mới sản phẩm',
       content: DrawerAddProductComponent,
-      size: "lg",
+      size: "xl",
       viewContainerRef: this.viewContainerRef,
     });
 
