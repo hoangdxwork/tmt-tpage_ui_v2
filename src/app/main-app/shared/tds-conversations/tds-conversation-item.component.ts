@@ -115,6 +115,10 @@ export class TDSConversationItemComponent implements OnInit  {
               break;
 
             case "address":
+              if(value.length > 200) {
+                return this.tdsMessage.error("Tin nhắn hoặc bình luận được chọn không quá 200 ký tự");
+              }
+
               model.type = 'address';
               this.showModalSuggestAddress(model, index);
               return;
