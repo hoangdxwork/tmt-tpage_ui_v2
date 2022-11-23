@@ -80,7 +80,7 @@ export class PrepareDetailsOrderLineHandler {
             ProductUOMId: item.ProductUOMId,
             ProductUOMName: item.ProductUOMName,
             ProductUOMQty: item.ProductUOMQty,
-            Type: item.Product?.Type,
+            Type: item.Product?.Type == ('fixed' || 'percent')? item.Product?.Type: 'fixed',
             Weight: item.Weight || 0,
             WeightTotal: 0
           } as any;

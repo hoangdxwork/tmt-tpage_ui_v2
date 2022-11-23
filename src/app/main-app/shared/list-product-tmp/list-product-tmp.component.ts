@@ -40,7 +40,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
-  search: boolean = false;
   retryClick: number = 0;
   disabledReload: boolean = false;
 
@@ -352,10 +351,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
 
     this.loadDataTable();
     this.isLoading = false;
-  }
 
-  onSearch() {
-    this.search = !this.search;
   }
 
   loadProductCategory() {

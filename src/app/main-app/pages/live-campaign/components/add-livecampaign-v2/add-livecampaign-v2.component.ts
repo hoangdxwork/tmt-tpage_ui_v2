@@ -1,3 +1,7 @@
+import { ODataLiveCampaignModelDTO } from './../../../../dto/live-campaign/odata-live-campaign-model.dto';
+import { ODataLiveCampaignService } from './../../../../services/mock-odata/odata-live-campaign.service';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ImportProductLivecampaignComponent } from './../import-product-livecampaign/import-product-livecampaign.component';
 import { PrepareAddCampaignHandler } from './../../../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -17,12 +21,13 @@ import { ApplicationUserService } from 'src/app/main-app/services/application-us
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
-import { Observable, takeUntil } from 'rxjs';
+import { Observable, takeUntil, map, mergeMap } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray,TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
+import { SortEnum } from '@core/enum';
 
 @Component({
   selector: 'add-livecampaign-v2',
@@ -64,6 +69,11 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   lstOrderTags!: string[];
 
+  sort: Array<SortDataRequestDTO>= [{
+    field: "DateCreated",
+    dir: SortEnum.desc,
+  }];
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -92,7 +102,8 @@ export class AddLiveCampaignV2Component implements OnInit {
     private productService: ProductService,
     private notificationService: TDSNotificationService,
     private prepareHandler: PrepareAddCampaignHandler,
-    private cdRef: ChangeDetectorRef) {
+    private cdRef: ChangeDetectorRef, 
+    private odataLiveCampaignService: ODataLiveCampaignService) {
       this.createForm();
   }
 
@@ -139,7 +150,39 @@ export class AddLiveCampaignV2Component implements OnInit {
 
     if(path === "copy/:id" && this.liveCampaignId) {
         this.loadLiveCampaign(this.liveCampaignId, true);
+    } else {
+        this.loadCheckIsEnableAuto();
     }
+  }
+
+  loadCheckIsEnableAuto() {
+    let params = THelperDataRequest.convertDataRequestToString(1, 1, {} as any, this.sort);
+
+    this.isLoading = true;
+    this.odataLiveCampaignService.getView(params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ODataLiveCampaignModelDTO) => {
+          if(res.value && res.value.length >=0 && res.value[0]?.Id) {
+            
+            let liveCampaignId = res.value[0]?.Id;
+            this.liveCampaignService.getByLiveCampaignId(liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: res => {
+                  if(res.IsEnableAuto) {
+                    this._form.controls.IsEnableAuto.setValue(res.IsEnableAuto);
+                  }
+                  this.isLoading = false;
+              },
+              error: error => {
+                  this.isLoading = false;
+              }
+            })
+          } else {
+            this.isLoading = false;
+          }
+      },
+      error: error => {
+          this.isLoading = false;
+      }
+    })
   }
 
   loadLiveCampaign(liveCampaignId: string, isCopy: boolean) {
@@ -694,7 +737,7 @@ export class AddLiveCampaignV2Component implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex) {
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }

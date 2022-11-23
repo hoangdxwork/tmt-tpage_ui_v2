@@ -26,6 +26,7 @@ import { StringHelperV2 } from "@app/shared/helper/string.helper";
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { LiveCampaigntAvailableToBuyDto, LiveCampaigntPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 @Component({
   selector: 'drawer-edit-livecampaign',
@@ -41,6 +42,7 @@ import { LiveCampaigntAvailableToBuyDto, LiveCampaigntPendingCheckoutDto } from 
 export class DrawerEditLiveCampaignComponent implements OnInit {
 
   @Input() liveCampaignId: any;
+  @Input() visibleDrawerEditLive!: boolean;
   @ViewChild('innerText') viewChildInnerText!: ElementRef;
 
   isLoading: boolean = false;
@@ -72,7 +74,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   pageSize: number = 10;
   pageIndex: number = 1;
   resfeshScroll: boolean = false;
-  countItemDeleted = 0;
+
+  lstOrderTags!: string[];
 
   numberWithCommas =(value: TDSSafeAny) =>{
     if(value != null) {
@@ -88,6 +91,10 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     return value;
   }
 
+  response: any;
+  inventories: any;
+  productIds: any;
+
   constructor(private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
     private modal: TDSModalService,
@@ -99,10 +106,15 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private socketOnEventService: SocketOnEventService,
     private fb: FormBuilder,
+    private productTemplateFacade: ProductTemplateFacade,
     private destroy$: TDSDestroyService) {
   }
 
   ngOnInit() {
+    if(!this.visibleDrawerEditLive) {
+      return;
+    }
+    
     if(this.liveCampaignId) {
       this.loadOverviewDetails(this.pageSize, this.pageIndex); //TODO: load dữ liệu danh sách sản phẩm
       this.loadOverviewReport(); //TODO: load dữ liệu thống kê tổng quan
@@ -111,8 +123,10 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.loadCurrentCompany(); //TODO: load dữ liệu tồn kho
     this.productLastV2(); //TODO: load danh sách sản phẩm từ cache
+    this.loadDetailExistByProductIds();
 
     this.onEventSocket();
+    this.eventEmitter();
   }
 
   onEventSocket() {
@@ -158,15 +172,37 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-  loadOverviewDetails(pageSize: number, pageIndex: number, text?: string, countItemDeleted?: number){
+  eventEmitter() {
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+
+              this.mappingProductToLive(this.response);
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              this.mappingProductToLive(this.response);
+          }
+        });
+      }
+    })
+  }
+
+  loadOverviewDetails(pageSize: number, pageIndex: number, text?: string){
     this.isLoading = true;
-    let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text, countItemDeleted);
+    let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
 
     this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
 
         this.lstDetail = [...(this.lstDetail || []), ...(res.Details || [])];
         this.count = res.TotalCount || 0;
+
+        this.getLstOrderTags(this.lstDetail);
 
         this.isLoading = false;
         this.cdRef.detectChanges();
@@ -220,20 +256,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
 
-            this.lstDetail = this.lstDetail.filter(x => x.Id != item.Id);
-            this.lstDetail = [...this.lstDetail];
-
-            this.count = this.count - 1;
-            this.countItemDeleted = this.countItemDeleted + 1;
-            delete this.isEditDetails[item.Id];
-
-            if(this.lstDetail.length == 5 &&  Number(this.lstDetail.length) < this.count) {
-              this.nextData();
-            }
-            if(this.countItemDeleted == this.pageSize &&  Number(this.lstDetail.length) < this.count) {
-              this.countItemDeleted = 0;
-              this.pageIndex = this.pageIndex - 1;
-            }
+            this.refreshData();
 
             this.isLoading = false;
             this.message.success('Thao tác thành công');
@@ -390,6 +413,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           })
 
           this.lstDetail = [...this.lstDetail];
+          this.getLstOrderTags(this.lstDetail);
+
           this.cdRef.detectChanges();
         },
         error: (err: any) => {
@@ -415,7 +440,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.indClickTag = -1;
     let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
     this.lstDetail = [];
-    this.countItemDeleted = 0;
     this.pageIndex = 1;
     this.resfeshScroll = false;
     this.loadOverviewDetails(this.pageSize, this.pageIndex, text);
@@ -503,7 +527,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.lstDetail = [];
     this.isEditDetails = {};
-    this.countItemDeleted = 0;
 
     this.isLoading = true;
     this.pageIndex = 1;
@@ -639,13 +662,16 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     const modal = this.modal.create({
       title: 'Thêm mới sản phẩm',
       content: DrawerAddProductComponent,
-      size: "lg",
+      size: "xl",
       viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        lstOrderTags: this.lstOrderTags
+      }
     });
 
     modal.afterClose.subscribe((response: any) => {
       if(!response) return;
-      this.mappingProductToLive(response);
+      this.response = response;
     });
   }
 
@@ -666,10 +692,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         let lstItems = [] as ReportLiveCampaignDetailDTO[];
 
         items.map((x: DataPouchDBDTO) => {
-          let qty = product.InitInventory > 0 ? product.InitInventory : 1;
+          let existQty = this.inventories && this.inventories[x.Id] && this.inventories[x.Id].QtyAvailable > 0;
+          x.QtyAvailable = existQty ? this.inventories[x.Id].QtyAvailable : 1;
 
           let item = {
-              Quantity: qty,
+              Quantity: x.QtyAvailable,
               RemainQuantity: 0,
               ScanQuantity: 0,
               QuantityCanceled: 0,
@@ -727,7 +754,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   nextData() {
     this.pageIndex += 1;
-    this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerTextValue, this.countItemDeleted);
+    this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerTextValue);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
@@ -759,7 +786,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex) {
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }
@@ -810,4 +837,30 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     return [...result];
   }
+
+  loadDetailExistByProductIds() {
+    // let id = this.liveCampaignId;
+    // if(!id) return;
+
+    // this.liveCampaignService.getDetailExistByProductIds(id).pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res: any) => {
+    //     this.productIds = res;
+    //   },
+    //   error: (err: any) => {
+    //     this.message.error(err?.error?.message);
+    //   }
+    // })
+  }
+
+  getLstOrderTags(data: ReportLiveCampaignDetailDTO[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }

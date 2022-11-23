@@ -161,7 +161,8 @@ export class ModalProductTemplateComponent implements OnInit {
       ImageUrl: [null],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
-      OrderTag: [null]
+      OrderTag: [null],
+      ProductVariantCount: [0]
     });
   }
 
@@ -189,7 +190,7 @@ export class ModalProductTemplateComponent implements OnInit {
   prepareModel() {
     const formModel = this._form.value;
     let ProductVariants = [...this.lstVariants];
-    ProductVariants.map(x=> {
+    ProductVariants.map(x => {
       x.OrderTag = (TDSHelperArray.isArray(x.OrderTag) && TDSHelperArray.hasListValue(x.OrderTag)) ? x.OrderTag.join(',') : x.OrderTag
     });
 
@@ -221,6 +222,7 @@ export class ModalProductTemplateComponent implements OnInit {
 
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
     this.defaultGet["ProductVariants"] = [...ProductVariants];
+    this.defaultGet['ProductVariantCount'] = this.defaultGet["ProductVariants"].length;
 
     return this.defaultGet;
   }
@@ -259,14 +261,15 @@ export class ModalProductTemplateComponent implements OnInit {
         next: ([product, indexDB]) => {
 
             const data: SyncCreateProductTemplateDto = {
-              type: type,
-              productTmpl: product as ProductTemplateV2DTO,
-              cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
+                type: type,
+                productTmpl: product as ProductTemplateV2DTO,
+                cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
             };
 
             // TODO: gọi cập nhật tồn kho
             let id = data.productTmpl.Id;
-            this.productTemplateFacade.stockChangeProductQty(id);
+            let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
+            this.productTemplateFacade.stockChangeProductQty(id, mapping);
 
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
@@ -490,7 +493,7 @@ export class ModalProductTemplateComponent implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex) {
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }

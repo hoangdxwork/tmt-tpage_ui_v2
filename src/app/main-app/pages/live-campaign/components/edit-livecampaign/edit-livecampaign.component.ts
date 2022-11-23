@@ -292,7 +292,9 @@ export class EditLiveCampaignComponent implements OnInit {
         LiveCampaign_Id: [null],
         ProductCode: [null],
         ImageUrl: [null],
-        IsActive: [false]
+        IsActive: [false],
+        TagWithAttributes: [null],
+        AttributeValues: [null]
     });
 
     if(data) {
@@ -779,7 +781,7 @@ export class EditLiveCampaignComponent implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex) {
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }
