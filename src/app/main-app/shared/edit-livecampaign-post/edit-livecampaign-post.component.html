@@ -276,7 +276,7 @@
 
                                   <!-- Sản phẩm -->
                                   <td>
-                                    <div class="flex gap-x-2 items-center">
+                                    <div class="flex gap-x-2">
                                       <div>
                                           <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="text-white" tdsSrc="{{ detail?.value?.ImageUrl }}">
                                           </tds-avatar>
@@ -285,6 +285,12 @@
                                       <div class="flex-auto flex flex-col gap-y-1">
                                           <span class="font-semibold text-[13px]"> {{ detail?.value.ProductNameGet || detail?.value.ProductName }}
                                           </span>
+
+                                          <div *ngIf="detail?.value?.AttributeValues?.length > 0" class="flex items-center gap-x-1">
+                                            <div *ngFor="let attributesItem of (detail?.value?.TagWithAttributes | stringToStringArray)">
+                                              <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='secondary'>{{ attributesItem }}</tds-tag>
+                                            </div>
+                                          </div>
 
                                           <!-- Tags -->
                                           <div class="flex items-center gap-x-1">
