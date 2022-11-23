@@ -91,6 +91,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   response: any;
   inventories: any;
+  productIds: any;
 
   constructor(private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
@@ -116,6 +117,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.loadCurrentCompany(); //TODO: load dữ liệu tồn kho
     this.productLastV2(); //TODO: load danh sách sản phẩm từ cache
+    this.loadDetailExistByProductIds();
 
     this.onEventSocket();
     this.eventEmitter();
@@ -836,5 +838,19 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     }
 
     return [...result];
+  }
+
+  loadDetailExistByProductIds() {
+    let id = this.liveCampaignId;
+    if(!id) return;
+
+    this.liveCampaignService.getDetailExistByProductIds(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.productIds = res;
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 }

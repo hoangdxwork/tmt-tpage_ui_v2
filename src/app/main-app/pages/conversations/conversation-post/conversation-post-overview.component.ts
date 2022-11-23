@@ -107,17 +107,17 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       let isOpenDrawer = this.drawerEditLiveCampaign;
       let data = this.liveCampaignService.getLocalStorageDrawer() as any;
 
-      // let exist = data && data.liveCampaignId && data.objectId;
+      let exist = data && data.liveCampaignId && data.objectId;
 
-      // if(exist) {
-      //   this.drawerEditLiveCampaign = data.isOpenDrawer;
+      if(exist) {
+        this.drawerEditLiveCampaign = data.isOpenDrawer;
 
-      //   if(data.isOpenDrawer) {
-      //     this.openDrawerEditLiveCampaign();
-      //   }
-      // } else {
-      //   this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
-      // }
+        if(data.isOpenDrawer) {
+          this.openDrawerEditLiveCampaign();
+        }
+      } else {
+        this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
+      }
       this.cdRef.detectChanges();
     }
   }
