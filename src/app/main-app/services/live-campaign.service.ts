@@ -374,4 +374,13 @@ export class LiveCampaignService extends BaseSevice {
 
     return this.apiService.getData<any>(api, null);
 	}
+
+  getDetailExistByProductIds(id: string): Observable<any>{
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/saleonine_livecampaign/${id}/getdetailexists`,
+        method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
 }
