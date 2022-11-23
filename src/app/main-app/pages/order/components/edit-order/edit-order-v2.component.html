@@ -571,17 +571,17 @@
 
         <div class="flex gap-x-4">
             <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-            <button tds-button class="w-[126px]" type="button" color="info" [disabled]="!_form?.valid || isLoading" (click)="onSave('SaveAndPrint','print')">
+            <button tds-button class="w-[126px]" type="button" color="info" [disabled]="isLoading" (click)="onSave('SaveAndPrint','print')">
               <span class="flex items-center">
                   <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in
               </span>
             </button>
-            <button *ngIf="isEnableCreateOrder" tds-button class="w-[170px]" type="button" color="info" [disabled]="!_form?.valid || isLoading" (click)="onSave('SaveAndPrint','printShip')">
+            <button *ngIf="isEnableCreateOrder" tds-button class="w-[170px]" type="button" color="info" [disabled]="isLoading" (click)="onSave('SaveAndPrint','printShip')">
               <span class="flex items-center">
                   <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in phiếu ship
               </span>
             </button>
-            <button tds-button class="w-[100px]" type="button" color="primary" [disabled]="!_form?.valid || isLoading" (click)="onSave()">Lưu</button>
+            <button tds-button class="w-[100px]" type="button" color="primary" [disabled]="isLoading" (click)="onSave()">Lưu</button>
         </div>
       </div>
     </div>
