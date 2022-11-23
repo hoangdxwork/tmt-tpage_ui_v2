@@ -21,6 +21,10 @@
     ImageUrl: string;
     IsActive: boolean;
     ProductTmlpId: number;
+
+    // 2 field không dùng để lưu
+    TagWithAttributes?: any;
+    AttributeValues?: any[];
 }
 
 export interface PreliminaryTemplate {
