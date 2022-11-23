@@ -9,6 +9,7 @@ import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
+import { TikTokLiveItemDataDto } from '@app/dto/conversation-all/chatomni/tikitok-live.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -207,9 +208,19 @@ export class SocketOnEventService {
       case ChatomniMessageType.TShopComment:
         let cTShop = {...socketData.Message?.Data} as ChatomniTShopDataDto;
         model = {
-            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || cTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa binh luận`,
+            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || cTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa bình luận`,
             Message: `${socketData.Message?.Message}`,
             Attachments: cTShop?.AttachmentDto,
+            Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+        };
+        break;
+
+      case ChatomniMessageType.UnofficialTikTokChat:
+        let tikitok = {...socketData.Message?.Data} as TikTokLiveItemDataDto;
+        model = {
+            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || tikitok?.nickname || 'Người dùng Tiktok'} </span> vừa bình luận`,
+            Message: `${socketData.Message?.Message}`,
+            Attachments: null,
             Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
         };
         break;

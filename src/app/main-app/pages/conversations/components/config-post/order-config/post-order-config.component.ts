@@ -296,7 +296,7 @@ export class PostOrderConfigComponent implements OnInit {
 
   enableRegexAttributeValues(event: boolean, item: TextContentToOrderDTO){
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
-    if(Number(idx) >=0 ) {
+    if(Number(idx) >= 0 ) {
       this.dataModel.TextContentToOrders[idx].Product!.IsEnableRegexAttributeValues = event;
       this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
     }

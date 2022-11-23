@@ -39,7 +39,7 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
     if(this.team.Type == CRMTeamType._Facebook && this.typeNumber == 12){
       this.dataFacebook = this.data.Data as MDB_Facebook_Mapping_PostDto;
     }else if(this.team.Type == CRMTeamType._TShop && this.typeNumber == 91) {
-      this.dataTshop = this.data.Data as ChatomniDataTShopPostDto
+      this.dataTshop = this.data.Data as ChatomniDataTShopPostDto;
     }
   }
 

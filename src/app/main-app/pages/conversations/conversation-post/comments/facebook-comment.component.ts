@@ -603,105 +603,59 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
-  loadPartnerTab(item: ChatomniDataItemDto, order?: any[]) {
-    let psid = item.UserId || item.Data?.from?.id;
-    if (!psid) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
+  loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+
+    let order = null as any;
+    if(orders && orders.length > 0) {
+      order = orders[0] as any;
     }
 
-    // TODO: gán sự kiện loading cho tab
-    this.postEvent.spinLoadingTab$.emit(true);
-
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ChatomniConversationInfoDto) => {
-          if(res) {
-              // Thông tin khách hàng
-              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
-
-              // Thông tin đơn hàng
-              this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
-              this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-
-              // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
-              if(order && TDSHelperString.hasValueString(order[0]?.code)){
-                  // Truyền sang coversation-post
-                  this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order[0].id, comment: item} );
-                  this.conversationOrderFacade.hasValueOrderCode$.emit(order[0]?.code);
-              }
-          }
-        },
-        error: (error: any) => {
-            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-        }
-    })
+    this.prepareLoadTab(item, order, null);
   }
 
-  loadOrderByCode(order: any, item: ChatomniDataItemDto){
+  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    this.prepareLoadTab(item, order, null);
+  }
+
+  onInsertFromPost(item: ChatomniDataItemDto) {
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
+  }
+
+  prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
+    this.postEvent.spinLoadingTab$.emit(true);
     let psid = item.UserId || item.Data?.from?.id;
+
     if (!psid) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
+      this.message.error("Không truy vấn được thông tin người dùng!");
+      return;
     }
 
-    // TODO: gán sự kiện loading cho tab
-    this.postEvent.spinLoadingTab$.emit(true);
-
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniConversationInfoDto) => {
-          if(res) {
-              // Thông tin khách hàng
-              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+      next: (info: ChatomniConversationInfoDto) => {
+          if(!info) return;
 
-              this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order.id, comment: item} );
-              this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-
-              // Truyền sang coversation-post
-              this.conversationOrderFacade.hasValueOrderCode$.emit(order.code);
+          if(order && order.id) {
+            this.conversationOrderFacade.hasValueOrderCode$.emit(order.code);
+            this.conversationOrderFacade.loadOrderFromCommentPost$.emit({
+                orderId: order.id,
+                comment: item
+            });
           }
+
+          if(type == 'SALEONLINE_ORDER') {
+              this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+          }
+
+          this.conversationOrderFacade.loadPartnerByPostComment$.emit(info);
       },
       error: (error: any) => {
-          // TODO: gán sự kiện loading cho tab
           this.postEvent.spinLoadingTab$.emit(false);
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     })
-  }
-
-  onInsertFromPost(item: ChatomniDataItemDto, order?: any[]) {
-    let psid = item.UserId || item.Data?.from?.id;
-    if (!psid) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
-    }
-
-    // TODO: gán sự kiện loading cho tab
-    this.postEvent.spinLoadingTab$.emit(true);
-
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniConversationInfoDto) => {
-
-        if(res) {
-            // Thông tin khách hàng
-            this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
-
-            // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
-            this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
-
-            // Truyền sang coversation-post
-            this.conversationOrderFacade.hasValueOrderCode$.emit(order?.[0]?.code);
-            this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-        }
-      },
-      error: (error: any) => {
-          this.currentId = '';
-          this.postEvent.spinLoadingTab$.emit(false);
-          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-      }
-    });
   }
 
   reloadDataCommentsOrder() {

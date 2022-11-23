@@ -14,6 +14,16 @@ export const UserMenu: Array<TDSMenuDTO> = [
     {
         name: "Thông báo",
         icon: "tdsi-notification-fill",
+        link: '/user/firebase-notification',
+    },
+    {
+        name: "Hoạt động",
+        icon: "tdsi-restore-fill",
+        link: '/user/activities',
+    },
+    {
+        name: "Thông báo 2",
+        icon: "tdsi-notification-fill",
         link: '/user/notification',
     },
 ]

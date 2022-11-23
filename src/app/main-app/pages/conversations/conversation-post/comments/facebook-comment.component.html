@@ -31,7 +31,7 @@
                                   <!-- Mã đơn hàng -->
                                   <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
                                       <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
-                                          <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
+                                          <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(item, order)">
                                               <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
                                           </div>
                                       </div>
@@ -98,10 +98,10 @@
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">
-                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item, commentOrders[item.Data?.from!.id])">Tạo đơn hàng</button>
+                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
 
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
-                                  tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
+                                  tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" tds-tooltip>
                                   <span class="flex items-center justify-center">
                                       <i class="tdsi-information-fill text-neutral-1-500"></i>
                                   </span>

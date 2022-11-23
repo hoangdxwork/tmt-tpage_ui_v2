@@ -180,7 +180,7 @@
 
                         <div *ngIf="currentTeam && type && conversationInfo">
                             <conversation-partner [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type"
-                              [syncConversationInfo]="syncConversationInfo" (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
+                               (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
                         </div>
 
                         <div class="w-full h-[calc(100vh-109px)] flex justify-center items-center" *ngIf="!conversationItem">
@@ -194,7 +194,7 @@
                               [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
 
                                 <span class="mr-2 flex items-center"> Đơn hàng
-                                    <tds-tag status='primary' class="ml-3" *ngIf="conversationInfo && conversationInfo.Order && conversationInfo.Order.Code"> #{{conversationInfo.Order.Code}} </tds-tag>
+                                    <tds-tag status='primary' class="ml-3" *ngIf="orderCode"> #{{orderCode}} </tds-tag>
                                 </span>
 
                                 <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
@@ -205,7 +205,7 @@
 
                         <div *ngIf="currentTeam && type && conversationInfo">
                             <conversation-order [conversationInfo]="conversationInfo" [team]="currentTeam"
-                              [type]="type" [syncConversationInfo]="syncConversationInfo"></conversation-order>
+                              [type]="type" ></conversation-order>
                         </div>
 
                         <div class="w-full h-[calc(100vh-109px)]  flex justify-center items-center" *ngIf="!conversationItem">

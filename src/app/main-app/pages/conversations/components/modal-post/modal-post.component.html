@@ -100,7 +100,8 @@
         <div class="flex w-full flex-auto overflow-hidden">
             <div  class="flex w-full h-full overflow-hidden">
                 <div class="h-full w-full">
-                    <facebook-comment [data]="data" [team]="currentTeam" [isShowModal]="true"></facebook-comment>
+                    <facebook-comment  *ngIf="data && data.Data && currentTeam!.Type == 'Facebook'" [data]="data" [team]="currentTeam" [isShowModal]="true"></facebook-comment>
+                    <tshop-comment  *ngIf="data && data.Data && currentTeam!.Type == 'TShop'" [data]="data" [team]="currentTeam" [isShowModal]="true"></tshop-comment>
                 </div>
             </div>
         </div>

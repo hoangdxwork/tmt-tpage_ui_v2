@@ -1,8 +1,8 @@
+import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -15,13 +15,13 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 export class AddPageComponent implements OnInit {
 
-  @Input() data!: UserPageDTO;
-  @Input() user!: CRMTeamDTO;
+  @Input() data!: CRMTeamDTO;
+  @Input() type!: string;
 
-  addPageForm!: FormGroup;
+  _form!: FormGroup;
   isLoading: boolean = false;
 
-  constructor( private modal: TDSModalRef,
+  constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
     private message: TDSMessageService,
     private crmTeamService: CRMTeamService) {
@@ -32,79 +32,90 @@ export class AddPageComponent implements OnInit {
     this.updateForm();
   }
 
-  onSubmit(): void {
+  onSave() {
     if(this.isLoading) {
-      return
+      return;
     }
 
-    if(!this.addPageForm.value["name"]){
+    if(!this._form.valid){
       this.message.error("Vui lòng nhập tên page");
-      return
+      return;
     }
 
-    let model = this.prepareModel();
     this.isLoading = true;
+    let model = this.prepareFacebookModel(this.data);
 
-    this.crmTeamService.insert(model).subscribe(
-      {
-        next: res => {
+    if(model != null) {
+      this.crmTeamService.insert(model).subscribe({
+        next: (res : CRMTeamDTO[]) => {
+
           this.message.success(Message.SaveSuccess);
           this.isLoading = false;
-          this.onCancel(true);
-      }, 
+          this.onCancel(res);
+      },
         error: error => {
-          if(error?.error?.message) {
-            this.message.error(error?.error?.message);
-          }
-          else {
-            this.message.error(Message.ErrorOccurred);
-          }
           this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       });
-  }
-
-  prepareModel() {
-    let formValue = this.addPageForm.value;
-
-    let model = {
-      Id: 0,
-      Facebook_ASUserId: this.user.OwnerId,
-      Facebook_Link: this.data.picture.data.url,
-      Facebook_PageId: this.data.id,
-      Facebook_PageLogo: null,
-      Facebook_PageName: this.data.name,
-      Facebook_PageToken: this.data.access_token,
-      Facebook_TypeId: "Page",
-      Facebook_UserAvatar: this.user.Facebook_UserAvatar,
-      Facebook_UserId: this.user.Facebook_UserId,
-      Facebook_UserName: this.user.Facebook_UserName,
-      Facebook_UserToken: this.user.OwnerToken,
-      Name: formValue["name"],
-      ParentId: this.user.Id,
-      Type: "Facebook"
-    };
-
-    return model;
+    } else {
+      this.message.error('Lỗi dữ liệu');
+    }
   }
 
   updateForm() {
     if(TDSHelperObject.hasValue(this.data)) {
-      this.addPageForm.controls["name"].setValue(this.data.name);
-      this.addPageForm.controls["pageName"].setValue(this.data.name);
-      this.addPageForm.controls["userName"].setValue(this.user.Name);
+      this._form.controls["Name"].setValue(this.data.Name);
+      this._form.controls["PageName"].setValue(this.data.Facebook_PageName);
+      this._form.controls["UserName"].setValue(this.data.Facebook_UserName);
     }
   }
 
   createForm() {
-    this.addPageForm = this.fb.group({
-      name :[''],
-      pageName : [{value: '', disabled: true}, Validators.required],
-      userName:[{value: '', disabled: true}, Validators.required],
+    this._form = this.fb.group({
+      Name :[null, Validators.required],
+      PageName : [{value: null, disabled: true}, Validators.required],
+      UserName:[{value: null, disabled: true}, Validators.required],
     });
   }
 
   onCancel(result: TDSSafeAny) {
     this.modal.destroy(result);
+  }
+
+  prepareFacebookModel(data: CRMTeamDTO) {
+    switch(this.type) {
+      case CRMTeamType._Facebook:
+        return {
+          Id: 0,
+          ParentId: data.ParentId,
+          Facebook_TypeId: data.Facebook_TypeId,
+          Facebook_UserId: data.Facebook_UserId,
+          Facebook_ASUserId: data.Facebook_ASUserId,
+          Facebook_UserToken: data.Facebook_UserToken,
+          Facebook_UserName: data.Facebook_UserName,
+          Facebook_UserAvatar: data.Facebook_UserAvatar,
+          Name: data.Name,
+          Facebook_PageId: data.Facebook_PageId,
+          Facebook_PageName: data.Facebook_PageName,
+          Facebook_PageLogo: data.Facebook_PageLogo,
+          Facebook_PageToken: data.Facebook_PageToken,
+          Facebook_Link: data.Facebook_Link,
+          Type: data.Type,
+        }
+      case CRMTeamType._TShop:
+        return {
+          ChannelAvatar: data.ChannelAvatar || data.Facebook_PageLogo,
+          ChannelId: data.ChannelId || data.Facebook_PageId,
+          ChannelToken: data.ChannelToken,
+          Id: 0,
+          Name: data.Name,
+          OwnerId: data.OwnerId || data.Facebook_ASUserId,
+          ParentId: data.ParentId,
+          ShopId: data.ShopId || data.Facebook_PageId,
+          Type: data.Type
+        }
+      default: return null;
+    }
   }
 }
