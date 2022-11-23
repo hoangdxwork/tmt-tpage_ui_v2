@@ -42,6 +42,7 @@ import { ProductTemplateFacade } from '@app/services/facades/product-template.fa
 export class DrawerEditLiveCampaignComponent implements OnInit {
 
   @Input() liveCampaignId: any;
+  @Input() visibleDrawerEditLive!: boolean;
   @ViewChild('innerText') viewChildInnerText!: ElementRef;
 
   isLoading: boolean = false;
@@ -73,7 +74,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   pageSize: number = 10;
   pageIndex: number = 1;
   resfeshScroll: boolean = false;
-  countItemDeleted = 0;
+
+  lstOrderTags!: string[];
 
   numberWithCommas =(value: TDSSafeAny) =>{
     if(value != null) {
@@ -109,6 +111,10 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   ngOnInit() {
+    if(!this.visibleDrawerEditLive) {
+      return;
+    }
+    
     if(this.liveCampaignId) {
       this.loadOverviewDetails(this.pageSize, this.pageIndex); //TODO: load dữ liệu danh sách sản phẩm
       this.loadOverviewReport(); //TODO: load dữ liệu thống kê tổng quan
@@ -186,15 +192,17 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
-  loadOverviewDetails(pageSize: number, pageIndex: number, text?: string, countItemDeleted?: number){
+  loadOverviewDetails(pageSize: number, pageIndex: number, text?: string){
     this.isLoading = true;
-    let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text, countItemDeleted);
+    let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
 
     this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
 
         this.lstDetail = [...(this.lstDetail || []), ...(res.Details || [])];
         this.count = res.TotalCount || 0;
+
+        this.getLstOrderTags(this.lstDetail);
 
         this.isLoading = false;
         this.cdRef.detectChanges();
@@ -248,20 +256,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
 
-            this.lstDetail = this.lstDetail.filter(x => x.Id != item.Id);
-            this.lstDetail = [...this.lstDetail];
-
-            this.count = this.count - 1;
-            this.countItemDeleted = this.countItemDeleted + 1;
-            delete this.isEditDetails[item.Id];
-
-            if(this.lstDetail.length == 5 &&  Number(this.lstDetail.length) < this.count) {
-              this.nextData();
-            }
-            if(this.countItemDeleted == this.pageSize &&  Number(this.lstDetail.length) < this.count) {
-              this.countItemDeleted = 0;
-              this.pageIndex = this.pageIndex - 1;
-            }
+            this.refreshData();
 
             this.isLoading = false;
             this.message.success('Thao tác thành công');
@@ -418,6 +413,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           })
 
           this.lstDetail = [...this.lstDetail];
+          this.getLstOrderTags(this.lstDetail);
+
           this.cdRef.detectChanges();
         },
         error: (err: any) => {
@@ -443,7 +440,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.indClickTag = -1;
     let text = TDSHelperString.stripSpecialChars(event.value?.toLocaleLowerCase()).trim();
     this.lstDetail = [];
-    this.countItemDeleted = 0;
     this.pageIndex = 1;
     this.resfeshScroll = false;
     this.loadOverviewDetails(this.pageSize, this.pageIndex, text);
@@ -531,7 +527,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.lstDetail = [];
     this.isEditDetails = {};
-    this.countItemDeleted = 0;
 
     this.isLoading = true;
     this.pageIndex = 1;
@@ -669,6 +664,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       content: DrawerAddProductComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        lstOrderTags: this.lstOrderTags
+      }
     });
 
     modal.afterClose.subscribe((response: any) => {
@@ -756,7 +754,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   nextData() {
     this.pageIndex += 1;
-    this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerTextValue, this.countItemDeleted);
+    this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerTextValue);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
@@ -841,16 +839,28 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   loadDetailExistByProductIds() {
-    let id = this.liveCampaignId;
-    if(!id) return;
+    // let id = this.liveCampaignId;
+    // if(!id) return;
 
-    this.liveCampaignService.getDetailExistByProductIds(id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        this.productIds = res;
-      },
-      error: (err: any) => {
-        this.message.error(err?.error?.message);
-      }
-    })
+    // this.liveCampaignService.getDetailExistByProductIds(id).pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res: any) => {
+    //     this.productIds = res;
+    //   },
+    //   error: (err: any) => {
+    //     this.message.error(err?.error?.message);
+    //   }
+    // })
   }
+
+  getLstOrderTags(data: ReportLiveCampaignDetailDTO[]) {
+    if(data) {
+        data = data.filter(x => x.Tags);
+        let getTags = data.map(x => x.Tags.toLocaleLowerCase().trim());
+        let tags = getTags.join(',');
+
+        if(TDSHelperString.hasValueString(tags)) {
+            this.lstOrderTags = tags.split(',');
+        }
+      }
+    }
 }

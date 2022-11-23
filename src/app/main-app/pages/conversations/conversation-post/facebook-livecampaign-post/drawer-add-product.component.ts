@@ -1,3 +1,4 @@
+import { TDSNotificationService } from 'tds-ui/notification';
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
 import { ProductIndexDBService } from '../../../../services/product-indexdb.service';
 import { TpageAddUOMComponent } from '../../../../shared/tpage-add-uom/tpage-add-uom.component';
@@ -16,7 +17,7 @@ import { ProductTemplateDTO, ProductUOMDTO } from '../../../../dto/product/produ
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { mergeMap } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { map, takeUntil } from 'rxjs/operators';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
@@ -33,6 +34,7 @@ import { ProductTemplateFacade } from '@app/services/facades/product-template.fa
   providers: [TDSDestroyService]
 })
 export class DrawerAddProductComponent implements OnInit {
+  @Input() lstOrderTags!: string[];
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
 
@@ -67,6 +69,8 @@ export class DrawerAddProductComponent implements OnInit {
 
   fileList: TDSUploadFile[] = [];
 
+  lstCheckOrderTags: string[] = [];
+
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,
     private modal: TDSModalService,
@@ -79,7 +83,8 @@ export class DrawerAddProductComponent implements OnInit {
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private notificationService: TDSNotificationService) {
        this.createForm();
   }
 
@@ -185,6 +190,10 @@ export class DrawerAddProductComponent implements OnInit {
 
   prepareModel() {
     const formModel = this._form.value as ProductTemplateDTO;
+    let ProductVariants = [...this.lstVariants];
+    ProductVariants.map(x => {
+      x.OrderTag = (TDSHelperArray.isArray(x.OrderTag) && TDSHelperArray.hasListValue(x.OrderTag)) ? x.OrderTag.join(',') : x.OrderTag
+    });
 
     this.defaultGet["Name"] = formModel.Name;
     this.defaultGet["Type"] = formModel.Type;
@@ -212,7 +221,7 @@ export class DrawerAddProductComponent implements OnInit {
     }
 
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
-    this.defaultGet["ProductVariants"] = [...this.lstVariants];
+    this.defaultGet["ProductVariants"] = [...ProductVariants];
     this.defaultGet['ProductVariantCount'] = this.defaultGet["ProductVariants"].length;
 
     return this.defaultGet;
@@ -220,6 +229,19 @@ export class DrawerAddProductComponent implements OnInit {
 
   onSave(type?: string) {
     if(this.isLoading) return;
+
+    if(type) {
+      let lstCheck = this.checkOrderTags();
+      if(TDSHelperArray.hasListValue(lstCheck)) {
+        let mess = lstCheck.join(',');
+        this.notificationService.warning(`Mã chốt đơn đã tồn tại`,
+                  `<div class="flex flex-col ">
+                      <span class="mb-1">Mã tồn tại: <span class="font-semibold"> ${mess}</span></span>
+                  </div>`);
+        return;
+      };
+    }
+
     let model = this.prepareModel();
 
     this.isLoading = true;
@@ -441,8 +463,81 @@ export class DrawerAddProductComponent implements OnInit {
     });
   }
 
-  changeTags(event:any, i:number){
-    this.lstVariants[i].OrderTag = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
+  changeTags(event:any,i:number){
+    let strs = [...this.checkInputMatch(event)];
+
+    this.lstVariants[i].OrderTag = strs.length > 0 ? [...strs] : null;
+    this.lstVariants[i] = this.lstVariants[i];
+    this.lstVariants = [...this.lstVariants];
+    
+    // this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
+
+    this.lstCheckOrderTags = this.getOrderTagsVariants(this.lstVariants);
   }
+
+  checkOrderTags() {
+    let lstOrderTagsVariants: string[] = this.getOrderTagsVariants(this.lstVariants);
+    let exist: string[] = [];
+
+    if(!TDSHelperArray.hasListValue(this.lstOrderTags)) {
+      return exist;
+    }
+
+    if(TDSHelperArray.hasListValue(lstOrderTagsVariants)) {
+      lstOrderTagsVariants.map((x) => {
+          let tag = this.lstOrderTags.filter(y => y.toLocaleLowerCase().trim() == x.toLocaleLowerCase().trim())[0];
+
+          if(tag){
+            exist = [...exist, tag];
+          }
+      })
+    }
+
+    return [...exist];
+  }
+
+  getOrderTagsVariants(data: ConfigProductVariant[]) {
+    let tagsVariants: string[] = [];
+
+    let dataTags = data.filter(x => x.OrderTag);
+    let getTags = dataTags.map(x => TDSHelperArray.isArray(x.OrderTag) ? x.OrderTag.join(','): x.OrderTag);
+    let tags = getTags.join(',');
+
+    if(TDSHelperString.hasValueString(tags)) {
+      tagsVariants = tags.split(',');
+    }
+
+    return [...tagsVariants];
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    let exist = pop ? this.lstCheckOrderTags.filter(x=>x.toLocaleLowerCase().trim() == pop.toLocaleLowerCase().trim())[0]: false;
+
+    if(exist) {
+        this.message.warning(`Mã chốt đơn ${pop} bị trùng trong danh sách sản phẩm vừa thêm.`);
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
+  }
+
 
 }
