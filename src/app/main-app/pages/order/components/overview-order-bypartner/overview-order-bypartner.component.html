@@ -25,7 +25,6 @@
             <tr>
               <th [width]="'48px'" class="text-center">STT</th>
               <th [width]="'140px'">Số HĐ</th>
-              <th [width]="'150px'">Thông tin</th>
               <th [width]="'140px'">
                 <div class="flex gap-x-1">
                   <span>Ngày tạo đơn</span>
@@ -54,14 +53,6 @@
                     <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{ data.Number || 'N/A' }}</span>
                   </div>
                   <!-- Nhãn -->
-                </td>
-
-                <!-- Thông tin -->
-                <td>
-                  <div class="w-full flex">
-                    <span *ngIf="data.FacebookName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                    <span class="ml-1 truncate">{{data.FacebookName || "---"}}</span>
-                  </div>
                 </td>
 
                 <!-- Ngày tạo đơn -->
