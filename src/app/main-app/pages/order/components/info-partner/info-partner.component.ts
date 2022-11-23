@@ -205,7 +205,7 @@ export class InfoPartnerComponent implements OnInit, OnDestroy {
   }
 
   refreshCreditDebit() {
-    this.loadCreditDebitCustomerDetail(0, 20);
+    this.loadCreditDebitCustomerDetail(this.pageSize, this.pageIndex);
   }
 
   onQueryParamsChangeCreditDebit(params: TDSTableQueryParams) {

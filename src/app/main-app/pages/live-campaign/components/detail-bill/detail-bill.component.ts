@@ -1,4 +1,4 @@
-import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
+import { ModalMergeOrderComponent } from './modal-merge-order.component';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
 import { TDSModalService } from 'tds-ui/modal';
@@ -26,9 +26,7 @@ import { TDSSafeAny, TDSHelperObject, TDSHelperString, TDSHelperArray } from 'td
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ColumnTableDTO } from '@app/dto/common/table.dto';
-import { FastSaleOrder_DefaultDTOV2 } from '@app/dto/fastsaleorder/fastsaleorder-default.dto';
-import _, { Dictionary } from 'lodash';
-import { ModalMergeOrderComponent } from './modal-merge-order.component';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'detail-bill',

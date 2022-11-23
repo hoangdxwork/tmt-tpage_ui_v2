@@ -225,7 +225,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         switch(res.EventName) {
             case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
               let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
-              let exit1 = res && fbCreated && fbCreated.Data?.Facebook_PostId == this.quickOrderModel.Facebook_PostId
+              let exit1 = res && fbCreated && fbCreated.Data?.Facebook_PostId == this.quickOrderModel?.Facebook_PostId
                 && fbCreated.Data.Facebook_ASUserId == this.quickOrderModel?.Facebook_ASUserId && this.type == 'post';
 
               if(!exit1) break;
@@ -235,8 +235,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
               let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
-              let exist2 = res && fbDelete && fbDelete.Data?.Facebook_PostId == this.quickOrderModel.Facebook_PostId
-                && fbDelete.Data.Facebook_ASUserId == this.quickOrderModel?.Facebook_ASUserId && this.type == 'post';
+              let exist2 = res && fbDelete && fbDelete.Data?.Facebook_PostId == this.quickOrderModel?.Facebook_PostId
+              && fbDelete.Data.Facebook_ASUserId == this.quickOrderModel?.Facebook_ASUserId && this.type == 'post';
 
               if(!exist2) break;
               // TODO: xóa mã đơn hàng sau khi tạo hóa đơn

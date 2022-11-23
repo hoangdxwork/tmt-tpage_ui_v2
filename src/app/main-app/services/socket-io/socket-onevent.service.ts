@@ -120,7 +120,7 @@ export class SocketOnEventService {
             // TODO: update đơn hàng bài viết
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
                 let notificationOrder = this.prepareOnUpdateOrder(socketData);
-                this.pubSocketEvent(notificationOrder, socketData, team); //OnSocketOnSaleOnline_OrderDto
+                this.pubSocketEvent(null, socketData, team); //OnSocketOnSaleOnline_OrderDto
             break;
 
             // TODO: delete đơn hàng bài viết
@@ -252,7 +252,7 @@ export class SocketOnEventService {
   prepareOnCreatedOrder(socketData: any) {
     let model = {...socketData} as OnSocketOnSaleOnline_OrderDto;
     let notification = {
-        Title: `Tạo đơn hàng: ${model.Data?.Facebook_UserName}`,
+        Title: `Đơn hàng mới: ${model.Data?.Facebook_UserName}`,
         Message: `Mã đơn hàng <span class="font-semibold">${model.Data?.Code}</span>`,
         Attachments: null,
         Url: ''

@@ -18,7 +18,7 @@
                                     <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" [required]='true' formControlName="Name" />
                                     <tds-error *ngIf="_form.invalid">Vui lòng nhập tên sản phẩm</tds-error>
                                 </tds-form-field>
-                                <tds-form-field *ngIf="type == 'liveCampaign'">    
+                                <tds-form-field *ngIf="type == 'liveCampaign'">
                                     <tds-label>Mã chốt đơn</tds-label>
                                     <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" formControlName="OrderTag"
                                         [allowClear]="true" [data]="" mode="tags" (selectChange)="onChangeModelTag($event)">
@@ -180,8 +180,9 @@
                           <th width="6%">STT</th>
                           <th width="8%">Ảnh</th>
                           <th width="16%">Tên</th>
-                          <th width="30%">Mã chốt đơn</th>
-                          <th width="20%">Giá</th>
+                          <th width="20%">Mã chốt đơn</th>
+                          <th width="15%">Giá</th>
+                          <th width="15%">Số lượng</th>
                           <th width="10%" [align]="'center'">Hoạt động</th>
                           <th width="10%" [align]="'center'">Thao tác</th>
                         </tr>
@@ -190,7 +191,7 @@
                         <tr *ngFor="let data of lstVariants; let i = index">
                           <td>{{ 1 + i }}</td>
                           <td>
-                            <div tds-tooltip [tooltipTitle]="data.ImageUrl?'Xem ảnh':'Tải ảnh'"> 
+                            <div tds-tooltip [tooltipTitle]="data.ImageUrl?'Xem ảnh':'Tải ảnh'">
                                 <upload-pictures-wall [data]="[data.ImageUrl]" [size]="64" (getResult)="getUrl($event, i)" (getBase64)="getBase64($event, i)" (onLoadImage)="onRemoveImage($event, i)"></upload-pictures-wall>
                             </div>
                           </td>
@@ -205,16 +206,21 @@
                               </div>
                             </div>
                           </td>
-                          
+
                           <td>
-                            <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [ngModel]="data.OrderTag|stringToStringArray" [ngModelOptions]="{standalone: true}"
-                                (selectChange)="changeTags($event,i)"
+                            <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [ngModel]="data.OrderTag | stringToStringArray"
+                                [ngModelOptions]="{standalone: true}" (selectChange)="changeTags($event,i)"
                                 [allowClear]="true" [data]="" mode="tags" class="w-full">
                             </tds-select>
                           </td>
                           <td>
                             <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
                               [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
+                            </tds-input-number>
+                          </td>
+                          <td>
+                            <tds-input-number [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}"
+                              [min]="0" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
                             </tds-input-number>
                           </td>
                           <td class="w-full text-center">

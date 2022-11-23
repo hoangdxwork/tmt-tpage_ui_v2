@@ -28,7 +28,7 @@ interface ColumnItem {
 export class ConfigActivitiesComponent implements OnInit {
   fromDate!: FormControl;
   toDate!: FormControl;
-  dateFilter: ConfigDateFilter = {type:'',range:[]};
+  dateFilter: ConfigDateFilter = {type:'thisWeek',range:[]};
   TableData:Array<TDSSafeAny> = [];
   listOfColumns: Array<ColumnItem> = [];
   testDate = new Date('Thu Mar 17 2022 17:00:24');
@@ -74,6 +74,7 @@ export class ConfigActivitiesComponent implements OnInit {
     this.odataTPosLoggingService.getView(params).subscribe((res: TDSSafeAny) => {
         this.count = res['@odata.count'] as number;
         this.lstData = res.value;
+
         this.isLoading = false;
     }, err => {
       this.message.error(err.error?.message || "Tải dữ liệu đã xảy ra lỗi!")

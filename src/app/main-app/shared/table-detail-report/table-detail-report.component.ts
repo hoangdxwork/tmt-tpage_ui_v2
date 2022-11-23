@@ -47,6 +47,10 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
   pageIndex: number = 1;
   resfeshScroll: boolean = false;
 
+  isEditDetails: { [id: string] : boolean } = {};
+  indClickTag = -1;
+  modelTags: Array<string> = [];
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null){
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -239,26 +243,170 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
   }
 
   onEditDetails(item: LiveCampaignSimpleDetail) {
-    let modal = this.modalService.create({
-      title: 'Chỉnh sửa chiến dịch',
-      content: EditLiveCampaignPostComponent,
-      size: "xl",
-      closable: false,
-      bodyStyle: {
-        padding: '0px',
-      },
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        id: this.liveCampaignId,
-        itemProduct: item
+    if(this.checkIsEdit() == 0) return;
+
+    if(item && item.Id) {
+        this.isEditDetails[item.Id] = true;
+    }
+  }
+
+  checkIsEdit() {
+    let exist = Object.keys(this.isEditDetails);
+    if(exist && exist.length > 0) {
+
+      let key = exist[0];
+      let formDetails = this.lstDetails as any[];
+      let product = formDetails.filter(f => f.Id == key)[0];
+
+      this.message.info(`Sản phẩm ${product.ProductName} chưa được lưu`, { duration: 3000 });
+      return 0;
+    }
+
+    return 1;
+  }
+
+  onSaveDetails(item: LiveCampaignSimpleDetail) {
+    if(item && item.Id) {
+        this.addProductLiveCampaignDetails([item]);
+    }
+  }
+
+  addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[]) {
+    let id = this.liveCampaignId as string;
+    items.map(x => {
+      if(x && x.Tags) {
+          x.Tags = x.Tags.toString();
       }
+    });
+
+    this.isLoading = true;
+    this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any[]) => {
+          this.isLoading = false;
+          if(!res) return;
+
+          res.map((x: LiveCampaignSimpleDetail, idx: number) => {
+
+              x.ProductName = items[idx].ProductName;
+              x.ProductNameGet = items[idx].ProductNameGet;
+              x.ImageUrl = items[idx].ImageUrl;
+
+              this.notificationService.info(`Cập nhật sản phẩm`,
+              `<div class="flex flex-col ">
+                  <span class="mb-1">Sản phẩm: <span class="font-semibold"> ${x.ProductName}</span></span>
+                  <span> Số lượng: <span class="font-semibold text-secondary-1">${x.Quantity}</span></span>
+              </div>`);
+
+              delete this.isEditDetails[x.Id];
+          })
+
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+        }
     })
+  }
+
+  removeDetail(item: LiveCampaignSimpleDetail) {
+    if(this.checkIsEdit() == 0) return;
+
+    let id = this.liveCampaignId as string;
+    this.isLoading = true;
+    this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.refreshData();
+
+            this.isLoading = false;
+            this.message.success('Thao tác thành công');
+
+            this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || 'Đã xảy ra lỗi')
+        }
+    })
+  }
+  
+  openTag(item: LiveCampaignSimpleDetail) {
+    let details = this.lstDetails as any[];
+    let index = details.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    this.indClickTag = index;
+    let data = details[index];
+
+    if(data && TDSHelperArray.isArray(data.Tags)){
+        this.modelTags = data.Tags;
+    } else {
+        this.modelTags = data.Tags ? data.Tags.split(",") : [];
+    }
+  }
+
+  onChangeModelTag(event: string[], item: TDSSafeAny) {
+    let lstDetails = this.lstDetails as any[];
+    let strs = [...this.checkInputMatch(event)];
+    let idx = lstDetails.findIndex((x: any) => x.Index == item.Index) as number;
+
+    if(Number(idx) >= 0) {
+      let details = lstDetails[idx];
+      details.Tags = strs?.join(',');
+
+      //TODO: cập nhật vào formArray
+      this.lstDetails[idx] = {...details};
+      this.modelTags = [...strs];
+    }
+    this.cdr.detectChanges();
+  }
+
+  onCloseTag() {
+    this.modelTags = [];
+    this.indClickTag = -1;
+  }
+
+  onSaveTag(item: any) {
+    let lstDetails = this.lstDetails as any[];
+    let index = lstDetails.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
+
+    //TODO: dữ liệu từ formArray
+    let details = lstDetails[index];
+    details.Tags = this.modelTags;
+
+    //TODO: cập nhật vào formArray
+    this.lstDetails[index] = {...details};
+
+    this.modelTags = [];
+    this.indClickTag = -1;
+  }
+
+  checkInputMatch(strs: string[]) {
+    let datas = strs as any[];
+    let pop!: string;
+
+    if(strs && strs.length == 0) {
+      pop = datas[0];
+    } else {
+      pop = datas[strs.length - 1];
+    }
+
+    let match = pop?.match(/[~!@$%^&*(\\\/\-['`;=+\]),.?":{}|<>_]/g);//có thể thêm #
+    let matchRex = match && match.length > 0;
+
+    // TODO: check kí tự đặc biệt
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
+        this.message.warning('Ký tự không hợp lệ');
+        datas = datas.filter(x => x!= pop);
+    }
+
+    return datas;
   }
 
   refreshData() {
     this.innerText = '';
     this.lstDetails = [];
     this.pageIndex = 1;
+    this.isEditDetails = {};
 
     this.loadData(this.pageSize, this.pageIndex)
   }

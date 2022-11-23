@@ -21,8 +21,10 @@ export class ModalMergeOrderComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingCollapse: boolean = false;
 
+  setOfCheckedId = new Set<number>();
   expandSet = new Set<number>();
-  ids: any = [];
+  checked = false;
+  indeterminate = false;
   isMerge: boolean = false;
   key: any = 0;
 
@@ -38,7 +40,7 @@ export class ModalMergeOrderComponent implements OnInit {
     this.isLoading = true;
 
     this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         let exist = res && res.value.length > 0;
 
         if(exist) {
@@ -51,7 +53,7 @@ export class ModalMergeOrderComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+        this.message.error(err?.error?.message);
       }
     })
   }
@@ -60,12 +62,12 @@ export class ModalMergeOrderComponent implements OnInit {
     this.isLoadingCollapse = true;
 
     this.fastSaleOrderService.getOrderLiveCampaignCanMergeByPartner(this.liveCampaignId, id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+      next: (res: any) => {
+
         if(res && res.value) {
           this.lstOrders = [...res.value];
         }
 
-        this.ids = this.lstOrders.map(x => x.Id);
         this.isLoadingCollapse = false;
       },
       error: (err) => {
@@ -73,6 +75,29 @@ export class ModalMergeOrderComponent implements OnInit {
         this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     })
+  }
+
+  updateCheckedSet(id: number, checked: boolean): void {
+    if (checked) {
+      this.setOfCheckedId.add(id);
+    } else {
+      this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: number, checked: boolean): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(value: boolean): void {
+    this.lstPartners.forEach(item => this.updateCheckedSet(item.Id, value));
+    this.refreshCheckedStatus();
+  }
+
+  refreshCheckedStatus(): void {
+    this.checked = this.lstPartners.every(item => this.setOfCheckedId.has(item.Id));
+    this.indeterminate = this.lstPartners.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
   }
 
   onExpandChange(id: number, checked: boolean): void {
@@ -82,30 +107,59 @@ export class ModalMergeOrderComponent implements OnInit {
       this.key = id;
       // TODO: cập nhật danh sách đơn hàng có thể gộp theo khách hàng
       this.lstOrders = [];
-      this.ids = [];
       this.loadOrderCanMergeByPartnerId(id);
     } else {
       this.expandSet.delete(id);
     }
   }
 
-  mergeOrder(data: PartnerCanMergeOrdersDto) {
-    this.isLoading = true;
-    let model = {
-      OrderIds: this.ids
+  mergeListOrders(){
+    if(this.isLoading) {
+      return;
     }
 
-    this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: FastSaleOrderModelDTO) => {
-        this.message.success('Gộp đơn thành công');
-        this.isMerge = true;
-        
-        this.loadPartner();
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-      }
+    this.setOfCheckedId.forEach(x => {
+      this.mergeOrder(x);
+    })
+  }
+
+  mergeOrder(partnerId: number) {
+    this.isLoading = true;
+
+    this.fastSaleOrderService.getOrderLiveCampaignCanMergeByPartner(this.liveCampaignId, partnerId)
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res) => {
+          if(res && res.value) {
+
+            let lstOrders = [...res.value];
+            let model = {
+              OrderIds: lstOrders.map(x => x.Id)
+            }
+
+            this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: FastSaleOrderModelDTO) => {
+
+                this.isMerge = true;
+                this.isLoading = false;
+                this.setOfCheckedId.delete(partnerId);
+
+                this.notification.success(`Mã hóa đơn ${res.Number}`, `Gộp đơn thành công: ${res.Name || res.Partner?.DisplayName}`, { duration: 3000 });
+                this.loadPartner();
+              },
+              error: (err) => {
+                this.isLoading = false;
+                this.message.error(err?.error?.message);
+              }
+            })
+          }
+
+          this.isLoadingCollapse = false;
+        },
+        error: (err) => {
+          this.isLoadingCollapse = false;
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+        }
     })
   }
 

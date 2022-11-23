@@ -8,15 +8,15 @@ export class StringToStringArrayPipe implements PipeTransform {
 
     transform(value: string): any {
 
-      let result: any = [];
-      if(TDSHelperString.isString(value)){
-          if(!value.includes(',')) {
-              result.push(value);
-          } else {
-              result = value.split(',');
-          }
+      if(TDSHelperString.isString(value) && value.length > 0){
+        if(!value.includes(',')) {
+            return [value];
+        }
+        return (value as string).split(",");
       }
 
-      return result;
+      if(TDSHelperArray.isArray(value)){
+          return value;
+      }
     }
   }

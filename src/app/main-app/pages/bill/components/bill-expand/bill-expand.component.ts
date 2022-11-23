@@ -161,7 +161,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
 
       case 1:
         break;
-        
+
       case 2:
         this.logOrder = [];
 

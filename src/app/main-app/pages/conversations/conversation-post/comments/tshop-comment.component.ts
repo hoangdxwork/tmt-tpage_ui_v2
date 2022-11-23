@@ -189,7 +189,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
               let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit2 = res && fbCreated && this.data
-                    && fbCreated.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbCreated.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exit2) break;
               this.setCommentUpdateOrderCode(fbCreated);
@@ -199,7 +199,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
               let fbOrder = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit3 = res && fbOrder && this.data
-                    && fbOrder.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbOrder.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exit3) break;
               this.setCommentUpdateOrderCode(fbOrder);
@@ -209,7 +209,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
               let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exist4 = res && fbDelete && this.data
-                    && fbDelete.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbDelete.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exist4) break;
               this.setCommentDeleteOrderCode(fbDelete);
@@ -219,7 +219,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.livecampaign_CartCheckout:
               let fbInvoice = {...res?.Data?.Data} as LiveCampaignFastSaleOrderDataDto;
               let exist5 = res && fbInvoice && this.data
-                    && fbInvoice.LiveCampaignId == this.data.LiveCampaignId;
+                    && fbInvoice.LiveCampaignId == this.data?.LiveCampaignId;
 
               if(!exist5) break;
               this.setCommentNumberInvoice(fbInvoice);

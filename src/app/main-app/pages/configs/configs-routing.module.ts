@@ -91,10 +91,10 @@ const routes: Routes = [
         path:'products/edit/:id',
         component: ConfigAddProductComponent
       },
-      {
-        path:'activities',
-        component: ConfigActivitiesComponent
-      },
+      // {
+      //   path:'activities',
+      //   component: ConfigActivitiesComponent
+      // },
       {
         path:'promotions',
         component: ConfigPromotionsComponent,

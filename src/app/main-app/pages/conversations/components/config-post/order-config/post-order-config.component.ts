@@ -239,7 +239,7 @@ export class PostOrderConfigComponent implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex) {
+    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }
@@ -539,9 +539,28 @@ export class PostOrderConfigComponent implements OnInit {
       next: (res: any) => {
           delete res['@odata.context'];
           this.currentLiveCampaign = {...res};
+
+          let exist = this.dataModel && this.dataModel.TextContentToOrders?.length == 0 && this.dataModel.IsEnableOrderAuto && this.currentLiveCampaign?.Id;
+          if(exist) {
+            let id = this.currentLiveCampaign?.Id as string;
+            this.loadConfigLiveCampaignV2(id);
+          }
+
           this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
       }
     })
+  }
+
+  changeIsEnableOrderAuto(event: boolean) {
+    let exist = event == true && this.dataModel && this.dataModel.TextContentToOrders
+    && this.dataModel.TextContentToOrders.length == 0 && this.currentLiveCampaign?.Id;
+    if(exist) {
+        let id = this.currentLiveCampaign?.Id as string;
+        this.loadConfigLiveCampaignV2(id);
+    }
   }
 
   loadConfigLiveCampaignV2(id: string) {
