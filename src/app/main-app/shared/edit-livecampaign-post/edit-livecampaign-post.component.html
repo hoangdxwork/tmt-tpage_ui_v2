@@ -437,7 +437,7 @@
 
     <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
         <button tds-button class="w-[100px]" color="secondary" (click)="onCannel(changedData)" type="button">Đóng</button>
-        <button *ngIf="(selectedIndex == 0 && id)" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+        <button *ngIf="(selectedIndex == 0 && id)" [disabled]="isLoading" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
     </div>
 
   </form>
