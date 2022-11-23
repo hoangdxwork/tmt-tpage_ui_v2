@@ -1,6 +1,6 @@
 import { TDSNotificationService } from 'tds-ui/notification';
 import { FastSaleOrderModelDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
-import { finalize, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -40,7 +40,7 @@ export class ModalMergeOrderComponent implements OnInit {
     this.isLoading = true;
 
     this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         let exist = res && res.value.length > 0;
 
         if(exist) {
@@ -53,7 +53,7 @@ export class ModalMergeOrderComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.notification.error('Lỗi', err?.error?.message);
+        this.message.error(err?.error?.message);
       }
     })
   }
@@ -62,7 +62,8 @@ export class ModalMergeOrderComponent implements OnInit {
     this.isLoadingCollapse = true;
 
     this.fastSaleOrderService.getOrderLiveCampaignCanMergeByPartner(this.liveCampaignId, id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+      next: (res: any) => {
+
         if(res && res.value) {
           this.lstOrders = [...res.value];
         }
@@ -126,25 +127,28 @@ export class ModalMergeOrderComponent implements OnInit {
     this.isLoading = true;
 
     this.fastSaleOrderService.getOrderLiveCampaignCanMergeByPartner(this.liveCampaignId, partnerId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
+      .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           if(res && res.value) {
+
             let lstOrders = [...res.value];
             let model = {
               OrderIds: lstOrders.map(x => x.Id)
             }
-        
+
             this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: FastSaleOrderModelDTO) => {
-                this.notification.success(`Mã khách hàng <span class="text-info-500">${partnerId}</span>`, `Gộp đơn thành công`);
+
                 this.isMerge = true;
+                this.isLoading = false;
                 this.setOfCheckedId.delete(partnerId);
+
+                this.notification.success(`Mã hóa đơn ${res.Number}`, `Gộp đơn thành công: ${res.Name || res.Partner?.DisplayName}`, { duration: 3000 });
                 this.loadPartner();
               },
               error: (err) => {
                 this.isLoading = false;
-                this.notification.error(`Lỗi: Mã khách hàng <span class="text-info-500">${partnerId}</span>`, `${err?.error?.message}`);
+                this.message.error(err?.error?.message);
               }
             })
           }
@@ -153,6 +157,7 @@ export class ModalMergeOrderComponent implements OnInit {
         },
         error: (err) => {
           this.isLoadingCollapse = false;
+          this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
         }
     })
