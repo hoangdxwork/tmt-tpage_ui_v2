@@ -40,7 +40,7 @@
 
                                 <!-- Sản phẩm -->
                                 <td class="py-2 px-4  w-[35%]">
-                                    <div class="flex flex-row gap-x-3 items-center flex-auto">
+                                    <div class="flex flex-row gap-x-3 flex-auto">
                                         <div>
                                             <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
                                         </div>
@@ -48,21 +48,27 @@
                                             <span class="font-semibold w-full min-w-[120px] truncate mb-1"
                                                 tds-tooltip="{{ data.ProductNameGet }}">{{ data.ProductNameGet }}</span>
 
+                                            <div *ngIf="data?.AttributeValues?.length > 0" class="flex items-center gap-x-1 mb-1">
+                                              <div *ngFor="let itemsAttributes of ( data?.TagWithAttributes | stringToStringArray)">
+                                                <tds-tag class="mr-1 mb-1 cursor-pointer text-[13px]" status='secondary'>{{ itemsAttributes }}</tds-tag>
+                                              </div>
+                                            </div>
+
                                             <div  class="flex flex-wrap items-center gap-1">
-                                                
+
                                                 <div *ngIf="data.Tags; else noTags" class="flex flex-wrap items-center gap-1">
                                                     <div *ngFor="let item of data.Tags | stringToStringArray">
-                                                        <tds-tag class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" [status]="isEditDetails[data.Id]?'primary':'secondary'" size="sm">
+                                                        <tds-tag class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status="primary" size="sm">
                                                             <div class="max-w-[48px] w-fit truncate">{{ item }}</div>
                                                         </tds-tag>
                                                     </div>
-    
+
                                                     <button *ngIf="isEditDetails[data.Id]" type="button"
                                                         (click)="openTag(data)" tds-popover [popoverVisible]="indClickTag == i" popoverTrigger="click"
                                                         [popoverContent]="contentAddtag" [popoverFooter]="footerAddTag" [popoverBackdrop]="true" [popoverAutoClose]="true" popoverPlacement="left"
                                                         tds-tooltip tooltipTitle="Thêm cú pháp chốt đơn"
                                                         color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
-    
+
                                                         <div class="w-5 h-5 relative">
                                                             <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
                                                             <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
@@ -108,7 +114,7 @@
                                                     </div>
                                                 </ng-template>
                                             </div>
-                                            <div class="text-neutral-1-400 font-regular text-body-2">Đơn vị: 
+                                            <div class="text-neutral-1-400 font-regular text-body-2">Đơn vị:
                                                 <span class="text-primary-1">{{ data.UOMName }}</span>
                                             </div>
                                             <div class="flex flex-auto">
@@ -189,7 +195,7 @@
                                                     </tds-form-field>
                                                 </div>
                                             </ng-template>
-            
+
                                             <ng-template #footerQuantity>
                                                 <div class="flex justify-end pt-2">
                                                     <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm"
@@ -261,6 +267,6 @@
                     <tds-empty></tds-empty>
                 </div>
             </ng-template>
-        </tds-spin> 
+        </tds-spin>
     </div>
 </div>

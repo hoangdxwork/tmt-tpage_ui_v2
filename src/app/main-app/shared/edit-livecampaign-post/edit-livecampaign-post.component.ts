@@ -408,7 +408,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
         LimitedQuantity: [0],
         ProductCode: [null],
         ImageUrl: [null],
-        IsActive: [false]
+        IsActive: [false],
+        TagWithAttributes: [null],
+        AttributeValues: [null]
     });
 
     if(x) {

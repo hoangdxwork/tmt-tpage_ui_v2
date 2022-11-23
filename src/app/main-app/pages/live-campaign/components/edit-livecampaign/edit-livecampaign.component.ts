@@ -292,7 +292,9 @@ export class EditLiveCampaignComponent implements OnInit {
         LiveCampaign_Id: [null],
         ProductCode: [null],
         ImageUrl: [null],
-        IsActive: [false]
+        IsActive: [false],
+        TagWithAttributes: [null],
+        AttributeValues: [null]
     });
 
     if(data) {
