@@ -616,7 +616,7 @@ export class PostOrderConfigComponent implements OnInit {
         ProductCode: model.DefaultCode,
         ProductName: model.NameGet,
         ProductNameGet: model.NameGet,
-        Price: model.ListPrice || model.Price,
+        Price: Number(model.ListPrice) || Number(model.Price) | 0,
         UOMId: model.UOMId,
         UOMName: model.UOMName,
         Quantity: 1,
