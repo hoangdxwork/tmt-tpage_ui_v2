@@ -157,7 +157,8 @@ export class DrawerAddProductComponent implements OnInit {
       InitInventory: [0],
       UOM: [null, Validators.required],
       UOMPO: [null, Validators.required],
-      OrderTag: [null]
+      OrderTag: [null],
+      ProductVariantCount: [0]
     });
   }
 
@@ -212,6 +213,7 @@ export class DrawerAddProductComponent implements OnInit {
 
     this.defaultGet["ImageUrl"] = formModel.ImageUrl;
     this.defaultGet["ProductVariants"] = [...this.lstVariants];
+    this.defaultGet['ProductVariantCount'] = this.defaultGet["ProductVariants"].length;
 
     return this.defaultGet;
   }
@@ -439,7 +441,8 @@ export class DrawerAddProductComponent implements OnInit {
     });
   }
 
-  changeTags(event:any,i:number){
-    this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
+  changeTags(event:any, i:number){
+    this.lstVariants[i].OrderTag = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
   }
+
 }
