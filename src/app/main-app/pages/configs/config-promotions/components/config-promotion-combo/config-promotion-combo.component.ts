@@ -1,3 +1,4 @@
+import { IndexDBHelperService } from '../../../../../services/indexdb-helper.service';
 import { FormGroup, FormBuilder, FormControl, Validators, FormArray } from '@angular/forms';
 import { Component, OnInit, Input } from '@angular/core';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
@@ -57,6 +58,7 @@ export class ConfigPromotionComboComponent implements OnInit {
     private message: TDSMessageService,
     private readonly tdsConfigService: TDSConfigService,
     private productIndexDBService: ProductIndexDBService,
+    private indexdbHelperService: IndexDBHelperService,
     private cacheApi: THelperCacheService,
   ) { }
 
@@ -110,9 +112,9 @@ export class ConfigPromotionComboComponent implements OnInit {
 
   loadProductIndexDB(productCount: number, version: number): any {
     this.isLoading = true;
-    this.productIndexDBService.getLastVersionV2(productCount, version)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: ProductPouchDBDTO) => {
+    this.indexdbHelperService.loadLastVersionV2(productCount, version);
+    this.indexdbHelperService.getLastVersionV2()
+      .pipe(finalize(() => this.isLoading = false)).subscribe((res: ProductPouchDBDTO) => {
           this.lstProduct = res.Datas;
       }, error => {
           this.message.error('Load danh sách sản phẩm đã xảy ra lỗi!');
