@@ -163,19 +163,12 @@ export class ChatomniConversationService extends BaseSevice {
   }
 
   getInfo(teamId: number, csid: string): Observable<any> {
-
     let id = `${teamId}_${csid}`;
     let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/info/${id}`,
         method: CoreApiMethodType.get
     }
     return this.apiService.getData<any>(api, null);
-  }
-
-  syncConversationInfo(teamId: number, csid: string): Observable<any> {
-    return this.getInfo(teamId, csid).pipe(map((x: any) => {
-        return x;
-    }),shareReplay(1))
   }
 
 }
