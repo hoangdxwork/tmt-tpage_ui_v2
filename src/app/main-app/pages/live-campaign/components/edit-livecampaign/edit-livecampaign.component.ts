@@ -57,7 +57,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
   dataModel!: LiveCampaignSimpleDto;
   livecampaignSimpleDetail: LiveCampaignSimpleDetail[] = [];
-  isEditDetails: { [id: string] : boolean } = {};
+  isEditDetails: { [id: string] : { isEdit?: boolean, previousData?: LiveCampaignSimpleDetail} } = {};
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
   lstQuickReplies:  Array<QuickReplyDTO> = [];
@@ -421,7 +421,16 @@ export class EditLiveCampaignComponent implements OnInit {
 
   onEditDetails(item: LiveCampaignSimpleDetail) {
     if(item && item.Id) {
-      this.isEditDetails[item.Id] = true;
+      this.isEditDetails[item.Id] = {
+        isEdit : true,
+        previousData : { ...item }
+      };
+    }
+  }
+
+  onRefreshDetails(item: LiveCampaignSimpleDetail, index: number) {
+    if(item && item.Id) {
+      this.detailsForm.at(index).patchValue(this.isEditDetails[item.Id].previousData);
     }
   }
 

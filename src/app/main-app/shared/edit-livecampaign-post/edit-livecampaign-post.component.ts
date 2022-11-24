@@ -69,7 +69,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   indClickTag: number = -1;
   modelTags: Array<string> = [];
 
-  isEditDetails: { [id: string] : boolean } = {};
+  isEditDetails: { [id: string] : { isEdit?: boolean, previousData?: LiveCampaignSimpleDetail} } = {};
   livecampaignSimpleDetail: any = [];
   innerTextValue: string = '';
 
@@ -893,7 +893,16 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   onEditDetails(item: LiveCampaignSimpleDetail) {
     if(item && item.Id) {
-        this.isEditDetails[item.Id] = true;
+      this.isEditDetails[item.Id] = {
+        isEdit : true,
+        previousData : { ...item }
+      };
+    }
+  }
+
+  onRefreshDetails(item: LiveCampaignSimpleDetail, index: number) {
+    if(item && item.Id) {
+      this.detailsForm.at(index).patchValue(this.isEditDetails[item.Id].previousData);
     }
   }
 
