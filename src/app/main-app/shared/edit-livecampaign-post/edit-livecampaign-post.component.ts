@@ -903,7 +903,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   onCancelEditDetails(item: LiveCampaignSimpleDetail, index: number) {
     if(item && item.Id) {
       this.detailsForm.at(index).patchValue(this.isEditDetails[item.Id].previousData);
-      this.isEditDetails[item.Id]!.isEdit = false;
+      delete this.isEditDetails[item.Id];
     }
   }
 
