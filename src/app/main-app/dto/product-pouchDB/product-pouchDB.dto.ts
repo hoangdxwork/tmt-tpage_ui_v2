@@ -39,6 +39,8 @@ export interface ProductPouchDBDTO {
   Id: number;
   IsDelete: boolean;
   Datas: DataPouchDBDTO[];
+  Total?: number;
+  LastVersion?: number;
 }
 
 export interface KeyCacheIndexDBDTO {
