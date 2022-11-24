@@ -604,6 +604,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, order?: any[]) {
+    if(item.IsOwner == true) return;
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
@@ -639,6 +640,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   loadOrderByCode(order: any, item: ChatomniDataItemDto){
+    if(item.IsOwner == true) return;
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
@@ -671,6 +673,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   onInsertFromPost(item: ChatomniDataItemDto, order?: any[]) {
+    if(item.IsOwner == true) return;
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
         this.message.error("Không truy vấn được thông tin người dùng!");
