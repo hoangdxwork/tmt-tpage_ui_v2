@@ -10,13 +10,13 @@
               <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
           </div>
 
-           <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2">
+           <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[110px]">
               <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
                   <div>
                       <tds-avatar [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [tdsSrc]="(item.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
                   </div>
                   <div class="ml-2 w-full h-full">
-                      <div class="bg-white rounded-2xl px-4 py-3">
+                      <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
                           <div class="flex items-center justify-between">
                               <div class="flex gap-x-2 items-center">
 
@@ -25,7 +25,7 @@
                                     </div>
 
                                   <!-- Mã đơn hàng -->
-                                  <div *ngIf="commentOrders && item?.UserId && commentOrders[item?.UserId]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
+                                  <div *ngIf="commentOrders && item?.UserId && commentOrders[item?.UserId] && !item.IsOwner" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
                                       <div *ngFor="let order of commentOrders[item?.UserId]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
                                           <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(item, order)">
                                               <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
@@ -34,7 +34,7 @@
                                   </div>
 
                                     <!-- Mã hóa đơn -->
-                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
+                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i && !item.IsOwner" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
                                         <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
                                             {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
@@ -93,7 +93,7 @@
                           </div>
 
                           <!-- thao tác -->
-                          <div class="flex items-center pt-3">
+                          <div *ngIf="!item.IsOwner" class="flex items-center pt-3" >
                               <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm"
                                   (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
 
