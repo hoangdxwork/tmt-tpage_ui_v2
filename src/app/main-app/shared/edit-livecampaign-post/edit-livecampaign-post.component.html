@@ -411,21 +411,21 @@
                                               <i class="tdsi-edit-2-fill"></i>
                                           </span>
                                       </button>
-              
-                                      <button *ngIf="!isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="red" type="button" size="sm" 
+
+                                      <button *ngIf="!isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="red" type="button" size="sm"
                                           type="button" tds-tooltip tooltipTitle="Xóa" (click)="removeDetail(detail.value)" >
                                           <span class="flex items-center">
                                               <i class="tdsi-trash-fill"></i>
                                           </span>
                                       </button>
-                                      
+
                                       <button *ngIf="isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="success" type="button" size="sm"
                                           tds-tooltip tooltipTitle="Áp dụng" (click)="onSaveDetails(detail.value)" type="button">
                                           <span class="flex items-center">
                                               <i class="tdsi-checkbox-check-fill"></i>
                                           </span>
                                       </button>
-              
+
                                       <button *ngIf="isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="error" type="button" size="sm"
                                           tds-tooltip tooltipTitle="Bỏ chỉnh sửa" (click)="onCancelEditDetails(detail.value, index)" type="button">
                                           <span class="flex items-center">
@@ -446,7 +446,9 @@
 
     <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
         <button tds-button class="w-[100px]" color="secondary" (click)="onCannel(changedData)" type="button">Đóng</button>
-        <button *ngIf="(selectedIndex == 0 && id)" [disabled]="isLoading" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+        <div *ngIf="(selectedIndex == 0 && id)" >
+          <button [disabled]="isSave" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+        </div>
     </div>
 
   </form>
