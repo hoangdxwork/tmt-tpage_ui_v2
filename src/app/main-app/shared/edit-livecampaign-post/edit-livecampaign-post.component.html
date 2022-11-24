@@ -404,26 +404,35 @@
 
                                   <!-- Thao tác -->
                                   <td class="text-center">
-                                    <button *ngIf="!isEditDetails[detail.value.Id]" tds-button-icon color="info" size="sm" class="ml-1 mr-1"
-                                        tds-tooltip tooltipTitle="Chỉnh sửa" (click)="onEditDetails(detail.value)" type="button">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-edit-2-fill"></i>
-                                        </span>
-                                    </button>
-
-                                    <button *ngIf="isEditDetails[detail.value.Id]" tds-button-icon color="success" size="sm" class="ml-1 mr-1"
-                                        tds-tooltip tooltipTitle="Áp dụng" (click)="onSaveDetails(detail.value)" type="button">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-checkbox-check-fill"></i>
-                                        </span>
-                                    </button>
-
-                                    <button tds-button-icon color="red" size="sm" class="ml-1 mr-1" type="button"
-                                        tds-tooltip tooltipTitle="Xóa" (click)="removeDetail(detail.value)" >
-                                        <span class="flex items-center">
-                                            <i class="tdsi-trash-fill"></i>
-                                        </span>
-                                    </button>
+                                    <div class="flex gap-x-1 justify-center">
+                                      <button *ngIf="!isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="info" type="button" size="sm"
+                                          tds-tooltip tooltipTitle="Chỉnh sửa" (click)="onEditDetails(detail.value)" type="button">
+                                          <span class="flex items-center">
+                                              <i class="tdsi-edit-2-fill"></i>
+                                          </span>
+                                      </button>
+              
+                                      <button *ngIf="!isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="red" type="button" size="sm" 
+                                          type="button" tds-tooltip tooltipTitle="Xóa" (click)="removeDetail(detail.value)" >
+                                          <span class="flex items-center">
+                                              <i class="tdsi-trash-fill"></i>
+                                          </span>
+                                      </button>
+                                      
+                                      <button *ngIf="isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="success" type="button" size="sm"
+                                          tds-tooltip tooltipTitle="Áp dụng" (click)="onSaveDetails(detail.value)" type="button">
+                                          <span class="flex items-center">
+                                              <i class="tdsi-checkbox-check-fill"></i>
+                                          </span>
+                                      </button>
+              
+                                      <button *ngIf="isEditDetails[detail.value.Id]?.isEdit" tds-button-icon color="info" type="button" size="sm"
+                                          tds-tooltip tooltipTitle="Làm mới dữ liệu" (click)="onRefreshDetails(detail.value, index)" type="button">
+                                          <span class="flex items-center">
+                                              <i class="tdsi-loading-fill"></i>
+                                          </span>
+                                      </button>
+                                    </div>
                                   </td>
                               </tr>
                           </tbody>
