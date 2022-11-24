@@ -1,3 +1,4 @@
+import { IndexDBHelperService } from '../../../../../services/indexdb-helper.service';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
@@ -67,6 +68,7 @@ export class ConfigPromotionGroupComponent implements OnInit {
     private productCategoryService: ProductCategoryService,
     private companyService: CompanyService,
     private productIndexDBService: ProductIndexDBService,
+    private indexdbHelperService: IndexDBHelperService,
     private cacheApi: THelperCacheService,
     private message: TDSMessageService,
   ) { }
@@ -117,13 +119,16 @@ export class ConfigPromotionGroupComponent implements OnInit {
 
   loadProductIndexDB(productCount: number, version: number): any {
     this.isLoading = true;
-    this.productIndexDBService.getLastVersionV2(productCount, version)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: ProductPouchDBDTO) => {
-          this.lstProduct = res.Datas;
-      }, error => {
+    this.indexdbHelperService.loadLastVersionV2(productCount, version);
+    this.indexdbHelperService.getLastVersionV2().pipe(finalize(() => this.isLoading = false))
+    .subscribe({
+      next: (res: ProductPouchDBDTO) => {
+        this.lstProduct = res.Datas;
+      }, 
+      error: (error) => {
           this.message.error('Load danh sách sản phẩm đã xảy ra lỗi!');
-      });
+      }
+    });
   }
 
   isShow(value: string) : boolean {
