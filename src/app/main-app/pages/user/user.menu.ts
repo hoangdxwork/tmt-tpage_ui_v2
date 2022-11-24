@@ -26,4 +26,9 @@ export const UserMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-notification-fill",
         link: '/user/notification',
     },
+    {
+        name: "Thông báo socket",
+        icon: "tdsi-notification-fill",
+        link: '/user/socket-notification',
+    },
 ]

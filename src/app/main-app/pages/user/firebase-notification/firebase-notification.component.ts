@@ -8,6 +8,7 @@ import { FirebaseRegisterService } from '@app/services/firebase/firebase-registe
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { takeUntil } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
@@ -36,6 +37,7 @@ export class FirebaseNotificationComponent implements OnInit {
 
   constructor(private firebaseRegisterService: FirebaseRegisterService,
     private message: TDSMessageService,
+    private readonly tdsConfigService: TDSConfigService,
     private destroy$: TDSDestroyService,
     private route: ActivatedRoute,
     public router: Router,
@@ -56,12 +58,14 @@ export class FirebaseNotificationComponent implements OnInit {
     this.loadUrl();
 
     this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
-    // if(this.deviceToken) {
     this.loadSubscribedTopics();
-    // }
 
     this.loadTopics();
     this.loadSubscribedTopics();
+
+    this.tdsConfigService.set('message', {
+      maxStack: 3
+      });
   }
 
   loadTopics() {
@@ -200,16 +204,64 @@ export class FirebaseNotificationComponent implements OnInit {
     }
   }
 
-  modalPermission() {
-    this.modalService.create({
-      title: 'Đăng kí nhận tin',
-      content: ModalRequestPermissionComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        idsTopic: this.idsTopic
-      }
+  requestPermission() {
+    const messaging = getMessaging();
+    this.isLoading = true;
+
+    getToken(messaging, { vapidKey: environment.firebaseConfig.vapidKey })
+      .then((token: any) => {
+
+          if(!token)  {
+              this.isLoading = false;
+              this.message.info('No registration token available. Request permission to generate one');
+              return;
+          }
+
+          this.deviceToken = token;
+          this.firebaseMessagingService.setDeviceTokenLocalStorage(token);
+
+          this.registerDevice(token);
+
+      }).catch((error) => {
+          this.isLoading = false;
+          this.message.error('An error occurred while retrieving token');
     });
+  }
+
+  registerDevice(token: string) {
+    let model = {
+        Platform: FireBaseDevice.Google,
+        DeviceToken: token
+    };
+
+    this.firebaseRegisterService.registerDevice(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.message.success('Đăng ký nhận tin thành công');
+            this.registerTopics();
+        },
+        error: (err: any) => {
+          this.isLoading = false;
+          this.message.error('Đăng kí nhận tin thất bại');
+        }
+    })
+  }
+
+  registerTopics() {
+    let model = {
+      TopicIds: this.idsTopic
+    }
+
+    this.isLoading = true;
+    this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.isLoading = false;
+          this.message.success('Đăng kí nhận tin thành công');
+      },
+      error: (err: any) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
+      }
+    })
   }
 
   modalGetNotifications() {

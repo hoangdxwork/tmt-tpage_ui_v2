@@ -4,7 +4,7 @@
       <i class="tdsi-information-fill text-white text-xl leading-none"></i>
       <span>Tùy chỉnh nhận thông báo cho thiết bị của bạn!</span>
     </div>
-    <div class="h-7 flex items-center cursor-pointer" (click)="modalPermission()">
+    <div class="h-7 flex items-center cursor-pointer" (click)="requestPermission()">
       <span class="font-semibold">Đăng kí thiết bị</span>
     </div>
   </div>
@@ -12,7 +12,7 @@
     <div class="w-1/4 h-full flex flex-col bg-white rounded-xl">
       <div class="flex justify-between items-center p-4">
         <span class="text-title-1 font-semibold">Thông báo</span>
-        <button tds-button-icon color="custom" (click)="modalGetNotifications()"
+        <button tds-button-icon color="custom" (click)="modalGetNotifications()" [ngClass]="deviceToken ? '' : 'hidden'"
           class="text-neutral-1-500 border-0 border-transparent ring-0 ring-transparent bg-transparent hover:text-neutral-1-500 hover:bg-neutral-3-50 focus:text-neutral-1-500 focus:bg-neutral-3-50">
           <i class="tdsi-gear-2-fill"></i>
         </button>
