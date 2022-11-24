@@ -757,6 +757,9 @@ export class DetailBillComponent implements OnInit {
         let modal =  this.modal.create({
           title: 'Danh sách có thể gộp đơn',
           content: ModalMergeOrderComponent,
+          onCancel: function(){
+            modal.componentInstance?.onCancel();
+          },
           size: "xl",
           viewContainerRef: this.viewContainerRef,
           componentParams: {
