@@ -55,7 +55,7 @@
                                               ...Xem thêm
                                           </div>
 
-                                          <div *ngIf="commentOrders[item.Data?.from!.id].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
+                                          <div *ngIf="commentOrders[item.Data?.from!.id].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
                                               ...Thu gọn
                                           </div>
                                         </div>
