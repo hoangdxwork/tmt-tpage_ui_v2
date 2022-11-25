@@ -27,6 +27,8 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
+import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'app-conversation-post',
@@ -102,6 +104,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniObjectService: ChatomniObjectService,
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
+    private socketOnEventService: SocketOnEventService,
     private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
@@ -146,10 +149,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.eventEmitter();
     this.loadLiveCampaign();
     this.spinLoading();
+    this.onEventSocket();
   }
 
   eventEmitter() {
-    // TODO: Cập nhật chiến lịch live từ object-facebook-post
     this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
         if(res && res.LiveCampaignId) {
@@ -199,14 +202,25 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             this.codeOrder = code;
             this.isDisableTabOrder = false;
         }else{
-          this.codeOrder = '';
-          // this.isDisableTabOrder = true;
+            this.codeOrder = '';
         }
 
         this.cdRef.detectChanges();
       }
     })
+  }
 
+  onEventSocket() {
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+        switch(res && res.EventName){
+            case ChatmoniSocketEventName.chatomniPostLiveEnd:
+              let exist = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop
+              && res.Data;
+            break;
+        }
+      }
+    })
   }
 
   spinLoading() {
