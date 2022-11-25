@@ -77,6 +77,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   ];
   currentFilterComment = this.filterOptionsComment[0];
 
+  fallbackImg = "../../../assets/imagesv2/errorPic.svg";
+
   isLoading: boolean = false;
   isProcessing: boolean = false;
   indClickTag: string = '';

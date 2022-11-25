@@ -36,7 +36,7 @@
 
                 <!-- tshop -->
                 <div class="flex items-center" *ngIf="team!.Type == 'TShop'">
-                    <tds-avatar [icon]="(data.Data | tshopType)?.KindValue == 1 ? 'tdsi-video-camera-fill': 'tdsi-facebook-f-fill'"
+                    <tds-avatar [icon]="(data.Data | tshopType)?.KindValue == 1 ? 'tdsi-video-camera-fill': 'tdsi-template-web-fill'"
                         [ngClass]="(data.Data | tshopType)?.KindValue == 1 ? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white mr-1"
                         [size]="36" [shape]="'circle'" [isAvatar]="false">
                     </tds-avatar>
@@ -47,10 +47,6 @@
                                 <!-- <span>{{translateType((data.Data | facebookType).type, (data.Data | facebookType).status_type)}}</span> -->
                                 <span class="whitespace-nowrap">{{(data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm"}}</span>
                             </div>
-                            <!-- truy cập bài viết -->
-                            <a [href]="(data.Data | tshopType)?.MediaLive?.RecordUrl" target="_blank" class="text-neutral-1-400">
-                                <i class="tdsi-expand-2-line leading-none text-xl"></i>
-                            </a>
                         </span>
                     </tds-tag>
                 </div>
@@ -169,7 +165,7 @@
                     </div>
 
                     <div class="post-picture" *ngIf="(data.Data | tshopType).MediaLive?.ThumbnailUrl">
-                        <img [src]="(data.Data | tshopType).MediaLive?.ThumbnailUrl" class="rounded-xl h-[122px] object-cover" />
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="(data.Data | tshopType).MediaLive?.ThumbnailUrl || ''" class="rounded-xl h-[122px] object-cover" />
                     </div>
               </div>
 

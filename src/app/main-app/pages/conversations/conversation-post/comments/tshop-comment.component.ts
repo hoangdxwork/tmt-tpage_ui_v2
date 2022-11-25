@@ -178,7 +178,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
               let fbComment = {...res.Data?.Message} as MessageSocketioDto;
 
               let exist1 = fbComment && fbComment.MessageType == ChatomniMessageType.TShopComment
-                  && this.team?.ChannelId == res.Data?.Conversation?.ChannelId
+                  && this.team?.ChannelId == (res.Data?.Conversation?.ChannelId || res.Data.Message?.ChannelId)
                   && this.data.ObjectId == fbComment?.ObjectId && this.dataSource;
 
               if(!exist1) break;
