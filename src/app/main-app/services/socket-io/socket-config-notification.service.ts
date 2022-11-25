@@ -8,7 +8,7 @@ import { ChatmoniSocketEventName } from "./soketio-event";
 export class SocketStorageNotificationService {
 
   public _keyCacheSocketConfig: string = "_socket_notification";
-  public socketData: any = {};
+  public socketData: {[key: string]: boolean} = {} as any
 
   constructor() {
   }
@@ -25,9 +25,16 @@ export class SocketStorageNotificationService {
     return this.socketData;
   }
 
-  setLocalStorage() {
+  setLocalStorage(item?: any) {
+    let value={} as any;
     const key = this._keyCacheSocketConfig;
-    let value = JSON.stringify(this.getSocketDataDefault());
+
+    if(item) {
+      value =  JSON.stringify(item);
+    } else {
+      value = JSON.stringify(this.getSocketDataDefault());
+    }
+
     localStorage.setItem(key, value);
   }
 

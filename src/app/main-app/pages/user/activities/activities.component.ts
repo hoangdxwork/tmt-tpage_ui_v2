@@ -29,7 +29,7 @@ interface ColumnItem {
 export class ActivitiesComponent implements OnInit {
   fromDate!: FormControl;
   toDate!: FormControl;
-  dateFilter: ConfigDateFilter = {type:'',range:[]};
+  dateFilter: ConfigDateFilter = {type:'thisWeek',range:[]};
   TableData:Array<TDSSafeAny> = [];
   listOfColumns: Array<ColumnItem> = [];
   testDate = new Date('Thu Mar 17 2022 17:00:24');

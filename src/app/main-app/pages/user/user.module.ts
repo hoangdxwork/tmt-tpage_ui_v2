@@ -57,6 +57,7 @@ import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { ModalRequestPermissionComponent } from './components/modal-request-permission/modal-request-permission.component';
+import { SocketNotificationComponent } from './socket-notification/socket-notification.component';
 
 const SERVICES = [
   TenantService,
@@ -81,7 +82,8 @@ const SERVICES = [
     FirebaseNotificationComponent,
     ModalGetNotificationComponent,
     ActivitiesComponent,
-    ModalRequestPermissionComponent
+    ModalRequestPermissionComponent,
+    SocketNotificationComponent
   ],
   imports: [
     CommonModule,
