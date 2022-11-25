@@ -250,10 +250,17 @@
                                             </span>
                                         </button>
 
-                                        <button tds-button-icon color="red" size="sm" class="ml-1 mr-1" type="button"
+                                        <button *ngIf="!isEditDetails[data?.Id]" tds-button-icon color="red" size="sm" class="ml-1 mr-1" type="button"
                                             tds-tooltip tooltipTitle="Xóa" (click)="removeDetail(data)" >
                                             <span class="flex items-center">
                                                 <i class="tdsi-trash-fill"></i>
+                                            </span>
+                                        </button>
+
+                                        <button *ngIf="isEditDetails[data?.Id]" tds-button-icon color="red" size="sm" class="ml-1 mr-1" type="button"
+                                            tds-tooltip tooltipTitle="Bỏ chỉnh sửa" (click)="onCloseDetail(data)" >
+                                            <span class="flex items-center">
+                                                <i class="tdsi-close-fill"></i>
                                             </span>
                                         </button>
                                     </div>
