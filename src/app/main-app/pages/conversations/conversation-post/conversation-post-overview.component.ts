@@ -108,7 +108,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       let isOpenDrawer = this.drawerEditLiveCampaign;
       let data = this.liveCampaignService.getLocalStorageDrawer() as any;
 
-      let exist = data && data.liveCampaignId && data.objectId;
+      let exist = data && TDSHelperString.hasValueString(liveCampaignId) && data.objectId;
 
       if(exist) {
         this.drawerEditLiveCampaign = data.isOpenDrawer;
