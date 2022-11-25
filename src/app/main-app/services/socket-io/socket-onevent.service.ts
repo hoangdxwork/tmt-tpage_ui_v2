@@ -66,6 +66,15 @@ export class SocketOnEventService {
             channelId = socketData.Data?.Conversation?.ChannelId;
             break;
 
+          case ChatmoniSocketEventName.chatomniOnMessage:
+            let tshopCmt = socketData?.Message?.ChannelId && socketData?.Message?.MessageType == ChatomniMessageType.TShopComment;
+            if(tshopCmt) {
+                channelId = socketData.Message.ChannelId;
+            } else {
+                channelId = socketData.Data?.Conversation?.ChannelId;
+            }
+            break;
+
           default:
             channelId = socketData.Conversation?.ChannelId;
             break;
@@ -97,6 +106,7 @@ export class SocketOnEventService {
 
             // TODO: thông báo tin nhắn, comment
             case ChatmoniSocketEventName.chatomniOnMessage:
+
                 let notificationMessage = this.prepareOnMessage(socketData, team);
                 this.pubSocketEvent(notificationMessage, socketData, team); //SocketioOnMessageDto
             break;
