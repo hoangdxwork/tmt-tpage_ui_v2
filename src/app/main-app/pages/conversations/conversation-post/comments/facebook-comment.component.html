@@ -31,7 +31,7 @@
                                   <!-- Mã đơn hàng -->
                                   <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] gap-x-1">
                                       <div class="text-info-500 font-semibold flex flex-row items-center gap-x-2">
-                                          <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(commentOrders[item.Data?.from!.id][0], item)">
+                                          <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(item, commentOrders[item.Data?.from!.id][0])">
                                               <span *ngIf="!order?.code?.includes('#')">#</span>{{ commentOrders[item.Data?.from!.id][0].code }}
                                           </div>
                                       </div>
@@ -46,7 +46,7 @@
                                     <ng-template #contentOrder>
                                         <div class="flex flex-wrap min-w-[100px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
                                           <div *ngFor="let cmt of commentOrders[item.Data?.from!.id]">
-                                            <span *ngIf="cmt.id != commentOrders[item.Data?.from!.id][0].id && (i <= 10 || isShowAllNumber)" classs="cursor-pointer " (click)="loadOrderByCode(cmt, item)">
+                                            <span *ngIf="cmt.id != commentOrders[item.Data?.from!.id][0].id && (i <= 10 || isShowAllNumber)" classs="cursor-pointer " (click)="loadOrderByCode(item, cmt)">
                                               <span class="text-info-500 font-semibold cursor-pointer hover:underline" style="font-size: 14px">{{ cmt.code }}</span>
                                               <span *ngIf="cmt.id != commentOrders[item.Data?.from!.id][commentOrders[item.Data?.from!.id].length - 1].id" class="pr-2">,</span>
                                             </span>
