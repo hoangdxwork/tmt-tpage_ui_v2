@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
+import { ChatmoniSocketEventName } from "@app/services/socket-io/soketio-event";
 
 @Pipe({
   name: 'getSocketName'
@@ -10,23 +11,23 @@ export class GetSocketNamePipe implements PipeTransform {
       case 'socket.all':
         return 'Tất cả';
 
-      case 'chatomni.on-message':
+      case ChatmoniSocketEventName.chatomniOnMessage:
         return 'Thông báo khi có tin nhắn gửi về';
 
-      case 'chatomni.on-update':
-        return 'Thông báo cập nhật đơn hàng';
+      case ChatmoniSocketEventName.chatomniOnUpdate:
+        return 'Thông báo tin nhắn lỗi';
 
-      case 'created':
+      case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
         return 'Thông báo tạo đơn hàng';
 
-      case 'deleted':
+      case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
         return 'Thông báo xóa đơn hàng';
 
-      case 'livecampaign.cart-checkout':
-        return '-';
+      case ChatmoniSocketEventName.livecampaign_CartCheckout:
+        return 'Tạo hóa đơn';
 
-      case 'chatomni.post-live-end':
-        return '-';
+      case ChatmoniSocketEventName.chatomniPostLiveEnd:
+        return 'Kết thúc live';
     }
     return '---';
   }
