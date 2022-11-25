@@ -7,7 +7,7 @@ import { ModalListProductComponent } from '../components/modal-list-product/moda
 import { ConversationPostEvent } from '../../../handler-v2/conversation-post/conversation-post.event';
 import { ObjectFacebookPostEvent } from '../../../handler-v2/conversation-post/object-facebook-post.event';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef, EventEmitter } from '@angular/core';
 import { takeUntil, finalize, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
@@ -37,6 +37,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
+  @Input() widthConversation!: number;
 
   @ViewChild('innerText') innerText!: ElementRef;
 
@@ -108,7 +109,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       let isOpenDrawer = this.drawerEditLiveCampaign;
       let data = this.liveCampaignService.getLocalStorageDrawer() as any;
 
-      let exist = data && data.liveCampaignId && data.objectId;
+      let exist = data && TDSHelperString.hasValueString(liveCampaignId) && data.objectId;
 
       if(exist) {
         this.drawerEditLiveCampaign = data.isOpenDrawer;

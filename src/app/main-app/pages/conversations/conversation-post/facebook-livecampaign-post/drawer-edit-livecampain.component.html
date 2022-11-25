@@ -1,7 +1,7 @@
 <tds-tabset [tabBarStyle]="{ 'padding':'0', 'overflow': 'hidden' }" class="tab-live-campaign border-t pt-2">
     <tds-tab title="Sản phẩm" [clsContent]="'p-0 w-full h-full flex'">
             <div class="w-full h-full flex flex-col overflow-hidden">
-                <!-- <div class="w-full flex gap-x-2 mt-2 px-1">
+                <div class="w-full flex gap-x-2 mt-2 px-1">
                     <div class="relative flex flex-auto">
                         <tds-form-field class="w-full">
                             <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
@@ -79,7 +79,7 @@
                     <button tds-button-icon color="primary" size="md" type="button" tds-tooltip="Thêm mới sản phẩm" (click)="showCreateProductModal()">
                         <i class="tdsi-plus-fill text-lg leading-none"></i>
                     </button>
-                </div> -->
+                </div>
 
                 <div class="w-full flex flex-col mt-2 rounded-md">
                     <tds-table [listData]="lstDetail" [showPagination]="false">
@@ -130,14 +130,32 @@
                         [scrollAnimationTime]="750">
                             <div *ngFor="let data of scroll.viewPortItems; let i = index" class="flex w-full overflow-hidden">
                                 <div [ngClass]="{'bg-primary-3':(isEditDetails[data.Id] && liveCampaignId)}" class="p-2 w-full border-t block hover:bg-neutral-3-50 hover:cursor-pointer">
-                                    <div class="mb-1 block">
+                                    <div class="mb-1 block inline-block">
                                         <div class="flex-auto flex flex-col gap-y-1">
-                                            <span class="font-semibold text-[13px] max-w-[80%] truncate" tds-tooltip="{{ data.ProductNameGet || data.ProductName }}">
+                                            <span class="font-semibold text-[13px] w-full truncate" tds-popover [popoverContent]="popoverTag" popoverPlacement="topLeft">
                                                 {{ data.ProductNameGet || data.ProductName }}
                                             </span>
 
+                                            <ng-template #popoverTag>
+                                                <div class="max-w-[320px]">
+                                                    <div class="flex flex-wrap gap-1 items-center" *ngIf="data.Tags?.length > 0">
+                                                        <div *ngFor="let item of (data.Tags | stringToStringArray)">
+                                                            <tds-tag class="mr-1 cursor-pointer text-[13px]" status='primary'>
+                                                                {{ (item || '') }}
+                                                            </tds-tag>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+
+                                            <!-- <div *ngIf="data?.AttributeValues?.length > 0" class="flex items-center gap-x-1 mb-1">
+                                                <div *ngFor="let itemsAttributes of ( data?.TagWithAttributes | stringToStringArray)">
+                                                  <tds-tag class="cursor-pointer text-[13px]" status='secondary'>{{ itemsAttributes }}</tds-tag>
+                                                </div>
+                                            </div> -->
+
                                             <!-- Tags -->
-                                            <div class="flex items-center flex-wrap gap-x-1">
+                                            <!-- <div class="flex items-center flex-wrap gap-x-1">
                                                 <span *ngIf="data.Tags?.length <= 0 && isEditDetails[data.Id]"
                                                     class="text-info-500 font-normal text-sm cursor-pointer"
                                                     (click)="openTag(data)" tds-popover
@@ -170,10 +188,10 @@
                                                             </svg>
                                                         </div>
                                                     </button>
-                                                </div>
+                                                </div> -->
 
                                                 <!-- button thêm nhãn -->
-                                                <ng-template #contentAddtag>
+                                                <!-- <ng-template #contentAddtag>
                                                     <div class="w-[360px]">
                                                         <tds-form-field>
                                                             <tds-select [(ngModel)]="modelTags"
@@ -204,48 +222,14 @@
                                                         </button>
                                                     </div>
                                                 </ng-template>
-                                            </div>
+                                            </div> -->
 
-                                            <div class="flex items-center justify-between gap-x-2" [ngClass]="isEditDetails[data.Id] ? 'w-full' : 'w-[80%]'">
-                                                <!-- Số lượng -->
-                                                <div class="flex items-center mb-1">
-                                                    <span class="flex items-center pr-2">Số lượng:</span>
-
-                                                    <tds-form-field *ngIf="isEditDetails[data.Id]" class="w-[88px]">
-                                                        <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
-                                                            [(ngModel)]="data.Quantity"
-                                                            [formatter]="numberWithCommas" [parser]="parserComas">
-                                                        </tds-input-number>
-                                                    </tds-form-field>
-
-                                                    <div *ngIf="!isEditDetails[data.Id]" class="text-body-2 text-center flex items-center">
-                                                        {{ data.Quantity || 0 | numberCustom }}
-                                                    </div>
-                                                </div>
-
-                                                <!-- Giá bán -->
-                                                <div class="flex items-center mb-1">
-                                                    <span class="flex items-center pr-2">Giá:</span>
-
-                                                    <tds-form-field *ngIf="isEditDetails[data.Id]" class="w-[128px]">
-                                                        <tds-input-number [min]="0" [step]="1000" size="sm" class="w-full"
-                                                            [(ngModel)]="data.Price"
-                                                            [formatter]="numberWithCommas" [parser]="parserComas">
-                                                        </tds-input-number>
-                                                    </tds-form-field>
-
-                                                    <div *ngIf="!isEditDetails[data.Id]" class="text-body-2 text-center flex items-center">
-                                                        {{ data.Price || 0 | numberCustom }}đ
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="flex flex-row items-center justify-between w-full">
-                                        <div class="w-[80%]">
                                             <!-- Trạng thái  -->
-                                            <div class="flex mb-1">
+                                            <!-- <div class="flex mb-1">
                                                 <span class="flex items-center pr-2">Trạng thái:</span>
                                                 <div class="flex flex-auto">
                                                     <div *ngIf="isEditDetails[data.Id]" class="w-[70%]">
@@ -261,29 +245,57 @@
                                                         Đã tắt
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <!-- Số lượng chốt -->
-                                            <div class="flex item-center gap-x-2 mb-2">
-                                                <div class="text-neutral-1-400 text-caption-2 flex items-center">
+                                            <div class="flex item-center gap-x-2 mb-2 text-body-2">
+                                                <div class="text-neutral-1-500  flex items-center">
                                                     Chờ chốt: {{ (data.QueueQuantity || 0) | numberCustom }}
                                                 </div>
                                                 <div>/</div>
-                                                <div class="text-neutral-1-400 text-caption-2 flex items-center">
+                                                <div class="text-neutral-1-500 flex items-center">
                                                     Đã chốt: {{ (data.UsedQuantity || 0) | numberCustom }}
                                                 </div>
                                                 <div>/</div>
-                                                <div class="text-caption-2 font-semibold flex items-center" [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
+                                                <div class="font-semibold flex items-center" [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
                                                     Còn lại: {{ (((data.Quantity - data.UsedQuantity) || 0) | numberCustom) }}
                                                 </div>
+                                            </div>
+
+
+                                    </div>
+                                    <div class="flex w-full items-center mb-1">
+                                        <!-- Giá bán -->
+                                        <div class="flex items-center gap-x-1 w-3/4" *ngIf="isEditDetails[data.Id]">
+                                            <span class="flex items-center pr-2 w-1/3">Giá:</span>
+
+                                            <div *ngIf="isEditDetails[data.Id]" class="w-2/3">
+                                                <tds-form-field class="w-full">
+                                                    <tds-input-number [min]="0" [step]="1000" size="sm" class="w-full"
+                                                        [(ngModel)]="data.Price"
+                                                        [formatter]="numberWithCommas" [parser]="parserComas">
+                                                    </tds-input-number>
+                                                </tds-form-field>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-x-1 w-3/4" *ngIf="!isEditDetails[data.Id]">
+                                            <span class="flex items-center">Giá:</span>
+                                            <div class="text-body-2 text-center flex items-center ml-2 ">
+                                                {{ data.Price || 0 | numberCustom }}đ
                                             </div>
                                         </div>
 
                                         <!-- Thao tác -->
-                                        <div class="w-[20%] text-center flex justify-end gap-x-1">
+
+                                        <div class="text-center flex justify-end gap-x-1 w-1/4">
                                             <span *ngIf="!isEditDetails[data.Id]" class="flex items-center"
                                                 tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
                                                 <i class="tdsi-edit-2-fill text-info-500 text-2xl"></i>
+                                            </span>
+
+                                            <span *ngIf="!isEditDetails[data.Id]" class="flex items-center" tds-tooltip="Xóa" (click)="removeDetail(data)">
+                                                <i class="tdsi-trash-fill text-error-400 text-2xl"></i>
                                             </span>
 
                                             <span *ngIf="isEditDetails[data.Id]" class="flex items-center"
@@ -291,9 +303,24 @@
                                                 <i class="tdsi-checkbox-check-fill text-success-400 text-2xl"></i>
                                             </span>
 
-                                            <span class="flex items-center" tds-tooltip="Xóa" (click)="removeDetail(data)">
-                                                <i class="tdsi-trash-fill text-error-400 text-2xl"></i>
+                                            <span *ngIf="isEditDetails[data.Id]" class="flex items-center" tds-tooltip="Bỏ chỉnh sửa" (click)="onCloseDetail(data)">
+                                                <i class="tdsi-close-fill text-error-400 text-2xl"></i>
                                             </span>
+
+                                        </div>
+                                    </div>
+                                    <div *ngIf="isEditDetails[data.Id]" class="w-3/4 flex">
+                                        <!-- Số lượng -->
+                                        <div class="flex items-center mb-1 gap-x-1">
+                                            <span class="flex items-center pr-2 w-1/3  truncate">Số lượng:</span>
+
+                                            <tds-form-field class="w-2/3">
+                                                <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
+                                                    [(ngModel)]="data.Quantity"
+                                                    [formatter]="numberWithCommas" [parser]="parserComas">
+                                                </tds-input-number>
+                                            </tds-form-field>
+
                                         </div>
                                     </div>
                                 </div>

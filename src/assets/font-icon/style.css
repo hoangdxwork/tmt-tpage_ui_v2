@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'TDSIcons';
   src:
-    url('fonts/TDSIcons.ttf?lcs3ww') format('truetype'),
-    url('fonts/TDSIcons.woff?lcs3ww') format('woff'),
-    url('fonts/TDSIcons.svg?lcs3ww#TDSIcons') format('svg');
+    url('fonts/TDSIcons.ttf?6o68i5') format('truetype'),
+    url('fonts/TDSIcons.woff?6o68i5') format('woff'),
+    url('fonts/TDSIcons.svg?6o68i5#TDSIcons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -24,6 +24,84 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.tdsi-date-and-time-fill:before {
+  content: "\eb26";
+}
+.tdsi-dark-mode-fill:before {
+  content: "\eb24";
+}
+.tdsi-light-mode-fill:before {
+  content: "\eb25";
+}
+.tdsi-sort-z-a-fill:before {
+  content: "\eb23";
+}
+.tdsi-arrow-circle-fill:before {
+  content: "\eb0d";
+}
+.tdsi-facebook-account-fill:before {
+  content: "\eb0e";
+}
+.tdsi-folder-add-fill:before {
+  content: "\eb0f";
+}
+.tdsi-folders-fill:before {
+  content: "\eb10";
+}
+.tdsi-gear-system-fill:before {
+  content: "\eb11";
+}
+.tdsi-google-fill:before {
+  content: "\eb12";
+}
+.tdsi-heart-fill:before {
+  content: "\eb13";
+}
+.tdsi-historytab-fill:before {
+  content: "\eb14";
+}
+.tdsi-import-product-fill:before {
+  content: "\eb15";
+}
+.tdsi-internet-fill:before {
+  content: "\eb16";
+}
+.tdsi-main-fill:before {
+  content: "\eb17";
+}
+.tdsi-maps-fill:before {
+  content: "\eb18";
+}
+.tdsi-store-fill:before {
+  content: "\eb19";
+}
+.tdsi-store-gear-fill:before {
+  content: "\eb1a";
+}
+.tdsi-users-fill:before {
+  content: "\eb1b";
+}
+.tdsi-wifi-off-fill:before {
+  content: "\eb1c";
+}
+.tdsi-add-to-foder-fill:before {
+  content: "\eb1d";
+}
+.tdsi-computer-fill:before {
+  content: "\eb1e";
+}
+.tdsi-dependency-fill:before {
+  content: "\eb1f";
+}
+.tdsi-dong-fill:before {
+  content: "\eb20";
+}
+.tdsi-drag-fill:before {
+  content: "\eb21";
+}
+.tdsi-export-product-fill:before {
+  content: "\eb22";
+}
 .tdsi-lazada-fill:before {
   content: "\eb0b";
 }
@@ -351,7 +429,7 @@
 .tdsi-addfriend-fill:before {
   content: "\eaae";
 }
-.tdsi-adjustments-fill:before {
+.tdsi-adjustments-line:before {
   content: "\eaaf";
 }
 .tdsi-apps-fill:before {
@@ -998,9 +1076,6 @@
 }
 .tdsi-comment-off-fill:before {
   content: "\e9c7";
-}
-.tdsi-date-and-time-fill:before {
-  content: "\e9c8";
 }
 .tdsi-edit-2-fill:before {
   content: "\e9c9";

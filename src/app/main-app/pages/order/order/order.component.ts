@@ -344,6 +344,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
+      this.isProcessing = true
       let ids = [...this.setOfCheckedId];
       this.showModalCreateBillFast(ids)
     }
@@ -374,9 +375,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
           }
 
           this.isLoading = false;
+          this.isProcessing = false
         },
         error: (error: any) => {
           this.isLoading = false;
+          this.isProcessing = false
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
         }
       });
@@ -384,7 +387,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onCreateBillDefault() {
     if (this.checkValueEmpty() == 1) {
-
+      this.isProcessing = true
       this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
         next: (res) => {
           let ids = [...this.setOfCheckedId];
@@ -407,9 +410,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
               }
             }
           })
+          this.isProcessing = false
         },
         error: (err) => {
           this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+          this.isProcessing = false
         }
       })
     }
@@ -417,7 +422,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
-
+      this.isProcessing = true
       this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
         next:(res) => {
           let model = {
@@ -438,14 +443,17 @@ export class OrderComponent implements OnInit, AfterViewInit {
               this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
 
               this.router.navigateByUrl(`bill/create?isorder=true`);
+              this.isProcessing = false
             },
             error: (err) => {
               this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
+              this.isProcessing = false
             }
           })
         },
         error:(err) => {
           this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+          this.isProcessing = false
         }
       });
     }

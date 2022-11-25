@@ -43,6 +43,10 @@ export interface ReportLiveCampaignDetailDTO {
   TotalFastSaleOrder?: number;
   TotalSaleOnlineOrder?: number;
   ProductTmlpId: number;
+
+  // 2 field không dùng để lưu
+  TagWithAttributes?: any;
+  AttributeValues?: any[];
 }
 
 export interface OrderSummaryDTO {
@@ -83,4 +87,10 @@ export interface OverviewReportDTO {
   BillSummary: BillSummaryDTO;
   PaySummary: PaySummaryDTO;
   TotalOrderBillSummary: TotalOrderBillSummaryDTO;
+}
+
+export interface DetailExistsDTO {
+  ProductId: number;
+  UOMId: number;
+  Tags: string;
 }

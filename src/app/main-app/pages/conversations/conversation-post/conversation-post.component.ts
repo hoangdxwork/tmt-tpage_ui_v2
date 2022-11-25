@@ -1,3 +1,4 @@
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { NgxVirtualScrollerDto } from './../../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 
@@ -40,6 +41,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   @ViewChild('innerText') innerText!: ElementRef;
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
+  @ViewChild('viewChildConvesationPost') viewChildConvesationPost!: ElementRef;
+
   isLoadingNextdata: boolean = false;
 
   public lstType: any[] = [
@@ -88,6 +91,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   currentObject?: ChatomniObjectsItemDto;
   partners$!: Observable<any>;
 
+  widthConversation!: number;
+
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
     private activityMatchingService: ActivityMatchingService,
@@ -105,6 +110,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
     private socketOnEventService: SocketOnEventService,
+    private resizeObserver: TDSResizeObserver,
     private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
@@ -517,6 +523,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
             this.queryObj = {...this.onSetFilterObject()};
             this.loadFilterDataSource();
+        }
+      });
+
+      this.resizeObserver.observe(this.viewChildConvesationPost)
+      .subscribe(() => {
+        if(this.viewChildConvesationPost && this.viewChildConvesationPost.nativeElement) {
+          this.widthConversation = this.viewChildConvesationPost.nativeElement.clientWidth as number;
         }
       });
   }
