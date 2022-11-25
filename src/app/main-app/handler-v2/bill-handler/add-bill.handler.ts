@@ -78,7 +78,7 @@ export class AddBillHandler {
     data.Ship_ServiceExtrasText = data.Ship_ServiceExtras ? JSON.stringify(data.Ship_ServiceExtras) : data.Ship_ServiceExtrasText;
     data.Ship_ExtrasText = data.Ship_ExtrasText ? JSON.stringify(data.Ship_Extras) : data.Ship_ExtrasText;
 
-    if (data.Ship_Receiver && Number(idEdit) == 0) {
+    if (data.Ship_Receiver) {
       data.Ship_Receiver.Name = data.ReceiverName;
       data.Ship_Receiver.Phone = data.ReceiverPhone;
 
