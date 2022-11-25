@@ -23,9 +23,6 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
   @Input() data! : ChatomniObjectsItemDto;
   @Input() item!: ChatomniDataItemDto;
 
-  dataFacebook!: MDB_Facebook_Mapping_PostDto;
-  dataTshop!: ChatomniDataTShopPostDto;
-
   postPictureError: any[] = [];
 
   constructor(private router: Router,
@@ -35,9 +32,7 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(this.team.Type == CRMTeamType._Facebook && this.typeNumber == 12){
-      this.dataFacebook = this.data.Data as MDB_Facebook_Mapping_PostDto;
     }else if(this.team.Type == CRMTeamType._TShop && this.typeNumber == 91) {
-      this.dataTshop = this.data.Data as ChatomniDataTShopPostDto;
     }
   }
 

@@ -4,31 +4,31 @@
         <div class="post-content flex flex-col">
             <div class="post-type flex flex-row items-center mb-3">
                 <tds-avatar
-                    [tdsSrc]="dataFacebook.status_type == 'added_video' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
+                    [tdsSrc]="(data.Data | facebookType)?.status_type == 'added_video' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
                     [size]="24" [shape]="'circle'" [isAvatar]="false" class="mr-1">
                 </tds-avatar>
-                <tds-tag [status]="dataFacebook.status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
+                <tds-tag [status]="(data.Data | facebookType)?.status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
                     <span class="flex items-center py-0.5">
-                        <span>{{dataFacebook.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
+                        <span>{{(data.Data | facebookType)?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
                     </span>
                 </tds-tag>
             </div>
             <div class="post-item">
                 <div class="w-full block">
-                    <p class="story font-semibold" *ngIf="dataFacebook.story">
-                        {{dataFacebook.story}}
+                    <p class="story font-semibold" *ngIf="(data.Data | facebookType)?.story">
+                        {{(data.Data | facebookType)?.story}}
                     </p>
-                    <div class="message font-regular" *ngIf="dataFacebook.message">
-                        <div [innerHTML]="dataFacebook.message | safeHtml"></div>
+                    <div class="message font-regular" *ngIf="(data.Data | facebookType)?.message">
+                        <div [innerHTML]="(data.Data | facebookType)!.message | safeHtml"></div>
                     </div>
-                    <p class="description" *ngIf="dataFacebook.description">{{dataFacebook.description}}</p>
+                    <p class="description" *ngIf="(data.Data | facebookType)?.description">{{(data.Data | facebookType)?.description}}</p>
                 </div>
             </div>
         </div>
-        <div class="post-picture" *ngIf="dataFacebook.picture && !checkPostPictureError(item)">
+        <div class="post-picture" *ngIf="(data.Data | facebookType)?.picture && !checkPostPictureError(item)">
             <img (error)="errorPostPicture(item)"
-                [src]="dataFacebook.picture"
-                alt="{{dataFacebook.story}}" class="rounded-xl"/>
+                [src]="(data.Data | facebookType)?.picture"
+                alt="{{(data.Data | facebookType)?.story}}" class="rounded-xl"/>
         </div>
     </div>
     <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
@@ -40,12 +40,12 @@
                     class="rounded-full z-40 -ml-2">
             </div>
             <span>
-                {{dataFacebook.reactions?.summary?.total_count || 0}}
+                {{(data.Data | facebookType)?.reactions?.summary?.total_count || 0}}
             </span>
         </div>
         <div class="comment flex flex-row items-center">
             <span class="comment-count  mr-4">
-                {{dataFacebook.comments?.summary?.total_count || 0}} Bình luận
+                {{(data.Data | facebookType)?.comments?.summary?.total_count || 0}} Bình luận
             </span>
             <div class="comment-button">
                 <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
@@ -57,7 +57,7 @@
                     <i class="tdsi-expand-line"></i>
                 </button>
                 <button tds-button-flat-icon color="secondary"  tds-tooltip tooltipTitle="Đi tới bài viết" tooltipPlacement="bottom">
-                    <a [href]="dataFacebook.permalink_url" target="_blank">
+                    <a [href]="(data.Data | facebookType)?.permalink_url" target="_blank">
                         <i class="tdsi-search-line"></i>
                     </a>
                 </button>
@@ -72,13 +72,13 @@
         <div class="post-content flex flex-col">
             <div class="post-type flex flex-row items-center mb-3">
                 <tds-avatar
-                    [tdsSrc]="dataTshop.Kind =='LIVE'?'../../../assets/imagesv2/conversation/live-circle.svg':'../../../assets/imagesv2/conversation/facebook-circle.svg'"
+                    [tdsSrc]="(data.Data | tshopType)?.Kind =='LIVE' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
                     [size]="24"
                     [shape]="'circle'"
                     [isAvatar]="false"
                     class="mr-1">
                 </tds-avatar>
-                <tds-tag [status]="dataTshop.Kind=='LIVE'?'error':'info'" type="outline" rounded="rounded-full">
+                <tds-tag [status]="(data.Data | tshopType)?.Kind=='LIVE' ? 'error' : 'info'" type="outline" rounded="rounded-full">
                     <span class="flex items-center py-0.5">
                         <span>{{data.ChannelCreatedTime | date: "dd-MM-yyyy HH:mm"}}</span>
                     </span>
@@ -86,21 +86,15 @@
             </div>
             <div class="post-item">
                 <div class="w-full block">
-                    <p class="story font-semibold" *ngIf="data.Title">
-                        {{data.Title}}
+                  <!-- // check điều kiện thêm -->
+                    <p class="story font-semibold">
+                      Đã phát trực tiếp
                     </p>
-                    <div class="message font-regular" *ngIf="data?.Description">
-                        <div [innerHTML]="data.Description | safeHtml"></div>
-                    </div>
                     <p class="description" *ngIf="data?.Description">{{data.Description}}</p>
                 </div>
             </div>
         </div>
-        <div class="post-picture" *ngIf="data?.Thumbnail && !checkPostPictureError(item)">
-            <!-- <img (error)="errorPostPicture(item)"
-                [src]="data.Thumbnail?.Url"
-                alt="{{data.Title}}" class="rounded-xl"/> -->
-        </div>
+        <div class="post-picture" *ngIf="data?.Thumbnail && !checkPostPictureError(item)"></div>
     </div>
     <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
         <div class="emotion-count flex flex-row items-center">
@@ -113,10 +107,6 @@
         </div>
         <div class="comment flex flex-row items-center">
             <div class="comment-button">
-                <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
-                    (click)="openModalPost(item)">
-                    <i class="tdsi-chart-pie-fill"></i>
-                </button>
                 <button tds-button-flat-icon color="secondary" tds-tooltip tooltipTitle="Đi tới bình luận" tooltipPlacement="bottom"
                     (click)="openPost(item, 'post')">
                     <i class="tdsi-expand-line"></i>
