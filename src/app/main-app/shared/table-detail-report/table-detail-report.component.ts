@@ -47,7 +47,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
   pageIndex: number = 1;
   resfeshScroll: boolean = false;
 
-  isEditDetails: { [id: string] : boolean } = {};
+  isEditDetails: { [id: string] : ReportLiveCampaignDetailDTO } = {};
   indClickTag = -1;
   modelTags: Array<string> = [];
 
@@ -242,11 +242,11 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
       }
   }
 
-  onEditDetails(item: LiveCampaignSimpleDetail) {
+  onEditDetails(item: ReportLiveCampaignDetailDTO) {
     if(this.checkIsEdit() == 0) return;
 
     if(item && item.Id) {
-        this.isEditDetails[item.Id] = true;
+        this.isEditDetails[item.Id] = {...item};
     }
   }
 
@@ -409,5 +409,16 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
     this.isEditDetails = {};
 
     this.loadData(this.pageSize, this.pageIndex)
+  }
+
+  onCloseDetail(item: ReportLiveCampaignDetailDTO) {
+    let index = this.lstDetails.findIndex(x=> x.ProductId == item.ProductId && x.UOMId == item.UOMId)
+
+    if(Number(index) >= 0) {
+      this.lstDetails[index] = this.isEditDetails[item.Id];
+      this.lstDetails = [...this.lstDetails];
+
+      delete this.isEditDetails[item.Id];
+    }
   }
 }

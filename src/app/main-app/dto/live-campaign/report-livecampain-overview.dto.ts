@@ -88,3 +88,9 @@ export interface OverviewReportDTO {
   PaySummary: PaySummaryDTO;
   TotalOrderBillSummary: TotalOrderBillSummaryDTO;
 }
+
+export interface DetailExistsDTO {
+  ProductId: number;
+  UOMId: number;
+  Tags: string;
+}
