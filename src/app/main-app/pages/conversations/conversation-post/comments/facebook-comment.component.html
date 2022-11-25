@@ -10,7 +10,7 @@
               <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
           </div>
 
-           <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2">
+           <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
               <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
 
                   <div *ngIf="item.Type == 12" >
@@ -21,7 +21,7 @@
                   </div>
 
                   <div class="ml-2 w-full h-full">
-                      <div class="bg-white rounded-2xl px-4 py-3">
+                      <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
                           <div class="flex items-center justify-between">
                               <div class="flex gap-x-2 items-center">
                                   <div *ngIf="item.Type == 12 && item.Data && item.Data?.from" class="min-w-[50px] max-w-[220px] truncate">
@@ -29,12 +29,37 @@
                                   </div>
 
                                   <!-- Mã đơn hàng -->
-                                  <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
-                                      <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
-                                          <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
-                                              <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
+                                  <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] gap-x-1">
+                                      <div class="text-info-500 font-semibold flex flex-row items-center gap-x-2">
+                                          <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(commentOrders[item.Data?.from!.id][0], item)">
+                                              <span *ngIf="!order?.code?.includes('#')">#</span>{{ commentOrders[item.Data?.from!.id][0].code }}
                                           </div>
                                       </div>
+                                      <span *ngIf="commentOrders[item.Data?.from!.id].length > 1" class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
+                                        tds-popover
+                                        [popoverVisible]="idPopoverVisible == item.Id"
+                                        [popoverContent]="contentOrder"
+                                        popoverTrigger="click"
+                                        [popoverBackdrop]="true">
+                                        +{{commentOrders[item.Data?.from!.id].length - 1}}
+                                    </span>
+                                    <ng-template #contentOrder>
+                                        <div class="flex flex-wrap min-w-[100px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
+                                          <div *ngFor="let cmt of commentOrders[item.Data?.from!.id]">
+                                            <span *ngIf="cmt.id != commentOrders[item.Data?.from!.id][0].id && (i <= 10 || isShowAllNumber)" classs="cursor-pointer " (click)="loadOrderByCode(cmt, item)">
+                                              <span class="text-info-500 font-semibold cursor-pointer hover:underline" style="font-size: 14px">{{ cmt.code }}</span>
+                                              <span *ngIf="cmt.id != commentOrders[item.Data?.from!.id][commentOrders[item.Data?.from!.id].length - 1].id" class="pr-2">,</span>
+                                            </span>
+                                          </div>
+                                          <div *ngIf="commentOrders[item.Data?.from!.id].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
+                                              ...Xem thêm
+                                          </div>
+
+                                          <div *ngIf="commentOrders[item.Data?.from!.id].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
+                                              ...Thu gọn
+                                          </div>
+                                        </div>
+                                    </ng-template>
                                   </div>
 
                                   <!-- Mã hóa đơn -->
@@ -98,22 +123,22 @@
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">
-                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item, commentOrders[item.Data?.from!.id])">Tạo đơn hàng</button>
+                              <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item, commentOrders[item.Data?.from!.id])">Tạo đơn hàng</button>
 
-                              <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
+                              <button *ngIf="!isShowModal && !item.IsOwner" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                   tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
                                   <span class="flex items-center justify-center">
                                       <i class="tdsi-information-fill text-neutral-1-500"></i>
                                   </span>
                               </button>
 
-                              <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item)">
+                              <button *ngIf="!item.IsOwner" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item)">
                                   <span class="flex items-center justify-center">
                                       <i class="tdsi-reply-fill text-neutral-1-500"></i>
                                   </span>
                               </button>
 
-                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                              <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
                                   <span class="flex items-center justify-center">
                                       <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                                   </span>

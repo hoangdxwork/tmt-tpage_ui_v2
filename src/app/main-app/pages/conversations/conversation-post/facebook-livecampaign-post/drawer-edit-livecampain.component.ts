@@ -5,7 +5,7 @@ import { ProductTemplateV2DTO } from '../../../../dto/product-template/product-t
 import { SyncCreateProductTemplateDto } from '../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ModalListPostComponent } from '../../components/modal-list-post/modal-list-post.component';
 import { GetAllFacebookPostDTO } from '../../../../dto/live-campaign/getall-facebook-post.dto';
-import { OverviewReportDTO, ReportLiveCampaignDetailDTO } from '../../../../dto/live-campaign/report-livecampain-overview.dto';
+import { DetailExistsDTO, OverviewReportDTO, ReportLiveCampaignDetailDTO } from '../../../../dto/live-campaign/report-livecampain-overview.dto';
 import { DrawerAddProductComponent } from './drawer-add-product.component';
 import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, ViewChild, ElementRef } from "@angular/core";
 import { LiveCampaignService } from "@app/services/live-campaign.service";
@@ -51,7 +51,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   count: number = 0;
 
   lstDetail: ReportLiveCampaignDetailDTO[] = [];
-  isEditDetails: { [id: string] : boolean } = {};
+  isEditDetails: { [id: string] : ReportLiveCampaignDetailDTO } = {};
   innerTextValue: string = '';
   searchValue: string = '';
   innerText: string = '';
@@ -76,6 +76,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   resfeshScroll: boolean = false;
 
   lstOrderTags!: string[];
+  lstDetailsAll: LiveCampaignSimpleDetail[] = []
 
   numberWithCommas =(value: TDSSafeAny) =>{
     if(value != null) {
@@ -93,7 +94,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   response: any;
   inventories: any;
-  productIds: any;
+  productIds: {[key: string]: DetailExistsDTO} = {} as any;
 
   constructor(private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
@@ -119,11 +120,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       this.loadOverviewDetails(this.pageSize, this.pageIndex); //TODO: load dữ liệu danh sách sản phẩm
       this.loadOverviewReport(); //TODO: load dữ liệu thống kê tổng quan
       this.loadFacebookPost(); //TODO: load dữ liệu bài viết fb
+      this.loadDataDetail(); //TODO: load hết danh sách detail
     }
 
     this.loadCurrentCompany(); //TODO: load dữ liệu tồn kho
     this.productLastV2(); //TODO: load danh sách sản phẩm từ cache
-    this.loadDetailExistByProductIds();
+    // this.loadDetailExistByProductIds();
 
     this.onEventSocket();
     this.eventEmitter();
@@ -248,6 +250,25 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     })
   }
 
+  loadDataDetail() {
+    this.isLoading = true;
+    this.liveCampaignService.getById(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+          this.isLoading = false;
+
+          if(!res) return;
+          delete res['@odata.context'];
+          this.lstDetailsAll = [...res.Details];
+
+          this.cdRef.detectChanges();
+      },
+      error:(err) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    });
+  }
+
   removeDetail(item: ReportLiveCampaignDetailDTO) {
     if(this.checkIsEdit() == 0) return;
 
@@ -257,6 +278,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         next: (res: any) => {
 
             this.refreshData();
+            this.loadDataDetail();
 
             this.isLoading = false;
             this.message.success('Thao tác thành công');
@@ -323,7 +345,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   addItemProduct(listData: DataPouchDBDTO[]) {
-    let formDetails = this.lstDetail as any[];
+    let formDetails = this.lstDetailsAll as any[];
     let simpleDetail: ReportLiveCampaignDetailDTO[] = [];
 
     listData.forEach((x: DataPouchDBDTO) => {
@@ -382,16 +404,19 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           if(!res) return;
 
           res.map((x: ReportLiveCampaignDetailDTO, idx: number) => {
+              let exist = this.lstDetailsAll.filter(y=> x.ProductId == y.ProductId && x.UOMId == y.UOMId)[0];
+              let formDetails = this.lstDetail as any[];
 
               x.ProductName = items[idx].ProductName;
               x.ProductNameGet = items[idx].ProductNameGet;
               x.ImageUrl = items[idx].ImageUrl;
 
-              let formDetails = this.lstDetail as any[];
-              let index = formDetails.findIndex(f => f.UOMId == x.UOMId && f.ProductId == x.ProductId);
+              if(exist) {
+                  let index = formDetails.findIndex(f => f.UOMId == x.UOMId && f.ProductId == x.ProductId);
 
-              if(Number(index) >= 0) {
-                  index = Number(index);
+                  if(Number(index) >= 0) {
+                    this.lstDetail[index] = {...x};
+                  }
 
                   this.notificationService.info(`Cập nhật sản phẩm`,
                   `<div class="flex flex-col ">
@@ -414,6 +439,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
           this.lstDetail = [...this.lstDetail];
           this.getLstOrderTags(this.lstDetail);
+          this.loadDataDetail();
 
           this.cdRef.detectChanges();
         },
@@ -604,7 +630,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     if(this.checkIsEdit() == 0) return;
 
     if(item && item.Id) {
-        this.isEditDetails[item.Id] = true;
+        this.isEditDetails[item.Id] = {...item};
     }
   }
 
@@ -839,17 +865,17 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   loadDetailExistByProductIds() {
-    // let id = this.liveCampaignId;
-    // if(!id) return;
+    let id = this.liveCampaignId;
+    if(!id) return;
 
-    // this.liveCampaignService.getDetailExistByProductIds(id).pipe(takeUntil(this.destroy$)).subscribe({
-    //   next: (res: any) => {
-    //     this.productIds = res;
-    //   },
-    //   error: (err: any) => {
-    //     this.message.error(err?.error?.message);
-    //   }
-    // })
+    this.liveCampaignService.getDetailExistByProductIds(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.productIds = res;
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   getLstOrderTags(data: ReportLiveCampaignDetailDTO[]) {
@@ -863,4 +889,15 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         }
       }
     }
+
+  onCloseDetail(item: ReportLiveCampaignDetailDTO) {
+    let index = this.lstDetail.findIndex(x=> x.ProductId == item.ProductId && x.UOMId == item.UOMId)
+
+    if(Number(index) >= 0) {
+      this.lstDetail[index] = this.isEditDetails[item.Id];
+      this.lstDetail = [...this.lstDetail];
+
+      delete this.isEditDetails[item.Id];
+    }
+  }
 }

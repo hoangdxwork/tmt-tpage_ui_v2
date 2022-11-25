@@ -100,7 +100,7 @@
               <th width="42px" [(checked)]="checked" [indeterminate]="indeterminate" class="border-l" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
               <th width="63px" [tdsLeft]="true" class="border-l text-center">STT</th>
-              <th width="120px" *ngIf="isHidden('Code')" [tdsLeft]="true" class="border-l min-w-[120px] max-w-[240px]">Mã</th>
+              <th width="160px" *ngIf="isHidden('Code')" [tdsLeft]="true" class="border-l min-w-[160px] max-w-[240px]">Mã</th>
               <th width="200px" *ngIf="isHidden('CRMTeamName')" class="border-l">Kênh kết nối</th>
               <th width="200px" *ngIf="isHidden('LiveCampaignName')" class="border-l">Chiến dịch live</th>
               <th width="260px" *ngIf="isHidden('Name')" class="border-l">Khách hàng</th>
@@ -142,7 +142,7 @@
                 <!-- Code -->
                 <td *ngIf="isHidden('Code')" class="border-l" [tdsLeft]="true">
                   <div class="w-full flex">
-                    <span class="w-full " [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
+                    <span class="w-full" [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
                   </div>
                   <!-- Nhãn -->
                   <div class="flex items-center gap-x-1 w-full">

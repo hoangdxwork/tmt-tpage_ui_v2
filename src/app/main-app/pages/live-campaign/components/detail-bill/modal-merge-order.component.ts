@@ -164,10 +164,6 @@ export class ModalMergeOrderComponent implements OnInit {
   }
 
   onCancel() {
-    if(this.isMerge) {
-      this.modal.destroy(true);
-    } else {
-      this.modal.destroy(null);
-    }
+    this.modal.destroy(this.isMerge);
   }
 }

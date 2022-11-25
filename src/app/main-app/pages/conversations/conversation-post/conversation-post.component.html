@@ -1,7 +1,7 @@
 <tds-spin [spinning]="isLoading" class="h-full">
     <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden text-body-2 text-neutral-1-900 relative">
         <div class="2xl:w-1/5 w-1/4 px-1 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
-            <div class="w-full flex flex-col gap-1">
+            <div #viewChildConvesationPost class="w-full flex flex-col gap-1">
                 <div class="bg-white p-2.5 flex flex-col gap-y-4">
 
                     <div class="w-full">
@@ -125,7 +125,7 @@
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[50%] flex flex-col h-full overflow-hidden" *ngIf="currentPost && currentTeam">
             <div class="h-full w-full">
-                <conversation-post-overview [data]="currentPost" [team]="currentTeam"></conversation-post-overview>
+                <conversation-post-overview [data]="currentPost" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
             </div>
             <div *ngIf="!currentPost" class="h-full w-full flex items-center justify-center">
                 <p class="text-body-2"> Hãy chọn một bài viết</p>

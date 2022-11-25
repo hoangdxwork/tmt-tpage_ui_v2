@@ -3,7 +3,7 @@ import { ModalAddQuickReplyComponent } from './../../pages/conversations/compone
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PrepareAddCampaignHandler } from '../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Input, ViewContainerRef, ViewChild, ChangeDetectorRef, Inject } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ViewChild, ChangeDetectorRef, Inject, AfterViewInit, AfterContentInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
@@ -63,13 +63,14 @@ export class EditLiveCampaignPostComponent implements OnInit {
   innerTextDebounce!: string;
 
   isLoading: boolean = false;
+  isSave: boolean = false;
   isLoadingProduct: boolean = false;
   isDepositChange: boolean = false;
   companyCurrents!: CompanyCurrentDTO;
   indClickTag: number = -1;
   modelTags: Array<string> = [];
 
-  isEditDetails: { [id: string] : boolean } = {};
+  isEditDetails: { [id: string] : { isEdit?: boolean, previousData?: LiveCampaignSimpleDetail} } = {};
   livecampaignSimpleDetail: any = [];
   innerTextValue: string = '';
 
@@ -824,7 +825,10 @@ export class EditLiveCampaignPostComponent implements OnInit {
     if(this.isCheckValue() === 0) {
         return;
     }
+    if(this.isLoading) return;
 
+    this.isLoading = true;
+    this.isSave = true;
     let model = this.prepareHandler.prepareModelSimple(this._form) as LiveCampaignSimpleDto;
 
     let resumeTime = model.ResumeTime;
@@ -845,15 +849,16 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   onUpdateSimple(id: string, model: LiveCampaignSimpleDto){
-    this.isLoading = true;
     this.liveCampaignService.updateSimple(id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
+          this.isSave = false;
           this.message.success('Cập nhật chiến dịch live thành công');
           this.onCannel(true);
       },
       error: (error: any) => {
           this.isLoading = false;
+          this.isSave = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       }
     });
@@ -893,7 +898,17 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   onEditDetails(item: LiveCampaignSimpleDetail) {
     if(item && item.Id) {
-        this.isEditDetails[item.Id] = true;
+      this.isEditDetails[item.Id] = {
+        isEdit : true,
+        previousData : { ...item }
+      };
+    }
+  }
+
+  onCancelEditDetails(item: LiveCampaignSimpleDetail, index: number) {
+    if(item && item.Id) {
+      this.detailsForm.at(index).patchValue(this.isEditDetails[item.Id].previousData);
+      delete this.isEditDetails[item.Id];
     }
   }
 
