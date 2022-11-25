@@ -25,6 +25,9 @@ export class ObjectTshopPostComponent  implements OnInit {
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
   mdbTshopPost!: ChatomniDataTShopPostDto;
 
+  fallbackImg = "../../../assets/imagesv2/errorPic.svg";
+  fallbackPost = "../../../assets/imagesv2/conversation-post-img.svg";
+
   constructor(private modal: TDSModalService,
     private crmTeamService: CRMTeamService,
     private viewContainerRef: ViewContainerRef) {
