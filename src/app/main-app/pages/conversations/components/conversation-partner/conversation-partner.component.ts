@@ -103,6 +103,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       next: (res: ChatomniConversationInfoDto) => {
         if(res) {
             this.loadData(res);
+            this.loadNotes(this.team.ChannelId, res.Conversation.ConversationId);
             this.postEvent.spinLoadingTab$.emit(false);
         }
       }
