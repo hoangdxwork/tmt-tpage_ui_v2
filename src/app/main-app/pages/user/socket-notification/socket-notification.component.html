@@ -1,0 +1,9 @@
+
+  <div class="p-4 flex w-full justify-center">
+    <div class="w-3/4 flex flex-col bg-white rounded-xl p-4 gap-y-4">
+      <div class="flex items-center" *ngFor="let item of lstItems">
+        <tds-switch [(ngModel)]="this.socketData[item]" (ngModelChange)="change(item)" size="lg"></tds-switch>
+        <span class="ml-4">{{ item | getSocketName }}</span>
+      </div>
+    </div>
+  </div>

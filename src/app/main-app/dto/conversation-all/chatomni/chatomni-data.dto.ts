@@ -140,6 +140,9 @@ export interface ChatomniDataItemDto {
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
   NlpEntities?: NlpEntityDto[] | any[];
+
+  Attachments?: any;
+
   IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
   isNoPartnerId?:  boolean; // không có trong api trả về, dùng để phân biệt cmt child chưa tìm thấy cmt partner trong list api trả về
 }
@@ -166,7 +169,30 @@ export enum ChatomniMessageType {
   FacebookComment = 12, // Trừ các số tiếp theo nếu facebook có loại mới
   ZaloMessage = 21,
   TShopComment = 91,
-  TShopMessage = 92
+  TShopMessage = 92,
+  UnofficialTikTokChat = 1001
+}
+
+export enum ChatomniChannelType{
+  General = 0,
+  TUser = 1,
+  TShop = 2,
+
+  FacebookUser = 3,
+  FacebookPage = 4,
+  FacebookShop = 5,
+  FacebookGroup = 6,
+
+  TDesk = 11,
+  TikTokShop = 12,
+  ShopeeShop = 13,
+  LazadaShop = 14,
+  TikiShop = 15,
+
+  /// Kênh tiktok không chính thống
+  UnofficialTikTok = 1001,
+  UnofficialFacebookUser = 1011,
+  UnofficialFacebookGroup = 1012
 }
 
 // Lấy ChatomniObjectsItemDto thay ExtrasObjectDto
@@ -205,7 +231,7 @@ export interface ExtrasChildsDto {
 
 export interface ChatomniTShopDataDto {
   Id: any;
-  Content: any;
+  Content: TShopDataConentDto;
   Type: number;
   Status: boolean;
   Sender: Sender;
@@ -221,11 +247,16 @@ export interface ChatomniTShopDataDto {
   ExtraProperties: ExtraProperties;
   ObjectKind: string;
   ObjectKindValue?: number;
-  ObjectId?: number;
+  ObjectId?: any;
   ParentCommentId?: any;
   UserId: string;
-  Actor: Actor;
+  Actor: TShopDataActorDto;
   CreatorId: string;
+}
+
+export interface TShopDataConentDto {
+  Tags: any;
+  Text: string;
 }
 
 export interface Sender {
@@ -260,7 +291,7 @@ export interface ExtraProperties {
   sendFrom: string;
 }
 
-export interface Actor {
+export interface TShopDataActorDto {
   Id: string;
   Name: string;
   AvatarUrl: string;

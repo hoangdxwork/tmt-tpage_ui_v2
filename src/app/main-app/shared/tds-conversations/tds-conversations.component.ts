@@ -206,12 +206,20 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
                       break;
 
                     case 'comment':
-                      if((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)) {
-                          this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
+                      if ((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)) {
+                        // TODO: trường hợp trả về comment child và tồn tại comment parent trên dữ liệu trên dataSource.Items
+                        if(this.checkCommentSocket(item)) return;
+                        
+                        this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
                       }
                       break;
 
                     default:
+                      if ((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)) {
+                        // TODO: trường hợp trả về comment child và tồn tại comment parent trên dữ liệu trên dataSource.Items
+                        if(this.checkCommentSocket(item)) return;
+                      }
+
                         this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
                       break;
                   }
@@ -262,6 +270,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.cdRef.detectChanges();
       }
     })
+  }
+
+  checkCommentSocket(item: TDSSafeAny) {
+    let indexChild = (this.dataSource.Items || []).findIndex(x => x.Data.Id == item?.ParentId);
+
+    if (item.ParentId && this.dataSource.Extras?.Childs && Number(indexChild) >= 0) {
+        this.dataSource.Extras.Childs[item.ParentId] = [...(this.dataSource.Extras?.Childs[item.ParentId] || []), ...[item]];
+
+        this.cdRef.detectChanges();
+        return true;
+    }
+
+    return false;
   }
 
   loadCurrentCompany() {

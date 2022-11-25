@@ -20,6 +20,7 @@ export interface ChatomniObjectsItemDto {
   Thumbnail?: Thumbnail;
   LiveCampaignId?: string;
   LiveCampaign?: ChatomniLiveCampaignDto;
+  StatusLive?: any; // 1 đang live
 }
 
 export interface ChatomniObjectsDto {

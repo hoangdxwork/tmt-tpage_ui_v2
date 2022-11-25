@@ -1,7 +1,7 @@
-import { number } from 'echarts';
+import { IndexDBHelperService } from './indexdb-helper.service';
 import { Injectable, OnDestroy } from "@angular/core";
-import { Observable, Subject, ReplaySubject } from "rxjs";
-import { map, mergeMap, shareReplay } from "rxjs/operators";
+import { Observable, Subject } from "rxjs";
+import { map, mergeMap } from "rxjs/operators";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from "../dto/product-pouchDB/product-pouchDB.dto";
@@ -28,6 +28,7 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
   private readonly _cacheObject$ = new Subject<KeyCacheIndexDBDTO>()
 
   constructor(private apiService: TCommonService,
+    private indexdbHelperService: IndexDBHelperService,
     private cacheApi: THelperCacheService) {
     super(apiService);
   }
@@ -58,7 +59,8 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
           return this.cacheObject;
       }),
       mergeMap((x: KeyCacheIndexDBDTO) => {
-          return this.getLastVersionV2(x.cacheCount, x.cacheVersion).pipe(map(a => a));
+        this.indexdbHelperService.loadLastVersionV2(x.cacheCount, x.cacheVersion);
+        return this.indexdbHelperService.getLastVersionV2().pipe(map(a => a));
       }))
       .subscribe({
           next: (res: ProductPouchDBDTO) => {
@@ -87,8 +89,7 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
               data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => b.Version - a.Version);
 
               //TODO: check số version
-              let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
-              let lastVersion = Number(Math.max(...versions)) ;
+              let lastVersion = Number(res.LastVersion) || 0;
 
               //TODO: check số lượng
               let countDB = Number(data.cacheDbStorage.length);
@@ -109,14 +110,6 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
           }
       }
     )
-  }
-
-  getLastVersionV2(countIndex: number, version: number): Observable<any> {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetLastVersionV2?$expand=Datas&countIndexDB=${countIndex}&Version=${version}`,
-      method: CoreApiMethodType.get
-    }
-    return this.apiService.getData<ProductPouchDBDTO>(api, null);
   }
 
   ngOnDestroy(): void {

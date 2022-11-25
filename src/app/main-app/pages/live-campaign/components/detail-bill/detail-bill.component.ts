@@ -26,6 +26,7 @@ import { TDSSafeAny, TDSHelperObject, TDSHelperString, TDSHelperArray } from 'td
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ColumnTableDTO } from '@app/dto/common/table.dto';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'detail-bill',
@@ -112,6 +113,7 @@ export class DetailBillComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
     private notification: TDSNotificationService,
+    private chatomniConversationService: ChatomniConversationService
   ) { }
 
   ngOnInit() {
@@ -303,6 +305,7 @@ export class DetailBillComponent implements OnInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -319,8 +322,8 @@ export class DetailBillComponent implements OnInit {
         return this.message.error('Không có kênh kết nối với khách hàng này.');
       }
 
-      this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
+      this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (teams: any): any => {
 
           if (teams.length == 0) {
             return this.message.error('Không có kênh kết nối với khách hàng này.');
@@ -345,31 +348,58 @@ export class DetailBillComponent implements OnInit {
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+            this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+          } else {
+            this.isLoading = false;
           }
-        });
+        }
+      });
     }, error => {
+      this.isLoading = false;
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  // loadMDBByPSId(pageId: string, psid: string) {
+  //   // Xoá hội thoại hiện tại
+  //   (this.currentConversation as any) = null;
+
+  //   // get data currentConversation
+  //   this.crmMatchingService.getMDBByPSId(pageId, psid)
+  //     .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+  //       if (res) {
+  //         let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+  //         this.currentConversation = { ...model };
+
+  //         this.psid = res.psid;
+  //         this.isOpenDrawer = true;
+  //       }
+  //     }, error => {
+  //       this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+  //     })
+  // }
+
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-          this.psid = res.psid;
-          this.isOpenDrawer = true;
+            this.psid = psid;
+            this.isOpenDrawer = true;
+            this.isLoading = false;
         }
-      }, error => {
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-      })
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   selectMappingTeam(item: any) {

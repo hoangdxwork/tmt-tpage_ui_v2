@@ -6,7 +6,7 @@ import { TpageAvatarFacebookComponent } from '../upload-image/tpage-avatar-faceb
   templateUrl: './tpage-avatar-group-facebook.component.html',
   styleUrls: ['./tpage-avatar-group-facebook.component.scss'],
   host: {
-    class: 'tds-avatar-group-facebook inline-flex'
+    class: 'tds-avatar-group-facebook flex items-center'
   }
 })
 export class TpageAvatarGroupFacebookComponent {

@@ -14,7 +14,7 @@
               <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
 
                   <div *ngIf="item.Type == 12" >
-                    <div (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" class="cursor-pointer" >
+                    <div (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" class="cursor-pointer" >
                         <tpage-avatar-facebook [shape]="'circle'" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
                         </tpage-avatar-facebook>
                     </div>
@@ -24,7 +24,7 @@
                       <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
                           <div class="flex items-center justify-between">
                               <div class="flex gap-x-2 items-center">
-                                  <div *ngIf="item.Type == 12 && item.Data && item.Data?.from" class="min-w-[50px] max-w-[220px] truncate">
+                                  <div *ngIf="item.Type == 12 && (item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] max-w-[220px] truncate">
                                       <span class="font-semibold cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip="{{item.Data.from.name}}">{{ item.Data.from.name }}</span>
                                   </div>
 
@@ -114,19 +114,19 @@
                           </div>
 
                           <!-- hình ảnh đính kèm -->
-                          <div *ngIf="item.Data?.attachment">
-                              <img tds-image *ngIf="item.Data?.attachment?.type != 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
+                          <div *ngIf="(item.Data | facebookDataCs)?.attachment">
+                              <img tds-image *ngIf="(item.Data | facebookDataCs)?.attachment?.type != 'sticker'" [tdsSrc]="(item.Data | facebookDataCs).attachment?.media?.image?.src"
                                 class="max-w-[200px]" />
-                              <img tds-image *ngIf="item.Data?.attachment?.type == 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
+                              <img tds-image *ngIf="(item.Data | facebookDataCs)?.attachment?.type == 'sticker'" [tdsSrc]="(item.Data | facebookDataCs).attachment?.media?.image?.src"
                                 class="max-w-[100px]" />
                           </div>
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">
-                              <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item, commentOrders[item.Data?.from!.id])">Tạo đơn hàng</button>
+                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
 
-                              <button *ngIf="!isShowModal && !item.IsOwner" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
-                                  tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip>
+                              <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
+                                  tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" tds-tooltip>
                                   <span class="flex items-center justify-center">
                                       <i class="tdsi-information-fill text-neutral-1-500"></i>
                                   </span>

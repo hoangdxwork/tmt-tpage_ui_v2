@@ -27,6 +27,7 @@ import { ListConfigDeliveryComponent } from './config-delivery/list-config-deliv
 import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
 import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
 import { StatusOrderComponent } from './status-order/status-order.component';
+import { FirebaseTopicsComponent } from '@app/shared/firebase/firebase-topics.component';
 
 const routes: Routes = [
   {
@@ -137,6 +138,10 @@ const routes: Routes = [
           {
             path:'divide-task',
             component: ConfigPagesDivideTaskComponent
+          },
+          {
+            path:'firebase',
+            component: FirebaseTopicsComponent
           }
         ]
       },

@@ -28,6 +28,8 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
+import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'app-conversation-post',
@@ -107,8 +109,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private chatomniObjectService: ChatomniObjectService,
     private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
-    private objectFacebookPostEvent: ObjectFacebookPostEvent,
-    private resizeObserver: TDSResizeObserver) {
+    private socketOnEventService: SocketOnEventService,
+    private resizeObserver: TDSResizeObserver,
+    private objectFacebookPostEvent: ObjectFacebookPostEvent) {
       super(crmService, activatedRoute, router);
   }
 
@@ -152,10 +155,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.eventEmitter();
     this.loadLiveCampaign();
     this.spinLoading();
+    this.onEventSocket();
   }
 
   eventEmitter() {
-    // TODO: Cập nhật chiến lịch live từ object-facebook-post
     this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
         if(res && res.LiveCampaignId) {
@@ -205,23 +208,23 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             this.codeOrder = code;
             this.isDisableTabOrder = false;
         }else{
-          this.codeOrder = '';
-          // this.isDisableTabOrder = true;
+            this.codeOrder = '';
         }
 
         this.cdRef.detectChanges();
       }
     })
+  }
 
-    // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
-    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (csid: string) => {
-          let teamId = this.currentTeam?.Id as any;
-          this.chatomniConversationService.syncConversationInfo(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => {
-                  this.syncConversationInfo = {...data};
-              }
-          })
+  onEventSocket() {
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+        switch(res && res.EventName){
+            case ChatmoniSocketEventName.chatomniPostLiveEnd:
+              let exist = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop
+              && res.Data;
+            break;
+        }
       }
     })
   }
@@ -329,21 +332,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
 
     // TODO: check lại trường hợp tshop
-    this.facebookGraphService.getFeed(this.currentTeam!.ChannelToken).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        if (TDSHelperArray.hasListValue(res?.data)) {
-            res.data.forEach((x: any) => {
-                if (x.picture) {
-                    let exist = this.lstObjects.filter(d => d.Id == x.id)[0];
-
-                    if (exist && this.currentTeam?.Type == 'Facebook') {
-                        // exist.Data?.picture = x.picture;
-                        // exist.Data.message = x.message;
-                    }
-                }
-            })
-        }
-    }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
+    this.facebookGraphService.getFeed(this.currentTeam!.ChannelToken).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {},
+      error: (error: any) => {
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+      }
     });
   }
 
@@ -351,29 +344,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsDto) => {
           if(res && res.Items) {
-
               this.lstObjects = [...res.Items];
-
-              let currentObject: ChatomniObjectsItemDto;
-              let params_postid: string;
-
-              params_postid = this.paramsUrl?.post_id;
-              if(!TDSHelperString.hasValueString(params_postid) || params_postid == "undefined") {
-                  params_postid = this.getStoragePostId();
-              }
-
-              currentObject = this.lstObjects.filter(x => x.ObjectId == params_postid)[0];
-
-              // TODO: nếu không tồn tại params_postid thì lấy item đầu tiên
-              if(!TDSHelperObject.hasValue(currentObject) && !TDSHelperString.hasValueString(currentObject?.ObjectId)) {
-                  currentObject = this.lstObjects[0];
-              }
-
-              this.selectPost(currentObject);
-              this.currentObject = currentObject
+              this.prepareParamsUrl();
           }
 
-          this.isLoading = false;
           setTimeout(() => {
               this.isRefreshing = false;
           }, 300);
@@ -382,6 +356,58 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.isLoading = false;
           this.isRefreshing = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  prepareParamsUrl() {
+    let currentObject: ChatomniObjectsItemDto;
+    let params_postid: string;
+
+    params_postid = this.paramsUrl?.post_id;
+    if(!TDSHelperString.hasValueString(params_postid) || params_postid == "undefined") {
+        params_postid = this.getStoragePostId();
+    }
+
+    if(params_postid == null) {
+      currentObject = this.lstObjects[0];
+      this.currentObject = currentObject;
+
+      this.selectPost(currentObject);
+      this.isLoading = false;
+      return;
+    }
+
+    currentObject = this.lstObjects.filter(x => x.ObjectId == params_postid)[0];
+    let exist = currentObject && currentObject?.ObjectId;
+    if(exist) {
+        this.currentObject = currentObject;
+        this.selectPost(currentObject);
+
+        this.isLoading = false;
+        return;
+    }
+
+    let teamId = this.currentTeam?.Id as number;
+    this.chatomniObjectService.getById(params_postid, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+          currentObject = {...res};
+
+          this.currentObject = currentObject;
+          this.lstObjects = [...[currentObject], ...this.lstObjects];
+
+          this.selectPost(currentObject);
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+
+          currentObject = this.lstObjects[0];
+          this.currentObject = currentObject;
+
+          this.selectPost(currentObject);
+          this.isLoading = false;
       }
     })
   }
@@ -424,7 +450,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.ObjectId}`;
         this.router.navigateByUrl(uriParams);
     }
-
   }
 
   nextData(event: any): any {

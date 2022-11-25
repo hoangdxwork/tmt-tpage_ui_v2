@@ -85,14 +85,14 @@
                         </div>
                     </tds-dropdown-menu>
 
-                    <!-- cài đặt-->
+                    <!-- Cấu hình bài viết -->
                     <button (click)="openConfigPost()" tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình bài viết" tooltipPlacement="bottom" tds-tooltip>
                         <span class="flex items-center justify-center">
                             <i class="tdsi-gear-2-fill text-neutral-1-500"></i>
                         </span>
                     </button>
 
-                    <!-- cấu hình bài viết -->
+                    <!-- cấu hình in -->
                     <!-- <button tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình in" tooltipPlacement="bottom" tds-tooltip>
                         <span class="flex items-center justify-center">
                             <i class="tdsi-setting-print-fill text-neutral-1-500"></i>
@@ -224,6 +224,10 @@
                         </div>
                         <div *ngIf="team && team.Type == 'TShop'" class="h-full w-full">
                             <tshop-comment [data]="data" [team]="team" [innerText]="keyWords"></tshop-comment>
+                        </div>
+
+                        <div *ngIf="team && team.Type == 'UnofficialTikTok'" class="h-full w-full">
+                            <tiktok-comment [data]="data" [team]="team" [innerText]="keyWords"></tiktok-comment>
                         </div>
                     </div>
                 </div>
