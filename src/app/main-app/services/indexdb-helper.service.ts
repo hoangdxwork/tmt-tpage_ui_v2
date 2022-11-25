@@ -70,7 +70,7 @@ export class IndexDBHelperService extends BaseSevice implements OnDestroy {
         let exist = Number(res.Total) > Number(this.cacheData.Datas.length) && Number(this.cacheData.Datas.length) > 0;
         if(exist) {
           this.currentSkip += 1;
-          this.loadLastVersionV2(res.Total || countIndex, version);
+          // this.loadLastVersionV2(res.Total || countIndex, version);
         } else {
             this._cacheProduct$.next(this.cacheData);
 

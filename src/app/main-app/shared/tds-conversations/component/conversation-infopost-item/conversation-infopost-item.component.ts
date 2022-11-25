@@ -28,12 +28,10 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
 
   postPictureError: any[] = [];
 
-  constructor(
-    private router: Router,
+  constructor(private router: Router,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
-    private destroy$: TDSDestroyService
-  ) { }
+    private destroy$: TDSDestroyService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(this.team.Type == CRMTeamType._Facebook && this.typeNumber == 12){

@@ -1,14 +1,11 @@
 <!-- Bài post Facebook lấy dto từ ChatomniObjectsItemDto với Data: Facebook_Graph_Post-->
-<div *ngIf="dataFacebook" class="post-block mb-3 bg-white flex flex-col">
+<div *ngIf="typeNumber == 12 && team?.Type == 'Facebook'" class="post-block mb-3 bg-white flex flex-col">
     <div class="post-body flex flex-row justify-between p-4">
         <div class="post-content flex flex-col">
             <div class="post-type flex flex-row items-center mb-3">
                 <tds-avatar
-                    [tdsSrc]="dataFacebook.status_type=='added_video'?'../../../assets/imagesv2/conversation/live-circle.svg':'../../../assets/imagesv2/conversation/facebook-circle.svg'"
-                    [size]="24"
-                    [shape]="'circle'"
-                    [isAvatar]="false"
-                    class="mr-1">
+                    [tdsSrc]="dataFacebook.status_type == 'added_video' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
+                    [size]="24" [shape]="'circle'" [isAvatar]="false" class="mr-1">
                 </tds-avatar>
                 <tds-tag [status]="dataFacebook.status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
                     <span class="flex items-center py-0.5">
@@ -70,7 +67,7 @@
 </div>
 
  <!-- Bài post TShop lấy dto từ ChatomniObjectsItemDto với Data: ChatomniDataTShopPostDto-->
-<div *ngIf="dataTshop" class="post-block mb-3 bg-white flex flex-col">
+<div *ngIf="typeNumber == 91 && team?.Type == 'TShop'" class="post-block mb-3 bg-white flex flex-col">
     <div class="post-body flex flex-row justify-between p-4">
         <div class="post-content flex flex-col">
             <div class="post-type flex flex-row items-center mb-3">

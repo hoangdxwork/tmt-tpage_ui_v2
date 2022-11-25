@@ -140,6 +140,9 @@ export interface ChatomniDataItemDto {
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
   NlpEntities?: NlpEntityDto[] | any[];
+
+  Attachments?: any;
+
   IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
   isNoPartnerId?:  boolean; // không có trong api trả về, dùng để phân biệt cmt child chưa tìm thấy cmt partner trong list api trả về
 }
@@ -228,7 +231,7 @@ export interface ExtrasChildsDto {
 
 export interface ChatomniTShopDataDto {
   Id: any;
-  Content: any;
+  Content: TShopDataConentDto;
   Type: number;
   Status: boolean;
   Sender: Sender;
@@ -247,8 +250,13 @@ export interface ChatomniTShopDataDto {
   ObjectId?: any;
   ParentCommentId?: any;
   UserId: string;
-  Actor: Actor;
+  Actor: TShopDataActorDto;
   CreatorId: string;
+}
+
+export interface TShopDataConentDto {
+  Tags: any;
+  Text: string;
 }
 
 export interface Sender {
@@ -283,7 +291,7 @@ export interface ExtraProperties {
   sendFrom: string;
 }
 
-export interface Actor {
+export interface TShopDataActorDto {
   Id: string;
   Name: string;
   AvatarUrl: string;
