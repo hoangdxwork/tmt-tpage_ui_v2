@@ -19,7 +19,7 @@
                 <div class="flex flex-col gap-2">
                     <div class="flex gap-4 items-center" style="min-height: 34px;">
                         <div class="font-sans font-semibold text-neutral-1-900 text-[20px]">
-                            {{conversationItem.Name || partner.Name}}
+                            {{partner.Name || conversationItem.Name}}
                         </div>
                         <button type="button" size="sm" tds-button-icon color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
                             <span class="flex items-center">
