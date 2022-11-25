@@ -26,7 +26,6 @@ export class ObjectTshopPostComponent  implements OnInit {
   mdbTshopPost!: ChatomniDataTShopPostDto;
 
   fallbackImg = "../../../assets/imagesv2/errorPic.svg";
-  fallbackPost = "../../../assets/imagesv2/conversation-post-img.svg";
 
   constructor(private modal: TDSModalService,
     private crmTeamService: CRMTeamService,
