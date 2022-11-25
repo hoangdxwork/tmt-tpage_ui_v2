@@ -28,7 +28,6 @@ import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
 
-
 @Component({
   selector: "tds-conversation-item",
   templateUrl:'./tds-conversation-item.component.html',
@@ -479,7 +478,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
 
     else {
       switch (this.team.Type) {
-        case  CRMTeamType._Facebook: 
+        case  CRMTeamType._Facebook:
         const model = this.prepareModel(message);
         model.post_id = this.dataItem.ObjectId || this.dataItem.Data?.object?.id || null;
         model.parent_id = this.dataItem.ParentId || this.dataItem?.Data?.id || null;
@@ -570,7 +569,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
                   this.tdsMessage.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
                   this.cdRef.detectChanges();
               }
-            })   
+            })
         break;
       }
     }
