@@ -1,3 +1,4 @@
+import { ShipReceiver } from './../../../dto/partner/change-partner-pricelist.dto';
 import { DeliveryCarrierV2Service } from './../../../services/delivery-carrier-v2.service';
 import { SuggestAddressService } from './../../../services/suggest-address.service';
 import { Validators } from '@angular/forms';
