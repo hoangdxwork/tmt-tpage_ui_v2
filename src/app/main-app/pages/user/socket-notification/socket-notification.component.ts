@@ -26,9 +26,23 @@ export class SocketNotificationComponent implements OnInit {
   }
 
   change(item: any) {
-    let current = this.socketData[item]
-    current = !current;
-    this.socketStorageNotificationService.setLocalStorage(this.socketData);
+    if(item == "socket.all") {
+      let cur = this.socketData[item]
+      if(cur == false) {
+        for(let data in this.socketData) {
+          this.socketData[data] = false
+        }
+      } else {
+        for(let data in this.socketData) {
+          this.socketData[data] = true
+        }
+      }
+      this.socketStorageNotificationService.setLocalStorage(this.socketData);
+    } else {
+      let current = this.socketData[item]
+      current = !current;
+      this.socketStorageNotificationService.setLocalStorage(this.socketData);
+    }
   }
 
 }
