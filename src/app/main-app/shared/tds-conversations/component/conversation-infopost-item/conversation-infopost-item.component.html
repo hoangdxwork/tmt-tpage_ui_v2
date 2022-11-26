@@ -71,12 +71,13 @@
     <div class="post-body flex flex-row justify-between p-4">
         <div class="post-content flex flex-col">
             <div class="post-type flex flex-row items-center mb-3">
-                <tds-avatar
-                    [tdsSrc]="(data.Data | tshopType)?.Kind =='LIVE' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
+                <tds-avatar 
+                    [ngClass]="(data.Data | tshopType)?.Kind =='LIVE' ? 'bg-error-400': ' bg-base-blue-500'"
+                    
+                    [icon]="(data.Data | tshopType)?.Kind =='LIVE' ? 'tdsi-video-camera-fill': 'tdsi-template-web-fill'"
                     [size]="24"
                     [shape]="'circle'"
-                    [isAvatar]="false"
-                    class="mr-1">
+                    class="mr-1 text-white">
                 </tds-avatar>
                 <tds-tag [status]="(data.Data | tshopType)?.Kind=='LIVE' ? 'error' : 'info'" type="outline" rounded="rounded-full">
                     <span class="flex items-center py-0.5">
@@ -86,15 +87,37 @@
             </div>
             <div class="post-item">
                 <div class="w-full block">
-                  <!-- // check điều kiện thêm -->
-                    <p class="story font-semibold">
-                      Đã phát trực tiếp
-                    </p>
+                    <span *ngIf="data.StatusLive == 1" class="w-full font-semibold truncate text-base-red-600">Đang phát trực tiếp</span>
+                    <span *ngIf="data.StatusLive != 1 && (data.Data | tshopType).KindValue == 1" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
+                    <span *ngIf="data.StatusLive != 1 && (data.Data | tshopType).KindValue != 1" class="w-full font-semibold truncate text-base-blue-600">Đã đăng một bài viết</span>
+
                     <p class="description" *ngIf="data?.Description">{{data.Description}}</p>
                 </div>
             </div>
         </div>
-        <div class="post-picture" *ngIf="data?.Thumbnail && !checkPostPictureError(item)"></div>
+
+        <!-- Hình ảnh -->
+        <div class="post-picture" *ngIf="data?.Thumbnail && !checkPostPictureError(item); else noPicture">
+            <div *ngIf="data.Thumbnail; else noPicture" class="rounded-lg">
+                <img  [src]="data.Thumbnail?.Url"
+                    [width]="120" [height]="88" (error)="errorPostPicture(item)"
+                    class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  object-cover">
+            </div>
+        </div>
+
+        <ng-template #noPicture>
+            <div *ngIf="!data.Thumbnail && data.StatusLive != 1 && (data.Data | tshopType).KindValue != 1; else noPictureLive">
+                <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
+                    class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+            </div>
+            <ng-template #noPictureLive>
+                <div  *ngIf="checkPostPictureError(item)"> 
+                    <img src="../../../assets/imagesv2/errorPic.svg" alt=""
+                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                </div>
+            </ng-template>
+        </ng-template>
+
     </div>
     <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
         <div class="emotion-count flex flex-row items-center">
