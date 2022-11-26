@@ -15,12 +15,12 @@
             <ng-template #noPicture>
                 <div *ngIf="!item.Thumbnail && item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1; else noPictureLive">
                     <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
-                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>
                 <ng-template #noPictureLive>
                     <div  *ngIf="checkPostPictureError(item)"> 
                         <img src="../../../assets/imagesv2/errorPic.svg" alt=""
-                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                     </div>
                 </ng-template>
             </ng-template>
@@ -37,7 +37,7 @@
             </div>
 
             <!-- Bài viết -->
-            <div *ngIf="(item.Data | tshopType).Kind && (item.Data | tshopType).KindValue == 0" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#3B7AD9] to-[#6EB3F8]">
+            <div *ngIf="(item.Data | tshopType).Kind && (item.Data | tshopType).KindValue == 0" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
                 <div class="tdsi-template-web-fill text-white leading-none"></div>
             </div>
         </div>

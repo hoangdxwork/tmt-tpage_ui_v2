@@ -1,3 +1,4 @@
+import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { NgxVirtualScrollerDto } from './../../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
@@ -111,7 +112,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private destroy$: TDSDestroyService,
     private socketOnEventService: SocketOnEventService,
     private resizeObserver: TDSResizeObserver,
-    private objectFacebookPostEvent: ObjectFacebookPostEvent) {
+    private objectFacebookPostEvent: ObjectFacebookPostEvent,
+    private notification: TDSNotificationService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -221,8 +223,22 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: SocketEventSubjectDto) => {
         switch(res && res.EventName){
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
-              let exist = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop
-              && res.Data;
+              let exist = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.ObjectId;
+
+              if(exist) {
+                let index = this.lstObjects.findIndex(x => x.ObjectId == res.Data.Data.ObjectId);
+                if(Number(index) >- 1) {
+                    this.lstObjects[index].StatusLive = 0;
+  
+                    this.lstObjects[index] = {...this.lstObjects[index]};
+                    this.lstObjects = [...this.lstObjects];
+
+                    this.notification.info('Thông báo live','Live stream đã kết thúc',  { placement: 'bottomLeft' });
+
+                    this.cdRef.detectChanges();
+                }
+              }
+
             break;
         }
       }
