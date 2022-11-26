@@ -143,7 +143,7 @@ export class FirebaseNotificationComponent implements OnInit {
             }
           }
 
-          if (item == null) {
+          if (item == null && this.data) {
             item = this.data[0];
           }
 
