@@ -3,13 +3,14 @@ importScripts('https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging-comp
 importScripts('https://www.gstatic.com/firebasejs/9.13.0/firebase-analytics-compat.js');
 
 firebase.initializeApp({
-  apiKey: "AIzaSyB6MbPLjt0r9NrCfasAs3aOA2zXZcAS1h4",
-  authDomain: "toanlefirebase.firebaseapp.com",
-  projectId: "toanlefirebase",
-  storageBucket: "toanlefirebase.appspot.com",
-  messagingSenderId: "743574831100",
-  appId: "1:743574831100:web:d26a6a84d7c3b8fc0f3c79",
-  measurementId: "G-87WC6HQ2F7"
+  apiKey: "AIzaSyAAnP3M-JqrBLr-AGoHTZ1Qtx7QR0MXGVQ",
+  authDomain: "tposmobile.firebaseapp.com",
+  databaseURL: "https://tposmobile.firebaseio.com",
+  projectId: "tposmobile",
+  storageBucket: "tposmobile.appspot.com",
+  messagingSenderId: "852209026200",
+  appId: "1:852209026200:web:ef6ad3d5d7573855a63ced",
+  measurementId: "G-XHX5BTL43H",
 });
 
 const messaging = firebase.messaging();
