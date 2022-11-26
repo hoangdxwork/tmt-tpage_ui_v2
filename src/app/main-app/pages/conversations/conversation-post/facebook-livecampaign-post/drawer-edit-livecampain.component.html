@@ -130,7 +130,7 @@
                         [scrollAnimationTime]="750">
                             <div *ngFor="let data of scroll.viewPortItems; let i = index" class="flex w-full overflow-hidden">
                                 <div [ngClass]="{'bg-primary-3':(isEditDetails[data.Id] && liveCampaignId)}" class="p-2 w-full border-t block hover:bg-neutral-3-50 hover:cursor-pointer">
-                                    <div class="mb-1 block inline-block">
+                                    <div class="mb-1 inline-block">
                                         <div class="flex-auto flex flex-col gap-y-1">
                                             <span class="font-semibold text-[13px] w-full truncate" tds-popover [popoverContent]="popoverTag" popoverPlacement="topLeft">
                                                 {{ data.ProductNameGet || data.ProductName }}
@@ -249,16 +249,37 @@
 
                                             <!-- Số lượng chốt -->
                                             <div class="flex item-center gap-x-2 mb-2 text-body-2">
-                                                <div class="text-neutral-1-500  flex items-center">
-                                                    Chờ chốt: {{ (data.QueueQuantity || 0) | numberCustom }}
+                                                <div class="text-neutral-1-500 flex items-center">
+                                                    Chờ chốt:
+                                                    <span 
+                                                        *ngIf="!animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty']" class="pl-1">
+                                                        {{ (data.QueueQuantity || 0) | numberCustom }}
+                                                    </span>
+                                                    <tds-spinner 
+                                                        *ngIf="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty']"
+                                                        [color]="'error'" class="ml-1 w-2.5 h-2.5"></tds-spinner>
                                                 </div>
                                                 <div>/</div>
                                                 <div class="text-neutral-1-500 flex items-center">
-                                                    Đã chốt: {{ (data.UsedQuantity || 0) | numberCustom }}
+                                                    Đã chốt:
+                                                    <span 
+                                                        *ngIf="!animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty']" class="pl-1">
+                                                        {{ (data.UsedQuantity || 0) | numberCustom }}
+                                                    </span>
+                                                    <tds-spinner 
+                                                        *ngIf="animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty']" 
+                                                        [color]="'error'" class="ml-1 w-2.5 h-2.5"></tds-spinner>
                                                 </div>
                                                 <div>/</div>
-                                                <div class="font-semibold flex items-center" [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
-                                                    Còn lại: {{ (((data.Quantity - data.UsedQuantity) || 0) | numberCustom) }}
+                                                <div class="font-semibold flex items-center" 
+                                                    [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
+                                                    Còn lại: 
+                                                    <span 
+                                                        *ngIf="!animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty'] && !animateSocket[data.ProductId + '_'+ data.UOMId + '_usedQty']" class="pl-1">
+                                                        {{ (((data.Quantity - data.UsedQuantity) || 0) | numberCustom) }}
+                                                    </span>
+                                                    <tds-spinner *ngIf="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty'] || animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty']" 
+                                                        [color]="'error'" class="ml-1 w-2.5 h-2.5"></tds-spinner>
                                                 </div>
                                             </div>
 
