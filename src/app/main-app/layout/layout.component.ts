@@ -70,6 +70,9 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     let localSocket = localStorage.getItem('_socketNotification') as any;
     let checkNotti = JSON.parse(localSocket || null);
     this.notiSocket = checkNotti;
+    if(!checkNotti) {
+      // this.infoNotifi();
+    }
 
     this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.lstMenu = this.setMenu(res);
@@ -292,4 +295,20 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         }
       }
   }
+
+  infoNotifi(): void {
+    this.modalService.info({
+      title: 'Nhận thông báo',
+      content: 'Bạn có muốn nhận thông báo từ TPage',
+      onOk: () => {
+        
+      },
+      onCancel:()=>{
+        
+      },
+      okText:"Đồng ý",
+      cancelText:"Đóng",
+      confirmViewType: "compact",
+    });
+  } 
 }
