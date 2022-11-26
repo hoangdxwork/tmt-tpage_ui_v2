@@ -30,6 +30,7 @@ import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSTagModule } from 'tds-ui/tag';
 import { OmnichannelConfigurationParams, OMNI_CONFIG } from 'omnichannel/core/services';
 import { BaseHelper } from './shared/helper/base.helper';
+import { TDSSpinnerModule } from "tds-ui/progress-spinner";
 
 // The Factory function
 const omniConfigFactory = (authService: TAuthService): OmnichannelConfigurationParams => {
@@ -91,6 +92,7 @@ const omniConfigFactory = (authService: TAuthService): OmnichannelConfigurationP
     TDSUploadModule,
     DirectivesModule,
     TDSTagModule,
+    TDSSpinnerModule
   ],
   providers:[
     // ...SERVICES,

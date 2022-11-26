@@ -23,8 +23,7 @@ export class ModalGetNotificationComponent implements OnInit {
   payload: any;
   checkAll: boolean = false;
 
-  constructor(
-    private modal: TDSModalRef,
+  constructor(private modal: TDSModalRef,
     private modalService: TDSModalService,
     private firebaseMessagingService: FirebaseMessagingService,
     private message: TDSMessageService,
@@ -52,14 +51,13 @@ export class ModalGetNotificationComponent implements OnInit {
 
   registerTopics() {
     let model = {
-      TopicIds: this.idsRegister
+      TopicIds: []
     }
 
     this.isLoading = true;
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
-          this.message.success('Đăng kí nhận tin thành công');
       },
       error: (err: any) => {
           this.isLoading = false;
@@ -111,7 +109,6 @@ export class ModalGetNotificationComponent implements OnInit {
       }
     });
   }
-
 
 
 }
