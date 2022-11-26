@@ -254,7 +254,6 @@ export class FirebaseNotificationComponent implements OnInit {
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
-          this.message.success('Đăng kí nhận tin thành công');
       },
       error: (err: any) => {
           this.isLoading = false;
