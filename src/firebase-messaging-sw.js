@@ -10,7 +10,7 @@ firebase.initializeApp({
   storageBucket: "tposmobile.appspot.com",
   messagingSenderId: "852209026200",
   appId: "1:852209026200:web:ef6ad3d5d7573855a63ced",
-  measurementId: "G-XHX5BTL43H",
+  measurementId: "G-XHX5BTL43H"
 });
 
 const messaging = firebase.messaging();
