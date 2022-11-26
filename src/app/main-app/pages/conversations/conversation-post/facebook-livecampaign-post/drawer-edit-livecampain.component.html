@@ -155,8 +155,8 @@
                                             </div> -->
 
                                             <!-- Tags -->
-                                            <!-- <div class="flex items-center flex-wrap gap-x-1">
-                                                <span *ngIf="data.Tags?.length <= 0 && isEditDetails[data.Id]"
+                                            <div *ngIf="isEditDetails[data.Id]" class="flex items-center flex-wrap gap-x-1">
+                                                <span *ngIf="data.Tags?.length <= 0"
                                                     class="text-info-500 font-normal text-sm cursor-pointer"
                                                     (click)="openTag(data)" tds-popover
                                                     [popoverVisible]="indClickTag == i"
@@ -171,7 +171,7 @@
                                                         </tds-tag>
                                                     </div>
 
-                                                    <button *ngIf="isEditDetails[data.Id]" type="button"
+                                                    <button type="button"
                                                         (click)="openTag(data)" tds-popover
                                                         [popoverVisible]="indClickTag == i"
                                                         popoverTrigger="click" [popoverContent]="contentAddtag"
@@ -188,10 +188,10 @@
                                                             </svg>
                                                         </div>
                                                     </button>
-                                                </div> -->
+                                                </div>
 
                                                 <!-- button thêm nhãn -->
-                                                <!-- <ng-template #contentAddtag>
+                                                <ng-template #contentAddtag>
                                                     <div class="w-[360px]">
                                                         <tds-form-field>
                                                             <tds-select [(ngModel)]="modelTags"
@@ -222,7 +222,7 @@
                                                         </button>
                                                     </div>
                                                 </ng-template>
-                                            </div> -->
+                                            </div>
 
                                         </div>
                                     </div>
