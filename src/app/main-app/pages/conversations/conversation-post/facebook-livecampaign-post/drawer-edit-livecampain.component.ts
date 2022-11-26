@@ -1,3 +1,4 @@
+import { animate } from '@angular/animations';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { THelperDataRequest } from '../../../../../lib/services/helper-data.service';
 import { ProductIndexDBService } from '../../../../services/product-indexdb.service';
@@ -70,10 +71,10 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
   dataOverviewReport!: OverviewReportDTO;
   facebookPosts: GetAllFacebookPostDTO[] = [];
-
   pageSize: number = 10;
   pageIndex: number = 1;
   resfeshScroll: boolean = false;
+  animateSocket: any = {};
 
   lstOrderTags!: string[];
   lstDetailsAll: LiveCampaignSimpleDetail[] = []
@@ -147,10 +148,19 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
                   const iCheckout = this.lstDetail.findIndex(x => x.ProductId == pCheckout.ProductId && x.UOMId == pCheckout.ProductUOMId);
                   if(Number(iCheckout) < 0) break;
 
-                  this.lstDetail[iCheckout].QueueQuantity = pCheckout.Quantity;
-                  this.lstDetail[iCheckout] = {...this.lstDetail[iCheckout]};
+                  let key1 = `${this.lstDetail[iCheckout].ProductId}_${this.lstDetail[iCheckout].UOMId}_queueQty`;
+                  this.animateSocket[key1] = true;
+               
+                  setTimeout(() => {
+                    this.lstDetail[iCheckout].QueueQuantity = pCheckout.Quantity;
+                    this.lstDetail[iCheckout] = {...this.lstDetail[iCheckout]};
 
-                  this.lstDetail = [...this.lstDetail];
+                    this.lstDetail = [...this.lstDetail];
+                    delete this.animateSocket[key1];
+
+                    this.cdRef.detectChanges();
+                  }, 1000);
+                  
                   this.cdRef.detectChanges();
               break;
 
@@ -162,11 +172,20 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
                   const iToBuy = this.lstDetail.findIndex(x => x.ProductId == toBuy.ProductId && x.UOMId == toBuy.ProductUOMId);
                   if(Number(iToBuy) < 0) break;
+                  
+                  let key2 = `${this.lstDetail[iToBuy].ProductId}_${this.lstDetail[iToBuy].UOMId}_usedQty`;
+                  this.animateSocket[key2] = true;
 
-                  this.lstDetail[iToBuy].UsedQuantity = (this.lstDetail[iToBuy].Quantity - toBuy.QuantityAvailableToBuy);
-                  this.lstDetail[iToBuy] = {...this.lstDetail[iToBuy]};
+                  setTimeout(() => {
+                    this.lstDetail[iToBuy].UsedQuantity = (this.lstDetail[iToBuy].Quantity - toBuy.QuantityAvailableToBuy);
+                    this.lstDetail[iToBuy] = {...this.lstDetail[iToBuy]};
 
-                  this.lstDetail = [...this.lstDetail];
+                    this.lstDetail = [...this.lstDetail];
+                    delete this.animateSocket[key2];
+
+                    this.cdRef.detectChanges();
+                  }, 1000);
+
                   this.cdRef.detectChanges();
               break;
           }
