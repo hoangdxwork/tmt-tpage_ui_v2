@@ -38,7 +38,6 @@ export class CreateDefaultProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProduct();
-    // this.loadCurrentCompany();
   }
 
   loadProduct(textSearch?: string) {
