@@ -25,7 +25,7 @@ export class ObjectTshopPostComponent  implements OnInit {
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
   mdbTshopPost!: ChatomniDataTShopPostDto;
 
-  fallbackImg = "../../../assets/imagesv2/errorPic.svg";
+  postPictureError: any[] = [];
 
   constructor(private modal: TDSModalService,
     private crmTeamService: CRMTeamService,
@@ -37,6 +37,14 @@ export class ObjectTshopPostComponent  implements OnInit {
 
   selectPost(item: ChatomniObjectsItemDto) {
       this.selectPostItemEvent.emit(item);
+  }
+
+  errorPostPicture(item: ChatomniObjectsItemDto) {
+    this.postPictureError.push(item?.ObjectId);
+  }
+
+  checkPostPictureError(item: ChatomniObjectsItemDto) {
+    return this.postPictureError.find(f => f == item?.ObjectId);
   }
 
 }

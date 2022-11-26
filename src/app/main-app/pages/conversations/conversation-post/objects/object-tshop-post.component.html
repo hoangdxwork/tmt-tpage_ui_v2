@@ -4,17 +4,25 @@
     <div class="flex flex-col gap-y-3" *ngIf="(item.Data | tshopType)">
         <div class="relative w-[120px] h-[88px]">
             <!-- Hình ảnh -->
-            <div *ngIf="item.Thumbnail; else noPicture" class="{{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}} rounded-lg">
-                <img tds-image [tdsSrc]="item.Thumbnail?.Url || ''"
-                    [width]="120" [height]="88" [fallback]="fallbackImg"
-                    class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  scale-75">
-            </div>
-
-            <ng-template #noPicture>
-                <div>
-                    <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
-                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+            <div class="post-picture" *ngIf="item?.Thumbnail && !checkPostPictureError(item); else noPicture">
+                <div *ngIf="item.Thumbnail; else noPicture" class="rounded-lg">
+                    <img  [src]="item.Thumbnail?.Url"
+                        [width]="120" [height]="88" (error)="errorPostPicture(item)"
+                        class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  object-cover">
                 </div>
+            </div>
+            
+            <ng-template #noPicture>
+                <div *ngIf="!item.Thumbnail && item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1; else noPictureLive">
+                    <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
+                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                </div>
+                <ng-template #noPictureLive>
+                    <div  *ngIf="checkPostPictureError(item)"> 
+                        <img src="../../../assets/imagesv2/errorPic.svg" alt=""
+                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                    </div>
+                </ng-template>
             </ng-template>
 
             <!-- Đang live -->
