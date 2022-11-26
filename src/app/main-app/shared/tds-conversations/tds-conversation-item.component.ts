@@ -218,7 +218,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
       CommentId: this.dataItem.Data?.id,
       Content: this.dataItem.Data?.is_hidden ? 'hiện' : 'ẩn',
       Message: this.dataItem.Data?.message,
-      UserName: this.dataItem.Data?.from.name,
+      UserName: this.dataItem.Data?.from?.name,
       fbid: this.dataItem.Data?.from?.id
     };
 
