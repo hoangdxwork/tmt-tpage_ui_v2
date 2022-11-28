@@ -60,17 +60,23 @@
                 <thead>
                   <tr>
                     <th width="6%">STT</th>
-                    <th width="24%">Tên</th>
+                    <th width="8%">Ảnh</th>
+                    <th width="18%">Tên</th>
                     <th width="20%">Mã chốt đơn</th>
                     <th width="15%">Giá</th>
                     <th width="15%">Số lượng</th>
                     <th width="10%" [align]="'center'">Hoạt động</th>
-                    <th width="10%" [align]="'center'">Thao tác</th>
+                    <th width="8%" [align]="'center'">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let data of lstVariants; let i = index">
                     <td>{{ 1 + i }}</td>
+                    <td>
+                      <div tds-tooltip [tooltipTitle]="data.ImageUrl ? 'Xem ảnh' : 'Tải ảnh'">
+                          <upload-pictures-wall [data]="[data.ImageUrl]" [size]="64" (getResult)="getUrl($event, i)" (getBase64)="getBase64($event, i)" (onLoadImage)="onRemoveImage($event, i)"></upload-pictures-wall>
+                      </div>
+                    </td>
                     <td>
                       <div class="flex flex-col">
                         <span class="mb-2">{{ data.NameTemplate || data.Name }}</span>
@@ -104,7 +110,7 @@
                       <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
                     </td>
                     <td>
-                      <div class="flex flex-row items-center justify-center gap-x-1">
+                      <div class="flex flex-row items-center justify-center">
                         <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
                           (click)="showEditVariantsModal(data)">
                           <span class="flex items-center">
