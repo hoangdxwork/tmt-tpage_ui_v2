@@ -179,7 +179,7 @@
   </div>
 
   <!--Lọc theo comments-->
-  <div *ngIf="dataItem.Type == 12 || dataItem.Type == 91" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
+  <div *ngIf="dataItem.Type == 12 || dataItem.Type == 91 || dataItem.Type == 1001" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
       <div class="w-full flex flex-row">
 
           <!-- Avatar Facebook_PageId -->
@@ -193,6 +193,10 @@
 
             <div *ngIf="dataItem.Type == 91">
                 <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
+            </div>
+
+            <div *ngIf="dataItem.Type == 1001">
+              <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
             </div>
           </div>
 
@@ -209,6 +213,7 @@
                           <div *ngIf="dataItem.Message">
                               <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
                               <div *ngIf="dataItem.Type == 91 && (dataItem.Data | tshopDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tshopDataCs).Actor?.Name }} </div>
+                              <div *ngIf="dataItem.Type == 1001 && (dataItem.Data | tiktokDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tiktokDataCs)?.nickname }} </div>
 
                             <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
                             <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert" #contentMessage></div>
@@ -340,6 +345,10 @@
                     <tds-avatar [size]="36" [tdsSrc]="(child.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
                   </div>
 
+                  <div *ngIf="dataItem.Type == 1001" class="avatar mr-2">
+                    <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
+                  </div>
+
                   <div class="flex flex-col w-full">
                       <div class="inline-flex w-fit group">
                           <div class="chat-body !m-0" tds-tooltip
@@ -352,6 +361,10 @@
 
                                         <div *ngIf="dataItem.Type == 91">
                                             <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tshopDataCs).Actor?.Name }} </div>
+                                        </div>
+
+                                        <div *ngIf="dataItem.Type == 1001">
+                                            <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tiktokDataCs).nickname }} </div>
                                         </div>
 
                                       <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>

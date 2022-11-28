@@ -2,7 +2,7 @@ import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
 import { ConvertToCRMTagsListPipe } from './convert-to-CRMTagList.pipe';
-import { ChatomniFacebookType, ChatomniTShopType, ChatomniTShopData, ChatomniFacebookData, ChatomniTiktokType } from './fb-post-type.pipe';
+import { ChatomniFacebookType, ChatomniTShopType, ChatomniTShopData, ChatomniFacebookData, ChatomniTiktokType, ChatomniTiktokData } from './fb-post-type.pipe';
 import { GetStatusNamePipe } from './get-status-name.pipe';
 import { SelectMultipleValuePipe } from './select-multiple-value.pipe';
 import { ConvertListUrlPipe } from './convert-list-url.pipe';
@@ -112,7 +112,8 @@ const cmp =[
   SortDateClassPipe,
   FirebaseSubscribedPipe,
   GetSocketNamePipe,
-  ChatomniTiktokType
+  ChatomniTiktokType,
+  ChatomniTiktokData
 ]
 
 @NgModule({
