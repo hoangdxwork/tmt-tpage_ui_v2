@@ -60,16 +60,15 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
-
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
-  vsStartIndex: number = 0;
-  vsSocketImports: ChatomniDataItemDto[] = [];
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() team!: CRMTeamDTO;
   @Input() isShowModal: boolean = false;
   @Input() innerText!: string;
 
+  vsStartIndex: number = 0;
+  vsSocketImports: ChatomniDataItemDto[] = [];
   partnerDict: {[key: string]: PartnerTimeStampItemDto} = {} as any;
   invoiceDict: {[key: number]: OrderPartnerByLivecampaignDto[]} = {} as any;
 

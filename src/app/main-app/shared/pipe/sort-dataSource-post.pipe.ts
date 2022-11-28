@@ -11,7 +11,7 @@ export class SortDataSourcePostPipe implements PipeTransform {
 
   constructor(){}
 
-  transform(data: ChatomniDataItemDto[]): any { 
+  transform(data: ChatomniDataItemDto[]): any {
     let dataChild: ChatomniDataItemDto[] = [];
     let model: ChatomniDataItemDto[] = [];
 
@@ -21,7 +21,7 @@ export class SortDataSourcePostPipe implements PipeTransform {
 
     if(data && data.length > 0) {
       data.map(x => {
-          if(x && !TDSHelperString.hasValueString(x.ParentId) && (x.Type == ChatomniMessageType.FacebookComment || x.Type == ChatomniMessageType.TShopComment)) {
+          if(x && !TDSHelperString.hasValueString(x.ParentId) && (x.Type == ChatomniMessageType.FacebookComment || x.Type == ChatomniMessageType.TShopComment || x.Type == ChatomniMessageType.UnofficialTikTokChat)) {
               model = [...model, ...[x]]
               let childitem: ChatomniDataItemDto[] = [];
 
