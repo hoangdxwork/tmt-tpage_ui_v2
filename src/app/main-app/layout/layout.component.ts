@@ -47,7 +47,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private modalService: TDSModalService,
     private socketService: SocketService,
     private activatedRoute: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private firebaseRegisterService: FirebaseRegisterService,
     private firebaseMessagingService: FirebaseMessagingService,
     private cdRef: ChangeDetectorRef,
@@ -98,12 +98,16 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     // TODO: check trạng thái connnect socket-io
     this.establishedConnected = this.socketService.establishedConnected;
 
+    this.firebaseDevice();
+  }
+
+  firebaseDevice() {
     let deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
     if(deviceToken) {
-      this.isDeviceToken = true;
+        this.isDeviceToken = true;
     } else {
-      this.isDeviceToken = false;
-      this.loadTopics();
+        this.isDeviceToken = false;
+        this.loadTopics();
     }
   }
 
@@ -314,7 +318,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   onCancel() {
-    this.isDeviceToken = false;
+    this.isDeviceToken = true;
   }
 
   requestPermission() {
@@ -348,11 +352,14 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     this.firebaseRegisterService.registerDevice(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.message.success('Đăng ký nhận tin thành công');
+            this.isRegister = false;
+            this.isDeviceToken = true;
             this.registerTopics();
         },
         error: (err: any) => {
           this.isRegister = false;
-          this.message.error('Đăng kí nhận tin thất bại');
+          this.isDeviceToken = true;
+          this.message.error(err?.error?.message);
         }
     })
   }
@@ -363,11 +370,10 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     }
 
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.isRegister = false;
-      },
+      next: (res: any) => {},
       error: (err: any) => {
           this.isRegister = false;
+          this.isDeviceToken = true;
           this.message.error(err?.error?.message);
       }
     })

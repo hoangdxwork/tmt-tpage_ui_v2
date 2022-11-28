@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FireBaseTopicDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
@@ -12,15 +12,14 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
   selector: 'modal-get-notification',
   templateUrl: './modal-get-notification.component.html',
 })
-export class ModalGetNotificationComponent implements OnInit {
+export class ModalGetNotificationComponent implements OnInit, OnChanges {
 
   @Input() deviceToken: any
   @Input() topicData: FireBaseTopicDto[] = [];
   @Input() idsTopic: any[] = [];
-  @Input() idsRegister: any[] = [];
 
+  idsRegister: any[] = [];
   isLoading: boolean = false;
-  payload: any;
   checkAll: boolean = false;
 
   constructor(private modal: TDSModalRef,
@@ -32,6 +31,21 @@ export class ModalGetNotificationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadSubscribedTopics();
+  }
+
+  loadSubscribedTopics() {
+    this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.idsRegister = [...res];
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
   }
 
   cancel() {
@@ -51,13 +65,15 @@ export class ModalGetNotificationComponent implements OnInit {
 
   registerTopics() {
     let model = {
-      TopicIds: []
+      TopicIds: this.idsRegister
     }
 
     this.isLoading = true;
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
+          this.message.success('Thao tác thành công');
+          this.modal.destroy(null);
       },
       error: (err: any) => {
           this.isLoading = false;
@@ -71,7 +87,7 @@ export class ModalGetNotificationComponent implements OnInit {
       title: 'Hủy đăng kí',
       content: 'Bạn có chắc muốn hủy đăng ký với thiết bị này!',
       onOk: () => { this.removeToken() },
-      onCancel:()=>{ console.log('cancel') },
+      onCancel:() => { this.modal.destroy(null) },
       okText:"Xác nhận",
       cancelText:"Hủy bỏ"
     });
@@ -105,10 +121,10 @@ export class ModalGetNotificationComponent implements OnInit {
       },
       error: (error) => {
           this.isLoading = false;
-          this.message.error('Xóa token nhận tin thất bại')
+          this.message.error('Xóa token nhận tin thất bại');
+          this.modal.destroy(null)
       }
     });
   }
-
 
 }
