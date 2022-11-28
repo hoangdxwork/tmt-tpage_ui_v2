@@ -64,7 +64,7 @@ export class FirebaseNotificationComponent implements OnInit {
 
     this.tdsConfigService.set('message', {
       maxStack: 3
-      });
+    });
   }
 
   loadTopics() {
@@ -159,6 +159,13 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   onDetail(item: any) {
+    if(item.dateRead == null) {
+      this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          item.dateRead = Date.now();
+        }
+      });
+    }
     this.dataDetail = item;
     this.setCurrentConversationItem(item);
   }
