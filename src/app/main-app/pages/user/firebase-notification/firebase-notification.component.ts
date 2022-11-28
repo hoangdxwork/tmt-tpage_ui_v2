@@ -5,7 +5,7 @@ import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto
 import { FireBaseDevice, FireBaseTopicDto, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, deleteToken } from 'firebase/messaging';
 import { takeUntil } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { TDSConfigService } from 'tds-ui/core/config';

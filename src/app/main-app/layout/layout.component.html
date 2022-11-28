@@ -1,13 +1,13 @@
 <div #withLayout class="w-full h-full text-neutral-1-900 dark:text-d-neutral-1-900 relative overflow-hidden flex flex-col">
     <div *ngIf="!isDeviceToken && router?.url?.startsWith('/dashboard')" class="w-full flex justify-center items-center">
-        <div class="top-4 bg-white fixed rounded-md">
+        <div class="top-0 bg-white fixed" style="border-radius: 0 0 0.375rem 0.375rem;">
             <tds-spin [spinning]="isRegister">
-                <div class="w-[500px] px-6 pt-7 pb-4 shadow-lg flex flex-col gap-y-8 rounded-md">
+                <div class="w-[500px] px-6 pt-7 pb-4 shadow-lg flex flex-col gap-y-6 rounded-md">
                     <div class="flex gap-x-6">
                         <span class="tdsi-notification-fill text-primary-1 text-[32px] leading-none"></span>
                         <div class="flex flex-col">
-                            <div class="h-[40px] text-title-1 font-semibold">Đăng kí nhận tin</div>
-                            <div class="h-[40px] text-body-2 font-regular">Bạn muốn nhận thông báo từ TPage</div>
+                            <div class="h-[30px] text-title-1 font-semibold">Đăng kí nhận tin</div>
+                            <div class="h-[30px] text-body-2 font-regular">Bạn muốn nhận thông báo từ TPage</div>
                         </div>
                     </div>
                     <div class="flex justify-end gap-x-3">
