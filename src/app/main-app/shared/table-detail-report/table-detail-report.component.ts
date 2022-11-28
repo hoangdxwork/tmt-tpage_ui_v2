@@ -169,7 +169,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
   showModalLiveCampaignBill(id: string, index: number) {
       if(index){
           this.modalService.create({
-              title: 'Hóa đơn chờ chốt',
+              title: 'Hóa đơn đã chốt',
               size: 'xl',
               content: ModalLiveCampaignBillComponent,
               viewContainerRef: this.viewContainerRef,

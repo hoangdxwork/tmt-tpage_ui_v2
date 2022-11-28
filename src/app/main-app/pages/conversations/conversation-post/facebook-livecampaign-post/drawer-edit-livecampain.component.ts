@@ -1,3 +1,5 @@
+import { ModalLiveCampaignBillComponent } from './../../../live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
+import { ModalLiveCampaignOrderComponent } from './../../../live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
 import { animate } from '@angular/animations';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { THelperDataRequest } from '../../../../../lib/services/helper-data.service';
@@ -779,6 +781,36 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
           facebookPosts: this.facebookPosts
         }
       })
+    }
+  }
+
+  showModalLiveCampaignOrder(data: ReportLiveCampaignDetailDTO) {
+    if(data.TotalSaleOnlineOrder){
+        this.modal.create({
+            title: 'Đơn hàng chờ chốt',
+            size: 'xl',
+            content: ModalLiveCampaignOrderComponent,
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+                livecampaignDetailId: data.Id
+            }
+        });
+    }
+  }
+
+  showModalLiveCampaignBill(data: ReportLiveCampaignDetailDTO) {
+    console.log(data);
+    
+    if(data.TotalFastSaleOrder){
+        this.modal.create({
+            title: 'Hóa đơn đã chốt',
+            size: 'xl',
+            content: ModalLiveCampaignBillComponent,
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+                livecampaignDetailId: data.Id
+            }
+        });
     }
   }
 
