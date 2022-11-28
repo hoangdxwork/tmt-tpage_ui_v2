@@ -149,8 +149,9 @@ export class PostOrderConfigComponent implements OnInit {
               this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
           }
 
-          if(res.LiveCampaignId && res.LiveCampaignId) {
-              this.loadLiveCampaignById(res.LiveCampaignId);
+          if(res.LiveCampaignId) {
+            this.dataModel.IsEnableOrderAuto = true;
+            this.loadLiveCampaignById(res.LiveCampaignId);
           }
 
           if(this.dataModel.ExcludedStatusNames) {
