@@ -13,39 +13,32 @@
             </div>
 
             <ng-template #noPicture>
-                <!-- <div *ngIf="!item.Thumbnail && item.StatusLive != 1 && (item.Data | tiktokType).KindValue != 1; else noPictureLive">
-                    <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
+                <div *ngIf="!item.Thumbnail">
+                    <img src="../../../assets/imagesv2/errorPic.svg" alt=""
                         class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>
-                <ng-template #noPictureLive>
-                    <div  *ngIf="checkPostPictureError(item)">
-                        <img src="../../../assets/imagesv2/errorPic.svg" alt=""
-                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
-                    </div>
-                </ng-template> -->
             </ng-template>
 
             <!-- Đang live -->
-            <!-- <div *ngIf="(item.Data | tiktokType).Kind && (item.Data | tiktokType).KindValue == 1 && item.StatusLive == 1" class="h-[22px] px-2 flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+            <div *ngIf="item.StatusLive == 1" class="h-[22px] px-2 flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
                 <div class="tdsi-live-broadcast-fill text-white leading-2 mr-2 text-caption-2 font-[Lato]"></div>
-                <span class="text-white leading-2 text-caption-2 font-[Lato]">{{(item.Data | tiktokType).Kind}}</span>
-            </div> -->
+                <span class="text-white leading-2 text-caption-2 font-[Lato]">Live</span>
+            </div>
 
             <!-- Tắt live -->
-            <!-- <div *ngIf="(item.Data | tiktokType).Kind && (item.Data | tiktokType).KindValue == 1 && item.StatusLive != 1" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+            <div *ngIf="item.StatusLive == 0" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
                     <div class="tdsi-video-camera-fill text-white leading-none"></div>
-            </div> -->
+            </div>
 
             <!-- Bài viết -->
-            <!-- <div *ngIf="(item.Data | tiktokType).Kind && (item.Data | tiktokType).KindValue == 0" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
+            <!-- <div *ngIf="item.StatusLive > 1" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
                 <div class="tdsi-template-web-fill text-white leading-none"></div>
             </div> -->
         </div>
     </div>
     <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
         <span *ngIf="item.StatusLive == 1" class="w-full font-semibold truncate text-base-red-600">Đang phát trực tiếp</span>
-        <!-- <span *ngIf="item.StatusLive != 1 && (item.Data | tiktokType).KindValue == 1" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
-        <span *ngIf="item.StatusLive != 1 && (item.Data | tiktokType).KindValue != 1" class="w-full font-semibold truncate text-base-blue-600">Đã đăng một bài viết</span> -->
+        <span *ngIf="item.StatusLive == 0" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
 
         <span *ngIf="item.Description" class=" text-neutral-1-400 line-clamp">
             <span>{{item.Description}}</span>
