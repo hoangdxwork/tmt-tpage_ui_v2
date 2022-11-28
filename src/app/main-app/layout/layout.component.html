@@ -1,21 +1,22 @@
 <div #withLayout class="w-full h-full text-neutral-1-900 dark:text-d-neutral-1-900 relative overflow-hidden flex flex-col">
     <div *ngIf="!isDeviceToken && router?.url?.startsWith('/dashboard')" class="w-full flex justify-center items-center">
-          <div class="w-[421px] flex relative">
-              <div class="top-0 text-body-1 fixed onesignal-reset">
-                  <div class="max-w-full flex justify-center">
-                      <div class="bg-white p-8 shadow-lg flex flex-col gap-y-4" style="border-radius: 0 0 8px 8px;">
-                          <div class="flex gap-x-4 justify-center items-center">
-                              <span class="tdsi-notification-fill text-neutral-1-400 text-[36px] leading-none"></span>
-                              <div class="slidedown-body-message font-semibold">Bạn muốn nhận thông báo từ TPage</div>
-                          </div>
-                          <div class="flex justify-end gap-x-2">
-                              <button type="button" tds-button color="secondary" [loading]="isRegister" (click)="onCancel()">Để sau</button>
-                              <button type="button" tds-button color="primary" [loading]="isRegister" (click)="requestPermission()">Đăng ký</button>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
+        <div class="top-4 bg-white fixed rounded-md">
+            <tds-spin [spinning]="isRegister">
+                <div class="w-[500px] px-6 pt-7 pb-4 shadow-lg flex flex-col gap-y-8 rounded-md">
+                    <div class="flex gap-x-6">
+                        <span class="tdsi-notification-fill text-primary-1 text-[32px] leading-none"></span>
+                        <div class="flex flex-col">
+                            <div class="h-[40px] text-title-1 font-semibold">Đăng kí nhận tin</div>
+                            <div class="h-[40px] text-body-2 font-regular">Bạn muốn nhận thông báo từ TPage</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-x-3">
+                        <button type="button" class="w-[100px]" tds-button color="secondary" (click)="onCancel()">Để sau</button>
+                        <button type="button" class="w-[100px]" tds-button color="primary" (click)="requestPermission()">Đăng ký</button>
+                    </div>
+                </div>
+            </tds-spin>
+        </div>
     </div>
 
     <div class="w-full dark">
