@@ -48,6 +48,7 @@ import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-obj
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { LiveCampaignFastSaleOrderDataDto } from '@app/dto/socket-io/livecampain-fastsaleorder.dto';
+
 @Component({
   selector: 'tiktok-comment',
   templateUrl: './tiktok-comment.component.html',
@@ -175,21 +176,21 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
         switch(res.EventName) {
             // Cập nhật bình luận
             case ChatmoniSocketEventName.chatomniOnMessage:
-              let tiktokData = {...res.Data?.Message} as MessageSocketioDto;
+              let fbComment = {...res.Data?.Message} as MessageSocketioDto;
 
-              let exist1 = tiktokData && tiktokData.MessageType == ChatomniMessageType.UnofficialTikTokChat
-                  && this.team?.ChannelId == res.Data?.Conversation?.ChannelId
-                  && this.data.ObjectId == tiktokData?.ObjectId && this.dataSource;
+              let exist1 = fbComment && fbComment.MessageType == ChatomniMessageType.TShopComment
+                  && this.team?.ChannelId == (res.Data?.Conversation?.ChannelId || res.Data.Message?.ChannelId)
+                  && this.data.ObjectId == fbComment?.ObjectId && this.dataSource;
 
               if(!exist1) break;
               this.setCommentRealtime(res);
             break;
 
-            // Tạo đơn hàng
+             // Tạo đơn hàng
             case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
               let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit2 = res && fbCreated && this.data
-                    && fbCreated.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbCreated.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exit2) break;
               this.setCommentUpdateOrderCode(fbCreated);
@@ -199,7 +200,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
               let fbOrder = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit3 = res && fbOrder && this.data
-                    && fbOrder.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbOrder.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exit3) break;
               this.setCommentUpdateOrderCode(fbOrder);
@@ -209,7 +210,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
               let fbDelete = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exist4 = res && fbDelete && this.data
-                    && fbDelete.Data?.Facebook_PostId == this.data.ObjectId;
+                    && fbDelete.Data?.Facebook_PostId == this.data?.ObjectId;
 
               if(!exist4) break;
               this.setCommentDeleteOrderCode(fbDelete);
@@ -219,7 +220,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.livecampaign_CartCheckout:
               let fbInvoice = {...res?.Data?.Data} as LiveCampaignFastSaleOrderDataDto;
               let exist5 = res && fbInvoice && this.data
-                    && fbInvoice.LiveCampaignId == this.data.LiveCampaignId;
+                    && fbInvoice.LiveCampaignId == this.data?.LiveCampaignId;
 
               if(!exist5) break;
               this.setCommentNumberInvoice(fbInvoice);
@@ -233,31 +234,37 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   }
 
   setCommentRealtime(response: SocketEventSubjectDto) {
-    // let itemNewComment = {...this.chatomniConversationFacade.preapreCommentTshopOnEventSocket(response.Data)};
+    let itemNewComment = {...this.chatomniConversationFacade.preapreCommentTshopOnEventSocket(response.Data)};
+    let index = this.dataSource.Items.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
 
-    // // TODO: nếu là comment child thì cũng push thẳng xóa parentId
-    // if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
-    //     itemNewComment.ParentId = null;
-    // }
+    // TODO: nếu res phản hồi bình luận tra về trước, không add comment con vào danh sách
+    if(Number(index) >= 0) {
+      return;
+    }
 
-    // if(this.vsStartIndex <= 1) {
-    //     this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
-    //     this.dataSource.Items = [...this.dataSource.Items];
+    // TODO: nếu là comment child thì cũng push thẳng xóa parentId
+    if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
+        itemNewComment.ParentId = null;
+    }
 
-    //     this.lengthDataSource = this.dataSource.Items.length;
+    if(this.vsStartIndex <= 1) {
+        this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
+        this.dataSource.Items = [...this.dataSource.Items];
 
-    //     if(this.virtualScroller) {
-    //       this.virtualScroller.scrollToPosition(0);
-    //     }
-    // } else {
-    //     this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
-    //     this.vsSocketImports = [...this.vsSocketImports];
+        this.lengthDataSource = this.dataSource.Items.length;
 
-    //     this.lengthDataSource = this.lengthDataSource + 1;
-    // }
+        if(this.virtualScroller) {
+          this.virtualScroller.scrollToPosition(0);
+        }
+    } else {
+        this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
+        this.vsSocketImports = [...this.vsSocketImports];
 
-    // this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
-    // this.cdRef.detectChanges();
+        this.lengthDataSource = this.lengthDataSource + 1;
+    }
+
+    this.postEvent.lengthLstObject$.emit(this.lengthDataSource);
+    this.cdRef.detectChanges();
   }
 
   setCommentUpdateOrderCode(model: OnSocketOnSaleOnline_OrderDto) {
@@ -494,6 +501,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
     if (!TDSHelperString.hasValueString(message)) {
       this.message.error('Hãy nhập nội dung cần gửi');
+      return;
     }
 
     this.replyComment(item, message);
@@ -503,13 +511,12 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   replyComment(item: ChatomniDataItemDto, msg:string){
     this.isReplyingComment = true;
     if(TDSHelperString.hasValueString(msg)) {
-        const model = this.prepareModel(item, msg);
+        let modelv2 = this.prepareModelV2(msg);
+        modelv2.RecipientId = item.Data?.Id as string;
 
         // TODO: gửi về tin nhắn
         if(item.Data.is_private_reply){
 
-          let modelv2 = this.prepareModelV2(msg);
-          modelv2.RecipientId = item.Data?.id || item.ObjectId || null;
           modelv2.MessageType = 2;
 
           this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
@@ -534,23 +541,22 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
       } else {
           // TODO: Trả lời bình luận
-          model.parent_id = item.ParentId || item.Data?.id || null;
-          model.fbid = item.UserId;
+          modelv2.ObjectId = item.Data?.ObjectId as string;
 
-          this.activityMatchingService.replyComment(this.team!.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
-              next:(res: any) => {
-
-                  res["status"] = ChatomniStatus.Done;
-                  res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop? 91 : 0);
-                  res.name = this.team.Name;
-                  let data = this.chatomniCommentFacade.mappingExtrasChildsDto(res);
+          this.chatomniCommentService.replyCommentTshop(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+              next:(res: ChatomniDataItemDto[]) => {
+                res.map((x: ChatomniDataItemDto)=> {
+                  x["Status"] = ChatomniStatus.Done;
+                  x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
+                  x.Data.Actor.Name = this.team.Name;
+                  let data = { ...x};
 
                   this.message.success("Trả lời bình luận thành công.");
-                  this.addReplyComment(item, model, data);
+                  this.addReplyComment(item, modelv2, data);
 
                   item.Data.is_reply = false;
                   this.isReplyingComment = false;
-
+                })
                   this.cdRef.detectChanges();
               },
               error: error => {
@@ -565,25 +571,6 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
     }
   }
 
-  prepareModel(item: ChatomniDataItemDto, message: string): any {
-    const model = {} as SendMessageModelDTO;
-    model.from = {
-      id: this.team?.ChannelId,
-      name: this.team?.Facebook_PageName
-    }
-    model.to = {
-      id: item.UserId,
-      name: item.Data?.from?.name
-    }
-    model.to_id = item.UserId;
-    model.to_name = item.Data?.from?.name;
-    model.post_id = item.Data.object?.id || item.ObjectId;
-    model.message = message;
-    model.created_time = (new Date()).toISOString();
-
-    return model;
-  }
-
   prepareModelV2(message: string): any {
     const model = {} as ChatomniSendMessageModelDto;
     model.Message = message;
@@ -591,120 +578,71 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
     return model;
   }
 
-  addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO, data: ChatomniDataItemDto) {
+  addReplyComment(item: ChatomniDataItemDto, model: any, data: ChatomniDataItemDto) {
     if(data){
-      data.ParentId = model.parent_id;
+      data.ParentId = model.RecipientId;
       data.ObjectId = item.ObjectId;
     }
 
-    this.dataSource.Items = [...this.dataSource.Items, ...[data]];
+    let datas = this.dataSource.Items.filter((x: ChatomniDataItemDto)=> x.Id != data.Id); // lọc lại vì nếu sokect trả về trước res
+    this.dataSource.Items = [...datas, ...[data]];
+
     this.postEvent.lengthLstObject$.emit(this.dataSource.Items.length);
   }
 
-  loadPartnerTab(item: ChatomniDataItemDto, commentOrder?: any) {
-    let psid = item.UserId || item.Data?.from?.id;
-    if (!psid) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
+  loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+
+    let order = null as any;
+    if(orders && orders.length > 0) {
+      order = orders[0] as any;
     }
 
-    let orderCode = commentOrder?.[psid]?.[0]?.code || '';
-    let orderId = commentOrder?.[psid]?.[0]?.id || '';
-
-    // TODO: gán sự kiện loading cho tab
-    this.postEvent.spinLoadingTab$.emit(true);
-
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ChatomniConversationInfoDto) => {
-          if(res) {
-              // Thông tin khách hàng
-              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
-
-              // Thông tin đơn hàng
-              this.conversationOrderFacade.loadOrderByPartnerComment$.emit(res);
-              this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-
-              // TODO: Nếu khách hàng có mã đơn hàng thì load đơn hàng
-              if(orderCode && TDSHelperString.hasValueString(orderCode)){
-                  // Truyền sang coversation-post
-                  this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: orderId, comment: item} );
-                  this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
-              }
-          }
-        },
-        error: (error: any) => {
-            this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-        }
-    })
+    this.prepareLoadTab(item, order, null);
   }
 
-  loadOrderByCode(order: any, item: ChatomniDataItemDto){
+  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    this.prepareLoadTab(item, order, null);
+  }
+
+  onInsertFromPost(item: ChatomniDataItemDto) {
+    this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
+  }
+
+  prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
+    this.postEvent.spinLoadingTab$.emit(true);
     let psid = item.UserId || item.Data?.from?.id;
+
     if (!psid) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
+      this.message.error("Không truy vấn được thông tin người dùng!");
+      return;
     }
 
-    // TODO: gán sự kiện loading cho tab
-    this.postEvent.spinLoadingTab$.emit(true);
-
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
     this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniConversationInfoDto) => {
-          if(res) {
-              // Thông tin khách hàng
-              this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
+      next: (info: ChatomniConversationInfoDto) => {
+          if(!info) return;
 
-              this.conversationOrderFacade.loadOrderFromCommentPost$.emit({orderId: order.id, comment: item} );
-              this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-
-              // Truyền sang coversation-post
-              this.conversationOrderFacade.hasValueOrderCode$.emit(order.code);
+          if(order && order.id) {
+            this.conversationOrderFacade.hasValueOrderCode$.emit(order.code);
+            this.conversationOrderFacade.loadOrderFromCommentPost$.emit({
+                orderId: order.id,
+                comment: item
+            });
           }
+
+          if(type == 'SALEONLINE_ORDER') {
+              this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+          }
+
+          this.conversationOrderFacade.loadPartnerByPostComment$.emit(info);
       },
       error: (error: any) => {
-          // TODO: gán sự kiện loading cho tab
           this.postEvent.spinLoadingTab$.emit(false);
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     })
-  }
-
-  onInsertFromPost(item: ChatomniDataItemDto, commentOrder: any) {
-    let psid = item.UserId || item.Data?.from?.id;
-    if (!psid) {
-        this.message.error("Không truy vấn được thông tin người dùng!");
-        return;
-    }
-
-    let orderCode = commentOrder[psid]?.[0]?.code;
-
-    // TODO: gán sự kiện loading cho tab
-    this.postEvent.spinLoadingTab$.emit(true);
-
-    // TODO: Đẩy dữ liệu sang conversation-partner để hiển thị thông tin khách hàng
-    this.chatomniConversationService.getInfo(this.team.Id, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniConversationInfoDto) => {
-
-        if(res) {
-            // Thông tin khách hàng
-            this.conversationOrderFacade.loadPartnerByPostComment$.emit(res);
-
-            // TODO: Đẩy dữ liệu sang conversation-orer để tạo hàm insertfrompost
-            this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
-
-            // Truyền sang coversation-post
-            this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
-            this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
-        }
-      },
-      error: (error: any) => {
-          this.currentId = '';
-          this.postEvent.spinLoadingTab$.emit(false);
-          this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-      }
-    });
   }
 
   reloadDataCommentsOrder() {
