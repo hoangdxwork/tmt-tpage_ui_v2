@@ -25,6 +25,8 @@ import { SharedService } from '@app/services/shared.service';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTmlpAttributesDto } from '@app/dto/product-template/product-attribute.dto';
+import { CRMTeamService } from '@app/services/crm-team.service';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
 
 @Component({
   selector: 'post-order-config',
@@ -52,6 +54,7 @@ export class PostOrderConfigComponent implements OnInit {
   lstTags: CRMTagDTO[] = []
   lstPartnerStatus: any;
   lstUser$!: Observable<ConfigUserDTO[]>;
+  currentTeam!: CRMTeamDTO | null;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -78,6 +81,7 @@ export class PostOrderConfigComponent implements OnInit {
     private modalRef: TDSModalRef,
     private productService: ProductService,
     private viewContainerRef: ViewContainerRef,
+    private crmTeamService: CRMTeamService,
     private modalService: TDSModalService,
     private sharedService: SharedService,
     private notificationService: TDSNotificationService,
@@ -666,6 +670,7 @@ export class PostOrderConfigComponent implements OnInit {
 
   prepareModelOrderConfig() {
     let model = {} as any;
+    this.currentTeam = this.crmTeamService.getCurrentTeam();
 
     let status: any[] = [];
     if( this.dataModel.ExcludedStatusNames) {
@@ -692,6 +697,7 @@ export class PostOrderConfigComponent implements OnInit {
     model.TextContentToOrders = this.dataModel.TextContentToOrders;
     model.IsOrderCreateOnlyOnce = this.dataModel.IsOrderCreateOnlyOnce || false;
     model.Users = this.prepareUser(this.dataModel.Users);
+    model.TeamId = this.currentTeam?.Id;
 
     if(model.Users == null){
       model.IsEnableAutoAssignUser = false;
