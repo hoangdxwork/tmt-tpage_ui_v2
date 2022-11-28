@@ -188,7 +188,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         switch(res.EventName) {
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-            if(res.Data && res.Data.Conversation && this.data){
+            if(res.Data && res.Data.Conversation && this.data) {
 
               // TODO: mapping dữ liệu khung chat hiện tại
               let exist = this.data.ConversationId == res.Data.Conversation?.UserId;
@@ -198,7 +198,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
                   let item = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(res.Data, this.data)};
 
                   switch (this.type) {
-
                     case 'message':
                       if((item.Type == ChatomniMessageType.FacebookMessage || item.Type == ChatomniMessageType.TShopMessage)) {
                           this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
@@ -209,7 +208,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
                       if ((item.Type == ChatomniMessageType.FacebookComment || item.Type == ChatomniMessageType.TShopComment)) {
                         // TODO: trường hợp trả về comment child và tồn tại comment parent trên dữ liệu trên dataSource.Items
                         if(this.checkCommentSocket(item)) return;
-                        
                         this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
                       }
                       break;
@@ -219,8 +217,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
                         // TODO: trường hợp trả về comment child và tồn tại comment parent trên dữ liệu trên dataSource.Items
                         if(this.checkCommentSocket(item)) return;
                       }
-
-                        this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
+                      this.dataSource.Items = [...(this.dataSource?.Items || []), ...[item]];
                       break;
                   }
 

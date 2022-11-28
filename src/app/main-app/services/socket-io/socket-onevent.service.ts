@@ -228,7 +228,7 @@ export class SocketOnEventService {
       case ChatomniMessageType.UnofficialTikTokChat:
         let tikitok = {...socketData.Message?.Data} as TikTokLiveItemDataDto;
         model = {
-            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || tikitok?.nickname || 'Người dùng Tiktok'} </span> vừa bình luận`,
+            Title: `TikTok: <span class="font-semibold"> ${socketData.Conversation?.Name || tikitok?.nickname || 'Người dùng Tiktok'} </span> vừa bình luận`,
             Message: `${socketData.Message?.Message}`,
             Attachments: null,
             Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
