@@ -801,7 +801,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   showModalLiveCampaignBill(data: ReportLiveCampaignDetailDTO) {
     if(data.TotalFastSaleOrder){
         this.modal.create({
-            title: 'Hóa đơn đã chốt',
+            title: 'Hóa đơn chờ chốt',
             size: 'xl',
             content: ModalLiveCampaignBillComponent,
             viewContainerRef: this.viewContainerRef,
