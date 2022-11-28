@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { FireBaseNotificationDto, NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { TDSMessageService } from 'tds-ui/message';
 import { NotificationGetMappingDTO, TPosAppMongoDBNotificationDTO } from '../../dto/notification/notification.dto';
 import { NotificationService } from '../../services/notification.service';
 
@@ -14,58 +18,43 @@ export class TpageNotificationDropdownComponent implements OnInit {
   visible = false;
   isLoading: boolean = false;
 
-  lstData: TPosAppMongoDBNotificationDTO[] = [];
-  pageSize = 10;
-  pageIndex = 1;
-  hasNextPage: boolean = true;
+  items:  NotificationItemDto[] = []
 
   constructor(public router: Router,
-    private notificationService: NotificationService
-  ) { }
+    private notificationService: NotificationService,
+    private firebaseRegisterService: FirebaseRegisterService,
+    private destroy$: TDSDestroyService,
+    private message: TDSMessageService) {
+  }
 
   get getRead() {
-    return this.lstData.find(x => !x.DateRead);
+    return this.items.find(x => !x.dateRead);
   }
 
   ngOnInit(): void {
-    this.loadData(this.pageSize, this.pageIndex);
+    this.loadData();
   }
 
-  loadData(pageSize: number, pageIndex: number) {
-    let model = this.prepareModel(pageSize, pageIndex);
-
-    this.isLoading = true;
-    this.notificationService.getMapping(model)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.hasNextPage = res.HasNextPage;
-        this.lstData = [...this.lstData, ...res.Items];
-      });
+  loadData(params?: any) {
+    this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: FireBaseNotificationDto) => {
+        this.items = [...data.items];
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
-  prepareModel(pageSize: number, pageIndex: number) {
-    let model = {} as NotificationGetMappingDTO;
-
-    model.Page = pageIndex;
-    model.Limit = pageSize;
-    model.IsRead = undefined;
-
-    return model;
-  }
-
-  onNext() {
-    this.pageIndex++;
-    this.loadData(this.pageSize, this.pageIndex);
-  }
-
-  onDetail(id: string) {
+  onDetail(item: any) {
     this.visible = false;
-    this.router.navigateByUrl(`user/notification/${id}`);
+    this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe();
+    this.router.navigateByUrl(`user/firebase-notification?id=${item?.id}`);
   }
 
   onAll() {
     this.visible = false;
-    this.router.navigateByUrl(`user/notification`);
+    this.router.navigateByUrl(`user/firebase-notification`);
   }
 
 }
