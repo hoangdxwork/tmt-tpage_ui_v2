@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { FireBaseNotificationDto, NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { finalize, takeUntil } from 'rxjs/operators';
@@ -16,9 +17,12 @@ import { NotificationService } from '../../services/notification.service';
 export class TpageNotificationDropdownComponent implements OnInit {
 
   visible = false;
-  isLoading: boolean = false;
 
-  items:  NotificationItemDto[] = []
+  data:  NotificationItemDto[] = []
+
+  cursor: any;
+  isLoadingProduct: boolean = false;
+  isLoadingNextdata: boolean = false;
 
   constructor(public router: Router,
     private notificationService: NotificationService,
@@ -28,7 +32,7 @@ export class TpageNotificationDropdownComponent implements OnInit {
   }
 
   get getRead() {
-    return this.items.find(x => !x.dateRead);
+    return this.data.find(x => !x.dateRead);
   }
 
   ngOnInit(): void {
@@ -37,8 +41,9 @@ export class TpageNotificationDropdownComponent implements OnInit {
 
   loadData(params?: any) {
     this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data: FireBaseNotificationDto) => {
-        this.items = [...data.items];
+      next: (res: FireBaseNotificationDto) => {
+        this.data = [...res.items];
+        this.cursor = res.cursor;
       },
       error: (err: any) => {
         this.message.error(err?.error?.message);
@@ -50,6 +55,40 @@ export class TpageNotificationDropdownComponent implements OnInit {
     this.visible = false;
     this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe();
     this.router.navigateByUrl(`user/firebase-notification?id=${item?.id}`);
+  }
+
+  vsEnd(event: NgxVirtualScrollerDto) {
+    if (this.isLoadingProduct || this.isLoadingNextdata) {
+      return;
+    }
+
+    let exisData = this.data && this.data.length > 0 && event && event.scrollStartPosition > 0;
+    if (exisData) {
+      const vsEnd = Number(this.data.length - 1) == Number(event.endIndex);
+      if (vsEnd) {
+        this.isLoadingNextdata = true;
+        setTimeout(() => {
+          this.nextData();
+          this.isLoadingNextdata = false;
+        }, 350)
+      }
+    }
+  }
+
+  nextData() {
+    if (this.cursor) {
+      this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.data = [...(this.data || []), ...res.items];
+          this.cursor = res.cursor;
+          this.isLoadingNextdata = false;
+        },
+        error: (err: any) => {
+          this.isLoadingNextdata = false;
+          this.message.error(`${err?.error?.message}`);
+        }
+      })
+    }
   }
 
   onAll() {
