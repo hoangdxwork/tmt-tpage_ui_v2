@@ -27,7 +27,7 @@ export class FirebaseMessagingService  {
       private angularFireAuth: AngularFireAuth) {
   }
 
-  deleteToken() {
+  deleteToken1() {
     return this.angularFireMessaging.getToken
       .pipe(mergeMap((token: any) => this.angularFireMessaging.deleteToken(token)));
   }

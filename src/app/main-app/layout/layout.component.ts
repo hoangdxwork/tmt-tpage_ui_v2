@@ -359,7 +359,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           this.isRegister = false;
           this.isDeviceToken = true;
-          this.message.error(err?.error?.message);
+          this.message.error('Đăng kí nhận tin thất bại');
         }
     })
   }

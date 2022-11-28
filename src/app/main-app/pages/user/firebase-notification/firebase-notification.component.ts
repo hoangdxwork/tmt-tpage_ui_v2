@@ -5,7 +5,7 @@ import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto
 import { FireBaseDevice, FireBaseTopicDto, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, deleteToken } from 'firebase/messaging';
 import { takeUntil } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { TDSConfigService } from 'tds-ui/core/config';
@@ -61,7 +61,7 @@ export class FirebaseNotificationComponent implements OnInit {
 
     this.tdsConfigService.set('message', {
       maxStack: 3
-      });
+    });
   }
 
   loadTopics() {
@@ -156,6 +156,13 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   onDetail(item: any) {
+    if(item.dateRead == null) {
+      this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          item.dateRead = Date.now();
+        }
+      });
+    }
     this.dataDetail = item;
     this.setCurrentConversationItem(item);
   }
