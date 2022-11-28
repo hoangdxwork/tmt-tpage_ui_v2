@@ -2,7 +2,7 @@
     <div *ngIf="item" (click)="selectPost(item)"  class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
     {{currentPost?.ObjectId == item.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
 
-    <div class="flex flex-col gap-y-3" *ngIf="item">
+    <div class="flex flex-col gap-y-3" *ngIf="(item.Data | facebookType)">
         <div class="relative w-[120px] h-[88px]">
             <div *ngIf="(item.Data | facebookType)?.picture; else noPicture" class="relative">
                 <img [src]="(item.Data | facebookType)?.picture" alt=""
@@ -154,7 +154,7 @@
 </div>
 
 <!-- <div *ngIf="postChilds && postChilds.length > 0 && currentPost?.Id == item.Id"  class="pl-7 flex flex-col gap-y-1">
-    
+
     <div *ngFor="let postChild of postChilds">
         <ng-container *ngIf="postChild.parent_id && postChild.parent_id == item!.ObjectId">
             <div class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4 {{ currentPost?.ObjectId == postChild.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"

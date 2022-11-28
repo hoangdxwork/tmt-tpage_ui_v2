@@ -97,7 +97,7 @@ export class CsOrder_FromConversationHandler {
       order.Email = order.Email || partner?.Email || conversationInfo.Conversation?.Email;
 
       order.PartnerId = order.PartnerId || conversationInfo.Partner?.Id;
-      order.PartnerName = order.PartnerName || conversationInfo.Conversation.Name || partner.Name;
+      order.PartnerName = order.PartnerName || conversationInfo.Conversation.Name || partner.Name || order.Facebook_UserName;
 
       if(this.userInit && !order.UserId) {
           order.UserId = this.userInit.Id;

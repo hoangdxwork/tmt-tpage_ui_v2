@@ -26,7 +26,7 @@ export class ChatomniTShopType implements PipeTransform {
 }
 
 @Pipe({
-  name: 'facebookDataMessage'
+  name: 'facebookDataCs'
 })
 
 export class ChatomniFacebookData implements PipeTransform {
@@ -37,7 +37,7 @@ export class ChatomniFacebookData implements PipeTransform {
 }
 
 @Pipe({
-  name: 'tShopDataMessage'
+  name: 'tshopDataCs'
 })
 
 export class ChatomniTShopData implements PipeTransform {

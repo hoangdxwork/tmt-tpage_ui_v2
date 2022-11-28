@@ -7,7 +7,6 @@ import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { PromotionAllDTO } from 'src/app/main-app/dto/configs/promotion/promotion-add.dto';
 import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPercentageSpecificProduct, showProduct } from 'src/app/main-app/services/facades/config-promotion.facede';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -18,6 +17,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
   templateUrl: './config-promotion-all.component.html',
   providers: [TDSDestroyService]
 })
+
 export class ConfigPromotionAllComponent implements OnInit {
   @Input() form!: FormGroup;
 

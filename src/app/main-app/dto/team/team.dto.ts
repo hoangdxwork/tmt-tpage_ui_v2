@@ -49,7 +49,7 @@ export interface CRMTeamDTO {
   IsDefault: boolean;
   IsConverted: boolean;
   Facebook_TokenExpired?: any;
-  Facebook_TypeId: number;
+  Facebook_TypeId: any;
   ParentId?: any;
   ParentName?: any;
   Facebook_Configs?: any;
@@ -94,6 +94,62 @@ export interface InputCreateChatbotDTO {
   Category: string;
   CompanyId: number;
   Phone: string;
+}
+
+export interface VerifyTeamDto {
+  FacebookId: string;
+  FacebookName: string;
+  FacebookAvatar: string;
+  Token: string;
+}
+
+export interface FaebookVerifyDataDto {
+  Id: number;
+  Name: string;
+  OwnerId?: any;
+  OwnerToken?: any;
+  OwnerAvatar?: any;
+  OwnerUrl?: any;
+  ChannelId?: any;
+  ChannelToken?: any;
+  ChannelAvatar?: any;
+  ShopToken?: any;
+  Active?: any;
+  CompanyId?: any;
+  Type?: any;
+  CountPage: number;
+  CountGroup: number;
+  Facebook_UserId: string;
+  Facebook_ASUserId: string;
+  Facebook_UserName: string;
+  Facebook_UserAvatar?: any;
+  Facebook_UserCover?: any;
+  Facebook_UserToken: string;
+  Facebook_UserPrivateToken?: any;
+  Facebook_UserPrivateToken2?: any;
+  Facebook_PagePrivateToken?: any;
+  Facebook_PageId?: any;
+  Facebook_PageName?: any;
+  Facebook_PageLogo?: any;
+  Facebook_PageCover?: any;
+  Facebook_PageToken?: any;
+  Facebook_Link?: any;
+  IsDefault: boolean;
+  IsConverted: boolean;
+  Facebook_TokenExpired?: any;
+  Facebook_TypeId: number;
+  ParentId?: any;
+  ParentName?: any;
+  Facebook_Configs?: any;
+  Childs: any[];
+  ShopId?: any;
+  Facebook_AccountId: string;
+  DateCreated?: any;
+}
+
+export interface FacebookVerifyResultDto {
+  IsAddRequired: boolean;
+  Data: FaebookVerifyDataDto;
 }
 
 export enum Facebook_Type {

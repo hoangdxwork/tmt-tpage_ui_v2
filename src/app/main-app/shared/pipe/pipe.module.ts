@@ -46,6 +46,7 @@ import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
 import { PriorityStatusColorPipe, PriorityStatusNamePipe } from './priority-status.pipe';
 import { SortDateClassPipe, SortDateNamePipe } from './sort-date.pipe';
 import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
+import { GetSocketNamePipe } from './get-socket-name.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -109,7 +110,8 @@ const cmp =[
   PriorityStatusNamePipe,
   SortDateNamePipe,
   SortDateClassPipe,
-  FirebaseSubscribedPipe
+  FirebaseSubscribedPipe,
+  GetSocketNamePipe,
 ]
 
 @NgModule({

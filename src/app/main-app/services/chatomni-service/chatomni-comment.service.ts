@@ -124,4 +124,12 @@ export class ChatomniCommentService extends BaseSevice  {
         }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
+
+  replyCommentTshop(teamId: number, userId: any, data: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}_${userId}/comments`,
+      method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }

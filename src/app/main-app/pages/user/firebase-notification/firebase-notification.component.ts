@@ -139,7 +139,7 @@ export class FirebaseNotificationComponent implements OnInit {
             }
           }
 
-          if (item == null) {
+          if (item == null && this.data) {
             item = this.data[0];
           }
 
@@ -251,6 +251,7 @@ export class FirebaseNotificationComponent implements OnInit {
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
+          this.message.success('Đăng kí nhận tin thành công');
       },
       error: (err: any) => {
           this.isLoading = false;
