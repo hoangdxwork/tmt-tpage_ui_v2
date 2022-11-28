@@ -8,7 +8,7 @@ import { Injectable } from "@angular/core";
 export class PreparePartnerHandler {
 
     public prepareModel(form:FormGroup, data:ChangePartnerPriceListDTO, partner: PartnerDetailDTO, idEdit: any) {
-        
+
         if (data?.Account) {
             form.controls['Account'].setValue(data.Account);
             form.controls['AccountId'].setValue(data.Account.Id);
@@ -17,8 +17,14 @@ export class PreparePartnerHandler {
         if (partner) {
             form.controls['Partner'].setValue(partner);
             form.controls['PartnerId'].setValue(partner.Id);
+
             // TODO: cập nhật giảm giá
-            form.controls['Discount'].setValue(partner.Discount);
+            let discount = form.controls['Discount'].value;
+            if(discount > 0) {
+                form.controls['Discount'].setValue(discount);
+            } else {
+                form.controls['Discount'].setValue(partner.Discount);
+            }
 
             data.PartnerDisplayName = partner.Name;
             data.PartnerPhone = partner.Phone;
@@ -49,7 +55,7 @@ export class PreparePartnerHandler {
             form.controls['PriceList'].setValue(data.PriceList);
             form.controls['PriceListId'].setValue(data.PriceList?.Id);
         }
-        
+
         form.controls['Revenue'].setValue(data?.Revenue);
         form.controls['DeliveryNote'].setValue(data?.DeliveryNote);
         form.controls['ReceiverName'].setValue(data?.ReceiverName);
