@@ -799,8 +799,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   showModalLiveCampaignBill(data: ReportLiveCampaignDetailDTO) {
-    console.log(data);
-    
     if(data.TotalFastSaleOrder){
         this.modal.create({
             title: 'Hóa đơn đã chốt',
