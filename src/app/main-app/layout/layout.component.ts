@@ -12,6 +12,11 @@ import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
 import { SocketService } from '@app/services/socket-io/socket.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { TDSMessageService } from 'tds-ui/message';
+import { FireBaseDevice, TopicDetailDto } from '@app/dto/firebase/topics.dto';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 
 @Component({
   selector: 'app-layout',
@@ -31,15 +36,22 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   establishedConnected?: boolean = true;
   notiSocket!: string;
 
-  @ViewChild('withLayout') ViewChildWithLayout!: ElementRef;
+  @ViewChild('withLayout') viewChildWithLayout!: ElementRef;
+  isDeviceToken: boolean = false;
+  isRegister: boolean = false;
+  topicData: any = [];
+  idsTopic: any[] = [];
 
   constructor(private auth: TAuthService,
     public crmService: CRMTeamService,
     private modalService: TDSModalService,
     private socketService: SocketService,
     private activatedRoute: ActivatedRoute,
-    private router: Router,
+    public router: Router,
+    private firebaseRegisterService: FirebaseRegisterService,
+    private firebaseMessagingService: FirebaseMessagingService,
     private cdRef: ChangeDetectorRef,
+    private message: TDSMessageService,
     private resizeObserver: TDSResizeObserver,
     private destroy$: TDSDestroyService ) {
 
@@ -85,15 +97,27 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
     // TODO: check trạng thái connnect socket-io
     this.establishedConnected = this.socketService.establishedConnected;
+
+    this.firebaseDevice();
+  }
+
+  firebaseDevice() {
+    let deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+    if(deviceToken) {
+        this.isDeviceToken = true;
+    } else {
+        this.isDeviceToken = false;
+        this.loadTopics();
+    }
   }
 
   ngAfterViewInit(): void {
-    this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth;
+    this.withLayout = this.viewChildWithLayout?.nativeElement?.offsetWidth;
 
-    this.resizeObserver.observe(this.ViewChildWithLayout)
+    this.resizeObserver.observe(this.viewChildWithLayout)
       .subscribe(() => {
 
-        this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth;
+        this.withLayout = this.viewChildWithLayout?.nativeElement?.offsetWidth;
 
         if(this.withLayout < this.withLaptop){
              this.inlineCollapsed = true;
@@ -292,4 +316,94 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         }
       }
   }
+
+  onCancel() {
+    this.isDeviceToken = true;
+  }
+
+  requestPermission() {
+    const messaging = getMessaging();
+    this.isRegister = true;
+
+    getToken(messaging, { vapidKey: environment.firebaseConfig.vapidKey })
+      .then((token: any) => {
+
+          if(!token)  {
+              this.isRegister = false;
+              this.message.info('No registration token available. Request permission to generate one');
+              return;
+          }
+
+          this.firebaseMessagingService.setDeviceTokenLocalStorage(token);
+          this.registerDevice(token);
+
+      }).catch((error) => {
+          this.isRegister = false;
+          this.message.error('An error occurred while retrieving token');
+    });
+  }
+
+  registerDevice(token: string) {
+    let model = {
+        Platform: FireBaseDevice.Google,
+        DeviceToken: token
+    };
+
+    this.firebaseRegisterService.registerDevice(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.message.success('Đăng ký nhận tin thành công');
+            this.isRegister = false;
+            this.isDeviceToken = true;
+            this.registerTopics();
+        },
+        error: (err: any) => {
+          this.isRegister = false;
+          this.isDeviceToken = true;
+          this.message.error(err?.error?.message);
+        }
+    })
+  }
+
+  registerTopics() {
+    let model = {
+      TopicIds: this.idsTopic
+    }
+
+    this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {},
+      error: (err: any) => {
+          this.isRegister = false;
+          this.isDeviceToken = true;
+          this.message.error(err?.error?.message);
+      }
+    })
+  }
+
+  loadTopics() {
+    this.firebaseRegisterService.topics().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+          this.topicData = [...data];
+          this.mappingTopicIds();
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    });
+  }
+
+  mappingTopicIds() {
+    let value = [] as TopicDetailDto[];
+
+    this.topicData?.map((x: any) => {
+      if(x && x.topics) {
+          x.topics.map((a: any) => {
+              value.push(a);
+          })
+      }
+    });
+
+    let ids = value?.map(x => x.id) as any[];
+    this.idsTopic = ids;
+  }
+
 }

@@ -1,4 +1,3 @@
-
 export interface TopicDetailDto {
   id: string;
   name: string;

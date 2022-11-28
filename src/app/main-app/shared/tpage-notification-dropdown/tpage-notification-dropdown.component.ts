@@ -46,21 +46,6 @@ export class TpageNotificationDropdownComponent implements OnInit {
     })
   }
 
-  // prepareModel(pageSize: number, pageIndex: number) {
-  //   let model = {} as NotificationGetMappingDTO;
-
-  //   model.Page = pageIndex;
-  //   model.Limit = pageSize;
-  //   model.IsRead = undefined;
-
-  //   return model;
-  // }
-
-  // onNext() {
-  //   this.pageIndex++;
-  //   this.loadData(this.pageSize, this.pageIndex);
-  // }
-
   onDetail(item: any) {
     this.visible = false;
     this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe();

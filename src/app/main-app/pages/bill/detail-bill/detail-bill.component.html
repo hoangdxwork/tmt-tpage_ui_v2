@@ -583,7 +583,7 @@
                                 <span>Địa chỉ giao hàng</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.ReceiverAddress || '---'}}</span>
+                                <span class="font-semibold">{{ dataModel.Ship_Receiver?.Street || dataModel.ReceiverAddress || '---'}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6">

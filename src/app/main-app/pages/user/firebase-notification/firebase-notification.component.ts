@@ -14,7 +14,6 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { ModalGetNotificationComponent } from '../components/modal-get-notification/modal-get-notification.component';
-import { ModalRequestPermissionComponent } from '../components/modal-request-permission/modal-request-permission.component';
 
 @Component({
   selector: 'firebase-notification',
@@ -58,10 +57,7 @@ export class FirebaseNotificationComponent implements OnInit {
     this.loadUrl();
 
     this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
-    this.loadSubscribedTopics();
-
     this.loadTopics();
-    this.loadSubscribedTopics();
 
     this.tdsConfigService.set('message', {
       maxStack: 3
@@ -280,21 +276,10 @@ export class FirebaseNotificationComponent implements OnInit {
       componentParams: {
         deviceToken: deviceToken,
         topicData: this.topicData,
-        idsTopic: this.idsTopic,
-        idsRegister: this.idsRegister
+        idsTopic: this.idsTopic
       }
     });
   }
 
-  loadSubscribedTopics() {
-    this.firebaseRegisterService.subscribedTopics().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.idsRegister = [...res];
-      },
-      error: (error: any) => {
-          this.message.error(error?.error?.message);
-      }
-    });
-  }
 
 }

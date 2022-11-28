@@ -57,8 +57,7 @@ export class ConfigPromotionAllComponent implements OnInit {
     private companyService: CompanyService,
     private message: TDSMessageService,
     private productIndexDBService: ProductIndexDBService,
-    private cacheApi: THelperCacheService,
-  ) { }
+    private cacheApi: THelperCacheService) { }
 
   get getRewardTypeFormGroup() {
     return this.form.value.RewardType;
@@ -79,10 +78,10 @@ export class ConfigPromotionAllComponent implements OnInit {
     this.productIndexDBService.setCacheDBRequest();
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: KeyCacheIndexDBDTO) => {
-          this.lstProduct = [...res.cacheDbStorage];
+            this.lstProduct = [...res.cacheDbStorage];
         },
         error: (err: any) => {
-          this.message.error(err?.error?.message)
+            this.message.error(err.message);
         }
     })
   }

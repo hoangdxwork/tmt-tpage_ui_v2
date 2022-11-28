@@ -100,10 +100,10 @@ export class ConfigPromotionGroupComponent implements OnInit {
     this.productIndexDBService.setCacheDBRequest();
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: KeyCacheIndexDBDTO) => {
-          this.lstProduct = [...res.cacheDbStorage];
+            this.lstProduct = [...res.cacheDbStorage];
         },
         error: (err: any) => {
-          this.message.error(err?.error?.message)
+            this.message.error(err.message);
         }
     })
   }
