@@ -122,7 +122,7 @@ export interface NlpEntityDto {
 }
 
 export interface ChatomniDataItemDto {
-  Data: any; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
+  Data: any; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto hoặc  TikTokLiveItemDataDto
   Id: string;
   ObjectId: string;
   ParentId?: string | any;
@@ -189,7 +189,7 @@ export enum ChatomniChannelType{
   LazadaShop = 14,
   TikiShop = 15,
 
-  /// Kênh tiktok không chính thống
+  // Kênh tiktok không chính thống
   UnofficialTikTok = 1001,
   UnofficialFacebookUser = 1011,
   UnofficialFacebookGroup = 1012

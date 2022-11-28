@@ -89,15 +89,6 @@ export class AppComponent {
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
 
-          // // Thông báo cập nhật đơn hàng
-          // case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-          //     let paramsPost = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
-          //     let orderNoti = res && paramsPost;
-
-          //     if(orderNoti == true) break;
-          //     this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
-          // break;
-
           // Thông báo xóa đơn hàng
           case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
               let paramsDelete = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;

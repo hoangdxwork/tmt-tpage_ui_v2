@@ -178,7 +178,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
             case ChatmoniSocketEventName.chatomniOnMessage:
               let fbComment = {...res.Data?.Message} as MessageSocketioDto;
 
-              let exist1 = fbComment && fbComment.MessageType == ChatomniMessageType.TShopComment
+              let exist1 = fbComment && fbComment.MessageType == ChatomniMessageType.UnofficialTikTokChat
                   && this.team?.ChannelId == (res.Data?.Conversation?.ChannelId || res.Data.Message?.ChannelId)
                   && this.data.ObjectId == fbComment?.ObjectId && this.dataSource;
 

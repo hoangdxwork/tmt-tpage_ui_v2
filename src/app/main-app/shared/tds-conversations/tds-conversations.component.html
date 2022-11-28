@@ -168,7 +168,7 @@
                         </div>
 
                         <!-- Thông tin bài post -->
-                        <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
+                        <div *ngIf="item.ObjectId && dataSource?.Extras && dataSource?.Extras!.Objects && dataSource?.Extras!.Objects[item.ObjectId]
                             && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
                             <conversation-infopost-item
                                 [team]="team" [typeNumber]="item.Type" [item]="item"
