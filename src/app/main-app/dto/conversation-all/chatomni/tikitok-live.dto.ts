@@ -35,41 +35,4 @@ export interface TikTokLiveItemDataDto {
     ownerUserId: string;
 }
 
-export interface TikTokLiveItemDto {
-    Data: TikTokLiveItemDataDto;
-    Id: string;
-    ObjectId: string;
-    ParentId?: any;
-    Message: string;
-    NlpEntities: any[];
-    Source?: any;
-    Type: ChatomniMessageType;
-    UserId: string;
-    Error?: any;
-    Status: number;
-    IsSystem: boolean;
-    IsOwner: boolean;
-    CreatedById?: any;
-    CreatedBy?: any;
-    CreatedTime: Date;
-    ChannelCreatedTime: Date;
-    ChannelUpdatedTime?: any;
-    Attachments?: any;
-}
-
-export interface Extras {
-}
-
-export interface Paging {
-    Next: string;
-    HasNext: boolean;
-    UrlNext: string;
-}
-
-export interface TikTokLiveDto {
-    Items: TikTokLiveItemDto[];
-    Extras: Extras;
-    Paging: Paging;
-}
-
 

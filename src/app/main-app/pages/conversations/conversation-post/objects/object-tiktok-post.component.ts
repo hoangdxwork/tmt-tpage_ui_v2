@@ -12,43 +12,33 @@ import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/cha
   providers: [ TDSDestroyService ]
 })
 
-export class ObjectTiktokPostComponent  implements OnInit, OnChanges {
+export class ObjectTiktokPostComponent  implements OnInit {
 
   @Input() item?: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
   @Input() postChilds!: any[];
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
-  // ChatomniDataTShopPostDto
-  mdbTshopPost!: ChatomniDataTShopPostDto;
+
+  postPictureError: any[] = [];
 
   constructor(private modal: TDSModalService,
     private viewContainerRef: ViewContainerRef) {
   }
 
   ngOnInit() {
-    if(this.item) {
-        this.mdbTshopPost = this.item.Data as ChatomniDataTShopPostDto;
-    }
-  }
-
-  showModalLiveCampaign(item: ChatomniObjectsItemDto) {
-    // const modal = this.modal.create({
-    //   title: 'Chiến dịch',
-    //   content: ListLiveCampaignComponent,
-    //   size: "lg",
-    //   viewContainerRef: this.viewContainerRef,
-    //   componentParams:{
-    //     post: item
-    //   }
-    // });
   }
 
   selectPost(item: ChatomniObjectsItemDto) {
-      this.selectPostItemEvent.emit(item);
+    this.selectPostItemEvent.emit(item);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  errorPostPicture(item: ChatomniObjectsItemDto) {
+    this.postPictureError.push(item?.ObjectId);
+  }
+
+  checkPostPictureError(item: ChatomniObjectsItemDto) {
+    return this.postPictureError.find(f => f == item?.ObjectId);
   }
 
 }

@@ -1,14 +1,13 @@
 import { ExtrasDto, PagingTimestamp } from './chatomni-data.dto';
 import { Attachments } from './../../facebook-post/facebook-post.dto';
-import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
-
+import { ChatomniObjectDataTiktokDto } from './chatomni-object-tiktok.dto';
 
 export interface ChatomniObjectsItemDto {
   /**
-   * MDB_Facebook_Mapping_PostDto | ChatomniDataTShopPostDto
+   * MDB_Facebook_Mapping_PostDto | ChatomniDataTShopPostDto | ChatomniDataTiktokPostDto
    * */
-  Data: MDB_Facebook_Mapping_PostDto | ChatomniDataTShopPostDto,
+  Data: any, // MDB_Facebook_Mapping_PostDto | ChatomniDataTShopPostDto | ChatomniObjectDataTiktokDto
   Id: string;
   ObjectId: string;
   ObjectType: ChatomniObjectTypeDto;

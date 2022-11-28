@@ -1,315 +1,298 @@
 <tds-spin [spinning]="isLoading" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full" style="padding: 8px 0 8px 8px">
-    <virtual-scroller *ngIf="dataSource && dataSource.Items && dataSource.Items.length > 0"
-          #scroll [items]="(dataSource.Items | sortDataSourcePost)" class="tds-custom-scroll w-full h-full"
-          (vsEnd)="vsEnd($event)"
-          (vsStart)="vsStart($event)"
-          [enableUnequalChildrenSizes]="true"
-          [scrollAnimationTime]="750">
+  <virtual-scroller *ngIf="dataSource && dataSource.Items && dataSource.Items.length > 0"
+        #scroll [items]="(dataSource.Items | sortDataSourcePost)" class="tds-custom-scroll w-full h-full"
+        (vsEnd)="vsEnd($event)"
+        (vsStart)="vsStart($event)"
+        [enableUnequalChildrenSizes]="true"
+        [scrollAnimationTime]="750">
 
-          <div *ngIf="isLoadingNextdata" class="p-2 bg-white rounded-md mr-2">
-              <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
-          </div>
+        <div *ngIf="isLoadingNextdata" class="p-2 bg-white rounded-md mr-2">
+            <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+        </div>
 
-           <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2">
-              <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
-                  <div>
-                      <tds-avatar [size]="'lg'" [tdsSrc]="(item.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
-                  </div>
-                  <div class="ml-2 w-full h-full">
-                      <div class="bg-white rounded-2xl px-4 py-3">
-                          <div class="flex items-center justify-between">
-                              <div class="flex gap-x-2 items-center">
+         <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
+            <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
+                <div>
+                    <tds-avatar [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [tdsSrc]="(item.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
+                </div>
+                <div class="ml-2 w-full h-full">
+                    <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
+                        <div class="flex items-center justify-between">
+                            <div class="flex gap-x-2 items-center">
 
-                                    <div class="min-w-[50px] max-w-[220px] truncate">
-                                        <label class="font-semibold cursor-pointer" *ngIf="item.Data">{{ (item.Data | tshopDataCs).Actor?.Name }} </label>
-                                    </div>
-
-                                  <!-- Mã đơn hàng -->
-                                  <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
-                                      <div *ngFor="let order of commentOrders[item.Data?.from!.id]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
-                                          <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(order, item)">
-                                              <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
-                                          </div>
-                                      </div>
+                                  <div class="min-w-[50px] max-w-[220px] truncate">
+                                      <label class="font-semibold cursor-pointer" *ngIf="item.Data">{{ (item.Data | tshopDataCs).Actor?.Name }} </label>
                                   </div>
 
-                                    <!-- Mã hóa đơn -->
-                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
-                                    <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
-                                            {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
-                                        </span>
-
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" (click)="onPopoverVisible(item.Id)"
-                                            class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
-                                            tds-popover
-                                            [popoverVisible]="idPopoverVisible == item.Id"
-                                            [popoverContent]="invContent"
-                                            popoverTrigger="click"
-                                            [popoverBackdrop]="true">
-                                            +{{invoiceDict[partnerDict[item.UserId].i].length - 1}}
-                                        </span>
-
-                                        <ng-template #invContent>
-                                            <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
-                                                <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
-                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)" (click)="onOpenDrawerBillDetail(inv)">
-                                                        <span class="text-primary-1 font-semibold cursor-pointer" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
-                                                        <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
-                                                    </span>
-                                                </div>
-
-                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
-                                                    ...Xem thêm
-                                                </div>
-
-                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
-                                                    ...Thu gọn
-                                                </div>
-                                            </div>
-                                        </ng-template>
+                                <!-- Mã đơn hàng -->
+                                <div *ngIf="commentOrders && item?.UserId && commentOrders[item?.UserId] && !item.IsOwner" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
+                                    <div *ngFor="let order of commentOrders[item?.UserId]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
+                                        <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(item, order)">
+                                            <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
+                                        </div>
                                     </div>
-                                  </div>
                                 </div>
 
-                              <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
-                          </div>
-
-                          <!-- nội dung bình luận -->
-                          <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
-                              <div #contentMessage showMore [length]="100" [text]="(item.Message | formatIconLike | bbcodeConvert )"></div>
-                              <!-- <button tooltipTitle="Thêm vào ghi chú" tds-tooltip="" tooltipPlacement="top" (click)="selectNote(i)"
-                                  class="rounded-full h-5 w-5 border border-primary-1 text-primary-1 flex justify-center items-center">
-                                  <span class="tdsi-plus-fill"></span>
-                              </button> -->
-                          </div>
-
-                          <!-- hình ảnh đính kèm -->
-                          <div *ngIf="item.Data?.attachment">
-                              <img tds-image *ngIf="item.Data?.attachment?.type != 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
-                                class="max-w-[200px]" />
-                              <img tds-image *ngIf="item.Data?.attachment?.type == 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
-                                class="max-w-[100px]" />
-                          </div>
-
-                          <!-- thao tác -->
-                          <div class="flex items-center pt-3">
-                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm"
-                                  (click)="onInsertFromPost(item, commentOrders)">Tạo đơn hàng</button>
-
-                              <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
-                                  tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders)" tds-tooltip>
-                                  <span class="flex items-center justify-center">
-                                      <i class="tdsi-information-fill text-neutral-1-500"></i>
-                                  </span>
-                              </button>
-
-                              <button type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item)">
-                                  <span class="flex items-center justify-center">
-                                      <i class="tdsi-reply-fill text-neutral-1-500"></i>
-                                  </span>
-                              </button>
-
-                              <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
-                                  <span class="flex items-center justify-center">
-                                      <i class="tdsi-messenger-fill text-neutral-1-500"></i>
-                                  </span>
-                              </button>
-
-                              <div *ngIf="childs[item.Id]">
-                                  <button type="button" *ngIf="isHiddenComment[item.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
-                                      <span class="flex items-center justify-center">
-                                          <i class="tdsi-eye-close-fill text-neutral-1-500"></i>
+                                  <!-- Mã hóa đơn -->
+                                <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i && !item.IsOwner" class="flex flex-auto flex-row items-center">
+                                  <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
+                                      <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
+                                          {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
                                       </span>
-                                  </button>
 
-                                  <button type="button" *ngIf="!isHiddenComment[item.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, false)" class="mr-2" size="sm" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
-                                      <span class="flex items-center justify-center">
-                                          <i class="tdsi-eye-line text-neutral-1-500"></i>
+                                      <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" (click)="onPopoverVisible(item.Id)"
+                                          class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
+                                          tds-popover
+                                          [popoverVisible]="idPopoverVisible == item.Id"
+                                          [popoverContent]="invContent"
+                                          popoverTrigger="click"
+                                          [popoverBackdrop]="true">
+                                          +{{invoiceDict[partnerDict[item.UserId].i].length - 1}}
                                       </span>
-                                  </button>
-                              </div>
 
-                              <div *ngIf="partnerDict && partnerDict[item.UserId]" class="w-full flex flex-row items-center justify-between">
-                                  <!-- trạng thái khách hàng & mã đơn hàng -->
-                                  <div class="flex items-center gap-1.5">
-
-                                      <!-- trạng thái khách hàng -->
-                                      <div *ngIf="partnerDict[item.UserId]" class="button-status flex items-center gap-1.5 mr-4">
-                                          <span *ngIf="partnerDict[item.UserId].p" class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer">
-                                              <i class="tdsi-call-fill text-body-2 leading-none text-white"></i>
-                                          </span>
-
-                                          <span *ngIf="partnerDict[item.UserId].a" class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer">
-                                              <i class="tdsi-pin-fill text-body-2 leading-none text-white"></i>
-                                          </span>
-
-                                          <div *ngIf="partnerDict[item.UserId].st" [ngStyle]="{'background-color': partnerDict[item.UserId].ss+'30', 'border-color': partnerDict[item.UserId].ss, 'color': partnerDict[item.UserId].ss}"
-                                              class="border font-semibold px-2 py-0.5 rounded text-caption-2 ">
-                                              {{partnerDict[item.UserId].st}}
-                                          </div>
-                                      </div>
-                                  </div>
-
-                                  <div *ngIf="partnerDict[item.UserId].t" class="justify-end flex-col gap-2 tag-status flex-auto xl:hidden 2xl:flex">
-                                      <div class="flex gap-2">
-                                          <div class="flex-auto flex flex-nowrap gap-1 justify-end items-center overflow-hidden" #currentWidthTag>
-                                              <div class="flex gap-x-1">
-                                                  <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 0:3" #widthTag
-                                                      class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
-                                                      <div *ngIf="tag" [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
-                                                          class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
-                                                          <div class="flex items-center">
-                                                              <span [ngStyle]="{'background-color': [tag.color_class] }"
-                                                              class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
-                                                          </div>
-                                                          <span class="flex-auto truncate">{{ tag.name }}</span>
-                                                      </div>
-                                                  </div>
-                                              </div>
-                                          </div>
-
-                                          <div class="flex gap-1.5 items-center"  *ngIf="partnerDict[item.UserId].t.length > 3">
-                                              <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer" tds-popover
-                                                  [popoverContent]="popoverContentTag"
-                                                  popoverPlacement="topRight"
-                                                  [popoverBackdrop]="true">
-                                                  +{{partnerDict[item.UserId].t.length - 3}}
-                                              </div>
-
-                                              <ng-template #popoverContentTag>
-                                                  <div class="flex gap-x-2 flex-wrap max-w-[500px]">
-                                                      <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 3:(partnerDict[item.UserId].t.length)" #widthTag
-                                                          class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
-                                                          <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
-                                                              class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
-                                                              <div class="flex items-center">
-                                                                  <span [ngStyle]="{'background-color': [tag.color_class] }"
-                                                                  class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
-                                                              </div>
-                                                              <span class="flex-auto truncate">{{tag.name}}</span>
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                              </ng-template>
-                                          </div>
-                                      </div>
-                                  </div>
-
-                                  <!-- <button (popoverVisibleChange)="callbackTag($event, i)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
-                                      [popoverVisible]="idxClickTag == i" popoverTrigger="click" [popoverPlacement]="['topLeft', 'leftTop']"
-                                      [popoverAutoClose]="false" [popoverContent]="popoverContentTagConversat" [popoverBackdrop]="true"
-                                      popoverPlacement="left" color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent ml-1">
-                                      <div class="w-5 h-5 relative">
-                                          <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
-                                          <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
-                                              height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                              <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745" />
-                                          </svg>
-                                      </div>
-                                  </button> -->
-
-                                  <ng-template #popoverContentTagConversat>
-                                      <div class="w-[336px] max-h-[500px] flex flex-col gap-y-3">
-                                          <div class="flex justify-between">
-                                              <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
-                                              <button tds-button-icon color="secondary" class="!rounded-full"
-                                                  (click)="showModalAddTag()"
-                                                  tds-tooltip
-                                                  tooltipTitle="Thêm nhãn mới">
-                                                  <span class="flex items-center">
-                                                      <i class="tdsi-plus-fill"></i>
+                                      <ng-template #invContent>
+                                          <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
+                                              <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
+                                                  <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)" (click)="onOpenDrawerBillDetail(inv)">
+                                                      <span class="text-primary-1 font-semibold cursor-pointer" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
+                                                      <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
                                                   </span>
-                                              </button>
+                                              </div>
+
+                                              <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
+                                                  ...Xem thêm
+                                              </div>
+
+                                              <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
+                                                  ...Thu gọn
+                                              </div>
                                           </div>
-                                          <tds-form-field class="w-full">
-                                              <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchTag()"/>
-                                              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                                          </tds-form-field>
-                                          <div class="flex-auto flex flex-wrap gap-2.5 overflow-hidden overflow-y-auto tds-custom-scroll">
-                                              <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
-                                                  class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
-                                                  [ngClass]="partnerDict[item.UserId] && partnerDict[item.UserId].t && (item.Id | checkTagSelectedComment : partnerDict[item.UserId].t)?'tdsi-tick-fill opacity-100':'opacity-40'"
-                                                  [ngStyle]="{'background-color': [item.ColorClassName]}" >
-                                                  <span class="font-sans">{{item.Name}}</span>
-                                              </span>
-                                          </div>
-                                      </div>
-                                  </ng-template>
+                                      </ng-template>
+                                  </div>
+                                </div>
                               </div>
-                          </div>
-                      </div>
 
-                    <!-- Input trả lời bình luận -->
-                    <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative min-h-[118px]" *ngIf="item.Data?.is_reply">
-                        <div [ngClass]="isReplyingComment ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
-                        <div class="flex justify-between gap-2 pb-2">
-
-                            <textarea #contentReply tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi" [(ngModel)]="messageModel"
-                                [ngModelOptions]="{standalone: true}" (keydown.enter)="onEnter(item, $event)" class="resize-none" rows="2"></textarea>
-
-                            <button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer(item)">
-                                <span class="flex items-center px-5">
-                                    <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
-                                </span>
-                            </button>
+                            <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
                         </div>
 
-                        <!-- Check Private Reply -->
-                        <div class="quick-message gap-5">
-                          <div class="check gap-4 flex items-center">
-                            <div class="icon-send flex gap-x-2 items-center">
-                                <button tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:border-transparent focus:ring-0 focus:ring-transparent hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Cảm xúc"
-                                    tds-popover popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
-                                    [popoverBackdrop]="true" popoverPlacement="top">
-                                  <i class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none"></i>
+                        <!-- nội dung bình luận -->
+                        <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
+                            <div #contentMessage showMore [length]="100" [text]="(item.Message | formatIconLike | bbcodeConvert )"></div>
+                        </div>
+
+                        <!-- hình ảnh đính kèm -->
+                        <div *ngIf="item.Attachments">
+                            <!-- <img tds-image *ngIf="(item.Data | tshopDataCs)?.type != 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
+                              class="max-w-[200px]" />
+                            <img tds-image *ngIf="(item.Data | tshopDataCs)?.type == 'sticker'" [tdsSrc]="item.Data.attachment?.media?.image?.src"
+                              class="max-w-[100px]" /> -->
+                        </div>
+
+                        <!-- thao tác -->
+                        <div *ngIf="!item.IsOwner" class="flex items-center pt-3" >
+                            <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm"
+                                (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
+
+                            <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
+                                tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.UserId] : '')" tds-tooltip>
+                                <span class="flex items-center justify-center">
+                                    <i class="tdsi-information-fill text-neutral-1-500"></i>
+                                </span>
+                            </button>
+
+                            <button *ngIf="!item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item)">
+                                <span class="flex items-center justify-center">
+                                    <i class="tdsi-reply-fill text-neutral-1-500"></i>
+                                </span>
+                            </button>
+
+                            <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                                <span class="flex items-center justify-center">
+                                    <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+                                </span>
+                            </button>
+
+                            <div *ngIf="childs[item.Id]">
+                                <button type="button" *ngIf="isHiddenComment[item.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
+                                    <span class="flex items-center justify-center">
+                                        <i class="tdsi-eye-close-fill text-neutral-1-500"></i>
+                                    </span>
                                 </button>
-                                <ng-template #infoEmojiMart>
-                                  <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
-                                </ng-template>
 
-                                <quick-reply-button tds-tooltip tooltipTitle="Tin nhắn nhanh" (onQuickReplySelected)="onQuickReplySelected($event, partnerDict[item.UserId])"></quick-reply-button>
-
-                                <div class="w-[30px]">
-                                  <button *ngIf="item.Data.is_private_reply" (click)="onProductsbypageFb(item)" tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:border-transparent focus:ring-0 focus:ring-transparent hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Sản phẩm">
-                                    <i class="tdsi-product-line text-neutral-1-400 text-xl leading-none"></i>
-                                  </button>
-                                </div>
+                                <button type="button" *ngIf="!isHiddenComment[item.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, false)" class="mr-2" size="sm" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
+                                    <span class="flex items-center justify-center">
+                                        <i class="tdsi-eye-line text-neutral-1-500"></i>
+                                    </span>
+                                </button>
                             </div>
-                            <tds-checkbox [checked]="item.Data.is_private_reply" (change)="isPrivateReply(item)"> Gửi về tin nhắn </tds-checkbox>
-                          </div>
+
+                            <div *ngIf="partnerDict && partnerDict[item.UserId]" class="w-full flex flex-row items-center justify-between">
+                                <!-- trạng thái khách hàng & mã đơn hàng -->
+                                <div class="flex items-center gap-1.5">
+
+                                    <!-- trạng thái khách hàng -->
+                                    <div *ngIf="partnerDict[item.UserId]" class="button-status flex items-center gap-1.5 mr-4">
+                                        <span *ngIf="partnerDict[item.UserId].p" class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer">
+                                            <i class="tdsi-call-fill text-body-2 leading-none text-white"></i>
+                                        </span>
+
+                                        <span *ngIf="partnerDict[item.UserId].a" class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer">
+                                            <i class="tdsi-pin-fill text-body-2 leading-none text-white"></i>
+                                        </span>
+
+                                        <div *ngIf="partnerDict[item.UserId].st" [ngStyle]="{'background-color': partnerDict[item.UserId].ss+'30', 'border-color': partnerDict[item.UserId].ss, 'color': partnerDict[item.UserId].ss}"
+                                            class="border font-semibold px-2 py-0.5 rounded text-caption-2 ">
+                                            {{partnerDict[item.UserId].st}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="partnerDict[item.UserId].t" class="justify-end flex-col gap-2 tag-status flex-auto xl:hidden 2xl:flex">
+                                    <div class="flex gap-2">
+                                        <div class="flex-auto flex flex-nowrap gap-1 justify-end items-center overflow-hidden" #currentWidthTag>
+                                            <div class="flex gap-x-1">
+                                                <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 0:3" #widthTag
+                                                    class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                                                    <div *ngIf="tag" [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
+                                                        class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
+                                                        <div class="flex items-center">
+                                                            <span [ngStyle]="{'background-color': [tag.color_class] }"
+                                                            class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                                                        </div>
+                                                        <span class="flex-auto truncate">{{ tag.name }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex gap-1.5 items-center"  *ngIf="partnerDict[item.UserId].t.length > 3">
+                                            <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer" tds-popover
+                                                [popoverContent]="popoverContentTag"
+                                                popoverPlacement="topRight"
+                                                [popoverBackdrop]="true">
+                                                +{{partnerDict[item.UserId].t.length - 3}}
+                                            </div>
+
+                                            <ng-template #popoverContentTag>
+                                                <div class="flex gap-x-2 flex-wrap max-w-[500px]">
+                                                    <div *ngFor="let tag of partnerDict[item.UserId].t | slice: 3:(partnerDict[item.UserId].t.length)" #widthTag
+                                                        class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                                                        <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
+                                                            class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
+                                                            <div class="flex items-center">
+                                                                <span [ngStyle]="{'background-color': [tag.color_class] }"
+                                                                class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                                                            </div>
+                                                            <span class="flex-auto truncate">{{tag.name}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ng-template #popoverContentTagConversat>
+                                    <div class="w-[336px] max-h-[500px] flex flex-col gap-y-3">
+                                        <div class="flex justify-between">
+                                            <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
+                                            <button tds-button-icon color="secondary" class="!rounded-full"
+                                                (click)="showModalAddTag()"
+                                                tds-tooltip
+                                                tooltipTitle="Thêm nhãn mới">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-plus-fill"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <tds-form-field class="w-full">
+                                            <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchTag()"/>
+                                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                                        </tds-form-field>
+                                        <div class="flex-auto flex flex-wrap gap-2.5 overflow-hidden overflow-y-auto tds-custom-scroll">
+                                            <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
+                                                class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
+                                                [ngClass]="partnerDict[item.UserId] && partnerDict[item.UserId].t && (item.Id | checkTagSelectedComment : partnerDict[item.UserId].t)?'tdsi-tick-fill opacity-100':'opacity-40'"
+                                                [ngStyle]="{'background-color': [item.ColorClassName]}" >
+                                                <span class="font-sans">{{item.Name}}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
                         </div>
                     </div>
 
+                  <!-- Input trả lời bình luận -->
+                  <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative min-h-[118px]" *ngIf="item.Data?.is_reply">
+                      <div [ngClass]="isReplyingComment ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
+                      <div class="flex justify-between gap-2 pb-2">
+
+                          <textarea #contentReply tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi" [(ngModel)]="messageModel"
+                              [ngModelOptions]="{standalone: true}" (keydown.enter)="onEnter(item, $event)" class="resize-none" rows="2"></textarea>
+
+                          <button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer(item)">
+                              <span class="flex items-center px-5">
+                                  <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+                              </span>
+                          </button>
+                      </div>
+
+                      <!-- Check Private Reply -->
+                      <div class="quick-message gap-5">
+                        <div class="check gap-4 flex items-center">
+                          <div class="icon-send flex gap-x-2 items-center">
+                              <button tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:border-transparent focus:ring-0 focus:ring-transparent hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Cảm xúc"
+                                  tds-popover popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
+                                  [popoverBackdrop]="true" popoverPlacement="top">
+                                <i class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none"></i>
+                              </button>
+                              <ng-template #infoEmojiMart>
+                                <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+                              </ng-template>
+
+                              <quick-reply-button tds-tooltip tooltipTitle="Tin nhắn nhanh" (onQuickReplySelected)="onQuickReplySelected($event, partnerDict[item.UserId])"></quick-reply-button>
+
+                              <div class="w-[30px]">
+                                <button *ngIf="item.Data.is_private_reply" (click)="onProductsbypageFb(item)" tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:border-transparent focus:ring-0 focus:ring-transparent hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Sản phẩm">
+                                  <i class="tdsi-product-line text-neutral-1-400 text-xl leading-none"></i>
+                                </button>
+                              </div>
+                          </div>
+                          <tds-checkbox [checked]="item.Data.is_private_reply" (change)="isPrivateReply(item)"> Gửi về tin nhắn </tds-checkbox>
+                        </div>
+                      </div>
                   </div>
-              </div>
-          </div>
 
-          <div *ngIf="isLoadingNextdata" class="p-2 bg-white rounded-md mr-2">
-              <tds-skeleton  [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
-              <tds-skeleton  [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
-          </div>
+                </div>
+            </div>
+        </div>
 
-    </virtual-scroller>
+        <div *ngIf="isLoadingNextdata" class="p-2 bg-white rounded-md mr-2">
+            <tds-skeleton  [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+            <tds-skeleton  [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+        </div>
+
+  </virtual-scroller>
 </tds-spin>
 
 <drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order" (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
 
 <tds-drawer [visible]="isOpenDrawer"
-    [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
-    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'50vw'">
-    <ng-template #titleMessage>
-        <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
-            Gửi tin nhắn Facebook
-        </span>
-    </ng-template>
-    <ng-container *tdsDrawerContent>
-        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
-            <div *ngIf="currentConversation && team" class="w-full">
-                <shared-tds-conversations class="flex w-full h-full" [team]="team"
-                    [data]="currentConversation" [type]="'all'">
-                </shared-tds-conversations>
-            </div>
-        </div>
-    </ng-container>
+  [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+  [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'50vw'">
+  <ng-template #titleMessage>
+      <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
+          Gửi tin nhắn Facebook
+      </span>
+  </ng-template>
+  <ng-container *tdsDrawerContent>
+      <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
+          <div *ngIf="currentConversation && team" class="w-full">
+              <shared-tds-conversations class="flex w-full h-full" [team]="team"
+                  [data]="currentConversation" [type]="'all'">
+              </shared-tds-conversations>
+          </div>
+      </div>
+  </ng-container>
 </tds-drawer>
