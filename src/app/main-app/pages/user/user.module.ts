@@ -29,9 +29,16 @@ import { TDSTabsModule } from 'tds-ui/tabs';
 import { TDSSelectModule } from 'tds-ui/select';
 import { ModalEditInfoUserComponent } from './components/modal-edit-info-user/modal-edit-info-user.component';
 import { ModalChangePasswordComponent } from './components/modal-change-password/modal-change-password.component';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { FirebaseNotificationComponent } from './firebase-notification/firebase-notification.component';
+import { ModalGetNotificationComponent } from './components/modal-get-notification/modal-get-notification.component';
+import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { TDSSkeletonModule } from 'tds-ui/skeleton';
+import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
 
 const SERVICES = [
-  TenantService
+  TenantService,
+  FirebaseRegisterService,
 ]
 
 @NgModule({
@@ -47,7 +54,9 @@ const SERVICES = [
     NotificationListComponent,
     NotificationDetailComponent,
     ModalEditInfoUserComponent,
-    ModalChangePasswordComponent
+    ModalChangePasswordComponent,
+    FirebaseNotificationComponent,
+    ModalGetNotificationComponent,
   ],
   imports: [
     CommonModule,
@@ -68,7 +77,10 @@ const SERVICES = [
     TDSPopoverModule,
     TDSTabsModule,
     PipeModule,
-    TDSModalModule
+    TDSModalModule,
+    VirtualScrollerModule,
+    TDSSkeletonModule,
+    TDSCheckBoxModule,
   ],
   providers: [
     ...SERVICES

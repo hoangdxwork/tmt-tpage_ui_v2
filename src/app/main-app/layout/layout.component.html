@@ -1,6 +1,25 @@
 <div #withLayout class="w-full h-full text-neutral-1-900 dark:text-d-neutral-1-900 relative overflow-hidden flex flex-col">
-    <div class="w-full dark">
+    <div *ngIf="!isDeviceToken && router?.url?.startsWith('/dashboard')" class="w-full flex justify-center items-center">
+        <div class="top-0 bg-white fixed" style="border-radius: 0 0 0.375rem 0.375rem;">
+            <tds-spin [spinning]="isRegister">
+                <div class="w-[500px] px-6 pt-7 pb-4 shadow-lg flex flex-col gap-y-6 rounded-md">
+                    <div class="flex gap-x-6">
+                        <span class="tdsi-notification-fill text-primary-1 text-[32px] leading-none"></span>
+                        <div class="flex flex-col">
+                            <div class="h-[30px] text-title-1 font-semibold">Đăng kí nhận tin</div>
+                            <div class="h-[30px] text-body-2 font-regular">Bạn muốn nhận thông báo từ TPage</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-x-3">
+                        <button type="button" class="w-[100px]" tds-button color="secondary" (click)="onCancel()">Để sau</button>
+                        <button type="button" class="w-[100px]" tds-button color="primary" (click)="requestPermission()">Đăng ký</button>
+                    </div>
+                </div>
+            </tds-spin>
+        </div>
+    </div>
 
+    <div class="w-full dark">
         <tds-header urlLogoText='../../../assets/imagesv2/tpos-text.svg'>
             <div class="inline-flex tds-header-toolbar-left items-center ml-2">
                 <div class="flex items-center text-body-2 font-semibold text-neutral-1-400">
@@ -12,11 +31,6 @@
                 </a>
             </div>
             <div class="inline-flex tds-header-toolbar-right items-center">
-                <!-- Không có kết nối singalr -->
-                <!-- <button class="mr-4" tds-button-icon color="primary" rounded="!rounded-full" tooltipPlacement="bottom"
-                    *ngIf="establishedConnected == false" tds-tooltip tooltipTitle="Kết nối socket-io thất bại">
-                        <i class="tdsi-flash-off-fill"></i>
-                </button> -->
                 <div>
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
                 </div>

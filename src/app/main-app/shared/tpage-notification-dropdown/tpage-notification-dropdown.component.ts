@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
+import { FireBaseNotificationDto, NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { TDSMessageService } from 'tds-ui/message';
 import { NotificationGetMappingDTO, TPosAppMongoDBNotificationDTO } from '../../dto/notification/notification.dto';
 import { NotificationService } from '../../services/notification.service';
 
@@ -12,60 +17,83 @@ import { NotificationService } from '../../services/notification.service';
 export class TpageNotificationDropdownComponent implements OnInit {
 
   visible = false;
-  isLoading: boolean = false;
 
-  lstData: TPosAppMongoDBNotificationDTO[] = [];
-  pageSize = 10;
-  pageIndex = 1;
-  hasNextPage: boolean = true;
+  data:  NotificationItemDto[] = []
+
+  cursor: any;
+  isLoadingProduct: boolean = false;
+  isLoadingNextdata: boolean = false;
 
   constructor(public router: Router,
-    private notificationService: NotificationService
-  ) { }
+    private notificationService: NotificationService,
+    private firebaseRegisterService: FirebaseRegisterService,
+    private destroy$: TDSDestroyService,
+    private message: TDSMessageService) {
+  }
 
   get getRead() {
-    return this.lstData.find(x => !x.DateRead);
+    return this.data.find(x => !x.dateRead);
   }
 
   ngOnInit(): void {
-    this.loadData(this.pageSize, this.pageIndex);
+    this.loadData();
   }
 
-  loadData(pageSize: number, pageIndex: number) {
-    let model = this.prepareModel(pageSize, pageIndex);
-
-    this.isLoading = true;
-    this.notificationService.getMapping(model)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.hasNextPage = res.HasNextPage;
-        this.lstData = [...this.lstData, ...res.Items];
-      });
+  loadData(params?: any) {
+    this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: FireBaseNotificationDto) => {
+        this.data = [...res.items];
+        this.cursor = res.cursor;
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
-  prepareModel(pageSize: number, pageIndex: number) {
-    let model = {} as NotificationGetMappingDTO;
-
-    model.Page = pageIndex;
-    model.Limit = pageSize;
-    model.IsRead = undefined;
-
-    return model;
-  }
-
-  onNext() {
-    this.pageIndex++;
-    this.loadData(this.pageSize, this.pageIndex);
-  }
-
-  onDetail(id: string) {
+  onDetail(item: any) {
     this.visible = false;
-    this.router.navigateByUrl(`user/notification/${id}`);
+    this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe();
+    this.router.navigateByUrl(`user/firebase-notification?id=${item?.id}`);
+  }
+
+  vsEnd(event: NgxVirtualScrollerDto) {
+    if (this.isLoadingProduct || this.isLoadingNextdata) {
+      return;
+    }
+
+    let exisData = this.data && this.data.length > 0 && event && event.scrollStartPosition > 0;
+    if (exisData) {
+      const vsEnd = Number(this.data.length - 1) == Number(event.endIndex);
+      if (vsEnd) {
+        this.isLoadingNextdata = true;
+        setTimeout(() => {
+          this.nextData();
+          this.isLoadingNextdata = false;
+        }, 350)
+      }
+    }
+  }
+
+  nextData() {
+    if (this.cursor) {
+      this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.data = [...(this.data || []), ...res.items];
+          this.cursor = res.cursor;
+          this.isLoadingNextdata = false;
+        },
+        error: (err: any) => {
+          this.isLoadingNextdata = false;
+          this.message.error(`${err?.error?.message}`);
+        }
+      })
+    }
   }
 
   onAll() {
     this.visible = false;
-    this.router.navigateByUrl(`user/notification`);
+    this.router.navigateByUrl(`user/firebase-notification`);
   }
 
 }

@@ -5,13 +5,14 @@ import { CompanyService } from 'src/app/main-app/services/company.service';
 import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPercentageSpecificProduct, showProduct } from 'src/app/main-app/services/facades/config-promotion.facede';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { THelperCacheService } from 'src/app/lib';
-import { DataPouchDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from '@app/dto/product-template/product-tempalte.dto';
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSConfigService } from 'tds-ui/core/config';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'app-config-promotion-combo',
@@ -51,7 +52,7 @@ export class ConfigPromotionComboComponent implements OnInit {
     return value;
   };
 
-  constructor(
+  constructor(private destroy$: TDSDestroyService,
     private formBuilder:FormBuilder,
     private companyService: CompanyService,
     private message: TDSMessageService,
@@ -87,36 +88,15 @@ export class ConfigPromotionComboComponent implements OnInit {
   }
 
   loadProduct() {
-    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
-    this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
-
-      // if(TDSHelperString.hasValueString(obs)) {
-      //     let cache = JSON.parse(obs['value']) as TDSSafeAny;
-      //     let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
-
-      //     this.indexDbVersion = cacheDB.cacheVersion;
-      //     this.indexDbProductCount = cacheDB.cacheCount;
-      //     this.indexDbStorage = cacheDB.cacheDbStorage;
-      // }
-
-      // if(this.indexDbProductCount == -1 && this.indexDbVersion == 0) {
-        this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
-      // } else {
-          // this.loadDataTable();
-      // }
-
-    });
-  }
-
-  loadProductIndexDB(productCount: number, version: number): any {
-    this.isLoading = true;
-    this.productIndexDBService.getLastVersionV2(productCount, version)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: ProductPouchDBDTO) => {
-          this.lstProduct = res.Datas;
-      }, error => {
-          this.message.error('Load danh sách sản phẩm đã xảy ra lỗi!');
-      });
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: KeyCacheIndexDBDTO) => {
+            this.lstProduct = [...res.cacheDbStorage];
+        },
+        error: (err: any) => {
+            this.message.error(err.message);
+        }
+    })
   }
 
   addDetailDiscount(){
