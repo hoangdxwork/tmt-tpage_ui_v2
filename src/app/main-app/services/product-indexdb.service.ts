@@ -61,8 +61,7 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
         return this.cacheObject;
       }),
       mergeMap((x: KeyCacheIndexDBDTO) => {
-          this.indexDBHelperService.setLastVersionV2(x.cacheCount, x.cacheVersion);
-          return this.indexDBHelperService.getLastVersionV2();
+        return this.getLastVersionV2(x.cacheCount, x.cacheVersion).pipe(map(a => a));
       }))
       .subscribe({
           next: (res: ProductPouchDBDTO) => {
@@ -117,6 +116,14 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
               });
           }
       })
+  }
+
+  getLastVersionV2(countIndex: number, version: number): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetLastVersionV2?$expand=Datas&countIndexDB=${countIndex}&Version=${version}`,
+      method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<ProductPouchDBDTO>(api, null);
   }
 
   getMaxVersion(lstVersion: number[]) {
