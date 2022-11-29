@@ -50,15 +50,20 @@ export class LiveCampaignComponent implements OnInit {
     let model = this.overviewModel;
 
     this.isLoadingReport = true;
-    this.liveCampaignService.getReportLiveCampaignOverview({ model: model })
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoadingReport = false)).subscribe(res => {
-          if(res) {
-            delete res['@odata.context'];
-            this.dataReports = { ...res };
-          }
-      }, error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
-      })
+    this.liveCampaignService.getReportLiveCampaignOverview({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res) {
+          delete res['@odata.context'];
+          this.dataReports = { ...res };
+        }
+
+        this.isLoadingReport = false;
+      }, 
+      error: (error) => {
+        this.isLoadingReport = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   onCreate() {
