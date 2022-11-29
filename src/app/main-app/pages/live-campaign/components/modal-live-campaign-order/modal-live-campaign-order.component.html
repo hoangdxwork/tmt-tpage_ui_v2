@@ -39,7 +39,7 @@
           <div *ngIf="data.IsOrderPriority != null">
             <div class="flex flex-auto mt-0.5">
               <div class="px-2 py-0.5 rounded text-white font-semibold text-caption-2" [ngClass]="data.IsOrderPriority == true ? 'bg-primary-1' : 'bg-neutral-1-300' ">
-                <span *ngIf="data.IsOrderPriority != true">Dự bị</span>
+                <span *ngIf="data.IsOrderPriority == false">Dự bị</span>
                 <span *ngIf="data.IsOrderPriority == true">Ưu tiên</span>
               </div>
             </div>
