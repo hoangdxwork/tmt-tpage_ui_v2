@@ -10,14 +10,28 @@
                             <div class="tdsi-user-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
 
                             <div class="flex flex-auto items-center justify-between">
-                                <div class="flex gap-4 items-center">
-                                    <span *ngIf="!isEditPartner">{{ quickOrderModel.PartnerName }}</span>
+                                <div class="flex gap-4 items-center w-[60%] justify-between">
+                                    <span *ngIf="!isEditPartner" class="max-w-[50%] truncate"
+                                        tds-tooltip="{{quickOrderModel.PartnerName}}">{{ quickOrderModel.PartnerName }}</span>
                                     <tds-form-field *ngIf="isEditPartner">
                                         <input tdsInput autocomplete="off" placeholder="Tên khách hàng" [required]='true'
                                             [(ngModel)]="quickOrderModel.PartnerName" [ngModelOptions]="{ standalone: true }"/>
                                     </tds-form-field>
 
-                                    <span class="text-primary-1 font-semibold xl:truncate">FB: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    <div *ngIf="team?.Type === 'Facebook'" class="max-w-[50%] truncate">
+                                        <span class="text-primary-1 font-semibold"
+                                            tds-tooltip="{{quickOrderModel.Facebook_UserName}}">FB: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    </div>
+
+                                    <div *ngIf="team?.Type === 'TShop'" class="max-w-[50%] truncate">
+                                        <span class="text-primary-1 font-semibold"
+                                            tds-tooltip="{{quickOrderModel.Facebook_UserName}}">TShop: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    </div>
+
+                                    <div *ngIf="team?.Type === 'UnofficialTikTok'" class="max-w-[50%] truncate">
+                                        <span class="text-primary-1 font-semibold"
+                                            tds-tooltip="{{quickOrderModel.Facebook_UserName}}">TikTok: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    </div>
                                 </div>
 
                                 <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()" tds-tooltip [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'">

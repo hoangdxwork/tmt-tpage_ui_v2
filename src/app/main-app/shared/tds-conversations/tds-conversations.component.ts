@@ -677,7 +677,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.isLoadingSendMess = true;
     let activityFinal = this.dataSource?.Items ? this.dataSource.Items[this.dataSource.Items!.length - 1]: null
 
-    if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === ChatomniMessageType.FacebookComment || activityFinal?.Type === ChatomniMessageType.TShopComment)) {
+    if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === ChatomniMessageType.FacebookComment || activityFinal?.Type === ChatomniMessageType.TShopComment || activityFinal?.Type === ChatomniMessageType.UnofficialTikTokChat)) {
         if (this.type === 'all') {
             //TODO: Trả lời tin nhắn bình luận bằng tin nhắn
             this.sendPrivateRepliesV2(activityFinal, message);
@@ -720,11 +720,21 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.activityMatchingService.replyComment(this.team?.Id, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ResponseAddMessCommentDto) => {
-
           // add vào dataSource tại đây
           res["status"] = ChatomniStatus.Done;
-          res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop ? 91 : 0);
           res.name = this.team.Name;
+
+          switch(this.team.Type) {
+            case CRMTeamType._Facebook:
+              res.type = 12;
+              break;
+            case CRMTeamType._TShop:
+              res.type = 91;
+              break;
+            case CRMTeamType._UnofficialTikTok:
+              res.type = 1001;
+              break;
+          }
 
           let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
 
@@ -855,18 +865,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   sendPrivateRepliesV2(activityFinal: any, message: string){
     const model = this.prepareModelV2(message);
     model.MessageType = 2;
-    model.RecipientId = activityFinal?.Data?.id || null;
+    model.RecipientId = activityFinal?.Data?.id || activityFinal?.Data?.msgId || null;
 
     if(TDSHelperArray.hasListValue(this.uploadedImages) && model.Attachment.Data){
         model.Attachment.Data.Url = this.uploadedImages[0];
     }
-
+    
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-
             if(this.uploadedImages.length > 0) {
-                this.message.info('Trả lời tin nhắn bình luận chỉ gửi 1 hình ảnh')
+              this.message.info('Trả lời tin nhắn bình luận chỉ gửi 1 hình ảnh');
             }
 
             this.messageResponseV2(res, model);
