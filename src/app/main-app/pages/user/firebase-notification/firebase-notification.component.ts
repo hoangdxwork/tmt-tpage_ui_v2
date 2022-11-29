@@ -207,11 +207,18 @@ export class FirebaseNotificationComponent implements OnInit {
     }
   }
 
-  requestPermission() {
-    const messaging = getMessaging();
+  async requestPermission() {
     this.isLoading = true;
 
-    getToken(messaging, { vapidKey: environment.firebaseConfig.vapidKey })
+    const messaging = getMessaging();
+    const serviceWorkerRegistration = await navigator
+      .serviceWorker
+      .register('../../../assets/firebase/firebase-messaging-sw.js');
+
+    await getToken(messaging, {
+        serviceWorkerRegistration: serviceWorkerRegistration,
+        vapidKey: environment.firebaseConfig.vapidKey
+      })
       .then((token: any) => {
 
           if(!token)  {
