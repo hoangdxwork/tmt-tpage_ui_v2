@@ -64,6 +64,21 @@ export interface PayloadElementsDto {
   currency: any;
 }
 
+export interface AddressPayloadDto {
+  street_1: string,
+  city: string,
+  postal_code: any,
+  country: string,
+  state: string
+}
+
+export interface SummaryPayloadDto {
+  subtotal: number;
+  shipping_cost: number;
+  total_tax: number;
+  total_cost: number;
+}
+
 export interface FacebookPayloadDto {
   url?: any;
   template_type: string;
@@ -76,8 +91,8 @@ export interface FacebookPayloadDto {
   payment_method?: any;
   order_url?: any;
   timestamp?: any;
-  address?: any;
-  summary?: any;
+  address?: AddressPayloadDto;
+  summary?: SummaryPayloadDto;
 }
 
 export interface FacebookWebhookAttachmentDto {
