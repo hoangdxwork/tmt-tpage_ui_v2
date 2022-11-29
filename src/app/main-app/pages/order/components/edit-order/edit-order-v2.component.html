@@ -11,7 +11,7 @@
                     <tds-avatar [size]="84" [tdsSrc]="quickOrderModel?.Partner?.ImageUrl"></tds-avatar>
                   </div>
                   <div class="col-span-3 flex flex-col gap-y-2">
-                    <tds-label>Tên Khách hàng</tds-label>
+                    <tds-label>Tên khách hàng</tds-label>
                     <tds-form-field>
                       <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true'
                         [ngModel]="quickOrderModel?.Partner?.Name" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangePartnerName($event)"/>
@@ -20,7 +20,7 @@
 
                     <div *ngIf="quickOrderModel?.Partner">
                       <tds-button-group>
-                        <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
+                        <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'"
                           class="rounded-md px-2" [ngStyle]="getStatusColor(quickOrderModel?.Partner?.StatusText ) | buttonStatusColor: true">
                           <span class="flex items-center font-semibold font-sans cursor-pointer">
                             {{ quickOrderModel?.Partner?.StatusText || 'Bình thường' }} <i
@@ -29,8 +29,9 @@
                         </div>
                         <tds-dropdown-menu #menu="tdsDropdownMenu">
                           <div class="w-full max-h-[300px] overflow-y-auto tds-panel-scroll" *ngIf="lstPartnerStatus">
-                              <div tds-dropdown-item *ngFor="let status of lstPartnerStatus" (click)="selectStatus(status)">
-                                  <a [ngStyle]="{'color': status.value }"> {{ status.text }} </a>
+                              <div tds-dropdown-item *ngFor="let status of lstPartnerStatus" (click)="selectStatus(status)" class="flex items-center gap-x-2">
+                                <a [ngStyle]="{'background-color': status.value }" class="w-2 h-2 rounded-full"></a>
+                                <a class="text-neutral-1-900 text-body-2">{{ status.text }}</a>
                               </div>
                           </div>
                         </tds-dropdown-menu>
