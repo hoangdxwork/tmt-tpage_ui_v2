@@ -295,6 +295,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
                 this.onSavePost(null, 'print');
               break;
+            case CRMTeamType._UnofficialTikTok:
+                this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromTiktokComment(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
+                this.insertFromPostModel.UserId = this.userInit?.Id;
+
+                this.onSavePost(null, 'print');
+              break;
           }
           this.cdRef.detectChanges();
       }

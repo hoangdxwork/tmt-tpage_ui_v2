@@ -511,7 +511,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
     this.isReplyingComment = true;
     if(TDSHelperString.hasValueString(msg)) {
         let modelv2 = this.prepareModelV2(msg);
-        modelv2.RecipientId = item.Data?.Id as string;
+        modelv2.RecipientId = item.Data?.msgId as string;
 
         // TODO: gửi về tin nhắn
         if(item.Data.is_private_reply){
@@ -540,7 +540,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
       } else {
           // TODO: Trả lời bình luận
-          modelv2.ObjectId = item.Data?.ObjectId as string;
+          modelv2.ObjectId = item?.ObjectId as string;
 
           this.chatomniCommentService.replyCommentTshop(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
               next:(res: ChatomniDataItemDto[]) => {
