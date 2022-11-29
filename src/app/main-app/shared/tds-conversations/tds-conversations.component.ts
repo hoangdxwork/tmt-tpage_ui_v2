@@ -695,16 +695,21 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   sendIconLike() {
-    const message = "(y)";
-    let model = this.prepareModelV2(message);
+    let message = "(y)";
 
+    let channelType = this.team.Type;
+    if(channelType  && channelType == CRMTeamType._TShop) {
+        message = "👍";
+    }
+
+    let model = this.prepareModelV2(message);
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.messageResponseV2(res, model);
         },
         error: error => {
-          this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
+            this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
         }
       });
   }
