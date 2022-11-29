@@ -53,6 +53,38 @@ export interface Attachments {
   paging?: any;
 }
 
+export interface PayloadElementsDto {
+  title: string;
+  image_url: string;
+  subtitle: string;
+  buttons: any;
+  item_url: any;
+  quantity: any;
+  price: any;
+  currency: any;
+}
+
+export interface FacebookPayloadDto {
+  url?: any;
+  template_type: string;
+  top_element_style?: any;
+  elements?: PayloadElementsDto[];
+  buttons?: any;
+  recipient_name?: any;
+  order_number?: any;
+  currency?: any;
+  payment_method?: any;
+  order_url?: any;
+  timestamp?: any;
+  address?: any;
+  summary?: any;
+}
+
+export interface FacebookWebhookAttachmentDto {
+  type: string;
+  payload: FacebookPayloadDto;
+}
+
 export interface ChatomniFacebookDataDto {
   id: string;
   message: string;
@@ -75,6 +107,7 @@ export interface ChatomniFacebookDataDto {
   attachment?: any;
   message_tags: MessageTag[];
   phone: string;
+  webhook_attachments: FacebookWebhookAttachmentDto[] | any[];
 
   // các dữ liệu bổ sung để check client
   has_admin_required?: boolean;
