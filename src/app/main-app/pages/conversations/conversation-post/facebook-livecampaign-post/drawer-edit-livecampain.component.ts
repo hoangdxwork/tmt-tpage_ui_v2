@@ -118,7 +118,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     if(!this.visibleDrawerEditLive) {
       return;
     }
-    
+
     if(this.liveCampaignId) {
       this.loadOverviewDetails(this.pageSize, this.pageIndex); //TODO: load dữ liệu danh sách sản phẩm
       this.loadOverviewReport(); //TODO: load dữ liệu thống kê tổng quan
@@ -152,7 +152,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
                   let key1 = `${this.lstDetail[iCheckout].ProductId}_${this.lstDetail[iCheckout].UOMId}_queueQty`;
                   this.animateSocket[key1] = true;
-               
+
                   setTimeout(() => {
                     this.lstDetail[iCheckout].QueueQuantity = pCheckout.Quantity;
                     this.lstDetail[iCheckout] = {...this.lstDetail[iCheckout]};
@@ -162,7 +162,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
                     this.cdRef.detectChanges();
                   }, 1000);
-                  
+
                   this.cdRef.detectChanges();
               break;
 
@@ -174,7 +174,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
                   const iToBuy = this.lstDetail.findIndex(x => x.ProductId == toBuy.ProductId && x.UOMId == toBuy.ProductUOMId);
                   if(Number(iToBuy) < 0) break;
-                  
+
                   let key2 = `${this.lstDetail[iToBuy].ProductId}_${this.lstDetail[iToBuy].UOMId}_usedQty`;
                   this.animateSocket[key2] = true;
 
@@ -785,7 +785,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   showModalLiveCampaignOrder(data: ReportLiveCampaignDetailDTO) {
-    if(data.TotalSaleOnlineOrder){
+    if(data.QueueQuantity > 0){
         this.modal.create({
             title: 'Đơn hàng chờ chốt',
             size: 'xl',
@@ -799,9 +799,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   showModalLiveCampaignBill(data: ReportLiveCampaignDetailDTO) {
-    if(data.TotalFastSaleOrder){
+    if(data.UsedQuantity > 0){
         this.modal.create({
-            title: 'Hóa đơn chờ chốt',
+            title: 'Hóa đơn đã chốt',
             size: 'xl',
             content: ModalLiveCampaignBillComponent,
             viewContainerRef: this.viewContainerRef,
