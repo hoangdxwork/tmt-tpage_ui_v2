@@ -785,7 +785,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   showModalLiveCampaignOrder(data: ReportLiveCampaignDetailDTO) {
-    if(data.TotalSaleOnlineOrder){
+    if(data.QueueQuantity > 0){
         this.modal.create({
             title: 'Đơn hàng chờ chốt',
             size: 'xl',
@@ -799,7 +799,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   showModalLiveCampaignBill(data: ReportLiveCampaignDetailDTO) {
-    if(data.TotalFastSaleOrder){
+    if(data.UsedQuantity > 0){
         this.modal.create({
             title: 'Hóa đơn chờ chốt',
             size: 'xl',
