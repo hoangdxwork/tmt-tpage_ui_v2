@@ -139,7 +139,7 @@ export class FirebaseNotificationComponent implements OnInit {
             }
           }
 
-          if (item == null) {
+          if (item == null && this.data) {
             item = this.data[0];
           }
 
@@ -207,11 +207,18 @@ export class FirebaseNotificationComponent implements OnInit {
     }
   }
 
-  requestPermission() {
-    const messaging = getMessaging();
+  async requestPermission() {
     this.isLoading = true;
 
-    getToken(messaging, { vapidKey: environment.firebaseConfig.vapidKey })
+    const messaging = getMessaging();
+    const serviceWorkerRegistration = await navigator
+      .serviceWorker
+      .register('../../../assets/firebase/firebase-messaging-sw.js');
+
+    await getToken(messaging, {
+        serviceWorkerRegistration: serviceWorkerRegistration,
+        vapidKey: environment.firebaseConfig.vapidKey
+      })
       .then((token: any) => {
 
           if(!token)  {
@@ -258,6 +265,7 @@ export class FirebaseNotificationComponent implements OnInit {
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
+          this.message.success('Đăng kí nhận tin thành công');
       },
       error: (err: any) => {
           this.isLoading = false;
