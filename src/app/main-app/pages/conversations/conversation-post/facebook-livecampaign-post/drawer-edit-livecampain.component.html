@@ -252,7 +252,7 @@
                                                 <div class="text-neutral-1-500 flex items-center hover:underline hover:text-info-500"
                                                     tds-tooltip="Click xem đơn hàng chờ chốt" (click)="showModalLiveCampaignOrder(data)">
                                                     Chờ chốt:&nbsp;
-                                                    <span>{{ (data.QueueQuantity || 0) | numberCustom }}</span>
+                                                    <span class="mr-0.5">{{ (data.QueueQuantity || 0) | numberCustom }}</span>
                                                     <tds-spinner
                                                         [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty'] ? 'visible' : 'invisible'"
                                                         [color]="'error'" class="w-2.5 h-2.5"></tds-spinner>
@@ -261,7 +261,7 @@
                                                 <div class="text-neutral-1-500 flex items-center  hover:underline hover:text-info-500"
                                                     tds-tooltip="Click xem hóa đơn đã chốt" (click)="showModalLiveCampaignBill(data)">
                                                     Đã chốt:&nbsp;
-                                                    <span>{{ (data.UsedQuantity || 0) | numberCustom }}</span>
+                                                    <span class="mr-0.5">{{ (data.UsedQuantity || 0) | numberCustom }}</span>
                                                     <tds-spinner
                                                         [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty'] ? 'visible' : 'invisible'"
                                                         [color]="'error'" class="ml-1 w-2.5 h-2.5"></tds-spinner>
@@ -270,7 +270,7 @@
                                                 <div class="font-semibold flex items-center"
                                                     [ngClass]="data.RemainRealQuantity > 10 ? 'text-info-400' : 'text-error-400'">
                                                     Còn lại:&nbsp;
-                                                    <span>{{ (((data.Quantity - data.UsedQuantity) || 0) | numberCustom) }}</span>
+                                                    <span class="mr-0.5">{{ (((data.Quantity - data.UsedQuantity) || 0) | numberCustom) }}</span>
                                                     <tds-spinner
                                                         [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty']
                                                             || animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty'] ? 'visible' : 'invisible'"
