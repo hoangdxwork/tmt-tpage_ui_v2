@@ -159,7 +159,7 @@
                                             <td>
                                               <div *ngIf="data.IsOrderPriority != null">
                                                 <tds-tag [status]="data.IsOrderPriority ? 'primary' : 'secondary'">
-                                                  {{ data.IsOrderPriority ? 'Ưu tiên' : 'Dự bị' }}
+                                                  {{ data.IsOrderPriority == true ? 'Ưu tiên' : 'Dự bị' }}
                                                 </tds-tag>
                                               </div>
                                             </td>
