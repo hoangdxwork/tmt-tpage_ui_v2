@@ -1,3 +1,5 @@
+import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
+import { ChatomniReplyCommentModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
 import { ChatmoniSocketEventName } from './../../services/socket-io/soketio-event';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
@@ -6,7 +8,7 @@ import { ChatomniSendMessageService } from './../../services/chatomni-service/ch
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
-import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType, ExtrasChildsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniStatus, ChatomniDataDto, ChatomniMessageType, ExtrasChildsDto, ChatomniDataItemDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { CreateTagModalComponent } from '../../pages/configs/components/create-tag-modal/create-tag-modal.component';
@@ -132,7 +134,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private chatomniSendMessageService: ChatomniSendMessageService,
     private socketOnEventService: SocketOnEventService,
     private chatomniConversationFacade: ChatomniConversationFacade,
-    private quickReplyService: QuickReplyService) {
+    private quickReplyService: QuickReplyService,
+    private chatomniCommentService: ChatomniCommentService) {
 
       this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
           next: (user: any) => {
@@ -685,7 +688,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
         else if (this.type === 'comment') {
             //TODO: Phản hồi bình lần bằng bình luận
-            this.replyComment(activityFinal, message);
+            switch(this.team.Type) {
+              case CRMTeamType._Facebook:
+                this.replyComment(activityFinal, message);
+              break;
+
+              case CRMTeamType._TShop:
+                this.replyCommentTshop(activityFinal, message);
+              break;
+            }
         }
 
     } else {
@@ -703,6 +714,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     let model = this.prepareModelV2(message);
+    model.MessageType = 0;
+
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
@@ -773,6 +786,29 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
+  replyCommentTshop(activityFinal: any, message: string) {
+    let modelv2 = this.prepareModelComment(message);
+    modelv2.RecipientId = activityFinal?.Data?.Id as string;
+    modelv2.ObjectId = activityFinal?.Data?.ObjectId as string;
+
+    this.chatomniCommentService.replyCommentTshop(this.team!.Id, activityFinal.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: ChatomniDataItemDto[]) => {
+          // todo: socket trả về đã map
+
+            this.currentImage = null;
+            this.uploadedImages = [];
+            delete this.messageModel;
+            this.isLoadingSendMess = false;
+            this.cdRef.detectChanges();
+        },
+        error: error => {
+            this.isLoadingSendMess = false;
+            this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
+            this.cdRef.detectChanges();
+        }
+      })
+  }
+
   onRetryMessage() {
     this.activityMatchingService.onCopyMessageHasAminRequired$.subscribe({
       next: (message: string) => {
@@ -797,6 +833,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       model.Attachment.Data = {} as TDSSafeAny;
       model.Attachment.Data.Urls = [...this.uploadedImages]
     }
+
+    return model;
+  }
+
+  prepareModelComment(message: string): any {
+    const model = {} as ChatomniReplyCommentModelDto;
+    model.Message = message;
 
     return model;
   }
