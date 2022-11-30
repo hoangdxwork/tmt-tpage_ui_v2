@@ -44,7 +44,7 @@
                         <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
                             <div class="font-semibold flex flex-col items-center 2xl:block">
                                 <!-- <span>{{translateType((data.Data | facebookType).type, (data.Data | facebookType).status_type)}}</span> -->
-                                <span class="whitespace-nowrap">{{(data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm"}}</span>
+                                <span class="whitespace-nowrap">{{ (data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm" }}</span>
                             </div>
                         </span>
                     </tds-tag>
@@ -73,7 +73,7 @@
                         <span class="flex items-center overflow-hidden">
                             <i class="tdsi-product-fill text-lg leading-none mr-2"></i>
                             <span *ngIf="defaultProductPost; else noDataProduct" class="truncate">
-                                {{defaultProductPost.ProductNameGet}}
+                                {{ defaultProductPost.ProductNameGet }}
                             </span>
                             <ng-template #noDataProduct>
                                 <span>Chọn sản phẩm</span>
@@ -91,7 +91,7 @@
                     <tds-dropdown-menu #menu="tdsDropdownMenu">
                         <div class="w-[210px] flex flex-col gap-y-1">
                             <span tds-dropdown-item *ngFor="let item of filterExcel" (click)="onChangeExcel(item)">
-                                <a>{{item.text}}</a>
+                                <a>{{ item.text }}</a>
                             </span>
                         </div>
                     </tds-dropdown-menu>
@@ -194,8 +194,8 @@
                         </div>
                     </div>
 
-                    <div class="post-picture" *ngIf="data.Thumbnail" class="h-[122px]">
-                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="data.Thumbnail.Url" class="rounded-xl h-[122px] object-cover" />
+                    <div class="post-picture" class="h-[122px]">
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="data.Thumbnail?.Url || '' " class="rounded-xl h-[122px] object-cover" />
                     </div>
                 </div>
 
