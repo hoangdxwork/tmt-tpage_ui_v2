@@ -583,7 +583,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     this.isReply = false;
     const model = this.prepareModelV2(message);
     model.MessageType = 2;
-    model.RecipientId = this.dataItem.Data.id || null;
+    model.RecipientId = this.dataItem.Data.id || this.dataItem.Data.Id || null;
 
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
