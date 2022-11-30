@@ -1,3 +1,4 @@
+import { ChatomniCommnetModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { Injectable } from "@angular/core";
 import { ChatomniDataDto, ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { map, Observable, shareReplay } from "rxjs";
@@ -131,5 +132,13 @@ export class ChatomniCommentService extends BaseSevice  {
       method: CoreApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+  
+  commentHandle(teamId: number, data: ChatomniCommnetModelDto) {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}/comments`,
+      method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<any>(api, data);
   }
 }

@@ -35,23 +35,6 @@
                 </div>
 
                 <!-- tshop -->
-                <div class="flex items-center" *ngIf="team!.Type == 'TShop'">
-                    <tds-avatar [icon]="(data.Data | tshopType)?.KindValue == 1 ? 'tdsi-video-camera-fill': 'tdsi-template-web-fill'"
-                        [ngClass]="(data.Data | tshopType)?.KindValue == 1 ? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white mr-1"
-                        [size]="36" [shape]="'circle'" [isAvatar]="false">
-                    </tds-avatar>
-
-                    <tds-tag rounded="rounded-full" [status]="(data.Data | tshopType)?.KindValue == 1 ? 'bg-base-red-50 text-base-red-600' : 'bg-base-blue-50 text-base-blue-600'">
-                        <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
-                            <div class="font-semibold flex flex-col items-center 2xl:block">
-                                <!-- <span>{{translateType((data.Data | facebookType).type, (data.Data | facebookType).status_type)}}</span> -->
-                                <span class="whitespace-nowrap">{{(data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm"}}</span>
-                            </div>
-                        </span>
-                    </tds-tag>
-                </div>
-
-                <!-- tshop -->
                 <div class="flex items-center gap-x-3" *ngIf="team!.Type == 'TShop'">
                     <tds-avatar [tdsSrc]="'../../../assets/imagesv2/tshop/_liveapp.svg'"
                         [size]="36" [shape]="'circle'" [isAvatar]="false">
