@@ -34,6 +34,7 @@ import { FacebookChannelComponent } from './components/facebook-channel/facebook
 import { TshopChannelComponent } from './components/tshop-channel/tshop-channel.component';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { ConvertPageComponent } from './components/convert-page/convert-page.component';
+import { TiktokChannelComponent } from './components/tiktok-channel/tiktok-channel.component';
 
 const SERVICES = [
   FacebookGraphService,
@@ -49,7 +50,8 @@ const SERVICES = [
     TshopChannelComponent,
     FacebookChannelV2Component,
     TshopChannelComponentV2,
-    ConvertPageComponent
+    ConvertPageComponent,
+    TiktokChannelComponent
   ],
   imports: [
     CommonModule,

@@ -49,6 +49,9 @@ export class FacebookComponent implements OnInit {
           case CRMTeamType._TShop:
             this.currentTab = 1;
             break;
+          case CRMTeamType._TikTok:
+            this.currentTab = 2;
+          break;
         }
       }
     });
@@ -80,6 +83,9 @@ export class FacebookComponent implements OnInit {
         case 1:
           this.currentPage = 'tshop';
           break;
+        case 2:
+          this.currentPage = 'tiktok';
+        break;
       }
       
       this.directPage(`connect-channel?page=${this.currentPage}`);
