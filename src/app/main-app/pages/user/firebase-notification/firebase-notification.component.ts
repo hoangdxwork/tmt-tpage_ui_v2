@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto';
@@ -30,6 +30,10 @@ export class FirebaseNotificationComponent implements OnInit {
   id!: string;
   isLoading: boolean = false;
 
+  viewPortHeight: number = 0;
+  itemHeight: number = 0;
+  itemCount: number = 0;
+
   deviceToken: any;
   idsRegister: any[] = [];
   idsTopic: any[] = [];
@@ -42,6 +46,7 @@ export class FirebaseNotificationComponent implements OnInit {
     public router: Router,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
+    private render: Renderer2,
     private firebaseMessagingService: FirebaseMessagingService) {
   }
 
@@ -177,7 +182,7 @@ export class FirebaseNotificationComponent implements OnInit {
     if (this.isLoadingProduct || this.isLoadingNextdata) {
       return;
     }
-
+    
     let exisData = this.data && this.data.length > 0 && event && event.scrollStartPosition > 0;
     if (exisData) {
       const vsEnd = Number(this.data.length - 1) == Number(event.endIndex);
@@ -188,14 +193,41 @@ export class FirebaseNotificationComponent implements OnInit {
           this.isLoadingNextdata = false;
         }, 350)
       }
+    } else {
+      setTimeout(() => {
+        let scrollContent = document.getElementsByClassName('scrollable-content')?.item(0);
+        this.render.addClass(scrollContent,'!h-auto');//set thuộc tính h-auto cho viewport
+
+        let scrollerHeight = this.render.parentNode(scrollContent)?.clientHeight as number;//chiều cao của scroller
+        this.viewPortHeight = scrollContent?.clientHeight as number;//chiều cao viewport
+        this.itemHeight = Math.round(this.viewPortHeight/this.itemCount);//chiều cao của mỗi item
+        // trường hợp chiều cao của viewport < scroller height, get nextdata
+        if(this.viewPortHeight < scrollerHeight) {
+          this.nextData(scrollerHeight);
+        }
+      }, 2000);
     }
   }
 
-  nextData() {
+  nextData(scrollerHeight?: number) {
+    if(scrollerHeight) this.isLoading = true;
+
     if (this.cursor) {
       this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.data = [...(this.data || []), ...res.items];
+          // TODO: xử lý scroll viewport khi load dữ liệu 
+          if(scrollerHeight) {
+            this.itemCount = this.data?.length || 0;
+            this.viewPortHeight =  this.itemHeight * this.itemCount;
+            
+            if(this.viewPortHeight < scrollerHeight) {
+              this.nextData(scrollerHeight);
+            } else {
+              this.isLoading = false;
+            }
+          }
+
           this.cursor = res.cursor;
           this.isLoadingNextdata = false;
         },
