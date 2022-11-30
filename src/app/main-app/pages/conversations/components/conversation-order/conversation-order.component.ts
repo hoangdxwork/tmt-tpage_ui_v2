@@ -128,6 +128,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   pageSize = 20;
   pageIndex = 1;
   isLoadingNextdata: boolean = false;
+  clickPrint: string = '';
 
   numberWithCommas = (value:TDSSafeAny) => {
     if(value != null){
@@ -734,7 +735,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.calcFee();
   }
 
-  onSavePost(formAction?: string | null, type?: string): any {
+  onSavePost(formAction?: string | null, type?: string, _click_print?: any): any {
+    let printOrder = !this.isEnableCreateOrder && _click_print == '_click_print' && type == 'print';
+    if(printOrder) {
+        this.clickPrint = '_click_print';
+    }
+
     let model1 = this.insertFromPostModel;
     let model2= {} as any;
     this.team = this.crmTeamService.getCurrentTeam() as any;
@@ -771,7 +777,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
-  onSave(formAction?: string, type?: string): any {
+  onSave(formAction?: string, type?: string, _click_print?: any): any {
+    let printOrder = !this.isEnableCreateOrder && _click_print == '_click_print' && type == 'print';
+    if(printOrder) {
+        this.clickPrint = '_click_print';
+    }
+
     this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
     let model = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
     model.FormAction = formAction;
@@ -1494,12 +1505,26 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         this.message.success('Cập nhật đơn hàng thành công');
     }
 
-    let print = type && !this.saleOnlineSettings?.isDisablePrint;
-    if(!print) return;
-
     let id = order.Id as string;
     let message = this.type == 'post' ? this.commentPost?.Message : null;
-    this.orderPrintService.printId(id, this.quickOrderModel, message);
+
+    if(this.clickPrint == '_click_print') {
+
+      this.orderPrintService.printId(id, this.quickOrderModel, message);
+      this.clickPrint = '';
+
+    } else {
+
+      let print = type && !this.saleOnlineSettings?.isDisablePrint;
+      if(!print) return;
+
+      if(order.IsCreated) {
+          this.orderPrintService.printId(id, this.quickOrderModel, message);
+      } else
+        if(this.saleOnlineSettings?.isPrintMultiTimes) {
+            this.orderPrintService.printId(id, this.quickOrderModel, message);
+      }
+    }
   }
 
   prepareResponseSaleOnline(order: QuickSaleOnlineOrderModel, type?: string) {
