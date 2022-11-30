@@ -1,4 +1,4 @@
-<div *ngIf="data" class="h-full w-5/6 flex flex-col p-4 gap-y-4">
+<tds-spin [spinning]="isLoading" *ngIf="data" class="h-full w-5/6 flex flex-col p-4 gap-y-4">
   <div class="bg-info-400 rounded-md flex justify-between px-4 py-3 text-body-2 text-white items-center" [ngClass]="deviceToken ? 'hidden' : '' ">
     <div class="flex gap-x-2.5 items-center">
       <i class="tdsi-information-fill text-white text-xl leading-none"></i>
@@ -8,6 +8,7 @@
       <span class="font-semibold">Đăng kí thiết bị</span>
     </div>
   </div>
+
   <div class="h-full w-full flex gap-x-4">
     <div class="w-1/4 h-full flex flex-col bg-white rounded-xl">
       <div class="flex justify-between items-center p-4">
@@ -64,4 +65,4 @@
       </div>
     </div>
   </div>
-</div>
+</tds-spin>
