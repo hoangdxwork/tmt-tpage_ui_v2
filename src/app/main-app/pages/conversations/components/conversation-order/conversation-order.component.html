@@ -618,7 +618,7 @@
               <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSave()">Lưu nháp</button>
               <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen')">Xác nhận</button>
 
-              <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print')">Lưu và in</button>
+              <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print', '_click_print')">Lưu và in</button>
 
               <div class="gap-x-2 xl:flex 2xl:hidden">
                 <button *ngIf="isEnableCreateOrder" tds-button-icon color="primary" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')" tds-tooltip="In hóa đơn">
@@ -649,7 +649,7 @@
           <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' ">
             <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost()">Lưu</button>
 
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost('SaveAndPrint', 'print')">
+            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost('SaveAndPrint', 'print', '_click_print')">
                Lưu và in
             </button>
 
