@@ -10,7 +10,7 @@ import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../
 import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren, ViewContainerRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren, ViewContainerRef, Inject } from "@angular/core";
 import { finalize, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
@@ -27,6 +27,7 @@ import { ProductPagefbComponent } from "../../pages/conversations/components/pro
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: "tds-conversation-item",
@@ -70,6 +71,8 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
+  @ViewChild('scrollProduct') scrollProduct!: ElementRef<any>;
+  @ViewChild('itemProduct') itemProduct!: ElementRef<any>;
 
   constructor(private element: ElementRef,
     private modalService: TDSModalService,
@@ -86,7 +89,8 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     private omniMessageFacade: ChatomniMessageFacade,
     private chatomniEventEmiter: ChatomniEventEmiterService,
     private chatomniSendMessageService: ChatomniSendMessageService,
-    private chatomniCommentService: ChatomniCommentService) {
+    private chatomniCommentService: ChatomniCommentService,
+    @Inject(DOCUMENT) private document: Document) {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -747,6 +751,41 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
         this.tdsMessage.info('Đã copy số điện thoại');
       }
     }
+  }
+
+  next() {
+    let width = this.itemProduct.nativeElement.clientWidth;
+    let element = this.document.getElementById('scroll-product') as any;
+
+    setTimeout(() => {
+      if(element && width) {
+        let left = width + element.scrollLeft;
+        element?.scroll({
+            left: left,
+            behavior: 'smooth',
+        })
+      }
+    }, 100)
+  }
+
+  previous() {
+    let width = this.itemProduct.nativeElement.clientWidth;
+    let element = this.document.getElementById('scroll-product') as any;
+
+    setTimeout(() => {
+      if(element && width) {
+        let right = element.scrollLeft - width;
+        element?.scroll({
+            left: right,
+            behavior: 'smooth',
+        })
+      }
+    }, 100)
+  }
+
+  detail() {
+    console.log("Chi tiết");
+
   }
 
 }
