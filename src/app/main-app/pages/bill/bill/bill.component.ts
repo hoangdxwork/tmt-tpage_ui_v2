@@ -598,6 +598,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if(!TDSHelperString.hasValueString(data.CRMTeamId)) {
+      this.isLoading = false;
       this.message.error(Message.PageNotExist);
       return;
     }
@@ -611,12 +612,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         if (pageIds.length == 0) {
+          this.isLoading = false;
           return this.message.error('Không có kênh kết nối với khách hàng này.');
         }
 
         this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
           next: (teams: any): any => {
             if (teams?.length == 0) {
+              this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
             }
 
@@ -644,6 +647,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
