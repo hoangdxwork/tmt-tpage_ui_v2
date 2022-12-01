@@ -84,7 +84,7 @@
                                         </tds-select>
                                     </tds-form-field>
                                 </div>
-                                <button tds-button-icon type="button" color="secondary" (click)="onCreateCategory()">
+                                <button tds-button-icon type="button" color="secondary" tds-tooltip="Thêm nhóm sản phẩm" (click)="onCreateCategory()">
                                     <i class="tdsi-plus-circle-fill text-primary-1"></i>
                                 </button>
                             </div>
@@ -135,12 +135,12 @@
                                         </tds-select>
                                     </tds-form-field>
                                 </div>
-                                <button tds-button-icon type="button" color="secondary" size="md"  (click)="onSearchUOM('UOM')">
+                                <button tds-button-icon type="button" color="secondary" size="md" tds-tooltip="Tìm kiếm đơn vị tính" (click)="onSearchUOM('UOM')">
                                     <span class="flex items-center">
                                         <i class="tdsi-search-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon type="button" color="secondary" (click)="showCreateUOMModal()">
+                                <button tds-button-icon type="button" color="secondary" tds-tooltip="Thêm đơn vị tính" (click)="showCreateUOMModal()">
                                     <i class="tdsi-plus-circle-fill text-primary-1"></i>
                                 </button>
                             </div>
@@ -155,7 +155,7 @@
                                         </tds-select>
                                     </tds-form-field>
                                 </div>
-                                <button tds-button-icon type="button" color="secondary" size="md" (click)="onSearchUOM('UOMPO')">
+                                <button tds-button-icon type="button" color="secondary" size="md" tds-tooltip="Tìm kiếm đơn vị tính" (click)="onSearchUOM('UOMPO')">
                                     <span class="flex items-center">
                                         <i class="tdsi-search-fill text-neutral-1-500"></i>
                                     </span>
