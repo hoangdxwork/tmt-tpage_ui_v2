@@ -1,15 +1,15 @@
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
-import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from './../../dto/suggest-address/suggest-address.dto';
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
 import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
-import { ChatomniSendMessageService } from './../../services/chatomni-service/chatomni-send-message.service';
+import { ChatomniSendMessageService } from '../../services/chatomni-service/chatomni-send-message.service';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
-import { ModalAddAddressV2Component } from './../../pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
-import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event/chatomni-event-emiter.service';
+import { ModalAddAddressV2Component } from '../../pages/conversations/components/modal-add-address-v2/modal-add-address-v2.component';
+import { ChatomniEventEmiterService } from '../../app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
-import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
-import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto, AttachmentDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
+import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from '../../dto/conversation-all/chatomni/response-mess.dto';
+import { ChatomniCommentFacade } from '../../services/chatomni-facade/chatomni-comment.facade';
+import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto } from '../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { CRMTeamType } from '../../dto/team/chatomni-channel.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren, ViewContainerRef, Inject } from "@angular/core";
 import { finalize, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
@@ -30,15 +30,15 @@ import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
-  selector: "tds-conversation-item",
-  templateUrl:'./tds-conversation-item.component.html',
+  selector: "tiktok-conversation-item",
+  templateUrl:'./tiktok-conversation-item.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [eventReplyCommentTrigger],
   providers: [ TDSDestroyService ]
 })
 
-export class TDSConversationItemComponent implements OnInit, OnChanges  {
+export class TiktokConversationItemComponent implements OnInit, OnChanges  {
 
   @Input() dataItem!: ChatomniDataItemDto;
   @Input() csid!: string;
@@ -240,7 +240,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     });
   }
 
-  isErrorAttachment(att: AttachmentDto, dataItem: ChatomniDataItemDto){
+  isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
     if(dataItem && (dataItem.Status != ChatomniStatus.Error || dataItem.Error?.Message)) {
         this.dataItem.Data['is_error_attachment'] = true;
     }

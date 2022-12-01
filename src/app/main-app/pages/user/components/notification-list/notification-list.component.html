@@ -7,7 +7,7 @@
             <tds-avatar [shape]="'square'" [size]="80" tdsSrc="{{item.Image}}" [isAvatar]="false" class="rounded min-w-[80px]"></tds-avatar>
 
             <div class="text-neutral-1-400 relative w-full">
-            <div class="flex flex-col flex-auto gap-y-1 absolute inset-0" *ngIf="item.DateRead else notRead">
+            <div class="flex flex-col flex-auto gap-y-1 absolute inset-0" *ngIf="item?.DateRead else notRead">
                 <span class="text-base font-semibold w-full">{{item.Title}}</span>
                 <span class="truncate w-full">{{item.Description}}</span>
                 <span class="text-[13px] font-semibold w-full">{{item.DateCreated | yiDiffDateTime}} - {{item.DateCreated | date: 'dd/MM/yyyy'}}</span>

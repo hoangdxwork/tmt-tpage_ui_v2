@@ -27,13 +27,13 @@
               class="flex flex-auto justify-between items-start overflow-hidden cursor-pointer hover:bg-neutral-3-50 border-l-3"
               [ngClass]="item.id == dataDetail.id ? 'border-blue-500 bg-secondary-3': 'border-transparent bg-white'">
               <div class="flex gap-x-4 p-4 justify-between w-full overflow-hidden">
-                <div class="w-full flex gap-x-4" [ngClass]="item.dateRead ? 'text-neutral-1-400' : ''">
+                <div class="w-full flex gap-x-4" [ngClass]="item?.dateRead ? 'text-neutral-1-400' : ''">
                   <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item?.notification?.thumbnail }}"
                     [isAvatar]="false" class="rounded min-w-[63px]"></tds-avatar>
                   <div class="w-full flex flex-col flex-auto overflow-hidden">
                     <span class="text-body-2 font-semibold truncate break-words">{{ item?.notification?.title }}</span>
                     <span class="truncate text-body-2 break-words">{{ item?.notification?.shortContent }}</span>
-                    <span class="text-caption-2 font-semibold" [ngClass]="item.dateRead ? '' : 'text-info-400'">{{
+                    <span class="text-caption-2 font-semibold" [ngClass]="item?.dateRead ? '' : 'text-info-400'">{{
                       item?.dateCreated | yiDiffDateTime }} - {{ item?.dateCreated | date: 'dd/MM/yyyy' }}</span>
                   </div>
                 </div>
