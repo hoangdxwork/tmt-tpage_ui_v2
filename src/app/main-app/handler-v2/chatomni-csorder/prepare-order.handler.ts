@@ -30,7 +30,8 @@ export class CsOrder_PrepareModelHandler {
         x.Id = model.Id;
     }
 
-    x.Name = model.Name;
+    x.Name = model.Name || model.PartnerName || x.Facebook_UserName;
+
     x.Address = model.Address;
     x.CityCode = model.CityCode;
     x.CityName = model.CityName;
@@ -45,6 +46,7 @@ export class CsOrder_PrepareModelHandler {
     x.Facebook_ASUserId = model.Facebook_ASUserId;
     x.Facebook_UserId = model.Facebook_UserId;
     x.Facebook_UserName = model.Facebook_UserName;
+    x.Facebook_PostId = model.Facebook_PostId;
 
     x.Note = model.Note;
     x.PartnerId = model.PartnerId;
@@ -120,7 +122,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     //TODO: check sdt cấu hình mặc định
-    let config = JSON.parse(companyCurrents.Configs);
+    let config = companyCurrents?.Configs ? JSON.parse(companyCurrents.Configs) : null;
     if(config && config.PhoneRegex) {
         let phoneRegex = config.PhoneRegex || null;
         phoneRegex = new RegExp(`${phoneRegex}`, 'g');
@@ -198,7 +200,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     //TODO: check sdt cấu hình mặc định
-    let config = JSON.parse(companyCurrents.Configs);
+    let config = companyCurrents?.Configs ? JSON.parse(companyCurrents.Configs) : null;
     if(config && config.PhoneRegex) {
         let phoneRegex = config.PhoneRegex || null;
         phoneRegex = new RegExp(`${phoneRegex}`, 'g');
@@ -255,7 +257,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     //TODO: check sdt cấu hình mặc định
-    let config = JSON.parse(companyCurrents.Configs);
+    let config = companyCurrents?.Configs ? JSON.parse(companyCurrents.Configs) : null;
     if(config && config.PhoneRegex) {
         let phoneRegex = config.PhoneRegex || null;
         phoneRegex = new RegExp(`${phoneRegex}`, 'g');
@@ -332,6 +334,7 @@ export interface InsertFromMessageDto {
   Facebook_UserId: string;
   Facebook_ASUserId: string;
   Facebook_UserName: string;
+  Facebook_PostId: string;
   PartnerName: string;
   Name: string;
   Email?: any;

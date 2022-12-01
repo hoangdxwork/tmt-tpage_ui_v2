@@ -1,3 +1,4 @@
+import { Facebook } from './../../../../../lib/dto/facebook.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
@@ -66,6 +67,7 @@ import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'conversation-order',
@@ -188,6 +190,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private csOrder_PrepareModelHandler: CsOrder_PrepareModelHandler,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
+    private route: ActivatedRoute,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private socketOnEventService: SocketOnEventService,
@@ -746,12 +749,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.team = this.crmTeamService.getCurrentTeam() as any;
 
     if(model1 && this.quickOrderModel) {
-        model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)};
+        model2 = {...this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel, this.team)}; // ưu tiên lấy dữ liệu đơn hàng làm model
     }
 
     let model = Object.assign({}, model1, model2) as any;
-    model.FormAction = formAction;
+    if(!TDSHelperString.hasValueString(model.Facebook_PostId)) {
+        model.Facebook_PostId = this.route.snapshot.queryParams['post_id'];
+    }
 
+    model.FormAction = formAction;
     if(this.validateModelFastSalesOrder(model) == 0) return;
 
     this.isLoading = true;

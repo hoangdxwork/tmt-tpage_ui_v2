@@ -11,20 +11,18 @@
           </div>
 
            <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
-              <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
+              <div *ngIf="item && item.Type == 12" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
 
-                  <div *ngIf="item.Type == 12" >
-                    <div (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" class="cursor-pointer" >
-                        <tpage-avatar-facebook [shape]="'circle'" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
-                        </tpage-avatar-facebook>
-                    </div>
+                  <div (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" class="cursor-pointer" >
+                      <tpage-avatar-facebook [shape]="'circle'" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
+                      </tpage-avatar-facebook>
                   </div>
 
                   <div class="ml-2 w-full h-full">
                       <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
                           <div class="flex items-center justify-between">
                               <div class="flex gap-x-2 items-center">
-                                  <div *ngIf="item.Type == 12 && (item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] max-w-[220px] truncate">
+                                  <div *ngIf="(item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] max-w-[220px] truncate">
                                       <span class="font-semibold cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip="{{item.Data.from.name}}">{{ item.Data.from.name }}</span>
                                   </div>
 
