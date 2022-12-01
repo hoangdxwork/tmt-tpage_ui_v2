@@ -31,7 +31,7 @@
                     <div class="flex gap-2" *ngIf="partner.Id">
                         <tds-button-group>
 
-                          <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
+                          <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'"
                               class="border border-solid rounded-md px-2" [ngStyle]="getStatusColor(partner.StatusText) | buttonStatusColor">
                               <span class="flex items-center text-caption-2 font-semibold font-sans cursor-pointer">
                                   {{ partner.StatusText || 'Bình thường' }} <i class="tdsi-arrow-down-fill text-lg leading-none ml-1"></i>
@@ -40,14 +40,15 @@
 
                           <tds-dropdown-menu #menu="tdsDropdownMenu">
                               <div class="w-full max-h-[300px] overflow-y-auto tds-panel-scroll">
-                                  <div tds-dropdown-item *ngFor="let x of lstPartnerStatus" (click)="selectStatus(x)">
-                                      <a [ngStyle]="{'color': x.value }"> {{ x.text }} </a>
+                                  <div tds-dropdown-item *ngFor="let x of lstPartnerStatus" (click)="selectStatus(x)" class="flex items-center gap-x-2">
+                                      <a [ngStyle]="{'background-color': x.value }" class="w-2 h-2 rounded-full"></a>
+                                      <span class="text-neutral-1-900 text-body-2">{{ x.text }} </span>
                                   </div>
                               </div>
                           </tds-dropdown-menu>
                         </tds-button-group>
 
-                        <div class="text-body-2 font-regular font-sans text-neutral-1-400" >
+                        <div class="text-body-2 font-regular font-sans text-neutral-1-400">
                             ID: <span class="font-semibold">{{partner.Id}}</span>
                         </div>
                     </div>

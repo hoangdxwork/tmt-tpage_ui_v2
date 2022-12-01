@@ -11,19 +11,19 @@
     (queryParams)="onQueryParamsChange($event)"  (clickRefresh)="onRefresh()">
     <thead>
       <tr>
-        <th [width]="'5%'">STT</th>
-        <th [width]="'16%'">Khách hàng</th>
-        <th [width]="'16%'">Mã hóa đơn</th>
-        <th [width]="'16%'">Số lượng sản phẩm</th>
-        <th [width]="'16%'">Ngày tạo</th>
-        <th [width]="'16%'">Trạng thái</th>
-        <th [width]="'16%'"></th>
+        <th [width]="'10%'" [align]="'center'">STT</th>
+        <th [width]="'15%'">Khách hàng</th>
+        <th [width]="'15%'">Mã hóa đơn</th>
+        <th [width]="'15%'" [align]="'center'">Số lượng sản phẩm</th>
+        <th [width]="'15%'" [align]="'center'">Ngày tạo</th>
+        <th [width]="'15%'">Trạng thái</th>
+        <th [width]="'15%'"></th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of tableMessage.data; let index=index">
         <!-- STT-->
-        <td>
+        <td [align]="'center'">
           {{index + 1}}
         </td>
 
@@ -38,12 +38,12 @@
         </td>
 
         <!-- Số lượng sản phẩm -->
-        <td  class="text-center">
+        <td [align]="'center'">
           {{data.ProductUOMQty}}
         </td>
 
         <!-- Ngày tạo -->
-        <td>
+        <td [align]="'center'">
           {{data.DateInvoice | yiDateTimeFormat}}
         </td>
 
@@ -66,5 +66,5 @@
 </div>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-  <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Đóng</button>
+  <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
 </div>

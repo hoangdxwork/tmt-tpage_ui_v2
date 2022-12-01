@@ -30,10 +30,10 @@
         class="w-[336px] h-[500px] overflow-hidden overflow-y-auto tds-custom-scroll">
           <div *ngFor="let item of scroll.viewPortItems" (click)="onDetail(item)"
             class="flex gap-x-4 py-2.5 px-4 relative w-full cursor-pointer hover:bg-neutral-3-200">
-            <div class="w-full flex gap-x-4" [ngClass]="item.dateRead ? 'text-neutral-1-400' : ''">
+            <div class="w-full flex gap-x-4" [ngClass]="item?.dateRead ? 'text-neutral-1-400' : ''">
               <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item?.notification?.thumbnail }}" [isAvatar]="false" class="rounded min-w-[63px]"></tds-avatar>
               <div class=" w-full relative">
-                <div class="flex flex-col flex-auto gap-y-1 inset-0 absolute" *ngIf="item.dateRead; else notRead">
+                <div class="flex flex-col flex-auto gap-y-1 inset-0 absolute" *ngIf="item?.dateRead; else notRead">
                    <span class="text-body-2 font-semibold w-full text-neutral-1-900 truncate">{{item.notification.title}}</span>
                    <span class="text-caption-2 w-full text-neutral-1-900 truncate">{{item.notification.shortContent}}</span>
                    <span class="text-caption-2 font-semibold w-full text-neutral-1-400">{{item.dateCreated | yiDiffDateTime}} - {{item.dateCreated | date: 'dd/MM/yyyy'}}</span>
@@ -48,7 +48,7 @@
                 </ng-template>
               </div>
 
-              <span class="tdsi-radio-circle-fill text-info-400 absolute top-1 right-1 text-xs" *ngIf="!item.dateRead"></span>
+              <span class="tdsi-radio-circle-fill text-info-400 absolute top-1 right-1 text-xs" *ngIf="!item?.dateRead"></span>
             </div>
             <div class="pt-2 pr-2" [ngClass]="item?.dateRead ? 'hidden' : ''">
               <span class="tdsi-radio-circle-fill text-info-400 text-xs"></span>

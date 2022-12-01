@@ -213,19 +213,19 @@
               <!-- Thao tác -->
               <td [tdsRight]="true">
                 <div class="flex gap-x-2">
-                  <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(order)">
+                  <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(order)">
                     <span class="flex items-center">
                       <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                     </span>
                   </button>
 
-                  <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order)">
+                  <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm" (click)="onEdit(order)">
                     <span class="flex items-center text-neutral-1-500">
                       <i class="tdsi-edit-fill"></i>
                     </span>
                   </button>
 
-                  <button tds-button-icon color="secondary" size="sm" (click)="onDelete(order.Id, order.Code)">
+                  <button tds-button-icon color="secondary" tds-tooltip="Xóa" size="sm" (click)="onDelete(order.Id, order.Code)">
                     <span class="flex items-center text-neutral-1-500">
                       <i class="tdsi-trash-fill"></i>
                     </span>

@@ -157,6 +157,9 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
           this.modalService.create({
               title: 'Đơn hàng chờ chốt',
               size: 'xl',
+              bodyStyle: {
+                padding: '0px',
+              },
               content: ModalLiveCampaignOrderComponent,
               viewContainerRef: this.viewContainerRef,
               componentParams: {
@@ -171,6 +174,9 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
           this.modalService.create({
               title: 'Hóa đơn chờ chốt',
               size: 'xl',
+              bodyStyle: {
+                padding: '0px',
+              },
               content: ModalLiveCampaignBillComponent,
               viewContainerRef: this.viewContainerRef,
               componentParams: {
@@ -329,7 +335,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
         }
     })
   }
-  
+
   openTag(item: LiveCampaignSimpleDetail) {
     let details = this.lstDetails as any[];
     let index = details.findIndex(x => x.ProductId === item.ProductId && x.UOMId == item.UOMId);
