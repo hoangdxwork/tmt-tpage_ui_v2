@@ -170,10 +170,10 @@
                         <!-- Thông tin bài post -->
                         <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
                             && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
-                            <conversation-infopost-item
+                            <extras-conversation-item
                                 [team]="team" [typeNumber]="item.Type" [item]="item"
                                 [data]="dataSource.Extras!.Objects[item.ObjectId]">
-                            </conversation-infopost-item>
+                            </extras-conversation-item>
                         </div>
                     </div>
                     <ng-container *ngIf="item && (data.ConversationId) && type && team">
