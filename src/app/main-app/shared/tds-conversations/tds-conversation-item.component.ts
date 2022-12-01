@@ -71,7 +71,6 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
-  @ViewChild('scrollProduct') scrollProduct!: ElementRef<any>;
   @ViewChild('itemProduct') itemProduct!: ElementRef<any>;
 
   constructor(private element: ElementRef,
@@ -753,30 +752,30 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     }
   }
 
-  next() {
+  next(id: any) {
     let width = this.itemProduct.nativeElement.clientWidth;
-    let element = this.document.getElementById('scroll-product') as any;
+    let element = this.document.getElementById(`scroll-product${id}`) as any;
 
     setTimeout(() => {
       if(element && width) {
         let left = width + element.scrollLeft;
         element?.scroll({
-            left: left,
+            left: left + width,
             behavior: 'smooth',
         })
       }
     }, 100)
   }
 
-  previous() {
+  previous(id: any) {
     let width = this.itemProduct.nativeElement.clientWidth;
-    let element = this.document.getElementById('scroll-product') as any;
+    let element = this.document.getElementById(`scroll-product${id}`) as any;
 
     setTimeout(() => {
       if(element && width) {
         let right = element.scrollLeft - width;
         element?.scroll({
-            left: right,
+            left: right - width,
             behavior: 'smooth',
         })
       }

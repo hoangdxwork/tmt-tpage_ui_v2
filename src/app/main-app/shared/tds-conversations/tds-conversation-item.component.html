@@ -7,8 +7,8 @@
           (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
           <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
               <div *ngIf="wb.type == 'template' && wb.payload">
-                <div #scrollProduct class="w-full flex justify-end relative">
-                  <div id="scroll-product" class="w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
+                <div class="w-full flex justify-end relative">
+                  <div id="scroll-product{{dataItem.Data.id}}" class="w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
                     <div #itemProduct class="snap-start shrink-0">
                       <tds-card class="bg-white w-full h-full rounded-xl" (click)="detail()">
                         <img src="../../assets/imagesv2/product-image.svg" alt="" />
@@ -75,12 +75,67 @@
                         </tds-card-content>
                       </tds-card>
                     </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 07</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 08</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 09</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 10</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 11</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
                   </div>
-                  <div class="w-[85%] px-2 h-full flex justify-between items-center absolute z-9999">
-                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous()">
+                  <div class="w-[85%] px-2 h-full flex justify-between items-center absolute z-1">
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous(dataItem.Data.id)">
                       <i class="tdsi-arrow-left-fill text-neutral-1-400"></i>
                     </button>
-                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="next()">
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="next(dataItem.Data.id)">
                       <i class="tdsi-arrow-right-fill text-neutral-1-400"></i>
                     </button>
                   </div>
@@ -204,7 +259,7 @@
               </div>
           </div> -->
 
-          
+
           <div *ngIf="dataItem.Data && dataItem.Data?.attachments && this.isShowItemImage == true">
               <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
                   (closeShowItemImage)="onCloseShowItemImage($event)">
