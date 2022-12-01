@@ -93,6 +93,7 @@ export class TableBillMessageComponent implements OnInit {
       });
 
       if (pageIds.length == 0) {
+        this.isLoading = false;
         return this.message.error('Không có kênh kết nối với khách hàng này.');
       }
 
@@ -100,6 +101,7 @@ export class TableBillMessageComponent implements OnInit {
         .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
 
           if (teams.length == 0) {
+            this.isLoading = false;
             return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 

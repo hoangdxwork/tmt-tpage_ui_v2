@@ -319,6 +319,7 @@ export class DetailBillComponent implements OnInit {
       });
 
       if (pageIds.length == 0) {
+        this.isLoading = false;
         return this.message.error('Không có kênh kết nối với khách hàng này.');
       }
 
@@ -326,6 +327,7 @@ export class DetailBillComponent implements OnInit {
           next: (teams: any): any => {
 
           if (teams.length == 0) {
+            this.isLoading = false;
             return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 

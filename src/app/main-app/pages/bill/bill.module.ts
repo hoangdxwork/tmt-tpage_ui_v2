@@ -1,3 +1,4 @@
+import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
 import { ChatomniConversationFacade } from './../../services/chatomni-facade/chatomni-conversation.facade';
 import { PrepareDetailsOrderLineHandler } from './../../handler-v2/order-handler/prepare-details-orderLine.handler';
 import { PrepareCopyBill } from './../../handler-v2/bill-handler/prepare-copy-bill.handler';
@@ -154,7 +155,8 @@ const SERVICES = [
   PrepareCopyBill,
   ChatomniConversationFacade,
   LiveCampaignService,
-  ChatomniConversationService
+  ChatomniConversationService,
+  ChatomniCommentService
 ]
 
 @NgModule({

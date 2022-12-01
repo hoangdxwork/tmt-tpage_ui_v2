@@ -819,6 +819,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     }
 
     if(!TDSHelperString.hasValueString(data.CRMTeamId)) {
+      this.isLoading = false;
       this.message.error(Message.PageNotExist);
       return;
     }
@@ -833,6 +834,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
           this.isOpenChat = false;
           if (pageIds.length == 0) {
+              this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 
@@ -840,6 +842,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
             next: (teams: any): any => {
 
                 if (teams?.length == 0) {
+                    this.isLoading = false;
                     return this.message.error('Không có kênh kết nối với khách hàng này.');
                 }
 
