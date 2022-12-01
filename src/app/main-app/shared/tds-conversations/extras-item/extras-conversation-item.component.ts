@@ -1,22 +1,22 @@
-import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from './../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
-import { ChatomniDataItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
-import { ModalPostComponent } from './../../../../pages/conversations/components/modal-post/modal-post.component';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Router } from '@angular/router';
-import { CRMTeamType } from './../../../../dto/team/chatomni-channel.dto';
-import { ChatomniDataTShopPostDto } from './../../../../dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { Component, OnInit, ChangeDetectionStrategy, Input, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
+import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
+import { ModalPostComponent } from '@app/pages/conversations/components/modal-post/modal-post.component';
 
 @Component({
-  selector: 'conversation-infopost-item',
-  templateUrl: './conversation-infopost-item.component.html',
+  selector: 'extras-conversation-item',
+  templateUrl: './extras-conversation-item.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationInfopostItemComponent implements OnInit, OnChanges {
+export class ExtrasConversationItemComponent implements OnInit, OnChanges {
 
   @Input() team!: CRMTeamDTO;
   @Input() typeNumber!: number;

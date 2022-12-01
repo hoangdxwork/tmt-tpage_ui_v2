@@ -1,5 +1,5 @@
 <div class="w-full text-body-2 text-neutral-1-900 h-[473px]">
-  <tds-table #basicTable 
+  <tds-table #basicTable
     [listData]="lstOfData"
     [scroll]="{ y:'auto' }"
     [showSizeChanger]="true"
@@ -8,7 +8,7 @@
     [(pageIndex)]="pageIndex"
     [loading]="isLoading"
     [total]="count"
-    (queryParams)="onQueryParamsChange($event)"  
+    (queryParams)="onQueryParamsChange($event)"
     (clickRefresh)="onRefresh()">
     <thead>
       <tr>
@@ -36,10 +36,12 @@
         <!-- Mã đơn hàng -->
         <td>
           <div class="mb-2">{{ data.Code || '---' }}</div>
-          <div *ngIf="data.IsOrderPriority != null" class="flex flex-auto mt-0.5">
-            <div class="px-2 py-0.5 rounded text-white font-semibold text-caption-2" [ngClass]="data.IsOrderPriority == true ? 'bg-primary-1' : 'bg-neutral-1-300' ">
-              <span *ngIf="data.IsOrderPriority != true">Dự bị</span>
-              <span *ngIf="data.IsOrderPriority == true">Ưu tiên</span>
+          <div *ngIf="data.IsOrderPriority != null">
+            <div class="flex flex-auto mt-0.5">
+              <div class="px-2 py-0.5 rounded text-white font-semibold text-caption-2" [ngClass]="data.IsOrderPriority == true ? 'bg-primary-1' : 'bg-neutral-1-300' ">
+                <span *ngIf="data.IsOrderPriority == false">Dự bị</span>
+                <span *ngIf="data.IsOrderPriority == true">Ưu tiên</span>
+              </div>
             </div>
           </div>
         </td>
