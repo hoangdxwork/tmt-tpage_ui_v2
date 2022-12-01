@@ -1,6 +1,6 @@
 <div *ngIf="dataItem && team" class="px-2">
 	<!--Lọc theo Messages-->
-	<div *ngIf="dataItem.Type == 11" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
+	<div *ngIf="dataItem.Type == 11 || dataItem.Type == 92" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
 
       <!-- webhook_attachments template sản phẩm -->
       <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
@@ -136,6 +136,11 @@
                     [psid]="(dataItem.Data | facebookType)?.from?.id" [token]="team.ChannelToken">
                 </tpage-avatar-facebook>
             </div>
+            <div *ngIf="dataItem.Type == 92 && (dataItem.Data | tshopType)">
+                <tpage-avatar-facebook *ngIf="dataItem.IsShowAvatar" [shape]="'circle'" [size]="36"
+                    [psid]="dataItem.UserId" [token]="team.ChannelToken">
+                </tpage-avatar-facebook>
+            </div>
           </div>
 
           <!-- Tin nhắn văn bản -->
@@ -204,6 +209,31 @@
               </div>
           </div> -->
 
+          <!--Tin nhắn hình ảnh TShop-->
+          <!-- 1 hình -->
+		      <div *ngIf="dataItem.Type == 92 && dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length == 1 && !dataItem.Message" class="flex flex-wrap max-w-[225px]">
+                <div *ngFor="let att of dataItem.Data.AttachmentDto" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
+                    class="p-0.5 flex gap-x-2 justify-center items-center">
+                    <a *ngIf="att.fileUrl" (click)="open_gallery(att)" class="relative">
+                        <show-attachment class="w-full h-full" [type]="att.fileExtension" [height]="'225px'" [url]="att.fileUrl" (onError)="isErrorAttachment(att, dataItem)">
+                        </show-attachment>
+                    </a>
+                </div>
+          </div>
+
+              <!-- Nhiều hình -->
+          <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length > 1 && dataItem.Type == 92 && !dataItem.Message" class="flex flex-wrap w-[327px]">
+              <div *ngFor="let att of dataItem.Data.AttachmentDto" class="p-0.5"  [ngClass]="dataItem.Data.AttachmentDto.length == 2 ? 'w-1/2' : 'w-1/3'">
+                  <div class="w-full relative" [ngStyle]="{'padding-top.%': 100}">
+
+                      <a *ngIf="att.fileUrl" (click)="open_gallery(att)" class="absolute inset-0 w-full h-full flex">
+                          <show-attachment class="w-full h-full" [type]="att.fileExtension" [url]="att.fileUrl" (onError)="isErrorAttachment(att, dataItem)">
+                          </show-attachment>
+                      </a>
+                  </div>
+              </div>
+          </div>
+
           <div *ngIf="dataItem.Data && dataItem.Data?.attachments && this.isShowItemImage == true">
               <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
                   (closeShowItemImage)="onCloseShowItemImage($event)">
@@ -212,6 +242,11 @@
 
           <!-- Tin nhắn không tải được -->
           <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments && dataItem.Type == 11" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+              tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
+              Không tải được tin nhắn!
+          </div>
+
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.AttachmentDto && dataItem.Type == 92" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
               tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
@@ -281,7 +316,7 @@
   </div>
 
   <!--Lọc theo comments-->
-  <div *ngIf="dataItem.Type == 12" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
+  <div *ngIf="dataItem.Type == 12 || dataItem.Type == 91 || dataItem.Type == 1001" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
       <div class="w-full flex flex-row">
 
           <!-- Avatar Facebook_PageId -->
@@ -291,6 +326,14 @@
                     [psid]="!dataItem.IsOwner ? dataItem.UserId : team.ChannelId"
                     [token]="team.ChannelToken">
                 </tpage-avatar-facebook>
+            </div>
+
+            <div *ngIf="dataItem.Type == 91">
+                <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
+            </div>
+
+            <div *ngIf="dataItem.Type == 1001">
+              <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
             </div>
           </div>
 
@@ -305,7 +348,10 @@
                       <div class="flex flex-auto">
                           <!--Nội dung-->
                           <div *ngIf="dataItem.Message">
-                            <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
+                              <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
+                              <div *ngIf="dataItem.Type == 91 && (dataItem.Data | tshopDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tshopDataCs).Actor?.Name }} </div>
+                              <div *ngIf="dataItem.Type == 1001 && (dataItem.Data | tiktokDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tiktokDataCs)?.nickname }} </div>
+
                             <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
                             <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert" #contentMessage></div>
                           </div>
@@ -432,6 +478,14 @@
                       </tpage-avatar-facebook>
                   </div>
 
+                  <div *ngIf="dataItem.Type == 91" class="avatar mr-2">
+                    <tds-avatar [size]="36" [tdsSrc]="(child.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
+                  </div>
+
+                  <div *ngIf="dataItem.Type == 1001" class="avatar mr-2">
+                    <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
+                  </div>
+
                   <div class="flex flex-col w-full">
                       <div class="inline-flex w-fit group">
                           <div class="chat-body !m-0" tds-tooltip
@@ -440,6 +494,14 @@
                                   <div class="border-activety-comment" *ngIf="child.Message">
                                         <div *ngIf="dataItem.Type == 12">
                                             <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                        </div>
+
+                                        <div *ngIf="dataItem.Type == 91">
+                                            <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tshopDataCs).Actor?.Name }} </div>
+                                        </div>
+
+                                        <div *ngIf="dataItem.Type == 1001">
+                                            <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tiktokDataCs).nickname }} </div>
                                         </div>
 
                                       <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
