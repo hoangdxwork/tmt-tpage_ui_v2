@@ -1,3 +1,6 @@
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
+import { TUserCacheDto } from './../../../lib/dto/tshop.dto';
+import { FacebookUser } from 'src/app/lib/dto/facebook.dto';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 
 import { TDSHelperString } from 'tds-ui/shared/utility';
@@ -19,6 +22,7 @@ export class TShopService extends BaseSevice {
   baseRestApi: string = "";
 
   private readonly tshopUser$ = new Subject<any>();
+  private readonly cacheLoginUser = '_cache_login_user';
 
   constructor(private apiService: TCommonService,
     private message: TDSMessageService) {
@@ -28,12 +32,14 @@ export class TShopService extends BaseSevice {
 
   windowLoginTShop() {
     window.addEventListener("message", (event: MessageEvent<any>) => {
-      if(!event) return;
+      if(!event || !event.data?.data) return;
 
       let data = event.data;
-      let model = JSON.parse(data) as any;
+      let model = JSON.parse(data) as TUserCacheDto;
+      let exist = model && model.access_token && model.user;
 
-      if(model && model.access_token && model.user) {
+      if(exist) {
+        this.setCacheLoginUser(model, CRMTeamType._TShop);
         this.tshopUser$.next(model);
       }
     });
@@ -58,5 +64,28 @@ export class TShopService extends BaseSevice {
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
   }
 
+  setCacheLoginUser(user: TUserCacheDto, type: string) {
+    let model = {
+      data: user,
+      type: type
+    }
 
+    let data = JSON.stringify(model);
+    localStorage.setItem(this.cacheLoginUser, data);
+  }
+
+  getCacheLoginUser(): TUserCacheDto | null {
+    let data = localStorage.getItem(this.cacheLoginUser);
+
+    if(data) {
+      let model = JSON.parse(data);
+      return model;
+    } else {
+      return null;
+    }
+  }
+
+  removeCacheLoginUser() {
+    localStorage.removeItem(this.cacheLoginUser);
+  }
 }

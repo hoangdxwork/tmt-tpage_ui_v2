@@ -1,3 +1,7 @@
+export interface TUserCacheDto {
+  access_token: string;
+  user: TUserDto;
+}
 export interface TUserDto {
   Id: string;
   Name: string;
