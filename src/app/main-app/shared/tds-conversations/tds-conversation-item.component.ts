@@ -8,7 +8,7 @@ import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
-import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto, AttachmentDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren, ViewContainerRef, Inject } from "@angular/core";
 import { finalize, takeUntil } from "rxjs";
@@ -240,7 +240,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     });
   }
 
-  isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
+  isErrorAttachment(att: AttachmentDto, dataItem: ChatomniDataItemDto){
     if(dataItem && (dataItem.Status != ChatomniStatus.Error || dataItem.Error?.Message)) {
         this.dataItem.Data['is_error_attachment'] = true;
     }
@@ -448,6 +448,51 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
       this.listAtts = [...result];
       if(att.image_data && att.image_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.image_data.url);
       if(att.video_data && att.video_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.video_data.url);
+    }
+  }
+
+  open_galleryTshop(att: any) {
+    this.isShowItemImage = true;
+    let result:TDSSafeAny[]= [];
+    this.gallery = this.dataSource.Items.filter((x: ChatomniDataItemDto) => x.Data && x.Data.AttachmentDto != null && x.Data.AttachmentDto.length != 0);
+
+    if(this.gallery && this.gallery.length > 0) {
+
+      this.gallery.map(item => {
+        if(item.Data?.AttachmentDto && !item.IsOwner){
+
+          item.Data?.AttachmentDto.map((attachment: any) => {
+              if(attachment.fileExtension != 'audio/mpeg'){
+
+                  let image_url = attachment.fileUrl;
+                  result.push({
+                      date_time: item.CreatedTime,
+                      id: item.Data?.from?.id || item.UserId,
+                      url: image_url,
+                      type: attachment.fileExtension ? attachment.fileExtension : null
+                  });
+              }
+          })
+        }
+
+        if(item.Data?.AttachmentDto && item.Data?.AttachmentDto.length != 0 && item.IsOwner){
+          let attachment = item.Data?.AttachmentDto;
+          if(attachment.mime_type != 'audio/mpeg'){
+
+            let image_url = attachment.image_data.url;
+            result.push({
+                date_time: item.CreatedTime,
+                id: item.Data?.from?.id || item.UserId,
+                url: image_url,
+                type: attachment.mime_type ? attachment.mime_type : null
+            });
+        }
+        }
+      })
+
+      this.listAtts = [...result];
+
+      if((att.image_data && att.image_data?.url) || att.fileUrl) this.imageClick = this.listAtts.findIndex(x => x.url == (att.image_data?.url || att.fileUrl));
     }
   }
 

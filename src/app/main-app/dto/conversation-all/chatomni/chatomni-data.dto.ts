@@ -286,7 +286,7 @@ export interface ChatomniTShopDataDto {
   ShopId: string;
   ConversationId: string;
   Recipient: Recipient;
-  AttachmentDto: AttachmentDto[];
+  AttachmentDto: AttachmentDto[] | any;
   ListUserId: string[];
   MessageLinkDto: any[];
   SocketId: string;
@@ -333,6 +333,22 @@ export interface AttachmentDto {
   messageId: string;
   attachmentType: number;
   creationTime: Date;
+}
+
+export interface ImageData {
+  width: number;
+  height: number;
+  max_width: number;
+  max_height: number;
+  url: string;
+  image_type: number;
+  render_as_sticker: boolean;
+}
+
+export interface AttachmentIsAdminDto {
+  mime_type: string;
+  size: number;
+  image_data: ImageData;
 }
 
 export interface ExtraProperties {
