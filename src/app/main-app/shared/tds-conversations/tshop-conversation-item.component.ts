@@ -788,4 +788,49 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
 
   }
 
+  open_galleryTshop(att: any) {
+    this.isShowItemImage = true;
+    let result:TDSSafeAny[]= [];
+    this.gallery = this.dataSource.Items.filter((x: ChatomniDataItemDto) => x.Data && x.Data.AttachmentDto != null && x.Data.AttachmentDto.length != 0);
+
+    if(this.gallery && this.gallery.length > 0) {
+
+      this.gallery.map(item => {
+        if(item.Data?.AttachmentDto && !item.IsOwner){
+
+          item.Data?.AttachmentDto.map((attachment: any) => {
+              if(attachment.fileExtension != 'audio/mpeg'){
+
+                  let image_url = attachment.fileUrl;
+                  result.push({
+                      date_time: item.CreatedTime,
+                      id: item.Data?.from?.id || item.UserId,
+                      url: image_url,
+                      type: attachment.fileExtension ? attachment.fileExtension : null
+                  });
+              }
+          })
+        }
+
+        if(item.Data?.AttachmentDto && item.Data?.AttachmentDto.length != 0 && item.IsOwner){
+          let attachment = item.Data?.AttachmentDto;
+          if(attachment.mime_type != 'audio/mpeg'){
+
+            let image_url = attachment.image_data.url;
+            result.push({
+                date_time: item.CreatedTime,
+                id: item.Data?.from?.id || item.UserId,
+                url: image_url,
+                type: attachment.mime_type ? attachment.mime_type : null
+            });
+        }
+        }
+      })
+
+      this.listAtts = [...result];
+
+      if((att.image_data && att.image_data?.url) || att.fileUrl) this.imageClick = this.listAtts.findIndex(x => x.url == (att.image_data?.url || att.fileUrl));
+    }
+  }
+
 }

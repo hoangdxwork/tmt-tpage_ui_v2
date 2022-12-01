@@ -144,7 +144,7 @@
             <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.Message" [searchText]="searchText" class="text-left" ></div>
           </div>
 
-          <!-- Tin nhắn hình ảnh -->
+          <!-- Tin nhắn hình ảnh facebook -->
 		      <!-- 1 hình -->
 		      <div *ngIf="dataItem.Data && dataItem.Data?.attachments && dataItem.Data.attachments?.data!.length == 1" class="flex flex-wrap max-w-[225px]">
               <div *ngFor="let att of dataItem.Data.attachments.data" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
@@ -204,6 +204,7 @@
               </div>
           </div> -->
 
+          
           <div *ngIf="dataItem.Data && dataItem.Data?.attachments && this.isShowItemImage == true">
               <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
                   (closeShowItemImage)="onCloseShowItemImage($event)">

@@ -210,23 +210,24 @@
           </div> -->
 
           <!--Tin nhắn hình ảnh TShop-->
+          <!-- Trường hợp là isOwner là false -->
           <!-- 1 hình -->
-		      <div *ngIf="dataItem.Type == 92 && dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length == 1 && !dataItem.Message" class="flex flex-wrap max-w-[225px]">
-                <div *ngFor="let att of dataItem.Data.AttachmentDto" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
-                    class="p-0.5 flex gap-x-2 justify-center items-center">
-                    <a *ngIf="att.fileUrl" (click)="open_gallery(att)" class="relative">
-                        <show-attachment class="w-full h-full" [type]="att.fileExtension" [height]="'225px'" [url]="att.fileUrl" (onError)="isErrorAttachment(att, dataItem)">
-                        </show-attachment>
-                    </a>
-                </div>
+		      <div *ngIf="dataItem.Type == 92 && dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length == 1 && !dataItem.Message && !dataItem.IsOwner" class="flex flex-wrap max-w-[225px]">
+            <div *ngFor="let att of (dataItem.Data | tshopDataCs).AttachmentDto" class="flex-row-reverse"
+                class="p-0.5 flex gap-x-2 justify-center items-center">
+                <a *ngIf="att.fileUrl" (click)="open_galleryTshop(att)" class="relative">
+                    <show-attachment class="w-full h-full" [type]="att.fileExtension" [height]="'225px'" [url]="att.fileUrl" (onError)="isErrorAttachment(att, dataItem)">
+                    </show-attachment>
+                </a>
+            </div>
           </div>
 
-              <!-- Nhiều hình -->
-          <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length > 1 && dataItem.Type == 92 && !dataItem.Message" class="flex flex-wrap w-[327px]">
+          <!-- Nhiều hình -->
+          <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length > 1 && dataItem.Type == 92 && !dataItem.Message && !dataItem.IsOwner" class="flex flex-wrap w-[327px]">
               <div *ngFor="let att of dataItem.Data.AttachmentDto" class="p-0.5"  [ngClass]="dataItem.Data.AttachmentDto.length == 2 ? 'w-1/2' : 'w-1/3'">
                   <div class="w-full relative" [ngStyle]="{'padding-top.%': 100}">
 
-                      <a *ngIf="att.fileUrl" (click)="open_gallery(att)" class="absolute inset-0 w-full h-full flex">
+                      <a *ngIf="att.fileUrl" (click)="open_galleryTshop(att)" class="absolute inset-0 w-full h-full flex">
                           <show-attachment class="w-full h-full" [type]="att.fileExtension" [url]="att.fileUrl" (onError)="isErrorAttachment(att, dataItem)">
                           </show-attachment>
                       </a>
@@ -234,7 +235,19 @@
               </div>
           </div>
 
-          <div *ngIf="dataItem.Data && dataItem.Data?.attachments && this.isShowItemImage == true">
+          <!-- Trường hợp là isOwner là true -->
+          <div *ngIf="dataItem.Type == 92 && dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto.image_data && !dataItem.Message && dataItem.IsOwner" class="flex flex-wrap max-w-[225px]">
+            <div class="flex-row"
+                class="p-0.5 flex gap-x-2 justify-center items-center">
+                <a *ngIf="dataItem.Data.AttachmentDto.image_data.url" (click)="open_galleryTshop(dataItem.Data.AttachmentDto)" class="relative">
+                    <show-attachment class="w-full h-full" [type]="dataItem.Data.AttachmentDto.mime_type.fileExtension" [height]="'225px'" [url]="dataItem.Data.AttachmentDto.image_data.url" (onError)="isErrorAttachment(dataItem.Data.AttachmentDto.image_data, dataItem)">
+                    </show-attachment>
+                </a>
+            </div>
+          </div>
+
+
+          <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && this.isShowItemImage == true">
               <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
                   (closeShowItemImage)="onCloseShowItemImage($event)">
               </show-item-image>
