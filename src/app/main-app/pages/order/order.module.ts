@@ -89,6 +89,7 @@ import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
 import { ModalOrderDeletedComponent } from './components/modal-order-deleted/modal-order-deleted.component';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -129,6 +130,7 @@ const SERVICES = [
   SO_PrepareFastSaleOrderHandler,
   ChatomniCommentFacade,
   ChatomniConversationFacade,
+  ChatomniCommentService,
   ChatomniConversationService
 ]
 
@@ -196,6 +198,6 @@ const SERVICES = [
     ...SERVICES,
     DatePipe
   ],
-  
+
 })
 export class OrderModule { }
