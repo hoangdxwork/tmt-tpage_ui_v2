@@ -3,7 +3,7 @@
 	<div *ngIf="dataItem.Type == 11" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
 
       <!-- webhook_attachments template sản phẩm -->
-      <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
+      <!-- <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
           (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
           <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
               <div *ngIf="wb.type == 'template' && wb.payload">
@@ -181,7 +181,7 @@
                 </div>
               </div>
           </div>
-      </div>
+      </div> -->
 
       <div class="chat-body w-full" [ngClass]="dataItem.IsShowAvatar? '': '!my-2 pl-9'">
           <div *ngIf="!dataItem.IsOwner " class="mr-2 flex flex-col justify-end">
@@ -244,21 +244,9 @@
                           <show-attachment [type]="att.mime_type" [url]="att.file_url" (onError)="isErrorAttachment(att, dataItem)">
                           </show-attachment>
                       </a>
-
                   </div>
               </div>
           </div>
-
-          <!-- webhook_attachments template sản phẩm -->
-          <!-- <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
-              (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
-              <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
-                  <div *ngIf="wb.type == 'template' && wb.payload">
-                    <div>hihi</div>
-                  </div>
-              </div>
-          </div> -->
-
 
           <div *ngIf="dataItem.Data && dataItem.Data?.attachments && this.isShowItemImage == true">
               <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
