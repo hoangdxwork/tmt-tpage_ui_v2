@@ -313,13 +313,13 @@ export class PostOrderConfigComponent implements OnInit {
     }
   }
 
-  enableOrderMultiple(event: boolean, item: TextContentToOrderDTO){
-    let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
-    if(Number(idx) >= 0) {
-      this.dataModel.TextContentToOrders[idx].Product!.IsEnableOrderMultiple = event;
-      this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
-    }
-  }
+  // enableOrderMultiple(event: boolean, item: TextContentToOrderDTO){
+  //   let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
+  //   if(Number(idx) >= 0) {
+  //     this.dataModel.TextContentToOrders[idx].Product!.IsEnableOrderMultiple = event;
+  //     this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
+  //   }
+  // }
 
   changeUsers(event: ConfigUserDTO[]){
     this.dataModel.Users = event;
@@ -453,7 +453,7 @@ export class PostOrderConfigComponent implements OnInit {
 
           delete res['@odata.context'];
           const product = {...res} as ProductTmlpAttributesDto;
-          let item = {...this.prepareProduct(product)} as TextContentToOrderDTO;
+          let item = {...this.prepareProduct(product, index)} as TextContentToOrderDTO;
 
           let content = this.generateTagDetail(product.DefaultCode, product.OrderTag, null, null);
           item.Content = content?.join(',');
@@ -602,7 +602,7 @@ export class PostOrderConfigComponent implements OnInit {
     })
   }
 
-  prepareProduct(model: ProductTmlpAttributesDto) {
+  prepareProduct(model: ProductTmlpAttributesDto, line?: number) {
     let indexs = this.dataModel.TextContentToOrders.map(x => x.Index);
     let item = {
         Index: Number(Math.max(...indexs)),
@@ -611,6 +611,10 @@ export class PostOrderConfigComponent implements OnInit {
         ContentWithAttributes: '',
         Product: null
     } as TextContentToOrderDTO;
+
+    if(line && line >= 0) {
+        item.Index = line;
+    }
 
     let productModel = {
         ProductId: model.Id,

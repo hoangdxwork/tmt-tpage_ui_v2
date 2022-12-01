@@ -44,14 +44,14 @@ import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { FormatIconLikePipe } from '../pipe/format-icon-like.pipe';
 import { TDSConversationsComponent } from './tds-conversations.component';
 import { TDSConversationItemComponent } from './tds-conversation-item.component';
-import { ConversationInfopostItemComponent } from './component/conversation-infopost-item/conversation-infopost-item.component';
+import { ExtrasConversationItemComponent } from './extras-item/extras-conversation-item.component';
 
 const CMP =[
   TDSConversationsComponent,
   TDSConversationItemComponent,
   IconEmojiMartComponent,
   ShowItemImageComponent,
-  ConversationInfopostItemComponent,
+  ExtrasConversationItemComponent,
 ]
 
 @NgModule({
