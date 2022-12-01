@@ -195,15 +195,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               }
             break;
 
-            case ChatmoniSocketEventName.chatomniOnUpdate:
-              break;
+          case ChatmoniSocketEventName.chatomniOnUpdate:
+            break;
 
-            case ChatmoniSocketEventName.chatomniMarkseen:
-              this.setSocketMarkseen(res.Data);
-              break;
+          case ChatmoniSocketEventName.chatomniMarkseen:
+            this.setSocketMarkseen(res.Data);
+            break;
 
-            default:
-              break;
+          default:
+            break;
         }
       }
     })

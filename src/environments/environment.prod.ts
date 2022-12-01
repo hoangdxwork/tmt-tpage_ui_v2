@@ -3,7 +3,7 @@ export const environment = {
   signalRAppend: "",
   urlLogin:'/account/login',
   socketUrl: 'https://rt-2.tpos.app/chatomni',
-  tShopUrl: 'https://app.live.dev.tmtco.org/oauth',
+  tShopUrl: 'https://app.live.tmtco.org/oauth',
   apiAccount:{
     signInPassword:"/token",
     signInFacebook:"/sign-in/facebook",

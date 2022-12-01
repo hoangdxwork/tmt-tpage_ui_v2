@@ -3,7 +3,7 @@ import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Injectable } from '@angular/core';
 import { TUserDto } from '@core/dto/tshop.dto';
-import { ReplaySubject, Observable } from 'rxjs';
+import { ReplaySubject, Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { TDSMessageService } from 'tds-ui/message';
 import { BaseSevice } from '../base.service';
@@ -17,30 +17,30 @@ export class TShopService extends BaseSevice {
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "";
-  private _currentToken!: string | null;
-  private _userTShopLogin!: TUserDto | null;
-  private readonly currentUser$ = new ReplaySubject<TUserDto | null>(1);
+
+  private readonly tshopUser$ = new Subject<any>();
 
   constructor(private apiService: TCommonService,
     private message: TDSMessageService) {
     super(apiService)
-    this.eventLogin();
+      this.windowLoginTShop();
   }
 
-  eventLogin() {
+  windowLoginTShop() {
     window.addEventListener("message", (event: MessageEvent<any>) => {
-      let data = event?.data;
+      if(!event) return;
 
-      if(data) {
-        let checkString = TDSHelperString.isString(data);
-        let model = checkString ? JSON.parse(data) : data;
+      let data = event.data;
+      let model = JSON.parse(data) as any;
 
-        if(model?.access_token && model?.user) {
-          this.setCurrentToken(model?.access_token);
-          this.onUpdateUser(model?.user);
-        }
+      if(model && model.access_token && model.user) {
+        this.tshopUser$.next(model);
       }
     });
+  }
+
+  getTShopUser() {
+    return this.tshopUser$.asObservable();
   }
 
   refreshUserToken(id: any): Observable<any> {
@@ -52,41 +52,11 @@ export class TShopService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  getCurrentToken(): string | null {
-    return this._currentToken;
-  }
-
-  setCurrentToken(token: string) {
-    this._currentToken = token;
-  }
-
-  getCurrentUser(): TUserDto | null {
-    return this._userTShopLogin;
-  }
-
-  setCurrentUser(token: TUserDto) {
-    this._userTShopLogin = token;
-  }
 
   getAuthentication(fragment: string) {
     let hostname = location.href.replace("/" + location.hash, "");;
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
   }
 
-  onUpdateUser(data: TUserDto | null) {
-    this._userTShopLogin = data;
 
-    if(data == null)
-      this._currentToken = null;
-
-    this.currentUser$.next(data);
-  }
-
-  onChangeUser() {
-    return this.currentUser$.asObservable();
-  }
-
-  logout() {
-    this.onUpdateUser(null);
-  }
 }

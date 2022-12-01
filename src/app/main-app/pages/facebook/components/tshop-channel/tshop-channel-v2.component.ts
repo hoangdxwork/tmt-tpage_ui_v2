@@ -5,7 +5,7 @@ import { FacebookService } from 'src/app/main-app/services/facebook.service';
 import { Message } from '../../../../../lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef, Component, OnInit, Output, ViewContainerRef, EventEmitter } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Output, ViewContainerRef, EventEmitter, HostListener } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
@@ -28,11 +28,9 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
   isLoading: boolean = true;
   loginTeam!: CRMTeamDTO | null;
+  access_token: string = '';
 
-  tShopAuthentication!: string;
-
-  constructor(
-    private crmTeamService: CRMTeamService,
+  constructor(private crmTeamService: CRMTeamService,
     private cdRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService,
     public router: Router,
@@ -41,61 +39,76 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     private facebookService: FacebookService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
-    private message: TDSMessageService
-  ) {
+    private message: TDSMessageService) {
     super(crmTeamService, activatedRoute, router);
   }
 
   ngOnInit(): void {
-    //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
-    let user = this.facebookService.getCacheLoginUser() as any;
-    let exist = user != null && user?.data && user?.type == CRMTeamType._TShop;
+    // //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
+    // let user = this.facebookService.getCacheLoginUser() as any;
+    // let exist = user != null && user?.data && user?.type == CRMTeamType._TShop;
 
-    if(exist) {
-      this.userTShopLogin = user.data;
-    } else {
-      this.userTShopLogin = null;
-      this.tShopSignOut();
-    }
+    // if(exist) {
+    //     this.userTShopLogin = user.data;
+    // } else {
+    //     this.userTShopLogin = null;
+    //     this.tShopSignOut();
+    // }
 
     this.loadData();
+    this.eventEmitter();
   }
 
-  getTShopAuthentication() {
-    let fragment = 'connect-channel/tshop-login';
-    this.tShopAuthentication = this.tShopService.getAuthentication(fragment);
+  eventEmitter() {
+    this.tShopService.getTShopUser().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+          this.access_token = res.access_token;
+          this.userTShopLogin = res.user;
 
-    this.tShopService.onChangeUser().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        if (res) {
-          this.userTShopLogin = { ...res };
-          //TODO: lưu cache thông tin đăng nhập
-          this.facebookService.setCacheLoginUser(this.userTShopLogin, CRMTeamType._TShop);
-          this.message.success('Đăng nhập thành công');
-          // TODO: cập nhật lại danh sách sau khi đăng nhập thành công
-          this.loadData();
+          this.insertUserTShop(res.access_token);
         }
       },
-      error: (err) => {
-        this.userTShopLogin = null;
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
       }
-    });
+    })
   }
 
+  // getTShopAuthentication() {
+  //   let fragment = 'connect-channel/tshop-login';
+  //   let auth = this.tShopService.getAuthentication(fragment);
+
+  //   // this.tShopService.onChangeUser().pipe(takeUntil(this.destroy$)).subscribe({
+  //   //   next: (res) => {debugger
+  //   //     if (res) {
+  //   //       this.userTShopLogin = { ...res };
+  //   //       //TODO: lưu cache thông tin đăng nhập
+  //   //       this.facebookService.setCacheLoginUser(this.userTShopLogin, CRMTeamType._TShop);
+  //   //       this.loadData();
+  //   //     }
+  //   //   },
+  //   //   error: (err) => {
+  //   //     this.userTShopLogin = null;
+  //   //     this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+  //   //   }
+  //   // });
+  // }
+
   tShopSignIn() {
-    this.getTShopAuthentication();
+    let fragment = 'connect-channel/tshop-login';
+    const auth = this.tShopService.getAuthentication(fragment);
 
     const width = 800;
     const height = 600;
     const y = (window.top?.outerHeight || 0) / 2 + (window.top?.screenY || 0) - (width / 2);
     const x = (window.top?.outerWidth || 0) / 2 + (window.top?.screenX || 0) - (height / 2);
-    window.open(this.tShopAuthentication, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
+    window.open(auth, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
   }
 
   tShopSignOut() {
     this.isLoading = true;
-    this.tShopService.logout();
+    // this.tShopService.logout();
     this.userTShopLogin = null;
     this.loginTeam = null;
     this.isLoading = false;
@@ -109,7 +122,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
       this.message.error(Message.ConnectionChannel.ChannelExist);
     }
 
-    this.insertUserTShop(this.tShopService.getCurrentToken());
+    // this.insertUserTShop(this.tShopService.getCurrentToken());
   }
 
   insertUserTShop(accessToken: string | null) {
@@ -125,17 +138,13 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
     this.crmTeamService.insert(team).pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs) => {
-
+        this.isLoading = false;
         this.message.success('Thêm page thành công');
         this.loadData();
-        this.isLoading = false;
-        this.cdRef.detectChanges();
-
       },
       error: (error) => {
         this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
         this.isLoading = false;
-        this.cdRef.detectChanges();
       }
     })
   }
@@ -173,7 +182,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
       this.data.splice(this.data.indexOf(exist), 1);
       this.data.unshift(exist);
 
-      exist.OwnerToken = this.tShopService.getCurrentToken() || exist.OwnerToken;
+      // exist.OwnerToken = this.tShopService.getCurrentToken() || exist.OwnerToken;
     }
   }
 
@@ -181,7 +190,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     this.crmTeamService.getTShopUser(token).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         console.log(res);
-        
+
       }
     })
   }

@@ -71,7 +71,11 @@ export class SocketOnEventService {
             if(tshopCmt) {
                 channelId = socketData.Message.ChannelId;
             } else {
-                channelId = socketData.Data?.Conversation?.ChannelId;
+                channelId = socketData.Conversation?.ChannelId;
+                let isNull = !TDSHelperString.hasValueString(channelId) && TDSHelperString.hasValueString(socketData.Data.Conversation?.ChannelId);
+                if(isNull) {
+                    channelId = socketData.Data.Conversation?.ChannelId;
+                }
             }
             break;
 
