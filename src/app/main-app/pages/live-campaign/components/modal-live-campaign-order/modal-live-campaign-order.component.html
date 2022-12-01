@@ -12,19 +12,19 @@
     (clickRefresh)="onRefresh()">
     <thead>
       <tr>
-        <th [width]="'5%'" class="text-center">STT</th>
-        <th [width]="'16%'">Khách hàng</th>
-        <th [width]="'16%'">Mã đơn hàng</th>
-        <th [width]="'16%'">Số lượng sản phẩm</th>
-        <th [width]="'16%'">Ngày tạo</th>
-        <th [width]="'16%'">Trạng thái</th>
-        <th [width]="'16%'">Chi tiết</th>
+        <th [width]="'10%'" [align]="'center'">STT</th>
+        <th [width]="'15%'">Khách hàng</th>
+        <th [width]="'15%'">Mã đơn hàng</th>
+        <th [width]="'15%'" [align]="'center'">Số lượng sản phẩm</th>
+        <th [width]="'15%'" [align]="'center'">Ngày tạo</th>
+        <th [width]="'15%'">Trạng thái</th>
+        <th [width]="'15%'">Chi tiết</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data; let index = index">
         <!-- STT-->
-        <td class="text-center">
+        <td [align]="'center'">
           {{ index | numericalOrder:pageSize:pageIndex }}
         </td>
 
@@ -47,12 +47,12 @@
         </td>
 
         <!-- Số lượng sản phẩm -->
-        <td class="text-center">
+        <td [align]="'center'">
           {{ data.Quantity || 0 }}
         </td>
 
         <!-- Ngày tạo -->
-        <td>
+        <td [align]="'center'">
           {{ (data.DateCreated | yiDateTimeFormat) || '---' }}
         </td>
 
