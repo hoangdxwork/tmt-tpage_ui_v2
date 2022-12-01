@@ -1,3 +1,4 @@
+import { FacebookCacheDto } from './../../../../../lib/dto/facebook.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { VerifyTeamDto, FacebookVerifyResultDto } from './../../../../dto/team/team.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
@@ -119,7 +120,13 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
         next: (res: FacebookUser) => {
           if(res && res.id) {
             this.userFBLogin = {...res};
-            this.facebookService.setCacheLoginUser(this.userFBLogin, CRMTeamType._Facebook);
+
+            let cacheData = {
+              access_token: this.userFBAuth?.accessToken,
+              user: this.userFBLogin
+            } as FacebookCacheDto;
+
+            this.facebookService.setCacheLoginUser(cacheData, CRMTeamType._Facebook);
             
             if (this.data && this.data.length > 0) {
               this.sortByFbLogin(res.id);

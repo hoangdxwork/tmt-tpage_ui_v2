@@ -1,3 +1,4 @@
+import { TUserCacheDto } from './../../../../../lib/dto/tshop.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { AddPageComponent } from '../add-page/add-page.component';
 import { TDSModalService } from 'tds-ui/modal';
@@ -44,16 +45,15 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   }
 
   ngOnInit(): void {
-    // //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
-    // let user = this.facebookService.getCacheLoginUser() as any;
-    // let exist = user != null && user?.data && user?.type == CRMTeamType._TShop;
+    //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
+    let cacheData = this.tShopService.getCacheLoginUser() as any;
+    let exist = cacheData != null && cacheData?.data && cacheData?.data?.user && cacheData?.type == CRMTeamType._TShop;
 
-    // if(exist) {
-    //     this.userTShopLogin = user.data;
-    // } else {
-    //     this.userTShopLogin = null;
-    //     this.tShopSignOut();
-    // }
+    if(exist) {
+        this.userTShopLogin = cacheData.data.user;
+    } else {
+        this.tShopSignOut();
+    }
 
     this.loadData();
     this.eventEmitter();
@@ -61,7 +61,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
   eventEmitter() {
     this.tShopService.getTShopUser().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: TUserCacheDto) => {
         if(res) {
           this.access_token = res.access_token;
           this.userTShopLogin = res.user;
@@ -75,26 +75,6 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     })
   }
 
-  // getTShopAuthentication() {
-  //   let fragment = 'connect-channel/tshop-login';
-  //   let auth = this.tShopService.getAuthentication(fragment);
-
-  //   // this.tShopService.onChangeUser().pipe(takeUntil(this.destroy$)).subscribe({
-  //   //   next: (res) => {debugger
-  //   //     if (res) {
-  //   //       this.userTShopLogin = { ...res };
-  //   //       //TODO: lưu cache thông tin đăng nhập
-  //   //       this.facebookService.setCacheLoginUser(this.userTShopLogin, CRMTeamType._TShop);
-  //   //       this.loadData();
-  //   //     }
-  //   //   },
-  //   //   error: (err) => {
-  //   //     this.userTShopLogin = null;
-  //   //     this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-  //   //   }
-  //   // });
-  // }
-
   tShopSignIn() {
     let fragment = 'connect-channel/tshop-login';
     const auth = this.tShopService.getAuthentication(fragment);
@@ -107,22 +87,9 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   }
 
   tShopSignOut() {
-    this.isLoading = true;
-    // this.tShopService.logout();
     this.userTShopLogin = null;
     this.loginTeam = null;
-    this.isLoading = false;
-  }
-
-  onTShopConnected() {
-    this.isLoading = true;
-    let channel = this.data.find((x) => x.OwnerId == this.userTShopLogin?.Id);
-
-    if (channel || !this.userTShopLogin) {
-      this.message.error(Message.ConnectionChannel.ChannelExist);
-    }
-
-    // this.insertUserTShop(this.tShopService.getCurrentToken());
+    this.tShopService.removeCacheLoginUser();
   }
 
   insertUserTShop(accessToken: string | null) {
@@ -143,8 +110,8 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
         this.loadData();
       },
       error: (error) => {
-        this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
         this.isLoading = false;
+        this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
       }
     })
   }
@@ -181,21 +148,15 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
       this.data.splice(this.data.indexOf(exist), 1);
       this.data.unshift(exist);
-
-      // exist.OwnerToken = this.tShopService.getCurrentToken() || exist.OwnerToken;
     }
   }
 
-  getTShopUser(token: string) {
-    this.crmTeamService.getTShopUser(token).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        console.log(res);
-
-      }
-    })
-  }
-
   verifyConnect(team: CRMTeamDTO) {
+    if(!this.userTShopLogin) {
+      this.message.error('Vui lòng đăng nhập để thực hiện tính năng này');
+      return; 
+    }
+
     let model = this.prepareModel(team);
     this.isLoading = true;
 
@@ -241,7 +202,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
                 this.isLoading = false;
               },
               error: (error) => {
-                this.message.error('Kết nối quá hạn. Vui lòng đăng nhập lại!');
+                this.message.error('Kết nối quá hạn. Vui lòng đăng nhập lại');
                 this.isLoading = false;
               }
             })
@@ -283,13 +244,9 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   }
 
   delete(id: number) {
-    this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           this.message.success('Hủy kết nối thành công');
-          if(id == this.loginTeam?.Id) {
-            this.loginTeam = null;
-          }
           this.loadData();
         },
         error: (error) => {
@@ -315,6 +272,11 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   }
 
   showModalAddPage(data: CRMTeamDTO): void {
+    if(!this.userTShopLogin) {
+      this.message.error('Vui lòng đăng nhập để thực hiện tính năng này');
+      return; 
+    }
+
     const modal = this.modal.create({
       title: 'Thêm Page',
       content: AddPageComponent,
@@ -327,7 +289,14 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
     modal.afterClose.subscribe((result) => {
       if (TDSHelperObject.hasValue(result)) {
-        this.loadData();
+        // TODO: trường hợp active childs
+        let index = this.data.findIndex(x=>x.Id == data.ParentId);
+
+        this.data[index].Childs?.map(f => {
+          if(f.ChannelId == data.ChannelId) {
+            f.Active = true;
+          }
+        })
       }
     });
   }

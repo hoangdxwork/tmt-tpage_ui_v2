@@ -1,5 +1,5 @@
-import { TUserDto } from '@core/dto/tshop.dto';
-import { FacebookUser } from './../../lib/dto/facebook.dto';
+import { FacebookCacheDto } from './../../lib/dto/facebook.dto';
+import { FacebookUser } from 'src/app/lib/dto/facebook.dto';
 import { FacebookVerifyResultDto } from './../dto/team/team.dto';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -17,6 +17,7 @@ export class FacebookService extends BaseSevice {
   prefix: string = "odata";
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/facebook";
+
   private readonly cacheLoginUser = '_cache_login_user';
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
@@ -78,7 +79,7 @@ export class FacebookService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  setCacheLoginUser(user: TUserDto | FacebookUser, type: string) {
+  setCacheLoginUser(user: FacebookCacheDto, type: string) {
     let model = {
       data: user,
       type: type
@@ -88,7 +89,7 @@ export class FacebookService extends BaseSevice {
     localStorage.setItem(this.cacheLoginUser, data);
   }
 
-  getCacheLoginUser(): TUserDto | FacebookUser | null {
+  getCacheLoginUser(): FacebookCacheDto | null {
     let data = localStorage.getItem(this.cacheLoginUser);
 
     if(data) {

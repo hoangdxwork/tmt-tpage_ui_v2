@@ -2,7 +2,7 @@
   <div *ngIf="data && data.length > 0" class="h-full w-full flex gap-x-4 p-4">
 
     <div class="w-3/4 h-full flex flex-col gap-y-4">
-      <div *ngFor="let team of data; let i = index" class="bg-white rounded-xl h-full w-full border border-neutral-2-100">
+      <div *ngFor="let team of data; let i = index" class="bg-white rounded-xl w-full border border-neutral-2-100">
         <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
           <tds-collapse-panel [header]="header"
             [tdsClass]="'p-0'" 
@@ -154,7 +154,7 @@
             <img class="text-white avatar-fb w-[132px] h-[132px] rounded-full" [src]="userFBLogin?.picture?.data.url" 
               [ngClass]="'border-3 border-white ring-2 ring-primary-1'">
           </div>
-          <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">Xin chào, {{ userFBLogin?.name }}!</span>
+          <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">{{ userFBLogin?.name }}!</span>
           <span class="mt-2 text-body-2 text-neutral-1-400">tmt30.tpos.vn</span>
 
           <div class="mt-6 text-title-1 font-semibold text-success-400" 

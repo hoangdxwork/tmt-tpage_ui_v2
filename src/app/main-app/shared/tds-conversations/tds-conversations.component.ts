@@ -1007,6 +1007,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onSelectTag(item: any) {
+    let exist = this.data.Tags && TDSHelperArray.hasListValue(this.data.Tags);
+    if(!exist) return;
+
     let tags = [...this.data.Tags];
 
     if (tags.findIndex(x=> x.Id == item.Id) > 0) {
