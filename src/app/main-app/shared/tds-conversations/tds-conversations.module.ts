@@ -45,6 +45,8 @@ import { FormatIconLikePipe } from '../pipe/format-icon-like.pipe';
 import { TDSConversationsComponent } from './tds-conversations.component';
 import { TDSConversationItemComponent } from './tds-conversation-item.component';
 import { ConversationInfopostItemComponent } from './component/conversation-infopost-item/conversation-infopost-item.component';
+import { TiktokConversationItemComponent } from './tiktok-conversation-item.component';
+import { TShopConversationItemComponent } from './tshop-conversation-item.component';
 
 const CMP =[
   TDSConversationsComponent,
@@ -52,6 +54,8 @@ const CMP =[
   IconEmojiMartComponent,
   ShowItemImageComponent,
   ConversationInfopostItemComponent,
+  TiktokConversationItemComponent,
+  TShopConversationItemComponent
 ]
 
 @NgModule({
