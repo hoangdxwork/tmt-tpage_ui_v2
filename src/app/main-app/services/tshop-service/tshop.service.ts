@@ -32,7 +32,9 @@ export class TShopService extends BaseSevice {
 
   windowLoginTShop() {
     window.addEventListener("message", (event: MessageEvent<any>) => {
-      if(!event || !event.data?.data) return;
+      if(!event || !event.data) return;
+
+      if(!TDSHelperString.hasValueString(event.data)) return;
 
       let data = event.data;
       let model = JSON.parse(data) as TUserCacheDto;
