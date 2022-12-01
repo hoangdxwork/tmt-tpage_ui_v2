@@ -80,38 +80,38 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     // this.tShopService.removeCacheTshopUser();
     let fragment = 'connect-channel/tshop-login';
     this.tShopAuthentication = this.tShopService.getAuthentication(fragment);
-     
-    this.tShopService.onChangeUser().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        if(res) {
-          this.userTShopLogin = {...res};
-          // this.tShopService.setCacheTShopUser(this.userTShopLogin);
-          this.message.success('Đăng nhập thành công');
-          
-          this.sortByTShopLogin(res?.Id);
-        }
-      },
-      error: (err) => {
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-      }
-    });
+
+    // this.tShopService.onChangeUser().pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res) => {
+    //     if(res) {
+    //       this.userTShopLogin = {...res};
+    //       // this.tShopService.setCacheTShopUser(this.userTShopLogin);
+    //       this.message.success('Đăng nhập thành công');
+
+    //       this.sortByTShopLogin(res?.Id);
+    //     }
+    //   },
+    //   error: (err) => {
+    //     this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+    //   }
+    // });
   }
 
   tShopSignIn() {
     this.getTShopAuthentication();
-    
+
     const width = 800;
     const height = 600;
     const y = (window.top?.outerHeight || 0) / 2 + (window.top?.screenY || 0) - (width / 2);
     const x = (window.top?.outerWidth || 0) / 2 + (window.top?.screenX || 0) - (height / 2);
     let a = window.open(this.tShopAuthentication, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
     console.log(a);
-    
+
   }
 
   tShopSignOut() {
     this.isLoading = true;
-    this.tShopService.logout();
+    // this.tShopService.logout();
     // this.tShopService.removeCacheTshopUser();
     this.userTShopLogin = null;
     this.isLoading = false;
@@ -127,7 +127,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
 
     this.lastScrollPosition = this.viewportScroller.getScrollPosition();
 
-    this.insertUserTShop(this.tShopService.getCurrentToken());
+    // this.insertUserTShop(this.tShopService.getCurrentToken());
   }
 
   insertUserTShop(accessToken: string | null) {
@@ -149,7 +149,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
         this.isLoading = false;
         this.cdRef.detectChanges();
 
-      }, 
+      },
       error: (error) => {
         this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
         this.isLoading = false;
@@ -213,7 +213,7 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
       this.data.splice(this.data.indexOf(exist), 1);
       this.data.unshift(exist);
 
-      exist.OwnerToken = this.tShopService.getCurrentToken() || exist.OwnerToken;
+      // exist.OwnerToken = this.tShopService.getCurrentToken() || exist.OwnerToken;
 
       this.onChangeCollapse(exist.Id, true);
       this.isUserTShopConnectChannel = true;
