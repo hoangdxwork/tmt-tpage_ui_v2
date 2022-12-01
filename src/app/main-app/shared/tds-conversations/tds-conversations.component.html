@@ -168,7 +168,7 @@
                         </div>
 
                         <!-- Thông tin bài post -->
-                        <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
+                        <div *ngIf="item.ObjectId && dataSource?.Extras && dataSource?.Extras!.Objects && dataSource?.Extras!.Objects[item.ObjectId]
                             && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
                             <extras-conversation-item
                                 [team]="team" [typeNumber]="item.Type" [item]="item"
@@ -176,7 +176,9 @@
                             </extras-conversation-item>
                         </div>
                     </div>
-                    <ng-container *ngIf="item && (data.ConversationId) && type && team">
+
+                    <!-- Facebook -->
+                    <ng-container *ngIf="item && data.ConversationId && type && team && team.Type === 'Facebook'">
                         <tds-conversation-item
                             [team]="team" [csid]="data.ConversationId"
                             [name]="data.Name" [dataItem]="item"
@@ -184,8 +186,34 @@
                             [dataSource]="dataSource" [index]="i"
                             [companyCurrents]="companyCurrents"
                             [searchText]="searchText"
-                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[item?.Data?.id]: []">
+                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
                         </tds-conversation-item>
+                    </ng-container>
+
+                    <!-- TShop -->
+                    <ng-container *ngIf="item && data.ConversationId && type && team && team.Type == 'TShop'">
+                        <tshop-conversation-item
+                            [team]="team" [csid]="data.ConversationId"
+                            [name]="data.Name" [dataItem]="item"
+                            [type]="type" [partner]="partner"
+                            [dataSource]="dataSource" [index]="i"
+                            [companyCurrents]="companyCurrents"
+                            [searchText]="searchText"
+                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
+                        </tshop-conversation-item>
+                    </ng-container>
+
+                    <!-- Tiktok -->
+                    <ng-container *ngIf="item && data.ConversationId && type && team && (team.Type != 'TShop' && team.Type != 'Facebook')">
+                        <tiktok-conversation-item
+                            [team]="team" [csid]="data.ConversationId"
+                            [name]="data.Name" [dataItem]="item"
+                            [type]="type" [partner]="partner"
+                            [dataSource]="dataSource" [index]="i"
+                            [companyCurrents]="companyCurrents"
+                            [searchText]="searchText"
+                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
+                        </tiktok-conversation-item>
                     </ng-container>
                   </div>
                 </div>

@@ -1,0 +1,552 @@
+<div *ngIf="dataItem && team" class="px-2">
+	<!--Lọc theo Messages-->
+	<div *ngIf="dataItem.Type == 11 || dataItem.Type == 92" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
+
+      <!-- webhook_attachments template sản phẩm -->
+      <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
+          (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
+          <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
+              <div *ngIf="wb.type == 'template' && wb.payload">
+                <div #scrollProduct class="w-full flex justify-end relative">
+                  <div id="scroll-product" class="w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
+                    <div #itemProduct class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl" (click)="detail()">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 01</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 02</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 03</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 04</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 05</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                    <div class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl">
+                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">Bộ chén siu bền 06</h3>
+                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                  </div>
+                  <div class="w-[85%] px-2 h-full flex justify-between items-center absolute z-9999">
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous()">
+                      <i class="tdsi-arrow-left-fill text-neutral-1-400"></i>
+                    </button>
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="next()">
+                      <i class="tdsi-arrow-right-fill text-neutral-1-400"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="w-full flex justify-end py-2">
+                  <div class="px-4 py-2 bg-primary-1 text-white rounded-l-xl rounded-t-xl">
+                    Hóa đơn của bạn
+                  </div>
+                </div>
+
+                <div class="w-full flex justify-end">
+                  <div class="flex flex-col w-[50%]">
+                    <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
+                      <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
+                      <span class="text-title-1 font-semibold">Ngọc Anh</span>
+                    </div>
+                    <div class="bg-white px-4 rounded-b-xl">
+                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col items-start">
+                        <div class="flex gap-x-2.5">
+                          <img class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover"
+                              src="../../assets/imagesv2/product-image.svg">
+                          <div class="flex flex-col gap-y-1 items-start">
+                            <div class="font-semibold">[SP1128A] Bộ chén siêu bền</div>
+                            <div class="flex gap-x-2">
+                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">1</span></span>
+                              <span>-</span>
+                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">200.000</span></span>
+                            </div>
+                          </div>
+                        </div>
+                        <span class="mt-4 text-neutral-1-600">Đã thanh toán bằng</span>
+                        <span class="mt-1 text-body-1">Tiền mặt</span>
+                        <span class="mt-2 text-neutral-1-600">Địa chỉ giao hàng</span>
+                        <span class="mt-1 text-body-1">106 Hoàng Diệu, phường 14, quận 4, Hồ Chí Minh</span>
+                      </div>
+                      <div class="py-2 flex justify-between items-center">
+                        <span class="text-neutral-1-600 font-semibold">Tổng tiền</span>
+                        <span class="text-title-1 font-semibold">650.000</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="chat-body w-full" [ngClass]="dataItem.IsShowAvatar? '': '!my-2 pl-9'">
+          <div *ngIf="!dataItem.IsOwner " class="mr-2 flex flex-col justify-end">
+
+            <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookType)">
+                <tpage-avatar-facebook *ngIf="dataItem.IsShowAvatar" [shape]="'circle'" [size]="36"
+                    [psid]="(dataItem.Data | facebookType)?.from?.id" [token]="team.ChannelToken">
+                </tpage-avatar-facebook>
+            </div>
+            <div *ngIf="dataItem.Type == 92 && (dataItem.Data | tshopType)">
+                <tpage-avatar-facebook *ngIf="dataItem.IsShowAvatar" [shape]="'circle'" [size]="36"
+                    [psid]="dataItem.UserId" [token]="team.ChannelToken">
+                </tpage-avatar-facebook>
+            </div>
+          </div>
+
+          <!-- Tin nhắn văn bản -->
+          <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
+            <div class="text-left hidden" [innerHtml]="dataItem.Message | jsonPayload | formatIconLike | bbcodeConvert | highlightSearch : searchText" #contentMessage></div>
+            <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.Message" [searchText]="searchText" class="text-left" ></div>
+          </div>
+
+          <!-- Tin nhắn hình ảnh -->
+		      <!-- 1 hình -->
+		      <div *ngIf="dataItem.Data && dataItem.Data?.attachments && dataItem.Data.attachments?.data!.length == 1" class="flex flex-wrap max-w-[225px]">
+              <div *ngFor="let att of dataItem.Data.attachments.data" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
+                  class="p-0.5 flex gap-x-2 justify-center items-center">
+
+                  <a class="flex items-center" [ngClass]="reloadingImage ? 'cursor-wait' : 'cursor-pointer'" tds-tooltip tooltipTitle="Tải lại"
+                      *ngIf="dataItem.Data!.is_error_attachment" (click)="refreshAttachment(att)">
+                      <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
+                  </a>
+                  <a *ngIf="att.image_data" (click)="open_gallery(att)" class="relative">
+                      <show-attachment class="w-full h-full" [type]="att.mime_type" [height]="'225px'" [url]="att.image_data.url" (onError)="isErrorAttachment(att, dataItem)">
+                      </show-attachment>
+                      <div class="absolute inset-0" tds-tooltip tooltipTitle="Ảnh đã hết hạn" *ngIf="dataItem.Data!.is_error_attachment"></div>
+                  </a>
+                  <a *ngIf="att.video_data" (click)="open_gallery(att)">
+                      <show-attachment [type]="att.mime_type" [url]="att.video_data?.url" (onError)="isErrorAttachment(att, dataItem)"
+                          [width]="'320px'" [height]="'240px'" [isMuted]="false">
+                      </show-attachment>
+                  </a>
+                  <a *ngIf="att.file_url" container="body" (click)="open_gallery(att)">
+                      <show-attachment [type]="att.mime_type" [url]="att.file_url" (onError)="isErrorAttachment(att, dataItem)">
+                      </show-attachment>
+                  </a>
+
+              </div>
+          </div>
+
+		      <!-- Nhiều hình -->
+          <div *ngIf="dataItem.Data && dataItem.Data?.attachments && dataItem.Data.attachments?.data!.length > 1" class="flex flex-wrap w-[327px]">
+              <div *ngFor="let att of dataItem.Data.attachments.data" class="p-0.5"  [ngClass]="dataItem.Data.attachments.data.length == 2 ? 'w-1/2' : 'w-1/3'">
+                  <div class="w-full relative" [ngStyle]="{'padding-top.%': 100}">
+
+                      <a *ngIf="att.image_data" (click)="open_gallery(att)" class="absolute inset-0 w-full h-full flex">
+                          <show-attachment class="w-full h-full" [type]="att.mime_type" [url]="att.image_data.url" (onError)="isErrorAttachment(att, dataItem)">
+                          </show-attachment>
+                      </a>
+                      <a *ngIf="att.video_data" (click)="open_gallery(att)" class="absolute inset-0 w-full h-full flex">
+                          <show-attachment [type]="att.mime_type" [url]="att.video_data?.url"  (onError)="isErrorAttachment(att, dataItem)"
+                          [width]="'320px'" [height]="'240px'" [isMuted]="false"></show-attachment>
+                      </a>
+                      <a *ngIf="att.file_url" container="body" (click)="open_gallery(att)" class="absolute inset-0 w-full h-full flex">
+                          <show-attachment [type]="att.mime_type" [url]="att.file_url" (onError)="isErrorAttachment(att, dataItem)">
+                          </show-attachment>
+                      </a>
+
+                  </div>
+              </div>
+          </div>
+
+          <!-- webhook_attachments template sản phẩm -->
+          <!-- <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
+              (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
+              <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
+                  <div *ngIf="wb.type == 'template' && wb.payload">
+                    <div>hihi</div>
+                  </div>
+              </div>
+          </div> -->
+
+          <!--Tin nhắn hình ảnh TShop-->
+          <!-- 1 hình -->
+		      <div *ngIf="dataItem.Type == 92 && dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length == 1 && !dataItem.Message" class="flex flex-wrap max-w-[225px]">
+                <div *ngFor="let att of dataItem.Data.AttachmentDto" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
+                    class="p-0.5 flex gap-x-2 justify-center items-center">
+                    <a *ngIf="att.fileUrl" (click)="open_gallery(att)" class="relative">
+                        <show-attachment class="w-full h-full" [type]="att.fileExtension" [height]="'225px'" [url]="att.fileUrl" (onError)="isErrorAttachment(att, dataItem)">
+                        </show-attachment>
+                    </a>
+                </div>
+          </div>
+
+              <!-- Nhiều hình -->
+          <div *ngIf="dataItem.Data && dataItem.Data?.AttachmentDto && dataItem.Data.AttachmentDto!.length > 1 && dataItem.Type == 92 && !dataItem.Message" class="flex flex-wrap w-[327px]">
+              <div *ngFor="let att of dataItem.Data.AttachmentDto" class="p-0.5"  [ngClass]="dataItem.Data.AttachmentDto.length == 2 ? 'w-1/2' : 'w-1/3'">
+                  <div class="w-full relative" [ngStyle]="{'padding-top.%': 100}">
+
+                      <a *ngIf="att.fileUrl" (click)="open_gallery(att)" class="absolute inset-0 w-full h-full flex">
+                          <show-attachment class="w-full h-full" [type]="att.fileExtension" [url]="att.fileUrl" (onError)="isErrorAttachment(att, dataItem)">
+                          </show-attachment>
+                      </a>
+                  </div>
+              </div>
+          </div>
+
+          <div *ngIf="dataItem.Data && dataItem.Data?.attachments && this.isShowItemImage == true">
+              <show-item-image [lstImage]="listAtts" [team]="team" [data]="dataItem" [name]="name" [imageClick]="imageClick"
+                  (closeShowItemImage)="onCloseShowItemImage($event)">
+              </show-item-image>
+          </div>
+
+          <!-- Tin nhắn không tải được -->
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments && dataItem.Type == 11" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+              tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
+              Không tải được tin nhắn!
+          </div>
+
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.AttachmentDto && dataItem.Type == 92" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+              tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
+              Không tải được tin nhắn!
+          </div>
+
+          <!-- Tin nhắn lỗi -->
+          <div *ngIf="(dataItem.Error && dataItem.Error!.Message) || dataItem.Status == 2" class="select-message flex items-center">
+
+              <!-- Gửi lại tin nhắn lỗi -->
+              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
+                  <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
+              </a>
+
+              <!-- Thông báo tin nhắn lỗi -->
+              <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Error?.Message" tds-popover [popoverContent]="popoverBug">
+                  <span class="tdsi-info-line text-error-400 text-body-1 leading-none" ></span>
+              </a>
+
+              <ng-template #popoverBug>
+                  <div class="max-w-[336px] text-body-2 text-neutral-1-900">{{dataItem.Error? dataItem.Error.Message: ''}}</div>
+              </ng-template>
+          </div>
+
+          <!-- admin copy tin nhắn gửi lại-->
+          <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Data!.has_admin_required" tds-tooltip tooltipTitle="Sao chép" (click)="copyMessage()">
+              <span class="tdsi-copy-line  text-body-1 leading-none"></span>
+          </a>
+
+          <!-- Chọn số điện thoại, địa chỉ, ghi chú -->
+          <div *ngIf="!dataItem.Data.attachments" class="select-icon">
+              <div class="select-order flex flex-row items-center w-fit h-full px-3">
+
+                  <span tds-tooltip tooltipTitle="Chọn làm số điện thoại"  (click)="selectOrder('phone')"
+                      class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
+                      <span class="tdsi-call-fill text-md text-white"></span>
+                  </span>
+
+                  <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="selectOrder('address', undefined, dataItem.NlpEntities)"
+                      class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
+                      <span class="tdsi-pin-fill text-md text-white"></span>
+                  </span>
+
+                  <span tds-tooltip tooltipTitle="Thêm vào ghi chú" (click)="selectOrder('note')"
+                      class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer">
+                      <span class="tdsi-note-2-fill text-md text-white"></span>
+                  </span>
+
+              </div>
+          </div>
+      </div>
+
+      <!-- Đang gửi -->
+      <span *ngIf="dataItem.Status == 0" class="chat-by mr-2">
+          <span class="tdsi-send-fill"></span> Đang gửi... <span *ngIf="dataItem.CreatedBy"> bởi <span class="text-info-500">{{dataItem.CreatedBy?.Name}}</span></span>
+      </span>
+
+      <!-- Người gửi -->
+      <span *ngIf="(dataItem.Error && dataItem.Error?.Message) || dataItem.Status == 2 ; else seenBy">
+          <span *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" class="text-caption-2 text-neutral-1-400 gap-x-1 flex justify-end">
+              <span class="tdsi-info-line flex items-center"></span>Tin nhắn chưa được gửi
+          </span>
+      </span>
+      <ng-template #seenBy>
+          <span *ngIf="dataItem.CreatedBy && dataItem.Status != 0" class="chat-by">
+              Được gửi bởi <span class="text-info-500"> {{dataItem.CreatedBy?.Name}}</span>
+          </span>
+      </ng-template>
+  </div>
+
+  <!--Lọc theo comments-->
+  <div *ngIf="dataItem.Type == 12 || dataItem.Type == 91 || dataItem.Type == 1001" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
+      <div class="w-full flex flex-row">
+
+          <!-- Avatar Facebook_PageId -->
+          <div class="mr-2">
+            <div *ngIf="dataItem.Type == 12">
+                <tpage-avatar-facebook [shape]="'circle'" [size]="36"
+                    [psid]="!dataItem.IsOwner ? dataItem.UserId : team.ChannelId"
+                    [token]="team.ChannelToken">
+                </tpage-avatar-facebook>
+            </div>
+
+            <div *ngIf="dataItem.Type == 91">
+                <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
+            </div>
+
+            <div *ngIf="dataItem.Type == 1001">
+              <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
+            </div>
+          </div>
+
+        <!-- comment block -->
+        <div class="flex flex-col w-full commnent-block">
+
+          <div class="inline-flex w-fit chat-main-block group">
+              <!-- Nội dung bình luận -->
+              <div class="chat-body w-full !m-0" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
+
+                  <div class="chat-content bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
+                      <div class="flex flex-auto">
+                          <!--Nội dung-->
+                          <div *ngIf="dataItem.Message">
+                              <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
+                              <div *ngIf="dataItem.Type == 91 && (dataItem.Data | tshopDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tshopDataCs).Actor?.Name }} </div>
+                              <div *ngIf="dataItem.Type == 1001 && (dataItem.Data | tiktokDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tiktokDataCs)?.nickname }} </div>
+
+                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
+                            <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert" #contentMessage></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Lỗi gửi tin -->
+              <div *ngIf="dataItem.Error || dataItem.Status == 2">
+                   <span class="tdsi-information-fill" title="{{dataItem.Error?.Message}}"></span>
+              </div>
+
+            <!-- Thao tác -->
+            <div *ngIf="!dataItem.Data?.attachments" class="chat-option invisible group-hover:visible">
+                <div class="select-order flex flex-row items-center w-fit h-full pl-3">
+                    <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" (click)="selectOrder('phone')"
+                        class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
+                        <i class="tdsi-call-fill text-md text-white"></i>
+                    </span>
+                    <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="selectOrder('address', undefined, dataItem.NlpEntities)"
+                        class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
+                        <i class="tdsi-pin-fill text-md text-white"></i>
+                    </span>
+                    <span tds-tooltip tooltipTitle="Thêm vào ghi chú" (click)="selectOrder('note')"
+                        class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer" >
+                        <i class="tdsi-note-2-fill text-md text-white"></i>
+                    </span>
+                </div>
+            </div>
+          </div>
+
+          <!--Thích hiện ẩn + CreatedBy.Name-->
+          <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
+            <div class="chat-acts flex flex-row items-center" style="position: relative;">
+
+              <button class="link-act hover:underline" [disabled]="isReplyingComment"
+                  (click)="clickReply(dataItem.Message ? dataItem.Data?.can_remove : null)"> Phản hồi
+              </button>
+
+              <span *ngIf="isReplyingComment" class="ml-1">
+                  <tds-spinner [color]="'primary'" class="w-2 h-2"></tds-spinner>
+              </span>
+
+              <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
+              <button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="dataItem.Data?.user_likes ? 'text-secondary-1' : ''"
+                  (click)="addLike(dataItem.Message ? dataItem.Data?.can_like : null)">
+                  {{dataItem.Data?.user_likes ? 'Đã thích' : 'Thích'}}
+              </button>
+
+              <tds-spinner *ngIf="isLiking" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
+              <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
+              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment(dataItem.Message ? dataItem.Data?.can_hide: null)">
+                {{dataItem.Data?.is_hidden ? 'Hiện' : 'Ẩn'}}
+              </button>
+
+              <tds-spinner *ngIf="isHiding" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
+              <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
+              <span *ngIf="dataItem.CreatedTime" class="date-diff cursor-pointer hover:underline" tds-tooltip
+                tooltipTitle="{{dataItem.CreatedTime | date:'dd'}} Tháng {{dataItem.CreatedTime | date:'MM'}}, {{dataItem.CreatedTime | date:'yyyy'}} lúc {{dataItem.CreatedTime | date:'HH:mm'}}">
+                {{dataItem.CreatedTime | yiDiffDateTime}}
+              </span>
+            </div>
+
+            <span class="chat-by font-regular" *ngIf="dataItem.IsSystem && dataItem.CreatedBy"> Được gửi bởi
+              <span class="font-semibold" style="color: #03468b;">{{dataItem.CreatedBy.Name}}</span>
+            </span>
+          </div>
+
+          <!-- Input trả lời bình luận -->
+          <div *ngIf="isReply" @eventReplyComment class="chat-reply relative flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" >
+              <div [ngClass]="isReplyingComment ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
+              <div class="flex flex-row w-full">
+
+                  <textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
+                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+                      class="w-full resize-none !p-0 !m-0 no-scrollbar" (keydown.enter)="onEnter($event)">
+                  </textarea>
+
+                  <button tds-button type="button" color="primary" tds-tooltip tooltipTitle="Nhấn Enter để gửi"
+                     class="!rounded-full" [size]="'lg'" (click)="clickSendMessage()">
+                      <span class="flex items-center px-5">
+                          <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+                      </span>
+                  </button>
+              </div>
+
+              <!-- Check Private Reply -->
+              <div class="quick-message gap-5">
+                <div class="check gap-4 flex items-center">
+                  <div class="icon-send flex gap-x-2 items-center">
+                      <button tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:border-transparent focus:ring-0 hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Cảm xúc"
+                          tds-popover popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
+                          [popoverBackdrop]="true" popoverPlacement="top">
+                        <i class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none"></i>
+                      </button>
+                      <ng-template #infoEmojiMart>
+                        <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+                      </ng-template>
+
+                      <quick-reply-button tds-tooltip tooltipTitle="Tin nhắn nhanh"
+                        (onQuickReplySelected)="onQuickReplySelected($event)" [partner]="partner">
+                      </quick-reply-button>
+
+                      <div class="w-[30px]">
+                        <button *ngIf="isPrivateReply" (click)="onProductsbypageFb()" tds-button-flat-icon size="sm" color="custom" class="cursor-pointer focus:border-transparent focus:ring-0 focus:ring-transparent hover:bg-neutral-3-50" type="button" tds-tooltip tooltipTitle="Sản phẩm">
+                          <i class="tdsi-product-line text-neutral-1-400 text-xl leading-none"></i>
+                        </button>
+                      </div>
+                  </div>
+                  <tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">Gửi về tin nhắn</tds-checkbox>
+                </div>
+              </div>
+          </div>
+
+          <!-- Phản hồi bình luận -->
+          <div *ngIf="children" class="chat-list" @eventReplyComment>
+              <div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
+                  <div *ngIf="dataItem.Type == 12" class="avatar mr-2">
+                    <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
+                        [token]="team.ChannelToken">
+                      </tpage-avatar-facebook>
+                  </div>
+
+                  <div *ngIf="dataItem.Type == 91" class="avatar mr-2">
+                    <tds-avatar [size]="36" [tdsSrc]="(child.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
+                  </div>
+
+                  <div *ngIf="dataItem.Type == 1001" class="avatar mr-2">
+                    <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
+                  </div>
+
+                  <div class="flex flex-col w-full">
+                      <div class="inline-flex w-fit group">
+                          <div class="chat-body !m-0" tds-tooltip
+                              tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
+                              <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
+                                  <div class="border-activety-comment" *ngIf="child.Message">
+                                        <div *ngIf="dataItem.Type == 12">
+                                            <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                        </div>
+
+                                        <div *ngIf="dataItem.Type == 91">
+                                            <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tshopDataCs).Actor?.Name }} </div>
+                                        </div>
+
+                                        <div *ngIf="dataItem.Type == 1001">
+                                            <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tiktokDataCs).nickname }} </div>
+                                        </div>
+
+                                      <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
+                                      <div class="hidden" [innerHtml]="child.Message | bbcodeConvert" #contentMessageChild></div>
+                                  </div>
+                              </div>
+                          </div>
+
+                        <div *ngIf="!child.Data?.attachments"  class="chat-option invisible group-hover:visible">
+                            <div class="select-order flex flex-row items-center w-fit h-full pl-3">
+                                <span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
+                                    class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                                    (click)="selectOrder('phone')">
+                                    <i class="tdsi-call-fill text-md text-white"></i>
+                                </span>
+
+                                <span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
+                                    class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                                    (click)="selectOrder('address', i)">
+                                    <i class="tdsi-pin-fill text-md text-white"></i>
+                                </span>
+
+                                <span tds-tooltip tooltipTitle="Thêm vào ghi chú"
+                                    class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+                                    (click)="selectOrder('note', i)">
+                                    <i class="tdsi-note-2-fill text-md text-white"></i>
+                                </span>
+                            </div>
+                        </div>
+                      </div>
+
+                      <div class="chat-meta text-neutral-1-600 text-caption-2 font-regular mt-1.5 relative">
+                          <div class="chat-acts flex flex-row items-center relative" >
+                              <span *ngIf="child.ChannelCreatedTime" class="date-diff cursor-pointer hover:underline"	tds-tooltip
+                                  tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}} Tháng {{child.ChannelCreatedTime | date:'MM'}}, {{child.ChannelCreatedTime | date:'yyyy'}} lúc {{child.ChannelCreatedTime | date:'HH:mm'}}">
+                                  {{child.ChannelCreatedTime | yiDiffDateTime}}
+                              </span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>
+	</div>
+  <!--Lọc theo comments v2 Lỗi hiện thị-->
+</div>
+

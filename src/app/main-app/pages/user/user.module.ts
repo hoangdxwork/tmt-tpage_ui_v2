@@ -29,16 +29,40 @@ import { TDSTabsModule } from 'tds-ui/tabs';
 import { TDSSelectModule } from 'tds-ui/select';
 import { ModalEditInfoUserComponent } from './components/modal-edit-info-user/modal-edit-info-user.component';
 import { ModalChangePasswordComponent } from './components/modal-change-password/modal-change-password.component';
-import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { FirebaseNotificationComponent } from './firebase-notification/firebase-notification.component';
-import { ModalGetNotificationComponent } from './components/modal-get-notification/modal-get-notification.component';
+import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { TDSSkeletonModule } from 'tds-ui/skeleton';
+import { ModalGetNotificationComponent } from './components/modal-get-notification/modal-get-notification.component';
 import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
+import { TDSTableModule } from 'tds-ui/table';
+import { ActivitiesComponent } from './activities/activities.component';
+import { TDSBadgeModule } from 'tds-ui/badges';
+import { TDSDropDownModule } from 'tds-ui/dropdown';
+import { OdataTPosLoggingService } from '@app/services/mock-odata/odata-tpos-logging.service';
+import { TDSButtonMenuModule } from 'tds-ui/button-menu';
+import { TDSSwitchModule } from 'tds-ui/switch';
+import { TDSInputNumberModule } from 'tds-ui/input-number';
+import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TDSRadioModule } from 'tds-ui/radio';
+import { TDSBreadCrumbModule } from 'tds-ui/breadcrumb';
+import { TDSImageModule } from 'tds-ui/image';
+import { TDSTagModule } from 'tds-ui/tag';
+import { TDSDatePickerModule } from 'tds-ui/date-picker';
+import { TDSPaginationModule } from 'tds-ui/pagination';
+import { TDSAlertModule } from 'tds-ui/alert';
+import { TDSEmptyModule } from 'tds-ui/empty';
+import { TDSCollapseModule } from 'tds-ui/collapse';
+import { TDSNotificationModule } from 'tds-ui/notification';
+import { TDSFilterStatusModule } from 'tds-ui/filter-status';
+import { TDSTimePickerModule } from 'tds-ui/time-picker';
+import { ModalRequestPermissionComponent } from './components/modal-request-permission/modal-request-permission.component';
+import { SocketNotificationComponent } from './socket-notification/socket-notification.component';
 
 const SERVICES = [
   TenantService,
   FirebaseRegisterService,
+  OdataTPosLoggingService,
 ]
 
 @NgModule({
@@ -57,6 +81,9 @@ const SERVICES = [
     ModalChangePasswordComponent,
     FirebaseNotificationComponent,
     ModalGetNotificationComponent,
+    ActivitiesComponent,
+    ModalRequestPermissionComponent,
+    SocketNotificationComponent
   ],
   imports: [
     CommonModule,
@@ -77,10 +104,30 @@ const SERVICES = [
     TDSPopoverModule,
     TDSTabsModule,
     PipeModule,
-    TDSModalModule,
     VirtualScrollerModule,
     TDSSkeletonModule,
+    TDSModalModule,
     TDSCheckBoxModule,
+    TDSTableModule,
+    TDSBadgeModule,
+    TDSDropDownModule,
+    TDSButtonMenuModule,
+    TDSSwitchModule,
+    TDSInputNumberModule,
+    TDSToolTipModule,
+    TDSButtonMenuModule,
+    TDSRadioModule,
+    TDSBreadCrumbModule,
+    TDSImageModule,
+    TDSTagModule,
+    TDSDatePickerModule,
+    TDSPaginationModule,
+    TDSTimePickerModule,
+    TDSFilterStatusModule,
+    TDSNotificationModule,
+    TDSCollapseModule,
+    TDSEmptyModule,
+    TDSAlertModule,
   ],
   providers: [
     ...SERVICES

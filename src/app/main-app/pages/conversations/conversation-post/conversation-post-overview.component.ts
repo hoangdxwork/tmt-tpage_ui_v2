@@ -1,3 +1,4 @@
+import { ChatomniDataTShopPostDto } from './../../../dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { OverviewLiveCampaignComponent } from '../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { SharedService } from '../../../services/shared.service';
 import { ModalProductDefaultComponent } from '../components/modal-product-default/modal-product-default.component';
@@ -75,6 +76,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     { value: "Phone", text: "Tìm số điện thoại" }
   ];
   currentFilterComment = this.filterOptionsComment[0];
+
+  fallbackImg = "../../../assets/imagesv2/errorPic.svg";
 
   isLoading: boolean = false;
   isProcessing: boolean = false;
@@ -312,19 +315,17 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   }
 
   openConfigPost() {
-    if (this.team!.Type == 'Facebook') {
-      let date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+    let date = formatDate(this.team!.Type == 'Facebook' ? (this.data.Data as MDB_Facebook_Mapping_PostDto).created_time : (this.data.Data as ChatomniDataTShopPostDto).CreationTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
 
-      this.modalService.create({
-        title: `Cấu hình bài viết - ${date}`,
-        content: ConfigPostOutletComponent,
-        size: "xl",
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          data: this.data,
-        }
-      });
-    }
+    this.modalService.create({
+      title: `Cấu hình bài viết - ${date}`,
+      content: ConfigPostOutletComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        data: this.data,
+      }
+    });
   }
 
   fillterAll(data: TDSSafeAny, index: number) {

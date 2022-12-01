@@ -22,6 +22,7 @@ export class FirebaseMessagingService  {
 
   constructor(private message: TDSMessageService,
       private angularFireMessaging: AngularFireMessaging,
+      private firebaseRegisterService: FirebaseRegisterService,
       private angularFireDatabase: AngularFireDatabase,
       private angularFireAuth: AngularFireAuth) {
   }

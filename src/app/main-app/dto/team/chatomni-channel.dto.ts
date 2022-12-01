@@ -79,5 +79,9 @@ export enum CRMTeamType {
   _Facebook = "Facebook",
   _Zalo = "Zalo",
   _TShop = "TShop",
-  _TUser = "TUser"
+  _TUser = "TUser",
+  _Lazada = "Lazada",
+  _Shopee = "Shopee",
+  _TikTok = "TikTok",
+  _UnofficialTikTok = "UnofficialTikTok"
 }

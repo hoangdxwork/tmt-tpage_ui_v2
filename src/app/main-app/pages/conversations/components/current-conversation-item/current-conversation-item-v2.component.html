@@ -6,12 +6,13 @@
         <div class="p-3.5 flex flex-col w-full h-full">
             <div class="flex gap-3">
                 <div class="relative">
+
                     <tpage-avatar-facebook
                         [noAssignedUser]="item.AssignedTo ? true : false"
                         [shape]="'circle'" [size]="'lg'" [hasAvatar]="item.Avatar"
                         [psid]="item.ConversationId" [token]="team.ChannelToken">
                     </tpage-avatar-facebook>
-        
+
                     <!-- icon comment -->
                     <span *ngIf="item.LatestMessage && (item.LatestMessage.MessageType == 12 || item.LatestMessage.MessageType == 91) && (type == 'all' || type == 'comment')"
                         class="absolute" style="top: 31px;left: 31px;">
@@ -26,7 +27,7 @@
                             </defs>
                         </svg>
                     </span>
-        
+
                     <!-- icon message -->
                     <span *ngIf="item.LatestMessage && (item.LatestMessage.MessageType == 11 || item.LatestMessage.MessageType == 92) && (type == 'all' || type == 'message')"
                         class="absolute" style="top: 31px;left: 31px;">
@@ -60,7 +61,7 @@
                                 <span *ngIf="item.State == 2" class="tdsi-bot-fill ml-2" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề"></span>
                             </div>
                         </div>
-        
+
                         <div class="flex items-center gap-2">
                             <span *ngIf="item.CountUnread > 0">
                                 <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread" title="Phản hồi chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
@@ -73,7 +74,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div  class="min-h-[20px]">
                         <div *ngIf="item | latestMessageType: type">
                             <div [ngClass]="(type | seenedMessage: item.CountUnread)? 'text-neutral-1-900' : 'text-neutral-1-600'" class="cs-item relative"
@@ -81,7 +82,7 @@
                             </div>
                         </div>
                     </div>
-        
+
                     <!-- Nhân viên  -->
                     <div *ngIf="item" class="flex items-center w-full min-h-[20px]" [style.justify-content]="item.AssignedTo?.Name ? 'space-between' : 'end'">
                         <div *ngIf="item.AssignedTo" class="flex items-center">
@@ -94,11 +95,11 @@
                             </span>
                             <span class="ml-1 text-[13px]" style="line-height: 15px;">{{item.AssignedTo?.Name}}</span>
                         </div>
-        
+
                     </div>
                 </div>
               </div>
-        
+
               <!--keyTags thêm trong mục binh luận-->
               <div class="flex justify-end flex-col gap-2" [ngClass]="((item.Tags && item.Tags.length > 0) || item.HasPhone || item.HasAddress )? 'pt-3': ''">
                 <div class="flex gap-2 items-end">
@@ -117,7 +118,7 @@
                             </div>
                         </div>
                     </div>
-        
+
                     <div class="flex gap-1.5 items-center">
                         <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" *ngIf="countHiddenTag > 0" tds-popover
                             [popoverContent]="popoverContentTag"

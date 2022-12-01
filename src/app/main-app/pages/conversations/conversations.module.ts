@@ -149,6 +149,8 @@ import { TDSSkeletonModule } from 'tds-ui/skeleton';
 import { ModalListPostComponent } from './components/modal-list-post/modal-list-post.component';
 import { DrawerEditLiveCampaignComponent } from './conversation-post/facebook-livecampaign-post/drawer-edit-livecampain.component';
 import { TShopCommentComponent } from './conversation-post/comments/tshop-comment.component';
+import { TiktokCommentComponent } from './conversation-post/comments/tiktok-comment.component';
+import { ObjectTiktokPostComponent } from './conversation-post/objects/object-tiktok-post.component';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 
 const SERVICES = [
@@ -266,7 +268,9 @@ const FACADES = [
     ModalListPostComponent,
     DrawerEditLiveCampaignComponent,
     DrawerAddProductComponent,
-    TShopCommentComponent
+    TShopCommentComponent,
+    TiktokCommentComponent,
+    ObjectTiktokPostComponent
   ],
 
   imports: [

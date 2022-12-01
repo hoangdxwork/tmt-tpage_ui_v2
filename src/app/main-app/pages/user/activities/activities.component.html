@@ -1,0 +1,146 @@
+<div class="w-full h-full flex justify-center p-4">
+  <div class="flex flex-col w-[1280px] h-full bg-white rounded-xl">
+      <div class="flex flex-row items-center justify-between px-4 py-3">
+          <span class="text-neutral-1-900 text-header-1 font-semibold">NHẬT KÝ HOẠT ĐỘNG</span>
+          <div class="flex flex-row items-center justify-end w-1/2">
+              <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'" class="w-[240px] mr-2">
+                  <span class="flex flex-row items-center justify-between text-neutral-1-500 w-full">
+                      <div class="flex flex-row items-center">
+                          <i class="tdsi-calendar-fill mr-2"></i>
+                          <span class="text-neutral-1-900 text-body-2 font-semibold">
+                              Chọn thời gian
+                          </span>
+                      </div>
+                      <i class="tdsi-arrow-down-line text-lg leading-none"></i>
+                  </span>
+              </button>
+              <tds-dropdown-menu #menu="tdsDropdownMenu">
+                  <div class="w-[340px] divide-y">
+                      <div class="py-3">
+                          <div class="flex flex-row items-center justify-between w-full py-1.5 px-3 cursor-pointer
+                              {{dateFilter.type === 'today' ? 'bg-neutral-3-50':''}}"
+                              (click)="selectDateFilter('today')">
+                              <a class="text-neutral-1-900 text-body-2 font-regular">Hôm nay</a>
+                              <span *ngIf="dateFilter.type === 'today'" class="flex items-center">
+                                  <i class="tdsi-success-fill text-primary-1 text-md"></i>
+                              </span>
+                          </div>
+                          <div class="flex flex-row items-center justify-between w-full py-1.5 px-3 cursor-pointer
+                              {{dateFilter.type === 'yesterday' ? 'bg-neutral-3-50':''}}"
+                              (click)="selectDateFilter('yesterday')">
+                              <a class="text-neutral-1-900 text-body-2 font-regular">Hôm qua</a>
+                              <span *ngIf="dateFilter.type === 'yesterday'" class="flex items-center">
+                                  <i class="tdsi-success-fill text-primary-1 text-md"></i>
+                              </span>
+                          </div>
+                          <div class="flex flex-row items-center justify-between w-full py-1.5 px-3 cursor-pointer
+                              {{dateFilter.type === 'thisWeek' ? 'bg-neutral-3-50':''}}"
+                              (click)="selectDateFilter('thisWeek')">
+                              <a class="text-neutral-1-900 text-body-2 font-regular">Tuần này</a>
+                              <span *ngIf="dateFilter.type === 'thisWeek'" class="flex items-center">
+                                  <i class="tdsi-success-fill text-primary-1 text-md"></i>
+                              </span>
+                          </div>
+                          <div class="flex flex-row items-center justify-between w-full py-1.5 px-3 cursor-pointer
+                              {{dateFilter.type === 'thisMonth' ? 'bg-neutral-3-50':''}}"
+                              (click)="selectDateFilter('thisMonth')">
+                              <a class="text-neutral-1-900 text-body-2 font-regular">Tháng này</a>
+                              <span *ngIf="dateFilter.type === 'thisMonth'" class="flex items-center">
+                                  <i class="tdsi-success-fill text-primary-1 text-md"></i>
+                              </span>
+                          </div>
+                          <div class="flex flex-row items-center justify-between w-full py-1.5 px-3 cursor-pointer
+                              {{dateFilter.type === 'thisYear' ? 'bg-neutral-3-50':''}}"
+                              (click)="selectDateFilter('thisYear')">
+                              <a class="text-neutral-1-900 text-body-2 font-regular">Năm này</a>
+                              <span *ngIf="dateFilter.type === 'thisYear'" class="flex items-center">
+                                  <i class="tdsi-success-fill text-primary-1 text-md"></i>
+                              </span>
+                          </div>
+                      </div>
+                      <div class="flex flex-col p-3">
+                          <tds-form-field class="mb-4">
+                              <tds-label>Từ ngày</tds-label>
+                              <tds-date-picker
+                                  [formControl]="fromDate"
+                                  (openChange)="selectDateFilter('range')">
+                              </tds-date-picker>
+                              <tds-error>
+                                  Vui lòng nhập ngày
+                              </tds-error>
+                          </tds-form-field>
+                          <tds-form-field>
+                              <tds-label>Đến ngày</tds-label>
+                              <tds-date-picker
+                                  [formControl]="toDate"
+                                  (openChange)="selectDateFilter('range')">
+                              </tds-date-picker>
+                              <tds-error>
+                                  Vui lòng nhập ngày
+                              </tds-error>
+                          </tds-form-field>
+                      </div>
+                      <div class="flex flex-row items-center justify-between p-3">
+                          <button tds-flat-button
+                              (click)="resetDateFilter()">
+                              <span class="flex items-center">
+                                  <i class="tdsi-close-fill text-xl leading-none text-neutral-1-500 mr-2"></i>
+                                  <span class="text-neutral-1-900 text-body-2 font-semibold text-center">Hủy lọc</span>
+                              </span>
+                          </button>
+                          <div class="flex flex-row items-center">
+                              <button tds-button color="secondary" class="mr-2 w-[80px]" tds-dropdown-item>
+                                  <span class="text-neutral-1-900 text-body-2 font-semibold text-center">Hủy</span>
+                              </button>
+                              <button tds-button color="primary"
+                                  (click)="onDateFilter()">
+                                  <span class="text-white text-body-2 font-semibold text-center">Áp dụng</span>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </tds-dropdown-menu>
+              <tds-form-field size='md' class="w-1/2">
+                  <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm nhanh theo người thao tác" autocomplete="off" [(ngModel)]="filterObj.searchText"
+                  [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
+                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              </tds-form-field>
+          </div>
+      </div>
+      <div class="flex flex-auto pb-2.5">
+          <tds-table #sortTable [listData]="lstData" [total]="count" tableLayout="fixed" [loading]="isLoading"
+          (clickRefresh)="resetDateFilter()"
+          (pageIndexChange)="pageIndexChange($event)">
+              <thead>
+                  <tr>
+                      <th width="19%">Người dùng</th>
+                      <th width="43%">Nội dung</th>
+                      <th width="19%" *ngFor="let column of listOfColumns"
+                          [sortOrder]="column.sortOrder"
+                          [sortFn]="column.sortFn"
+                          [sortDirections]="column.sortDirections">
+                          {{ column.name }}
+                      </th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <ng-template ngFor let-data [ngForOf]="sortTable.data">
+                      <tr class="text-neutral-1-900 text-body-2 font-regular">
+                          <td>
+                              <tds-avatar [tdsSrc]="data?.User?.Avatar" width="44px" class="rounded-full mr-4"></tds-avatar>
+                              <span>{{ data?.User?.Name }}</span>
+                          </td>
+                          <td>
+                            <span class="configs-activities" [innerHTML]="data.Content"></span>
+                          </td>
+                          <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm a' }}</td>
+                          <td>
+                              <tds-badge [status]="data.status ? 'success' : 'secondary' "></tds-badge>
+                          </td>
+                      </tr>
+                  </ng-template>
+              </tbody>
+          </tds-table>
+      </div>
+  </div>
+</div>

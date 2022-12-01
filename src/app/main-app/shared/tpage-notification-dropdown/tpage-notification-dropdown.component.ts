@@ -28,8 +28,8 @@ export class TpageNotificationDropdownComponent implements OnInit {
     private notificationService: NotificationService,
     private firebaseRegisterService: FirebaseRegisterService,
     private destroy$: TDSDestroyService,
-    private message: TDSMessageService) {
-  }
+    private message: TDSMessageService,
+  ) { }
 
   get getRead() {
     return this.data.find(x => !x.dateRead);

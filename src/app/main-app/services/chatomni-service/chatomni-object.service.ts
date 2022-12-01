@@ -55,6 +55,15 @@ export class ChatomniObjectService extends BaseSevice  {
     return this.apiService.getData<ChatomniObjectsDto>(api, null);
   }
 
+  getById(id: string, teamId: number): Observable<ChatomniObjectsItemDto> {
+
+    let api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/object/${id}?teamId=${teamId}`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<ChatomniObjectsItemDto>(api, null);
+  }
+
   makeDataSource(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
 
     this.urlNext = '';
