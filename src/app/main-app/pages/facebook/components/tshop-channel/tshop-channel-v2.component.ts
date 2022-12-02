@@ -105,7 +105,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     };
 
     this.crmTeamService.insert(team).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (obs) => {
+      next: (res) => {
         this.isLoading = false;
         this.message.success('Thêm page thành công');
         this.loadData();
@@ -160,11 +160,10 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
     this.isLoading = true;
 
-    this.tShopService.refreshUserToken(team.Id).pipe(takeUntil(this.destroy$)).subscribe({
+    this.tShopService.refreshUserToken(team.Id, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
+        this.crmTeamService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
 
-        this.crmTeamService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe(
-          {
             next: (res: ChatOmniTShopDto[]) => {
               let exist = res && res.length > 0;
 
@@ -210,10 +209,10 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     })
   }
 
-  refreshUserToken(id: number) {
+  refreshUserToken(team: CRMTeamDTO) {
     this.isLoading = true;
 
-    this.tShopService.refreshUserToken(id).subscribe({
+    this.tShopService.refreshUserToken(team.Id, team.OwnerToken).subscribe({
       next: (res) => {
         this.message.success('Cập nhật token thành công');
         this.isLoading = false;
@@ -225,13 +224,21 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     })
   }
 
-  refreshChannelToken(id: number) {
+  refreshChannelToken(team: CRMTeamDTO) {
     this.isLoading = true;
 
-    this.tShopService.refreshChannelToken(id).subscribe({
-      next: (res) => {
-        this.message.success('Cập nhật token thành công');
+    this.tShopService.refreshChannelToken(team.Id, team.ChannelId, team.ChannelToken).subscribe({
+      next: (res: any) => {
+        let index = this.data.findIndex(x=> x.Id == team.ParentId);
+
+        this.data[index].Childs?.map(f => {
+          if(f.ChannelId == team.ChannelId) {
+            f.ChannelToken = res;
+          }
+        })
+        
         this.isLoading = false;
+        this.message.success('Cập nhật token thành công');
       },
       error: (err) => {
         this.isLoading = false;

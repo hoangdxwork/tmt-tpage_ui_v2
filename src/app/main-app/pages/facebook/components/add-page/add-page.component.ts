@@ -47,7 +47,7 @@ export class AddPageComponent implements OnInit {
 
     if(model != null) {
       this.crmTeamService.insert(model).subscribe({
-        next: (res : CRMTeamDTO[]) => {
+        next: (res : any) => {
 
           this.message.success(Message.SaveSuccess);
           this.isLoading = false;
