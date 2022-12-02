@@ -106,14 +106,22 @@ export class ModalGetNotificationComponent implements OnInit, OnChanges {
     this.idsRegister = [...this.idsRegister];
   }
 
-  removeToken() {
+  async removeToken() {
     if(this.isLoading) return;
     this.isLoading = true;
 
     const messaging = getMessaging();
-    getToken(messaging, { vapidKey: environment.firebaseConfig.vapidKey })
+    const serviceWorkerRegistration = await navigator
+      .serviceWorker
+      .register('../../../assets/firebase/firebase-messaging-sw.js');
+
+    await getToken(messaging, {
+        serviceWorkerRegistration: serviceWorkerRegistration,
+        vapidKey: environment.firebaseConfig.vapidKey
+      })
       .then((token: any) => {
-          deleteToken(token).then((token: any) => {
+
+          deleteToken(token).then((a: any) => {
 
               this.isLoading = false;
               this.message.success('Xóa token nhận tin thành công');
