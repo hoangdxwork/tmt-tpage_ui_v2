@@ -40,14 +40,11 @@
 
               <ng-template #extraButton>
                 <div class="flex gap-x-3 items-center">
-                  <button tds-button color="custom" rounded="!rounded-full"  tds-tooltip="Làm mới Token"
-                      class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                      bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1"
-                      (click)="refreshUserToken(team.Id)">
-                    <span class="flex items-center">
-                      <i class="tdsi-reload-fill text-xl leading-none"></i>
-                    </span>
-                  </button>
+                  <!-- <button tds-button-icon color="custom" tds-tooltip="Làm mới Token" (click)="refreshUserToken(team)"
+                    class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                        hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                    <i class="tdsi-reload-fill text-lg leading-none"></i>
+                  </button> -->
                   <!-- <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối"
                     class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                         hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
@@ -91,14 +88,11 @@
                     </div>
                     <!--TODO Đã kết nối -->
                     <div *ngIf="child.Active" class="flex items-center">
-                      <button tds-button color="custom" rounded="!rounded-full"  tds-tooltip="Làm mới Token"
-                        class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                        bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1"
-                        (click)="refreshChannelToken(child.Id)">
-                      <span class="flex items-center">
-                        <i class="tdsi-reload-fill text-xl leading-none"></i>
-                      </span>
-                    </button>
+                      <button tds-button-icon color="custom" tds-tooltip="Làm mới Token" (click)="refreshChannelToken(child)"
+                        class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                            hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                        <i class="tdsi-reload-fill text-lg leading-none"></i>
+                      </button>
                       <button tds-button color="custom" (click)="unConnected(child)" rounded="!rounded-full"
                         class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
                             focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">

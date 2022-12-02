@@ -61,12 +61,12 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<Array<ChatOmniTShopDto>>(api, null);
   }
 
-  insert(data: TDSSafeAny): Observable<Array<CRMTeamDTO>> {
+  insert(data: TDSSafeAny): Observable<any> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
       method: CoreApiMethodType.post
     }
-    return this.apiService.getData<Array<CRMTeamDTO>>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   onChangeListFaceBook() {

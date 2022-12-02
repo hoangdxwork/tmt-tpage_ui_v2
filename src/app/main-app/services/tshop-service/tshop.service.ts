@@ -51,18 +51,18 @@ export class TShopService extends BaseSevice {
     return this.tshopUser$.asObservable();
   }
 
-  refreshUserToken(id: any): Observable<any> {
+  refreshUserToken(id: any, accessToken: any): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshusertoken`,
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshusertoken?id=${id}&accessToken=${accessToken}`,
       method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
-  refreshChannelToken(id: any): Observable<any> {
+  refreshChannelToken(id: any, channelId: any, accessToken: any): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshchanneltoken`,
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshchanneltoken?id=${id}&channelId=${channelId}&accessToken=${accessToken}`,
       method: CoreApiMethodType.post,
     }
 
