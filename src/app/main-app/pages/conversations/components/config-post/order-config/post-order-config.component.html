@@ -132,13 +132,13 @@
 
                   <tds-form-field>
                       <tds-label>Từ số</tds-label>
-                      <tds-input-number [(ngModel)]="fromMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="0" [max]="1000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
+                      <tds-input-number [(ngModel)]="fromMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="0" [max]="20000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
                       </tds-input-number>
                   </tds-form-field>
 
                   <tds-form-field>
                       <tds-label>Đến số</tds-label>
-                      <tds-input-number [(ngModel)]="toMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="1" [max]="1000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
+                      <tds-input-number [(ngModel)]="toMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="1" [max]="20000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
                       </tds-input-number>
                   </tds-form-field>
               </div>
