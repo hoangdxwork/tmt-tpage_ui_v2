@@ -34,7 +34,7 @@ export class TShopService extends BaseSevice {
     window.addEventListener("message", (event: MessageEvent<any>) => {
       if(!event || !event.data) return;
 
-      if(!TDSHelperString.hasValueString(event.data)) return;
+      if(!TDSHelperString.isString(event.data)) return;
 
       let data = event.data;
       let model = JSON.parse(data) as TUserCacheDto;
@@ -54,6 +54,15 @@ export class TShopService extends BaseSevice {
   refreshUserToken(id: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshusertoken`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  refreshChannelToken(id: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshchanneltoken`,
       method: CoreApiMethodType.post,
     }
 
