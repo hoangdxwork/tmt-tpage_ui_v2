@@ -609,7 +609,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   loadTags(data: ChatomniConversationItemDto) {
     if (data) {
-      if (!TDSHelperArray.hasListValue(this.tags)) {
+      if (this.tags?.length == 0) {
         this.crmTagService.dataActive$.subscribe({
           next: (res: any) => {
             this.tags = [...res];
@@ -628,8 +628,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let tags = this.tags || [];
     let local = this.crmTagService.getTagLocalStorage() as any;
 
-    if (TDSHelperArray.hasListValue(tags) && local) {
-      tags.sort((a: any, b: any) => {
+    if (tags && tags.length > 0 && local) {debugger
+      tags?.sort((a: any, b: any) => {
         if (!local[a.Id]) {
           local[a.Id] = { "point": 0 };
         }
@@ -644,7 +644,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           }
         }
 
-        if ((local[a.Id].point > local[b.Id].point) && !(this.data.Tags as any)[b.Id]) {
+        if (local[a.Id] && (local[a.Id].point > local[b.Id].point) && this.data.Tags && !(this.data.Tags as any)[b.Id]) {
           return -1;
         }
 
