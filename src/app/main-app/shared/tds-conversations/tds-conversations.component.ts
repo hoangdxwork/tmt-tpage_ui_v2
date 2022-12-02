@@ -608,7 +608,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadTags(data: ChatomniConversationItemDto) {
-    if (data && data.Tags) {
+    if (data) {
       if (!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe({
           next: (res: any) => {
@@ -918,7 +918,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if(TDSHelperArray.hasListValue(this.uploadedImages) && model.Attachment.Data){
         model.Attachment.Data.Url = this.uploadedImages[0];
     }
-    
+
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
@@ -1007,13 +1007,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onSelectTag(item: any) {
-    let tags = [...this.data.Tags];
+    let tags = this.data.Tags;
 
-    if (tags.findIndex(x=> x.Id == item.Id) > 0) {
-      let modelTag = this.omniMessageFacade.mappingModelTag(item);
-      this.removeIndexDbTag(modelTag);
-    } else {
+    if(tags == null) {
       this.assignIndexDbTag(item);
+    } else {
+      if (tags.findIndex((x: any) => x.Id == item.Id) > 0) {
+        let modelTag = this.omniMessageFacade.mappingModelTag(item);
+        this.removeIndexDbTag(modelTag);
+      } else {
+        this.assignIndexDbTag(item);
+      }
     }
   }
 
