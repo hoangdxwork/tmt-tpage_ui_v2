@@ -612,12 +612,14 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         if (pageIds.length == 0) {
+          this.isLoading = false;
           return this.message.error('Không có kênh kết nối với khách hàng này.');
         }
 
         this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
           next: (teams: any): any => {
             if (teams?.length == 0) {
+              this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
             }
 
