@@ -567,15 +567,40 @@ export class AddLiveCampaignV2Component implements OnInit {
 
   isCheckValue() {
     let formValue = this._form.value;
+    let formDetails = this.detailsForm.value as any[];
 
-    if(!TDSHelperString.hasValueString(formValue.Name)) {
+    if(!TDSHelperString.hasValueString((formValue.Name || '').trim())) {
         this.message.error('Vui lòng nhập tên chiến dịch');
+        return 0;
+    }
+
+    if(formValue.Name.length > 255) {
+        this.message.error('Tên chiến dịch live tối đa 255 ký tự');
+        return 0;
+    }
+
+    if(TDSHelperString.hasValueString((formValue.Note || '').trim()) && formValue.Note.length > 500) {
+        this.message.error('Ghi chú tối đa 500 ký tự');
         return 0;
     }
 
     if(formValue.ResumeTime > 0 && formValue.ResumeTime < 10) {
         this.message.error('Thời gian tổng hợp tối thiểu 10 phút');
         return 0;
+    }
+
+    if(formDetails && formDetails.length > 0) {
+      let checkLimitedQuantity = formDetails.findIndex(x=> x.LimitedQuantity == null);
+      if(checkLimitedQuantity >= 0) {
+        this.message.error('Vui lòng nhập đầy đủ giới hạn trên đơn sản phẩm');
+        return 0;
+      }
+
+      let checkPrice = formDetails.findIndex(x=> x.Price == null);
+      if(checkPrice >= 0) {
+        this.message.error('Vui lòng nhập đầy đủ giá bán sản phẩm');
+        return 0;
+      }
     }
 
     return 1;
