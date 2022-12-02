@@ -351,8 +351,14 @@ export class PostOrderConfigComponent implements OnInit {
 
   generateRangeTemplates() {
     if(this.fromMoreTemplate > this.toMoreTemplate) {
-        this.message.error(Message.ConversationPost.ErrorNumberMoreTemplate);
-        return;
+      this.message.error(Message.ConversationPost.ErrorNumberMoreTemplate);
+      return;
+    }
+
+    let range = Number(this.toMoreTemplate) - Number(this.fromMoreTemplate);
+    if(range > 1000) {
+      this.message.error('Chỉ cho phép tạo tối đa 1000 mẫu');
+      return;
     }
 
     for(let i = this.fromMoreTemplate; i <= this.toMoreTemplate; i++) {
