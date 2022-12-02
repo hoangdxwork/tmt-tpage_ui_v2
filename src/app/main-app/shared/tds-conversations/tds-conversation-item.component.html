@@ -8,135 +8,25 @@
           <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
               <div *ngIf="wb.type == 'template' && wb.payload">
                 <div class="w-full flex justify-end relative">
-                  <div id="scroll-product{{dataItem.Data.id}}" class="w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
+                  <div *ngFor="let item of wb?.payload?.elements" id="scroll-product{{dataItem.Data.id}}" class="w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
                     <div #itemProduct class="snap-start shrink-0">
                       <tds-card class="bg-white w-full h-full rounded-xl" (click)="detail()">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
+                        <img src="{{ item?.image_url }}" alt="" />
                         <tds-card-content class="px-4 py-3">
                             <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 01</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 02</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 03</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 04</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 05</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 06</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 07</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 08</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 09</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 10</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
-                    </div>
-                    <div class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl">
-                        <img src="../../assets/imagesv2/product-image.svg" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">Bộ chén siu bền 11</h3>
-                                <p class="text-body-2 text-neutral-1-400">200.000k</p>
+                                <h3 class="text-body font-semibold">{{ item?.title }}</h3>
+                                <p class="text-body-2 text-neutral-1-400">{{ item?.price }}</p>
                             </div>
                         </tds-card-content>
                       </tds-card>
                     </div>
                   </div>
-                  <div class="w-[85%] px-2 h-full flex justify-between items-center absolute z-1">
+                  <div [ngClass]="wb?.payload?.elements?.length > 2 ? 'flex' : 'hidden'" class="w-[85%] px-2 h-full justify-between items-center absolute z-1">
                     <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous(dataItem.Data.id)">
-                      <i class="tdsi-arrow-left-fill text-neutral-1-400"></i>
+                      <i class="tdsi-arrow-left-line text-neutral-1-400"></i>
                     </button>
                     <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="next(dataItem.Data.id)">
-                      <i class="tdsi-arrow-right-fill text-neutral-1-400"></i>
+                      <i class="tdsi-arrow-right-line text-neutral-1-400"></i>
                     </button>
                   </div>
                 </div>
@@ -151,30 +41,30 @@
                   <div class="flex flex-col w-[50%]">
                     <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
                       <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
-                      <span class="text-title-1 font-semibold">Ngọc Anh</span>
+                      <span class="text-title-1 font-semibold">{{ wb.payload.recipient_name }}</span>
                     </div>
                     <div class="bg-white px-4 rounded-b-xl">
                       <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col items-start">
                         <div class="flex gap-x-2.5">
                           <img class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover"
-                              src="../../assets/imagesv2/product-image.svg">
+                              src="{{ wb?.payload?.order_url }}">
                           <div class="flex flex-col gap-y-1 items-start">
-                            <div class="font-semibold">[SP1128A] Bộ chén siêu bền</div>
+                            <div class="font-semibold">{{ wb?.payload?.summary }}</div>
                             <div class="flex gap-x-2">
-                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">1</span></span>
+                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ wb?.payload?.order_number }}</span></span>
                               <span>-</span>
-                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">200.000</span></span>
+                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ wb?.payload?.currency }}</span></span>
                             </div>
                           </div>
                         </div>
                         <span class="mt-4 text-neutral-1-600">Đã thanh toán bằng</span>
-                        <span class="mt-1 text-body-1">Tiền mặt</span>
+                        <span class="mt-1 text-body-1">{{ wb?.payload?.payment_method }}</span>
                         <span class="mt-2 text-neutral-1-600">Địa chỉ giao hàng</span>
-                        <span class="mt-1 text-body-1">106 Hoàng Diệu, phường 14, quận 4, Hồ Chí Minh</span>
+                        <span class="mt-1 text-body-1">{{ wb?.payload?.address }}</span>
                       </div>
                       <div class="py-2 flex justify-between items-center">
                         <span class="text-neutral-1-600 font-semibold">Tổng tiền</span>
-                        <span class="text-title-1 font-semibold">650.000</span>
+                        <span class="text-title-1 font-semibold">{{ (wb?.payload?.order_number)*(wb?.payload?.currency) }}</span>
                       </div>
                     </div>
                   </div>
