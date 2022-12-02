@@ -52,7 +52,8 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     if(exist) {
         this.userTShopLogin = cacheData.data.user;
     } else {
-        this.tShopSignOut();
+      this.userTShopLogin = null;
+      this.loginTeam = null;
     }
 
     this.loadData();
@@ -151,76 +152,85 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     }
   }
 
-  verifyConnect(team: CRMTeamDTO) {
+  getTShopPage(team: CRMTeamDTO) {
     if(!this.userTShopLogin) {
       this.message.error('Vui lòng đăng nhập để thực hiện tính năng này');
       return; 
     }
 
-    let model = this.prepareModel(team);
     this.isLoading = true;
 
-    this.facebookService.verifyConect(model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res) => {
+    this.tShopService.refreshUserToken(team.Id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
 
-          this.crmTeamService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe(
-            {
-              next: (res: ChatOmniTShopDto[]) => {
-                let exist = res && res.length > 0;
+        this.crmTeamService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe(
+          {
+            next: (res: ChatOmniTShopDto[]) => {
+              let exist = res && res.length > 0;
 
-                if (!exist) {
-                  this.message.info('Không tìm thấy kênh mới nào');
-                  return;
-                }
-
-                let ids = team?.Childs?.map(x => x.ChannelId) || [];
-                let newArray: any = [];
-
-                res.map((x: ChatOmniTShopDto) => {
-                  let exist1 = ids?.find(a => a == x.Id);
-                  if (!exist1) {
-                    let item = this.prepareChatOmniTShopToTeam(x, team);
-                    newArray.push(item);
-                  }
-                });
-
-                if (newArray.length == 0) {
-                  this.isLoading = false;
-                  this.message.info('Không tìm thấy kênh mới nào');
-                  return;
-                }
-
-                // TODO: map thêm kênh mới nếu có
-                let findIndex = this.data.findIndex(x => x.Id == team.Id);
-                if (findIndex > -1) {
-                  this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...newArray];
-                  this.data[findIndex] = { ...this.data[findIndex] };
-
-                  this.message.info(`Đã tìm thấy ${newArray.length} kênh mới`);
-                }
-
-                this.isLoading = false;
-              },
-              error: (error) => {
-                this.message.error('Kết nối quá hạn. Vui lòng đăng nhập lại');
-                this.isLoading = false;
+              if (!exist) {
+                this.message.info('Không tìm thấy kênh mới nào');
+                return;
               }
-            })
-        },
-        error: (error: any) => {
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-          this.isLoading = false;
-        }
+
+              let ids = team?.Childs?.map(x => x.ChannelId) || [];
+              let newArray: any = [];
+
+              res.map((x: ChatOmniTShopDto) => {
+                let exist1 = ids?.find(a => a == x.Id);
+                if (!exist1) {
+                  let item = this.prepareChatOmniTShopToTeam(x, team);
+                  newArray.push(item);
+                }
+              });
+
+              if (newArray.length == 0) {
+                this.isLoading = false;
+                this.message.info('Không tìm thấy kênh mới nào');
+                return;
+              }
+
+              // TODO: map thêm kênh mới nếu có
+              let findIndex = this.data.findIndex(x => x.Id == team.Id);
+              if (findIndex > -1) {
+                this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...newArray];
+                this.data[findIndex] = { ...this.data[findIndex] };
+
+                this.message.info(`Đã tìm thấy ${newArray.length} kênh mới`);
+              }
+
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.message.error('Kết nối quá hạn. Vui lòng đăng nhập lại');
+              this.isLoading = false;
+            }
+          })
       }
-    )
+    })
   }
 
-  refreshToken(id: any) {
+  refreshUserToken(id: number) {
     this.isLoading = true;
 
     this.tShopService.refreshUserToken(id).subscribe({
       next: (res) => {
-        this.message.success('Cập nhật thành công');
+        this.message.success('Cập nhật token thành công');
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+      }
+    })
+  }
+
+  refreshChannelToken(id: number) {
+    this.isLoading = true;
+
+    this.tShopService.refreshChannelToken(id).subscribe({
+      next: (res) => {
+        this.message.success('Cập nhật token thành công');
         this.isLoading = false;
       },
       error: (err) => {
@@ -258,17 +268,6 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
         }
       }
     );
-  }
-
-  prepareModel(team: CRMTeamDTO) {
-    let model = {
-      FacebookAvatar: team.ChannelAvatar || team.Facebook_UserAvatar || team.OwnerAvatar,
-      FacebookId: team.ChannelId || team.Facebook_UserId || team.OwnerId,
-      FacebookName: team.Name || team.Facebook_UserName,
-      Token: team.OwnerToken || team.ChannelToken
-    } as any
-
-    return model;
   }
 
   showModalAddPage(data: CRMTeamDTO): void {
