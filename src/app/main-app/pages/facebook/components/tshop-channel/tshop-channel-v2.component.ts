@@ -1,3 +1,4 @@
+import { TDSNotificationService } from 'tds-ui/notification';
 import { TUserCacheDto } from './../../../../../lib/dto/tshop.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { AddPageComponent } from '../add-page/add-page.component';
@@ -13,7 +14,7 @@ import { TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TpageBaseComponent } from '@app/shared/tpage-base/tpage-base.component';
-import { ChatOmniTShopDto, TUserDto } from '@core/dto/tshop.dto';
+import { TUserDto } from '@core/dto/tshop.dto';
 import { TShopService } from '@app/services/tshop-service/tshop.service';
 
 @Component({
@@ -37,11 +38,11 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private tShopService: TShopService,
-    private facebookService: FacebookService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
+    private notification: TDSNotificationService,
     private message: TDSMessageService) {
-    super(crmTeamService, activatedRoute, router);
+      super(crmTeamService, activatedRoute, router);
   }
 
   ngOnInit(): void {
@@ -51,8 +52,10 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
     if(exist) {
         this.userTShopLogin = cacheData.data.user;
+        this.access_token = cacheData.data.access_token;
     } else {
       this.userTShopLogin = null;
+      this.access_token = null as any;
       this.loginTeam = null;
     }
 
@@ -100,7 +103,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
       Name: this.userTShopLogin?.Name,
       Type: "TUser",
       ChannelId: this.userTShopLogin?.Id,
-      OwnerToken: accessToken,
+      OwnerToken: this.access_token,
       OwnerAvatar: this.userTShopLogin?.Address
     };
 
@@ -160,11 +163,15 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
     this.isLoading = true;
 
+    if(this.userTShopLogin.Id == team.OwnerId) {
+      team.OwnerToken = this.access_token;
+    }
+
     this.tShopService.refreshUserToken(team.Id, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+      next: (token) => {
         this.crmTeamService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
 
-            next: (res: ChatOmniTShopDto[]) => {
+            next: (res: TUserDto[]) => {debugger
               let exist = res && res.length > 0;
 
               if (!exist) {
@@ -175,10 +182,10 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
               let ids = team?.Childs?.map(x => x.ChannelId) || [];
               let newArray: any = [];
 
-              res.map((x: ChatOmniTShopDto) => {
+              res.map((x: TUserDto) => {
                 let exist1 = ids?.find(a => a == x.Id);
                 if (!exist1) {
-                  let item = this.prepareChatOmniTShopToTeam(x, team);
+                  let item = this.prepareTeam(x, team);
                   newArray.push(item);
                 }
               });
@@ -201,8 +208,12 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
               this.isLoading = false;
             },
             error: (error) => {
-              this.message.error('Kết nối quá hạn. Vui lòng đăng nhập lại');
               this.isLoading = false;
+              this.notification.error(`Không thể chọn kênh`,
+                `<div class="whitespace-normal w-[300px]">Hãy đăng nhập đúng tài khoản TShop<br>
+                  [<span class="text-error-400 font-semibold">${team.Name}</span>].<br>
+                  Không thể kết nối page</div>`,
+                { duration: 5000 });
             }
           })
       }
@@ -224,15 +235,15 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     })
   }
 
-  refreshChannelToken(team: CRMTeamDTO) {
+  refreshChannelToken(child: CRMTeamDTO, team: CRMTeamDTO) {
     this.isLoading = true;
 
-    this.tShopService.refreshChannelToken(team.Id, team.ChannelId, team.ChannelToken).subscribe({
+    this.tShopService.refreshChannelToken(team.Id, child.ChannelId, child.ChannelToken).subscribe({
       next: (res: any) => {
-        let index = this.data.findIndex(x=> x.Id == team.ParentId);
+        let index = this.data.findIndex(x=> x.Id == child.ParentId);
 
         this.data[index].Childs?.map(f => {
-          if(f.ChannelId == team.ChannelId) {
+          if(f.ChannelId == child.ChannelId) {
             f.ChannelToken = res;
           }
         })
@@ -263,8 +274,8 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   delete(id: number) {
     this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
-          this.message.success('Hủy kết nối thành công');
           this.loadData();
+          this.message.success('Hủy kết nối thành công');
         },
         error: (error) => {
           if (error?.error?.message) {
@@ -277,7 +288,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     );
   }
 
-  showModalAddPage(data: CRMTeamDTO): void {
+  showModalAddPage(data: CRMTeamDTO) {
     if(!this.userTShopLogin) {
       this.message.error('Vui lòng đăng nhập để thực hiện tính năng này');
       return; 
@@ -293,26 +304,20 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
       },
     });
 
-    modal.afterClose.subscribe((result) => {
-      if (TDSHelperObject.hasValue(result)) {
+    modal.afterClose.subscribe((res) => {
+      if (TDSHelperObject.hasValue(res)) {
         // TODO: trường hợp active childs
-        let index = this.data.findIndex(x=>x.Id == data.ParentId);
-
-        this.data[index].Childs?.map(f => {
-          if(f.ChannelId == data.ChannelId) {
-            f.Active = true;
-          }
-        })
+        this.loadData();
       }
     });
   }
 
-  prepareChatOmniTShopToTeam(x: ChatOmniTShopDto, team?: CRMTeamDTO) {
+  prepareTeam(x: TUserDto, team?: CRMTeamDTO) {
     let model = {} as CRMTeamDTO;
 
     model.Name = x.Name;
     model.ChannelId = x.Id;
-    model.ChannelToken = '';
+    model.ChannelToken = team?.ChannelToken;
     model.Facebook_Link = '';
     model.Facebook_TypeId = 'Page';
     model.Facebook_ASUserId = team?.OwnerId;
@@ -323,7 +328,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     model.Facebook_PageId = x.Id;
     model.Facebook_PageName = x.Name;
     model.Facebook_PageLogo = x.Avatar;
-    model.Facebook_PageToken = '';
+    model.Facebook_PageToken = team?.ChannelToken;
     model.Active = false;
     model.ParentId = team?.Id;
     model.Type = CRMTeamType._TShop;

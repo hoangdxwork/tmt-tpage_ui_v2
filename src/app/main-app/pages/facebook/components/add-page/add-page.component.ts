@@ -48,8 +48,6 @@ export class AddPageComponent implements OnInit {
     if(model != null) {
       this.crmTeamService.insert(model).subscribe({
         next: (res : any) => {
-
-          this.message.success(Message.SaveSuccess);
           this.isLoading = false;
           this.onCancel(res);
       },
@@ -108,7 +106,7 @@ export class AddPageComponent implements OnInit {
           ChannelAvatar: data.ChannelAvatar || data.Facebook_PageLogo,
           ChannelId: data.ChannelId || data.Facebook_PageId,
           ChannelToken: data.ChannelToken,
-          Id: 0,
+          // Id: 0,
           Name: data.Name,
           OwnerId: data.OwnerId || data.Facebook_ASUserId,
           ParentId: data.ParentId,

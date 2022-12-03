@@ -40,11 +40,11 @@
 
               <ng-template #extraButton>
                 <div class="flex gap-x-3 items-center">
-                  <!-- <button tds-button-icon color="custom" tds-tooltip="Làm mới Token" (click)="refreshUserToken(team)"
+                  <button tds-button-icon color="custom" tds-tooltip="Làm mới Token" (click)="refreshUserToken(team)" *ngIf="userTShopLogin && userTShopLogin.Id == team.OwnerId"
                     class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                         hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                     <i class="tdsi-reload-fill text-lg leading-none"></i>
-                  </button> -->
+                  </button>
                   <!-- <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối"
                     class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                         hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
@@ -88,7 +88,7 @@
                     </div>
                     <!--TODO Đã kết nối -->
                     <div *ngIf="child.Active" class="flex items-center">
-                      <button tds-button-icon color="custom" tds-tooltip="Làm mới Token" (click)="refreshChannelToken(child)"
+                      <button tds-button-icon color="custom" tds-tooltip="Làm mới Token" (click)="refreshChannelToken(child, team)"
                         class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                             hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                         <i class="tdsi-reload-fill text-lg leading-none"></i>
