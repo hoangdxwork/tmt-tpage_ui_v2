@@ -1382,9 +1382,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder) {
     let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
-    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
 
-    if(exit) {
+    if(index >= 0) {
         this.quickOrderModel.Details.splice(index,1);
         this.calcTotal();
         this.coDAmount();
@@ -1466,9 +1465,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   plus(item: Detail_QuickSaleOnlineOrder) {
     let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
-    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
 
-    if(exit) {
+    if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity++;
         this.calcTotal();
         this.coDAmount();
@@ -1477,9 +1475,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   minus(item: Detail_QuickSaleOnlineOrder) {
     let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
-    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
 
-    if(exit) {
+    if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity--;
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;
@@ -1741,11 +1738,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   onChangeQuantity(event: any, item: any){
     let index = this.quickOrderModel?.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
-    if(event) {
-      this.quickOrderModel.Details[index].Quantity = Number(event);
-    } else {
+    if(event && index >= 0) {
+        this.quickOrderModel.Details[index].Quantity = Number(event);
+    }  
+
+    if(!event && index >= 0) {
       this.quickOrderModel.Details[index].Quantity = 1;
-      // TODO: cập nhật thay đổi giá trị của input
       this.quickOrderModel.Details[index] = {...this.quickOrderModel.Details[index]};
     }
 
