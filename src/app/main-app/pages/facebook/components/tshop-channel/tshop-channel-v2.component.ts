@@ -10,12 +10,13 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, OnInit, Output, ViewContainerRef, EventEmitter, HostListener } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TpageBaseComponent } from '@app/shared/tpage-base/tpage-base.component';
 import { TUserDto } from '@core/dto/tshop.dto';
 import { TShopService } from '@app/services/tshop-service/tshop.service';
+import tr from 'date-fns/esm/locale/tr/index.js';
 
 @Component({
   selector: 'tshop-channel-v2',
@@ -51,8 +52,8 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     let exist = cacheData != null && cacheData?.data && cacheData?.data?.user && cacheData?.type == CRMTeamType._TShop;
 
     if(exist) {
-        this.userTShopLogin = cacheData.data.user;
-        this.access_token = cacheData.data.access_token;
+      this.userTShopLogin = cacheData.data.user;
+      this.access_token = cacheData.data.access_token;
     } else {
       this.userTShopLogin = null;
       this.access_token = null as any;
@@ -97,20 +98,27 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   }
 
   insertUserTShop(accessToken: string | null) {
-    let team = {
+    let item = {
       Id: 0,
       OwnerId: this.userTShopLogin?.Id,
       Name: this.userTShopLogin?.Name,
       Type: "TUser",
       ChannelId: this.userTShopLogin?.Id,
       OwnerToken: this.access_token,
-      OwnerAvatar: this.userTShopLogin?.Address
+      OwnerAvatar: this.userTShopLogin?.Avatar
     };
 
-    this.crmTeamService.insert(team).pipe(takeUntil(this.destroy$)).subscribe({
+    this.crmTeamService.insert(item).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         this.isLoading = false;
-        this.message.success('Thêm page thành công');
+
+        let cacheObj =  {
+          access_token: this.access_token,
+          user: this.userTShopLogin,
+        } as TUserCacheDto;
+
+        this.tShopService.setCacheLoginUser(cacheObj, CRMTeamType._TShop);
+        this.message.success('Thao tác thành công');
         this.loadData();
       },
       error: (error) => {
@@ -122,8 +130,6 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
   loadData() {
     this.isLoading = true;
-
-    // TODO load all data
     this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
         if (res) {
@@ -156,22 +162,24 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   }
 
   getTShopPage(team: CRMTeamDTO) {
-    if(!this.userTShopLogin) {
-      this.message.error('Vui lòng đăng nhập để thực hiện tính năng này');
-      return; 
+    this.isLoading = true;
+    if(this.userTShopLogin && this.userTShopLogin.Id == team.OwnerId) {
+        team.OwnerToken = this.access_token;
     }
 
-    this.isLoading = true;
+    if(!TDSHelperString.hasValueString(team.OwnerToken)) {
+      this.notification.error(`Không thể kết nối trang`,
+      `<div class="whitespace-normal w-[300px]">Hãy đăng nhập đúng tài khoản TShop<br>
+        [<span class="text-error-400 font-semibold">${team.Name}</span>]</div>`, { duration: 5000 });
 
-    if(this.userTShopLogin.Id == team.OwnerId) {
-      team.OwnerToken = this.access_token;
+      return;
     }
 
     this.tShopService.refreshUserToken(team.Id, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
       next: (token) => {
         this.crmTeamService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
 
-            next: (res: TUserDto[]) => {debugger
+            next: (res: TUserDto[]) => {
               let exist = res && res.length > 0;
 
               if (!exist) {
@@ -201,7 +209,6 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
               if (findIndex > -1) {
                 this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...newArray];
                 this.data[findIndex] = { ...this.data[findIndex] };
-
                 this.message.info(`Đã tìm thấy ${newArray.length} kênh mới`);
               }
 
@@ -209,11 +216,11 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
             },
             error: (error) => {
               this.isLoading = false;
-              this.notification.error(`Không thể chọn kênh`,
+              console.error(error);
+
+              this.notification.error(`Không thể kết nối trang`,
                 `<div class="whitespace-normal w-[300px]">Hãy đăng nhập đúng tài khoản TShop<br>
-                  [<span class="text-error-400 font-semibold">${team.Name}</span>].<br>
-                  Không thể kết nối page</div>`,
-                { duration: 5000 });
+                  [<span class="text-error-400 font-semibold">${team.Name}</span>]</div>`, { duration: 5000 });
             }
           })
       }
@@ -222,10 +229,9 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
   refreshUserToken(team: CRMTeamDTO) {
     this.isLoading = true;
-
     this.tShopService.refreshUserToken(team.Id, team.OwnerToken).subscribe({
       next: (res) => {
-        this.message.success('Cập nhật token thành công');
+        this.message.success('Làm mới token thành công');
         this.isLoading = false;
       },
       error: (err) => {
@@ -238,18 +244,25 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   refreshChannelToken(child: CRMTeamDTO, team: CRMTeamDTO) {
     this.isLoading = true;
 
-    this.tShopService.refreshChannelToken(team.Id, child.ChannelId, child.ChannelToken).subscribe({
-      next: (res: any) => {
+    this.tShopService.refreshChannelToken(team.Id, child.ChannelId, team.ChannelToken).subscribe({
+      next: (token: any) => {
+
+        if(!TDSHelperString.hasValueString(token)) {
+          this.isLoading = false;
+          this.message.error('Không thể lấy token của'+ ` ${child.Name}`);
+          return;
+        }
+
         let index = this.data.findIndex(x=> x.Id == child.ParentId);
 
         this.data[index].Childs?.map(f => {
           if(f.ChannelId == child.ChannelId) {
-            f.ChannelToken = res;
+            f.ChannelToken = token;
           }
         })
-        
+
         this.isLoading = false;
-        this.message.success('Cập nhật token thành công');
+        this.message.success('Làm mới token thành công');
       },
       error: (err) => {
         this.isLoading = false;
@@ -288,28 +301,48 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     );
   }
 
-  showModalAddPage(data: CRMTeamDTO) {
+  showModalAddPage(child: CRMTeamDTO, team: CRMTeamDTO) {
     if(!this.userTShopLogin) {
       this.message.error('Vui lòng đăng nhập để thực hiện tính năng này');
-      return; 
+      return;
     }
 
-    const modal = this.modal.create({
-      title: 'Thêm Page',
-      content: AddPageComponent,
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        data: data,
-        type: CRMTeamType._TShop
-      },
-    });
+    this.isLoading = true;
+    this.tShopService.refreshChannelToken(team.Id, child.ChannelId, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (token: any) => {
 
-    modal.afterClose.subscribe((res) => {
-      if (TDSHelperObject.hasValue(res)) {
-        // TODO: trường hợp active childs
-        this.loadData();
+        if(!TDSHelperString.hasValueString(token)) {
+          this.isLoading = false;
+          this.message.error('Không thể lấy token của'+ ` ${child.Name}`);
+          return;
+        }
+
+        child.ChannelToken = token;
+
+        const modal = this.modal.create({
+          title: 'Thêm Page',
+          content: AddPageComponent,
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            data: child,
+            type: CRMTeamType._TShop
+          },
+        });
+
+        modal.afterClose.subscribe({
+          next: (res: any) => {
+                this.loadData();
+          },
+          error: (error: any) => {
+            this.isLoading = false;
+          }
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message);
       }
-    });
+    })
   }
 
   prepareTeam(x: TUserDto, team?: CRMTeamDTO) {
@@ -317,18 +350,19 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
     model.Name = x.Name;
     model.ChannelId = x.Id;
-    model.ChannelToken = team?.ChannelToken;
+    model.ChannelAvatar = x.Avatar;
+    model.ChannelToken = '';//verify mới lấy dc token
     model.Facebook_Link = '';
     model.Facebook_TypeId = 'Page';
     model.Facebook_ASUserId = team?.OwnerId;
-    model.Facebook_UserAvatar = team?.Facebook_UserAvatar;
+    model.Facebook_UserAvatar = x.Avatar;
     model.Facebook_UserId = team?.Facebook_UserId;
     model.Facebook_UserName = team?.Name;
     model.Facebook_UserToken = team?.OwnerToken;
     model.Facebook_PageId = x.Id;
     model.Facebook_PageName = x.Name;
     model.Facebook_PageLogo = x.Avatar;
-    model.Facebook_PageToken = team?.ChannelToken;
+    model.Facebook_PageToken = '';
     model.Active = false;
     model.ParentId = team?.Id;
     model.Type = CRMTeamType._TShop;

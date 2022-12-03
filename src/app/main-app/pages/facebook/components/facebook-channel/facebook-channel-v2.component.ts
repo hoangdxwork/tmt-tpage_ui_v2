@@ -72,7 +72,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
     //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
     let user = this.facebookService.getCacheLoginUser() as any;
     let exist = user != null && user?.data && user?.type == CRMTeamType._Facebook;
-    
+
     if(exist) {
       this.userFBLogin = user.data;
     } else {
@@ -127,7 +127,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
             } as FacebookCacheDto;
 
             this.facebookService.setCacheLoginUser(cacheData, CRMTeamType._Facebook);
-            
+
             if (this.data && this.data.length > 0) {
               this.sortByFbLogin(res.id);
             }
@@ -201,13 +201,13 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
           {
             next: (res) => {
               let team = this.prepareLoginModel();
-    
+
               this.crmTeamService.insert(team).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (obs) => {
                   this.isLoading = false;
                   this.message.success('Thêm page thành công');
                   this.loadData();
-                }, 
+                },
                 error: error => {
                   this.isLoading = false;
                   this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
@@ -218,13 +218,13 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
               // TODO: nếu lỗi sẽ lấy token của user đăng nhập
               if(this.userFBLogin) {
                 let team = this.prepareLoginModel();
-    
+
                 this.crmTeamService.insert(team).pipe(takeUntil(this.destroy$)).subscribe({
                   next: (obs) => {
                     this.isLoading = false;
                     this.message.success('Thêm page thành công');
                     this.loadData();
-                  }, 
+                  },
                   error: (error) => {
                       this.isLoading = false;
                       this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
@@ -257,7 +257,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
           if(id == this.loginTeam?.Id) {
             this.loginTeam = null;
           }
-          
+
           this.loadData();
         },
         error: (error) => {
@@ -371,10 +371,10 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
                         if(findIndex > -1) {
                           this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...newArray];
                           this.data[findIndex] = {...this.data[findIndex]};
-  
+
                           this.message.info(`Đã tìm thấy ${newArray.length} kênh mới`);
                         }
-                        
+
                         this.isLoading = false;
                     },
                     error: (error) => {
@@ -394,8 +394,8 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
           this.isLoading = false;
           this.notification.error(`Không thể chọn kênh`,
             `<div class="whitespace-normal w-[300px]">Hãy đăng nhập đúng tài khoản facebook<br>
-              [<span class="text-error-400 font-semibold">${team.Name}</span>].<br>
-              Sau đó nhấn nút <span class="text-info-500">làm mới Token</span> và hãy thử chọn lại</div>`,
+              [<span class="text-error-400 font-semibold">${team.Name}</span>]
+            </div>`,
             { duration: 5000 });
       }
     })
@@ -403,7 +403,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
 
   prepareLoginModel() {
     let model = {} as CRMTeamDTO;
-    
+
     model.CountGroup = 0;
     model.CountPage = 0;
     model.Facebook_AccountId = this.userFBLogin?.id,
