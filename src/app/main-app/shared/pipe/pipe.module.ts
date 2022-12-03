@@ -1,3 +1,4 @@
+import { GetTeamIconPipe } from './get-team-icon.pipe';
 import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
@@ -113,7 +114,8 @@ const cmp =[
   FirebaseSubscribedPipe,
   GetSocketNamePipe,
   ChatomniTiktokType,
-  ChatomniTiktokData
+  ChatomniTiktokData,
+  GetTeamIconPipe
 ]
 
 @NgModule({

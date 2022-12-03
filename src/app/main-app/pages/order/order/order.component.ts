@@ -1,3 +1,4 @@
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { formatDate, DatePipe } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
@@ -54,6 +55,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
 
   lstOfData!: ODataSaleOnline_OrderModel[];
+  lstOfTeam!: CRMTeamDTO[];
   getStatus!: TIDictionary<String>;
   pageSize = 20;
   pageIndex = 1;
@@ -151,6 +153,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.loadAllTeam();
     this.loadTags();
     this.loadGridConfig();
     this.loadStatusTypeExt();
@@ -237,6 +240,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          
           let lstId = this.lstOfData.map((x) => x.PartnerId);
           this.loadParnerStatus(lstId);
       },
@@ -322,6 +326,19 @@ export class OrderComponent implements OnInit, AfterViewInit {
               this.hiddenColumns = this.columns;
             }
         }
+    })
+  }
+
+  loadAllTeam() {
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res && TDSHelperArray.hasListValue(res)) {
+          this.lstOfTeam = [...res];
+        }
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message);
+      }
     })
   }
 
