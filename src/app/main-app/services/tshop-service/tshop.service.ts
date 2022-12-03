@@ -41,7 +41,6 @@ export class TShopService extends BaseSevice {
       let exist = model && model.access_token && model.user;
 
       if(exist) {
-        this.setCacheLoginUser(model, CRMTeamType._TShop);
         this.tshopUser$.next(model);
       }
     });
@@ -69,13 +68,13 @@ export class TShopService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-
   getAuthentication(fragment: string) {
     let hostname = location.href.replace("/" + location.hash, "");;
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
   }
 
   setCacheLoginUser(user: TUserCacheDto, type: string) {
+
     let model = {
       data: user,
       type: type

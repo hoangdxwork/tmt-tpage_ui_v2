@@ -45,20 +45,18 @@ export class AddPageComponent implements OnInit {
     this.isLoading = true;
     let model = this.prepareFacebookModel(this.data);
 
-    if(model != null) {
-      this.crmTeamService.insert(model).subscribe({
-        next: (res : any) => {
-          this.isLoading = false;
-          this.onCancel(res);
-      },
-        error: error => {
-          this.isLoading = false;
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-        }
-      });
-    } else {
-      this.message.error('Lỗi dữ liệu');
-    }
+    this.crmTeamService.insert(model).subscribe({
+      next: (res : any) => {
+        this.isLoading = false;
+        this.message.success('Kết nối kênh thành công');
+        this.onCancel(res);
+    },
+      error: error => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    });
+
   }
 
   updateForm() {
@@ -103,17 +101,19 @@ export class AddPageComponent implements OnInit {
         }
       case CRMTeamType._TShop:
         return {
-          ChannelAvatar: data.ChannelAvatar || data.Facebook_PageLogo,
-          ChannelId: data.ChannelId || data.Facebook_PageId,
+          ChannelAvatar: data.ChannelAvatar,
+          ChannelId: data.ChannelId,
           ChannelToken: data.ChannelToken,
-          // Id: 0,
+          Id: 0,
           Name: data.Name,
           OwnerId: data.OwnerId || data.Facebook_ASUserId,
           ParentId: data.ParentId,
-          ShopId: data.ShopId || data.Facebook_PageId,
+          ShopId: data.ShopId || data.ChannelId,
           Type: data.Type
         }
-      default: return null;
+
+      default:
+        return null;
     }
   }
 }
