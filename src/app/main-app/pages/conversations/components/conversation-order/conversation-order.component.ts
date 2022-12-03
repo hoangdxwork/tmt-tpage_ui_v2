@@ -75,6 +75,7 @@ import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 @Component({
   selector: 'conversation-order',
   templateUrl: './conversation-order.component.html',
+  styleUrls: ['./conversation-order.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
@@ -1731,5 +1732,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
     return data.Id;
+  }
+
+  onChangeQuantity(event: any, item: any){
+    let index = this.quickOrderModel?.Details?.findIndex(x => x.ProductId == item.ProductId);
+
+    if(event) {
+      this.quickOrderModel.Details[index].Quantity = Number(event);
+    } else {
+      this.quickOrderModel.Details[index].Quantity = 1;
+      // TODO: cập nhật thay đổi giá trị của input
+      this.quickOrderModel.Details[index] = {...this.quickOrderModel.Details[index]};
+    }
+
+    this.calcTotal();
+    this.coDAmount();
   }
 }
