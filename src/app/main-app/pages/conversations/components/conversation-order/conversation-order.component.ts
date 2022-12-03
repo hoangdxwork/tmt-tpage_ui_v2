@@ -1380,8 +1380,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.visibleIndex = -1;
   }
 
-  onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
+  onRemoveProduct(item: Detail_QuickSaleOnlineOrder) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+
     if(exit) {
         this.quickOrderModel.Details.splice(index,1);
         this.calcTotal();
@@ -1462,7 +1464,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this._street = x._street;
   }
 
-  plus(item: Detail_QuickSaleOnlineOrder, index: number) {
+  plus(item: Detail_QuickSaleOnlineOrder) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
 
     if(exit) {
@@ -1472,7 +1475,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
   }
 
-  minus(item: Detail_QuickSaleOnlineOrder, index: number) {
+  minus(item: Detail_QuickSaleOnlineOrder) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
 
     if(exit) {
@@ -1735,7 +1739,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onChangeQuantity(event: any, item: any){
-    let index = this.quickOrderModel?.Details?.findIndex(x => x.ProductId == item.ProductId);
+    let index = this.quickOrderModel?.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
     if(event) {
       this.quickOrderModel.Details[index].Quantity = Number(event);
