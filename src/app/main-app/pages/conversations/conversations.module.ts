@@ -1,3 +1,4 @@
+import { PrepareUpdateTShopByLiveCampaign } from './../../handler-v2/conversation-post/prepare-tshop-post.handler';
 import { DrawerAddProductComponent } from './conversation-post/facebook-livecampaign-post/drawer-add-product.component';
 import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
 import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
@@ -203,6 +204,7 @@ const SERVICES = [
   ObjectFacebookPostEvent,
   FaceBookPostItemHandler,
   PrepareUpdateFacebookByLiveCampaign,
+  PrepareUpdateTShopByLiveCampaign,
   PrepareAddCampaignHandler,
   CsOrder_FromConversationHandler,
   ConversationPostEvent

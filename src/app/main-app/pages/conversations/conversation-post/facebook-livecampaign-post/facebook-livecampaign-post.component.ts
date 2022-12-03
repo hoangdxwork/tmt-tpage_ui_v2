@@ -1,3 +1,5 @@
+import { PrepareUpdateTShopByLiveCampaign } from './../../../../handler-v2/conversation-post/prepare-tshop-post.handler';
+import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { FaceBookPostItemHandler } from '../../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ChatomniObjectsItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { LiveCampaignModel } from '../../../../dto/live-campaign/odata-live-campaign-model.dto';
@@ -28,6 +30,7 @@ import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-pos
 export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
+  @Input() type!: string;
 
   lstOfData: Array<LiveCampaignModel> = [];
   currentLiveCampaign: any;
@@ -52,6 +55,7 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
     private viewContainerRef: ViewContainerRef,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private prepareUpdateFacebookByLiveCampaign: PrepareUpdateFacebookByLiveCampaign,
+    private prepareUpdateTShopByLiveCampaign: PrepareUpdateTShopByLiveCampaign,
     private modal: TDSModalService,
     private destroy$: TDSDestroyService) {
   }
@@ -209,10 +213,20 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
 
   onSave() {
     let id = this.currentLiveCampaign?.Id;
-    if(id && Guid.isGuid(id)) {
-      let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
-      this.isLoading = true;
 
+    if(id && Guid.isGuid(id)) {
+      let model = {} as any;
+
+      switch(this.type) {
+        case CRMTeamType._Facebook:
+          model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
+          break;
+        case CRMTeamType._TShop:
+          model = {...this.prepareUpdateTShopByLiveCampaign.prepareUpdateTShopLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
+          break;
+      }
+      
+      this.isLoading = true;
       this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
 

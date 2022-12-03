@@ -30,6 +30,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
   @Input() liveCampaignId!: string;
   @Input() data!: ChatomniObjectsItemDto;
   @Input() isNoPost!: boolean;
+  @Input() type!: string;
 
   isLoading: boolean = false;
   indClickStatus:string = '';
@@ -202,7 +203,8 @@ export class OverviewLiveCampaignComponent implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        data: this.data
+        data: this.data,
+        type: this.type
       }
     })
 
@@ -214,6 +216,8 @@ export class OverviewLiveCampaignComponent implements OnInit {
         }
       }
     })
+
+    this.cdr.markForCheck();
   }
 
   showModalLstPost () {

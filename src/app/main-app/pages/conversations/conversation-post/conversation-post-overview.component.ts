@@ -258,7 +258,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   }
 
-  showModalLiveCampaign(data: ChatomniObjectsItemDto, liveCampaignId?: string) {
+  showModalLiveCampaign(data: ChatomniObjectsItemDto, type: string, liveCampaignId?: string) {
     if(liveCampaignId) {
       const modal = this.modalService.create({
         title: 'Tổng quan chiến dịch live',
@@ -270,7 +270,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         viewContainerRef: this.viewContainerRef,
         componentParams: {
             liveCampaignId: liveCampaignId,
-            data: data
+            data: data,
+            type: type
         }
       });
     } else {
@@ -280,15 +281,16 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-            data: data
+            data: data,
+            type: type
         }
       })
     }
   }
 
-  openTag(item: ChatomniObjectsItemDto) {
+  openTag(item: ChatomniObjectsItemDto, type: string) {
     this.indClickTag = item.Id;
-    this.showModalLiveCampaign(item);
+    this.showModalLiveCampaign(item, type);
   }
 
   closeTag(): void {
