@@ -1,3 +1,4 @@
+import { InventoryChangeType } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -142,17 +143,23 @@ export class EditLiveCampaignPostComponent implements OnInit {
   eventEmitter() {
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
+        if(obs !== InventoryChangeType._editLiveCampaignPost) return;
+
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
           next: (inventories: any) => {
               this.inventories = {};
               this.inventories = inventories;
-
-              this.mappingProductToLive(this.response);
+              
+              if(this.response) {
+                this.mappingProductToLive(this.response);
+              }
           },
           error: (err: any) => {
               this.message.error(err?.error?.message);
-              this.mappingProductToLive(this.response);
+              if(this.response) {
+                this.mappingProductToLive(this.response);
+              }
           }
         });
       }
@@ -494,19 +501,18 @@ export class EditLiveCampaignPostComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: 'liveCampaign',
+          type: InventoryChangeType._editLiveCampaignPost,
           lstOrderTags: this.lstOrderTags
         }
     });
 
     modal.afterClose.subscribe((response: any) => {
       if(!response) return;
-      this.response = response;
+      this.response = {...response} as SyncCreateProductTemplateDto;
     })
   }
 
   mappingProductToLive(response: any) {
-    response = {...response} as SyncCreateProductTemplateDto;
     this.indexDbStorage = [...response.cacheDbStorage];
 
     if(response.type === 'select' && response.productTmpl) {

@@ -1,3 +1,4 @@
+import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
 import { ProductIndexDBService } from '../../../../services/product-indexdb.service';
@@ -269,7 +270,7 @@ export class DrawerAddProductComponent implements OnInit {
             // TODO: gọi cập nhật tồn kho
             let id = data.productTmpl.Id;
             let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
-            this.productTemplateFacade.stockChangeProductQty(id, mapping);
+            this.productTemplateFacade.stockChangeProductQty(id, mapping, InventoryChangeType._drawerAddProduct);
 
             this.modalRef.destroy(data.type ? data : null);
             this.isLoading = false;

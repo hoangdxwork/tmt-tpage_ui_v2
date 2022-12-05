@@ -184,7 +184,7 @@ export class ModalProductTemplateComponent implements OnInit {
     formControls["PurchasePrice"].setValue(data.PurchasePrice);
     formControls["DiscountPurchase"].setValue(data.DiscountPurchase);
     formControls["StandardPrice"].setValue(data.StandardPrice);
-    formControls['OrderTag'].setValue(data.OrderTag);
+    formControls["OrderTag"].setValue(data.OrderTag);
   }
 
   prepareModel() {
@@ -269,7 +269,7 @@ export class ModalProductTemplateComponent implements OnInit {
             // TODO: gọi cập nhật tồn kho
             let id = data.productTmpl.Id;
             let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
-            this.productTemplateFacade.stockChangeProductQty(id, mapping);
+            this.productTemplateFacade.stockChangeProductQty(id, mapping, this.type);
 
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
