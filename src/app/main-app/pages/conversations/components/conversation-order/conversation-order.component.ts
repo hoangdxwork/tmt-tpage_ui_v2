@@ -1,3 +1,4 @@
+import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { Facebook } from './../../../../../lib/dto/facebook.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
@@ -360,7 +361,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     //TODO: load tồn kho cho sản phẩm mới tạo
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
-        if(obs !== 'tabOrder') return;
+        if(obs !== InventoryChangeType._tabOrder) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -948,20 +949,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         size: "xl",
         viewContainerRef: this.viewContainerRef,
         componentParams:{
-          type: 'tabOrder'
+          type: InventoryChangeType._tabOrder
         }
     })
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(!res) return;
-          this.response = res;
+          this.response = {...res} as SyncCreateProductTemplateDto;
       }
     })
   }
 
   mappingProduct(response: any) {
-    response = {...response} as SyncCreateProductTemplateDto;
     this.indexDbStorage = [...response.cacheDbStorage];
 
     if(response.type === 'select' && response.productTmpl) {
@@ -985,6 +985,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
       this.calcTotal();
       this.coDAmount();
+      this.cdRef.detectChanges();
     }
   }
 

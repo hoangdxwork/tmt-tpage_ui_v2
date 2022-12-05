@@ -1,3 +1,4 @@
+import { InventoryChangeType } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -142,7 +143,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   eventEmitter() {
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
-        if(obs !== 'liveCampaign') return;
+        if(obs !== InventoryChangeType._editLiveCampaignPost) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -500,30 +501,23 @@ export class EditLiveCampaignPostComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: 'liveCampaign',
+          type: InventoryChangeType._editLiveCampaignPost,
           lstOrderTags: this.lstOrderTags
         }
     });
 
     modal.afterClose.subscribe((response: any) => {
       if(!response) return;
-      this.response = response;
+      this.response = {...response} as SyncCreateProductTemplateDto;
     })
   }
 
   mappingProductToLive(response: any) {
-    response = {...response} as SyncCreateProductTemplateDto;
     this.indexDbStorage = [...response.cacheDbStorage];
 
     if(response.type === 'select' && response.productTmpl) {
         const product = response.productTmpl as ProductTemplateV2DTO;
-        let items:DataPouchDBDTO[] = [];
-
-        if(product.VariantFirstId) {
-          items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.Id == product.VariantFirstId && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
-        } else {
-          items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
-        }
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
 
         if(items && items.length == 0) {
             this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');

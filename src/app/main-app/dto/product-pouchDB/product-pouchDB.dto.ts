@@ -54,6 +54,12 @@ export interface SyncCreateProductTemplateDto {
   productTmpl: ProductTemplateV2DTO;
 }
 
-
+export enum InventoryChangeType {
+  _editLiveCampaignPost = "_EDIT_LIVECAMPAIGN_POST",
+  _tabOrder = "_TAB_ORDER",
+  _defaultProduct = "_DEFAULT_PRODUCT",
+  _drawerAddProduct = "_DRAWER_ADD_PRODUCT",
+  _editOrder = "_EDIT_ORDER"
+}
 
 

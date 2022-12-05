@@ -1,3 +1,4 @@
+import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
@@ -74,7 +75,7 @@ export class ModalListProductComponent implements OnInit {
     //TODO: load tồn kho cho sản phẩm mới tạo
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
-        if(obs !== 'defaultProduct') return;
+        if(obs !== InventoryChangeType._defaultProduct) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -152,20 +153,19 @@ export class ModalListProductComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams:{
-          type: 'defaultProduct'
+          type: InventoryChangeType._defaultProduct
         }
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
         if(!res) return;
-        this.response = res;
+        this.response = {...res} as SyncCreateProductTemplateDto;
       }
     })
   }
 
   mappingProduct(response: any) {
-    response = {...response} as SyncCreateProductTemplateDto;
     this.indexDbStorage = [...response.cacheDbStorage];
 
     if(response.type === 'select' && response.productTmpl) {

@@ -1,6 +1,6 @@
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { FormGroup } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
@@ -202,7 +202,7 @@ export class EditOrderV2Component implements OnInit {
     //TODO: load tồn kho cho sản phẩm mới tạo
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
-        if(obs !== 'editOrder') return;
+        if(obs !== InventoryChangeType._editOrder) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -434,18 +434,17 @@ export class EditOrderV2Component implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: 'editOrder'
+          type: InventoryChangeType._editOrder
         }
     });
 
     modal.afterClose.subscribe(res => {
       if(!res) return;
-      this.response = res;
+      this.response = {...res} as SyncCreateProductTemplateDto;
     })
   }
 
   mappingProduct(response: any) {
-    response = {...response} as SyncCreateProductTemplateDto;
     this.indexDbStorage = [...response.cacheDbStorage];
 
     if(response.type === 'select' && response.productTmpl) {
