@@ -1,3 +1,4 @@
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { Facebook } from './../../../../../lib/dto/facebook.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
@@ -155,6 +156,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   so_FacebookComments!: SaleOnline_Facebook_CommentDto[];
   saleOnlineSettings!: SaleOnlineSettingDTO;
   insertFromPostModel!: InsertFromPostDto;
+  response: any;
+  inventories: any;
 
   disableSyncOrder: boolean = false; //dùng cho bài viết
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
@@ -192,6 +195,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     private destroy$: TDSDestroyService,
     private route: ActivatedRoute,
     private chatomniConversationFacade: ChatomniConversationFacade,
+    private productTemplateFacade: ProductTemplateFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private socketOnEventService: SocketOnEventService,
     private productIndexDBService: ProductIndexDBService) {
@@ -350,6 +354,30 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(info, this.team, this.type)};
           this.mappingAddress(this.quickOrderModel);
           this.cdRef.detectChanges();
+      }
+    })
+
+    //TODO: load tồn kho cho sản phẩm mới tạo
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        if(obs !== 'tabOrder') return;
+
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+              if(this.response) {
+                this.mappingProduct(this.response);
+              }
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              if(this.response) {
+                this.mappingProduct(this.response);
+              }
+          }
+        });
       }
     })
   }
@@ -918,35 +946,46 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef
+        viewContainerRef: this.viewContainerRef,
+        componentParams:{
+          type: 'tabOrder'
+        }
     })
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if(!res) return;
-          res = {...res} as SyncCreateProductTemplateDto;
-          this.indexDbStorage = [...res.cacheDbStorage];
-
-          if(res.type === 'select' && res.productTmpl) {
-              const product = res.productTmpl as ProductTemplateV2DTO;
-              let items = this.indexDbStorage.filter(y => y.Id == product.VariantFirstId && y.UOMId == product.UOMId && y.Active) as any[];
-
-              if(items && items.length == 0) {
-                this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-                return;
-              }
-
-              let x = items[0] as DataPouchDBDTO;
-
-              let data: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(x);
-              this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[data]];
-
-              this.calcTotal();
-              this.coDAmount();
-              this.cdRef.detectChanges();
-          }
+          this.response = res;
       }
     })
+  }
+
+  mappingProduct(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
+
+    if(response.type === 'select' && response.productTmpl) {
+      const product = response.productTmpl as ProductTemplateV2DTO;
+      let x!:DataPouchDBDTO;
+
+      if(product.VariantFirstId) {
+        x = this.indexDbStorage?.find((x: DataPouchDBDTO) => x.Id == product.VariantFirstId && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO;
+      } else {
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
+        x = items[0];
+      }
+
+      if(!x) {
+        this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+        return;
+      }
+
+      let data: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(x);
+      this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[data]];
+
+      this.calcTotal();
+      this.coDAmount();
+    }
   }
 
   mappingDetailQuickSaleOnlineOrder(data: any, type?: string){ //check lại dữ liệu

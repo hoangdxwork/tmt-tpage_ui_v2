@@ -1,3 +1,4 @@
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { ProductIndexDBService } from './../../../../services/product-indexdb.service';
 import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/modal-product-template.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -37,6 +38,7 @@ export class ModalListProductComponent implements OnInit {
   indexDbProductCount: number = -1;
   productTmplItems!: ProductTemplateV2DTO;
 
+  response: any;
   inventories!: TDSSafeAny;
   companyCurrents!: CompanyCurrentDTO;
   priceListItems: any;
@@ -54,6 +56,7 @@ export class ModalListProductComponent implements OnInit {
     private productService: ProductService,
     private conversationOrderFacade: ConversationOrderFacade,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
+    private productTemplateFacade: ProductTemplateFacade,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private productIndexDBService: ProductIndexDBService) {
@@ -64,6 +67,33 @@ export class ModalListProductComponent implements OnInit {
       this.loadCurrentCompany();
     }
     this.productIndexDB();
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    //TODO: load tồn kho cho sản phẩm mới tạo
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        if(obs !== 'defaultProduct') return;
+
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+              if(this.response) {
+                this.mappingProduct(this.response);
+              }
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              if(this.response) {
+                this.mappingProduct(this.response);
+              }
+          }
+        });
+      }
+    })
   }
 
   loadCurrentCompany() {
@@ -120,25 +150,38 @@ export class ModalListProductComponent implements OnInit {
         title: 'Thêm sản phẩm',
         content: ModalProductTemplateComponent,
         size: 'xl',
-        viewContainerRef: this.viewContainerRef
+        viewContainerRef: this.viewContainerRef,
+        componentParams:{
+          type: 'defaultProduct'
+        }
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
         if(!res) return;
-
-        res = {...res} as SyncCreateProductTemplateDto;
-        this.indexDbStorage = [...res.cacheDbStorage];
-
-        if(res.type === 'select' && res.productTmpl) {
-          let model = res.productTmpl;
-          let item = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active)[0] as DataPouchDBDTO;
-
-          if(!item) return;
-          this.addItem(item);
-        }
+        this.response = res;
       }
     })
+  }
+
+  mappingProduct(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
+
+    if(response.type === 'select' && response.productTmpl) {
+      let model = response.productTmpl;
+      let item!:DataPouchDBDTO;
+
+      if(model.VariantFirstId) {
+        item = this.indexDbStorage?.find((x: DataPouchDBDTO) => x.Id == model.VariantFirstId && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO;
+      } else {
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == model.Id && x.UOMId == model.UOMId && x.Active) as DataPouchDBDTO[];
+        item = items[0];
+      }
+
+      if(!item) return;
+      this.addItem(item);
+    }
   }
 
   onCancel(){

@@ -1,3 +1,4 @@
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { FormGroup } from '@angular/forms';
@@ -141,6 +142,9 @@ export class EditOrderV2Component implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
 
+  response: any;
+  inventories: any;
+
   isEqualAmountInsurance: boolean = false;
   delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
   isEnableCalcFee: boolean = false;
@@ -174,6 +178,7 @@ export class EditOrderV2Component implements OnInit {
     private sharedService: SharedService,
     private destroy$: TDSDestroyService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
+    private productTemplateFacade: ProductTemplateFacade,
     private router: Router,
     private productIndexDBService: ProductIndexDBService) {
   }
@@ -190,6 +195,33 @@ export class EditOrderV2Component implements OnInit {
 
     this.loadCarrier();
     this.loadCurrentCompany();
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    //TODO: load tồn kho cho sản phẩm mới tạo
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        if(obs !== 'editOrder') return;
+
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+              if(this.response) {
+                this.mappingProduct(this.response);
+              }
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+              if(this.response) {
+                this.mappingProduct(this.response);
+              }
+          }
+        });
+      }
+    })
   }
 
   loadData() {
@@ -401,48 +433,60 @@ export class EditOrderV2Component implements OnInit {
         content: ModalProductTemplateComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          type: 'editOrder'
+        }
     });
 
     modal.afterClose.subscribe(res => {
       if(!res) return;
-
-      res = {...res} as SyncCreateProductTemplateDto;
-      this.indexDbStorage = [...res.cacheDbStorage];
-
-      if(res.type === 'select' && res.productTmpl) {
-        const product = res.productTmpl as ProductTemplateV2DTO;
-        let items = this.indexDbStorage.filter(y => y.Id == product.VariantFirstId && y.UOMId == product.UOMId && y.Active) as any[];
-
-        if(items && items.length == 0) {
-          this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
-          return;
-        }
-
-        let data = items[0] as DataPouchDBDTO;
-        let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
-            ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
-
-        let item = {
-            Quantity: qty,
-            Price: data.Price,
-            ProductId: data.Id,
-            ProductName: data.Name,
-            ProductNameGet: data.NameGet,
-            ProductCode: data.DefaultCode,
-            UOMId: data.UOMId,
-            UOMName: data.UOMName,
-            Note: null,
-            Factor: 1,
-            OrderId: this.quickOrderModel.Id,
-            Priority: 0,
-            ImageUrl: data.ImageUrl,
-        } as Detail_QuickSaleOnlineOrder;
-
-        this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
-        this.calcTotal();
-        this.coDAmount();
-      }
+      this.response = res;
     })
+  }
+
+  mappingProduct(response: any) {
+    response = {...response} as SyncCreateProductTemplateDto;
+    this.indexDbStorage = [...response.cacheDbStorage];
+
+    if(response.type === 'select' && response.productTmpl) {
+      const product = response.productTmpl as ProductTemplateV2DTO;
+      let data!:DataPouchDBDTO;
+
+      if(product.VariantFirstId) {
+        data = this.indexDbStorage?.find((x: DataPouchDBDTO) => x.Id == product.VariantFirstId && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO;
+      } else {
+        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
+        data = items[0];
+      }
+
+      if(!data) {
+        this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+        return;
+      }
+
+      let qty = this.lstInventory && this.lstInventory[data.Id] && Number(this.lstInventory[data.Id]?.QtyAvailable) > 0
+          ? Number(this.lstInventory[data.Id]?.QtyAvailable) : 1;
+
+      let item = {
+          Quantity: qty,
+          Price: data.Price,
+          ProductId: data.Id,
+          ProductName: data.Name,
+          ProductNameGet: data.NameGet,
+          ProductCode: data.DefaultCode,
+          UOMId: data.UOMId,
+          UOMName: data.UOMName,
+          Note: null,
+          Factor: 1,
+          OrderId: this.quickOrderModel.Id,
+          Priority: 0,
+          ImageUrl: data.ImageUrl,
+      } as Detail_QuickSaleOnlineOrder;
+
+      this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[item]];
+      this.calcTotal();
+      this.coDAmount();
+    }
   }
 
   confirmShipService(carrier: TDSSafeAny) {

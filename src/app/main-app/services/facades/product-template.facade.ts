@@ -15,7 +15,7 @@ export class ProductTemplateFacade {
       private productTemplateService: ProductTemplateService) {
   }
 
-  stockChangeProductQty(id: any, mapping: any[]) {
+  stockChangeProductQty(id: any, mapping: any[], type: string) {
     this.productTemplateService.getProductTemplateByIdV2(id).subscribe({
        next: (res: any) => {
 
@@ -47,30 +47,30 @@ export class ProductTemplateFacade {
 
                       this.productTemplateService.changeProductQtyIds(model2).subscribe({
                           next: (res2: any) => {
-                              this.onStockChangeProductQty$.emit(true);
+                              this.onStockChangeProductQty$.emit(type);
                               this.message.info('Cập nhật tồn kho thành công');
                           },
                           error: (error: any) => {
                               this.message.error(error?.error?.message);
-                              this.onStockChangeProductQty$.emit(true);
+                              this.onStockChangeProductQty$.emit(type);
                           }
                       })
                   },
                   error: (error: any) => {
                       this.message.error(error?.error?.message);
-                      this.onStockChangeProductQty$.emit(true);
+                      this.onStockChangeProductQty$.emit(type);
                   }
                 })
             },
             error: (error: any) => {
                 this.message.error(error?.error?.message);
-                this.onStockChangeProductQty$.emit(true);
+                this.onStockChangeProductQty$.emit(type);
             }
           })
         },
         error: (error: any) => {
             this.message.error(error?.error?.message);
-            this.onStockChangeProductQty$.emit(true);
+            this.onStockChangeProductQty$.emit(type);
         }
       })
   }

@@ -269,7 +269,7 @@ export class DrawerAddProductComponent implements OnInit {
             // TODO: gọi cập nhật tồn kho
             let id = data.productTmpl.Id;
             let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
-            this.productTemplateFacade.stockChangeProductQty(id, mapping);
+            this.productTemplateFacade.stockChangeProductQty(id, mapping, 'drawerProduct');
 
             this.modalRef.destroy(data.type ? data : null);
             this.isLoading = false;

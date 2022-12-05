@@ -142,17 +142,23 @@ export class EditLiveCampaignPostComponent implements OnInit {
   eventEmitter() {
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
+        if(obs !== 'liveCampaign') return;
+
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
           next: (inventories: any) => {
               this.inventories = {};
               this.inventories = inventories;
-
-              this.mappingProductToLive(this.response);
+              
+              if(this.response) {
+                this.mappingProductToLive(this.response);
+              }
           },
           error: (err: any) => {
               this.message.error(err?.error?.message);
-              this.mappingProductToLive(this.response);
+              if(this.response) {
+                this.mappingProductToLive(this.response);
+              }
           }
         });
       }
@@ -511,7 +517,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
     if(response.type === 'select' && response.productTmpl) {
         const product = response.productTmpl as ProductTemplateV2DTO;
-        let items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
+        let items:DataPouchDBDTO[] = [];
+
+        if(product.VariantFirstId) {
+          items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.Id == product.VariantFirstId && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
+        } else {
+          items = this.indexDbStorage?.filter((x: DataPouchDBDTO) => x.ProductTmplId == product.Id && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO[];
+        }
 
         if(items && items.length == 0) {
             this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
