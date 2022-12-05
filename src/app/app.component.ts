@@ -9,6 +9,7 @@ import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,10 @@ export class AppComponent {
   teamId!: number;
   isShowModal: boolean = false;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
+  @ViewChild('templateFirebase') templateFirebase!: TemplateRef<{}>;
+
+  message: any;
+  token: any;
 
   constructor(public libCommon: TCommonService,
     public auth: TAuthService,
@@ -49,8 +54,8 @@ export class AppComponent {
     let that = this;
     that.init().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.loader.hidden();
-        that.isLoaded = true;
+          this.loader.hidden();
+          that.isLoaded = true;
       }
     });
 
@@ -83,15 +88,6 @@ export class AppComponent {
               if(createdNoti == true) break;
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
-
-          // // Thông báo cập nhật đơn hàng
-          // case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-          //     let paramsPost = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
-          //     let orderNoti = res && paramsPost;
-
-          //     if(orderNoti == true) break;
-          //     this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
-          // break;
 
           // Thông báo xóa đơn hàng
           case ChatmoniSocketEventName.onDeleteSaleOnline_Order:

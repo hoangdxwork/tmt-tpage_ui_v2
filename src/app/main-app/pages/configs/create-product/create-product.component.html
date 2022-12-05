@@ -167,7 +167,7 @@
               <tds-label>Đơn vị mặc định<span class="text-error-400">*</span> :</tds-label>
               <tds-form-field class="w-full col-span-2">
                 <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
-                  formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false" [required]="true"
+                  formControlName="UOM" [valuePrimitive]="false" [data]="UOMList" [allowClear]="false" [required]="true"
                   [optionOverflowSize]="5">
                 </tds-select>
                 <tds-error>
@@ -178,7 +178,7 @@
               <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
               <tds-form-field class="w-full col-span-2">
                 <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
-                  formControlName="UOM" [valuePrimitive]="false" [data]="UOMList" [allowClear]="false" [required]="true"
+                  formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false" [required]="true"
                   [optionOverflowSize]="5">
                 </tds-select>
                 <tds-error>

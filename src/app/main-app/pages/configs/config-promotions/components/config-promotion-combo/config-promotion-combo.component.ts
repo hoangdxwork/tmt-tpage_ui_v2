@@ -16,7 +16,8 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'app-config-promotion-combo',
-  templateUrl: './config-promotion-combo.component.html'
+  templateUrl: './config-promotion-combo.component.html',
+  providers: [TDSDestroyService]
 })
 export class ConfigPromotionComboComponent implements OnInit {
   @Input() form!: FormGroup;
@@ -58,8 +59,7 @@ export class ConfigPromotionComboComponent implements OnInit {
     private message: TDSMessageService,
     private readonly tdsConfigService: TDSConfigService,
     private productIndexDBService: ProductIndexDBService,
-    private cacheApi: THelperCacheService,
-  ) { }
+    private cacheApi: THelperCacheService) { }
 
   get detailsFormGroups() {
     return (this.form?.get("Details") as FormArray);

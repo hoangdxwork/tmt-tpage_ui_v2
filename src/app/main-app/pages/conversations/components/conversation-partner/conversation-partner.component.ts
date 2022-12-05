@@ -1,5 +1,4 @@
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
-import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
@@ -16,8 +15,6 @@ import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conve
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { TDSTagStatusType } from 'tds-ui/tag';
-import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
 import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -29,6 +26,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenueDto, Conversation_LastBillDto, GroupBy_ConversationBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
     selector: 'conversation-partner',
@@ -40,7 +38,6 @@ import { ConversationPostEvent } from '@app/handler-v2/conversation-post/convers
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
-  @Input() syncConversationInfo!: ChatomniConversationInfoDto;
   @Input() isLoading!: boolean;
 
   @Input() team!: CRMTeamDTO;
@@ -58,10 +55,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   lstPartnerStatus!: Array<PartnerStatusDTO>;
   innerNote!: string;
-  lastBill!: Conversation_LastBillDto;
-  lstBill: GroupBy_ConversationBillDto[] = [];
+  lastInvoice!: Conversation_LastBillDto;
+  stateInvoices: GroupBy_ConversationBillDto[] = [];
   totalBill: number = 0;
 
+  lstInvoice: Conversation_LastBillDto[] = [];
   tab_Bill?: any = null;
   isEditPartner: boolean = false;
   partner!: ConversationPartnerDto;
@@ -81,13 +79,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private cdRef: ChangeDetectorRef,
     private postEvent: ConversationPostEvent,
     private chatomniConversationFacade: ChatomniConversationFacade,
-    private conversationDataFacade: ConversationDataFacade,
     private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
     private csPartner_PrepareModelHandler: CsPartner_PrepareModelHandler,
     private conversationOrderFacade: ConversationOrderFacade,
     private destroy$: TDSDestroyService,
     private router: Router,
-    private omniEventEmiter: ChatomniEventEmiterService) {
+    private chatomniConversationService: ChatomniConversationService) {
   }
 
   ngOnInit(): void  {
@@ -96,28 +93,27 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
     }
 
-    // TODO: update partner từ conversation realtime signalR
-    this.loadUpdateInfoByConversation();
     this.loadPartnerStatus();
     this.eventEmitter();
   }
 
   eventEmitter(){
-    // TODO: Chọn làm địa chỉ, số điện thoại, ghi chú  selectOrder(type: string)
     this.onSelectOrderFromMessage();
-
-    // TODO: load thông tin partner từ comment bài post 'comment-filter-all'
     this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
-        if(TDSHelperObject.hasValue(res)) {
-          this.loadData(res);
-
-          // TODO: gán sự kiện loading cho tab conversation-post
-          this.postEvent.spinLoadingTab$.emit(false);
+        if(res) {
+            this.loadData(res);
+            this.loadNotes(this.team.ChannelId, res.Conversation.ConversationId);
+            this.postEvent.spinLoadingTab$.emit(false);
         }
       }
-    })
+    });
 
+    this.chatomniConversationFacade.onSyncConversationPartner$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (info: ChatomniConversationInfoDto) => {
+          this.loadData(info);
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -126,24 +122,17 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         this.loadData(x);
         this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
     }
-
-    if(changes['syncConversationInfo'] && !changes['syncConversationInfo'].firstChange) {
-        let data = {...changes['syncConversationInfo'].currentValue} as ChatomniConversationInfoDto;
-        this.onSyncConversationInfo(data);
-        this.cdRef.detectChanges();
-    }
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
     this.validateData();
     this.conversationInfo = {...conversationInfo};
 
-    this.onSyncConversationInfo(this.conversationInfo);
+    this.prepareModelPartner(this.conversationInfo);
     this.cdRef.detectChanges();
   }
 
-  onSyncConversationInfo(conversationInfo: ChatomniConversationInfoDto) {
-    // TODO: gán thông tin khách hàng
+  prepareModelPartner(conversationInfo: ChatomniConversationInfoDto) {
     if(this.team && conversationInfo) {
         this.partner = {...this.csPartner_PrepareModelHandler.getPartnerFromConversation(conversationInfo, this.team)};
         this.mappingAddress(this.partner);
@@ -154,15 +143,32 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     if(conversationInfo.Bill && conversationInfo.Bill.LastBill) {
-        this.lastBill = {...conversationInfo.Bill.LastBill}
+        this.lastInvoice = {...conversationInfo.Bill.LastBill}
     }
 
     if(conversationInfo.Bill && conversationInfo.Bill.Data) {
         this.totalBill = 0;
-        this.lstBill = [...conversationInfo.Bill.Data];
-        this.lstBill.map(x => {
-          this.totalBill = this.totalBill + x.Total;
+
+        this.stateInvoices = [...conversationInfo.Bill.Data];
+        this.stateInvoices.map(x => this.totalBill = this.totalBill + x.Total);
+
+        this.stateInvoices.map(x => {
+          switch(x.Type) {
+              case 'open':
+                x.Name = 'Đã xác nhận';
+                break;
+              case 'paid':
+                x.Name = 'Đã thanh toán';
+                break;
+              case 'cancel':
+                x.Name = 'Hủy bỏ';
+                break;
+              case 'draft':
+                x.Name = 'Nháp';
+                break;
+          }
         })
+        this.stateInvoices = [...this.stateInvoices];
     }
 
     if(conversationInfo.Revenue) {
@@ -170,59 +176,49 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
   }
 
-  loadUpdateInfoByConversation() {
-    this.conversationDataFacade.onUpdateInfoByConversation$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      if(res) {
-        if(TDSHelperString.hasValueString(res.phone) && this.partner){
-            this.partner.Phone = res.phone;
-        }
-        if(TDSHelperString.hasValueString(res.address) && this.partner){
-            this.partner.Street = res.address;
-        }
-      }
-      this.cdRef.detectChanges();
-    })
-  }
-
   onSelectOrderFromMessage() {
     this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (obs: any) => {
-        switch (obs.type) {
-          case 'phone':
-            this.partner.Phone = obs.value;
-          break;
-          case 'address':
-            if(obs.value && TDSHelperObject.hasValue(obs.value)) {
-              let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(obs.value, this.partner);
-              this.partner = partner;
-              this.mappingAddress(this.partner);
-              this.cdRef.detectChanges();
-            }
-          break;
-          case 'note':
-            let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + obs.value : obs.value);
-            this.partner.Comment = text;
-          break;
-        }
+        next: (obs: any) => {
+          switch (obs.type) {
+              case 'phone':
+                this.partner.Phone = obs.value;
+              break;
+              case 'address':
+                if(obs.value && TDSHelperObject.hasValue(obs.value)) {
+                  let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(obs.value, this.partner);
+                  this.partner = partner;
+                  this.mappingAddress(this.partner);
+                  this.cdRef.detectChanges();
+                }
+              break;
+              case 'note':
+                let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + obs.value : obs.value);
+                this.partner.Comment = text;
+              break;
+          }
 
-        this.updatePartner(obs.type);
-      }
+          this.updatePartner(obs.type);
+        }
     })
   }
 
   updatePartner(type: string) {
-
     if(this.conversationInfo && this.team) {
       this.isLoading = true;
       let model = {...this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.conversationItem)};
 
       this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: this.team.Id }).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-            this.isLoading = false;
             this.notiOrderFromMessage(type);
+
             if(this.isEditPartner) {
               this.tempPartner = {...this.partner}
             }
+
+            let csid = res.FacebookPSId || res.FacebookASIds;
+            this.onSyncConversationOrder(csid);
+
+            this.isLoading = false;
             this.cdRef.detectChanges();
         },
         error: (error: any) => {
@@ -315,12 +311,28 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     })
   }
 
-  onChangeTabBill(event: any) {
-    if(this.tab_Bill == event) {
-      this.tab_Bill = null;
-    } else {
+  onChangeTabBill(event: any, item: GroupBy_ConversationBillDto) {
       this.tab_Bill = event;
-    }
+      this.lstInvoice = [];
+
+      let partnerId = this.partner.Id;
+      let state = item.Type;
+
+      if(partnerId && state) {
+        this.isLoading = true;
+        this.partnerService.getInvoice(partnerId, state).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.lstInvoice =  [...res];
+                this.isLoading = false;
+                this.cdRef.detectChanges();
+            },
+            error: (error: any) => {
+                this.isLoading = false;
+                this.message.error(`${error?.error?.message}`);
+                this.cdRef.detectChanges();
+            }
+        })
+      }
   }
 
   selectStatus(event: PartnerStatusDTO) {
@@ -419,22 +431,20 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     let teamId = this.team.Id;
     if(!model.Name) {
       this.message.error('Vui lòng nhập tên khách hàng');
-      return
+      return;
     }
 
     this.isLoading = true;
     this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: teamId }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-
           delete res['@odata.context'];
           this.message.success('Cập nhật khách hàng thành công');
 
-          // TODO: gọi sự kiện đồng bộ dữ liệu qua conversation-all, conversation-post, đẩy xuống ngOnChanges
-          let csid = res.FacebookPSId;
-          this.chatomniConversationFacade.onSyncConversationInfo$.emit(csid);
+          let csid = res.FacebookPSId || res.FacebookASIds;
+          this.onSyncConversationOrder(csid);
 
           this.isEditPartner = false;
-          this.isLoading = false
+          this.isLoading = false;
           delete this.tempPartner;
           this.cdRef.detectChanges();
       },
@@ -445,6 +455,21 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           this.cdRef.detectChanges();
       }
     });
+  }
+
+  onSyncConversationOrder(csid: any) {
+    setTimeout(() => {
+      this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (info: ChatomniConversationInfoDto) => {
+              this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
+              this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message);
+          }
+      })
+    }, 350);
   }
 
   prepareModel() {
@@ -518,8 +543,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
       this.cdRef.detectChanges();
     }
-  })
-  }
+  })}
 
   checkAddressByPhone() {
     let phone = this.partner.Phone;
@@ -562,8 +586,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.conversationInfo = null;
     (this.partner as any) = null;
     (this.revenue as any) = null;
-    (this.lastBill as any) = null;
-    (this.lstBill as any) = null;
+    (this.lastInvoice as any) = null;
+    (this.stateInvoices as any) = null;
+    this.lstInvoice = [];
     this.totalBill = 0;
     (this._cities as any) = null;
     (this._districts as any) = null;

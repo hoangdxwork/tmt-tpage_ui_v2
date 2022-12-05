@@ -581,8 +581,9 @@ export interface Conversation_LastBillDto {
 
 export interface GroupBy_ConversationBillDto {
   Type: string;
-  Value: Conversation_LastBillDto[];
+  // Value: Conversation_LastBillDto[];
   Total: number;
+  Name: string;
 }
 
 export interface Conversation_FastSaleOrderDto {

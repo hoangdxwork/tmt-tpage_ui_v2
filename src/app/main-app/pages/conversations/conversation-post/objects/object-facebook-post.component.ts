@@ -1,3 +1,4 @@
+import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { OverviewLiveCampaignComponent } from './../../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { PrepareUpdateFacebookByLiveCampaign } from './../../../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-post/object-facebook-post.event';
@@ -109,7 +110,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-            data: data
+            data: data,
+            type: CRMTeamType._Facebook
         }
       })
     }

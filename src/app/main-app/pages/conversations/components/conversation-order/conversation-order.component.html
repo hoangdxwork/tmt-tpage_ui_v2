@@ -10,14 +10,28 @@
                             <div class="tdsi-user-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
 
                             <div class="flex flex-auto items-center justify-between">
-                                <div class="flex gap-4 items-center">
-                                    <span *ngIf="!isEditPartner">{{ quickOrderModel.PartnerName }}</span>
+                                <div class="flex gap-4 items-center w-[60%] justify-between">
+                                    <span *ngIf="!isEditPartner" class="max-w-[50%] truncate"
+                                        tds-tooltip="{{quickOrderModel.PartnerName}}">{{ quickOrderModel.PartnerName }}</span>
                                     <tds-form-field *ngIf="isEditPartner">
                                         <input tdsInput autocomplete="off" placeholder="Tên khách hàng" [required]='true'
                                             [(ngModel)]="quickOrderModel.PartnerName" [ngModelOptions]="{ standalone: true }"/>
                                     </tds-form-field>
 
-                                    <span class="text-primary-1 font-semibold xl:truncate">FB: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    <div *ngIf="team?.Type === 'Facebook'" class="max-w-[50%] truncate">
+                                        <span class="text-primary-1 font-semibold"
+                                            tds-tooltip="{{quickOrderModel.Facebook_UserName}}">FB: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    </div>
+
+                                    <div *ngIf="team?.Type === 'TShop'" class="max-w-[50%] truncate">
+                                        <span class="text-primary-1 font-semibold"
+                                            tds-tooltip="{{quickOrderModel.Facebook_UserName}}">TShop: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    </div>
+
+                                    <div *ngIf="team?.Type === 'UnofficialTikTok'" class="max-w-[50%] truncate">
+                                        <span class="text-primary-1 font-semibold"
+                                            tds-tooltip="{{quickOrderModel.Facebook_UserName}}">TikTok: {{ quickOrderModel.Facebook_UserName }}</span>
+                                    </div>
                                 </div>
 
                                 <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()" tds-tooltip [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'">
@@ -138,7 +152,7 @@
                                 <div *ngIf="textSearchProduct && indexDbStorage && indexDbStorage.length > 0; else noDataProduct"
                                     class="absolute left-0 right-0 -bottom-2 top-full h-[300px] z-10 bg-white shadow-md">
                                     <tds-table #basicTable [listData]="indexDbStorage | filterindexdblive: innerTextDebounce"
-                                        [scroll]="{y:'100%',x:'hidden'}" [showPagination]="false"
+                                        [scroll]="{ y:'100%', x:'hidden' }" [showPagination]="false"
                                         [frontPagination]="false" [virtualItemSize]="20"
                                         [loading]="isLoadingProduct" [virtualForTrackBy]="trackByIndex">
                                         <tbody>
@@ -160,7 +174,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-        
+
                                             </ng-template>
                                         </tbody>
                                     </tds-table>
@@ -272,14 +286,14 @@
                                     <!-- Số lượng -->
                                     <td width="30%">
                                         <div class="flex gap-x-2 items-center">
-                                            <button type="button" class="tdsi-minus-fill text-white p-0.5 bg-neutral-1-200 rounded-full cursor-pointer hover:bg-primary-1" 
+                                            <button type="button" class="tdsi-minus-fill text-white p-0.5 bg-neutral-1-200 rounded-full cursor-pointer hover:bg-primary-1"
                                                 [disabled]="item.Quantity == 1" (click)="minus(item)"></button>
                                             <tds-form-field class="w-[50px] hover:bg-primary-1 bg-opacity-10 rounded">
                                                 <input tdsInput type="number" [min]="1" [step]="1" autocomplete="off" size="sm" class="cart-checkout text-center font-semibold text-neutral-1-900"
-                                                    placeholder="1" [ngModel]="item.Quantity" [ngModelOptions]="{standalone: true}" 
+                                                    placeholder="1" [ngModel]="item.Quantity" [ngModelOptions]="{standalone: true}"
                                                     (ngModelChange)="onChangeQuantity($event, item)"/>
                                             </tds-form-field>
-                                            <button type="button" class="tdsi-plus-fill text-white p-0.5 bg-neutral-1-200 rounded-full hover:bg-primary-1" 
+                                            <button type="button" class="tdsi-plus-fill text-white p-0.5 bg-neutral-1-200 rounded-full hover:bg-primary-1"
                                                 (click)="plus(item)"></button>
                                         </div>
                                     </td>
@@ -604,7 +618,7 @@
               <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSave()">Lưu nháp</button>
               <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen')">Xác nhận</button>
 
-              <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print')">Lưu và in</button>
+              <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print', '_click_print')">Lưu và in</button>
 
               <div class="gap-x-2 xl:flex 2xl:hidden">
                 <button *ngIf="isEnableCreateOrder" tds-button-icon color="primary" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')" tds-tooltip="In hóa đơn">
@@ -632,14 +646,14 @@
           </div>
 
           <!-- Button Footer conversation post-->
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post'">
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost()">Lưu</button>
+          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' ">
+            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost()">Lưu</button>
 
-            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onInsertFromPost('SaveAndPrint', 'print')">
+            <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost('SaveAndPrint', 'print', '_click_print')">
                Lưu và in
             </button>
 
-            <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onInsertFromPost('SaveAndPrint','printShip')">
+            <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onSavePost('SaveAndPrint','printShip')">
                 <span class="flex items-center">
                     <i class="tdsi-truck-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In phiếu ship
                 </span>

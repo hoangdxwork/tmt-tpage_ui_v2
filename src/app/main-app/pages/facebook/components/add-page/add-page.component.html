@@ -1,24 +1,20 @@
-<tds-spin tip="Loading..." [spinning]="isLoading">
-  <form [formGroup]="addPageForm" autocomplete="off" (ngSubmit)="onSubmit()" *ngIf="data">
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="_form" autocomplete="off" *ngIf="data">
     <div class="w-full flex flex-col gap-8">
-        <tds-form-field >
+        <tds-form-field>
             <tds-label>Facebook</tds-label>
-            <input tdsInput class="bg-neutral-3-50"
-            [required]='true' formControlName="userName"
-            />
+            <input tdsInput class="bg-neutral-3-50" [required]='true' formControlName="UserName"/>
         </tds-form-field>
 
-        <tds-form-field >
+        <tds-form-field>
             <tds-label>Page</tds-label>
-            <input tdsInput class="bg-neutral-3-50"
-            [required]='true' formControlName="pageName"/>
+            <input tdsInput class="bg-neutral-3-50" [required]='true' formControlName="PageName"/>
         </tds-form-field>
 
-        <tds-form-field >
+        <tds-form-field [color]="_form.controls['Name'].valid ? 'default' : 'error'">
             <tds-label>Tên</tds-label>
-            <input tdsInput placeholder="Mèo nhạt nhẽo"
-            [required]='true' formControlName="name"/>
-            <tds-error>Bạn phải nhập tên</tds-error>
+            <input tdsInput placeholder="Nhập tên page" [required]='true' formControlName="Name"/>
+            <tds-error>Vui lòng nhập tên page</tds-error>
         </tds-form-field>
     </div>
   </form>
@@ -26,7 +22,7 @@
       <button tds-button color="secondary" (click)="onCancel(null)" class="mr-4">
           Hủy bỏ
       </button>
-      <button tds-button color="primary" (click)="onSubmit()" >
+      <button tds-button color="primary" (click)="onSave()" >
           Hoàn tất
       </button>
   </div>

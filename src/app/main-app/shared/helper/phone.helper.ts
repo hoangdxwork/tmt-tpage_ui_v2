@@ -19,12 +19,12 @@ export class PhoneHelper {
       }
 
       if(companyCurrents && companyCurrents.Configs) {
-        let config = JSON.parse(companyCurrents.Configs);
-
-        let phoneRegex = config.PhoneRegex || null;
-        phoneRegex = new RegExp(`${phoneRegex}`, 'g');
+        let config = companyCurrents?.Configs ? JSON.parse(companyCurrents.Configs) : null;
+        let phoneRegex = config?.PhoneRegex || null;
 
         if(phoneRegex) {
+            phoneRegex = new RegExp(`${phoneRegex}`, 'g');
+
             let exec = phoneRegex.exec(text);
             if(exec && exec[1]) {
                 phone = exec[1].trim();

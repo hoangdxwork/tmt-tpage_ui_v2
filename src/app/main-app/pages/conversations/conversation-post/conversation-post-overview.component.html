@@ -35,26 +35,37 @@
                 </div>
 
                 <!-- tshop -->
-                <div class="flex items-center" *ngIf="team!.Type == 'TShop'">
-                    <tds-avatar [icon]="(data.Data | tshopType)?.KindValue == 1 ? 'tdsi-video-camera-fill': 'tdsi-facebook-f-fill'"
-                        [ngClass]="(data.Data | tshopType)?.KindValue == 1 ? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white mr-1"
+                <div class="flex items-center gap-x-3" *ngIf="team!.Type == 'TShop'">
+                    <tds-avatar [tdsSrc]="'../../../assets/imagesv2/tshop/_liveapp.svg'"
                         [size]="36" [shape]="'circle'" [isAvatar]="false">
                     </tds-avatar>
 
-                    <tds-tag rounded="rounded-full" [status]="(data.Data | tshopType)?.KindValue == 1 ? 'bg-base-red-50 text-base-red-600' : 'bg-base-blue-50 text-base-blue-600'">
+                    <tds-tag rounded="rounded-full" [status]="'bg-base-orange-50 text-base-orange-500'">
                         <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
                             <div class="font-semibold flex flex-col items-center 2xl:block">
                                 <!-- <span>{{translateType((data.Data | facebookType).type, (data.Data | facebookType).status_type)}}</span> -->
-                                <span class="whitespace-nowrap">{{(data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm"}}</span>
+                                <span class="whitespace-nowrap">{{ (data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm" }}</span>
                             </div>
-                            <!-- truy cập bài viết -->
-                            <a [href]="(data.Data | tshopType)?.MediaLive?.RecordUrl" target="_blank" class="text-neutral-1-400">
-                                <i class="tdsi-expand-2-line leading-none text-xl"></i>
-                            </a>
                         </span>
                     </tds-tag>
                 </div>
 
+                <!-- tiktok -->
+                <div class="flex items-center gap-x-3" *ngIf="team!.Type == 'UnofficialTikTok'">
+                    <tds-avatar 
+                        [tdsSrc]="data.StatusLive ? '../../../assets/imagesv2/tiktok/tiktok-live.svg' : '../../../assets/imagesv2/tiktok/tiktok.svg'"
+                        [size]="36" [shape]="'circle'" [isAvatar]="false">
+                    </tds-avatar>
+
+                    <tds-tag rounded="rounded-full" [status]="'bg-neutral-2-100 text-neutral-1-900'">
+                        <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
+                            <div class="font-semibold flex flex-col items-center 2xl:block">
+                                <!-- <span>{{translateType((data.Data | facebookType).type, (data.Data | facebookType).status_type)}}</span> -->
+                                <span class="whitespace-nowrap">{{ data.CreatedTime | date: "dd-MM-yyyy HH:mm" }}</span>
+                            </div>
+                        </span>
+                    </tds-tag>
+                </div>
 
                 <div class="post-option flex flex-row items-center gap-2 2xl:gap-3">
                     <button tds-button-outline [color]="defaultProductPost? 'primary': 'secondary'" tds-tooltip tooltipTitle="Sản phẩm mặc định" tooltipPlacement="bottom"
@@ -62,7 +73,7 @@
                         <span class="flex items-center overflow-hidden">
                             <i class="tdsi-product-fill text-lg leading-none mr-2"></i>
                             <span *ngIf="defaultProductPost; else noDataProduct" class="truncate">
-                                {{defaultProductPost.ProductNameGet}}
+                                {{ defaultProductPost.ProductNameGet }}
                             </span>
                             <ng-template #noDataProduct>
                                 <span>Chọn sản phẩm</span>
@@ -80,19 +91,19 @@
                     <tds-dropdown-menu #menu="tdsDropdownMenu">
                         <div class="w-[210px] flex flex-col gap-y-1">
                             <span tds-dropdown-item *ngFor="let item of filterExcel" (click)="onChangeExcel(item)">
-                                <a>{{item.text}}</a>
+                                <a>{{ item.text }}</a>
                             </span>
                         </div>
                     </tds-dropdown-menu>
 
-                    <!-- cài đặt-->
+                    <!-- Cấu hình bài viết -->
                     <button (click)="openConfigPost()" tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình bài viết" tooltipPlacement="bottom" tds-tooltip>
                         <span class="flex items-center justify-center">
                             <i class="tdsi-gear-2-fill text-neutral-1-500"></i>
                         </span>
                     </button>
 
-                    <!-- cấu hình bài viết -->
+                    <!-- cấu hình in -->
                     <!-- <button tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình in" tooltipPlacement="bottom" tds-tooltip>
                         <span class="flex items-center justify-center">
                             <i class="tdsi-setting-print-fill text-neutral-1-500"></i>
@@ -131,7 +142,7 @@
                         </div>
 
                         <div *ngIf="data.LiveCampaign">
-                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data, data.LiveCampaign.Id)">
+                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
                                     <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
@@ -141,7 +152,7 @@
 
                         <div *ngIf="!data.LiveCampaign">
                             <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
-                                (click)="openTag(data)"
+                                (click)="openTag(data, team.Type)"
                                 [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
                                 [popoverAutoClose]="false" [popoverBackdrop]="true"
                                 popoverPlacement="right"
@@ -159,19 +170,56 @@
                 </div>
 
                 <!-- TShop -->
-                <div class="post-body flex flex-row justify-between p-4" *ngIf="team.Type == 'TShop'">
-                    <div class="flex flex-col justify-between gap-y-3">
+                <div class="post-body flex flex-row justify-between flex-auto p-4" *ngIf="team.Type == 'TShop'">
+                    <div class="flex flex-col justify-between gap-y-3 w-3/4">
                         <div class="w-full flex flex-col gap-y-3">
                             <p class="italic text-neutral-1-900 text-caption-1">
                                 {{ (data.Data | tshopType).Content?.Text || '(Chưa có nội dung tiêu đề)' }}
                             </p>
                         </div>
+
+                        <div *ngIf="data.LiveCampaign">
+                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
+                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
+                                    <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
+                                    <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                </span>
+                            </tds-tag>
+                        </div>
+        
+                        <div *ngIf="!data.LiveCampaign">
+                            <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
+                                (click)="openTag(data, team.Type)"
+                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
+                                [popoverAutoClose]="false" [popoverBackdrop]="true"
+                                popoverPlacement="right"
+                                status="bg-neutral-3-100 text-neutral-1-600">
+                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                                    <span class="flex-auto truncate">Chọn chiến dịch</span>
+                                    <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                </span>
+                            </tds-tag>
+                        </div>
                     </div>
 
                     <div class="post-picture" *ngIf="(data.Data | tshopType).MediaLive?.ThumbnailUrl">
-                        <img [src]="(data.Data | tshopType).MediaLive?.ThumbnailUrl" class="rounded-xl h-[122px] object-cover" />
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="(data.Data | tshopType).MediaLive?.ThumbnailUrl || ''" class="rounded-xl h-[122px] object-cover" />
                     </div>
-              </div>
+                </div>
+                <!-- tiktok -->
+                <div class="post-body flex flex-row justify-between p-4" *ngIf="team.Type == 'UnofficialTikTok'">
+                    <div class="flex flex-col justify-between gap-y-3">
+                        <div class="w-full flex flex-col gap-y-3">
+                            <p class="italic text-neutral-1-900 text-caption-1">
+                                {{ data.Description || '(Chưa có nội dung tiêu đề)' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="post-picture" class="h-[122px]">
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="data.Thumbnail?.Url || '' " class="rounded-xl h-[122px] object-cover" />
+                    </div>
+                </div>
 
                 <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4 gap-x-2">
                     <container-element [ngSwitch]="indClickFilter" class="w-full">
@@ -224,6 +272,10 @@
                         </div>
                         <div *ngIf="team && team.Type == 'TShop'" class="h-full w-full">
                             <tshop-comment [data]="data" [team]="team" [innerText]="keyWords"></tshop-comment>
+                        </div>
+
+                        <div *ngIf="team && team.Type == 'UnofficialTikTok'" class="h-full w-full">
+                            <tiktok-comment [data]="data" [team]="team" [innerText]="keyWords"></tiktok-comment>
                         </div>
                     </div>
                 </div>

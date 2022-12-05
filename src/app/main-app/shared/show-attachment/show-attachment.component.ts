@@ -23,7 +23,7 @@ export class ShowAttachmentComponent implements OnInit, OnChanges {
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.currentType = this.getAttachmentType(changes.type.currentValue);
+    this.currentType = this.getAttachmentType(changes.type?.currentValue);
   }
 
   ngOnInit(): void {

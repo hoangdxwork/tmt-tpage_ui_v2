@@ -1,48 +1,51 @@
 <div *ngIf="item" (click)="selectPost(item)"  class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
     {{ currentPost?.ObjectId == item.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
 
-    <div class="flex flex-col gap-y-3" *ngIf="mdbTshopPost">
+    <div class="flex flex-col gap-y-3" *ngIf="(item.Data | tshopType)">
         <div class="relative w-[120px] h-[88px]">
-            <div *ngIf="item.Thumbnail; else mediaPicture" class="relative">
-                <img [src]="item.Thumbnail.Url"
-                    [width]="item.Thumbnail.Width || 120"
-                    [height]="item.Thumbnail.Height || 88"
-                    class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md object-cover">
+            <!-- Hình ảnh -->
+            <div class="post-picture" *ngIf="item?.Thumbnail && !checkPostPictureError(item); else noPicture">
+                <div *ngIf="item.Thumbnail; else noPicture" class="rounded-lg">
+                    <img  [src]="item.Thumbnail?.Url"
+                        [width]="120" [height]="88" (error)="errorPostPicture(item)"
+                        class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  object-cover">
+                </div>
             </div>
-            <ng-template #mediaPicture>
-                <!-- trường hợp đang livestream -->
-                <div *ngIf="mdbTshopPost.MediaLive" class="relative">
-                    <img [src]="mdbTshopPost.MediaLive?.ThumbnailUrl" alt="" class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
+            
+            <ng-template #noPicture>
+                <div *ngIf="!item.Thumbnail && item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1; else noPictureLive">
+                    <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
+                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>
-                <!-- trường hợp offstream -->
-                <div *ngIf="mdbTshopPost.Medias && !mdbTshopPost.MediaLive" class="relative">
-                    <img [src]="mdbTshopPost.Medias?.[0]?.Url" alt="" class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
-                </div>
+                <ng-template #noPictureLive>
+                    <div  *ngIf="checkPostPictureError(item)"> 
+                        <img src="../../../assets/imagesv2/errorPic.svg" alt=""
+                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                    </div>
+                </ng-template>
             </ng-template>
 
-            <div *ngIf="mdbTshopPost.MediaLive?.IsBroadcasting">
-                <div *ngIf="mdbTshopPost.Kind" class="h-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
-                    <div class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">{{mdbTshopPost.Kind}}</div>
-                </div>
+            <!-- Đang live -->
+            <div *ngIf="(item.Data | tshopType).Kind && (item.Data | tshopType).KindValue == 1 && item.StatusLive == 1" class="h-[22px] px-2 flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                <div class="tdsi-live-broadcast-fill text-white leading-2 mr-2 text-caption-2 font-[Lato]"></div>
+                <span class="text-white leading-2 text-caption-2 font-[Lato]">{{(item.Data | tshopType).Kind}}</span>
+            </div>
 
-                <!-- <div *ngIf="mdbTshopPost.HiddenKind" class="h-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
-                    <div class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">{{mdbTshopPost.HiddenKind}}</div>
-                </div> -->
+            <!-- Tắt live -->
+            <div *ngIf="(item.Data | tshopType).Kind && (item.Data | tshopType).KindValue == 1 && item.StatusLive != 1" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                    <div class="tdsi-video-camera-fill text-white leading-none"></div>
+            </div>
+
+            <!-- Bài viết -->
+            <div *ngIf="(item.Data | tshopType).Kind && (item.Data | tshopType).KindValue == 0" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
+                <div class="tdsi-template-web-fill text-white leading-none"></div>
             </div>
         </div>
-        <!-- <div class="flex items-center w-full">
-            <div class="flex items-center gap-x-2 text-neutral-1-400">
-                <i class="tdsi-like-line"></i>
-                <div>{{mdbTshopPost.count_reactions || 0}}</div>
-            </div>
-            <div class="ml-4 flex items-center gap-x-2 text-neutral-1-400">
-                <i class="tdsi-message-line"></i>
-                <div>{{mdbTshopPost.count_comments || 0}}</div>
-            </div>
-        </div> -->
     </div>
     <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
-        <span class="w-full font-semibold truncate">{{ item.Title || '(Không có tiêu đề)' }}</span>
+        <span *ngIf="item.StatusLive == 1" class="w-full font-semibold truncate text-base-red-600">Đang phát trực tiếp</span>
+        <span *ngIf="item.StatusLive != 1 && (item.Data | tshopType).KindValue == 1" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
+        <span *ngIf="item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1" class="w-full font-semibold truncate text-base-blue-600">Đã đăng một bài viết</span>
 
         <span *ngIf="item.Description" class=" text-neutral-1-400 line-clamp">
             <span>{{item.Description}}</span>
@@ -57,100 +60,74 @@
             </span>
         </div>
 
-        <!-- <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
-            <div *ngIf="mdbTshopPost.Content.Tags">
-                <tds-tag *ngFor="let tag of mdbTshopPost.Content.Tags"
-                    status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}" size="sm">
-                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
-                        <span class="flex-auto truncate">{{tag.ObjectKind}}</span>
+        <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
+            <div *ngIf="item.LiveCampaign" class="item-object-live">
+                <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500"
+                    (click)="showModalLiveCampaign(item)">
+                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
+                        [tooltipTitle]="item.LiveCampaign.Name">
+                        <span class="flex-auto truncate">{{item.LiveCampaign.Name}}</span>
+                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                     </span>
                 </tds-tag>
             </div>
-        </div> -->
+
+            <div *ngIf="!item.LiveCampaign" class="item-object-live">
+                <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
+                    (click)="openTag(item)"
+                    [popoverVisible]="indClickTag == item.Id" popoverTrigger="click"
+                    [popoverAutoClose]="false" [popoverBackdrop]="true"
+                    popoverPlacement="left" [popoverAutoClose]="false"
+                    status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
+                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                        <span class="flex-auto truncate">Chọn chiến dịch</span>
+                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                    </span>
+                </tds-tag>
+
+                <!-- <ng-template #contentAddtag>
+                    <div class="w-[304px]">
+                        <tds-form-field>
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
+                                [ngModel]="currentLiveCampaign" [data]="lstOfLiveCampaign" disabledField="isActive"
+                                [allowClear]="true" [valuePrimitive]="false" [autoClose]="false">
+
+                                <ng-template tds-option-tmp let-label='label' let-item="item"
+                                    let-value='value' let-selected="selected">
+                                    <span class="flex flex-col gap-y-2 bg-neutral-3-50 w-full p-2 rounded" [ngClass]="{'text-primary-1':selected}">
+                                        <span>Tên: <span class="font-semibold">{{item.Name}}</span></span>
+                                        <span>Page: {{item.Facebook_UserName || '...'}}</span>
+                                    </span>
+                                </ng-template>
+                            </tds-select>
+                        </tds-form-field>
+                    </div>
+                  </ng-template> -->
+
+                  <!-- <ng-template #footerAddTag>
+                    <div class="flex justify-end pt-2">
+                        <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                            <span class="flex items-center">
+                              <i class="tdsi-close-fill"></i>
+                            </span>
+                        </button>
+
+                        <button tds-button-icon type="button" size="sm" color="primary" (click)="updateFacebookByLiveCampaign()">
+                            <span class="flex items-center">
+                              <i class="tdsi-tick-fill"></i>
+                            </span>
+                        </button>
+                    </div>
+                </ng-template> -->
+            </div>
+
+            <!-- Chờ sửa api mở lại sau -->
+            <!-- <div *ngIf="item.LiveCampaign" class="flex">
+                <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
+                    tds-tooltip tooltipTitle="Bật tạo đơn tự động">
+                    <i class="tdsi-flash-on-fill text-white leading-5"></i>
+                </div>
+            </div> -->
+        </div>
     </div>
 </div>
-<!-- <div *ngIf="postChilds && postChilds.length > 0" class="pl-7 flex flex-col gap-y-1">
-  <div *ngFor="let postChild of postChilds">
-      <ng-container *ngIf="postChild.parent_id && postChild.parent_id == item!.ObjectId">
-          <div class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4 {{ currentPost?.ObjectId == postChild.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"
-              (click)="selectPost(postChild)">
-              <div class="flex flex-col gap-y-3">
-                  <div class="relative w-[120px] h-[88px]">
-                      <div *ngIf="postChild.picture; else noPicture" class="relative">
-                          <img [src]="postChild.picture" alt=""
-                              class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md">
-                      </div>
-                      <ng-template #noPicture>
-                          <div *ngIf="!postChild.picture; else errorPicture">
-                              <img src="assets/imagesv2/conversation-post-img.svg" alt=""
-                                  class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == postChild.fbid ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
-                          </div>
-                          <ng-template #errorPicture>
-                              <img src="assets/imagesv2/errorPic.svg" alt=""
-                                  class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
-                          </ng-template>
-                      </ng-template>
-                  </div>
-                  <div class="flex items-center w-full">
-                      <div class="flex items-center gap-x-2 text-neutral-1-400">
-                          <i class="tdsi-like-line"></i>
-                          <div>{{postChild.count_reactions || 0}}</div>
-                      </div>
-                      <div class="ml-4 flex items-center gap-x-2 text-neutral-1-400">
-                          <i class="tdsi-message-line"></i>
-                          <div>{{postChild.count_comments || 0}}</div>
-                      </div>
-                  </div>
-              </div>
-              <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
-                  <span class="w-full font-semibold truncate" *ngIf="postChild.description">
-                      {{postChild.description}}
-                  </span>
-                  <span *ngIf="!postChild.description">
-                      (Chưa có tiêu đề)
-                  </span>
-                  <span *ngIf="postChild.message" class=" text-neutral-1-400">{{postChild.message | slice: 0: 50}}
-                      <span *ngIf="postChild.message.length > 50">...</span>
-                  </span>
-                  <span *ngIf="postChild.created_time | compareToday" class="text-neutral-1-400">
-                      {{postChild.created_time | yiDateTimeFormat}}
-                  </span>
-                  <span *ngIf="!(postChild.created_time | compareToday)"
-                      class="text-neutral-1-400">
-                      {{postChild.created_time | date:'dd/MM/yyyy HH:mm'}}
-                  </span>
-                  <div class="w-full flex justify-between items-center">
-                      <div *ngIf="postChild.live_campaign">
-                          <tds-tag size="sm"
-                              status="{{ currentPost?.ObjectId == postChild.fbid ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
-                              (click)="showModalLiveCampaign(postChild)">
-                              <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]"
-                                  tds-tooltip [tooltipTitle]="postChild.live_campaign?.name">
-                                  <span
-                                      class="flex-auto truncate">{{postChild.live_campaign?.name}}</span>
-                                  <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
-                              </span>
-                          </tds-tag>
-                      </div>
-                      <div *ngIf="!postChild.live_campaign">
-                          <tds-tag size="sm"
-                              status="{{ currentPost?.ObjectId == postChild.fbid ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
-                              <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
-                                  <span class="flex-auto truncate">Chọn chiến dịch</span>
-                                  <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
-                              </span>
-                          </tds-tag>
-                      </div>
-                      <div *ngIf="postChild.live_campaign"
-                          class="flex items-center justify-center">
-                          <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
-                              tds-tooltip tooltipTitle="Bật tạo đơn tự động">
-                              <i class="tdsi-flash-on-fill text-white leading-5"></i>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </ng-container>
-  </div>
-</div> -->

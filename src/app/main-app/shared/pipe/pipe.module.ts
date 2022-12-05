@@ -1,8 +1,9 @@
+import { GetTeamIconPipe } from './get-team-icon.pipe';
 import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
 import { ConvertToCRMTagsListPipe } from './convert-to-CRMTagList.pipe';
-import { ChatomniFacebookType, ChatomniTShopType, ChatomniTShopData, ChatomniFacebookData } from './fb-post-type.pipe';
+import { ChatomniFacebookType, ChatomniTShopType, ChatomniTShopData, ChatomniFacebookData, ChatomniTiktokType, ChatomniTiktokData } from './fb-post-type.pipe';
 import { GetStatusNamePipe } from './get-status-name.pipe';
 import { SelectMultipleValuePipe } from './select-multiple-value.pipe';
 import { ConvertListUrlPipe } from './convert-list-url.pipe';
@@ -46,6 +47,7 @@ import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
 import { PriorityStatusColorPipe, PriorityStatusNamePipe } from './priority-status.pipe';
 import { SortDateClassPipe, SortDateNamePipe } from './sort-date.pipe';
 import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
+import { GetSocketNamePipe } from './get-socket-name.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -109,7 +111,11 @@ const cmp =[
   PriorityStatusNamePipe,
   SortDateNamePipe,
   SortDateClassPipe,
-  FirebaseSubscribedPipe
+  FirebaseSubscribedPipe,
+  GetSocketNamePipe,
+  ChatomniTiktokType,
+  ChatomniTiktokData,
+  GetTeamIconPipe
 ]
 
 @NgModule({

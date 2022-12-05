@@ -66,8 +66,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   conversationInfo!: ChatomniConversationInfoDto | any;
   conversationItem!: ChatomniConversationItemDto | any;
 
-  syncConversationInfo!: ChatomniConversationInfoDto;// TODO: chỉ dùng cho trường hợp đồng bộ dữ liệu partner + order
-
   isFastSend: boolean = false;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
@@ -92,6 +90,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   notificationRef!: TDSNotificationRef;
   totalConversations: number = 0;
   userLogged: any;
+  orderCode: any;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -196,15 +195,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               }
             break;
 
-            case ChatmoniSocketEventName.chatomniOnUpdate:
-              break;
+          case ChatmoniSocketEventName.chatomniOnUpdate:
+            break;
 
-            case ChatmoniSocketEventName.chatomniMarkseen:
-              this.setSocketMarkseen(res.Data);
-              break;
+          case ChatmoniSocketEventName.chatomniMarkseen:
+            this.setSocketMarkseen(res.Data);
+            break;
 
-            default:
-              break;
+          default:
+            break;
         }
       }
     })
@@ -270,9 +269,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             const vsIndex = this.vsSocketImports?.findIndex(x => x.ConversationId == itemNewMess.ConversationId);
             if(Number(vsIndex) >= 0) {
                 this.vsSocketImports[vsIndex].LatestMessage = {
-                  CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
-                  Message: itemNewMess.LatestMessage?.Message,
-                  MessageType: itemNewMess.LatestMessage?.MessageType
+                    CreatedTime: itemNewMess.LatestMessage?.CreatedTime,
+                    Message: itemNewMess.LatestMessage?.Message,
+                    MessageType: itemNewMess.LatestMessage?.MessageType
                 } as any;
 
                 this.vsSocketImports[vsIndex].CountUnread = (this.vsSocketImports[vsIndex].CountUnread || 0) + 1;
@@ -367,26 +366,21 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // TODO: sự kiên đồng bộ dữ liệu lưu khách hàng hoặc tạo đơn hàng hội thoại, ngOnChanges tự lấy sự kiện
     this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          let teamId = this.currentTeam?.Id as any;
-          this.chatomniConversationService.syncConversationInfo(teamId, this.csid).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (data: any) => {
-                  this.syncConversationInfo = {...data};
-                  this.conversationInfo.Order = {...data.Order};
+      next: (info: ChatomniConversationInfoDto) => {
 
-                  let csid = this.syncConversationInfo.Conversation.ConversationId;
-                  let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
+          let csid = info?.Conversation?.ConversationId;
+          let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
 
-                  if(Number(index) >= 0 && this.syncConversationInfo.Partner) {
-                      this.lstConversation[index].HasPhone = this.syncConversationInfo.Partner.Phone ? true : false;
-                      this.lstConversation[index].HasAddress = this.syncConversationInfo.Partner.Street ? true : false;
-                      this.lstConversation[index] = {...this.lstConversation[index]};
-                      this.lstConversation = [...this.lstConversation];
-                  }
+          if(Number(index) >= 0 && info?.Partner) {
+              this.lstConversation[index].HasPhone = info.Partner?.Phone ? true : false;
+              this.lstConversation[index].HasAddress = info.Partner?.Street ? true : false;
+              this.lstConversation[index] = {...this.lstConversation[index]};
+              this.lstConversation = [...this.lstConversation];
+          }
 
-                  this.cdRef.markForCheck();
-              }
-          })
+          // TODO: cập nhật mã đơn hàng
+          this.orderCode = info?.Order?.Code;
+          this.cdRef.markForCheck();
       }
     })
 
@@ -409,7 +403,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   loadData(team: any) {
     this.validateData();
-
     this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type);
     if(this.dataSource$) {
         this.loadConversations(this.dataSource$);
@@ -418,7 +411,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
     if(this.isLoading || this.isProcessing){
-        return;
+      return;
     }
 
     this.isLoading = true;
@@ -427,35 +420,60 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           if (res && TDSHelperArray.hasListValue(res.Items)) {
               this.lstConversation = [...res.Items];
-
-              let currentOmni: ChatomniConversationItemDto;
-              let params_csid: string;
-
-              // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
-              params_csid = this.paramsUrl?.csid;
-              if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
-                  params_csid = this.getStorageConversationId();
-              }
-
-              currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
-
-              // TODO: nếu không tồn tại params_csid thì lấy item đầu tiên
-              if(!TDSHelperObject.hasValue(currentOmni) && !TDSHelperString.hasValueString(currentOmni?.ConversationId)) {
-                  currentOmni = this.lstConversation[0];
-              }
-
-              this.setCurrentConversationItem(currentOmni);
-
+              this.prepareParamsUrl();
           } else {
-              //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-              this.validateData();
+              this.validateData(); //lọc hội thoại data rỗng res.items = 0
+              this.isLoading = false;
           }
-
-          this.isLoading = false;
       },
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  prepareParamsUrl() {
+    let currentOmni: ChatomniConversationItemDto;
+    let params_csid: string;
+
+    // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
+    params_csid = this.paramsUrl?.csid;
+    if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
+        params_csid = this.getStorageConversationId();
+    }
+
+    if(params_csid == null) {
+      currentOmni = this.lstConversation[0];
+      this.setCurrentConversationItem(currentOmni);
+
+      this.isLoading = false;
+      return;
+    }
+
+    currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
+    let exist = currentOmni && currentOmni?.ConversationId;
+    if(exist) {
+        this.setCurrentConversationItem(currentOmni);
+        this.isLoading = false;
+        return;
+    }
+
+    let teamId = this.currentTeam?.Id as number;
+    this.chatomniConversationService.getById(teamId, params_csid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
+          currentOmni = {...res};
+          this.lstConversation = [...[currentOmni], ...this.lstConversation];
+
+          this.setCurrentConversationItem(currentOmni);
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+
+          currentOmni = this.lstConversation[0];
+          this.setCurrentConversationItem(currentOmni);
       }
     })
   }
@@ -487,13 +505,18 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.chatomniConversationService.getInfo(this.currentTeam!.Id, item.ConversationId).pipe(takeUntil(this.destroy$)).subscribe({
               next: (info: ChatomniConversationInfoDto) => {
                   this.conversationInfo = {...info};
+
+                  if(this.conversationInfo && this.conversationInfo.Order) {
+                      this.orderCode = this.conversationInfo.Order.Code;
+                  }
+
                   this.isLoading = false;
-                  this.cdRef.markForCheck();
+                  this.cdRef.detectChanges();
               },
               error: (error: any) => {
                   this.isLoading = false;
                   this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
-                  this.cdRef.markForCheck();
+                  this.cdRef.detectChanges();
               }
           })
       }
@@ -527,14 +550,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
-
           if(res && res.Items) {
               this.lstConversation = [...(res.Items || [])];
               this.lstConversation = [...this.lstConversation];
           } else {
               this.disableNextUrl = true;
           }
-
           this.isLoadingNextdata = false;
       },
       error: (error) => {
@@ -545,12 +566,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
-        this.disableNextUrl = false;
-        this.removeStorageConversationId();
+      this.disableNextUrl = false;
+      this.removeStorageConversationId();
 
-        let uri = this.router.url.split("?")[0];
-        let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
-        this.router.navigateByUrl(uriParams);
+      let uri = this.router.url.split("?")[0];
+      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+      this.router.navigateByUrl(uriParams);
     }
 
     this.crmService.onUpdateTeam(data);
@@ -857,6 +878,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.conversationInfo;
     delete this.conversationItem;
     delete this.dataSource$;
+    delete this.orderCode;
   }
 
   setStorageConversationId(id: string): any {

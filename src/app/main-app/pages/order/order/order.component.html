@@ -215,8 +215,8 @@
                 <!-- Kênh kết nối -->
                 <td *ngIf="isHidden('CRMTeamName')" class="border-l">
                   <div class="w-full flex">
-                    <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                    <span class="ml-1 ">{{data.CRMTeamName}}</span>
+                    <span *ngIf="data.CRMTeamName" [ngClass]="data.CRMTeamId | getTeamIcon:lstOfTeam"></span>
+                    <span class="ml-1 ">{{ data.CRMTeamName }}</span>
                   </div>
                 </td>
 

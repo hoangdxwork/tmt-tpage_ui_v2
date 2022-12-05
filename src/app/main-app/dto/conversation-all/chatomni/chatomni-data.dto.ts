@@ -53,6 +53,53 @@ export interface Attachments {
   paging?: any;
 }
 
+export interface PayloadElementsDto {
+  title: string;
+  image_url: string;
+  subtitle: string;
+  buttons: any;
+  item_url: any;
+  quantity: any;
+  price: any;
+  currency: any;
+}
+
+export interface AddressPayloadDto {
+  street_1: string,
+  city: string,
+  postal_code: any,
+  country: string,
+  state: string
+}
+
+export interface SummaryPayloadDto {
+  subtotal: number;
+  shipping_cost: number;
+  total_tax: number;
+  total_cost: number;
+}
+
+export interface FacebookPayloadDto {
+  url?: any;
+  template_type: string;
+  top_element_style?: any;
+  elements?: PayloadElementsDto[];
+  buttons?: any;
+  recipient_name?: any;
+  order_number?: any;
+  currency?: any;
+  payment_method?: any;
+  order_url?: any;
+  timestamp?: any;
+  address?: AddressPayloadDto;
+  summary?: SummaryPayloadDto;
+}
+
+export interface FacebookWebhookAttachmentDto {
+  type: string;
+  payload: FacebookPayloadDto;
+}
+
 export interface ChatomniFacebookDataDto {
   id: string;
   message: string;
@@ -75,6 +122,7 @@ export interface ChatomniFacebookDataDto {
   attachment?: any;
   message_tags: MessageTag[];
   phone: string;
+  webhook_attachments: FacebookWebhookAttachmentDto[] | any[];
 
   // các dữ liệu bổ sung để check client
   has_admin_required?: boolean;
@@ -122,7 +170,7 @@ export interface NlpEntityDto {
 }
 
 export interface ChatomniDataItemDto {
-  Data: any; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto
+  Data: any; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto hoặc  TikTokLiveItemDataDto
   Id: string;
   ObjectId: string;
   ParentId?: string | any;
@@ -140,6 +188,9 @@ export interface ChatomniDataItemDto {
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
   NlpEntities?: NlpEntityDto[] | any[];
+
+  Attachments?: any;
+
   IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
   isNoPartnerId?:  boolean; // không có trong api trả về, dùng để phân biệt cmt child chưa tìm thấy cmt partner trong list api trả về
 }
@@ -166,7 +217,30 @@ export enum ChatomniMessageType {
   FacebookComment = 12, // Trừ các số tiếp theo nếu facebook có loại mới
   ZaloMessage = 21,
   TShopComment = 91,
-  TShopMessage = 92
+  TShopMessage = 92,
+  UnofficialTikTokChat = 1001
+}
+
+export enum ChatomniChannelType{
+  General = 0,
+  TUser = 1,
+  TShop = 2,
+
+  FacebookUser = 3,
+  FacebookPage = 4,
+  FacebookShop = 5,
+  FacebookGroup = 6,
+
+  TDesk = 11,
+  TikTokShop = 12,
+  ShopeeShop = 13,
+  LazadaShop = 14,
+  TikiShop = 15,
+
+  // Kênh tiktok không chính thống
+  UnofficialTikTok = 1001,
+  UnofficialFacebookUser = 1011,
+  UnofficialFacebookGroup = 1012
 }
 
 // Lấy ChatomniObjectsItemDto thay ExtrasObjectDto
@@ -205,14 +279,14 @@ export interface ExtrasChildsDto {
 
 export interface ChatomniTShopDataDto {
   Id: any;
-  Content: any;
+  Content: TShopDataConentDto;
   Type: number;
   Status: boolean;
   Sender: Sender;
   ShopId: string;
   ConversationId: string;
   Recipient: Recipient;
-  AttachmentDto: AttachmentDto[];
+  AttachmentDto: AttachmentDto[] | any;
   ListUserId: string[];
   MessageLinkDto: any[];
   SocketId: string;
@@ -221,11 +295,16 @@ export interface ChatomniTShopDataDto {
   ExtraProperties: ExtraProperties;
   ObjectKind: string;
   ObjectKindValue?: number;
-  ObjectId?: number;
+  ObjectId?: any;
   ParentCommentId?: any;
   UserId: string;
-  Actor: Actor;
+  Actor: TShopDataActorDto;
   CreatorId: string;
+}
+
+export interface TShopDataConentDto {
+  Tags: any;
+  Text: string;
 }
 
 export interface Sender {
@@ -256,11 +335,27 @@ export interface AttachmentDto {
   creationTime: Date;
 }
 
+export interface ImageData {
+  width: number;
+  height: number;
+  max_width: number;
+  max_height: number;
+  url: string;
+  image_type: number;
+  render_as_sticker: boolean;
+}
+
+export interface AttachmentIsAdminDto {
+  mime_type: string;
+  size: number;
+  image_data: ImageData;
+}
+
 export interface ExtraProperties {
   sendFrom: string;
 }
 
-export interface Actor {
+export interface TShopDataActorDto {
   Id: string;
   Name: string;
   AvatarUrl: string;

@@ -79,7 +79,7 @@ const routes: Routes = [
         loadChildren: () => import('./pages/partner/partner.module').then(m => m.PartnerModule)
       },
       {
-        path: "facebook",
+        path: "connect-channel",
         data: {
           breadcrumb: 'Partner'
         },
