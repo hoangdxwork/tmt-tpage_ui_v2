@@ -11,14 +11,14 @@
                         class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  object-cover">
                 </div>
             </div>
-            
+
             <ng-template #noPicture>
                 <div *ngIf="!item.Thumbnail && item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1; else noPictureLive">
                     <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
                         class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>
                 <ng-template #noPictureLive>
-                    <div  *ngIf="checkPostPictureError(item)"> 
+                    <div  *ngIf="checkPostPictureError(item)">
                         <img src="../../../assets/imagesv2/errorPic.svg" alt=""
                             class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                     </div>
@@ -60,7 +60,7 @@
             </span>
         </div>
 
-        <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
+        <!-- <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
             <div *ngIf="item.LiveCampaign" class="item-object-live">
                 <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500"
                     (click)="showModalLiveCampaign(item)">
@@ -84,50 +84,7 @@
                         <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                     </span>
                 </tds-tag>
-
-                <!-- <ng-template #contentAddtag>
-                    <div class="w-[304px]">
-                        <tds-form-field>
-                            <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
-                                [ngModel]="currentLiveCampaign" [data]="lstOfLiveCampaign" disabledField="isActive"
-                                [allowClear]="true" [valuePrimitive]="false" [autoClose]="false">
-
-                                <ng-template tds-option-tmp let-label='label' let-item="item"
-                                    let-value='value' let-selected="selected">
-                                    <span class="flex flex-col gap-y-2 bg-neutral-3-50 w-full p-2 rounded" [ngClass]="{'text-primary-1':selected}">
-                                        <span>Tên: <span class="font-semibold">{{item.Name}}</span></span>
-                                        <span>Page: {{item.Facebook_UserName || '...'}}</span>
-                                    </span>
-                                </ng-template>
-                            </tds-select>
-                        </tds-form-field>
-                    </div>
-                  </ng-template> -->
-
-                  <!-- <ng-template #footerAddTag>
-                    <div class="flex justify-end pt-2">
-                        <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
-                            <span class="flex items-center">
-                              <i class="tdsi-close-fill"></i>
-                            </span>
-                        </button>
-
-                        <button tds-button-icon type="button" size="sm" color="primary" (click)="updateFacebookByLiveCampaign()">
-                            <span class="flex items-center">
-                              <i class="tdsi-tick-fill"></i>
-                            </span>
-                        </button>
-                    </div>
-                </ng-template> -->
             </div>
-
-            <!-- Chờ sửa api mở lại sau -->
-            <!-- <div *ngIf="item.LiveCampaign" class="flex">
-                <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
-                    tds-tooltip tooltipTitle="Bật tạo đơn tự động">
-                    <i class="tdsi-flash-on-fill text-white leading-5"></i>
-                </div>
-            </div> -->
-        </div>
+        </div> -->
     </div>
 </div>
