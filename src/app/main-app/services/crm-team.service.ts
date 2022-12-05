@@ -31,7 +31,7 @@ export class CRMTeamService extends BaseSevice {
 
   getAllFacebooks(): Observable<Array<CRMTeamDTO>> {
     let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v2.0/chatomni/channelssimplest`,
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/channels`,
       method: CoreApiMethodType.get
     }
     return this.apiService.getData<Array<CRMTeamDTO>>(api, null);

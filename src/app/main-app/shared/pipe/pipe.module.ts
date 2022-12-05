@@ -48,6 +48,7 @@ import { PriorityStatusColorPipe, PriorityStatusNamePipe } from './priority-stat
 import { SortDateClassPipe, SortDateNamePipe } from './sort-date.pipe';
 import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
 import { GetSocketNamePipe } from './get-socket-name.pipe';
+import { ImageLazyLoadPipe } from './image-lazy-load.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -115,7 +116,8 @@ const cmp =[
   GetSocketNamePipe,
   ChatomniTiktokType,
   ChatomniTiktokData,
-  GetTeamIconPipe
+  GetTeamIconPipe,
+  ImageLazyLoadPipe
 ]
 
 @NgModule({

@@ -14,7 +14,8 @@
               <div *ngIf="item && item.Type == 91" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
 
                   <div (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.UserId] : '')">
-                      <tds-avatar [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [tdsSrc]="(item.Data | tshopDataCs)?.Actor?.AvatarUrl"></tds-avatar>
+                      <tds-avatar [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'"
+                       [tdsSrc]="(item.Data | tshopDataCs)?.Actor?.AvatarUrl | imageLazyLoad: isLoadingNextdata"></tds-avatar>
                   </div>
 
                   <div class="ml-2 w-full h-full">
