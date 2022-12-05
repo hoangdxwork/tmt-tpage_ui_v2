@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { takeUntil } from 'rxjs';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { SocketStorageNotificationService } from '@app/services/socket-io/socket-config-notification.service';
 
 @Component({
   selector: 'app-socket-notification',
   templateUrl: './socket-notification.component.html',
+  providers: [ TDSDestroyService ]
 })
 export class SocketNotificationComponent implements OnInit {
   socketData: {[key: string]: boolean} = {} as any
   lstItems: Array<any> = [];
 
   constructor(
-    private socketStorageNotificationService: SocketStorageNotificationService
+    private socketStorageNotificationService: SocketStorageNotificationService,
+    private destroy$: TDSDestroyService,
   ) { }
 
   ngOnInit(): void {
@@ -23,7 +27,15 @@ export class SocketNotificationComponent implements OnInit {
       this.lstItems.push(item);
     }
     this.socketData = exist
+    this.onEventEmitter();
   }
+
+  onEventEmitter() {
+    this.socketStorageNotificationService.socketAllEmitter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.socketData = this.socketStorageNotificationService.getLocalStorage();
+    });
+  }
+
 
   change(item: any) {
     if(item == "socket.all") {
@@ -38,6 +50,7 @@ export class SocketNotificationComponent implements OnInit {
         }
       }
       this.socketStorageNotificationService.setLocalStorage(this.socketData);
+      this.socketStorageNotificationService.socketAllEmitter$.emit(this.socketData[item]);
     } else {
       let current = this.socketData[item]
       current = !current;

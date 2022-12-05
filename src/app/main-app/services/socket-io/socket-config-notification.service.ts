@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { ChatmoniSocketEventName } from "./soketio-event";
 
 @Injectable({
@@ -8,7 +8,9 @@ import { ChatmoniSocketEventName } from "./soketio-event";
 export class SocketStorageNotificationService {
 
   public _keyCacheSocketConfig: string = "_socket_notification";
-  public socketData: {[key: string]: boolean} = {} as any
+  public socketData: {[key: string]: boolean} = {} as any;
+
+  public socketAllEmitter$ = new EventEmitter<boolean>();
 
   constructor() {
   }
