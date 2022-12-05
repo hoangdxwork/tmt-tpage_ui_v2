@@ -524,7 +524,7 @@ export class DrawerAddProductComponent implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
+    if(matchRex || (TDSHelperString.isString(pop) && !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim()))) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }

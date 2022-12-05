@@ -240,7 +240,7 @@ export class PostOrderConfigComponent implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
+    if(matchRex || (TDSHelperString.isString(pop) && !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim()))) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }
@@ -462,6 +462,11 @@ export class PostOrderConfigComponent implements OnInit {
           let item = {...this.prepareProduct(product, index)} as TextContentToOrderDTO;
 
           let content = this.generateTagDetail(product.DefaultCode, product.OrderTag, null, null);
+          let contentRange = this.dataModel.TextContentToOrders[index].Content;
+          if(contentRange) {
+              contentRange = contentRange.split(',');
+              content = [...contentRange, ...content];
+          }
           item.Content = content?.join(',');
 
           let productTmpl = product.ProductTmpl;
