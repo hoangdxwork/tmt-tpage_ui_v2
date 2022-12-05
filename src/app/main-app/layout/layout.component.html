@@ -26,8 +26,8 @@
                     <tds-tag status='primary' rounded="rounded-full" class="text-caption-2 font-semibold">T-PAGE</tds-tag>
                 </div>
                 <a (click)="changeNotiSocketInfo()" class="ml-2" style="font-size: 18px; color: #fff">
-                    <span *ngIf="notiSocket != 'OFF'" class="tdsi-notification-fill" tds-tooltip tooltipTitle="Đang bật thông báo realtime"></span>
-                    <span *ngIf="notiSocket == 'OFF'" class="tdsi-notifications-off-fill" tds-tooltip tooltipTitle="Đã tắt thông báo realtime"></span>
+                    <span *ngIf="notiSocket" class="tdsi-notification-fill" tds-tooltip tooltipTitle="Đang bật thông báo realtime"></span>
+                    <span *ngIf="!notiSocket" class="tdsi-notifications-off-fill" tds-tooltip tooltipTitle="Đã tắt thông báo realtime"></span>
                 </a>
             </div>
             <div class="inline-flex tds-header-toolbar-right items-center">

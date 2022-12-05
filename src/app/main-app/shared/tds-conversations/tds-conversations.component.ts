@@ -628,7 +628,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let tags = this.tags || [];
     let local = this.crmTagService.getTagLocalStorage() as any;
 
-    if (tags && tags.length > 0 && local) {debugger
+    if (tags && tags.length > 0 && local) {
       tags?.sort((a: any, b: any) => {
         if (!local[a.Id]) {
           local[a.Id] = { "point": 0 };

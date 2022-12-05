@@ -9,7 +9,7 @@ export class GetSocketNamePipe implements PipeTransform {
   transform(name: string): string {
     switch (name) {
       case 'socket.all':
-        return 'Tất cả';
+        return 'Bật/Tắt thông báo socket';
 
       case ChatmoniSocketEventName.chatomniOnMessage:
         return 'Thông báo khi có tin nhắn gửi về';
