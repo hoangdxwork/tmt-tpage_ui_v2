@@ -24,7 +24,8 @@ export class BillFilterOptionsComponent implements OnInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    carrierId: -1
   }
 
   datePicker: any[] = [addDays(new Date(), -30), new Date()];
@@ -120,7 +121,8 @@ export class BillFilterOptionsComponent implements OnInit {
         dateRange: this.datePicker ? {
             startDate: this.datePicker[0],
             endDate: this.datePicker[1]
-        } : null
+        } : null,
+        carrierId: this.modelCarrier.Id
     }
 
     this.onLoadOption.emit(this.filterObj);
@@ -149,7 +151,8 @@ export class BillFilterOptionsComponent implements OnInit {
         dateRange: {
             startDate: addDays(new Date(), -30),
             endDate: new Date(),
-        }
+        },
+        carrierId: -1
     }
 
     this.onLoadOption.emit(this.filterObj);

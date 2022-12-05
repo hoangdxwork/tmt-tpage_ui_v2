@@ -72,7 +72,7 @@ export class CsPartner_PrepareModelHandler {
         Street: partner?.Street,
 
         FacebookASIds: item.ConversationId,
-        FacebookId: partner.FacebookId,
+        FacebookId: partner.FacebookId || item.ConversationId,
 
         City: partner.City?.code ? {
             code: partner.City.code,

@@ -590,8 +590,18 @@ export class EditLiveCampaignComponent implements OnInit {
   isCheckValue() {
     let formValue = this._form.value;
 
-    if(!TDSHelperString.hasValueString(formValue.Name)) {
+    if(!TDSHelperString.hasValueString((formValue.Name || '').trim())) {
         this.message.error('Vui lòng nhập tên chiến dịch');
+        return 0;
+    }
+
+    if(formValue.Name.length > 255) {
+        this.message.error('Tên chiến dịch live tối đa 255 ký tự');
+        return 0;
+    }
+
+    if(TDSHelperString.hasValueString((formValue.Note || '').trim()) && formValue.Note.length > 500) {
+        this.message.error('Ghi chú tối đa 500 ký tự');
         return 0;
     }
 

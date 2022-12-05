@@ -167,7 +167,8 @@ export class DetailBillPaymentComponent implements OnInit {
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate
-      } : null
+      } : null,
+      carrierId: event.carrierId
     }
 
     this.loadData(this.pageSize, this.pageIndex);

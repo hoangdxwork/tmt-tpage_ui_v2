@@ -96,6 +96,12 @@ export class ODataLiveCampaignBillService extends BaseSevice {
       dataFilter.logic = "and";
     }
 
+    
+    if(filterObj.carrierId >= 0 ) {
+      dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
+        dataFilter.logic = "and";
+    }
+
     return dataFilter;
   }
 

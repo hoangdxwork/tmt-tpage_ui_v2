@@ -72,6 +72,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'conversation-order',
   templateUrl: './conversation-order.component.html',
+  styleUrls: ['./conversation-order.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
@@ -1125,9 +1126,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.visibleIndex = -1;
   }
 
-  onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
-    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
-    if(exit) {
+  onRemoveProduct(item: Detail_QuickSaleOnlineOrder) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+
+    if(index >= 0) {
         this.quickOrderModel.Details.splice(index,1);
         this.calcTotal();
         this.coDAmount();
@@ -1207,20 +1209,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this._street = x._street;
   }
 
-  plus(item: Detail_QuickSaleOnlineOrder, index: number) {
-    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+  plus(item: Detail_QuickSaleOnlineOrder) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
-    if(exit) {
+    if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity++;
         this.calcTotal();
         this.coDAmount();
     }
   }
 
-  minus(item: Detail_QuickSaleOnlineOrder, index: number) {
-    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+  minus(item: Detail_QuickSaleOnlineOrder) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
-    if(exit) {
+    if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity--;
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;
@@ -1478,6 +1480,22 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
     return data.Id;
+  }
+
+  onChangeQuantity(event: any, item: any){
+    let index = this.quickOrderModel?.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+
+    if(event && index >= 0) {
+        this.quickOrderModel.Details[index].Quantity = Number(event);
+    }
+
+    if(!event && index >= 0) {
+      this.quickOrderModel.Details[index].Quantity = 1;
+      this.quickOrderModel.Details[index] = {...this.quickOrderModel.Details[index]};
+    }
+
+    this.calcTotal();
+    this.coDAmount();
   }
 
   onCreateFastSaleOrder(order: QuickSaleOnlineOrderModel, type?: string) {
