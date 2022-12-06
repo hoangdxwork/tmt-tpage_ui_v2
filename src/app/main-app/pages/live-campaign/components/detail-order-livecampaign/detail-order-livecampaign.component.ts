@@ -27,7 +27,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
       endDate: new Date(),
     },
     liveCampaignId: null,
-    IsHasPhone: null, 
+    Telephone: null,
     PriorityStatus: null
   }
 

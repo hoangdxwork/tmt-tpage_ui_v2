@@ -79,7 +79,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     },
     teamId: '',
     liveCampaignId: '',
-    IsHasPhone: null,
+    Telephone: null,
     PriorityStatus: null
   }
 
@@ -226,10 +226,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
+    // let params = `top=${pageSize}&%24orderby=DateCreated+desc&%24filter=${filters}`;
 
-    if(this.filterObj.IsHasPhone != null) {
-      params += `&IsHasPhone=${this.filterObj.IsHasPhone}`;
-    }
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
@@ -570,7 +568,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-      IsHasPhone: null,
+      Telephone: null,
       PriorityStatus: null
     }
 
@@ -611,6 +609,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.teamId = event.teamId ? event.teamId : null;
 
     this.filterObj.PriorityStatus = event.PriorityStatus ? event.PriorityStatus : null;
+
+    this.filterObj.Telephone = event.Telephone;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
