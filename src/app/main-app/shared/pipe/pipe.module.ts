@@ -47,7 +47,7 @@ import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
 import { PriorityStatusColorPipe, PriorityStatusNamePipe } from './priority-status.pipe';
 import { SortDateClassPipe, SortDateNamePipe } from './sort-date.pipe';
 import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
-import { GetSocketNamePipe } from './get-socket-name.pipe';
+import { GetSocketNamePipe, CheckSocketTeamTypePipe } from './get-socket-name.pipe';
 import { ImageLazyLoadPipe } from './image-lazy-load.pipe';
 
 const cmp =[
@@ -117,7 +117,8 @@ const cmp =[
   ChatomniTiktokType,
   ChatomniTiktokData,
   GetTeamIconPipe,
-  ImageLazyLoadPipe
+  ImageLazyLoadPipe,
+  CheckSocketTeamTypePipe
 ]
 
 @NgModule({

@@ -1,3 +1,5 @@
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { Component, OnInit, EventEmitter } from '@angular/core';
@@ -39,21 +41,26 @@ export class SocketNotificationComponent implements OnInit {
 
   change(item: any) {
     if(item == "socket.all") {
-      let cur = this.socketData[item]
-      if(cur == false) {
-        for(let data in this.socketData) {
-          this.socketData[data] = false
+        let cur = this.socketData[item];
+        
+        if(cur == false) {
+            for(let data in this.socketData) {
+              this.socketData[data] = false;
+            }
+        } else {
+            for(let data in this.socketData) {
+              this.socketData[data] = true;
+            }
         }
-      } else {
-        for(let data in this.socketData) {
-          this.socketData[data] = true
-        }
-      }
-      this.socketStorageNotificationService.setLocalStorage(this.socketData);
-      this.socketStorageNotificationService.socketAllEmitter$.emit(this.socketData[item]);
+
+        this.socketStorageNotificationService.setLocalStorage(this.socketData);
+        this.socketStorageNotificationService.socketAllEmitter$.emit(this.socketData[item]);
     } else {
-      let current = this.socketData[item]
-      current = !current;
+        if(item == ChatmoniSocketEventName.chatomniOnMessage) {
+          this.socketData[CRMTeamType._Facebook] = this.socketData[item];
+          this.socketData[CRMTeamType._TShop] = this.socketData[item];
+          this.socketData[CRMTeamType._TikTok] = this.socketData[item];
+        }
       this.socketStorageNotificationService.setLocalStorage(this.socketData);
     }
   }

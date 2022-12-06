@@ -1,3 +1,4 @@
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { EventEmitter, Injectable } from "@angular/core";
 import { ChatmoniSocketEventName } from "./soketio-event";
 
@@ -18,6 +19,9 @@ export class SocketStorageNotificationService {
   getSocketDataDefault() {
     this.socketData['socket.all'] = true;
     this.socketData[ChatmoniSocketEventName.chatomniOnMessage] = true;
+    this.socketData[CRMTeamType._Facebook] = true;
+    this.socketData[CRMTeamType._TShop] = true;
+    this.socketData[CRMTeamType._TikTok] = true;
     this.socketData[ChatmoniSocketEventName.chatomniOnUpdate] = true;
     this.socketData[ChatmoniSocketEventName.onCreatedSaleOnline_Order] = true;
     this.socketData[ChatmoniSocketEventName.onDeleteSaleOnline_Order] = true;

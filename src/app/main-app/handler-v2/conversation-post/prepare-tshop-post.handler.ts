@@ -20,6 +20,10 @@ export class PrepareUpdateTShopByLiveCampaign {
         let x = {} as any;
 
         x.Facebook_LiveId = item.ObjectId;
+        x.ChatomniObject = {
+          ChannelType: 2,
+          ObjectId: item.ObjectId
+        }
         x.Facebook_UserAvatar = item.Thumbnail?.Url;
         x.Facebook_UserId = (item.Data as ChatomniDataTShopPostDto)?.ShopId;
         x.Facebook_UserName = '';

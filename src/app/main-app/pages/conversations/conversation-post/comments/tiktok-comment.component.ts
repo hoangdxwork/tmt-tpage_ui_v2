@@ -236,6 +236,11 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
     let itemNewComment = {...this.chatomniConversationFacade.preapreCommentTshopOnEventSocket(response.Data)};
     let index = this.dataSource.Items.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
 
+    // TODO: đang search bình luận thì không push dữ liệu vào
+    if(TDSHelperString.isString(this.innerText) && TDSHelperString.hasValueString(this.innerText)) {
+      return;
+    }
+      
     // TODO: nếu res phản hồi bình luận tra về trước, không add comment con vào danh sách
     if(Number(index) >= 0) {
       return;

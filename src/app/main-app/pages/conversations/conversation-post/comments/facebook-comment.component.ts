@@ -237,6 +237,11 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   setCommentRealtime(response: any) {
     let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(response.Data, this.conversationItem) };
 
+    // TODO: đang search bình luận thì không push dữ liệu vào
+    if(TDSHelperString.isString(this.innerText) && TDSHelperString.hasValueString(this.innerText)) {
+      return;
+    }
+
     // TODO: nếu là comment child thì cũng push thẳng xóa parentId
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
         itemNewComment.ParentId = null;
