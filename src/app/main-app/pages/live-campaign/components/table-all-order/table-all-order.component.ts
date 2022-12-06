@@ -63,7 +63,7 @@ export class TableAllOrderComponent implements OnInit {
       endDate: new Date(),
     },
     liveCampaignId: null,
-    IsHasPhone: null,
+    Telephone: null,
     PriorityStatus: null
   }
 
@@ -148,9 +148,6 @@ export class TableAllOrderComponent implements OnInit {
     let filters = this.odataLiveCampaignOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    if(this.filterObj.IsHasPhone != null) {
-      params += `&IsHasPhone=${this.filterObj.IsHasPhone}`;
-    }
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
@@ -207,7 +204,7 @@ export class TableAllOrderComponent implements OnInit {
         endDate: event.dateRange.endDate,
       } : null,
       liveCampaignId: null,
-      IsHasPhone: event.IsHasPhone,
+      Telephone: event.Telephone,
       PriorityStatus: event.PriorityStatus
     }
 
@@ -223,7 +220,7 @@ export class TableAllOrderComponent implements OnInit {
       searchText: '',
       dateRange: {} as any,
       liveCampaignId: null,
-      IsHasPhone: null,
+      Telephone: null,
       PriorityStatus: null
     }
 
