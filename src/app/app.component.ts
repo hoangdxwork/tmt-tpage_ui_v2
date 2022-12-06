@@ -1,3 +1,5 @@
+import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { SocketStorageNotificationService } from './main-app/services/socket-io/socket-config-notification.service';
 import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -5,12 +7,11 @@ import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
-import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 
 @Component({
   selector: 'app-root',
@@ -104,6 +105,10 @@ export class AppComponent {
           // Thông báo khi có tin nhắn gửi về
           case ChatmoniSocketEventName.chatomniOnMessage:
               if(!localSocket[ChatmoniSocketEventName.chatomniOnMessage]) return;
+              if(!localSocket[CRMTeamType._Facebook] && (res?.Data?.Message?.MessageType == ChatomniMessageType.FacebookComment || res?.Data?.Message?.MessageType == ChatomniMessageType.FacebookMessage)) return;
+              if(!localSocket[CRMTeamType._TShop] && (res?.Data?.Message?.MessageType == ChatomniMessageType.TShopComment || res?.Data?.Message?.MessageType == ChatomniMessageType.TShopMessage)) return; 
+              if(!localSocket[CRMTeamType._TikTok] && res?.Data?.Message?.MessageType == ChatomniMessageType.UnofficialTikTokChat ) return; 
+
               let paramsMess = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
               let exist = res && paramsMess;
 

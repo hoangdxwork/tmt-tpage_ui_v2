@@ -1,7 +1,10 @@
 <div class="p-4 flex w-full justify-center text-body-2 text-neutral-1-900">
   <div class="w-3/4 flex flex-col bg-white rounded-xl p-4 gap-y-4">
-    <div class="flex items-center" *ngFor="let item of lstItems">
-      <tds-switch [(ngModel)]="this.socketData[item]" [disabled]="item != 'socket.all' && !this.socketData['socket.all'] " (ngModelChange)="change(item)" size="lg"></tds-switch>
+    <div class="flex items-center" *ngFor="let item of lstItems" [ngClass]="(item | checkSocketTeamType)? 'ml-4': ''">
+      <tds-switch [(ngModel)]="this.socketData[item]" 
+        [disabled]="(item != 'socket.all' && !this.socketData['socket.all']) || (!this.socketData['chatomni.on-message'] && (item | checkSocketTeamType))" 
+        (ngModelChange)="change(item)" size="lg">
+      </tds-switch>
       <span class="ml-4">{{ item | getSocketName }}</span>
     </div>
   </div>

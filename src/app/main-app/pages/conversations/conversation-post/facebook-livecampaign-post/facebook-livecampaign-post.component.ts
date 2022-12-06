@@ -220,35 +220,60 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
       switch(this.type) {
         case CRMTeamType._Facebook:
           model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
+
+          this.isLoading = true;
+          this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+
+                this.data.LiveCampaignId = this.currentLiveCampaign.Id;
+                this.data.LiveCampaign = {
+                    Id: this.currentLiveCampaign.Id,
+                    Name:this.currentLiveCampaign.Name,
+                    Note: this.currentLiveCampaign.Note
+                };
+
+                // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+                this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
+
+                this.isLoading = false;
+                this.message.success('Cập nhật chiến dịch thành công');
+                this.modalRef.destroy(this.currentLiveCampaign.Id);
+            },
+            error: (error: any) => {
+                this.isLoading = false;
+                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+            }
+          });
           break;
         case CRMTeamType._TShop:
           model = {...this.prepareUpdateTShopByLiveCampaign.prepareUpdateTShopLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
+
+          this.isLoading = true;
+          this.liveCampaignService.updateTShopByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+    
+                this.data.LiveCampaignId = this.currentLiveCampaign.Id;
+                this.data.LiveCampaign = {
+                    Id: this.currentLiveCampaign.Id,
+                    Name:this.currentLiveCampaign.Name,
+                    Note: this.currentLiveCampaign.Note
+                };
+    
+                // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+                this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
+    
+                this.isLoading = false;
+                this.message.success('Cập nhật chiến dịch thành công');
+                this.modalRef.destroy(this.currentLiveCampaign.Id);
+            },
+            error: (error: any) => {
+                this.isLoading = false;
+                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+            }
+          });
           break;
       }
       
-      this.isLoading = true;
-      this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-
-            this.data.LiveCampaignId = this.currentLiveCampaign.Id;
-            this.data.LiveCampaign = {
-                Id: this.currentLiveCampaign.Id,
-                Name:this.currentLiveCampaign.Name,
-                Note: this.currentLiveCampaign.Note
-            };
-
-            // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
-
-            this.isLoading = false;
-            this.message.success('Cập nhật chiến dịch thành công');
-            this.modalRef.destroy(this.currentLiveCampaign.Id);
-        },
-        error: (error: any) => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-        }
-      });
     }
   }
 
