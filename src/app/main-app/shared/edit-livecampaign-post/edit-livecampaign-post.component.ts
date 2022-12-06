@@ -141,9 +141,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   eventEmitter() {
-    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
-        if(obs !== InventoryChangeType._editLiveCampaignPost) return;
+        if(obs !== InventoryChangeType._EDIT_LIVECAMPAIGN_POST) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -501,7 +501,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: InventoryChangeType._editLiveCampaignPost,
+          type: InventoryChangeType._EDIT_LIVECAMPAIGN_POST,
           lstOrderTags: this.lstOrderTags
         }
     });

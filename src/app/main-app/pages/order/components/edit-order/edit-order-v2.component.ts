@@ -200,9 +200,9 @@ export class EditOrderV2Component implements OnInit {
 
   eventEmitter() {
     //TODO: load tồn kho cho sản phẩm mới tạo
-    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
-        if(obs !== InventoryChangeType._editOrder) return;
+        if(obs !== InventoryChangeType._EDIT_ORDER) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -434,7 +434,7 @@ export class EditOrderV2Component implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          type: InventoryChangeType._editOrder
+          type: InventoryChangeType._EDIT_ORDER
         }
     });
 
