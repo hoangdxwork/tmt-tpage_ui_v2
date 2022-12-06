@@ -121,12 +121,20 @@
                   <i class="tdsi-edit-fill"></i>
                 </button>
               </div>
+
+              <tds-label>Khối lượng (g)</tds-label>
+              <tds-form-field class="w-full col-span-2">
+                <tds-input-number formControlName="Weight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                <tds-error>
+                  Vui lòng nhập khối lượng
+                </tds-error>
+              </tds-form-field>
             </div>
 
             <div class="grid grid-cols-3 xl:gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center">
               <tds-label>Giá sản phẩm:</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="ListPrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                <tds-input-number formControlName="ListPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập giá sản phẩm
                 </tds-error>
