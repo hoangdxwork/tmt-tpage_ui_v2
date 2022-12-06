@@ -308,7 +308,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     }
 
     this.isLoading = true;
-    this.tShopService.refreshChannelToken(team.Id, child.ChannelId, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
+    this.tShopService.getlonglivetoken(child.ChannelId, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
       next: (token: any) => {
 
         if(!TDSHelperString.hasValueString(token)) {
@@ -331,7 +331,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
         modal.afterClose.subscribe({
           next: (res: any) => {
-                this.loadData();
+            this.loadData();
           },
           error: (error: any) => {
             this.isLoading = false;
@@ -340,7 +340,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
       },
       error: (error) => {
         this.isLoading = false;
-        this.message.error(error?.error?.message);
+        this.message.error('Không thể lấy token của'+ ` ${child.Name}`);
       }
     })
   }
