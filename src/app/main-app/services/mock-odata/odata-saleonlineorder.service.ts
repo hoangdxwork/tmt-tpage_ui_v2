@@ -19,7 +19,7 @@ export interface FilterObjSOOrderModel {
   } | any,
   liveCampaignId: string | any,
   teamId?: string | any,
-  IsHasPhone: boolean | any,
+  Telephone: boolean | any,
   PriorityStatus: string | any
 }
 
@@ -102,6 +102,12 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         ],
         logic: 'and'
       })
+
+      if(filterObj.Telephone != null) {
+        (dataFilter.filters[0] as FilterDataRequestDTO)?.filters?.push(
+          { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
+        )
+      }
     }
 
     if (filterObj && Number(filterObj?.teamId)) {
