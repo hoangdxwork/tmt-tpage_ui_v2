@@ -1,3 +1,4 @@
+import { ChatomniCommentModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
 import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
@@ -186,29 +187,26 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
     if(this.isLiking){
       return
     }
-
     this.isLiking = true;
+
     let model = {
-      TeamId: this.team.Id,
-      CommentId:  this.dataItem.Data?.id,
-      Content: this.dataItem.Data?.user_likes ? 'hủy thích' : 'thích',
-      Message: this.dataItem.Data?.message,
-      UserName: this.dataItem.Data?.from?.name,
-      fbid: this.dataItem.Data?.from?.id
-    }
+      CommentType: 3,
+      Recipients: [this.dataItem.Data?.Id as string]
+    } as ChatomniCommentModelDto;
 
-    this.activityMatchingService.addLikeComment(model)
-      .pipe(takeUntil(this.destroy$), finalize (()=>{this.isLiking = false})).subscribe({
-        next: (res: any) => {
-            this.tdsMessage.success('Thao tác thành công!');
-            this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
+    this.chatomniCommentService.commentHandle(this.team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.tdsMessage.success('Thao tác thành công!');
+          this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
+          this.isLiking = false;
 
-            this.cdRef.markForCheck();
+          this.cdRef.markForCheck();
         },
-        error: error => {
-            this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
-            this.cdRef.markForCheck();
-        }
+      error: error => {
+          this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
+          this.isLiking = false;
+          this.cdRef.markForCheck();
+      }
     });
   }
 
@@ -217,27 +215,27 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
       return
     }
     this.isHiding = true;
+
     let model = {
-      TeamId: this.team.Id,
-      CommentId: this.dataItem.Data?.id,
-      Content: this.dataItem.Data?.is_hidden ? 'hiện' : 'ẩn',
-      Message: this.dataItem.Data?.message,
-      UserName: this.dataItem.Data?.from?.name,
-      fbid: this.dataItem.Data?.from?.id
-    };
+      CommentType: this.dataItem.Data?.is_hidden ? 2: 1,
+      Recipients: [this.dataItem.Data?.Id as string]
+    } as ChatomniCommentModelDto
 
-    this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{this.isHiding = false})).subscribe({
+    this.chatomniCommentService.commentHandle(this.team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.tdsMessage.success('Thao tác thành công!');
-        this.dataItem.Data.is_hidden = !this.dataItem.Data?.is_hidden;
+          this.tdsMessage.success('Thao tác thành công!');
+          this.dataItem.Data.is_hidden = !this.dataItem.Data?.is_hidden;
+          this.isHiding = false;
 
-        this.cdRef.markForCheck();
-      },
+          this.cdRef.markForCheck();
+        },
       error: error => {
-        this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
-        this.cdRef.markForCheck();
+          this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
+          this.isHiding = false;
+          this.cdRef.markForCheck();
       }
     });
+    
   }
 
   isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
