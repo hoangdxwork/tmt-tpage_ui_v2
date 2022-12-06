@@ -73,9 +73,9 @@ export class ModalListProductComponent implements OnInit {
 
   eventEmitter() {
     //TODO: load tồn kho cho sản phẩm mới tạo
-    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
-        if(obs !== InventoryChangeType._defaultProduct) return;
+        if(obs !== InventoryChangeType._DEFAULT_PRODUCT) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -153,7 +153,7 @@ export class ModalListProductComponent implements OnInit {
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams:{
-          type: InventoryChangeType._defaultProduct
+          type: InventoryChangeType._DEFAULT_PRODUCT
         }
     });
 

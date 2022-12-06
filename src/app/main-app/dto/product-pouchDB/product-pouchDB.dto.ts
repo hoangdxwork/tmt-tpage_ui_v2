@@ -55,11 +55,11 @@ export interface SyncCreateProductTemplateDto {
 }
 
 export enum InventoryChangeType {
-  _editLiveCampaignPost = "_EDIT_LIVECAMPAIGN_POST",
-  _tabOrder = "_TAB_ORDER",
-  _defaultProduct = "_DEFAULT_PRODUCT",
-  _drawerAddProduct = "_DRAWER_ADD_PRODUCT",
-  _editOrder = "_EDIT_ORDER"
+  _EDIT_LIVECAMPAIGN_POST = "_EDIT_LIVECAMPAIGN_POST",
+  _TAB_ORDER = "_TAB_ORDER",
+  _DEFAULT_PRODUCT = "_DEFAULT_PRODUCT",
+  _DRAWER_ADD_PRODUCT = "_DRAWER_ADD_PRODUCT",
+  _EDIT_ORDER = "_EDIT_ORDER"
 }
 
 

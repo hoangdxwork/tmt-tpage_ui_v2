@@ -360,9 +360,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
 
     //TODO: load tồn kho cho sản phẩm mới tạo
-    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
-        if(obs !== InventoryChangeType._tabOrder) return;
+        if(obs !== InventoryChangeType._TAB_ORDER) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -950,7 +950,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         size: "xl",
         viewContainerRef: this.viewContainerRef,
         componentParams:{
-          type: InventoryChangeType._tabOrder
+          type: InventoryChangeType._TAB_ORDER
         }
     })
 
