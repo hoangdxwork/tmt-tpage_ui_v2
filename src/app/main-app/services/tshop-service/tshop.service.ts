@@ -68,6 +68,15 @@ export class TShopService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  getlonglivetoken(id:any,	accessToken: any, type: string = CRMTeamType._TShop): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/getlonglivetoken/${id}?accessToken=${accessToken}&type=${type}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
   getAuthentication(fragment: string) {
     let hostname = location.href.replace("/" + location.hash, "");;
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
