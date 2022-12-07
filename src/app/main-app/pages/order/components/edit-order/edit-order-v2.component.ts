@@ -387,7 +387,7 @@ export class EditOrderV2Component implements OnInit {
           UOMName: item.UOMName,
       } as Detail_QuickSaleOnlineOrder;
 
-      this.quickOrderModel.Details.push(data);
+      this.quickOrderModel.Details = [...(this.quickOrderModel.Details || []), ...[data]];
     }
 
     this.closeSearchProduct();
