@@ -13,7 +13,7 @@ export class ActivityMatchingService extends BaseSevice  {
   prefix: string = "odata";
   table: string = "CRMActivity";
   baseRestApi: string = "rest/v1.0/crmmatching";
-  baseRestApi_v2: string = "rest/v2.0/chatomni";
+  baseRestApi_v2: string = "rest/v2.0/crmmatching";
 
   private activity: any = {};
   private extras: any = {};
@@ -183,26 +183,24 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  assignTagToConversation(psid: string, tagId: string, pageId: string){
+  assignTagToConversation(tagId: string, teamId: any, userId: any){
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/updatetag`,
+      url: `${this._BASE_URL}/${this.baseRestApi_v2}/${teamId}_${userId}/updatetag`,
       method: CoreApiMethodType.post
     }
     let model = {
-      pageId: pageId,
       action: 'add',
       tagId: tagId
     }
     return this.apiService.getData<TDSSafeAny>(api, model);
   }
 
-  removeTagFromConversation(psid: string, tagId: string, pageId: string){
+  removeTagFromConversation(tagId: string, teamId: any, userId: any){
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/updatetag`,
+      url: `${this._BASE_URL}/${this.baseRestApi_v2}/${teamId}_${userId}/updatetag`,
       method: CoreApiMethodType.post
     }
     let model =  {
-      pageId: pageId,
       action: 'remove',
       tagId: tagId
     }
