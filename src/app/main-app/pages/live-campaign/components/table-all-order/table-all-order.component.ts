@@ -1,3 +1,5 @@
+import { CRMTeamDTO } from './../../../../dto/team/team.dto';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { addDays } from 'date-fns';
 import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
@@ -53,6 +55,7 @@ export class TableAllOrderComponent implements OnInit {
   paddingCollapse: number = 36;
   lstStatusTypeExt!: Array<any>;
   indClickTag = "";
+  lstOfTeam!: CRMTeamDTO[];
 
   public filterObj: FilterObjSOOrderModel = {
     tags: [],
@@ -116,6 +119,7 @@ export class TableAllOrderComponent implements OnInit {
     private chatomniConversationService: ChatomniConversationService) { }
 
   ngOnInit(): void {
+    this.loadAllTeam();
     this.loadTags();
     this.loadStatusTypeExt();
     this.loadSummaryStatus();
@@ -161,6 +165,19 @@ export class TableAllOrderComponent implements OnInit {
         this.message.error(`${error?.error?.message}` || Message.CanNotLoadData);
       }
     });
+  }
+
+  loadAllTeam() {
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res && TDSHelperArray.hasListValue(res)) {
+          this.lstOfTeam = [...res];
+        }
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   getViewData(params: string) {

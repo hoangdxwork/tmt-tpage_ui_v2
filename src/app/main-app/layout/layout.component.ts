@@ -82,6 +82,10 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // TODO: check trạng thái bât tắt socket thông báo
     let localSocket = this.socketStorageNotificationService.getLocalStorage() as any;
+    if(!localSocket) {
+      this.socketStorageNotificationService.setLocalStorage();
+      localSocket = this.socketStorageNotificationService.getLocalStorage();
+    }
     this.notiSocket = localSocket["socket.all"];
 
     this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
