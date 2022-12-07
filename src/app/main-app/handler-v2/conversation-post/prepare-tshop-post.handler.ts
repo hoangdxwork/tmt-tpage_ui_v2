@@ -21,7 +21,7 @@ export class PrepareUpdateTShopByLiveCampaign {
 
         x.Facebook_LiveId = item.ObjectId;
         x.ChatomniObject = {
-          ChannelType: 2,
+          ChannelType: "TShop",
           ObjectId: item.ObjectId
         }
         x.Facebook_UserAvatar = item.Thumbnail?.Url;
@@ -31,19 +31,6 @@ export class PrepareUpdateTShopByLiveCampaign {
         x.Id = liveCampaign?.Id;
         x.Name = liveCampaign?.Name;
         x.Note = liveCampaign?.Note;
-        x.Facebook_Post = {
-          from: {
-            picture: item.Thumbnail?.Url,
-            id: (item.Data as ChatomniDataTShopPostDto)?.ShopId,
-            name: ''
-          },
-          created_time: (item.Data as ChatomniDataTShopPostDto)?.CreationTime,
-          facebook_id: item.ObjectId,
-          full_picture: '',
-          message: '',
-          picture: item.Thumbnail?.Url,
-          source: ''
-        }
 
         return {...x};
     }
