@@ -249,7 +249,7 @@ export class CreateBillFastComponent implements OnInit {
       if(this.isPrint == true) {
         obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
       }
-      
+
       if(this.isPrintShip == true) {
         obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${data.Ids}`);
       }
@@ -332,7 +332,7 @@ export class CreateBillFastComponent implements OnInit {
       },
       error:(err) => {
         this.isLoading = false;
-        this.message.error(err?.error?.message || Message.InsertFail);
+        this.message.error("Không được để trống số lượng hoặc số tiền!");
       }
     });
   }
