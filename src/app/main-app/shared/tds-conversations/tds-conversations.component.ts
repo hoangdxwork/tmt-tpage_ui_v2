@@ -1026,7 +1026,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   assignIndexDbTag(item: any) {
-    this.activityMatchingService.assignTagToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
+    this.activityMatchingService.assignTagToConversation(item.Id,this.team.Id, this.data.UserId)
       .pipe(takeUntil(this.destroy$)).subscribe({
           next: ()=> {
               this.assignTagOnView(item);
@@ -1040,7 +1040,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   removeIndexDbTag(item: any): void {
-    this.activityMatchingService.removeTagFromConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
+    this.activityMatchingService.removeTagFromConversation(item.Id,this.team.Id, this.data.UserId)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
             this.removeTagOnView(item);
