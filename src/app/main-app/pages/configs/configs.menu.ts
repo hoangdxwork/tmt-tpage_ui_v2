@@ -100,10 +100,10 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
                 name: "Gắn thẻ",
                 link: '/configs/pages/divide-task',
             },
-            {
-                name: "Firebase",
-                link: '/configs/pages/firebase',
-            },
+            // {
+            //     name: "Firebase",
+            //     link: '/configs/pages/firebase',
+            // },
         ]
     }
 ]
