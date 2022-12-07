@@ -1,3 +1,4 @@
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { AutoOrderConfigDTO } from '@app/dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs/operators';
@@ -74,7 +75,8 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     private message: TDSMessageService,
     private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef) { }
+    private cdRef: ChangeDetectorRef,
+    private crmTeamService: CRMTeamService) { }
 
   ngOnInit(): void {
     this.loadData(this.data.ObjectId);
@@ -83,7 +85,10 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   loadData(postId: string) {
     this.isLoading = false;
 
-    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$))
+    let currentTeam = this.crmTeamService.getCurrentTeam();
+    if(!currentTeam) return;
+
+    this.facebookPostService.getOrderConfig(currentTeam.Id ,postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
           if(TDSHelperString.hasValueString(res.OrderReplyTemplate)) {

@@ -144,7 +144,11 @@ export class PostOrderConfigComponent implements OnInit {
 
   loadData(postId: string) {
     this.isLoading = true;
-    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
+
+    this.currentTeam = this.crmTeamService.getCurrentTeam();
+    if(!this.currentTeam) return;
+
+    this.facebookPostService.getOrderConfig(this.currentTeam?.Id, postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
           this.dataModel = {...res};
 
