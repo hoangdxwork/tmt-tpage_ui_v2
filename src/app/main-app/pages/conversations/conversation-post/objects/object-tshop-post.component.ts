@@ -78,7 +78,8 @@ export class ObjectTshopPostComponent  implements OnInit {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
             liveCampaignId: data?.LiveCampaign?.Id,
-            data: data
+            data: data,
+            type: CRMTeamType._TShop
         }
       });
     } else {
