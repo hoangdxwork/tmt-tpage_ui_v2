@@ -231,7 +231,7 @@ export class CsOrder_PrepareModelHandler {
     x.Name = comment.Data?.Actor?.Name;
     x.CRMTeamId = team.Id;
     x.Facebook_ASUserId = comment.UserId;
-    x.Facebook_CommentId = comment.Id;
+    x.Facebook_CommentId = comment.Data?.Id;
     x.Facebook_PostId = comment.ObjectId;
     x.Facebook_UserName = comment.Data?.Actor?.Name;
     x.PartnerName = comment.Data?.Actor?.Name;
