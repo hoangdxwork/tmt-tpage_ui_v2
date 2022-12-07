@@ -34,7 +34,7 @@
               <tbody>
                   <ng-template ngFor let-i='index' let-data [ngForOf]="tableUser.data" let-odd='odd' let-index="index">
                       <tr>
-                          <td> {{ index | numericalOrder: pageSize : pageIndex }}</td>
+                          <td>{{ index | numericalOrder: pageSize : pageIndex }}</td>
                           <td>{{ data.Name }}</td>
                           <td>
                             <div *ngFor="let userRole of data?.Roles">
