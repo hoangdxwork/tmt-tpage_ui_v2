@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectorRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { map, mergeMap, Subject, takeUntil, finalize, Observable } from 'rxjs';
 import { SortEnum } from 'src/app/lib';
@@ -55,6 +55,7 @@ export class OverviewOrderBypartnerComponent implements OnInit {
     private router: Router,
     private odataFastSaleOrderPartnerIdService: OdataFastSaleOrderPartnerIdService,
     private modalRef: TDSModalRef,
+    private cdref: ChangeDetectorRef
     ) { }
 
   ngOnInit(): void {
@@ -96,7 +97,7 @@ export class OverviewOrderBypartnerComponent implements OnInit {
           if (tabNavs) {
             let state = null;
 
-            let exist = this.tabNavs.filter(x => x.State === 'draft')[0];
+            let exist = this.tabNavs.filter(x => x.State === this.filterObj?.state)[0];
             if (exist) {
               state = exist.State;
             } else {
@@ -108,13 +109,17 @@ export class OverviewOrderBypartnerComponent implements OnInit {
 
           return this.getView(pageSize, pageIndex);
 
-        })).subscribe((res: any) => {
-          this.count = res["@odata.count"];
-          this.lstOrder = [...res.value];
-          this.isLoading = false;
-        }, err => {
-          this.isLoading = false;
-          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        })).subscribe({
+          next: (res: any) => {
+            this.count = res["@odata.count"];
+            this.lstOrder = [...res.value];
+            this.isLoading = false;
+  
+            this.cdref.detectChanges();
+          }, error: err => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || Message.CanNotLoadData);
+          }
         })
     }
   }
