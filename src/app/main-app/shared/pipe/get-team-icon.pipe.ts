@@ -13,7 +13,7 @@ export class GetTeamIconPipe implements PipeTransform {
   transform(crmTeamId: number, crmTeamList: CRMTeamDTO[]): string {
     let team!: CRMTeamDTO;
 
-    crmTeamList.map(x => {
+    crmTeamList?.map(x => {
       if(x.Childs && x.Childs.length > 0) {
         let exist = x.Childs.find(a=>a.Id == crmTeamId);
 
