@@ -407,6 +407,7 @@ export class ConversationOrderListComponent implements OnInit {
         next:(res) => {
             this.isLoading = false;
             this.message.success(Message.DeleteSuccess);
+            this.loadData(this.pageSize, this.pageIndex);
 
             // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
             this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);

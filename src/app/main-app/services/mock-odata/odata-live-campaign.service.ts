@@ -39,7 +39,7 @@ export class ODataLiveCampaignService extends BaseSevice {
     return this.apiService.getData<ODataLiveCampaignModelDTO>(api, null);
   }
 
-  public buildFilter(filterObj: FilterObjLiveCampaignDTO) {
+  public buildFilter(filterObj: FilterObjLiveCampaignDTO, isFilterActive?: boolean) {
 
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
@@ -51,7 +51,7 @@ export class ODataLiveCampaignService extends BaseSevice {
         dataFilter.logic = "and";
     }
 
-    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
+    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate && isFilterActive != false) {
 
         let startDate = new Date(filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
         let endDate = new Date(filterObj?.dateRange.endDate).toISOString();
