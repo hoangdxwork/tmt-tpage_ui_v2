@@ -706,6 +706,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   nextData(event: any) {
+    if(this.dataSource?.Items?.length == 0) return;
+
     let id = `${this.team.Id}_${this.data.ObjectId}`;
     let dataSourceItem = (this.dataSource?.Items || []);
 
