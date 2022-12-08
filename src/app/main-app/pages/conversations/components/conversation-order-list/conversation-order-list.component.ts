@@ -21,6 +21,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { CRMTeamService } from '@app/services/crm-team.service';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
 
 @Component({
   selector: 'conversation-order-list',
@@ -28,9 +29,10 @@ import { CRMTeamService } from '@app/services/crm-team.service';
   providers: [TDSDestroyService]
 })
 
-export class ConversationOrderListComponent implements OnInit {
+export class ConversationOrderListComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
+  @Input() currentTeam!: CRMTeamDTO | null;
 
   isOpenCollapCheck: boolean = false;
   indeterminate: boolean = false;
@@ -92,6 +94,10 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if(changes['currentTeam'] && !changes['currentTeam'].firstChange) {
+      this.currentTeam = changes['currentTeam'].currentValue;
+    }
+
     if(changes['data'] && !changes['data'].firstChange) {
         this.currentPost = changes['data'].currentValue;
         this.loadData(this.pageSize, this.pageIndex);
@@ -126,11 +132,11 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   getViewData(params: string) {
-    let team = this.crmTeamService.getCurrentTeam() as any;
+    let team = this.currentTeam as any;
 
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
-      .getOrdersChannelByPostId(team?.Id,this.currentPost.ObjectId, params, this.filterObj)
+      .getOrdersChannelByPostId(team.Id, this.currentPost.ObjectId, params, this.filterObj)
       .pipe(finalize(() => this.isLoading = false ));
   }
 
