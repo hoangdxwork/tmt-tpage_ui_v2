@@ -659,10 +659,10 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   loadCommentsOrderByPost() {
     this.commentOrders = {};
-    this.facebookCommentService.getCommentsOrderByPost(this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: OdataCommentOrderPostDTO) => {
-        if(res && res.value) {
-            let comments = [...res.value];
+    this.facebookCommentService.chatomniGetCommentsOrders(this.team.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+            let comments = [...res];
 
             comments.map((x: CommentOrderPost) => {
                 this.commentOrders[x.asuid] = [];
