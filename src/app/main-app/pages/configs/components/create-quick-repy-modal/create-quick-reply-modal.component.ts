@@ -102,11 +102,9 @@ export class CreateQuickReplyModalComponent implements OnInit {
   currentItem: any;
 
   formQuickReply!: FormGroup;
-  // createImageForm!: FormGroup;
+  createImageForm!: FormGroup;
   base64textString!: string;
   urlSampleUrl!: string;
-  fileName!:string;
-  messageError: any[] = [];
 
   createMessageForm!: FormGroup;
   mediaForm: Array<string> = [];
@@ -145,9 +143,9 @@ export class CreateQuickReplyModalComponent implements OnInit {
       pages: new FormControl(null),
     })
 
-    // this.createImageForm = this.formBuilder.group({
-    //   image: new FormControl(''),
-    // });
+    this.createImageForm = this.formBuilder.group({
+      image: new FormControl(''),
+    });
 
     this.createMessageForm = this.formBuilder.group({
       title: new FormControl('', [Validators.required]),
@@ -229,7 +227,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
           this.createMessageForm.controls.title.setValue(templateAd.Title);
           this.createMessageForm.controls.subTitle.setValue(templateAd.SubTitle);
           this.createMessageForm.controls.text.setValue(templateAd.Text);
-          // this.createImageForm.controls.image.setValue(templateAd.Url);
+          this.createImageForm.controls.image.setValue(templateAd.Url);
 
           this.templateType = templateAd.TemplateType;
 
@@ -286,7 +284,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
   onChangeRadio(radio: boolean) {
     this.formQuickReply.controls.advancedTemplateRadio.setValue(radio)
     this.mediaForm = []
-    // this.createImageForm.controls.image.setValue('')
+    this.createImageForm.controls.image.setValue('')
     this.onResetMessageFrom();
   }
 
@@ -295,7 +293,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
     this.templateType = data.id;
     this.messageStructurePart = 1;
     this.onResetMessageFrom();
-    // this.createImageForm.controls.image.setValue('')
+    this.createImageForm.controls.image.setValue('')
     this.mediaForm = []
 
   }
@@ -328,30 +326,10 @@ export class CreateQuickReplyModalComponent implements OnInit {
     this.formQuickReply.controls.bodyHtml.setValue(this.formQuickReply.value.bodyHtml.concat(data))
   }
 
-  // getUrl(ev: any) {
-  //   this.createImageForm.controls.image.setValue(ev)
-  // }
-
-  handleFileInput(event: any) {
-    var files = event.target.files;
-    var file = files[0];
-
-    if (files && file) {
-      let reader = new FileReader();
-      this.fileName = file.name;
-
-      reader.onload = this.handleReaderBtoa.bind(this);
-      reader.readAsBinaryString(file);
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    }
+  getUrl(ev: any) {
+    this.createImageForm.controls.image.setValue(ev)
   }
 
-  handleReaderBtoa(readerEvt: any) {
-    let binaryString = readerEvt.target.result;
-    this.base64textString = btoa(binaryString);
-  }
 
   cancel() {
     this.modal.destroy(null);
@@ -397,7 +375,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
   prepareModel() {
     let formModelQuickReply = this.formQuickReply.value;
     let formModelCreateMessage = this.createMessageForm.value;
-    // let formModelCreateImage = this.createImageForm.value
+    let formModelCreateImage = this.createImageForm.value
 
     if (formModelQuickReply.active != null) {
       this.data.Active = formModelQuickReply.active as boolean;
@@ -420,7 +398,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
       return
     }
     if (formModelQuickReply.advancedTemplateRadio) {
-      // this.dataAdvancedTemplate.Url = formModelCreateImage.image
+      this.dataAdvancedTemplate.Url = formModelCreateImage.image
       if (this.templateType == 'generic') {
         this.dataAdvancedTemplate.Title = formModelCreateMessage.title
         this.dataAdvancedTemplate.SubTitle = formModelCreateMessage.subTitle
