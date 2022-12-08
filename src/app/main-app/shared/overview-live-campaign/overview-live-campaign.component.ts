@@ -1,3 +1,5 @@
+import { PrepareUpdateTShopByLiveCampaign } from './../../handler-v2/conversation-post/prepare-tshop-post.handler';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { TableDetailReportComponent } from './../table-detail-report/table-detail-report.component';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ModalListPostComponent } from './../../pages/conversations/components/modal-list-post/modal-list-post.component';
@@ -48,7 +50,8 @@ export class OverviewLiveCampaignComponent implements OnInit {
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
-    private prepareUpdateFacebookByLiveCampaign: PrepareUpdateFacebookByLiveCampaign
+    private prepareUpdateFacebookByLiveCampaign: PrepareUpdateFacebookByLiveCampaign,
+    private prepareUpdateTShopByLiveCampaign: PrepareUpdateTShopByLiveCampaign
     ) { }
 
   ngOnInit(): void {
@@ -133,11 +136,41 @@ export class OverviewLiveCampaignComponent implements OnInit {
       title: 'Xóa chiến dịch live',
       content: `Bạn có chắc muốn xóa chiến dịch <span class="text-info-500 font-semibold">${this.dataLiveCampaign.Name}</span>`,
       onOk: () => {
-          let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
-          this.isLoading = true;
+        let model =  {} as any;
+        switch(this.type) {
+          case CRMTeamType._Facebook:
+            model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
+            this.isLoading = true;
 
-          this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+            this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: any) => {
+                  this.data.LiveCampaignId = null as any;
+                  this.data.LiveCampaign = null as any;
+
+                  // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+                  this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
+
+                  this.isLoading = false;
+                  this.message.success('Bỏ chọn chiến dịch thành công');
+                  this.modelRef.destroy(null);
+
+                  this.cdr.detectChanges();
+              },
+              error: (error: any) => {
+                  this.isLoading = false;
+                  this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+                  this.cdr.detectChanges();
+              }
+            });
+            break;
+
+          case CRMTeamType._TShop:
+          model = {...this.prepareUpdateTShopByLiveCampaign.prepareUpdateTShopLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
+
+          this.isLoading = true;
+          this.liveCampaignService.updateTShopByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
+    
                 this.data.LiveCampaignId = null as any;
                 this.data.LiveCampaign = null as any;
 
@@ -152,10 +185,11 @@ export class OverviewLiveCampaignComponent implements OnInit {
             },
             error: (error: any) => {
                 this.isLoading = false;
-                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-                this.cdr.detectChanges();
+                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
             }
           });
+          break;
+        }
       },
       okText: "Xác nhận",
       cancelText: "Hủy bỏ"
