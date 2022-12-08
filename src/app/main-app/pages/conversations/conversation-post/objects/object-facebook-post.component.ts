@@ -100,7 +100,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
             liveCampaignId: data?.LiveCampaign?.Id,
-            data: data
+            data: data,
+            type: CRMTeamType._Facebook
         }
       });
     } else {

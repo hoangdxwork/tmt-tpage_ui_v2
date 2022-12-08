@@ -72,7 +72,7 @@ export class ODataLiveCampaignService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
+        let value = filterObj.searchText.trim();
         dataFilter.filters.push( {
             filters: [
               { field: "Name", operator: OperatorEnum.contains, value: value },
