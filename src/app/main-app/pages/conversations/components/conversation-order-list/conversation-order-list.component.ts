@@ -126,11 +126,11 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   getViewData(params: string) {
-    let teamId = this.crmTeamService.getCurrentTeam() as any;
-    console.log(teamId);
+    let team = this.crmTeamService.getCurrentTeam() as any;
+
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
-      .getOrdersChannelByPostId(teamId.Id,this.currentPost.ObjectId, params, this.filterObj)
+      .getOrdersChannelByPostId(team?.Id,this.currentPost.ObjectId, params, this.filterObj)
       .pipe(finalize(() => this.isLoading = false ));
   }
 
