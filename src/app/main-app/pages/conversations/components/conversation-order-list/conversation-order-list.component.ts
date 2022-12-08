@@ -20,6 +20,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
+import { CRMTeamService } from '@app/services/crm-team.service';
 
 @Component({
   selector: 'conversation-order-list',
@@ -79,6 +80,7 @@ export class ConversationOrderListComponent implements OnInit {
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
     private fastSaleOrderService: FastSaleOrderService,
+    private crmTeamService: CRMTeamService,
     private cdr: ChangeDetectorRef) {
   }
 
@@ -124,9 +126,11 @@ export class ConversationOrderListComponent implements OnInit {
   }
 
   getViewData(params: string) {
+    let teamId = this.crmTeamService.getCurrentTeam() as any;
+    console.log(teamId);
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
-      .getViewByPost(this.currentPost.ObjectId, params, this.filterObj)
+      .getOrdersChannelByPostId(teamId.Id,this.currentPost.ObjectId, params, this.filterObj)
       .pipe(finalize(() => this.isLoading = false ));
   }
 
