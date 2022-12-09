@@ -24,7 +24,7 @@ export class CRMTeamService extends BaseSevice {
   private _currentTeam!: CRMTeamDTO | null;
 
   @Output() changeTeamFromLayout$ = new EventEmitter<any>();
-  @Output() loginOnhangeTeam$ = new EventEmitter<any>();
+  @Output() loginOnChangeTeam$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService);
@@ -80,9 +80,9 @@ export class CRMTeamService extends BaseSevice {
 
   onRefreshListFacebook() {
     this.getAllFacebooks().subscribe({
-      next: dataTeam => {
-        if (TDSHelperObject.hasValue(dataTeam)) {
-          this.onUpdateListFaceBook(dataTeam);
+      next: (res) => {
+        if (TDSHelperObject.hasValue(res)) {
+          this.onUpdateListFaceBook(res);
         }
         else {
           this.onUpdateListFaceBook(null);

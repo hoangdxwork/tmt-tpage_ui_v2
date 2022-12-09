@@ -42,7 +42,7 @@ export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
   }
 
   eventEmitter() {
-    this.crmTeamService.loginOnhangeTeam$.subscribe(res => {
+    this.crmTeamService.loginOnChangeTeam$.subscribe(res => {
       this.crmTeamService.onRefreshListFacebook();
       this.loadListTeam();
     })
