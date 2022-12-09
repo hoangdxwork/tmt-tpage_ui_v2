@@ -41,7 +41,7 @@
                         </span>
 
                     <!-- TShop -->
-                        <tds-avatar *ngIf="team.Type == 'TShop'" 
+                        <tds-avatar *ngIf="team.Type == 'TShop'"
                             [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
                             [tdsSrc]="data.Avatar?.Url"
                             [shape]="'circle'" [size]="'lg'">
@@ -62,7 +62,7 @@
                         </span>
 
                     <!-- Tiktok -->
-                        <tds-avatar *ngIf="team.Type == 'TikTok'" 
+                        <tds-avatar *ngIf="team.Type == 'TikTok'"
                             [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
                             [tdsSrc]="data.Avatar?.Url"
                             [shape]="'circle'" [size]="'lg'">
@@ -467,7 +467,7 @@
                       <quick-reply-button [partner]="partner" (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
                   </div>
 
-                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Đơn hàng" (click)="showModalListBill(data)">
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Hóa đơn" (click)="showModalListBill(data)">
                       <div class="tdsi-file-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
                   </div>
 
