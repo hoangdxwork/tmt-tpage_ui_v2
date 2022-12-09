@@ -330,7 +330,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
           },
         });
 
-        modal.afterClose.subscribe({
+        modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
             if(res) {
               this.crmService.loginOnChangeTeam$.emit(true);

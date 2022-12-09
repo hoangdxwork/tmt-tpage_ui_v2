@@ -252,10 +252,10 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
 
   deleteTeam(id: number) {
     this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           this.message.success('Hủy kết nối thành công');
           this.crmService.loginOnChangeTeam$.emit(true);
-          
+
           if(id == this.loginTeam?.Id) {
             this.loginTeam = null;
           }
@@ -286,8 +286,8 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
       },
     });
 
-    modal.afterClose.subscribe((res) => {
-      if(res) {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
         if(res) {
           this.crmService.loginOnChangeTeam$.emit(true);
           this.loadData();
