@@ -172,6 +172,14 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  addTemplateMessageV3(teamId: number, userId: string, data: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/crmactivity/${teamId}_${userId}/addchanneltemplatemessage`,
+      method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   assignUser(psid:string, data: any){
     if(data.to_id) {
       psid = data.to_id;

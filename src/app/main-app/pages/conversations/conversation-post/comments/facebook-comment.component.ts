@@ -445,11 +445,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
   onProductSelected(event: any, item: ChatomniDataItemDto) {
     let model = {
-      page_id: this.team?.ChannelId,
-      to_id: item.UserId,
-      comment_id: item.Id,
-      message: `${ event.Name} - ${event.Price}`,
-
       product: {
         Id: event.Id,
         Name: event.Name,
@@ -458,7 +453,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       }
     };
 
-    this.activityMatchingService.addTemplateMessageV2(this.team.ChannelId, model)
+    this.activityMatchingService.addTemplateMessageV3(this.team?.Id, item.UserId, model)
     .pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         item.Data.is_reply = false;

@@ -272,6 +272,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.disableNextUrl = false;
 
       this.currentType = this.lstType.find(x => x.id === event.id);
+      if(this.currentType.id == 'all') {
+        this.isFilter = false;
+      }
 
       this.queryObj = this.onSetFilterObject();
       this.loadFilterDataSource();
@@ -394,14 +397,24 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return;
     }
 
-    currentObject = this.lstObjects.filter(x => x.ObjectId == params_postid)[0];
-    let exist = currentObject && currentObject?.ObjectId;
-    if(exist) {
-        this.currentObject = currentObject;
-        this.selectPost(currentObject);
+    let index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+    if(Number(index) >= 0) {
+      currentObject = this.lstObjects[index];
 
-        this.isLoading = false;
-        return;
+      //TODO: item thứ 6 trở đi không hiện trên màn hình đổi lên đầu
+      if(Number(index) >= 5) {
+        this.lstObjects = this.lstObjects.filter(x => x.ObjectId != params_postid);
+        this.lstObjects = [...[currentObject], ...this.lstObjects];
+      }
+
+      let exist = currentObject && currentObject?.ObjectId;
+      if(exist) {
+          this.currentObject = currentObject;
+          this.selectPost(currentObject);
+
+          this.isLoading = false;
+          return;
+      }
     }
 
     let teamId = this.currentTeam?.Id as number;
@@ -555,6 +568,32 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
           this.lstObjects  = [...res.Items];
+          let currentObject = {} as any;
+
+          let index = this.lstObjects.findIndex(x => x.ObjectId == this.currentPost?.ObjectId);
+          if(Number(index) >= 0) {
+             currentObject = this.lstObjects[index];
+
+            //TODO: item thứ 6 trở đi không hiện trên màn hình đổi lên đầu
+            if(Number(index) >= 5) {
+              this.lstObjects = this.lstObjects.filter(x => x.ObjectId != this.currentPost?.ObjectId);
+              this.lstObjects = [...[currentObject], ...this.lstObjects];
+            }
+          } else if(!this.isFilter) {
+            let teamId = this.currentTeam?.Id as number;
+            this.chatomniObjectService.getById(this.currentPost?.ObjectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: ChatomniObjectsItemDto) => {
+                  currentObject = {...res};
+                  this.lstObjects = [...[currentObject], ...this.lstObjects];
+
+                  this.isLoading = false;
+              },
+              error: (error: any) => {
+                  this.isLoading = false;
+                  this.message.error(error?.error?.message);
+              }
+            })
+          }
 
           setTimeout(() => {
               this.isRefreshing = false;
