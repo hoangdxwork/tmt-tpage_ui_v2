@@ -289,6 +289,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
         next: (res) => {
           this.loadData();
           this.message.success('Hủy kết nối thành công');
+          this.crmService.loginOnhangeTeam$.emit(true);
         },
         error: (error) => {
           if (error?.error?.message) {
@@ -331,7 +332,13 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
         modal.afterClose.subscribe({
           next: (res: any) => {
-            this.loadData();
+            if(res) {
+              delete res["@odata.context"];
+              this.crmService.loginOnhangeTeam$.emit(true);
+              this.loadData();
+            } else {
+              this.isLoading = false;
+            }
           },
           error: (error: any) => {
             this.isLoading = false;
