@@ -105,7 +105,6 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     const y = (window.top?.outerHeight || 0) / 2 + (window.top?.screenY || 0) - (width / 2);
     const x = (window.top?.outerWidth || 0) / 2 + (window.top?.screenX || 0) - (height / 2);
     let a = window.open(this.tShopAuthentication, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
-    console.log(a);
 
   }
 

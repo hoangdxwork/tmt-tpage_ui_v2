@@ -223,6 +223,15 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  checkInfo_v2(teamId: any, userId: any) : Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/partner/${teamId}_${userId}/checkinfo`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
   getLastOrder(partnerId: number): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/partner/${partnerId}/lastorder`,

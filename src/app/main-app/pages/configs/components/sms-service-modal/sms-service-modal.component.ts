@@ -63,7 +63,6 @@ export class SMSServiceModalComponent implements OnInit {
             res.forEach(item => {
               item.name = this.parserName(item.name);
             });
-            console.log(this.items);
 
             if (this.dataId) {
                 this.isLoading = true;

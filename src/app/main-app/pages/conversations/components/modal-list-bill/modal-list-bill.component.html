@@ -20,7 +20,7 @@
             </div>
         </tds-dropdown-menu>
     </div>
-       
+
     <div class="flex flex-col flex-auto">
         <tds-table class="!h-auto" #basicTable [listData]="lstBillofPartner" [showPagination]="false" [pageSize]="lstBillofPartner.length">
             <thead>
@@ -29,14 +29,13 @@
                     <th width="154px">Ngày tạo</th>
                     <th width="154px">Tổng tiền</th>
                     <th width="154px">Trạng thái</th>
-                    <th width="154px">Thông tin</th>
-                    <th width="154px">Thanh toán</th>
+                    <th width="140px">Thông tin</th>
+                    <th width="200px">Thanh toán</th>
                     <th class="text-center">Thao tác</th>
                 </tr>
             </thead>
         </tds-table>
         <tds-spin [spinning]="isLoading" class="flex flex-col overflow-hidden overflow-y-auto w-full h-full">
-    
             <virtual-scroller *ngIf="lstBillofPartner && lstBillofPartner.length > 0; else noData"
                 #scroll [items]="lstBillofPartner" class="tds-custom-scroll w-full h-full"
                 (vsEnd)="vsEnd($event)"
@@ -51,7 +50,7 @@
                         <div class="w-[154px] p-2">
                             <tds-tag [status]='data.ShowState | getColorStatusShowState'>{{data.ShowState}}</tds-tag>
                         </div>
-                        <div class="w-[154px] p-2">
+                        <div class="w-[140px] p-2">
                             <div>
                                 <button tds-flat-button color="secondary" rounded="!rounded-full" (click)="showModalDetailBill(data)">
                                     <span class="flex items-center text-info-500">
@@ -60,7 +59,6 @@
                                 </button>
                             </div>
                         </div>
-    
                         <div class="w-[154px] p-2">
                             <button tds-button color="secondary" tds-dropdown [backdrop]="true" trigger="click" [tdsDropdownMenu]="menu">
                                 <span class="flex items-center">
@@ -76,7 +74,7 @@
                                 </div>
                             </tds-dropdown-menu>
                         </div>
-                        <div class="flex-auto p-2 gap-x-2 flex justify-center">
+                        <div class="flex-auto p-2 gap-x-2 flex justify-end">
                             <button tds-button-icon color="secondary" (click)="showModalSendMessage(data)" tds-tooltip tooltipTitle="Gửi mẫu facebook">
                                 <span class="flex items-center text-neutral-1-500">
                                     <i class="tdsi-facebook-2-fill"></i>
@@ -102,8 +100,7 @@
             </ng-template>
         </tds-spin>
     </div>
-    
 </div>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
+    <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="cancel()">Đóng</button>
 </div>

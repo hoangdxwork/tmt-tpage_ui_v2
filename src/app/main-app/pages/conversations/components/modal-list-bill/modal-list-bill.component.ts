@@ -14,6 +14,7 @@ import { Component, Input, OnInit, Output, ViewContainerRef, EventEmitter } from
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
 
 @Component({
   selector: 'app-modal-list-bill',
@@ -33,7 +34,7 @@ export class ModalListBillComponent implements OnInit {
   lstBillofPartner!: BillofPartnerDTO[];
   lstBillDeafault!: BillofPartnerDTO[];
   pageCurrent = 1;
-  pageCurrentOld = 0; 
+  pageCurrentOld = 0;
   partnerId!: number;
   datas: BillofPartnerDTO[] = [];
   searchSelect: string = "";
@@ -71,12 +72,9 @@ export class ModalListBillComponent implements OnInit {
     this.lstBillofPartner = [];
     this.datas = [];
     this.pageCurrent = 1;
-    let model = {
-      UserId:  this.psid,
-      PageId: this.page_id
-    }
+    let team = this.teamService.getCurrentTeam() as CRMTeamDTO;
 
-    this.partnerService.checkInfo(model).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+    this.partnerService.checkInfo_v2(team.Id, this.psid).pipe(takeUntil(this.destroy$)).subscribe((res) => {
       if (res.Data && res.Data["Id"]) {
         this.partnerId = res.Data["Id"];
         this.nextData();
@@ -195,7 +193,7 @@ export class ModalListBillComponent implements OnInit {
     if(data.ShowState != "Đã xác nhận") {
       this.message.error("Chỉ được gửi yêu cầu cho đơn hàng đã xác nhận.");
       return
-    } 
+    }
     var model = [];
     this.isLoading = true
     var payment = this.paymentMethodOptions.filter(x => x.Text == data.PaymentMethod);
@@ -212,7 +210,7 @@ export class ModalListBillComponent implements OnInit {
 
     let modelDestroy = {
       type: 'sendPayMent',
-      value: '' 
+      value: ''
     }
 
     this.fastSaleOrderService.sendPaymentRequest(model).pipe(takeUntil(this.destroy$)).subscribe(
@@ -227,7 +225,7 @@ export class ModalListBillComponent implements OnInit {
             }
           }
           this.isLoading = false;
-        }, 
+        },
         error: error => {
           this.isLoading = false;
           this.message.error(error.error? error.error.message:'Gửi yêu cầu thất bại');
@@ -238,13 +236,13 @@ export class ModalListBillComponent implements OnInit {
   onSendImage(data: BillofPartnerDTO){
     let modelDestroy = {
       type: 'img',
-      value: '' 
+      value: ''
     }
     this.isLoading = true;
     this.fastSaleOrderService.getOrderHtmlToImage(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: res => {
-          modelDestroy.value = res; 
+          modelDestroy.value = res;
           this.isLoading = false;
 
           this.modalRef.destroy(modelDestroy);
@@ -270,7 +268,7 @@ export class ModalListBillComponent implements OnInit {
   }
   }
 
-  
+
   trackByIndex(_: number, data: any): number {
     return data.Id;
   }
