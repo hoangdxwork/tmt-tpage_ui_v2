@@ -207,14 +207,13 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, model);
   }
 
-  assignUserToConversation(psid: string, userId: string, pageId: string) {
+  assignUserToConversation(id: string, userId: string, pageId: string) {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/assignuser`,
+      url: `${this._BASE_URL}/rest/v2.0/crmmatching/${id}/assignuser`,
       method: CoreApiMethodType.post
     }
 
     let model = {
-      pageId: pageId,
       userId: userId
     }
     return this.apiService.getData<TDSSafeAny>(api, model);

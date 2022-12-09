@@ -971,10 +971,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   assignUser(item: TDSSafeAny) {
     if(this.isLoadingSelectUser){
-      return
+      return;
     }
+    
     this.isLoadingSelectUser = true;
-    this.activityMatchingService.assignUserToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
+    let id = `${this.team.Id}_${this.data.UserId}`;
+
+    this.activityMatchingService.assignUserToConversation(id, item.Id, this.team.ChannelId)
       .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: TDSSafeAny) => {
               this.data.AssignedTo = res;
