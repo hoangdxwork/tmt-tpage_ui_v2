@@ -353,13 +353,6 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
   onProductSelected(event :any) {
     if(event && event.Id){
       let model = {
-        // page_id: this.team.Facebook_PageId,
-        // to_id: this.dataItem.UserId,
-        // comment_id: this.dataItem.Data.id,
-
-        page_id: this.team.ChannelId || this.team.Facebook_PageId,
-        to_id: this.dataItem.UserId,
-
         product: {
           Id: event.Id,
           Name: event.Name,
@@ -368,7 +361,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
         }
       };
 
-      this.activityMatchingService.addTemplateMessageV2(this.team.ChannelId, model)
+      this.activityMatchingService.addTemplateMessageV3(this.team?.Id, this.dataItem?.UserId, model)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
             if(TDSHelperArray.hasListValue(res)){

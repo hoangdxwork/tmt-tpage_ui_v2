@@ -429,9 +429,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   onProductSelected(event: any) {
     let that= this;
     let model = {
-      page_id: this.pageId,
-      to_id: this.data.ConversationId,
-
       product: {
         Id: event.Id,
         Name: event.Name,
@@ -440,7 +437,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
     };
 
-    this.activityMatchingService.addTemplateMessageV2(this.data.ConversationId, model)
+    this.activityMatchingService.addTemplateMessageV3(this.team?.Id ,this.data?.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
               that.message.success('Gửi thành công sản phẩm');

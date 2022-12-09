@@ -451,14 +451,24 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       return;
     }
 
-    currentOmni = this.lstConversation.filter(x => x.ConversationId == params_csid)[0];
-    let exist = currentOmni && currentOmni?.ConversationId;
-    if(exist) {
-        this.setCurrentConversationItem(currentOmni);
-        this.isLoading = false;
-        return;
-    }
+    let index = this.lstConversation.findIndex(x => x.ConversationId == params_csid)
+    if(Number(index) >= 0) {
+      currentOmni = this.lstConversation[index];
 
+      //TODO: item thứ 7 trở đi không hiện trên màn hình đổi lên đầu
+      if(Number(index) >= 6) {
+        this.lstConversation = this.lstConversation.filter(x => x.ConversationId != params_csid);
+        this.lstConversation = [...[currentOmni], ...this.lstConversation];
+      }
+
+      let exist = currentOmni && currentOmni?.ConversationId;
+      if(exist) {
+          this.setCurrentConversationItem(currentOmni);
+          this.isLoading = false;
+          return;
+      }
+    }
+    
     let teamId = this.currentTeam?.Id as number;
     this.chatomniConversationService.getById(teamId, params_csid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {
@@ -782,6 +792,32 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           this.lstConversation = [...res?.Items];
           this.totalConversations = res?.Items.length;
+
+          let currentOmni = {} as any;
+          let index = this.lstConversation.findIndex(x => x.ConversationId == this.conversationItem?.ConversationId);
+          if(Number(index) >= 0) {
+            let currentOmni = this.lstConversation[index];
+      
+            //TODO: item thứ 7 trở đi không hiện trên màn hình đổi lên đầu
+            if(Number(index) >= 6) {
+              this.lstConversation = this.lstConversation.filter(x => x.ConversationId != this.conversationItem?.ConversationId);
+              this.lstConversation = [...[currentOmni], ...this.lstConversation];
+            }
+            } else if(!this.isFilter) {
+              let teamId = this.currentTeam?.Id as number;
+              this.chatomniConversationService.getById(teamId, this.conversationItem?.ConversationId).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (res: ChatomniConversationItemDto) => {
+                    currentOmni = {...res};
+                    this.lstConversation = [...[currentOmni], ...this.lstConversation];
+          
+                    this.isLoading = false;
+                },
+                error: (error: any) => {
+                    this.isLoading = false;
+                    this.message.error(error?.error?.message);
+                }
+              })
+            }
 
           this.isProcessing = false;
           this.cdRef.detectChanges();
