@@ -9,6 +9,7 @@ import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
 import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
+import { TikTokLiveItemDataDto } from '@app/dto/conversation-all/chatomni/tikitok-live.dto';
 
 export interface SocketEventNotificationDto {
   Title: string;
@@ -65,6 +66,19 @@ export class SocketOnEventService {
             channelId = socketData.Data?.Conversation?.ChannelId;
             break;
 
+          case ChatmoniSocketEventName.chatomniOnMessage:
+            let tshopCmt = socketData?.Message?.ChannelId && socketData?.Message?.MessageType == ChatomniMessageType.TShopComment;
+            if(tshopCmt) {
+                channelId = socketData.Message.ChannelId;
+            } else {
+                channelId = socketData.Conversation?.ChannelId;
+                let isNull = !TDSHelperString.hasValueString(channelId) && TDSHelperString.hasValueString(socketData.Data.Conversation?.ChannelId);
+                if(isNull) {
+                    channelId = socketData.Data.Conversation?.ChannelId;
+                }
+            }
+            break;
+
           default:
             channelId = socketData.Conversation?.ChannelId;
             break;
@@ -96,6 +110,7 @@ export class SocketOnEventService {
 
             // TODO: thông báo tin nhắn, comment
             case ChatmoniSocketEventName.chatomniOnMessage:
+
                 let notificationMessage = this.prepareOnMessage(socketData, team);
                 this.pubSocketEvent(notificationMessage, socketData, team); //SocketioOnMessageDto
             break;
@@ -207,9 +222,19 @@ export class SocketOnEventService {
       case ChatomniMessageType.TShopComment:
         let cTShop = {...socketData.Message?.Data} as ChatomniTShopDataDto;
         model = {
-            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || cTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa binh luận`,
+            Title: `TShop: <span class="font-semibold"> ${socketData.Conversation?.Name || cTShop?.Actor?.Name || 'Người dùng TShop'} </span> vừa bình luận`,
             Message: `${socketData.Message?.Message}`,
             Attachments: cTShop?.AttachmentDto,
+            Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+        };
+        break;
+
+      case ChatomniMessageType.UnofficialTikTokChat:
+        let tikitok = {...socketData.Message?.Data} as TikTokLiveItemDataDto;
+        model = {
+            Title: `TikTok: <span class="font-semibold"> ${socketData.Conversation?.Name || tikitok?.nickname || 'Người dùng Tiktok'} </span> vừa bình luận`,
+            Message: `${socketData.Message?.Message}`,
+            Attachments: null,
             Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
         };
         break;

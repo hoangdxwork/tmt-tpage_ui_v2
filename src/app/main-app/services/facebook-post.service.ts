@@ -207,9 +207,9 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
     return this.apiService.getData<ConversationPostConfigDTO>(api, data);
   }
 
-  getOrderConfig(postId: string): Observable<any> {
+  getOrderConfig(teamId: number, postId: string): Observable<any> {
     let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs`,
+      url: `${this._BASE_URL}/rest/v2.0/facebookpost/${teamId}_${postId}/autoorderconfigs`,
       method: CoreApiMethodType.get
     }
 

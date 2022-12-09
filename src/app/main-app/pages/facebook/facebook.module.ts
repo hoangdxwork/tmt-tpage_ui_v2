@@ -1,3 +1,6 @@
+import { TshopChannelComponentV2 } from './components/tshop-channel/tshop-channel-v2.component';
+import { FacebookChannelV2Component } from './components/facebook-channel/facebook-channel-v2.component';
+import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -25,6 +28,13 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSBadgeModule } from 'tds-ui/badges';
 import { TDSAvatarModule } from 'tds-ui/avatar';
 import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TShopLoginComponent } from './components/tshop-login/tshop-login.component';
+import { TDSTabsModule } from 'tds-ui/tabs';
+import { FacebookChannelComponent } from './components/facebook-channel/facebook-channel.component';
+import { TshopChannelComponent } from './components/tshop-channel/tshop-channel.component';
+import { TDSEmptyModule } from 'tds-ui/empty';
+import { ConvertPageComponent } from './components/convert-page/convert-page.component';
+import { TiktokChannelComponent } from './components/tiktok-channel/tiktok-channel.component';
 
 const SERVICES = [
   FacebookGraphService,
@@ -34,7 +44,14 @@ const SERVICES = [
 @NgModule({
   declarations: [
     FacebookComponent,
-    AddPageComponent
+    AddPageComponent,
+    TShopLoginComponent,
+    FacebookChannelComponent,
+    TshopChannelComponent,
+    FacebookChannelV2Component,
+    TshopChannelComponentV2,
+    ConvertPageComponent,
+    TiktokChannelComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +75,10 @@ const SERVICES = [
     PipeModule,
     TDSSpinnerModule,
     UploadImageModule,
-    TDSToolTipModule
+    TDSToolTipModule,
+    TDSTabsModule,
+    TDSEmptyModule,
+    TDSFilterStatusModule
   ],
   providers: [
     ...SERVICES,

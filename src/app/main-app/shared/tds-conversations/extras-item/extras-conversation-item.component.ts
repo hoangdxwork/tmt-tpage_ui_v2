@@ -23,23 +23,16 @@ export class ExtrasConversationItemComponent implements OnInit, OnChanges {
   @Input() data! : ChatomniObjectsItemDto;
   @Input() item!: ChatomniDataItemDto;
 
-  dataFacebook!: MDB_Facebook_Mapping_PostDto;
-  dataTshop!: ChatomniDataTShopPostDto;
-
   postPictureError: any[] = [];
 
-  constructor(
-    private router: Router,
+  constructor(private router: Router,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
-    private destroy$: TDSDestroyService
-  ) { }
+    private destroy$: TDSDestroyService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(this.team.Type == CRMTeamType._Facebook && this.typeNumber == 12){
-      this.dataFacebook = this.data.Data as MDB_Facebook_Mapping_PostDto;
     }else if(this.team.Type == CRMTeamType._TShop && this.typeNumber == 91) {
-      this.dataTshop = this.data.Data as ChatomniDataTShopPostDto
     }
   }
 

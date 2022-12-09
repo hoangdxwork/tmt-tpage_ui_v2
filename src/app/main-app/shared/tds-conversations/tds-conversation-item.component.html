@@ -1,13 +1,86 @@
 <div *ngIf="dataItem && team" class="px-2">
 	<!--Lọc theo Messages-->
-	<div *ngIf="dataItem.Type == 11 || dataItem.Type == 92" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
+	<div *ngIf="dataItem.Type == 11" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
+
+      <!-- webhook_attachments template sản phẩm -->
+      <!-- <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
+          (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
+          <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
+              <div *ngIf="wb.type == 'template' && wb.payload">
+                <div class="w-full flex justify-end relative">
+                  <div *ngFor="let item of wb?.payload?.elements" id="scroll-product{{dataItem.Data.id}}" class="w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
+                    <div #itemProduct class="snap-start shrink-0">
+                      <tds-card class="bg-white w-full h-full rounded-xl" (click)="detail()">
+                        <img src="{{ item?.image_url }}" alt="" />
+                        <tds-card-content class="px-4 py-3">
+                            <div class="flex flex-col items-start gap-y-1">
+                                <h3 class="text-body font-semibold">{{ item?.title }}</h3>
+                                <p class="text-body-2 text-neutral-1-400">{{ item?.price }}</p>
+                            </div>
+                        </tds-card-content>
+                      </tds-card>
+                    </div>
+                  </div>
+                  <div [ngClass]="wb?.payload?.elements?.length > 2 ? 'flex' : 'hidden'" class="w-[85%] px-2 h-full justify-between items-center absolute z-1">
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous(dataItem.Data.id)">
+                      <i class="tdsi-arrow-left-line text-neutral-1-400"></i>
+                    </button>
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="next(dataItem.Data.id)">
+                      <i class="tdsi-arrow-right-line text-neutral-1-400"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="w-full flex justify-end py-2">
+                  <div class="px-4 py-2 bg-primary-1 text-white rounded-l-xl rounded-t-xl">
+                    Hóa đơn của bạn
+                  </div>
+                </div>
+
+                <div class="w-full flex justify-end">
+                  <div class="flex flex-col w-[50%]">
+                    <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
+                      <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
+                      <span class="text-title-1 font-semibold">{{ wb.payload.recipient_name }}</span>
+                    </div>
+                    <div class="bg-white px-4 rounded-b-xl">
+                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col items-start">
+                        <div class="flex gap-x-2.5">
+                          <img class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover"
+                              src="{{ wb?.payload?.order_url }}">
+                          <div class="flex flex-col gap-y-1 items-start">
+                            <div class="font-semibold">{{ wb?.payload?.summary }}</div>
+                            <div class="flex gap-x-2">
+                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ wb?.payload?.order_number }}</span></span>
+                              <span>-</span>
+                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ wb?.payload?.currency }}</span></span>
+                            </div>
+                          </div>
+                        </div>
+                        <span class="mt-4 text-neutral-1-600">Đã thanh toán bằng</span>
+                        <span class="mt-1 text-body-1">{{ wb?.payload?.payment_method }}</span>
+                        <span class="mt-2 text-neutral-1-600">Địa chỉ giao hàng</span>
+                        <span class="mt-1 text-body-1">{{ wb?.payload?.address }}</span>
+                      </div>
+                      <div class="py-2 flex justify-between items-center">
+                        <span class="text-neutral-1-600 font-semibold">Tổng tiền</span>
+                        <span class="text-title-1 font-semibold">{{ (wb?.payload?.order_number)*(wb?.payload?.currency) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div> -->
+
       <div class="chat-body w-full" [ngClass]="dataItem.IsShowAvatar? '': '!my-2 pl-9'">
           <div *ngIf="!dataItem.IsOwner " class="mr-2 flex flex-col justify-end">
 
-            <tpage-avatar-facebook *ngIf="dataItem.IsShowAvatar" [shape]="'circle'" [size]="36"
-                [psid]="dataItem.Data?.from?.id" [token]="team.ChannelToken">
-            </tpage-avatar-facebook>
-
+            <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookType)">
+                <tpage-avatar-facebook *ngIf="dataItem.IsShowAvatar" [shape]="'circle'" [size]="36"
+                    [psid]="(dataItem.Data | facebookType)?.from?.id" [token]="team.ChannelToken">
+                </tpage-avatar-facebook>
+            </div>
           </div>
 
           <!-- Tin nhắn văn bản -->
@@ -16,7 +89,7 @@
             <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.Message" [searchText]="searchText" class="text-left" ></div>
           </div>
 
-          <!-- Tin nhắn hình ảnh -->
+          <!-- Tin nhắn hình ảnh facebook -->
 		      <!-- 1 hình -->
 		      <div *ngIf="dataItem.Data && dataItem.Data?.attachments && dataItem.Data.attachments?.data!.length == 1" class="flex flex-wrap max-w-[225px]">
               <div *ngFor="let att of dataItem.Data.attachments.data" [ngClass]="dataItem.IsOwner ? 'flex-row' : 'flex-row-reverse'"
@@ -61,7 +134,6 @@
                           <show-attachment [type]="att.mime_type" [url]="att.file_url" (onError)="isErrorAttachment(att, dataItem)">
                           </show-attachment>
                       </a>
-
                   </div>
               </div>
           </div>
@@ -73,7 +145,7 @@
           </div>
 
           <!-- Tin nhắn không tải được -->
-          <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
+          <div *ngIf="!dataItem.Message && !dataItem.Data?.attachments && dataItem.Type == 11" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
               tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>
@@ -143,7 +215,7 @@
   </div>
 
   <!--Lọc theo comments-->
-  <div *ngIf="dataItem.Type == 12 || dataItem.Type == 91" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
+  <div *ngIf="dataItem.Type == 12" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
       <div class="w-full flex flex-row">
 
           <!-- Avatar Facebook_PageId -->
@@ -154,27 +226,10 @@
                     [token]="team.ChannelToken">
                 </tpage-avatar-facebook>
             </div>
-
-            <div *ngIf="dataItem.Type == 91">
-                <tds-avatar [size]="36" [tdsSrc]="(dataItem.Data | tShopDataMessage)?.Actor?.AvatarUrl"></tds-avatar>
-            </div>
           </div>
 
         <!-- comment block -->
         <div class="flex flex-col w-full commnent-block">
-
-          <!--Chat chỉ gửi hình ảnh-->
-          <!-- <div *ngIf="dataItem.Image" class="img-outer">
-              <img tds-image [tdsSrc]="data.Image" class="img-responsive img-thumbnail">
-          </div> -->
-
-          <!-- Hình ảnh -->
-          <!-- <div *ngIf="dataItem.comment?.attachment" class="pb-2 w-full">
-              <img tds-image *ngIf="data.comment.attachment.type != 'sticker'"
-                [tdsSrc]="data.comment.attachment.media.image.src" />
-              <img tds-image *ngIf="data.comment.attachment.type == 'sticker'"
-                [tdsSrc]="data.comment.attachment.media.image.src" />
-          </div> -->
 
           <div class="inline-flex w-fit chat-main-block group">
               <!-- Nội dung bình luận -->
@@ -184,14 +239,7 @@
                       <div class="flex flex-auto">
                           <!--Nội dung-->
                           <div *ngIf="dataItem.Message">
-                            <div *ngIf="dataItem.Type == 12">
-                                <div class="name font-semibold pb-1">{{dataItem.Data?.from?.name}}</div>
-                            </div>
-
-                            <div *ngIf="dataItem.Type == 91">
-                                <div class="name font-semibold pb-1" *ngIf="dataItem.Data">{{ (dataItem.Data | tShopDataMessage).Actor?.Name }} </div>
-                            </div>
-
+                            <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
                             <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
                             <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert" #contentMessage></div>
                           </div>
@@ -222,6 +270,7 @@
                 </div>
             </div>
           </div>
+
           <!--Thích hiện ẩn + CreatedBy.Name-->
           <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
             <div class="chat-acts flex flex-row items-center" style="position: relative;">
@@ -311,8 +360,8 @@
           <!-- Phản hồi bình luận -->
           <div *ngIf="children" class="chat-list" @eventReplyComment>
               <div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
-                  <div class="avatar mr-2">
-                      <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
+                  <div *ngIf="dataItem.Type == 12" class="avatar mr-2">
+                    <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
                         [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
                   </div>
@@ -323,7 +372,10 @@
                               tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
                                   <div class="border-activety-comment" *ngIf="child.Message">
-                                      <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                        <div *ngIf="dataItem.Type == 12">
+                                            <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
+                                        </div>
+
                                       <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
                                       <div class="hidden" [innerHtml]="child.Message | bbcodeConvert" #contentMessageChild></div>
                                   </div>

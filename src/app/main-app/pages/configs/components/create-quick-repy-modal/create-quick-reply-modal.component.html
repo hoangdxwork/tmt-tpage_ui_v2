@@ -218,10 +218,10 @@
             <div *ngIf="templateType == 'generic'">
                 <div *ngIf="messageStructurePart == 1">
                     <div class="flex flex-col w-full">
-                        <form [formGroup]="createImageForm" class="flex flex-col gap-y-2" autocomplete="off">
+                        <div class="flex flex-col gap-y-2">
                             <span class="text-neutral-1-900 text-body-2 font-semibold">Phương tiện</span>
                             <upload-pictures-wall [data]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></upload-pictures-wall>
-                        </form>
+                        </div>
                     </div>
                 </div>
                 <div *ngIf="messageStructurePart == 2">
@@ -244,9 +244,9 @@
                 <div *ngIf="messageStructurePart == 3">
                     <div class="flex flex-col w-full h-full">
                         <span class="text-neutral-1-900 text-body-2 font-semibold mb-2">Nút hành động</span>
-                        <div class="w-full h-[195px] overflow-auto tds-custom-scroll">
+                        <div class="w-full h-[195px] overflow-auto tds-custom-scroll mb-2 pr-2">
                             <div *ngFor="let formButtons of buttonFormList; let i = index">
-                                <div class="bg-neutral-3-50 w-full rounded p-3 mb-2">
+                                <div class="bg-neutral-3-50 w-full rounded p-3">
                                     <div class="flex flex-row items-center justify-between w-full mb-2.5">
                                         <span class="text-neutral-1-900 text-caption-1 font-semibold">
                                             Hành động {{ i + 1 }}
@@ -314,9 +314,9 @@
                 <div *ngIf="messageStructurePart == 2">
                     <div class="flex flex-col w-full h-full">
                         <span class="text-neutral-1-900 text-body-2 font-semibold mb-2">Nút hành động</span>
-                        <div class="w-full h-[195px] overflow-auto tds-custom-scroll">
+                        <div class="w-full h-[195px] overflow-auto tds-custom-scroll mb-2 pr-2">
                             <div *ngFor="let form of buttonFormList; let i = index">
-                                <div class="bg-neutral-3-50 w-full rounded p-3 mb-2">
+                                <div class="bg-neutral-3-50 w-full rounded p-3">
                                     <div class="flex flex-row items-center justify-between w-full mb-2.5">
                                         <span class="text-neutral-1-900 text-caption-1 font-semibold">
                                             Hành động {{ i + 1 }}
@@ -369,18 +369,18 @@
             <div *ngIf="templateType == 'media'">
                 <div *ngIf="messageStructurePart == 1">
                     <div class="flex flex-col w-full">
-                        <form [formGroup]="createImageForm" class="flex flex-col gap-y-2" autocomplete="off">
+                        <div class="flex flex-col gap-y-2">
                             <span class="text-neutral-1-900 text-body-2 font-semibold">Phương tiện</span>
                             <upload-pictures-wall [data]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></upload-pictures-wall>
-                        </form>
+                        </div>
                     </div>
                 </div>
                 <div *ngIf="messageStructurePart == 2">
                     <div class="flex flex-col w-full h-full">
                         <span class="text-neutral-1-900 text-body-2 font-semibold mb-2">Nút hành động</span>
-                        <div class="w-full h-[195px] overflow-auto tds-custom-scroll">
+                        <div class="w-full h-[195px] overflow-auto tds-custom-scroll mb-2 pr-2">
                             <div *ngFor="let form of buttonFormList; let i = index">
-                                <div class="bg-neutral-3-50 w-full rounded p-3 mb-2">
+                                <div class="bg-neutral-3-50 w-full rounded p-3">
                                     <div class="flex flex-row items-center justify-between w-full mb-2.5">
                                         <span class="text-neutral-1-900 text-caption-1 font-semibold">
                                             Hành động {{ i + 1 }}

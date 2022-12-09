@@ -26,7 +26,6 @@ import { ColumnTableDTO } from '../../../order/components/config-column/config-c
 export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
   @Input() currentDateRanges!: TDSDateRangeDTO;
-  @ViewChild('innerText') innerText!: ElementRef;
 
   filterObj: FilterObjLiveCampaignDTO = {
     ids: [],
@@ -55,6 +54,8 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
+  isFilterActive: boolean = false;
+  innerText!: string;
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: ColumnTableDTO[] = [
@@ -169,14 +170,16 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  onLoadOption(event: FilterObjLiveCampaignDTO) {
-    this.filterObj = { ...this.filterObj, ...event };
-    this.loadData(this.pageSize, this.pageIndex);
+  onLoadOption(event: TDSSafeAny) {
+    this.filterObj = { ...this.filterObj, ...event.value };
+    this.isFilterActive = event.isActive;
+
+    this.onSearch();
   }
 
   refreshData() {
     this.pageIndex = 1;
-    this.innerText.nativeElement.value = '';
+    this.innerText = '';
 
     this.checked = false;
     this.indeterminate = false;
@@ -292,26 +295,22 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
       });
     }, 500);
 
-    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-      map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      distinctUntilChanged(),
-      // TODO: switchMap xử lý trường hợp sub in sub
-      switchMap((text: TDSSafeAny) => {
+  }
 
-        this.pageIndex = 1;
-        this.filterObj.searchText = text;
-        let filters = this.odataLiveCampaignService.buildFilter(this.filterObj);
+  onSearch(event?: any) {
+    this.pageIndex = 1;
+        this.filterObj.searchText = this.innerText;
+        let filters = this.odataLiveCampaignService.buildFilter(this.filterObj, this.isFilterActive);
 
         let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
-        return this.getViewData(params);
-
-      }))
-      .subscribe((res: any) => {
-          this.count = res['@odata.count'] as number;
-          this.lstOfData = [...res.value];
-      }, error => {
-          this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+        this.getViewData(params).subscribe({
+          next: (res: any) => {
+            this.count = res['@odata.count'] as number;
+            this.lstOfData = [...res.value];
+          }, 
+          error: error => {
+            this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+        }
       });
   }
 

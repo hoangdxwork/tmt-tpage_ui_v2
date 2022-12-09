@@ -39,6 +39,7 @@ export interface ProductPouchDBDTO {
   Id: number;
   IsDelete: boolean;
   Datas: DataPouchDBDTO[];
+  Total: number;
 }
 
 export interface KeyCacheIndexDBDTO {
@@ -53,6 +54,12 @@ export interface SyncCreateProductTemplateDto {
   productTmpl: ProductTemplateV2DTO;
 }
 
-
+export enum InventoryChangeType {
+  _EDIT_LIVECAMPAIGN_POST = "_EDIT_LIVECAMPAIGN_POST",
+  _TAB_ORDER = "_TAB_ORDER",
+  _DEFAULT_PRODUCT = "_DEFAULT_PRODUCT",
+  _DRAWER_ADD_PRODUCT = "_DRAWER_ADD_PRODUCT",
+  _EDIT_ORDER = "_EDIT_ORDER"
+}
 
 

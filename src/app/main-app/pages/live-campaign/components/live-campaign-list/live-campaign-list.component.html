@@ -2,7 +2,8 @@
   <div class="w-full flex space-x-2 justify-end items-center px-4 py-2.5">
     <div class="w-1/4">
         <tds-form-field class="w-full">
-            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput #innerText />
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput 
+                [(ngModel)]="innerText" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
         </tds-form-field>
     </div>

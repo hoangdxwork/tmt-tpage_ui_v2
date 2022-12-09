@@ -77,6 +77,43 @@
               ],
               "outputHashing": "all"
             },
+            "staging": {
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "10mb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "10kb",
+                  "maximumError": "20kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                },
+                {
+                  "replace": "src/manifest.json",
+                  "with": "src/assets/firebase/manifest.json"
+                },
+                {
+                  "replace": "src/firebase-messaging-sw.js",
+                  "with": "src/assets/firebase/firebase-messaging-sw.js"
+                }
+              ],
+              "outputHashing": "all"
+            },
             "development": {
               "buildOptimizer": false,
               "optimization": false,
@@ -99,6 +136,9 @@
           "configurations": {
             "production": {
               "browserTarget": "source:build:production"
+            },
+            "staging": {
+              "browserTarget": "source:build:staging"
             },
             "development": {
               "browserTarget": "source:build:development"

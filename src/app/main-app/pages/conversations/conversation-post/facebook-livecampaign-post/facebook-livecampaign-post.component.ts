@@ -1,3 +1,5 @@
+import { PrepareUpdateTShopByLiveCampaign } from './../../../../handler-v2/conversation-post/prepare-tshop-post.handler';
+import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { FaceBookPostItemHandler } from '../../../../handler-v2/conversation-post/facebook-post-item.handler';
 import { ChatomniObjectsItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-objects.dto';
 import { LiveCampaignModel } from '../../../../dto/live-campaign/odata-live-campaign-model.dto';
@@ -28,6 +30,7 @@ import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-pos
 export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
 
   @Input() data!: ChatomniObjectsItemDto;
+  @Input() type!: string;
 
   lstOfData: Array<LiveCampaignModel> = [];
   currentLiveCampaign: any;
@@ -52,6 +55,7 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
     private viewContainerRef: ViewContainerRef,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private prepareUpdateFacebookByLiveCampaign: PrepareUpdateFacebookByLiveCampaign,
+    private prepareUpdateTShopByLiveCampaign: PrepareUpdateTShopByLiveCampaign,
     private modal: TDSModalService,
     private destroy$: TDSDestroyService) {
   }
@@ -209,32 +213,67 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
 
   onSave() {
     let id = this.currentLiveCampaign?.Id;
+
     if(id && Guid.isGuid(id)) {
-      let model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
-      this.isLoading = true;
+      let model = {} as any;
 
-      this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
+      switch(this.type) {
+        case CRMTeamType._Facebook:
+          model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
 
-            this.data.LiveCampaignId = this.currentLiveCampaign.Id;
-            this.data.LiveCampaign = {
-                Id: this.currentLiveCampaign.Id,
-                Name:this.currentLiveCampaign.Name,
-                Note: this.currentLiveCampaign.Note
-            };
+          this.isLoading = true;
+          this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
 
-            // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-            this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
+                this.data.LiveCampaignId = this.currentLiveCampaign.Id;
+                this.data.LiveCampaign = {
+                    Id: this.currentLiveCampaign.Id,
+                    Name:this.currentLiveCampaign.Name,
+                    Note: this.currentLiveCampaign.Note
+                };
 
-            this.isLoading = false;
-            this.message.success('Cập nhật chiến dịch thành công');
-            this.modalRef.destroy(this.currentLiveCampaign.Id);
-        },
-        error: (error: any) => {
-            this.isLoading = false;
-            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-        }
-      });
+                // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+                this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
+
+                this.isLoading = false;
+                this.message.success('Cập nhật chiến dịch thành công');
+                this.modalRef.destroy(this.currentLiveCampaign.Id);
+            },
+            error: (error: any) => {
+                this.isLoading = false;
+                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+            }
+          });
+          break;
+        case CRMTeamType._TShop:
+          model = {...this.prepareUpdateTShopByLiveCampaign.prepareUpdateTShopLiveCampaign(this.data, this.currentLiveCampaign, 'update')};
+
+          this.isLoading = true;
+          this.liveCampaignService.updateTShopByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+    
+                this.data.LiveCampaignId = this.currentLiveCampaign.Id;
+                this.data.LiveCampaign = {
+                    Id: this.currentLiveCampaign.Id,
+                    Name:this.currentLiveCampaign.Name,
+                    Note: this.currentLiveCampaign.Note
+                };
+    
+                // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+                this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.emit(this.data);
+    
+                this.isLoading = false;
+                this.message.success('Cập nhật chiến dịch thành công');
+                this.modalRef.destroy(this.currentLiveCampaign.Id);
+            },
+            error: (error: any) => {
+                this.isLoading = false;
+                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+            }
+          });
+          break;
+      }
+      
     }
   }
 

@@ -1,3 +1,4 @@
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { formatDate, DatePipe } from '@angular/common';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
@@ -40,6 +41,7 @@ import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.com
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
 import { ModalOrderDeletedComponent } from '../components/modal-order-deleted/modal-order-deleted.component';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'app-order',
@@ -53,6 +55,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
 
   lstOfData!: ODataSaleOnline_OrderModel[];
+  lstOfTeam!: CRMTeamDTO[];
   getStatus!: TIDictionary<String>;
   pageSize = 20;
   pageIndex = 1;
@@ -79,7 +82,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     },
     teamId: '',
     liveCampaignId: '',
-    IsHasPhone: null,
+    Telephone: null,
     PriorityStatus: null
   }
 
@@ -144,11 +147,13 @@ export class OrderComponent implements OnInit, AfterViewInit {
     private crmMatchingService: CRMMatchingService,
     private modalService: TDSModalService,
     private chatomniMessageFacade: ChatomniMessageFacade,
-    private destroy$: TDSDestroyService,
-    private datePipe : DatePipe) {
+    private datePipe : DatePipe,
+    private chatomniConversationService: ChatomniConversationService,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
+    this.loadAllTeam();
     this.loadTags();
     this.loadGridConfig();
     this.loadStatusTypeExt();
@@ -226,15 +231,14 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
+    // let params = `top=${pageSize}&%24orderby=DateCreated+desc&%24filter=${filters}`;
 
-    if(this.filterObj.IsHasPhone != null) {
-      params += `&IsHasPhone=${this.filterObj.IsHasPhone}`;
-    }
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          
           let lstId = this.lstOfData.map((x) => x.PartnerId);
           this.loadParnerStatus(lstId);
       },
@@ -320,6 +324,19 @@ export class OrderComponent implements OnInit, AfterViewInit {
               this.hiddenColumns = this.columns;
             }
         }
+    })
+  }
+
+  loadAllTeam() {
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res && TDSHelperArray.hasListValue(res)) {
+          this.lstOfTeam = [...res];
+        }
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message);
+      }
     })
   }
 
@@ -570,7 +587,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-      IsHasPhone: null,
+      Telephone: null,
       PriorityStatus: null
     }
 
@@ -611,6 +628,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.filterObj.teamId = event.teamId ? event.teamId : null;
 
     this.filterObj.PriorityStatus = event.PriorityStatus ? event.PriorityStatus : null;
+
+    this.filterObj.Telephone = event.Telephone;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
@@ -810,21 +829,29 @@ export class OrderComponent implements OnInit, AfterViewInit {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
     this.isOpenChat = true;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+    if(!TDSHelperString.hasValueString(data.CRMTeamId)) {
+      this.isLoading = false;
+      this.message.error(Message.PageNotExist);
+      return;
+    }
+
+    this.partnerService.getAllByPartnerId(data.CRMTeamId, partnerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any): any => {
 
           let pageIds: any = [];
           obs?.map((x: any) => {
-              pageIds.push(x.page_id);
+              pageIds.push(x.ChannelId);
           });
 
           this.isOpenChat = false;
           if (pageIds.length == 0) {
+              this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 
@@ -832,6 +859,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
             next: (teams: any): any => {
 
                 if (teams?.length == 0) {
+                    this.isLoading = false;
                     return this.message.error('Không có kênh kết nối với khách hàng này.');
                 }
 
@@ -839,12 +867,12 @@ export class OrderComponent implements OnInit, AfterViewInit {
                 let pageDic = {} as any;
 
                 teams.map((x: any) => {
-                  let exist = obs.filter((r: any) => r.page_id == x.ChannelId)[0];
+                  let exist = obs.filter((r: any) => r.ChannelId == x.ChannelId)[0];
 
-                  if (exist && !pageDic[exist.page_id]) {
-                    pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                  if (exist && !pageDic[exist.ChannelId]) {
+                    pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vàoss
                     this.mappingTeams.push({
-                        psid: exist.psid,
+                        psid: exist.UserId,
                         team: x
                     })
                   }
@@ -852,34 +880,39 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
                 if (this.mappingTeams.length > 0) {
                     this.currentMappingTeam = this.mappingTeams[0];
-                    this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+                    this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+                } else {
+                  this.isLoading = false;
                 }
             }
           });
       },
       error: (error: any) => {
         this.isOpenChat = false;
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
       }
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-            this.currentConversation = { ...model };
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-            this.psid = res.psid;
+            this.psid = psid;
             this.isOpenDrawer = true;
+            this.isLoading = false;
         }
       },
       error: (error: any) => {
+          this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })

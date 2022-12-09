@@ -104,7 +104,11 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
     }
 
     this.isActive = true;
-    this.onLoadOption.emit(this.filterObj);
+    let model =  {
+      isActive: this.isActive,
+      value: this.filterObj
+    }
+    this.onLoadOption.emit(model);
   }
 
   onCancel() {
@@ -122,7 +126,11 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
     };
 
     this.isActive = false;
-    this.onLoadOption.emit(this.filterObj);
+    let model =  {
+      isActive: this.isActive,
+      value: this.filterObj
+    }
+    this.onLoadOption.emit(model);
     this.isVisible = false;
   }
 

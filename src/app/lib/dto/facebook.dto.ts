@@ -27,6 +27,11 @@ export interface FacebookUser {
   picture: FacebookPicture
 }
 
+export interface FacebookCacheDto {
+  access_token: string;
+  user: FacebookUser;
+}
+
 export interface FacebookLoginOptions {
   auth_type?: 'rerequest';
   scope?: string;

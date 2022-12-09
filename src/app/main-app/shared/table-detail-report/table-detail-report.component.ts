@@ -10,7 +10,7 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TDSSafeAny, TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { ReportLiveCampaignDetailDTO } from '../../dto/live-campaign/report-livecampain-overview.dto';
 import { Message } from '../../../lib/consts/message.const';
-import { takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { ModalLiveCampaignBillComponent } from '../../pages/live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { ModalLiveCampaignOrderComponent } from '../../pages/live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
@@ -145,6 +145,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
     this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.inventories = res;
+          this.cdr.detectChanges();
       },
       error: (err: any) => {
           this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
@@ -400,7 +401,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
+    if(matchRex || (TDSHelperString.isString(pop) && !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim()))) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }

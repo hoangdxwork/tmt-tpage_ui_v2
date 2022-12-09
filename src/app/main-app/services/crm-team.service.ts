@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
+import { ChatOmniTShopDto, TShopDto, TUserDto } from '@core/dto/tshop.dto';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -16,7 +17,6 @@ export class CRMTeamService extends BaseSevice {
   prefix: string = "odata";
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/crmteam";
-  private readonly __keyCacheFacebook_PageId = 'nearestFacebookPageId';
   private readonly __keyCacheTeamId = 'nearestTeamId';
 
   private readonly listFaceBook$ = new ReplaySubject<Array<CRMTeamDTO> | null>(1);
@@ -24,6 +24,7 @@ export class CRMTeamService extends BaseSevice {
   private _currentTeam!: CRMTeamDTO | null;
 
   @Output() changeTeamFromLayout$ = new EventEmitter<any>();
+  @Output() loginOnChangeTeam$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService);
@@ -45,12 +46,28 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<Array<CRMTeamDTO>>(api, null);
   }
 
-  insert(data: TDSSafeAny): Observable<Array<CRMTeamDTO>> {
+  getTShopUser(accessToken: string): Observable<TUserDto> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/user?accessToken=${accessToken}`,
+      method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<TUserDto>(api, null);
+  }
+
+  getTShop(accessToken: string): Observable<Array<ChatOmniTShopDto>> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/shop?accessToken=${accessToken}`,
+      method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<Array<ChatOmniTShopDto>>(api, null);
+  }
+
+  insert(data: TDSSafeAny): Observable<any> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
       method: CoreApiMethodType.post
     }
-    return this.apiService.getData<Array<CRMTeamDTO>>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   onChangeListFaceBook() {
@@ -62,17 +79,20 @@ export class CRMTeamService extends BaseSevice {
   }
 
   onRefreshListFacebook() {
-    this.getAllFacebooks().subscribe(dataTeam => {
-      if (TDSHelperObject.hasValue(dataTeam)) {
-        this.onUpdateListFaceBook(dataTeam);
-      }
-      else {
+    this.getAllFacebooks().subscribe({
+      next: (res) => {
+        if (TDSHelperObject.hasValue(res)) {
+          this.onUpdateListFaceBook(res);
+        }
+        else {
+          this.onUpdateListFaceBook(null);
+          this.onUpdateTeam(null);
+        }
+      }, 
+      error: (error) => {
         this.onUpdateListFaceBook(null);
         this.onUpdateTeam(null);
       }
-    }, error => {
-      this.onUpdateListFaceBook(null);
-      this.onUpdateTeam(null);
     });
   }
 
@@ -98,7 +118,7 @@ export class CRMTeamService extends BaseSevice {
     }))
   }
 
-  getTeamById(id: string): Observable<any> {
+  getTeamById(id: string): Observable<CRMTeamDTO> {
     return this.onChangeListFaceBook().pipe(map((res: any) => {
       let data: any[] = [];
 

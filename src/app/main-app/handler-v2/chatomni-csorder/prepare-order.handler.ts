@@ -3,12 +3,13 @@ import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-sale
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { Injectable } from "@angular/core";
 import { CompanyCurrentDTO } from "@app/dto/configs/company-current.dto";
-import { ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
+import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniTShopDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { SaleOnlineSettingDTO } from "@app/dto/setting/setting-sale-online.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
 import { CRMTeamService } from "@app/services/crm-team.service";
 import { TDSHelperString } from "tds-ui/shared/utility";
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
+import { TikTokLiveItemDataDto } from '@app/dto/conversation-all/chatomni/tikitok-live.dto';
 
 @Injectable()
 
@@ -29,17 +30,7 @@ export class CsOrder_PrepareModelHandler {
         x.Id = model.Id;
     }
 
-    switch(team.Type) {
-      case CRMTeamType._Facebook:
-        x.Name = model.Name;
-
-        break;
-
-      case CRMTeamType._TShop:
-        x.Name = model.PartnerName;
-
-        break;
-    }
+    x.Name = model.Name || model.PartnerName || x.Facebook_UserName;
 
     x.Address = model.Address;
     x.CityCode = model.CityCode;
@@ -55,6 +46,7 @@ export class CsOrder_PrepareModelHandler {
     x.Facebook_ASUserId = model.Facebook_ASUserId;
     x.Facebook_UserId = model.Facebook_UserId;
     x.Facebook_UserName = model.Facebook_UserName;
+    x.Facebook_PostId = model.Facebook_PostId;
 
     x.Note = model.Note;
     x.PartnerId = model.PartnerId;
@@ -70,7 +62,7 @@ export class CsOrder_PrepareModelHandler {
     x.UserId = model.UserId || model.User?.Id;
 
     x.Details = [];
-    model.Details?.map(obj => {
+    model.Details?.map((obj: any) => {
       let item = {
           Note: obj.Note,
           Price: obj.Price,
@@ -97,6 +89,7 @@ export class CsOrder_PrepareModelHandler {
 
     let x = {} as InsertFromPostDto;
     let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+    comment.Data = comment.Data as ChatomniFacebookDataDto;
 
     x.Name = comment.Data?.from?.name;
     x.CRMTeamId = team.Id;
@@ -129,7 +122,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     //TODO: check sdt cấu hình mặc định
-    let config = JSON.parse(companyCurrents.Configs);
+    let config = companyCurrents?.Configs ? JSON.parse(companyCurrents.Configs) : null;
     if(config && config.PhoneRegex) {
         let phoneRegex = config.PhoneRegex || null;
         phoneRegex = new RegExp(`${phoneRegex}`, 'g');
@@ -171,6 +164,119 @@ export class CsOrder_PrepareModelHandler {
     }
 
     return {...item};
+  }
+
+  public prepareInsertFromTiktokComment(comment: ChatomniDataItemDto, saleOnlineSetting: SaleOnlineSettingDTO, companyCurrents: CompanyCurrentDTO) {
+    let x = {} as InsertFromPostDto;
+    let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+    let data = comment.Data as TikTokLiveItemDataDto;
+
+    x.Name = data?.nickname;
+    x.CRMTeamId = team.Id;
+    x.Facebook_ASUserId = comment.UserId;
+    x.Facebook_CommentId = comment.Id;
+    x.Facebook_PostId = comment.ObjectId;
+    x.Facebook_UserName = data?.nickname;
+    x.PartnerName = data?.nickname;
+
+    //TODO: check sản phẩm mặc định
+    let product = this.facebookPostService.getDefaultProductPost() as Detail_QuickSaleOnlineOrder;
+    x.Details = [];
+
+    if(product && product.ProductId) {
+        let item = {
+          // Discount: product.Discount,
+          ProductId: product.ProductId,
+          ProductName: product.ProductName,
+          ProductNameGet: product.ProductNameGet,
+          UOMId: product.UOMId,
+          UOMName: product.UOMName,
+          Quantity: product.Quantity,
+          Price: product.Price,
+          Factor: product.Factor
+        } as Detail;
+
+        x.Details.push(item);
+    }
+
+    //TODO: check sdt cấu hình mặc định
+    let config = companyCurrents?.Configs ? JSON.parse(companyCurrents.Configs) : null;
+    if(config && config.PhoneRegex) {
+        let phoneRegex = config.PhoneRegex || null;
+        phoneRegex = new RegExp(`${phoneRegex}`, 'g');
+        this.phoneRegex = phoneRegex;
+    }
+
+    if(TDSHelperString.hasValueString(comment.Message) && !x.Telephone) {
+        let exec = this.phoneRegex.exec(comment.Message) as any[];
+        if(exec && exec[1]) {
+            let phone = exec[1].trim();
+            x.Telephone = phone;
+        }
+    }
+
+    if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
+        x.Note = `{before}${comment.Message}`;
+    }
+
+    return {...x};
+  }
+
+  public prepareInsertFromChannelComment(comment: ChatomniDataItemDto, saleOnlineSetting: SaleOnlineSettingDTO, companyCurrents: CompanyCurrentDTO) {
+
+    let x = {} as InsertFromPostDto;
+    let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+    comment.Data = comment.Data as ChatomniTShopDataDto;
+
+    x.Name = comment.Data?.Actor?.Name;
+    x.CRMTeamId = team.Id;
+    x.Facebook_ASUserId = comment.UserId;
+    x.Facebook_CommentId = comment.Data?.Id;
+    x.Facebook_PostId = comment.ObjectId;
+    x.Facebook_UserName = comment.Data?.Actor?.Name;
+    x.PartnerName = comment.Data?.Actor?.Name;
+
+    //TODO: check sản phẩm mặc định
+    let product = this.facebookPostService.getDefaultProductPost() as Detail_QuickSaleOnlineOrder;
+    x.Details = [];
+
+    if(product && product.ProductId) {
+        let item = {
+          // Discount: product.Discount,
+          ProductId: product.ProductId,
+          ProductName: product.ProductName,
+          ProductNameGet: product.ProductNameGet,
+          UOMId: product.UOMId,
+          UOMName: product.UOMName,
+          Quantity: product.Quantity,
+          Price: product.Price,
+          Factor: product.Factor
+        } as Detail;
+
+        x.Details.push(item);
+    }
+
+    //TODO: check sdt cấu hình mặc định
+    let config = companyCurrents?.Configs ? JSON.parse(companyCurrents.Configs) : null;
+    if(config && config.PhoneRegex) {
+        let phoneRegex = config.PhoneRegex || null;
+        phoneRegex = new RegExp(`${phoneRegex}`, 'g');
+        this.phoneRegex = phoneRegex;
+    }
+
+    if(TDSHelperString.hasValueString(comment.Message) && !x.Telephone) {
+        let exec = this.phoneRegex.exec(comment.Message) as any[];
+        if(exec && exec[1]) {
+            let phone = exec[1].trim();
+            x.Telephone = phone;
+        }
+    }
+
+    if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
+        x.Note = `{before}${comment.Message}`;
+    }
+
+    return {...x};
   }
 }
 
@@ -228,6 +334,7 @@ export interface InsertFromMessageDto {
   Facebook_UserId: string;
   Facebook_ASUserId: string;
   Facebook_UserName: string;
+  Facebook_PostId: string;
   PartnerName: string;
   Name: string;
   Email?: any;

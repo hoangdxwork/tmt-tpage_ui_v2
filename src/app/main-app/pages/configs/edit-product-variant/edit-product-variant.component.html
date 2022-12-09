@@ -22,7 +22,7 @@
                     <tds-form-field class="mb-4">
                         <tds-label>Nhóm sản phẩm:</tds-label>
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm'
-                            disabledField="isActive" formControlName="Categ" [data]="lstProductCategory" [valuePrimitive]="false"
+                            formControlName="Categ" [data]="lstProductCategory" [valuePrimitive]="false"
                             [allowClear]="true" >
                         </tds-select>
                         <tds-error>
@@ -38,10 +38,20 @@
                         </tds-select>
                     </tds-form-field>
 
+                    <!-- <tds-form-field class="mb-4">
+                        <tds-label>Đơn vị mặc định:</tds-label>
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mặc định'
+                            formControlName="UOM" [data]="lstProductUOM" [valuePrimitive]="false" [allowClear]="true">
+                        </tds-select>
+                        <tds-error>
+                            Vui lòng chọn đơn vị mua
+                        </tds-error>
+                    </tds-form-field> -->
+
                     <tds-form-field class="mb-4">
                         <tds-label>Đơn vị mua:</tds-label>
-                        <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua'
-                            disabledField="isActive" formControlName="UOM" [data]="lstProductUOM" [valuePrimitive]="false" [allowClear]="true">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mặc định'
+                            formControlName="UOMPO" [data]="lstProductUOM" [valuePrimitive]="false" [allowClear]="true">
                         </tds-select>
                         <tds-error>
                             Vui lòng chọn đơn vị mua

@@ -13,7 +13,7 @@ export class ActivityMatchingService extends BaseSevice  {
   prefix: string = "odata";
   table: string = "CRMActivity";
   baseRestApi: string = "rest/v1.0/crmmatching";
-  baseRestApi_v2: string = "rest/v2.0/chatomni";
+  baseRestApi_v2: string = "rest/v2.0/crmmatching";
 
   private activity: any = {};
   private extras: any = {};
@@ -172,6 +172,14 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  addTemplateMessageV3(teamId: number, userId: string, data: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/crmactivity/${teamId}_${userId}/addchanneltemplatemessage`,
+      method: CoreApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   assignUser(psid:string, data: any){
     if(data.to_id) {
       psid = data.to_id;
@@ -183,40 +191,37 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  assignTagToConversation(psid: string, tagId: string, pageId: string){
+  assignTagToConversation(tagId: string, teamId: any, userId: any){
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/updatetag`,
+      url: `${this._BASE_URL}/${this.baseRestApi_v2}/${teamId}_${userId}/updatetag`,
       method: CoreApiMethodType.post
     }
     let model = {
-      pageId: pageId,
       action: 'add',
       tagId: tagId
     }
     return this.apiService.getData<TDSSafeAny>(api, model);
   }
 
-  removeTagFromConversation(psid: string, tagId: string, pageId: string){
+  removeTagFromConversation(tagId: string, teamId: any, userId: any){
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/updatetag`,
+      url: `${this._BASE_URL}/${this.baseRestApi_v2}/${teamId}_${userId}/updatetag`,
       method: CoreApiMethodType.post
     }
     let model =  {
-      pageId: pageId,
       action: 'remove',
       tagId: tagId
     }
     return this.apiService.getData<TDSSafeAny>(api, model);
   }
 
-  assignUserToConversation(psid: string, userId: string, pageId: string) {
+  assignUserToConversation(id: string, userId: string, pageId: string) {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/assignuser`,
+      url: `${this._BASE_URL}/rest/v2.0/crmmatching/${id}/assignuser`,
       method: CoreApiMethodType.post
     }
 
     let model = {
-      pageId: pageId,
       userId: userId
     }
     return this.apiService.getData<TDSSafeAny>(api, model);

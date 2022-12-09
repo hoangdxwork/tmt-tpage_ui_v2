@@ -54,6 +54,16 @@ export class ModalAddShiftComponent implements OnInit {
   prepareModel() {
     let formValue = this.formAddShift.value;
 
+    if(formValue.Name == null) {
+      this.message.error("Vui lòng nhập tên ca làm việc");
+    }
+    if(formValue.FromHour == null) {
+      this.message.error("Vui lòng nhập thời gian bắt đầu");
+    }
+    if(formValue.ToHour == null) {
+      this.message.error("Vui lòng nhập thời gian kết thúc");
+    }
+
     let startTime = formValue.FromHour.getHours();
     let minutesStart = formValue.FromHour.getMinutes();
     let startEnd = formValue.ToHour.getHours();

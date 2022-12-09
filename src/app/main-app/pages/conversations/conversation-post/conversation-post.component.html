@@ -80,6 +80,11 @@
                             <object-tshop-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
                             </object-tshop-post>
                         </div>
+
+                        <div *ngIf="item && currentTeam!.Type == 'UnofficialTikTok'">
+                            <object-tiktok-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
+                            </object-tiktok-post>
+                        </div>
                     </div>
 
                     <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
@@ -146,7 +151,7 @@
                     </ng-template>
 
                     <div class="flex pt-1 w-full h-[calc(100vh-109px)]">
-                        <conversation-order-list class="w-full" [data]="currentPost" *ngIf="selectedIndex == 0"></conversation-order-list>
+                        <conversation-order-list class="w-full" [data]="currentPost" [currentTeam]="currentTeam" *ngIf="selectedIndex == 0"></conversation-order-list>
                     </div>
                 </tds-tab>
 
@@ -159,7 +164,7 @@
                         </div>
                     </ng-template>
                     <div *ngIf="currentTeam">
-                        <conversation-partner [team]="currentTeam" [type]="type" [syncConversationInfo]="syncConversationInfo"> </conversation-partner>
+                        <conversation-partner [team]="currentTeam" [type]="type"> </conversation-partner>
                     </div>
                 </tds-tab>
 
@@ -172,19 +177,18 @@
                         </div>
                     </ng-template>
                     <div *ngIf="currentTeam">
-                        <conversation-order [type]="type" [syncConversationInfo]="syncConversationInfo"></conversation-order>
+                        <conversation-order [type]="type"></conversation-order>
                     </div>
                 </tds-tab>
             </tds-tabset>
         </tds-spin>
-
 
         <!-- chưa có dữ liệu -->
         <div class="flex-auto flex " *ngIf="!currentPost && !currentObject && !isLoading">
             <div class="flex-auto flex flex-col justify-center items-center bg-white">
                 <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png" alt="">
                 <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp bán hàng toàn diện cho bán hàng đa kênh</span>
-                <span class="text-neutral-1-300 pt-2">Quản lý tập trung các bình luận, tin nhắn từ các kênh Facebook giúp bạn không bỏ sót bất kỳ đơn nào.</span>
+                <span class="text-neutral-1-300 pt-2">Quản lý tập trung các bình luận, tin nhắn từ các kênh giúp bạn không bỏ sót bất kỳ đơn nào.</span>
             </div>
         </div>
     </div>

@@ -1,10 +1,13 @@
+import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
+import { SocketStorageNotificationService } from './main-app/services/socket-io/socket-config-notification.service';
 import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
@@ -23,6 +26,10 @@ export class AppComponent {
   teamId!: number;
   isShowModal: boolean = false;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
+  @ViewChild('templateFirebase') templateFirebase!: TemplateRef<{}>;
+
+  message: any;
+  token: any;
 
   constructor(public libCommon: TCommonService,
     public auth: TAuthService,
@@ -34,14 +41,14 @@ export class AppComponent {
     private tdsConfigService: TDSConfigService,
     private socketOnEventService: SocketOnEventService,
     private loader: PageLoadingService,
+    private socketStorageNotificationService: SocketStorageNotificationService,
     private destroy$: TDSDestroyService) {
     this.loader.show();
 
-    let localSocket = localStorage.getItem('_socketNotification') as any;
-    let checkNotti = JSON.parse(localSocket || null);
-
-    if(!TDSHelperString.hasValueString(checkNotti)) {
-        localStorage.setItem('_socketNotification', JSON.stringify("ON"));
+    let exist = this.socketStorageNotificationService.getLocalStorage();
+    if(!exist) {
+      this.socketStorageNotificationService.setLocalStorage();
+      exist = this.socketStorageNotificationService.getLocalStorage();
     }
   }
 
@@ -49,23 +56,23 @@ export class AppComponent {
     let that = this;
     that.init().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.loader.hidden();
-        that.isLoaded = true;
+          this.loader.hidden();
+          that.isLoaded = true;
       }
     });
 
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
 
-        let localSocket = localStorage.getItem('_socketNotification') as any;
-        let checkNotti = JSON.parse(localSocket || null) || '';
+        let localSocket = this.socketStorageNotificationService.getLocalStorage() as any;
 
-        if(checkNotti == 'OFF') return;
+        if(!localSocket['socket.all']) return;
 
         this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
         switch(res.EventName) {
           // Thông báo tin nhắn lỗi
           case ChatmoniSocketEventName.chatomniOnUpdate:
+              if(!localSocket[ChatmoniSocketEventName.chatomniOnUpdate]) return;
               let paramsError =  this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
               let userError = res.Data?.Data?.UserId == this.route.snapshot.queryParams?.csid;
               let hasNoti = TDSHelperObject.hasValue(res.Notification);
@@ -77,6 +84,7 @@ export class AppComponent {
 
           // Thông báo tạo đơn hàng
           case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+              if(!localSocket[ChatmoniSocketEventName.onCreatedSaleOnline_Order]) return;
               let paramsCreated = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
               let createdNoti = res && paramsCreated;
 
@@ -84,17 +92,9 @@ export class AppComponent {
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
 
-          // // Thông báo cập nhật đơn hàng
-          // case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
-          //     let paramsPost = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
-          //     let orderNoti = res && paramsPost;
-
-          //     if(orderNoti == true) break;
-          //     this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
-          // break;
-
           // Thông báo xóa đơn hàng
           case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
+              if(!localSocket[ChatmoniSocketEventName.onDeleteSaleOnline_Order]) return;
               let paramsDelete = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
               let deleteNoti = res && paramsDelete;
 
@@ -104,6 +104,11 @@ export class AppComponent {
 
           // Thông báo khi có tin nhắn gửi về
           case ChatmoniSocketEventName.chatomniOnMessage:
+              if(!localSocket[ChatmoniSocketEventName.chatomniOnMessage]) return;
+              if(!localSocket[CRMTeamType._Facebook] && (res?.Data?.Message?.MessageType == ChatomniMessageType.FacebookComment || res?.Data?.Message?.MessageType == ChatomniMessageType.FacebookMessage)) return;
+              if(!localSocket[CRMTeamType._TShop] && (res?.Data?.Message?.MessageType == ChatomniMessageType.TShopComment || res?.Data?.Message?.MessageType == ChatomniMessageType.TShopMessage)) return; 
+              if(!localSocket[CRMTeamType._TikTok] && res?.Data?.Message?.MessageType == ChatomniMessageType.UnofficialTikTokChat ) return; 
+
               let paramsMess = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
               let exist = res && paramsMess;
 
@@ -113,10 +118,12 @@ export class AppComponent {
 
           // Thông báo Số lượng sản phẩm chiến dịch chờ chốt
           case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
+              if(!localSocket[ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout]) return;
           break;
 
           // Thông báo Số lượng sản phẩm chiến dịch có thểm mua
           case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
+              if(!localSocket[ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy]) return;
           break;
 
           default:

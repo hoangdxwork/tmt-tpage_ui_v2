@@ -1,3 +1,4 @@
+import { SocketStorageNotificationService } from './../services/socket-io/socket-config-notification.service';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -34,7 +35,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   withLayout!: number;
   withLaptop: number = 1600;
   establishedConnected?: boolean = true;
-  notiSocket!: string;
+  notiSocket!: boolean;
 
   @ViewChild('withLayout') viewChildWithLayout!: ElementRef;
   isDeviceToken: boolean = false;
@@ -53,7 +54,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private cdRef: ChangeDetectorRef,
     private message: TDSMessageService,
     private resizeObserver: TDSResizeObserver,
-    private destroy$: TDSDestroyService ) {
+    private destroy$: TDSDestroyService,
+    private socketStorageNotificationService: SocketStorageNotificationService ) {
 
     router.events.pipe(
         takeUntil(this.destroy$),filter(event => event instanceof NavigationEnd), // Only get the event of NavigationEnd
@@ -79,9 +81,12 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     // TODO: check trạng thái bât tắt socket thông báo
-    let localSocket = localStorage.getItem('_socketNotification') as any;
-    let checkNotti = JSON.parse(localSocket || null);
-    this.notiSocket = checkNotti;
+    let localSocket = this.socketStorageNotificationService.getLocalStorage() as any;
+    if(!localSocket) {
+      this.socketStorageNotificationService.setLocalStorage();
+      localSocket = this.socketStorageNotificationService.getLocalStorage();
+    }
+    this.notiSocket = localSocket["socket.all"];
 
     this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.lstMenu = this.setMenu(res);
@@ -99,6 +104,14 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     this.establishedConnected = this.socketService.establishedConnected;
 
     this.firebaseDevice();
+
+    this.onEventEmitter();
+  }
+
+  onEventEmitter() {
+    this.socketStorageNotificationService.socketAllEmitter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.notiSocket = res;
+    });
   }
 
   firebaseDevice() {
@@ -243,10 +256,10 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       {
         name: "Kênh kết nối",
         icon: "tdsi-facebook-2-fill",
-        link: `/facebook`,
+        link: `/connect-channel?page=fb`,
       },
       // {
-      //   name: "Sàn thương mại điện tử",
+      //   name: "Bán hàng đa kênh",
       //   icon: "tdsi-cart-fill",
       //   listChild: [
       //     {
@@ -303,17 +316,22 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   changeNotiSocketInfo() {
-      let localSocket = localStorage.getItem('_socketNotification') as any;
-      let checkNotti = JSON.parse(localSocket || null);
+      let localSocket = this.socketStorageNotificationService.getLocalStorage() as any;
+      if(localSocket) {
+          let cur = localSocket["socket.all"]
+          if(cur == false) {
+            for(let data in localSocket) {
+              localSocket[data] = true;
+            }
+          } else {
+            for(let data in localSocket) {
+              localSocket[data] = false;
+            }
+          }
+          this.notiSocket = localSocket["socket.all"];
 
-      if(TDSHelperString.hasValueString(checkNotti)) {
-        if(checkNotti == "ON") {
-            this.notiSocket = "OFF";
-            localStorage.setItem('_socketNotification', JSON.stringify(this.notiSocket));
-        } else {
-            this.notiSocket = "ON";
-            localStorage.setItem('_socketNotification', JSON.stringify(this.notiSocket));
-        }
+          this.socketStorageNotificationService.setLocalStorage(localSocket);
+          this.socketStorageNotificationService.socketAllEmitter$.emit(localSocket["socket.all"]);
       }
   }
 

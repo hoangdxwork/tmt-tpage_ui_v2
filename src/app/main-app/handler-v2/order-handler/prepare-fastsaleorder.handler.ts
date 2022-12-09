@@ -34,7 +34,7 @@ export class SO_PrepareFastSaleOrderHandler {
       // khi ko phải là khách hàng
       saleModel.PartnerId = quickOrderModel.PartnerId ||  quickOrderModel.Partner?.Id;
       if(Number( saleModel.PartnerId) > 0 && quickOrderModel.Partner) {
-          saleModel.Partner = { ...quickOrderModel.Partner } as any;
+          saleModel.Partner = {...quickOrderModel.Partner} as any;
 
           if(!TDSHelperString.hasValueString(saleModel.Partner?.CityCode) && saleModel.Partner && quickOrderModel.CityCode) {
               saleModel.Partner.CityCode = quickOrderModel.CityCode;
@@ -111,11 +111,6 @@ export class SO_PrepareFastSaleOrderHandler {
             ProductUOMQty: x.Quantity,
             Type: 'fixed',
           } as any;
-
-          // if(x.Discount > 0){
-          //   item.Discount = x.Discount;
-          //   item.Type = 'percent';
-          // }
 
           saleModel.OrderLines?.push(item);
         })

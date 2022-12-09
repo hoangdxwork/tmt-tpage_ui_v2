@@ -19,7 +19,7 @@ export interface FilterObjSOOrderModel {
   } | any,
   liveCampaignId: string | any,
   teamId?: string | any,
-  IsHasPhone: boolean | any,
+  Telephone: boolean | any,
   PriorityStatus: string | any
 }
 
@@ -66,7 +66,14 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getOrdersChannelByPostId(teamId: number, postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersChannelByPostId?PostId=${postId}&CRMTeamId=${teamId}&TagIds=${filterObj.tags}&${params}&$count=true`,
+      method: CoreApiMethodType.get,
+    }
 
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
 
   removeIds(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
@@ -102,6 +109,12 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         ],
         logic: 'and'
       })
+
+      if(filterObj.Telephone != null) {
+        (dataFilter.filters[0] as FilterDataRequestDTO)?.filters?.push(
+          { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
+        )
+      }
     }
 
     if (filterObj && Number(filterObj?.teamId)) {
