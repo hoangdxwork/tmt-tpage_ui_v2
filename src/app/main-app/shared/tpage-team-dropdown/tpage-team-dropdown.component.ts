@@ -1,6 +1,7 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, EventEmitter, Host, Input, OnDestroy, OnInit, Optional, Output } from '@angular/core';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Component, EventEmitter, Host, Input, OnDestroy, OnInit, Optional, Output, ChangeDetectorRef } from '@angular/core';
+import { Observable, takeUntil } from 'rxjs';
 import { TDSHeaderComponent } from 'tds-ui/header';
 import { TDSHelperObject } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
@@ -8,7 +9,8 @@ import { CRMTeamService } from '../../services/crm-team.service';
 
 @Component({
   selector: 'tpage-team-dropdown',
-  templateUrl: './tpage-team-dropdown.component.html'
+  templateUrl: './tpage-team-dropdown.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
@@ -17,23 +19,33 @@ export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
   currentTeam!: CRMTeamDTO | null;
   visible = false;
 
-  private destroy$ = new Subject<void>();
-
   @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO>();
   @Output() isRefresh = new EventEmitter<boolean>();
   @Input() isRefreshing!: boolean
 
   constructor(private crmTeamService: CRMTeamService,
     @Optional() @Host() public headerCmp: TDSHeaderComponent,
+    private destroy$: TDSDestroyService,
+    private cdr: ChangeDetectorRef,
     private liveCampaignService: LiveCampaignService) {
   }
 
   ngOnInit(): void {
-
-    this.loadListTeam()
-    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
+    this.loadListTeam();
+    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
         this.currentTeam = res;
+      }
     });
+
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    this.crmTeamService.loginOnChangeTeam$.subscribe(res => {
+      this.crmTeamService.onRefreshListFacebook();
+      this.loadListTeam();
+    })
   }
 
   loadListTeam() {
