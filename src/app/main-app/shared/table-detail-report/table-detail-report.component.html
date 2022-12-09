@@ -118,12 +118,20 @@
                                                 <span class="text-primary-1">{{ data.UOMName }}</span>
                                             </div>
                                             <div class="flex flex-auto">
-                                                <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                                                    <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].QtyAvailable || 0 }}</span>
+                                                <span class="text-neutral-1-400 font-regular text-body-2 flex flex-row items-center gap-x-1"> 
+                                                    Tồn kho:
+                                                    <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">
+                                                        {{ inventories[data.ProductId].QtyAvailable || 0 }}
+                                                    </span>
+                                                    <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                                        *ngIf="!inventories || !inventories[data.ProductId] && inventories[data.ProductId].QtyAvailable"></tds-spinner>
                                                 </span>
                                                 <span class="px-2">/</span>
-                                                <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                                <span class="text-neutral-1-400 font-regular text-body-2 flex flex-row items-center gap-x-1"> 
+                                                    Tồn dự báo:
                                                     <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId].VirtualAvailable || 0 }}</span>
+                                                    <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                                        *ngIf="!inventories || !inventories[data.ProductId] && inventories[data.ProductId].QtyAvailable"></tds-spinner>
                                                 </span>
                                             </div>
                                         </div>
