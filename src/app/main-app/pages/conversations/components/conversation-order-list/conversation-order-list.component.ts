@@ -1,3 +1,6 @@
+import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
+import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { SocketEventSubjectDto } from './../../../../services/socket-io/socket-onevent.service';
 import { FastSaleOrderService } from './../../../../services/fast-sale-order.service';
 import { GetListOrderIdsDTO } from './../../../../dto/saleonlineorder/list-order-ids.dto';
 import { CreateBillFastComponent } from './../../../order/components/create-bill-fast/create-bill-fast.component';
@@ -69,6 +72,10 @@ export class ConversationOrderListComponent implements OnInit {
   count: number = 0;
   disableCheck: boolean = false;
 
+  countOrderNew: number = 0;
+  countOrderDelete: number = 0;
+  idsDeleteOrder: string[] = [];
+
   constructor(private chatomniObjectFacade: ChatomniObjectFacade,
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
@@ -79,6 +86,7 @@ export class ConversationOrderListComponent implements OnInit {
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
     private fastSaleOrderService: FastSaleOrderService,
+    private socketOnEventService: SocketOnEventService,
     private cdr: ChangeDetectorRef) {
   }
 
@@ -87,6 +95,33 @@ export class ConversationOrderListComponent implements OnInit {
       this.currentPost = this.data;
       this.loadData(this.pageSize, this.pageIndex);
     }
+
+    this.onEventSocket();
+  }
+
+  onEventSocket() {
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+        if(!res) return;
+
+        if(res.Data?.Data?.Facebook_PostId != this.data.ObjectId) return;
+
+        switch(res.EventName) {
+          // TODO: tạo đơn hàng bài viết
+          case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
+              this.countOrderNew += 1;
+            break;
+
+          // TODO: delete đơn hàng bài viết
+          case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
+              let index = this.idsDeleteOrder.findIndex(x=> x == res.Data.Data.Id);
+              if(Number(index) >= 0) return;
+
+              this.countOrderDelete +=1;
+            break;
+        }
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -147,6 +182,8 @@ export class ConversationOrderListComponent implements OnInit {
   refreshData() {
     this.pageIndex = 1;
     this.tabIndex = 1;
+    this.countOrderNew = 0;
+    this.countOrderDelete = 0;
     this.filterObj = {
       tags: [],
       status: '',
@@ -411,6 +448,7 @@ export class ConversationOrderListComponent implements OnInit {
 
             // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
             this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
+            this.idsDeleteOrder = [...ids];
 
             this.setOfCheckedId = new Set<string>();
             this.checked = false;
