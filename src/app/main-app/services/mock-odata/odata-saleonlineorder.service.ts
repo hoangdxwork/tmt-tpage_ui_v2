@@ -66,7 +66,14 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getOrdersChannelByPostId(teamId: number, postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersChannelByPostId?PostId=${postId}&CRMTeamId=${teamId}&TagIds=${filterObj.tags}&${params}&$count=true`,
+      method: CoreApiMethodType.get,
+    }
 
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
 
   removeIds(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
