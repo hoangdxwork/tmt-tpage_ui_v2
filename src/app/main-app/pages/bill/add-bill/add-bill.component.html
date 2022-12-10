@@ -4,18 +4,16 @@
       <div class="flex flex-col gap-y-1">
           <tds-breadcrumb tds-page-header-breadcrumb>
               <tds-breadcrumb-item (click)="directPage('bill')">Phiếu bán hàng</tds-breadcrumb-item>
-              <tds-breadcrumb-item *ngIf="path == 'create'">Thêm mới</tds-breadcrumb-item>
-              <tds-breadcrumb-item *ngIf="path == 'edit'">Chỉnh sửa</tds-breadcrumb-item>
-              <tds-breadcrumb-item *ngIf="path == 'copy'">Sao chép</tds-breadcrumb-item>
-              <!-- <div *ngIf="path == 'create'">
+              <span class="tdsi-arrow-right-line ml-1 mr-1"></span>
+              <span *ngIf="path == 'create'">
                 <tds-breadcrumb-item>Thêm mới</tds-breadcrumb-item>
-              </div>
-              <div *ngIf="path == 'edit'">
+              </span>
+              <span *ngIf="path == 'edit'">
                 <tds-breadcrumb-item>Chỉnh sửa</tds-breadcrumb-item>
-              </div>
-              <div *ngIf="path == 'copy'">
+              </span>
+              <span *ngIf="path == 'copy'">
                 <tds-breadcrumb-item>Sao chép</tds-breadcrumb-item>
-              </div> -->
+              </span>
           </tds-breadcrumb>
           <div class="pl-4 pb-2.5">
               <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="path == 'create'">Thêm mới phiếu bán hàng</span>
@@ -780,7 +778,7 @@
                           </span>
                         </td>
                         <!-- Khối lượng -->
-                        <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ data.Weight >= 0 ? (data.Weight * 1000) : 0 }}</td>
+                        <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ data.Weight >= 0 ? (data.Weight * 1000)*(data.ProductUOMQty || 0) : 0 }}</td>
                         <!-- Thành tiền -->
                         <td>{{ data.PriceTotal || 0 | numberCustom  }}</td>
                       </tr>
@@ -902,13 +900,13 @@
                     </td>
                     <!-- Số lượng -->
                     <td>
-                      <tds-input-number [(ngModel)]="data.ProductUOMQty" [min]="1" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                      <tds-input-number [(ngModel)]="data.ProductUOMQty" [min]="1" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas" [autoFocus]="focusField == 'ProductUOMQty'"
                         (ngModelChange)="onChangeQuantity($event, data)" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </td>
                     <!-- Đơn giá -->
                     <td>
-                      <tds-input-number [(ngModel)]="data.PriceUnit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                      <tds-input-number [(ngModel)]="data.PriceUnit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas" [autoFocus]="focusField == 'PriceUnit'"
                         (ngModelChange)="onChangePriceUnit($event, data)" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </td>
@@ -917,7 +915,7 @@
                     <!-- Giảm giá -->
                     <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" class="text-center">
                       <span color="secondary" tds-popover popoverTrigger="click" [popoverContent]="popoverDiscountLines" [popoverAutoClose]="false"
-                        [popoverBackdrop]="true" popoverPlacement="left" [popoverVisible]="idDiscount == i" (popoverVisibleChange)="openDiscountPopover(i)">
+                        [popoverBackdrop]="true" popoverPlacement="left" [popoverVisible]="idDiscount == i" (popoverVisibleChange)="openDiscountProductPopover($event, i)">
 
                         <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
                           {{ data.Discount || 0 | numberCustom }} %
@@ -930,32 +928,44 @@
                       <!-- popover giảm giá mỗi dòng -->
                       <ng-template #popoverDiscountLines>
                         <div class="mb-2">
-                          <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100" [formatter]="numberWithCommas" [parser]="parserComas"
+                          <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100" 
+                            [formatter]="numberWithCommas" [parser]="parserComas"
                             *ngIf="data.Type === 'percent'"
-                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount', i)"
+                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount')"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
-                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" *ngIf="data.Type === 'fixed'" [formatter]="numberWithCommas" [parser]="parserComas"
-                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount_Fixed', i)"
+                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" *ngIf="data.Type === 'fixed'" 
+                            [formatter]="numberWithCommas" [parser]="parserComas"
+                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount_Fixed')"
                             [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
                         </div>
-                        <div class="flex items-center">
-                          <button tds-button type="button" style="line-height: 19px;margin-right: 6px"
-                            [color]="data.Type == 'percent' ? 'primary' : 'secondary'"
-                            (click)="selectProductType(data, 'percent', i, $event)"
-                            class="text-neutral-1-900 text-body-2 font-regular">
-                            <span class="flex items-center"> % </span>
-                          </button>
-                          <button tds-button type="button" [color]="data.Type == 'fixed' ? 'primary' : 'secondary'"
-                            (click)="selectProductType(data, 'fixed', i, $event)"
-                            class="text-neutral-1-900 text-body-2 font-regular">
-                            <span class="flex items-center"> VNĐ </span>
-                          </button>
+                        <div class="flex items-center justify-between w-full">
+                          <div class="flex items-center">
+                            <button tds-button type="button" style="line-height: 19px;margin-right: 6px"
+                              [color]="data.Type == 'percent' ? 'primary' : 'secondary'"
+                              (click)="selectProductType(data, 'percent', i, $event)"
+                              class="text-neutral-1-900 text-body-2 font-regular">
+                              <span class="flex items-center"> % </span>
+                            </button>
+                            <button tds-button type="button" 
+                              [color]="data.Type == 'fixed' ? 'primary' : 'secondary'"
+                              (click)="selectProductType(data, 'fixed', i, $event)"
+                              class="text-neutral-1-900 text-body-2 font-regular">
+                              <span class="flex items-center"> VNĐ </span>
+                            </button>
+                          </div>
+                          <div>
+                            <button tds-button-icon type="button" color="error"
+                              (click)="closeDiscountProductPopover()">
+                              <i class="tdsi-close-fill"></i>
+                            </button>
+                          </div>
                         </div>
                       </ng-template>
                     </td>
-                    <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000) : 0) | numberCustom }}</td>
+                    <!-- Khối lượng -->
+                    <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000)*(data.ProductUOMQty || 0) : 0) | numberCustom }}</td>
                     <td>{{ (data.PriceTotal || 0) | numberCustom }} đ</td>
                     <td [tdsRight]="true">
                       <div class="flex gap-x-2 justify-end">
@@ -977,53 +987,49 @@
                   <tr class="hover:bg-white border-b-0">
                     <td colspan="9">
                       <div class="flex w-full justify-end">
-                        <div class="w-[40%] flex justify-end">
-                          <div class="w-full grid grid-cols-2 gap-2 text-right font-semibold">
+                        <div class="xl:w-1/2 2xl:w-1/3 flex justify-end">
+                          <div class="w-full grid grid-cols-3 gap-2 text-right font-semibold">
                             <div><span class="font-regular">Tổng số lượng</span></div>
-                            <div class=""><span>{{totalQtyLines | numberCustom }}</span></div>
+                            <div class="col-span-2"><span>{{totalQtyLines | numberCustom }}</span></div>
 
                             <div><span class="font-regular">Tổng tạm tính</span></div>
-                            <div class=""><span>{{totalAmountLines | numberCustom  }} đ</span></div>
+                            <div class="col-span-2"><span>{{totalAmountLines | numberCustom  }} đ</span></div>
 
                             <!-- Giảm giá -->
-                            <div>
-                              <button *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal"
-                                tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
-                                (click)="openPopoverDiscount()" [(popoverVisible)]="visiblePopoverDiscount"
-                                [popoverContent]="popoverContentDiscount" [popoverFooter]="popoverFooterDiscount"
-                                [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
-                                  <span class="flex items-center justify-center">
-                                    <i class="tdsi-revenue-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>
-                                    Giảm giá
-                                  </span>
-                              </button>
-                            </div>
-                            <div *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" class="flex items-center justify-end">
+                            <button *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal"
+                              tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                              (click)="openPopoverDiscount()" [(popoverVisible)]="visiblePopoverDiscount"
+                              [popoverContent]="popoverContentDiscount" [popoverFooter]="popoverFooterDiscount"
+                              [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
+                                <span class="flex items-center justify-center">
+                                  <i class="tdsi-revenue-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>
+                                  Giảm giá
+                                </span>
+                            </button>
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" class="col-span-2 flex items-center justify-end">
                               <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value || 0) | numberCustom }} đ</span>
                             </div>
 
                             <!-- Thuế -->
-                            <div>
-                              <button *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax"
-                                tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
-                                (click)="openPopoverTax()" [(popoverVisible)]="visiblePopoverTax" class="min-w-[100px]"
-                                [popoverContent]="popoverContentTax" [popoverFooter]="popoverFooterTax"
-                                [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
-                                <span class="flex items-center justify-center">
-                                  <i class="tdsi-receipt-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>
-                                  Thuế
-                                </span>
-                              </button>
-                            </div>
+                            <button *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax"
+                              tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                              (click)="openPopoverTax()" [(popoverVisible)]="visiblePopoverTax"
+                              [popoverContent]="popoverContentTax" [popoverFooter]="popoverFooterTax"
+                              [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
+                              <span class="flex items-center justify-center">
+                                <i class="tdsi-receipt-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>
+                                Thuế
+                              </span>
+                            </button>
 
-                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax" class="flex items-center justify-end">
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax" class="col-span-2 flex items-center justify-end">
                               <span>{{ (_form.controls["AmountTax"].value || 0) | numberCustom }}đ</span>
                               <span class="ml-1 mr-1"> - </span>
                               <span>{{ _form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0 }}%</span>
                             </div>
 
                             <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax || saleConfig?.SaleSetting?.GroupDiscountTotal"><span>Tổng tiền</span></div>
-                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax || saleConfig?.SaleSetting?.GroupDiscountTotal" class="">
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax || saleConfig?.SaleSetting?.GroupDiscountTotal" class="col-span-2">
                               <span> {{ _form.controls["AmountTotal"].value | numberCustom }} đ</span>
                             </div>
                           </div>

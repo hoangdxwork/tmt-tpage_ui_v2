@@ -26,6 +26,7 @@ export class CalculateBillFeeHandler {
         }
 
         x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
+        x.PriceTotal = Math.round(x.PriceTotal);
         x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
 
         //TODO: tổng số lượng và tổng tiền tạm tính
