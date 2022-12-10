@@ -725,13 +725,15 @@ export class AddBillComponent implements OnInit {
     });
   }
 
-  onChangeQuantity(event: any, item: any) {
+  onChangeQuantity(event: number, item: any) {
     let datas = this._form.controls['OrderLines'].value;
-    if (TDSHelperArray.hasListValue(datas)) {
-
-      datas.map((x: any, i: number) => {
+    if (datas && datas.length > 0) {
+      datas.map((x: any, index: number) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
-          x.ProductUOMQty = event;
+            x.ProductUOMQty = event;
+
+            let formArray = this._form.controls["OrderLines"] as FormArray;
+            formArray.at(index).patchValue(datas[index]);
         }
       });
 
@@ -739,15 +741,19 @@ export class AddBillComponent implements OnInit {
     }
   }
 
-  onChangePriceUnit(event: any, item: any) {
+  onChangePriceUnit(event: number, item: any) {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-        datas.map((x: any) => {
+        datas.map((x: any, index: number) => {
           if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
               x.PriceUnit = event;
+
+              let formArray = this._form.controls["OrderLines"] as FormArray;
+              formArray.at(index).patchValue(datas[index]);
           }
         });
+
         this.calcTotal();
     }
   }
@@ -775,6 +781,9 @@ export class AddBillComponent implements OnInit {
         datas.map((x: any, index: number) => {
             if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
                 x[`${typeDiscount}`] = event;
+
+                let formArray = this._form.controls["OrderLines"] as FormArray;
+                formArray.at(index).patchValue(datas[index]);
             }
         });
     }
@@ -795,6 +804,9 @@ export class AddBillComponent implements OnInit {
           x.Type = type;
           x.Discount = 0;
           x.Discount_Fixed = 0;
+
+          let formArray = this._form.controls["OrderLines"] as FormArray;
+          formArray.at(index).patchValue(datas[index]);
         }
       });
     }
@@ -1104,7 +1116,7 @@ export class AddBillComponent implements OnInit {
     return model;
   }
 
-  prepareModel(): any {
+  prepareModel(): any {debugger
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại
