@@ -928,16 +928,16 @@
                       <!-- popover giảm giá mỗi dòng -->
                       <ng-template #popoverDiscountLines>
                         <div class="mb-2">
-                          <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100" 
+                          <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100"
                             [formatter]="numberWithCommas" [parser]="parserComas"
                             *ngIf="data.Type === 'percent'"
                             (ngModelChange)="changeProductDiscountType(data, $event, 'Discount')"
-                            [ngModelOptions]="{standalone: true}">
+                            [ngModelOptions]="{standalone: true}" [autoFocus]="focusField == 'Discount'">
                           </tds-input-number>
-                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1" *ngIf="data.Type === 'fixed'" 
+                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1000" *ngIf="data.Type === 'fixed'"
                             [formatter]="numberWithCommas" [parser]="parserComas"
                             (ngModelChange)="changeProductDiscountType(data, $event, 'Discount_Fixed')"
-                            [ngModelOptions]="{standalone: true}">
+                            [ngModelOptions]="{standalone: true}" [autoFocus]="focusField == 'Discount_Fixed'">
                           </tds-input-number>
                         </div>
                         <div class="flex items-center justify-between w-full">
@@ -948,7 +948,7 @@
                               class="text-neutral-1-900 text-body-2 font-regular">
                               <span class="flex items-center"> % </span>
                             </button>
-                            <button tds-button type="button" 
+                            <button tds-button type="button"
                               [color]="data.Type == 'fixed' ? 'primary' : 'secondary'"
                               (click)="selectProductType(data, 'fixed', i, $event)"
                               class="text-neutral-1-900 text-body-2 font-regular">
