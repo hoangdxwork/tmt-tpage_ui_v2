@@ -901,7 +901,7 @@
                     <!-- Số lượng -->
                     <td>
                       <tds-input-number [(ngModel)]="data.ProductUOMQty" [min]="1" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
-                        (ngModelChange)="onChangeQuantity($event, i)" [ngModelOptions]="{standalone: true}">
+                        (ngModelChange)="onChangeQuantity($event, data)" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </td>
                     <!-- Đơn giá -->
