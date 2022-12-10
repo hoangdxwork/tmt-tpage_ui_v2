@@ -387,6 +387,11 @@ export class AddBillComponent implements OnInit {
         } as any
     }
 
+    if(data) {
+      data.LiveCampaignId = null;
+      data.LiveCampaignName = null;
+    }
+
     this.fastSaleOrderService.apiDefaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {
             delete res['@odata.context'];

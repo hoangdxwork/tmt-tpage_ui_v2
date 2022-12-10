@@ -4,8 +4,8 @@
 
     <div class="flex flex-col gap-y-3" *ngIf="(item.Data | facebookType)">
         <div class="relative w-[120px] h-[88px]">
-            <div *ngIf="(item.Data | facebookType)?.picture; else noPicture" class="relative">
-                <img [src]="(item.Data | facebookType)?.picture" alt=""
+            <div *ngIf="(item.Data | facebookType)?.picture && !checkPostPictureError(item); else noPicture" class="relative">
+                <img [src]="(item.Data | facebookType)?.picture" alt="" (error)="errorPostPicture(item)"
                     class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
 
                 <span class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
@@ -83,7 +83,7 @@
 
         <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
             <div *ngIf="item.LiveCampaign" class="item-object-live">
-                <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500"
+                <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500"
                     (click)="showModalLiveCampaign(item)">
                     <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
                         [tooltipTitle]="item.LiveCampaign.Name">
@@ -99,7 +99,7 @@
                     [popoverVisible]="indClickTag == item.Id" popoverTrigger="click"
                     [popoverAutoClose]="false" [popoverBackdrop]="true"
                     popoverPlacement="left" [popoverAutoClose]="false"
-                    status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
+                    class="{{ currentPost?.ObjectId == item.ObjectId ? '!bg-neutral-3-100 !text-neutral-1-600': '!bg-neutral-3-50 !text-neutral-1-600'}}">
                     <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                         <span class="flex-auto truncate">Chọn chiến dịch</span>
                         <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>

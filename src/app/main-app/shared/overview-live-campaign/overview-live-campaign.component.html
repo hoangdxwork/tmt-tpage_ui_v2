@@ -1,6 +1,6 @@
 <tds-spin [spinning]="isLoading" class="text-body-2 text-neutral-1-900 flex h-[670px] overflow-hidden">
   <div *ngIf="!isNoPost" class="flex justify-between gap-x-2 items-center p-4">
-    <tds-tag *ngIf="dataLiveCampaign" status="bg-base-orange-50 text-base-orange-500 inline-flex"
+    <tds-tag *ngIf="dataLiveCampaign" class="!bg-base-orange-50 !text-base-orange-500 inline-flex"
       style="border: 1px solid #f3deba; width: fit-content; border-radius: 5px;">
       <span class="flex items-center py-0.5 cursor-pointer max-w-[450px]" >
           <span class="text-body-2 font-regular flex-auto truncate mr-2">{{ dataLiveCampaign.Name }}</span>
