@@ -13,7 +13,7 @@
                     </tds-avatar>
 
                     <tds-tag rounded="rounded-full"
-                        [status]="(data.Data | facebookType).status_type === 'added_video' ? 'bg-base-red-50 text-base-red-600' : 'bg-base-blue-50 text-base-blue-600'">
+                        [ngClass]="(data.Data | facebookType).status_type === 'added_video' ? '!bg-base-red-50 !text-base-red-600' : '!bg-base-blue-50 !text-base-blue-600'">
                         <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
 
                             <div class="font-semibold flex flex-col items-center 2xl:block">
@@ -40,7 +40,7 @@
                         [size]="36" [shape]="'circle'" [isAvatar]="false">
                     </tds-avatar>
 
-                    <tds-tag rounded="rounded-full" [status]="'bg-base-orange-50 text-base-orange-500'">
+                    <tds-tag rounded="rounded-full" class="!bg-base-orange-50 !text-base-orange-500">
                         <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
                             <div class="font-semibold flex flex-col items-center 2xl:block">
                                 <span class="whitespace-nowrap">{{ (data.Data | tshopType)?.CreationTime | date: "dd-MM-yyyy HH:mm" }}</span>
@@ -61,7 +61,7 @@
                         [size]="36" [shape]="'circle'" [isAvatar]="false">
                     </tds-avatar>
 
-                    <tds-tag rounded="rounded-full" [status]="'bg-neutral-2-100 text-neutral-1-900'">
+                    <tds-tag rounded="rounded-full" class="!bg-neutral-2-100 !text-neutral-1-900">
                         <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
                             <div class="font-semibold flex flex-col items-center 2xl:block">
                                 <!-- <span>{{translateType((data.Data | facebookType).type, (data.Data | facebookType).status_type)}}</span> -->
@@ -146,7 +146,7 @@
                         </div>
 
                         <div *ngIf="data.LiveCampaign">
-                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
+                            <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
                                     <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
@@ -160,7 +160,7 @@
                                 [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
                                 [popoverAutoClose]="false" [popoverBackdrop]="true"
                                 popoverPlacement="right"
-                                status="bg-neutral-3-100 text-neutral-1-600">
+                                class="!bg-neutral-3-100 !text-neutral-1-600">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                                     <span class="flex-auto truncate">Chọn chiến dịch</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
@@ -169,7 +169,7 @@
                         </div>
                     </div>
                     <div class="post-picture w-1/4 flex justify-end" *ngIf="(data.Data | facebookType).picture">
-                        <img [src]="(data.Data | facebookType).picture" class="rounded-xl h-[122px] object-cover" />
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="(data.Data | facebookType).picture || ''" class="rounded-xl h-[122px] object-cover" />
                     </div>
                 </div>
 
@@ -183,7 +183,7 @@
                         </div>
 
                         <div *ngIf="data.LiveCampaign">
-                            <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
+                            <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
                                     <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
@@ -197,7 +197,7 @@
                                 [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
                                 [popoverAutoClose]="false" [popoverBackdrop]="true"
                                 popoverPlacement="right"
-                                status="bg-neutral-3-100 text-neutral-1-600">
+                                class="!bg-neutral-3-100 !text-neutral-1-600">
                                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                                     <span class="flex-auto truncate">Chọn chiến dịch</span>
                                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
