@@ -194,8 +194,10 @@
                                   <tds-label>Chiết khấu mặc định(%)</tds-label>
                               </div>
                               <div class="col-span-3">
-                                  <tds-input-number [min]="0" [max]="100" [step]="1" formControlName="Discount" [formatter]="formatterPercent">
-                                  </tds-input-number>
+                                <tds-form-field>
+                                    <tds-input-number [min]="0" [max]="100" [step]="1" formControlName="Discount" [formatter]="formatterPercent">
+                                    </tds-input-number>
+                                </tds-form-field>
                               </div>
                           </div>
                           <div class="grid grid-cols-5 gap-x-4 mt-4">
@@ -203,8 +205,10 @@
                                   <tds-label>Chiết khấu mặc định (số tiền)</tds-label>
                               </div>
                               <div class="col-span-3">
-                                  <tds-input-number [min]="0" [step]="1000" [formControlName]="'AmountDiscount'" [formatter]="numberWithCommas" [parser]="parserComas">
-                                  </tds-input-number>
+                                <tds-form-field>
+                                    <tds-input-number [min]="0" [step]="1000" [formControlName]="'AmountDiscount'" [formatter]="numberWithCommas" [parser]="parserComas">
+                                    </tds-input-number>
+                                </tds-form-field>
                               </div>
                           </div>
                       </div>
