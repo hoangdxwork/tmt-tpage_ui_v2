@@ -24,7 +24,7 @@
                     </tds-flex>
                 </div>
             </div>
-            <div class="w-full">
+            <div *ngIf="changeRateOption" class="w-full">
                 <div echarts [options]="changeRateOption" [size]="['auto',300]"></div>
             </div>
         </div>

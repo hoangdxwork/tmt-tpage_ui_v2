@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-connect-page-report',
-  templateUrl: './connect-page-report.component.html',
-  styleUrls: ['./connect-page-report.component.scss']
+  templateUrl: './connect-page-report.component.html'
 })
 export class ConnectPageReportComponent implements OnInit {
   //#region variable

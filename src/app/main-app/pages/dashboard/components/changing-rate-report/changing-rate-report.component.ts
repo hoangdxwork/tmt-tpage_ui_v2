@@ -7,8 +7,7 @@ import { vi_VN } from 'tds-ui/i18n';
 
 @Component({
   selector: 'app-changing-rate-report',
-  templateUrl: './changing-rate-report.component.html',
-  styleUrls: ['./changing-rate-report.component.scss']
+  templateUrl: './changing-rate-report.component.html'
 })
 export class ChangingRateReportComponent implements OnInit {
   //#region variable
