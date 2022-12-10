@@ -136,12 +136,10 @@
                                         <div>{{data.DisplayName}}</div>
                                     </td>
                                     <td *ngIf="isHidden('Phone')" class="border-r border-neutral-200">
-                                        <div class="flex flex-col">
-                                            <span class="w-full ">{{data.Phone}}</span>
-                                            <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
-                                                {{ data.NameNetwork }}
-                                            </tds-tag>
-                                        </div>
+                                        <div class="w-full">{{data.Phone}}</div>
+                                        <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
+                                            {{ data.NameNetwork }}
+                                        </tds-tag>
                                     </td>
                                     <td *ngIf="isHidden('Email')" class="border-r border-neutral-200">{{ data.Email }}</td>
                                     <td *ngIf="isHidden('Street')" class="border-r border-neutral-200">
