@@ -9,7 +9,7 @@
             </tds-select>
         </div>
     </div>
-    <div *ngIf="!emptyData;else emptyTmp" class="w-full">
+    <div *ngIf="!emptyData && productOption;else emptyTmp" class="w-full">
         <div echarts [options]="productOption" [size]="['auto',500]"></div>
     </div>
 </div>
