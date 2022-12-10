@@ -1,6 +1,6 @@
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { PartnerDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, Input, OnInit } from '@angular/core';
-import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -9,20 +9,21 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-convert-partner',
-  templateUrl: './modal-convert-partner.component.html'
+  templateUrl: './modal-convert-partner.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class ModalConvertPartnerComponent implements OnInit {
 
-  formConvertPartner!: FormGroup
-  @Input() lstOfData: any[] = [];
+  @Input() lstOfData!: PartnerDTO[];
 
-  fromPartner: any = { Id: 0, Name: null };
-  toPartner: any = { Id: 0, Name: null };
+  fromPartner: { Id: number, Name: string } = { Id: 0, Name: '' };
+  toPartner: { Id: number, Name: string } = { Id: 0, Name: '' };;
 
   constructor(private modal: TDSModalRef,
     private message: TDSMessageService,
     private modalService: TDSModalService,
+    private destroy$: TDSDestroyService,
     private partnerService: PartnerService) { }
 
   ngOnInit(): void {
@@ -37,18 +38,22 @@ export class ModalConvertPartnerComponent implements OnInit {
       FromPartnerId: this.fromPartner.Id,
       ToPartnerId: this.toPartner.Id
     }
-
-    this.partnerService.transferPartner({model: model}).subscribe((res: any) => {
+    
+    this.partnerService.transferPartner({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
         if(res) {
             this.message.success('Chuyển đổi khách hàng thành công!');
             this.modalService.success({
                 title: 'Xóa dữ liệu khách hàng đích',
                 content: 'Bạn có muốn xóa dữ liệu khách hàng đích?',
                 onOk: () => {
-                    this.partnerService.delete(this.fromPartner.Id).subscribe((res: TDSSafeAny) => {
+                    this.partnerService.delete(this.fromPartner.Id).subscribe({
+                      next: (res: TDSSafeAny) => {
                         this.message.success('Xóa thành công!');
-                    }, error => {
-                      this.message.error(`Xóa khách hàng đích đã xảy ra lỗi!`);
+                      }, 
+                      error: (error) => {
+                        this.message.error(`Xóa khách hàng đích đã xảy ra lỗi!`);
+                      }
                     })
                 },
                 onCancel: () => { },
@@ -60,14 +65,17 @@ export class ModalConvertPartnerComponent implements OnInit {
         }
 
         this.modal.destroy(null);
-    }, error => {
-      this.message.error('Chuyển đổi khách hàng thất bại!');
-      this.modal.destroy(null);
+      }, 
+      error: (error) => {
+        this.message.error('Chuyển đổi khách hàng thất bại!');
+        this.modal.destroy(null);
+      }
     })
   }
 
   changeFrom(event: any) {
-    let exits = this.lstOfData.filter((x: any) => x.Id == event)[0]
+    let exits = this.lstOfData.filter((x: any) => x.Id == Number(event))[0];
+
     if(exits) {
       this.fromPartner.Id = exits.Id;
       this.fromPartner.Name = exits.Name;
@@ -75,7 +83,8 @@ export class ModalConvertPartnerComponent implements OnInit {
   }
 
   changeTo(event: any) {
-    let exits = this.lstOfData.filter((x: any) => x.Id == event)[0]
+    let exits = this.lstOfData.filter((x: any) => x.Id == Number(event))[0];
+
     if(exits) {
       this.toPartner.Id = exits.Id;
       this.toPartner.Name = exits.Name;

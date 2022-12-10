@@ -186,8 +186,8 @@
           </button>
       </div>
 
-       <!--TODO: Đã đăng nhập tài khoản -->
-       <div *ngIf="userTShopLogin">
+      <!--TODO: Đã đăng nhập tài khoản -->
+      <div *ngIf="userTShopLogin">
         <div class="bg-white rounded-xl p-4 pt-10 flex flex-col items-center justify-center">
           <div class="h-[136px] w-[136px] rounded-full bg-white border-2 border-info-500 flex items-center justify-center">
             <tds-avatar [size]="126" [tdsSrc]="userTShopLogin?.Avatar"></tds-avatar>
@@ -195,10 +195,10 @@
 
           <span class="mt-4 text-header-1 font-semibold text-neutral-1-900" >{{ userTShopLogin?.Name }}</span>
           <span class="mt-2 text-body-2 text-neutral-1-400">{{ userTShopLogin?.Email }}</span>
-          <div class="mt-6 text-title-1 font-semibold text-success-400" *ngIf="loginTeam?.Childs">Số trang TShop đang quản lí</div>
+          <div class="mt-6 text-title-1 font-semibold text-success-400" *ngIf="loginTShopOwner?.Childs">Số trang TShop đang quản lí</div>
 
-          <tpage-avatar-group-facebook *ngIf="loginTeam?.Childs">
-            <tpage-avatar-facebook *ngFor="let child of loginTeam?.Childs || []; let i=index"
+          <tpage-avatar-group-facebook *ngIf="loginTShopOwner?.Childs">
+            <tpage-avatar-facebook *ngFor="let child of loginTShopOwner?.Childs || []; let i=index"
               [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'sm'">
             </tpage-avatar-facebook>
           </tpage-avatar-group-facebook>
@@ -209,6 +209,11 @@
             </span>
           </button>
         </div>
+      </div>
+
+      <!--TODO: thêm tài khoản vào danh sách -->
+      <div class="pt-4" *ngIf="loginTShopOwner == null && userTShopLogin != null" (click)="insertUserTShop()">
+        <button tds-button class="w-full" color="primary">Thêm vào TPage</button>
       </div>
     </div>
   </div>

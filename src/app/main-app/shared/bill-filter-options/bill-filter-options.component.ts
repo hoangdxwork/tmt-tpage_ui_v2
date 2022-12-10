@@ -1,9 +1,10 @@
+import { DeliveryCarrierDTOV2 } from './../../dto/delivery-carrier.dto';
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { addDays } from "date-fns";
 import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
 import { TagService } from "src/app/main-app/services/tag.service";
 import { TDSContextMenuService } from "tds-ui/dropdown";
-import { TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSSafeAny, TDSHelperString } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'bill-filter-options',
@@ -45,7 +46,7 @@ export class BillFilterOptionsComponent implements OnInit {
   ];
   currentStatus = 'all';
 
-  lstCarriers: Array<TDSSafeAny> = [];
+  lstCarriers: Array<DeliveryCarrierDTOV2> = [];
   modelCarrier: TDSSafeAny;
 
   selectTags:  Array<TDSSafeAny> = [];
@@ -61,6 +62,19 @@ export class BillFilterOptionsComponent implements OnInit {
   ngOnInit(): void {
     this.carrierService.get().subscribe((res: TDSSafeAny) => {
         this.lstCarriers = res.value;
+
+        let data: DeliveryCarrierDTOV2[] = [];
+        this.lstCarriers.map(x=>{
+          let exist = data.find(y => y.DeliveryType == x.DeliveryType);
+          if(!exist) {
+            if(!TDSHelperString.hasValueString(x.DeliveryTypeGet)) {
+              x.DeliveryTypeGet = x.DeliveryType;
+            }
+            data = [ ...data, ...[x]]; 
+          }
+        });
+
+        this.lstCarriers = [...data];
     });
   }
 
@@ -122,7 +136,7 @@ export class BillFilterOptionsComponent implements OnInit {
             startDate: this.datePicker[0],
             endDate: this.datePicker[1]
         } : null,
-        carrierId: this.modelCarrier.Id
+        carrierId: this.modelCarrier ? this.modelCarrier.Id : ''
     }
 
     this.onLoadOption.emit(this.filterObj);

@@ -32,6 +32,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   currentLiveCampaign!: any;
   indClickTag: string = '';
   selectedId!: string;
+  postPictureError: any[] = [];
 
   constructor(private liveCampaignService: LiveCampaignService,
     private modal: TDSModalService,
@@ -170,5 +171,13 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
           }
         })
     }
+  }
+
+  errorPostPicture(item: ChatomniObjectsItemDto) {
+    this.postPictureError.push(item?.ObjectId);
+  }
+
+  checkPostPictureError(item: ChatomniObjectsItemDto) {
+    return this.postPictureError.find(f => f == item?.ObjectId);
   }
 }

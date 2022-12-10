@@ -148,7 +148,9 @@
                   <div class="flex items-center gap-x-1 w-full">
                     <div class="flex flex-wrap items-center w-fit">
                       <div *ngFor="let item of data.Tags | prettyjson">
-                        <tds-tag class=" mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
+                        <tds-tag class="cursor-pointer mr-1 mb-1" tds-tooltip="{{item.Name}}" status='primary'>
+                          <div class="max-w-[100px] w-fit truncate">{{item.Name}}</div>
+                      </tds-tag>
                       </div>
                       <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                         [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -222,14 +224,12 @@
 
                 <!-- Chiến dịch live -->
                 <td *ngIf="isHidden('LiveCampaignName')" class="border-l">
-                  <div class="flex flex-col gap-y-2">
-                    <div class="w-full flex justify-between items-center gx-2">
-                      <span class="ml-1">{{data.LiveCampaignName}}</span>
-                    </div>
-                    <tds-tag *ngIf="data.PriorityStatus" [status]='data.PriorityStatus | priorityStatusColor'>
-                      {{data.PriorityStatus | priorityStatusName}}
-                    </tds-tag>
+                  <div class="w-full">
+                    <span class="ml-1">{{data.LiveCampaignName}}</span>
                   </div>
+                  <tds-tag *ngIf="data.PriorityStatus" [status]='data.PriorityStatus | priorityStatusColor'>
+                    {{data.PriorityStatus | priorityStatusName}}
+                  </tds-tag>
                 </td>
 
                 <!-- Tên -->
@@ -283,15 +283,14 @@
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-l">
-                  <div class="flex flex-col gap-y-2">
-                    <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
-                      tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
-                      popoverTrigger="click">
-                      <span class="flex items-center">
-                        {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
-                      </span>
-                    </tds-tag>
-                  </div>
+                  <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" tds-tooltip="{{ data.StatusText }}" class="cursor-pointer"
+                    tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
+                    popoverTrigger="click">
+                    <div class="flex items-center">
+                      <div class="max-w-[80px] w-fit truncate">{{ data.StatusText }}</div>
+                      <i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
+                    </div>
+                  </tds-tag>
 
                   <tds-dropdown-menu #menu1="tdsDropdownMenu">
                     <div class="w-[160px] max-h-[300px] overflow-y-auto tds-panel-scroll">

@@ -79,7 +79,7 @@
                     </div>
                 </div> -->
             </div>
-            <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>
+            <div *ngIf="fbReportOption" echarts [options]="fbReportOption" [size]="['auto',446]"></div>
         </tds-spin>
     </div>
 </div>

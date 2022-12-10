@@ -137,6 +137,7 @@ export class AddBillComponent implements OnInit {
   isEqualAmountInsurance: boolean = false;
   delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
   isEnableCalcFee: boolean = false;
+  focusField: string = '';
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -385,6 +386,11 @@ export class AddBillComponent implements OnInit {
             Id: currentTeam.Id,
             Name: currentTeam.Name
         } as any
+    }
+
+    if(data) {
+      data.LiveCampaignId = null;
+      data.LiveCampaignName = null;
     }
 
     this.fastSaleOrderService.apiDefaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
@@ -680,10 +686,6 @@ export class AddBillComponent implements OnInit {
     }
   }
 
-  openDiscountPopover(i: number){
-    this.idDiscount = i;
-  }
-
   openTrackingOrderGHN() {
     let key = this.dataModel.TrackingRef;
     this.fastSaleOrderService.getTokenTrackingOrderGHN({ key: key }).subscribe({
@@ -725,30 +727,43 @@ export class AddBillComponent implements OnInit {
     });
   }
 
-  onChangeQuantity(event: any, item: any) {
+  onChangeQuantity(event: number, item: any) {
     let datas = this._form.controls['OrderLines'].value;
-    if (TDSHelperArray.hasListValue(datas)) {
 
-      datas.map((x: any, i: number) => {
+    if (datas && datas.length > 0) {
+      this.focusField = 'ProductUOMQty';
+
+      datas.map((x: any, index: number) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
-          x.ProductUOMQty = event;
+            x.ProductUOMQty = event;
+
+            let formArray = this._form.controls["OrderLines"] as FormArray;
+            formArray.at(index).patchValue(datas[index]);
         }
       });
 
       this.calcTotal();
+      this.coDAmount();
     }
   }
 
-  onChangePriceUnit(event: any, item: any) {
+  onChangePriceUnit(event: number, item: any) {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-        datas.map((x: any) => {
+      this.focusField = 'PriceUnit';
+
+        datas.map((x: any, index: number) => {
           if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
               x.PriceUnit = event;
+
+              let formArray = this._form.controls["OrderLines"] as FormArray;
+              formArray.at(index).patchValue(datas[index]);
           }
         });
+
         this.calcTotal();
+        this.coDAmount();
     }
   }
 
@@ -763,24 +778,38 @@ export class AddBillComponent implements OnInit {
     let formArray = this._form.controls["OrderLines"] as FormArray;
     formArray.at(index).patchValue(datas[index]);
 
-    this.dataModel.OrderLines = [...formArray.value];
-
     this.calcTotal();
+    this.coDAmount();
   }
 
-  changeProductDiscountType(item: OrderLineV2 ,event: any, typeDiscount: string, i: number) {
+  changeProductDiscountType(item: OrderLineV2 ,event: any, typeDiscount: string) {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-        datas.map((x: any, index: number) => {
-            if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
-                x[`${typeDiscount}`] = event;
-            }
-        });
+      this.focusField = `${typeDiscount}`;
+
+      datas.map((x: any, index: number) => {
+          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
+              x[`${typeDiscount}`] = event;
+
+              let formArray = this._form.controls["OrderLines"] as FormArray;
+              formArray.at(index).patchValue(datas[index]);
+          }
+      });
     }
 
-    this.dataModel.OrderLines = [...datas];
     this.calcTotal();
+    this.coDAmount();
+  }
+
+  openDiscountProductPopover(event: boolean, i: number){
+    if(event) {
+      this.idDiscount = i;
+    }
+  }
+
+  closeDiscountProductPopover() {
+    this.idDiscount = -1;
   }
 
   selectProductType(item:OrderLineV2, type: string, i: number, e:MouseEvent) {
@@ -799,16 +828,18 @@ export class AddBillComponent implements OnInit {
       });
     }
 
-    this.dataModel.OrderLines = [...datas];
     this.calcTotal();
+    this.coDAmount();
   }
 
   changeDiscount(event: any) {
       this.calcTotal();
+      this.coDAmount();
   }
 
   changeDecreaseAmount(event: any) {
       this.calcTotal();
+      this.coDAmount();
   }
 
   openPopoverDiscount() {
@@ -816,7 +847,7 @@ export class AddBillComponent implements OnInit {
   }
 
   closePopoverDiscount() {
-    this.visiblePopoverDiscount = false
+    this.visiblePopoverDiscount = false;
   }
 
   openPopoverTax() {

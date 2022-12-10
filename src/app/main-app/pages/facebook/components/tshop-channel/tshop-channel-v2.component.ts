@@ -16,7 +16,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TpageBaseComponent } from '@app/shared/tpage-base/tpage-base.component';
 import { TUserDto } from '@core/dto/tshop.dto';
 import { TShopService } from '@app/services/tshop-service/tshop.service';
-import tr from 'date-fns/esm/locale/tr/index.js';
 
 @Component({
   selector: 'tshop-channel-v2',
@@ -30,7 +29,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   isUserTShopConnectChannel: boolean = false;
 
   isLoading: boolean = true;
-  loginTeam!: CRMTeamDTO | null;
+  loginTShopOwner!: CRMTeamDTO | null;
   access_token: string = '';
 
   constructor(private crmTeamService: CRMTeamService,
@@ -57,7 +56,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     } else {
       this.userTShopLogin = null;
       this.access_token = null as any;
-      this.loginTeam = null;
+      this.loginTShopOwner = null;
     }
 
     this.loadData();
@@ -71,7 +70,9 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
           this.access_token = res.access_token;
           this.userTShopLogin = res.user;
 
-          this.insertUserTShop(res.access_token);
+          if (this.userTShopLogin) {
+            this.sortByTShopLogin(this.userTShopLogin.Id);
+          }
         }
       },
       error: (err: any) => {
@@ -93,11 +94,11 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
 
   tShopSignOut() {
     this.userTShopLogin = null;
-    this.loginTeam = null;
+    this.loginTShopOwner = null;
     this.tShopService.removeCacheLoginUser();
   }
 
-  insertUserTShop(accessToken: string | null) {
+  insertUserTShop() {
     let item = {
       Id: 0,
       OwnerId: this.userTShopLogin?.Id,
@@ -154,7 +155,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
     let exist = this.data.find((x) => x.OwnerId && x.OwnerId == ownerId);
 
     if (exist) {
-      this.loginTeam = { ...exist };
+      this.loginTShopOwner = { ...exist };
 
       this.data.splice(this.data.indexOf(exist), 1);
       this.data.unshift(exist);

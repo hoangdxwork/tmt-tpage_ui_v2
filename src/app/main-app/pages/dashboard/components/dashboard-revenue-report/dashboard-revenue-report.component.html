@@ -12,7 +12,7 @@
             </tds-select>
         </div>
     </div>
-    <div *ngIf="!emptyData;else emptyTmp">
+    <div *ngIf="!emptyData && revenueOption;else emptyTmp">
         <div class="flex flex-col py-6">
             <div class="w-full">
                 <div echarts [options]="revenueOption" [size]="['auto',439]"></div>

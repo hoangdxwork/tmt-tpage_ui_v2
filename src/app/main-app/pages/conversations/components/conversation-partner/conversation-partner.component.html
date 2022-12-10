@@ -251,7 +251,8 @@
                               <div class="grid grid-cols-4 gap-x-6 gap-y-4" *ngIf="item">
                                   <label>Đối tác GH:</label>
                                   <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold"> {{item.CarrierName}} - <span class="text-info-500">{{item.TrackingRef || '#N/A'}}</span> </div>
+
+                                      <div class="font-semibold">{{item.CarrierName}} - <span class="text-info-500 cursor-pointer" (click)="onOpenTrackingUrl(item)">{{item.TrackingRef || '#N/A'}}</span> </div>
                                   </div>
 
                                   <label>Phương thức TT:</label>

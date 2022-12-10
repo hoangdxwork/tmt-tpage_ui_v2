@@ -273,6 +273,10 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignTags(id: number, tags: Array<TagsPartnerDTO>) {
+    if(tags == null) {
+      this.message.error("Vui lòng nhập tên thẻ!");
+      return;
+    }
     let model = { PartnerId: id, Tags: tags };
     this.partnerService.assignTagPartner(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
@@ -571,13 +575,15 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Modal sinh nhật của khách hàng
   showModalBirthday() {
+    if(!this.lstBirtdays) return;
+
     this.modalService.create({
       title: 'Sinh nhật khách hàng',
       content: ModalBirthdayPartnerComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        data: this.lstBirtdays
+        lstData: [...this.lstBirtdays]
       }
     });
   }

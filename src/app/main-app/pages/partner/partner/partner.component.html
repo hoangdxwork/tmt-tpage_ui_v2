@@ -136,14 +136,14 @@
                                         <div>{{data.DisplayName}}</div>
                                     </td>
                                     <td *ngIf="isHidden('Phone')" class="border-r border-neutral-200">
-                                        <div class="flex flex-col">
-                                            <span class="w-full ">{{data.Phone}}</span>
-                                            <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
-                                                {{ data.NameNetwork }}
-                                            </tds-tag>
-                                        </div>
+                                        <div class="w-full">{{data.Phone}}</div>
+                                        <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
+                                            {{ data.NameNetwork }}
+                                        </tds-tag>
                                     </td>
-                                    <td *ngIf="isHidden('Email')" class="border-r border-neutral-200">{{ data.Email }}</td>
+                                    <td *ngIf="isHidden('Email')" class="border-r border-neutral-200">
+                                        <div class="w-[150px] truncate cursor-pointer" tds-tooltip="{{ data.Email }}">{{ data.Email }}</div>
+                                    </td>
                                     <td *ngIf="isHidden('Street')" class="border-r border-neutral-200">
                                         <div class="flex">
                                           <div class="w-auto flex">
@@ -155,14 +155,16 @@
                                         <div class="w-full flex items-center">
                                             <span [ngStyle]="{'color': data.StatusText | partnercolor: partnerStatusReport}"
                                                 class="tdsi-radio-circle-fill"></span>
-                                            <span class="ml-1 w-full ">{{data.StatusText}}</span>
+                                            <span class="ml-1 w-[100px] truncate cursor-pointer" tds-tooltip="{{data.StatusText}}">{{data.StatusText}}</span>
                                         </div>
                                     </td>
                                     <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200">
                                         <div class="flex items-center gap-x-1">
                                             <div class="flex flex-wrap items-center">
                                                 <div *ngFor="let item of data.Tags | prettyjson">
-                                                    <tds-tag class=" mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
+                                                    <tds-tag class="cursor-pointer mr-1 mb-1" tds-tooltip="{{item.Name}}" status='primary'>
+                                                        <div class="max-w-[70px] w-fit truncate">{{item.Name}}</div>
+                                                    </tds-tag>
                                                 </div>
                                                 <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                                                     [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -208,8 +210,8 @@
                                     <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right">{{ data.FacebookId }}</td>
                                     <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right">{{ data.Zalo }}</td>
                                     <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
-                                      <div class="w-full ">
-                                        {{ data.Credit || 0 | numberCustom }}
+                                      <div class="w-full">
+                                        {{ (data.Credit) || 0 | numberCustom }}
                                       </div>
                                     </td>
                                     <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200">

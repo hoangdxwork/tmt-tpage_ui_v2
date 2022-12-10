@@ -1,23 +1,38 @@
 /* You can add global styles to this file, and also import other style files */
-
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-@import "../node_modules/tds-ui/assets/scss/cdk";
+@import "../node_modules/tds-ui/assets/scss/cdk.scss";
 @import "../node_modules/tds-ui/assets/scss/scroll";
 @import "../node_modules/tds-ui/assets/scss/table.scss";
-
 @import "../node_modules/tds-ui/assets/scss/carousel.scss";
+@import "../node_modules/tds-ui/assets/scss/input.scss";
+@import "../node_modules/tds-ui/assets/scss/steps.scss";
+@import "../node_modules/tds-ui/assets/scss/radio.scss";
+@import "../node_modules/tds-ui/assets/scss/calendar.scss";
+@import "../node_modules/tds-ui/assets/scss/breadcrumb.scss";
+@import "../node_modules/tds-ui/assets/scss/confirm.scss";
+@import "../node_modules/tds-ui/assets/scss/menu.scss";
+
+@import "../node_modules/tds-ui/assets/scss/datepicker.scss";//
+@import "../node_modules/tds-ui/assets/scss/select.scss";//
+@import "../node_modules/tds-ui/assets/scss/tag.scss";//
+@import "../node_modules/tds-ui/assets/scss/form-field.scss";//
+@import "../node_modules/tds-ui/assets/scss/cascader.scss";//
+@import "../node_modules/tds-ui/assets/scss/tree-select.scss";//
 
 @import "./assets/font-icon/style.css";
 @import "./assets/scss/table-custom.scss";
 @import "./assets/scss/collapse-custom.scss";
 @import "./assets/scss/notification.scss";
 @import "./assets/scss/emojiMart.scss";
+@import "./assets/scss/menu.scss";
 
 @import "../node_modules/tds-editor/assets/tdsskin.scss";
 @import "../node_modules/tds-editor/assets/tdscontent.scss";
+
+
 
 body {
     overflow: hidden;

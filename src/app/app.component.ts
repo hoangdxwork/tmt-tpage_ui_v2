@@ -85,20 +85,20 @@ export class AppComponent {
           // Thông báo tạo đơn hàng
           case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
               if(!localSocket[ChatmoniSocketEventName.onCreatedSaleOnline_Order]) return;
-              let paramsCreated = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
-              let createdNoti = res && paramsCreated;
+              // let paramsCreated = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
+              // let createdNoti = res && paramsCreated;
 
-              if(createdNoti == true) break;
+              // if(createdNoti == true) break;
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
 
           // Thông báo xóa đơn hàng
           case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
               if(!localSocket[ChatmoniSocketEventName.onDeleteSaleOnline_Order]) return;
-              let paramsDelete = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
-              let deleteNoti = res && paramsDelete;
+              // let paramsDelete = this.router.url.startsWith('/conversation/post') && this.route.snapshot.queryParams?.post_id == res.Data?.Data?.Facebook_PostId;
+              // let deleteNoti = res && paramsDelete;
 
-              if(deleteNoti == true) break;
+              // if(deleteNoti == true) break;
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
 

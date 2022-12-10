@@ -13,9 +13,9 @@
             </tds-select>
         </div>
     </div>
-    <div *ngIf="!emptyData;else emptyTmp">
+    <div *ngIf="!emptyData && staffsData;else emptyTmp">
         <div class="flex xl:flex-col xl:items-center 2xl:flex-row w-full py-8 px-2 gap-6">
-            <div echarts [options]="staffOption" [size]="[270,270]"></div>
+            <div *ngIf="staffOption" echarts [options]="staffOption" [size]="[270,270]"></div>
             <div class="flex flex-col 2xl:flex-auto xl:w-full divide-y divide-neutral-2-200">
                 <div *ngIf="staffsData.length > 0" class="w-full py-6">
                     <div class="flex flex-row items-center justify-between w-full">
