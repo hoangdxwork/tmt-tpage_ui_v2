@@ -133,7 +133,7 @@
               <td  class="border-r">
                 <div class="flex flex-col gap-y-2">
                   <div class="w-full flex">
-                    <span *ngIf="order.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span *ngIf="order.CRMTeamName" [ngClass]="order.CRMTeamId | getTeamIcon:lstOfTeam"></span>
                     <span class="ml-1 ">{{order.CRMTeamName}}</span>
                   </div>
                   <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>

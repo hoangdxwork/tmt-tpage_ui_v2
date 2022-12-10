@@ -74,6 +74,9 @@ export class DetailBillComponent implements OnInit{
   }
 
   loadBill() {
+    this.productUOMQtyTotal= 0;
+    this.productPriceTotal = 0;
+
     this.isLoading = true;
     this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: any) => {

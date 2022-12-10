@@ -103,6 +103,9 @@ export class CreateQuickReplyModalComponent implements OnInit {
 
   formQuickReply!: FormGroup;
   createImageForm!: FormGroup;
+  base64textString!: string;
+  urlSampleUrl!: string;
+
   createMessageForm!: FormGroup;
   mediaForm: Array<string> = [];
   buttonFormList: Array<FormGroup> = [];
@@ -323,9 +326,10 @@ export class CreateQuickReplyModalComponent implements OnInit {
     this.formQuickReply.controls.bodyHtml.setValue(this.formQuickReply.value.bodyHtml.concat(data))
   }
 
-  getUrl(ev: string) {
+  getUrl(ev: any) {
     this.createImageForm.controls.image.setValue(ev)
   }
+
 
   cancel() {
     this.modal.destroy(null);

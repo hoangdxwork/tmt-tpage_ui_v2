@@ -57,7 +57,7 @@ export interface AutoOrderConfigDTO {
     EmailPattern: string;
     LiveCampaignId: string;
     LiveCampaignIsActive: boolean;
-    TeamId: number;
+    TeamId?: number;
     TextContentToOrders: TextContentToOrderDTO[];
     ExcludedPhones: string[];
     ExcludedStatusNames: any[];

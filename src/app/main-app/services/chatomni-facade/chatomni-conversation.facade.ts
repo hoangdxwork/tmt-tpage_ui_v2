@@ -1,15 +1,24 @@
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
-import { EventEmitter, Injectable, OnDestroy } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get, maxBy as _maxBy } from 'lodash';
 import { set as _set } from 'lodash';
-import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversationMessageDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
-import { CRMTeamService } from "../crm-team.service";
-import { Subject, takeUntil } from "rxjs";
+import { ChatomniConversationDto, ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
-import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniMessageType, ChatomniStatus } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
+import { ChatomniDataItemDto, ChatomniFacebookDataDto, ChatomniMessageType, ChatomniStatus, ChatomniTShopDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
+
+export interface OnSyncDto {
+  Type: TypeOnSync;
+  UserId: string;
+}
+
+export enum TypeOnSync {
+  _All = "All",
+  _Order = "Order",
+  _Partner= "Partner",
+}
 
 @Injectable()
 
@@ -23,6 +32,8 @@ export class ChatomniConversationFacade extends BaseSevice  {
 
   // TODO: sự kiên đồng bộ dữ liệu
   public onSyncConversationInfo$ = new EventEmitter<any | null>();
+  public onSyncConversationOrder$ = new EventEmitter<any | null>();
+  public onSyncConversationPartner$ = new EventEmitter<any | null>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -92,5 +103,28 @@ export class ChatomniConversationFacade extends BaseSevice  {
     }
 
     return 'Người dùng'
+  }
+
+  preapreCommentTshopOnEventSocket(socket: SocketioOnMessageDto) {
+    let item: ChatomniDataItemDto = {
+        Data: {...socket.Message?.Data} as ChatomniTShopDataDto,
+        Id: socket.Message?.Id,
+        ObjectId: socket.Message?.ObjectId,
+        ParentId: socket.Message?.ParentId,
+        Message: socket.Message?.Message,
+        Source: null,
+        Type: socket.Message?.MessageType,
+        UserId: socket.Message?.UserId,
+        Status: ChatomniStatus.Done,
+        IsSystem: false, // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
+        CreatedById: null,
+        CreatedBy: socket.Message?.CreatedBy,
+        CreatedTime: socket.Message?.CreatedTime,
+        ChannelCreatedTime: socket.Message?.ChannelCreatedTime,
+        ChannelUpdatedTime: null,
+        IsOwner: socket.Message?.IsOwner,
+    } as any;
+
+    return {...item};
   }
 }

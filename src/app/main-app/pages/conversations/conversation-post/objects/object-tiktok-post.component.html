@@ -1,0 +1,56 @@
+<div *ngIf="item" (click)="selectPost(item)"  class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
+    {{ currentPost?.ObjectId == item.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
+
+    <div class="flex flex-col gap-y-3" *ngIf="(item.Data | tiktokType)">
+        <div class="relative w-[120px] h-[88px]">
+            <!-- Hình ảnh -->
+            <div class="post-picture" *ngIf="item?.Thumbnail && !checkPostPictureError(item); else noPicture">
+                <div *ngIf="item.Thumbnail; else noPicture" class="rounded-lg">
+                    <img  [src]="item.Thumbnail?.Url"
+                        [width]="120" [height]="88" (error)="errorPostPicture(item)"
+                        class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  object-cover">
+                </div>
+            </div>
+
+            <ng-template #noPicture>
+                <div *ngIf="!item.Thumbnail">
+                    <img src="../../../assets/imagesv2/errorPic.svg" alt=""
+                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                </div>
+            </ng-template>
+
+            <!-- Đang live -->
+            <div *ngIf="item.StatusLive == 1" class="h-[22px] px-2 flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                <div class="tdsi-live-broadcast-fill text-white leading-2 mr-2 text-caption-2 font-[Lato]"></div>
+                <span class="text-white leading-2 text-caption-2 font-[Lato]">LIVE</span>
+            </div>
+
+            <!-- Tắt live -->
+            <div *ngIf="item.StatusLive == 0" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                    <div class="tdsi-video-camera-fill text-white leading-none"></div>
+            </div>
+
+            <!-- Bài viết -->
+            <!-- <div *ngIf="item.StatusLive > 1" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
+                <div class="tdsi-template-web-fill text-white leading-none"></div>
+            </div> -->
+        </div>
+    </div>
+    <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
+        <span *ngIf="item.StatusLive == 1" class="w-full font-semibold truncate text-base-red-600">Đang phát trực tiếp</span>
+        <span *ngIf="item.StatusLive == 0" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
+
+        <span *ngIf="item.Description" class=" text-neutral-1-400 line-clamp">
+            <span>{{item.Description}}</span>
+        </span>
+
+        <div class="flex justify-between items-center">
+            <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" >
+                {{item.ChannelCreatedTime | date:'dd/MM/yyyy'}}
+            </span>
+
+            <span *ngIf="item.ChannelUpdatedTime" class="text-neutral-1-400 tdsi-time-line" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc {{item.ChannelUpdatedTime | date:'dd/MM/yyyy HH:mm'}}">
+            </span>
+        </div>
+    </div>
+</div>

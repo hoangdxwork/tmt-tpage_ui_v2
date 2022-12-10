@@ -8,7 +8,7 @@ import { TagDTO } from "../../dto/tag/tag.dto";
 export class PartnerColorPipe implements PipeTransform {
 
     transform(text: string, partnerStatusReport: any[]): any {
-      let exits = partnerStatusReport?.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
+      let exits = partnerStatusReport?.filter(x => x && x.StatusText && x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
       if (exits) {
         return exits.StatusStyle;
       }

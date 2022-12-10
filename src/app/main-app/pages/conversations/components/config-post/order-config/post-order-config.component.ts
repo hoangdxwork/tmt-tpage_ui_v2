@@ -25,6 +25,8 @@ import { SharedService } from '@app/services/shared.service';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTmlpAttributesDto } from '@app/dto/product-template/product-attribute.dto';
+import { CRMTeamService } from '@app/services/crm-team.service';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
 
 @Component({
   selector: 'post-order-config',
@@ -52,6 +54,7 @@ export class PostOrderConfigComponent implements OnInit {
   lstTags: CRMTagDTO[] = []
   lstPartnerStatus: any;
   lstUser$!: Observable<ConfigUserDTO[]>;
+  currentTeam!: CRMTeamDTO | null;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -78,6 +81,7 @@ export class PostOrderConfigComponent implements OnInit {
     private modalRef: TDSModalRef,
     private productService: ProductService,
     private viewContainerRef: ViewContainerRef,
+    private crmTeamService: CRMTeamService,
     private modalService: TDSModalService,
     private sharedService: SharedService,
     private notificationService: TDSNotificationService,
@@ -140,7 +144,11 @@ export class PostOrderConfigComponent implements OnInit {
 
   loadData(postId: string) {
     this.isLoading = true;
-    this.facebookPostService.getOrderConfig(postId).pipe(takeUntil(this.destroy$)).subscribe({
+
+    this.currentTeam = this.crmTeamService.getCurrentTeam();
+    if(!this.currentTeam) return;
+
+    this.facebookPostService.getOrderConfig(this.currentTeam?.Id, postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
           this.dataModel = {...res};
 
@@ -240,7 +248,7 @@ export class PostOrderConfigComponent implements OnInit {
     let matchRex = match && match.length > 0;
 
     // TODO: check kí tự đặc biệt
-    if(matchRex || !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim())) {
+    if(matchRex || (TDSHelperString.isString(pop) && !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim()))) {
         this.message.warning('Ký tự không hợp lệ');
         datas = datas.filter(x => x!= pop);
     }
@@ -297,7 +305,7 @@ export class PostOrderConfigComponent implements OnInit {
 
   enableRegexAttributeValues(event: boolean, item: TextContentToOrderDTO){
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
-    if(Number(idx) >=0 ) {
+    if(Number(idx) >= 0 ) {
       this.dataModel.TextContentToOrders[idx].Product!.IsEnableRegexAttributeValues = event;
       this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
     }
@@ -462,6 +470,11 @@ export class PostOrderConfigComponent implements OnInit {
           let item = {...this.prepareProduct(product, index)} as TextContentToOrderDTO;
 
           let content = this.generateTagDetail(product.DefaultCode, product.OrderTag, null, null);
+          let contentRange = this.dataModel.TextContentToOrders[index].Content;
+          if(contentRange) {
+              contentRange = contentRange.split(',');
+              content = [...contentRange, ...content];
+          }
           item.Content = content?.join(',');
 
           let productTmpl = product.ProductTmpl;
@@ -677,6 +690,7 @@ export class PostOrderConfigComponent implements OnInit {
 
   prepareModelOrderConfig() {
     let model = {} as any;
+    this.currentTeam = this.crmTeamService.getCurrentTeam();
 
     let status: any[] = [];
     if( this.dataModel.ExcludedStatusNames) {
@@ -703,6 +717,7 @@ export class PostOrderConfigComponent implements OnInit {
     model.TextContentToOrders = this.dataModel.TextContentToOrders;
     model.IsOrderCreateOnlyOnce = this.dataModel.IsOrderCreateOnlyOnce || false;
     model.Users = this.prepareUser(this.dataModel.Users);
+    model.TeamId = this.currentTeam?.Id;
 
     if(model.Users == null){
       model.IsEnableAutoAssignUser = false;

@@ -87,6 +87,14 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     return this.apiService.getData<OdataCommentOrderPostDTO>(api, null);
   }
 
+  chatomniGetCommentsOrders(teamId: any, objectId: any): Observable<any> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/saleonine_livecampaign/getcommentorders?teamId=${teamId}&objectId=${objectId}`,
+      method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<OdataCommentOrderPostDTO>(api, null);
+  }
+
   getCommentsByPostId(postId: string): Observable<any> {
     let queryString = Object.keys(this.queryObj).map(key => {
         return key + '=' + this.queryObj[key]

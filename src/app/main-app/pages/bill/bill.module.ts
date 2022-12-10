@@ -1,3 +1,4 @@
+import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
 import { ChatomniConversationFacade } from './../../services/chatomni-facade/chatomni-conversation.facade';
 import { PrepareDetailsOrderLineHandler } from './../../handler-v2/order-handler/prepare-details-orderLine.handler';
 import { PrepareCopyBill } from './../../handler-v2/bill-handler/prepare-copy-bill.handler';
@@ -103,6 +104,7 @@ import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-
 import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cacl.handler';
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -152,7 +154,9 @@ const SERVICES = [
   PrepareDetailsOrderLineHandler,
   PrepareCopyBill,
   ChatomniConversationFacade,
-  LiveCampaignService
+  LiveCampaignService,
+  ChatomniConversationService,
+  ChatomniCommentService
 ]
 
 @NgModule({

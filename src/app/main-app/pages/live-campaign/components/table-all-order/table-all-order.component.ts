@@ -1,3 +1,6 @@
+import { CRMTeamDTO } from './../../../../dto/team/team.dto';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
+import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { addDays } from 'date-fns';
 import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { TIDictionary } from './../../../../../lib/dto/dictionary.dto';
@@ -52,6 +55,7 @@ export class TableAllOrderComponent implements OnInit {
   paddingCollapse: number = 36;
   lstStatusTypeExt!: Array<any>;
   indClickTag = "";
+  lstOfTeam!: CRMTeamDTO[];
 
   public filterObj: FilterObjSOOrderModel = {
     tags: [],
@@ -62,7 +66,7 @@ export class TableAllOrderComponent implements OnInit {
       endDate: new Date(),
     },
     liveCampaignId: null,
-    IsHasPhone: null,
+    Telephone: null,
     PriorityStatus: null
   }
 
@@ -111,9 +115,11 @@ export class TableAllOrderComponent implements OnInit {
     private resizeObserver: TDSResizeObserver,
     private tagService: TagService,
     private cdRef: ChangeDetectorRef,
-    private commonService: CommonService,) { }
+    private commonService: CommonService,
+    private chatomniConversationService: ChatomniConversationService) { }
 
   ngOnInit(): void {
+    this.loadAllTeam();
     this.loadTags();
     this.loadStatusTypeExt();
     this.loadSummaryStatus();
@@ -146,9 +152,6 @@ export class TableAllOrderComponent implements OnInit {
     let filters = this.odataLiveCampaignOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    if(this.filterObj.IsHasPhone != null) {
-      params += `&IsHasPhone=${this.filterObj.IsHasPhone}`;
-    }
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
@@ -162,6 +165,19 @@ export class TableAllOrderComponent implements OnInit {
         this.message.error(`${error?.error?.message}` || Message.CanNotLoadData);
       }
     });
+  }
+
+  loadAllTeam() {
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res && TDSHelperArray.hasListValue(res)) {
+          this.lstOfTeam = [...res];
+        }
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   getViewData(params: string) {
@@ -205,7 +221,7 @@ export class TableAllOrderComponent implements OnInit {
         endDate: event.dateRange.endDate,
       } : null,
       liveCampaignId: null,
-      IsHasPhone: event.IsHasPhone,
+      Telephone: event.Telephone,
       PriorityStatus: event.PriorityStatus
     }
 
@@ -221,7 +237,7 @@ export class TableAllOrderComponent implements OnInit {
       searchText: '',
       dateRange: {} as any,
       liveCampaignId: null,
-      IsHasPhone: null,
+      Telephone: null,
       PriorityStatus: null
     }
 
@@ -318,6 +334,7 @@ export class TableAllOrderComponent implements OnInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
@@ -332,6 +349,7 @@ export class TableAllOrderComponent implements OnInit {
         });
 
         if (pageIds.length == 0) {
+          this.isLoading = false;
           return this.message.error('Không có kênh kết nối với khách hàng này.');
         }
 
@@ -339,6 +357,7 @@ export class TableAllOrderComponent implements OnInit {
           next: (teams: any): any => {
 
             if (teams.length == 0) {
+              this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
             }
 
@@ -361,37 +380,41 @@ export class TableAllOrderComponent implements OnInit {
 
             if (this.mappingTeams.length > 0) {
               this.currentMappingTeam = this.mappingTeams[0];
-              this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
+              this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+            } else {
+              this.isLoading = false;
             }
           }
         });
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: MDBByPSIdDTO) => {
-          if (res) {
-            let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-            this.currentConversation = { ...model };
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
+        if (res) {
+            // let model = this.chatomniMessageFacade.mappingCurrentConversation(res);
+            this.currentConversation = { ...res };
 
-            this.psid = res.psid;
+            this.psid = psid;
             this.isOpenDrawer = true;
-          }
-        },
-        error: (error) => {
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+            this.isLoading = false;
         }
-      })
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
   }
 
   selectMappingTeam(item: any) {

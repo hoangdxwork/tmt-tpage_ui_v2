@@ -121,12 +121,20 @@
                   <i class="tdsi-edit-fill"></i>
                 </button>
               </div>
+
+              <tds-label>Khối lượng (kg)</tds-label>
+              <tds-form-field class="w-full col-span-2">
+                <tds-input-number formControlName="Weight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                <tds-error>
+                  Vui lòng nhập khối lượng
+                </tds-error>
+              </tds-form-field>
             </div>
 
             <div class="grid grid-cols-3 xl:gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center">
               <tds-label>Giá sản phẩm:</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="ListPrice" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                <tds-input-number formControlName="ListPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập giá sản phẩm
                 </tds-error>
@@ -167,7 +175,7 @@
               <tds-label>Đơn vị mặc định<span class="text-error-400">*</span> :</tds-label>
               <tds-form-field class="w-full col-span-2">
                 <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
-                  formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false" [required]="true"
+                  formControlName="UOM" [valuePrimitive]="false" [data]="UOMList" [allowClear]="false" [required]="true"
                   [optionOverflowSize]="5">
                 </tds-select>
                 <tds-error>
@@ -178,7 +186,7 @@
               <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
               <tds-form-field class="w-full col-span-2">
                 <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
-                  formControlName="UOM" [valuePrimitive]="false" [data]="UOMList" [allowClear]="false" [required]="true"
+                  formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false" [required]="true"
                   [optionOverflowSize]="5">
                 </tds-select>
                 <tds-error>
@@ -269,7 +277,7 @@
 
               <tds-label>Thể tích (m3)</tds-label>
               <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="Volume" [min]="0"  class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
+                <tds-input-number formControlName="Volume" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
                 <tds-error>
                   Vui lòng nhập thể tích
                 </tds-error>

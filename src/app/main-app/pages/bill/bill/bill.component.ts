@@ -30,6 +30,7 @@ import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carri
 import { TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { DatePipe, DOCUMENT } from '@angular/common';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'app-bill',
@@ -161,6 +162,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     private crmTeamService: CRMTeamService,
     private deliveryCarrierService: DeliveryCarrierService,
     private crmMatchingService: CRMMatchingService,
+    private chatomniConversationService: ChatomniConversationService,
     private chatomniMessageFacade: ChatomniMessageFacade) {
   }
 
@@ -589,12 +591,19 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+    this.isLoading = true;
 
     if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+    if(!TDSHelperString.hasValueString(data.CRMTeamId)) {
+      this.isLoading = false;
+      this.message.error(Message.PageNotExist);
+      return;
+    }
+
+    this.partnerService.getAllByPartnerId(data.CRMTeamId, partnerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any): any => {
 
         let pageIds: any = [];
@@ -603,12 +612,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         if (pageIds.length == 0) {
+          this.isLoading = false;
           return this.message.error('Không có kênh kết nối với khách hàng này.');
         }
 
         this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
           next: (teams: any): any => {
             if (teams?.length == 0) {
+              this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
             }
 
@@ -636,12 +647,13 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(pageId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 

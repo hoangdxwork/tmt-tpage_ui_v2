@@ -223,6 +223,15 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  checkInfo_v2(teamId: any, userId: any) : Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/partner/${teamId}_${userId}/checkinfo`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
   getLastOrder(partnerId: number): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/partner/${partnerId}/lastorder`,
@@ -249,6 +258,14 @@ export class PartnerService extends BaseSevice {
   getAllByMDBPartnerId(partnerId: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/rest/v1.0/partner/${partnerId}/pages`,
+        method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getAllByPartnerId(channelId: number, partnerId: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v2.0/partner/${channelId}_${partnerId}/channels`,
         method: CoreApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);

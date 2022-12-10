@@ -602,6 +602,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openMiniChat(data: PartnerDTO) {
     let partnerId = data.Id;
+    this.isLoading = true;
     this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any): any => {
 
@@ -611,12 +612,14 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         if (pageIds.length == 0) {
+          this.isLoading = false;
           return this.message.error('Không có kênh kết nối với khách hàng này.');
         }
 
         this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
           next: (teams: any): any => {
             if (teams?.length == 0) {
+              this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
             }
 
@@ -637,12 +640,15 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
             if (this.mappingTeams.length > 0) {
               this.currentMappingTeam = this.mappingTeams[0];
-              this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
+              this.loadMDBByPSId(this.currentMappingTeam.team?.Id, this.currentMappingTeam.psid);
+            } else {
+              this.isLoading = false;
             }
           }
         });
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
       }
     })
@@ -661,9 +667,11 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.psid = res.psid;
           this.isOpenDrawer = true;
+          this.isLoading = false;
         }
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       }
     })

@@ -148,11 +148,11 @@ export class FilterOptionsComponent implements OnInit {
     })
   }
 
-  selectIsHasPhone(checked: boolean, status: boolean) {
+  selectTelephone(checked: boolean, status: boolean) {
     if(checked) {
-      this.filterObj.IsHasPhone = status;
+      this.filterObj.Telephone = status;
     } else {
-      this.filterObj.IsHasPhone = null;
+      this.filterObj.Telephone = null;
     }
   }
 
@@ -194,7 +194,7 @@ export class FilterOptionsComponent implements OnInit {
         endDate: new Date(),
       },
       liveCampaignId: null,
-      IsHasPhone: null,
+      Telephone: null,
       PriorityStatus: null
     };
 
