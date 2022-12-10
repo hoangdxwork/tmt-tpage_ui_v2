@@ -303,31 +303,31 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         </svg>`,
         link: `/connect-channel?page=fb`,
       },
-      {
-        name: "Bán hàng đa kênh",
-        htmlIcon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11.4005 12.6015V4.72559H10.8384C9.16951 4.72559 7.53811 5.22047 6.15049 6.14765C4.76287 7.07482 3.68135 8.39266 3.0427 9.9345C2.40405 11.4763 2.23695 13.1729 2.56253 14.8097C2.88811 16.4466 3.69175 17.9501 4.87182 19.1301C6.0519 20.3102 7.5554 21.1139 9.19221 21.4394C10.829 21.765 12.5256 21.5979 14.0675 20.9593C15.6093 20.3206 16.9271 19.2391 17.8543 17.8515C18.7815 16.4639 19.2764 14.8325 19.2764 13.1636V12.6015H11.4005Z" class="tds-icon-primary"/>
-        <path d="M13.1627 2.40039H12.6006V11.4005H21.6007V10.8384C21.5983 8.60121 20.7086 6.45635 19.1266 4.87443C17.5447 3.29251 15.3999 2.40275 13.1627 2.40039V2.40039Z" class="tds-icon-secondary"/>
-        </svg>`,
-        listChild: [
-          {
-            name: "Kết nối",
-            link: `/omni-connection`,
-          },
-          {
-            name: "Sản phẩm sàn TMĐT",
-            link: `/omni-product`,
-          },
-          {
-            name: "Đơn hàng",
-            link: `/omni-order`,
-          },
-          {
-            name: "Sản phẩm TPOS",
-            link: `/omni-product-tpos`,
-          },
-        ]
-      },
+    //   {
+    //     name: "Bán hàng đa kênh",
+    //     htmlIcon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    //     <path d="M11.4005 12.6015V4.72559H10.8384C9.16951 4.72559 7.53811 5.22047 6.15049 6.14765C4.76287 7.07482 3.68135 8.39266 3.0427 9.9345C2.40405 11.4763 2.23695 13.1729 2.56253 14.8097C2.88811 16.4466 3.69175 17.9501 4.87182 19.1301C6.0519 20.3102 7.5554 21.1139 9.19221 21.4394C10.829 21.765 12.5256 21.5979 14.0675 20.9593C15.6093 20.3206 16.9271 19.2391 17.8543 17.8515C18.7815 16.4639 19.2764 14.8325 19.2764 13.1636V12.6015H11.4005Z" class="tds-icon-primary"/>
+    //     <path d="M13.1627 2.40039H12.6006V11.4005H21.6007V10.8384C21.5983 8.60121 20.7086 6.45635 19.1266 4.87443C17.5447 3.29251 15.3999 2.40275 13.1627 2.40039V2.40039Z" class="tds-icon-secondary"/>
+    //     </svg>`,
+    //     listChild: [
+    //       {
+    //         name: "Kết nối",
+    //         link: `/omni-connection`,
+    //       },
+    //       {
+    //         name: "Sản phẩm sàn TMĐT",
+    //         link: `/omni-product`,
+    //       },
+    //       {
+    //         name: "Đơn hàng",
+    //         link: `/omni-order`,
+    //       },
+    //       {
+    //         name: "Sản phẩm TPOS",
+    //         link: `/omni-product-tpos`,
+    //       },
+    //     ]
+    //   },
       {
         name: "Cấu hình",
         htmlIcon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
