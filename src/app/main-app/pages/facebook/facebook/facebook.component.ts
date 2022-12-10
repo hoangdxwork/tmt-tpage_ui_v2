@@ -1,3 +1,4 @@
+import { takeUntil } from 'rxjs/operators';
 import { mergeMap, Observable, map } from 'rxjs';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -20,27 +21,28 @@ export class FacebookComponent implements OnInit {
   currentPage!: string | null;
   currentTeam!: CRMTeamDTO | null;
   teamLogin!: TUserDto | FacebookUser | null;
+  firstLoad: boolean = true;
 
   constructor(public router: Router,
-    private facebookService: FacebookService,
     private crmTeamService: CRMTeamService,
+    private destroy$: TDSDestroyService,
     public activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    this.crmTeamService.getCacheTeamId().pipe(mergeMap((id) => {
+    this.crmTeamService.getCacheTeamId().pipe(takeUntil(this.destroy$)).pipe(mergeMap((id) => {
       if(id) {
         return this.crmTeamService.getTeamById(id).pipe(map((res) => { return res?.Type || null }));
       } else {
-        return new Observable(obs=>{
+        return new Observable<null>(obs=>{
           obs.next(null);
           obs.complete();
         })
       }
     }))
     .subscribe({
-      next: (res) => {
-
+      next: (res: CRMTeamType | null) => {
+        if(!this.firstLoad) return;
         // TODO: load route của tab hiện tại
         switch(res) {
           case CRMTeamType._Facebook:
@@ -53,10 +55,11 @@ export class FacebookComponent implements OnInit {
             this.currentTab = 2;
           break;
         }
+
+        this.firstLoad = false;
       }
     });
-    
-    
+
     // this.activatedRoute.queryParams.subscribe(params => {
     //   this.currentPage = params?.page || 'fb';
 
