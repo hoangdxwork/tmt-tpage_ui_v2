@@ -729,7 +729,7 @@ export class AddBillComponent implements OnInit {
 
   onChangeQuantity(event: number, item: any) {
     let datas = this._form.controls['OrderLines'].value;
-    
+
     if (datas && datas.length > 0) {
       this.focusField = 'ProductUOMQty';
 
@@ -786,9 +786,14 @@ export class AddBillComponent implements OnInit {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
-      datas.map((x: any) => {
+      this.focusField = `${typeDiscount}`;
+
+      datas.map((x: any, index: number) => {
           if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
               x[`${typeDiscount}`] = event;
+
+              let formArray = this._form.controls["OrderLines"] as FormArray;
+              formArray.at(index).patchValue(datas[index]);
           }
       });
     }
@@ -825,10 +830,6 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
-  }
-
-  get formArrayProduct() {
-    return this._form.controls["OrderLines"] as FormArray;
   }
 
   changeDiscount(event: any) {
