@@ -124,10 +124,17 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   selectTracking(event: any): void {
-    if (event && event.value == this.selectRefs) {
-      this.selectRefs = null;
+    if (event && event.value && event.IsSelected) {
+      this.selectRefs = event.value;
+
+      this.trackingRefs.map(x=> {
+        if(x.value == event.value) {
+          return x.IsSelected = true;
+        }
+        return x.IsSelected = false;
+      })
     } else {
-      this.selectRefs = event?.value;
+      this.selectRefs = null;
     }
 
     this.filterObj.hasTracking = this.selectRefs;
@@ -200,7 +207,7 @@ export class FilterOptionsComponent implements OnInit {
 
   checkActive(): boolean {
     let exist = TDSHelperArray.hasListValue(this.filterObj.tags) || TDSHelperArray.hasListValue(this.filterObj.status)
-      || TDSHelperString.hasValueString(this.filterObj.hasTracking) || TDSHelperString.hasValueString(this.filterObj.deliveryType)
+      || TDSHelperString.hasValueString(this.filterObj.hasTracking) || TDSHelperString.hasValueString(this.filterObj.carrierDeliveryType)
 
     if (exist) {
       return true
@@ -220,8 +227,8 @@ export class FilterOptionsComponent implements OnInit {
     this.filterObj = {
       tags: [],
       status: [],
-      carrierId: -1,
-      deliveryType: '',
+      deliveryId: -1,
+      carrierDeliveryType: '',
       hasTracking: null,
       searchText: '',
       dateRange: {
