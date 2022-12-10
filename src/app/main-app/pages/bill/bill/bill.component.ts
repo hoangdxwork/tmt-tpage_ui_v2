@@ -58,14 +58,18 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
   lstCarriers!: Array<DeliveryCarrierDTOV2>;
-  deliveryType!: string | null;
+  lstDeliveryIdView!: Array<DeliveryCarrierDTOV2>;
+  deliveryId!: string | null;
+
+  lstCarrierDelivery!: Array<DeliveryCarrierDTOV2>;
+  carrierDeliveryType!: string | null;
 
   public filterObj: FilterObjFastSaleModel = {
     tags: [],
     status: [],
     hasTracking: null,
-    carrierId: -1,
-    deliveryType: '',
+    deliveryId: -1,
+    carrierDeliveryType: '',
     searchText: '',
     dateRange: {
       startDate: addDays(new Date(), -30),
@@ -185,6 +189,19 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.deliveryCarrierService.get().subscribe({
       next: (res: any) => {
         this.lstCarriers = res.value;
+
+        let data: DeliveryCarrierDTOV2[] = [];
+        this.lstCarriers.map(x=>{
+          let exist = data.find(y => y.DeliveryType == x.DeliveryType);
+          if(!exist) {
+            if(!TDSHelperString.hasValueString(x.DeliveryTypeGet)) {
+              x.DeliveryTypeGet = x.DeliveryType;
+            }
+            data = [ ...data, ...[x]]; 
+          }
+        });
+
+        this.lstCarrierDelivery = [...data];
       },
       error: (error: any) => {
         this.message.error(`${error?.error?.message}` || 'Tải dữ liệu thất bại!');
@@ -207,9 +224,9 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       DateStart: startDate,
       DateEnd: endDate,
       SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()),
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      TagIds: this.filterObj.tags.join(","),
       TrackingRef: this.filterObj.hasTracking,
-      DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType : null,
+      DeliveryType: this.filterObj.carrierDeliveryType ? this.filterObj.carrierDeliveryType : null,
     };
 
 
@@ -501,7 +518,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filterObj.tags = event.tags;
     this.filterObj.status = event.status;
     this.filterObj.hasTracking = event.hasTracking;
-    this.filterObj.deliveryType = event.deliveryType;
+    this.filterObj.carrierDeliveryType = event.carrierDeliveryType;
     this.filterObj.tags = event.tags;
 
     this.filterObj.dateRange = {
@@ -546,14 +563,15 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId.clear();
-    this.deliveryType = null;
+    this.carrierDeliveryType = null;
+    this.deliveryId = null;
 
     this.filterObj = {
       tags: [],
       status: [],
       hasTracking: null,
-      carrierId: -1,
-      deliveryType: '',
+      deliveryId: -1,
+      carrierDeliveryType: '',
       searchText: '',
       dateRange: {
         startDate: addDays(new Date(), -30),
@@ -700,11 +718,27 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
-  onChangeCarrier(event: any) {
-    if (event && event.Id) {
-      this.filterObj.carrierId = event.Id;
+  onChangecarrierDeliveryType(event: any) {
+    this.lstDeliveryIdView = [];
+    this.deliveryId = null;
+    this.filterObj.deliveryId = -1;
+
+    if (event && event.DeliveryType) {
+        this.filterObj.carrierDeliveryType = event.DeliveryType;
+
+        let data = this.lstCarriers.filter(x=> x.DeliveryType == event.DeliveryType);
+        this.lstDeliveryIdView = [...data];
     } else {
-      this.filterObj.carrierId = -1;
+        this.filterObj.carrierDeliveryType = '';
+    }
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  onChangeDeliveryId(event: DeliveryCarrierDTOV2) {
+    if (event && event.Id) {
+        this.filterObj.deliveryId = event.Id;
+    } else {
+        this.filterObj.deliveryId = -1;
     }
     this.loadData(this.pageSize, this.pageIndex);
   }

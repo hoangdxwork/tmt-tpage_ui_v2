@@ -90,6 +90,15 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
       })
     }
 
+    if(filterObj.Telephone != null) {
+      dataFilter.filters.push({
+        filters: [
+        { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
+      ],
+      logic: 'and'
+      })
+    }
+
     return dataFilter;
   }
 

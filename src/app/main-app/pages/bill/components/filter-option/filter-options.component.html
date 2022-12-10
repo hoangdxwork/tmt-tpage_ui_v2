@@ -30,7 +30,7 @@
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">VẬN ĐƠN</p>
           <div class="w-full flex flex-wrap items-center gap-x-2 gap-y-2">
             <div *ngFor="let item of trackingRefs">
-              <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectState(item)">
+              <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectTracking(item)">
                 {{item.text}}
               </tds-tag>
             </div>
