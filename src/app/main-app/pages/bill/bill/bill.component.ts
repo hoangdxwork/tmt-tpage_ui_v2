@@ -352,6 +352,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   assignTags(id: number, tags: TDSSafeAny) {
+    if(tags == null) {
+      this.message.error("Vui lòng nhập tên thẻ!");
+      return;
+    }
     let model = { OrderId: id, Tags: tags };
     this.fastSaleOrderService.assignTagFastSaleOrder(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {

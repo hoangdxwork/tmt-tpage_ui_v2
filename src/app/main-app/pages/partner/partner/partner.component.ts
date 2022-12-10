@@ -273,6 +273,10 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignTags(id: number, tags: Array<TagsPartnerDTO>) {
+    if(tags == null) {
+      this.message.error("Vui lòng nhập tên thẻ!");
+      return;
+    }
     let model = { PartnerId: id, Tags: tags };
     this.partnerService.assignTagPartner(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
