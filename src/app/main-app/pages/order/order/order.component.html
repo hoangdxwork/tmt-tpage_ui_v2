@@ -148,7 +148,9 @@
                   <div class="flex items-center gap-x-1 w-full">
                     <div class="flex flex-wrap items-center w-fit">
                       <div *ngFor="let item of data.Tags | prettyjson">
-                        <tds-tag class=" mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
+                        <tds-tag class="cursor-pointer mr-1 mb-1" tds-tooltip="{{item.Name}}" status='primary'>
+                          <div class="max-w-[100px] w-fit truncate">{{item.Name}}</div>
+                      </tds-tag>
                       </div>
                       <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                         [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
@@ -281,12 +283,13 @@
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-l">
-                  <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
+                  <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" tds-tooltip="{{ data.StatusText }}" class="cursor-pointer"
                     tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
                     popoverTrigger="click">
-                    <span class="flex items-center">
-                      {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
-                    </span>
+                    <div class="flex items-center">
+                      <div class="max-w-[80px] w-fit truncate">{{ data.StatusText }}</div>
+                      <i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
+                    </div>
                   </tds-tag>
 
                   <tds-dropdown-menu #menu1="tdsDropdownMenu">

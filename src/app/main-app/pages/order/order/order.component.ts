@@ -504,7 +504,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   assignTags(id: string, tags: TDSSafeAny) {
     if(tags == null) {
-      this.message.error(`Vui lòng nhập tên thẻ!`);
+      this.message.error("Vui lòng nhập tên thẻ!");
       return;
     }
     let model = { OrderId: id, Tags: tags };

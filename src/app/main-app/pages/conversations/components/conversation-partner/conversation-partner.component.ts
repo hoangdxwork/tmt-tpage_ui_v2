@@ -27,6 +27,7 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenu
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { FastSaleOrderDTO } from '@app/dto/fastsaleorder/fastsaleorder.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -578,6 +579,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       case 'confirm':
         this.message.success('Lưu địa chỉ khách hàng thành công');
       break
+    }
+  }
+
+  onOpenTrackingUrl(data: Conversation_LastBillDto) {
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
     }
   }
 

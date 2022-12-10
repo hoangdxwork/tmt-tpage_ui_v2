@@ -553,6 +553,7 @@ export interface Conversation_LastBillDto {
   Type?: any;
   Number: string;
   TrackingRef?: any;
+  TrackingUrl?: any;
   DeliveryNote: string;
   ShipPaymentStatus?: any;
   Address: string;

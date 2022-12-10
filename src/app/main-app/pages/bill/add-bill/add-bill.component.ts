@@ -1121,7 +1121,7 @@ export class AddBillComponent implements OnInit {
     return model;
   }
 
-  prepareModel(): any {debugger
+  prepareModel(): any {
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại
