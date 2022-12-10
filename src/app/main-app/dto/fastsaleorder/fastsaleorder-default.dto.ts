@@ -617,8 +617,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     FacebookName: string;
     FacebookNameNosign: string;
     FacebookId: string;
-    LiveCampaignId?: string ; // bổ sung 14/07/2022
-    LiveCampaignName?: string ; // bổ sung 14/07/2022
+    LiveCampaignId?: string | any; // bổ sung 14/07/2022
+    LiveCampaignName?: string | any; // bổ sung 14/07/2022
     DisplayFacebookName: string;
     Deliver: string;
     ShipWeight: number ;

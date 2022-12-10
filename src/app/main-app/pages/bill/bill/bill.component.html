@@ -38,11 +38,18 @@
           <action-dropdown *ngIf="setOfCheckedId.size == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]>
           </action-dropdown>
 
-          <div class="xl:hidden 2xl:flex">
+          <div class="xl:hidden 2xl:flex gap-x-2">
             <tds-form-field>
-              <tds-select valueField="Id" textField="Name" class="xl:w-[100px] 2xl:w-[190px]"
-                placeholder="Chọn đối tác" [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)" [(ngModel)]="deliveryType"
-                disabledField="isActive" [data]="lstCarriers" [allowClear]="true">
+              <tds-select valueField="DeliveryType" textField="DeliveryTypeGet" class="xl:w-[100px] 2xl:w-[190px]"
+                placeholder="Chọn loại đối tác GH" [valuePrimitive]="false" (selectChange)="onChangecarrierDeliveryType($event)" [(ngModel)]="carrierDeliveryType"
+                disabledField="isActive" [data]="lstCarrierDelivery" [allowClear]="true">
+              </tds-select>
+            </tds-form-field>
+            <tds-form-field>
+              <tds-select [disabled]="filterObj.carrierDeliveryType == ''" tds-tooltip="Chọn loại đối tác GH trước" 
+                valueField="Id" textField="Name" class="xl:w-[100px] 2xl:w-[190px]"
+                placeholder="Chọn đối tác GH" [valuePrimitive]="false" (selectChange)="onChangeDeliveryId($event)" [(ngModel)]="deliveryId"
+                disabledField="isActive" [data]="lstDeliveryIdView" [allowClear]="true">
               </tds-select>
             </tds-form-field>
           </div>

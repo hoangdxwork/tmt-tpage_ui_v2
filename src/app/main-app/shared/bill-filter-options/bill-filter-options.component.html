@@ -37,7 +37,7 @@
           <p class="mb-2 font-semibold">LOẠI ĐỐI TÁC GH</p>
           <div class="w-full">
             <tds-form-field>
-              <tds-select valueField="Id" textField="Name" placeholder='Chọn loại đối tác'
+              <tds-select valueField="Id" textField="DeliveryTypeGet" placeholder='Chọn loại đối tác'
                     [(ngModel)]="modelCarrier" [allowClear]="true" [valuePrimitive]="false"
                     [data]="lstCarriers" (ngModelChange)="onChangeCarrier($event)" >
                 </tds-select>

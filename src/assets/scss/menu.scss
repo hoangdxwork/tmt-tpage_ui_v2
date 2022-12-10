@@ -1,0 +1,17 @@
+tds-menu{
+    .tds-icon-secondary{
+        @apply fill-neutral-3-100;
+    }
+    .tds-icon-primary{
+        @apply fill-neutral-1-200
+    }
+    tds-menu-group-inline.tds-menu-group-active,tds-menu-group-popup.tds-menu-group-active,tds-menu-group-inline:hover,tds-menu-group-popup:hover{
+        .tds-icon-secondary{
+            @apply fill-primary-5;
+        }
+        .tds-icon-primary{
+            @apply fill-primary-1;
+        }
+    }
+    
+ } 

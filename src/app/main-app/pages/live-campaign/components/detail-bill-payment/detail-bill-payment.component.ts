@@ -227,6 +227,10 @@ export class DetailBillPaymentComponent implements OnInit {
   }
 
   assignTags(id: number, tags: TDSSafeAny) {
+    if(tags == null) {
+      this.message.error("Vui lòng nhập tên thẻ!");
+      return;
+    }
     let model = { OrderId: id, Tags: tags };
     this.fastSaleOrderService.assignTagFastSaleOrder(model)
       .subscribe((res: TDSSafeAny) => {
@@ -403,7 +407,7 @@ export class DetailBillPaymentComponent implements OnInit {
         }
     })
   }
-  
+
   onChangeFilterDate() {
     let data = this.lstOfData;
     switch(this.filterDate) {

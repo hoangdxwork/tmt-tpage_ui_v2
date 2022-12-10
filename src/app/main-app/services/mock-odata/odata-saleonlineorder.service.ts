@@ -109,12 +109,15 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         ],
         logic: 'and'
       })
+    }
 
-      if(filterObj.Telephone != null) {
-        (dataFilter.filters[0] as FilterDataRequestDTO)?.filters?.push(
-          { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
-        )
-      }
+    if(filterObj.Telephone != null) {
+      dataFilter.filters.push({
+        filters: [
+        { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
+      ],
+      logic: 'and'
+      })
     }
 
     if (filterObj && Number(filterObj?.teamId)) {

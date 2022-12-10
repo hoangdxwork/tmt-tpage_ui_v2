@@ -1,5 +1,5 @@
 <button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="loadSummaryStatus()"
-    size="md" class="relative" tds-tooltip tooltipTitle="Lọc dữ liệu" [autoClose]="false" [(visible)]="isVisible">
+    size="md" class="relative" tds-tooltip tooltipTitle="Lọc dữ liệu" [autoClose]="false" [(visible)]="isVisible" (tdsDropdownOutsideClick)="closeMenu()">
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg text-neutral-1-500 leading-none"></i>
   </span>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Chiến dịch live -->
-    <div class="w-full mb-4">
+    <div *ngIf="!isLiveCamp" class="w-full mb-4">
       <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">CHIẾN DỊCH LIVE</p>
       <div class="w-full">
         <tds-form-field>

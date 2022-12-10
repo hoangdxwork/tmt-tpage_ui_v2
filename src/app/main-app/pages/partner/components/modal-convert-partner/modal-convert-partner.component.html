@@ -1,68 +1,55 @@
-<div>
-  <form class="flex flex-col gap-y-4">
-    <tds-form-field>
-      <tds-label>Khách hàng nguồn</tds-label>
-      <!-- <tds-select valueField="Id" textField="Name" placeholder='Chọn khách hàng' disabledField="isActive" (selectChange)="changeFrom($event)"
-               [(ngModel)]="fromPartner" [data]="lstOfData">
-            </tds-select> -->
-        <tds-select valueField="Id" textField="Name" placeholder='Chọn khách hàng' disabledField="isActive" (selectChange)="changeFrom($event)"
-          [(ngModel)]="fromPartner" [data]="lstOfData">
+<div class="flex flex-col gap-y-4">
 
-        <ng-template tds-label-tmp let-item="item">
-          {{item.data.Name}}
-        </ng-template>
+  <tds-label>Khách hàng nguồn</tds-label>
+  <tds-select valueField="Id" textField="Name" placeholder="Chọn khách hàng" [valuePrimitive]="false"
+    (selectChange)="changeFrom($event)" [(ngModel)]="fromPartner" [ngModelOptions]="{standalone: true}" [data]="lstOfData">
 
-        <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
-          <div class="flex flex-col gap-y-2.5">
-            <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{ item.DisplayName  }}</span>
-            <div class="flex gap-x-1">
-              <div *ngIf="item.Street"
-                class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md">
-              </div>
-              <div *ngIf="item.Phone" class="flex items-center justify-center">
-                <span
-                  class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></span>
-                <span class="ml-1">{{ item.Phone }}</span>
-              </div>
-              <span *ngIf="!item.Phone && !item.Address">--</span>
-            </div>
+    <ng-template tds-label-tmp let-item="item">
+      {{item.data.Name}}
+    </ng-template>
+
+    <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
+      <div class="flex flex-col gap-y-2.5">
+        <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{ item.DisplayName }}</span>
+        <div class="flex gap-x-1">
+          <div *ngIf="item.Street"
+            class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md">
           </div>
-        </ng-template>
-      </tds-select>
-    </tds-form-field>
-    <tds-form-field>
-      <tds-label>Khách hàng đích</tds-label>
-      <!-- <tds-select valueField="Id" textField="Name" placeholder='Chọn khách hàng' disabledField="isActive"
-        (selectChange)="changeTo($event)" [(ngModel)]="toPartner" [data]="lstOfData">
-      </tds-select> -->
-
-      <tds-select valueField="Id" textField="Name" placeholder='Chọn khách hàng' disabledField="isActive"
-        (selectChange)="changeTo($event)" [(ngModel)]="toPartner" [data]="lstOfData">
-
-        <ng-template tds-label-tmp let-item="item">
-          {{ item.data.Name}}
-        </ng-template>
-
-        <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
-          <div class="flex flex-col gap-y-2.5">
-            <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{ item.DisplayName }}</span>
-            <div class="flex gap-x-1">
-              <div *ngIf="item.Street"
-                class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md">
-              </div>
-              <div *ngIf="item.Phone" class="flex items-center justify-center">
-                <span
-                  class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></span>
-                <span class="ml-1">{{ item.Phone }}</span>
-              </div>
-              <span *ngIf="!item.Phone && !item.Address">--</span>
-            </div>
+          <div *ngIf="item.Phone" class="flex items-center justify-center">
+            <span class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></span>
+            <span class="ml-1">{{ item.Phone }}</span>
           </div>
-        </ng-template>
-      </tds-select>
+          <span *ngIf="!item.Phone && !item.Address">--</span>
+        </div>
+      </div>
+    </ng-template>
+  </tds-select>
 
-    </tds-form-field>
-  </form>
+  <tds-label>Khách hàng đích</tds-label>
+  <tds-select valueField="Id" textField="Name" placeholder="Chọn khách hàng" [valuePrimitive]="false"
+    (selectChange)="changeTo($event)" [(ngModel)]="toPartner" [ngModelOptions]="{standalone: true}" [data]="lstOfData">
+
+    <ng-template tds-label-tmp let-item="item">
+      {{ item.data.Name}}
+    </ng-template>
+
+    <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
+      <div class="flex flex-col gap-y-2.5">
+        <span class="font-semibold" [ngClass]="{'text-primary-1':selected}">{{ item.DisplayName }}</span>
+        <div class="flex gap-x-1">
+          <div *ngIf="item.Street"
+            class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md">
+          </div>
+          <div *ngIf="item.Phone" class="flex items-center justify-center">
+            <span class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></span>
+            <span class="ml-1">{{ item.Phone }}</span>
+          </div>
+          <span *ngIf="!item.Phone && !item.Address">--</span>
+        </div>
+      </div>
+    </ng-template>
+  </tds-select>
+
   <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
     <button tds-button type="submit" color="primary" (click)="onSave()">

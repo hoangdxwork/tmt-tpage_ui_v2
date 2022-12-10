@@ -1,21 +1,23 @@
+import { PartnerBirthdayDTO } from './../../../../dto/partner/partner-birthday.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { ModalSendMessageComponent } from './../modal-send-message/modal-send-message.component';
-import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
-import { takeUntil, finalize, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-birthday-partner',
-  templateUrl: './modal-birthday-partner.component.html'
+  templateUrl: './modal-birthday-partner.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 
-export class ModalBirthdayPartnerComponent implements OnInit, OnDestroy {
+export class ModalBirthdayPartnerComponent implements OnInit {
+    @Input() lstData: PartnerBirthdayDTO[] = [];
 
-    @Input() data: any = [];
     isProcessing: boolean = false;
-    private destroy$ = new Subject<void>();
 
     checked = false;
     indeterminate = false;
@@ -34,6 +36,7 @@ export class ModalBirthdayPartnerComponent implements OnInit, OnDestroy {
         private partnerService: PartnerService,
         private modalService: TDSModalService,
         private viewContainerRef: ViewContainerRef,
+        private destroy$: TDSDestroyService
     ) {
     }
 
@@ -54,13 +57,13 @@ export class ModalBirthdayPartnerComponent implements OnInit, OnDestroy {
     }
 
     onAllChecked(value: boolean): void {
-        this.data.forEach((item: any) => this.updateCheckedSet(item.Id, value));
+        this.lstData.forEach((item: any) => this.updateCheckedSet(item.Id, value));
         this.refreshCheckedStatus();
     }
 
     refreshCheckedStatus(): void {
-        this.checked = this.data.every((item: any)  => this.setOfCheckedId.has(item.Id));
-        this.indeterminate = this.data.some((item: any)  => this.setOfCheckedId.has(item.Id)) && !this.checked;
+        this.checked = this.lstData.every((item: any)  => this.setOfCheckedId.has(item.Id));
+        this.indeterminate = this.lstData.some((item: any)  => this.setOfCheckedId.has(item.Id)) && !this.checked;
     }
 
     cancel() {
@@ -70,12 +73,12 @@ export class ModalBirthdayPartnerComponent implements OnInit, OnDestroy {
     selectTime(time: any) {
       this.currentTime = time;
       this.partnerService.getPartnerBirthday(time.value).subscribe((res: any) => {
-          this.data = res;
+          this.lstData = res;
       })
     }
 
     exportExcel() {
-      if (this.isProcessing) { return }
+      if (this.isProcessing) { return; }
 
       let type = this.currentTime.value;
       this.excelExportService.exportGet(`/Partner/ExcelPartnerBirthDay?type=${type}`, `sinh-nhat-khach-hang`)
@@ -95,10 +98,4 @@ export class ModalBirthdayPartnerComponent implements OnInit, OnDestroy {
         }
       });
     }
-
-    ngOnDestroy(): void {
-      this.destroy$.next();
-      this.destroy$.complete();
-    }
-
 }

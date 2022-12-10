@@ -572,6 +572,7 @@ export class TableAllOrderComponent implements OnInit {
   }
 
   updateStatusSaleOnline(data: any, status: any) {
+
     let value = status.Text;
 
     this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe({
@@ -644,6 +645,10 @@ export class TableAllOrderComponent implements OnInit {
   }
 
   assignTags(id: string, tags: TDSSafeAny) {
+    if(tags == null) {
+      this.message.error("Vui lòng nhập tên thẻ!");
+      return;
+    }
     let model = { OrderId: id, Tags: tags };
     this.saleOnline_OrderService.assignSaleOnlineOrder(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {

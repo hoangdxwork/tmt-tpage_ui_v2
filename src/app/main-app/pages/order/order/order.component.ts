@@ -238,7 +238,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
-          
+
           let lstId = this.lstOfData.map((x) => x.PartnerId);
           this.loadParnerStatus(lstId);
       },
@@ -503,6 +503,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   assignTags(id: string, tags: TDSSafeAny) {
+    if(tags == null) {
+      this.message.error("Vui lòng nhập tên thẻ!");
+      return;
+    }
     let model = { OrderId: id, Tags: tags };
     this.saleOnline_OrderService.assignSaleOnlineOrder(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
