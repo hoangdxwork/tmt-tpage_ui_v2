@@ -1,0 +1,46 @@
+tds-table.table-vertical-line {
+    th,
+    td {
+        @apply border-l border-b border-neutral-2-100;
+    }
+
+    td:last-of-type {
+        @apply border-r border-neutral-2-100;
+    }
+
+    thead > tr:first-of-type > th {
+        @apply border-t border-neutral-2-100;
+    }
+
+    thead > tr:first-of-type > th:last-of-type {
+        @apply border-r border-neutral-2-100;
+    }
+    .tds-table-body table tbody{
+        tr{
+            td{
+                @apply border-b-0 border-l-0 border-r;
+            }
+            td:last-child{
+                @apply border-r-0;
+            }
+        }
+        tr[rowspan]{
+            td:first-child{
+                @apply border-l-0 border-b-0;
+            }
+        }
+        tr:last-child{
+            td{
+                @apply border-b-0;
+            }
+        }
+        tr:not(:first-child){
+            td{
+                @apply border-t;
+            }
+        }
+    }
+    .tds-table-tbody > tr.tds-table-row:not(.tds-row-selected):hover > td {
+        @apply bg-neutral-3-50 dark:bg-d-neutral-3-300;
+    }
+}
