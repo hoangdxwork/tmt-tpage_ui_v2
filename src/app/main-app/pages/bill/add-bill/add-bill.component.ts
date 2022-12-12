@@ -122,7 +122,7 @@ export class AddBillComponent implements OnInit {
   extraMoney: number = 0;
   insuranceFee: number = 0;
   indClickTag = -1;
-  idDiscount = -1;
+  isOpenDiscount: { [id: string] : boolean } = {};
 
   shipServices: CalculateFeeServiceResponseDto[] = [];
   shipExtraServices: ShipServiceExtra[] = [];
@@ -744,6 +744,7 @@ export class AddBillComponent implements OnInit {
 
       this.calcTotal();
       this.coDAmount();
+      this.cdRef.detectChanges();
     }
   }
 
@@ -753,17 +754,18 @@ export class AddBillComponent implements OnInit {
     if (TDSHelperArray.hasListValue(datas)) {
       this.focusField = 'PriceUnit';
 
-        datas.map((x: any, index: number) => {
-          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
-              x.PriceUnit = event;
+      datas.map((x: any, index: number) => {
+        if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
+          x.PriceUnit = event;
 
-              let formArray = this._form.controls["OrderLines"] as FormArray;
-              formArray.at(index).patchValue(datas[index]);
-          }
-        });
+          let formArray = this._form.controls["OrderLines"] as FormArray;
+          formArray.at(index).patchValue(datas[index]);
+        }
+      });
 
-        this.calcTotal();
-        this.coDAmount();
+      this.calcTotal();
+      this.coDAmount();
+      this.cdRef.detectChanges();
     }
   }
 
@@ -780,16 +782,17 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
-  changeProductDiscountType(item: OrderLineV2 ,event: any, typeDiscount: string) {
+  changeProductDiscountType(item: OrderLineV2, event: any, typeDiscount: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
       this.focusField = `${typeDiscount}`;
 
       datas.map((x: any, index: number) => {
-          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
+          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
               x[`${typeDiscount}`] = event;
 
               let formArray = this._form.controls["OrderLines"] as FormArray;
@@ -800,22 +803,20 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
-  openDiscountProductPopover(event: boolean, i: number){
-    if(event) {
-      this.idDiscount = i;
-    }
+  openDiscountProductPopover(data: OrderLineV2){
+    this.isOpenDiscount[`${data.ProductId}_${data.ProductUOMId}_${data.Id}`] = true;
+    this.cdRef.detectChanges();
   }
 
-  closeDiscountProductPopover() {
-    this.idDiscount = -1;
+  closeDiscountProductPopover(data: OrderLineV2) {
+    delete this.isOpenDiscount[`${data.ProductId}_${data.ProductUOMId}_${data.Id}`];
+    this.cdRef.detectChanges();
   }
 
-  selectProductType(item:OrderLineV2, type: string, i: number, e:MouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
-
+  selectProductType(item:OrderLineV2, type: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
 
@@ -830,16 +831,19 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
   changeDiscount(event: any) {
       this.calcTotal();
       this.coDAmount();
+      this.cdRef.detectChanges();
   }
 
   changeDecreaseAmount(event: any) {
       this.calcTotal();
       this.coDAmount();
+      this.cdRef.detectChanges();
   }
 
   openPopoverDiscount() {
@@ -877,6 +881,7 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
   showModalSearchPartner() {
@@ -916,6 +921,7 @@ export class AddBillComponent implements OnInit {
     }
 
     this.calcTotal();
+    this.cdRef.detectChanges();
   }
 
   removeOrderLines(item: OrderLineV2, index: number) {
@@ -925,11 +931,13 @@ export class AddBillComponent implements OnInit {
     this.totalAmountLines = Number(this.totalAmountLines - item.PriceTotal);
 
     this.calcTotal();
+    this.cdRef.detectChanges();
   }
 
   removeAllOrderLines() {
     this._form.setControl('OrderLines', this.fb.array([]));
     this.calcTotal();
+    this.cdRef.detectChanges();
   }
 
   onLoadProductToOrderLines(event: any): any {
