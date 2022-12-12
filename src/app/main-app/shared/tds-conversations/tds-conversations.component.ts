@@ -454,7 +454,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         title: 'Danh sách sản phẩm',
         content: ModalListProductComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'xl',
+        size: 'lg',
         bodyStyle: {
             padding: '0px'
         },

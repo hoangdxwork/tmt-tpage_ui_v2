@@ -48,6 +48,7 @@ export class ModalListProductComponent implements OnInit {
 
   indexDbStorage!: DataPouchDBDTO[];
   innerTextDebounce!: string;
+  setOfCheckedId = new Set<object>();
 
   constructor(private modal: TDSModalRef,
     private sharedService: SharedService,
@@ -64,9 +65,7 @@ export class ModalListProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(!this.defaultOrder) {
-      this.loadCurrentCompany();
-    }
+    this.loadCurrentCompany();
     this.productIndexDB();
     this.eventEmitter();
   }
@@ -131,6 +130,11 @@ export class ModalListProductComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 150);
+
     this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
   }
 
@@ -139,6 +143,7 @@ export class ModalListProductComponent implements OnInit {
       this.modal.destroy(item);
     } else {
       this.conversationOrderFacade.onAddProductOrder$.emit(item);
+      this.setOfCheckedId.add(item)
     }
   }
 

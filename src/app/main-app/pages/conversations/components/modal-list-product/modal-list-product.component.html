@@ -20,14 +20,14 @@
         [loading]="isLoading" [virtualForTrackBy]="trackByIndex">
           <thead>
               <tr>
-                  <th width="50%">Sản phẩm</th>
+                  <th width="60%">Sản phẩm</th>
                   <th width="25%">Đơn vị</th>
-                  <th width="25%">Giá</th>
+                  <th width="15%">Giá</th>
               </tr>
           </thead>
           <tbody>
             <ng-template tds-virtual-scroll let-data let-index="index">
-                <tr *ngIf="data" (click)="addItem(data)">
+                <tr *ngIf="data" (click)="addItem(data)" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data)}">
                     <td>
                     <div class="flex gap-x-2 items-center">
                         <div>
@@ -36,11 +36,16 @@
                         </div>
                         <div class="flex flex-col">
                             <span class="text-body-2" [ngClass]=" {'font-semibold' : defaultOrder == true} ">{{ data.NameGet }}</span>
-                            <span class="text-neutral-1-400 font-regular text-body-2" *ngIf="!this.defaultOrder"> Tồn kho:
-                            <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
+                            <span class="text-neutral-1-400 font-regular text-body-2 flex gap-x-2 items-center"> Tồn kho:
+                                <span class="text-primary-1" *ngIf="inventories">{{inventories[data.Id] ? inventories[data.Id].QtyAvailable : 0}}</span>
+                                <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                    *ngIf="!inventories"></tds-spinner>
                             </span>
-                            <span class="text-neutral-1-400 font-regular text-body-2" *ngIf="!this.defaultOrder"> Tồn dự báo:
-                            <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
+
+                            <span class="text-neutral-1-400 font-regular text-body-2 flex gap-x-2 items-center"> Tồn dự báo:
+                                <span class="text-primary-1" *ngIf="inventories">{{inventories[data.Id] ? inventories[data.Id].VirtualAvailable : 0}}</span>
+                                <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                    *ngIf="!inventories"></tds-spinner>
                             </span>
                         </div>
                     </div>

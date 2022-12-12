@@ -381,7 +381,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       const modal = this.modalService.create({
         title: 'Chọn sản phẩm',
         content: ModalListProductComponent,
-        size: "xl",
+        size: "lg",
         bodyStyle: {
           padding: '0px'
         },
