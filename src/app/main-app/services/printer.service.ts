@@ -45,31 +45,14 @@ export class PrinterService extends BaseSevice {
       method: CoreApiMethodType.get
     }
     return this.apiService.getExFile<TDSSafeAny>(api, null)
-    // .subscribe((res: TDSSafeAny) => {
-
-    //     return this.printHtml(res);
-    // })
   }
 
   printUrlAsync(url: string): Observable<any> {
-    // return new Observable((observer: any) => {
-
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${url}`,
       method: CoreApiMethodType.get,
     }
     return this.apiService.getExFile<TDSSafeAny>(api, null)
-    //   .subscribe((res: TDSSafeAny) => {
-    //     this.printHtml(res);
-
-    //     observer.next(res);
-    //     observer.complete();
-
-    //     return res;
-    //   }, error => {
-    //     observer.error(error);
-    //   })
-    // });
   }
 
   printIP(url: string, value: any): Observable<TDSSafeAny> {
