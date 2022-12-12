@@ -1155,34 +1155,6 @@ export class AddBillComponent implements OnInit {
         model.FormAction = 'draft';
     }
 
-    switch(this.path) {
-      case 'create':
-          model.OrderLines?.map((x: any) => {
-              delete x.Account;
-              delete x.AccountId;
-          })
-      break;
-
-      case 'copy':
-          model.OrderLines?.map((x: any) => {
-              delete x.Account;
-              delete x.AccountId;
-          })
-      break;
-
-      case 'edit':
-          model.OrderLines?.map((x: any) => {
-              x.AccountId = model.AccountId;
-              if(model.Account) {
-                  x.Account = model.Account;
-              }
-          })
-      break;
-
-      default:
-      break;
-    }
-
     if(model.TeamId && model.Team) {
       model.TeamId = Number(model.TeamId);
       model.Team = {

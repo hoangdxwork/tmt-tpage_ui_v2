@@ -127,8 +127,8 @@ export class AddBillHandler {
       data.OrderLines?.forEach((x: OrderLineV2) => {
 
         let item = {
-            Account: x.Account || data.Account,
-            AccountId: x.Account?.Id || data.AccountId,
+            Account: x.Account,
+            AccountId: x.AccountId || x.Account?.Id,
             Discount: x.Discount,
             Discount_Fixed: x.Discount_Fixed,
             Note: x.Note,
