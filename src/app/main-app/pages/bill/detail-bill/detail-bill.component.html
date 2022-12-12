@@ -117,10 +117,13 @@
                                     <span class="text-header-2 font-semibold mr-2 h-full flex justify-start">
                                         {{ dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign }}
                                     </span>
-                                    <tds-tag *ngIf="dataModel.Partner?.StatusText" status='primary' size="sm" rounded="rounded-full" class="flex items-center h-[28px]">
+                                    <!-- <tds-tag *ngIf="dataModel.Partner?.StatusText" status='primary' size="sm" rounded="rounded-full" class="flex items-center h-[28px]">
                                         <span class="w-fit whitespace-nowrap">
                                             {{dataModel.Partner.StatusText}}
                                         </span>
+                                    </tds-tag> -->
+                                    <tds-tag *ngIf="dataModel.Partner?.StatusText" class="cursor-pointer mr-1 mb-1 items-center" status='primary' rounded="rounded-full">
+                                        <div class="max-w-[100px] w-fit truncate">{{dataModel.Partner.StatusText}}</div>
                                     </tds-tag>
                                 </div>
                                 <span class="text-neutral-1-600">
