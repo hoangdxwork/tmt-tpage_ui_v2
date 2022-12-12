@@ -25,9 +25,13 @@ export class FirebaseMessagingService  {
       private firebaseRegisterService: FirebaseRegisterService,
       private angularFireDatabase: AngularFireDatabase,
       private angularFireAuth: AngularFireAuth) {
+
+      this.angularFireMessaging.messages.subscribe((payload) => {
+        // console.log("new message received. ", payload);
+      })
   }
 
-  deleteToken1() {
+  deleteToken() {
     return this.angularFireMessaging.getToken
       .pipe(mergeMap((token: any) => this.angularFireMessaging.deleteToken(token)));
   }
