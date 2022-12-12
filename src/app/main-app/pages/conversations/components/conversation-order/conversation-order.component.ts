@@ -861,11 +861,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
 
           if(res && !res.Message ) {
-              this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
+            this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
           }
 
           if(type && res) {
             this.printOrder(type, res);
+          }
+
+          // TODO: gọi lại request để mapping tồn kho sản phẩm
+          if(fs_model && fs_model.FormAction == 'SaveAndOpen' || fs_model.FormAction == 'SaveAndPrint') {
+            let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+            if(warehouseId > 0) {
+                this.productService.lstInventory = null;
+                this.loadInventoryWarehouseId(warehouseId);
+            }
           }
 
           this.shipServices = [];
@@ -1212,7 +1221,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     this.productService.setInventoryWarehouseId(warehouseId);
     this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.lstInventory = res;
+        this.lstInventory = {...res};
         this.cdRef.detectChanges();
       },
       error: (err: any) => {
