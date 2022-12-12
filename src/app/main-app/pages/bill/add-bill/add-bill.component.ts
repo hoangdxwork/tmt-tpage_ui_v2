@@ -122,7 +122,7 @@ export class AddBillComponent implements OnInit {
   extraMoney: number = 0;
   insuranceFee: number = 0;
   indClickTag = -1;
-  idDiscount = -1;
+  orderDiscount: OrderLineV2 | null = null;
 
   shipServices: CalculateFeeServiceResponseDto[] = [];
   shipExtraServices: ShipServiceExtra[] = [];
@@ -782,14 +782,14 @@ export class AddBillComponent implements OnInit {
     this.coDAmount();
   }
 
-  changeProductDiscountType(item: OrderLineV2 ,event: any, typeDiscount: string) {
+  changeProductDiscountType(item: OrderLineV2, event: any, typeDiscount: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
 
     if (TDSHelperArray.hasListValue(datas)) {
       this.focusField = `${typeDiscount}`;
 
       datas.map((x: any, index: number) => {
-          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
+          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
               x[`${typeDiscount}`] = event;
 
               let formArray = this._form.controls["OrderLines"] as FormArray;
@@ -800,22 +800,20 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
-  openDiscountProductPopover(event: boolean, i: number){
-    if(event) {
-      this.idDiscount = i;
-    }
+  openDiscountProductPopover(data: OrderLineV2){
+    this.orderDiscount = {...data};
+    this.cdRef.detectChanges();
   }
 
   closeDiscountProductPopover() {
-    this.idDiscount = -1;
+    this.orderDiscount = null;
+    this.cdRef.detectChanges();
   }
 
-  selectProductType(item:OrderLineV2, type: string, i: number, e:MouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
-
+  selectProductType(item:OrderLineV2, type: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
 
@@ -830,6 +828,7 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
   changeDiscount(event: any) {

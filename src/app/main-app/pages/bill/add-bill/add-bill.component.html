@@ -914,55 +914,55 @@
                     <!-- <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td> -->
                     <!-- Giảm giá -->
                     <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" class="text-center">
-                      <span color="secondary" tds-popover popoverTrigger="click" [popoverContent]="popoverDiscountLines" [popoverAutoClose]="false"
-                        [popoverBackdrop]="true" popoverPlacement="left" [popoverVisible]="idDiscount == i" (popoverVisibleChange)="openDiscountProductPopover($event, i)">
-
-                        <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
+                      <div class="relative">
+                        <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'" (click)="openDiscountProductPopover(data)">
                           {{ data.Discount || 0 | numberCustom }} %
                         </span>
 
-                        <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'fixed'">
+                        <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'fixed'" (click)="openDiscountProductPopover(data)">
                           {{ data.Discount_Fixed || 0 | numberCustom }} đ
                         </span>
-                      </span>
-                      <!-- popover giảm giá mỗi dòng -->
-                      <ng-template #popoverDiscountLines>
-                        <div class="mb-2">
-                          <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100"
-                            [formatter]="numberWithCommas" [parser]="parserComas"
-                            *ngIf="data.Type === 'percent'"
-                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount')"
-                            [ngModelOptions]="{standalone: true}" [autoFocus]="focusField == 'Discount'">
-                          </tds-input-number>
-                          <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1000" *ngIf="data.Type === 'fixed'"
-                            [formatter]="numberWithCommas" [parser]="parserComas"
-                            (ngModelChange)="changeProductDiscountType(data, $event, 'Discount_Fixed')"
-                            [ngModelOptions]="{standalone: true}" [autoFocus]="focusField == 'Discount_Fixed'">
-                          </tds-input-number>
-                        </div>
-                        <div class="flex items-center justify-between w-full">
-                          <div class="flex items-center">
-                            <button tds-button type="button" style="line-height: 19px;margin-right: 6px"
-                              [color]="data.Type == 'percent' ? 'primary' : 'secondary'"
-                              (click)="selectProductType(data, 'percent', i, $event)"
-                              class="text-neutral-1-900 text-body-2 font-regular">
-                              <span class="flex items-center"> % </span>
-                            </button>
-                            <button tds-button type="button"
-                              [color]="data.Type == 'fixed' ? 'primary' : 'secondary'"
-                              (click)="selectProductType(data, 'fixed', i, $event)"
-                              class="text-neutral-1-900 text-body-2 font-regular">
-                              <span class="flex items-center"> VNĐ </span>
-                            </button>
+
+                        <!-- popover giảm giá mỗi dòng -->
+                        <div class="absolute -left-[300px] -top-[30px] bg-white shadow-lg rounded-xl w-[300px] z-9999 p-4" 
+                          *ngIf="orderDiscount && orderDiscount.Id == data.Id">
+                          <div class="mb-2">
+                            <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100"
+                              [formatter]="numberWithCommas" [parser]="parserComas"
+                              *ngIf="data.Type === 'percent'"
+                              (ngModelChange)="changeProductDiscountType(data, $event, 'Discount', i)"
+                              [ngModelOptions]="{standalone: true}" [autoFocus]="focusField == 'Discount'">
+                            </tds-input-number>
+                            <tds-input-number [(ngModel)]="data.Discount_Fixed" [min]="0" [step]="1000" *ngIf="data.Type === 'fixed'"
+                              [formatter]="numberWithCommas" [parser]="parserComas"
+                              (ngModelChange)="changeProductDiscountType(data, $event, 'Discount_Fixed', i)"
+                              [ngModelOptions]="{standalone: true}" [autoFocus]="focusField == 'Discount_Fixed'">
+                            </tds-input-number>
                           </div>
-                          <div>
-                            <button tds-button-icon type="button" color="error"
-                              (click)="closeDiscountProductPopover()">
-                              <i class="tdsi-close-fill"></i>
-                            </button>
+                          <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center">
+                              <button tds-button type="button" style="line-height: 19px;margin-right: 6px"
+                                [color]="data.Type == 'percent' ? 'primary' : 'secondary'"
+                                (click)="selectProductType(data, 'percent', i)"
+                                class="text-neutral-1-900 text-body-2 font-regular">
+                                <span class="flex items-center"> % </span>
+                              </button>
+                              <button tds-button type="button"
+                                [color]="data.Type == 'fixed' ? 'primary' : 'secondary'"
+                                (click)="selectProductType(data, 'fixed', i)"
+                                class="text-neutral-1-900 text-body-2 font-regular">
+                                <span class="flex items-center"> VNĐ </span>
+                              </button>
+                            </div>
+                            <div>
+                              <button tds-button-icon type="button" color="error"
+                                (click)="closeDiscountProductPopover()">
+                                <i class="tdsi-close-fill"></i>
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </ng-template>
+                      </div>
                     </td>
                     <!-- Khối lượng -->
                     <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000)*(data.ProductUOMQty || 0) : 0) | numberCustom }}</td>
