@@ -925,7 +925,7 @@
 
                         <!-- popover giảm giá mỗi dòng -->
                         <div class="absolute -left-[300px] -top-[30px] bg-white shadow-lg rounded-xl w-[300px] z-9999 p-4" 
-                          *ngIf="orderDiscount && orderDiscount.Id == data.Id">
+                          *ngIf="isOpenDiscount[data.ProductId + '_' + data.ProductUOMId + '_' + data.Id]">
                           <div class="mb-2">
                             <tds-input-number [(ngModel)]="data.Discount" [min]="0" [step]="1" [max]="100"
                               [formatter]="numberWithCommas" [parser]="parserComas"
@@ -956,7 +956,7 @@
                             </div>
                             <div>
                               <button tds-button-icon type="button" color="error"
-                                (click)="closeDiscountProductPopover()">
+                                (click)="closeDiscountProductPopover(data)">
                                 <i class="tdsi-close-fill"></i>
                               </button>
                             </div>

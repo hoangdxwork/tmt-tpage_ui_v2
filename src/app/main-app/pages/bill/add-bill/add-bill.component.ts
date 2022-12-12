@@ -122,7 +122,7 @@ export class AddBillComponent implements OnInit {
   extraMoney: number = 0;
   insuranceFee: number = 0;
   indClickTag = -1;
-  orderDiscount: OrderLineV2 | null = null;
+  isOpenDiscount: { [id: string] : boolean } = {};
 
   shipServices: CalculateFeeServiceResponseDto[] = [];
   shipExtraServices: ShipServiceExtra[] = [];
@@ -744,6 +744,7 @@ export class AddBillComponent implements OnInit {
 
       this.calcTotal();
       this.coDAmount();
+      this.cdRef.detectChanges();
     }
   }
 
@@ -753,17 +754,18 @@ export class AddBillComponent implements OnInit {
     if (TDSHelperArray.hasListValue(datas)) {
       this.focusField = 'PriceUnit';
 
-        datas.map((x: any, index: number) => {
-          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
-              x.PriceUnit = event;
+      datas.map((x: any, index: number) => {
+        if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
+          x.PriceUnit = event;
 
-              let formArray = this._form.controls["OrderLines"] as FormArray;
-              formArray.at(index).patchValue(datas[index]);
-          }
-        });
+          let formArray = this._form.controls["OrderLines"] as FormArray;
+          formArray.at(index).patchValue(datas[index]);
+        }
+      });
 
-        this.calcTotal();
-        this.coDAmount();
+      this.calcTotal();
+      this.coDAmount();
+      this.cdRef.detectChanges();
     }
   }
 
@@ -780,6 +782,7 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
   changeProductDiscountType(item: OrderLineV2, event: any, typeDiscount: string, i: number) {
@@ -804,12 +807,12 @@ export class AddBillComponent implements OnInit {
   }
 
   openDiscountProductPopover(data: OrderLineV2){
-    this.orderDiscount = {...data};
+    this.isOpenDiscount[`${data.ProductId}_${data.ProductUOMId}_${data.Id}`] = true;
     this.cdRef.detectChanges();
   }
 
-  closeDiscountProductPopover() {
-    this.orderDiscount = null;
+  closeDiscountProductPopover(data: OrderLineV2) {
+    delete this.isOpenDiscount[`${data.ProductId}_${data.ProductUOMId}_${data.Id}`];
     this.cdRef.detectChanges();
   }
 
@@ -834,11 +837,13 @@ export class AddBillComponent implements OnInit {
   changeDiscount(event: any) {
       this.calcTotal();
       this.coDAmount();
+      this.cdRef.detectChanges();
   }
 
   changeDecreaseAmount(event: any) {
       this.calcTotal();
       this.coDAmount();
+      this.cdRef.detectChanges();
   }
 
   openPopoverDiscount() {
@@ -876,6 +881,7 @@ export class AddBillComponent implements OnInit {
 
     this.calcTotal();
     this.coDAmount();
+    this.cdRef.detectChanges();
   }
 
   showModalSearchPartner() {
@@ -915,6 +921,7 @@ export class AddBillComponent implements OnInit {
     }
 
     this.calcTotal();
+    this.cdRef.detectChanges();
   }
 
   removeOrderLines(item: OrderLineV2, index: number) {
@@ -924,11 +931,13 @@ export class AddBillComponent implements OnInit {
     this.totalAmountLines = Number(this.totalAmountLines - item.PriceTotal);
 
     this.calcTotal();
+    this.cdRef.detectChanges();
   }
 
   removeAllOrderLines() {
     this._form.setControl('OrderLines', this.fb.array([]));
     this.calcTotal();
+    this.cdRef.detectChanges();
   }
 
   onLoadProductToOrderLines(event: any): any {
