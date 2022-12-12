@@ -20,15 +20,14 @@
         [loading]="isLoading" [virtualForTrackBy]="trackByIndex">
           <thead>
               <tr>
-                  <th width="40%">Sản phẩm</th>
-                  <th width="20%">Đơn vị</th>
-                  <th width="20%">Giá</th>
-                  <th width="20%">Thao tác</th>
+                  <th width="50%">Sản phẩm</th>
+                  <th width="25%">Đơn vị</th>
+                  <th width="25%">Giá</th>
               </tr>
           </thead>
           <tbody>
             <ng-template tds-virtual-scroll let-data let-index="index">
-                <tr *ngIf="data">
+                <tr *ngIf="data" (click)="addItem(data)">
                     <td>
                     <div class="flex gap-x-2 items-center">
                         <div>
@@ -49,13 +48,13 @@
                     <td class="text-body-2">{{ data.UOMName }}</td>
                     <td class="text-body-2">{{ data.Price | numberCustom }} đ</td>
                     <td>
-                    <div>
+                    <!-- <div>
                         <button type="button" title="Thêm sản phẩm vào đơn hàng" tds-button-outline color="secondary" type="submit" size="sm" (click)="addItem(data)">
                             <span class="flex items-center text-primary-1">
                                 <i class="tdsi-add-fill mr-2 text-xl leading-none"></i>Thêm vào
                             </span>
                         </button>
-                    </div>
+                    </div> -->
                     </td>
                 </tr>
             </ng-template>
