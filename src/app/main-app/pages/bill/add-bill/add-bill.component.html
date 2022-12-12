@@ -831,7 +831,7 @@
 
           <div class="xl:w-2/3 2xl:w-2/3 h-full">
             <div class="rounded-xl bg-white flex h-full w-full gap-y-2 py-3 text-body-2 text-neutral-1-900">
-              <tds-table templateMode #TableAddBill [scroll]="{y:'auto', x: 'auto'}" [showPagination]="false">
+              <tds-table templateMode #TableAddBill [scroll]="{y: 'auto', x: 'auto'}" [showPagination]="false">
                 <thead>
                   <tr>
                     <th [width]="'50px'" [tdsLeft]="true">STT</th>
@@ -914,11 +914,15 @@
                     <!-- Giảm giá -->
                     <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" class="text-center">
                       <div class="relative">
-                        <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'" (click)="openDiscountProductPopover(data)">
+                        <span class="underline decoration-dotted cursor-pointer text-neutral-1-400 hover:text-info-500 hover:decoration-info-500"
+                          *ngIf="data.Type === 'percent'" 
+                          (click)="openDiscountProductPopover(data)">
                           {{ data.Discount || 0 | numberCustom }} %
                         </span>
 
-                        <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'fixed'" (click)="openDiscountProductPopover(data)">
+                        <span class="underline decoration-dotted cursor-pointer text-neutral-1-400 hover:text-info-500 hover:decoration-info-500"
+                          *ngIf="data.Type === 'fixed'" 
+                          (click)="openDiscountProductPopover(data)">
                           {{ data.Discount_Fixed || 0 | numberCustom }} đ
                         </span>
 

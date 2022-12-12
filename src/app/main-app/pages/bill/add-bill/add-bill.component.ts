@@ -807,6 +807,9 @@ export class AddBillComponent implements OnInit {
   }
 
   openDiscountProductPopover(data: OrderLineV2){
+    let exist = Object.keys(this.isOpenDiscount)?.length > 0;
+    if (exist) return;
+
     this.isOpenDiscount[`${data.ProductId}_${data.ProductUOMId}_${data.Id}`] = true;
     this.cdRef.detectChanges();
   }

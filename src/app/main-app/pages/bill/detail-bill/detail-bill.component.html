@@ -279,13 +279,17 @@
                                     <tr>
                                         <td>{{ i + 1 }}</td>
                                         <td>
-                                            {{ data.Product.NameGet }}
+                                            <div class="w-[300px] truncate" tds-tooltip="{{data.Product.NameGet}}">{{ data.Product.NameGet }}</div>
                                             <p class="text-[13px] italic text-[#0184FF]" *ngIf="data.User && data.User.Name">Nhân viên: {{ data.User.Name || '---' }}</p>
                                         </td>
                                         <td>{{ data.ProductUOMName }}</td>
                                         <td>{{ data.ProductUOMQty | numberCustom }}</td>
                                         <td>{{ data.PriceUnit | numberCustom }} đ</td>
-                                        <td>{{ data.Discount }} %</td>
+                                        <td>
+                                            <span *ngIf="data.Discount">{{ data.Discount }} %</span>
+                                            <span *ngIf="data.Discount_Fixed">{{ data.Discount_Fixed }} đ</span>
+                                            <span *ngIf="!data.Discount && !data.Discount_Fixed"> 0 %</span>
+                                        </td>
                                         <td>{{ data.PriceTotal | numberCustom }} đ</td>
                                     </tr>
                                 </ng-template>
