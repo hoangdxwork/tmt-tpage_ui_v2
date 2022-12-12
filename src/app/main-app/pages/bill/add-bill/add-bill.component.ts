@@ -76,6 +76,7 @@ export class AddBillComponent implements OnInit {
   _form!: FormGroup;
   id: any;
   path: any;
+  breadcrumb: string ='Sao chép';
   isOrder: any;
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
@@ -214,6 +215,7 @@ export class AddBillComponent implements OnInit {
 
     switch (this.path) {
         case 'copy':
+          this.breadcrumb = 'Sao chép';
             const key = this.fastSaleOrderService._keyCacheCopyInvoice;
             let obs = localStorage.getItem(key) as string;
 
@@ -226,11 +228,13 @@ export class AddBillComponent implements OnInit {
         break;
 
         case 'edit':
+          this.breadcrumb = 'Chỉnh sửa';
             this.loadBill(this.id);
             this.removelocalStorage();
         break;
 
         default:
+          this.breadcrumb = 'Thêm mới';
             this.loadDefault();
         break;
     }
