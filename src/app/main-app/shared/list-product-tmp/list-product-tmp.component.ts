@@ -1,3 +1,4 @@
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { ProductCategoryService } from './../../services/product-category.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -89,13 +90,16 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       private cdRef : ChangeDetectorRef,
       private destroy$: TDSDestroyService,
       private viewContainerRef: ViewContainerRef,
-      private productCategoryService: ProductCategoryService) {
+      private productCategoryService: ProductCategoryService,
+      private productTemplateFacade: ProductTemplateFacade) {
   }
 
   ngOnInit(): void {
     this.loadCurrentCompany();
     this.loadProductCategory();
     this.loadData();
+
+    this.eventEmitter();
   }
 
   loadData() {
@@ -118,6 +122,23 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
           this.disabledReload = false;
           this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
         }
+    })
+  }
+
+  eventEmitter() {
+    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+      next: (obs: any) => {
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (inventories: any) => {
+              this.inventories = {};
+              this.inventories = inventories;
+          },
+          error: (err: any) => {
+              this.message.error(err?.error?.message);
+          }
+        });
+      }
     })
   }
 
@@ -400,4 +421,5 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       this.lstOfData = [...data];
     }
   }
+
 }

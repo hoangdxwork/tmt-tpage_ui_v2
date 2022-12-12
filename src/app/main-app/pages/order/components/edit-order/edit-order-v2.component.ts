@@ -358,6 +358,12 @@ export class EditOrderV2Component implements OnInit {
       return;
     }
 
+    this.isLoadingProduct = true;
+    setTimeout(() => {
+      this.isLoadingProduct = false;
+      this.cdRef.detectChanges();
+    }, 150);
+
     this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
   }
 
