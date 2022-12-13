@@ -2,7 +2,7 @@ import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToO
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit, ViewContainerRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
@@ -558,6 +558,7 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadLiveCampaignById(id: string) {
+    this.isLoading = true;
     this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
@@ -568,10 +569,12 @@ export class PostOrderConfigComponent implements OnInit {
             let id = this.currentLiveCampaign?.Id as string;
             this.loadConfigLiveCampaignV2(id);
           }
+          this.isLoading = false;
 
           this.cdRef.detectChanges();
       },
       error: (err: any) => {
+        this.isLoading = false;
         this.message.error(err?.error?.message);
       }
     })
@@ -811,7 +814,26 @@ export class PostOrderConfigComponent implements OnInit {
     })
   }
 
-  prepareCheckDrity() { debugger
+  onCheckSelectChange(){
+    if(!this.prepareCheckDrity()) {
+      this.modalService.info({
+        title: 'Thông báo',
+        content: 'Cấu hình chốt đơn đã thay đổi nhưng chưa được lưu, bạn có muốn lưu không?',
+        onOk: () => {
+          this.onSave();
+        },
+        onCancel:()=>{
+          // this.dataModel = this.setData(this.dataDefault);
+        },
+        okText:"Lưu",
+        cancelText:"Bỏ qua",
+        confirmViewType: "compact",
+      });
+    }
+  }
+
+  prepareCheckDrity() { 
+    if(!this.dataDefault || !this.dataModel) return false;
     if(this.dataDefault.IsEnableOrderAuto != this.dataModel.IsEnableOrderAuto) return false;
     if(this.dataDefault.IsForceOrderWithAllMessage != this.dataModel.IsForceOrderWithAllMessage) return false;
     if(this.dataDefault.IsOnlyOrderWithPartner != this.dataModel.IsOnlyOrderWithPartner) return false;
