@@ -2,7 +2,7 @@ import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToO
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
@@ -55,6 +55,8 @@ export class PostOrderConfigComponent implements OnInit {
   lstPartnerStatus: any;
   lstUser$!: Observable<ConfigUserDTO[]>;
   currentTeam!: CRMTeamDTO | null;
+  dataDefault!: AutoOrderConfigDTO;
+  setOfCheckData= new Set<object>();
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -151,6 +153,7 @@ export class PostOrderConfigComponent implements OnInit {
     this.facebookPostService.getOrderConfig(this.currentTeam?.Id, postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
           this.dataModel = {...res};
+          this.setDataDefault(res);
 
           this.dataModel.TextContentToOrders = [];
           if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
@@ -739,6 +742,9 @@ export class PostOrderConfigComponent implements OnInit {
           } else {
               this.message.success('Cập nhật cấu hình thành công');
           }
+          let data = this.setData(this.dataModel);
+          this.setDataDefault(data);
+
           this.cdRef.detectChanges();
         },
         error:(error) => {
@@ -768,6 +774,76 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   onCannel() {
-    this.modalRef.destroy(null);
+    if(!this.prepareCheckDrity()) {
+      this.modalService.info({
+        title: 'Thông báo',
+        content: 'Cấu hình chốt đơn đã thay đổi nhưng chưa được lưu, bạn có muốn lưu không?',
+        onOk: () => {
+          this.onSave();
+        },
+        onCancel:()=>{
+          this.modalRef.destroy(null);
+        },
+        okText:"Lưu",
+        cancelText:"Đóng",
+        confirmViewType: "compact",
+      });
+    } else {
+      this.modalRef.destroy(null);
+    }
+  }
+
+  setData(data: AutoOrderConfigDTO) {
+    let model = {...data} as AutoOrderConfigDTO;
+    return model;
+  }
+
+  setDataDefault(data: AutoOrderConfigDTO) {
+    this.dataDefault = data;
+
+    if(data.TextContentToOrders && data.TextContentToOrders.length > 0) {
+      this.dataDefault.TextContentToOrders = data.TextContentToOrders;
+    }
+
+    this.setOfCheckData = new Set<object>();
+    this.dataDefault.TextContentToOrders.map(x=> {
+      this.setOfCheckData.add(x);
+    })
+  }
+
+  prepareCheckDrity() { debugger
+    if(this.dataDefault.IsEnableOrderAuto != this.dataModel.IsEnableOrderAuto) return false;
+    if(this.dataDefault.IsForceOrderWithAllMessage != this.dataModel.IsForceOrderWithAllMessage) return false;
+    if(this.dataDefault.IsOnlyOrderWithPartner != this.dataModel.IsOnlyOrderWithPartner) return false;
+    if(this.dataDefault.IsOnlyOrderWithPhone != this.dataModel.IsOnlyOrderWithPhone) return false;
+    if(this.dataDefault.IsForceOrderWithPhone != this.dataModel.IsForceOrderWithPhone) return false;
+    if(this.dataDefault.IsForcePrintWithPhone != this.dataModel.IsForcePrintWithPhone) return false;
+    if(this.dataDefault.MinLengthToOrder != this.dataModel.MinLengthToOrder) return false;
+    if(this.dataDefault.MaxCreateOrder != this.dataModel.MaxCreateOrder) return false;
+    if(this.dataDefault.TextContentToExcludeOrder != this.dataModel.TextContentToExcludeOrder) return false;
+    if(this.dataDefault.ExcludedPhones != this.dataModel.ExcludedPhones) return false;
+    if(this.dataDefault.IsEnableAutoAssignUser != this.dataModel.IsEnableAutoAssignUser) return false;
+    if(this.dataDefault.Users != this.dataModel.Users) return false;
+    if(this.dataDefault.IsEnableOrderReplyAuto != this.dataModel.IsEnableOrderReplyAuto) return false;
+    if(this.dataDefault.IsEnableOrderReplyAuto != this.dataModel.IsEnableOrderReplyAuto) return false;
+    if(this.dataDefault.OrderReplyTemplate != this.dataModel.OrderReplyTemplate) return false;
+    if(this.dataDefault.IsEnableShopLink != this.dataModel.IsEnableShopLink) return false;
+    if(this.dataDefault.IsOrderAutoReplyOnlyOnce != this.dataModel.IsOrderAutoReplyOnlyOnce) return false;
+    if(this.dataDefault.IsOrderCreateOnlyOnce != this.dataModel.IsOrderCreateOnlyOnce) return false;
+    if(this.dataDefault.TextContentToOrders?.length != this.dataModel.TextContentToOrders?.length) return false;
+    if(!this.checkTextContentToOrders()) return false;
+
+    return true;
+  }
+
+  checkTextContentToOrders() {
+    this.setOfCheckData
+    let exist = true;
+    this.dataModel.TextContentToOrders.map(x=> {
+      if(!this.setOfCheckData.has(x)) {
+        exist = false;
+      }
+    })
+    return exist;
   }
 }
