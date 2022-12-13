@@ -320,12 +320,13 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     let date = formatDate(this.team!.Type == 'Facebook' ? (this.data.Data as MDB_Facebook_Mapping_PostDto).created_time : (this.data.Data as ChatomniDataTShopPostDto).CreationTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
 
     this.modalService.create({
-      title: `Cấu hình bài viết - ${date}`,
       content: ConfigPostOutletComponent,
+      closable: false,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         data: this.data,
+        date: date
       }
     });
   }
