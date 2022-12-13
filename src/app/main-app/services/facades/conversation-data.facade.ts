@@ -46,16 +46,16 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     private sgRConnectionService: SignalRConnectionService) {
       super(apiService);
 
-      this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
-        if(res && TDSHelperArray.isArray(res)){
-            this.lstTeam = res;
-        }
-      })
+      // this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
+      //   if(res && TDSHelperArray.isArray(res)){
+      //       this.lstTeam = res;
+      //   }
+      // })
 
-      this.currentTeam = this.crmTeamService.getCurrentTeam();
-      this.currentUrl = this.router.routerState.snapshot.url;
+      // this.currentTeam = this.crmTeamService.getCurrentTeam();
+      // this.currentUrl = this.router.routerState.snapshot.url;
 
-      this.initialize();
+      // this.initialize();
   }
 
   initialize() {

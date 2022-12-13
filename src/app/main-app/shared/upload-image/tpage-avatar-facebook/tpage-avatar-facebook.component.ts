@@ -1,15 +1,17 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ImageFacade } from '../../../services/facades/image.facade';
 
 @Component({
   selector: 'tpage-avatar-facebook',
   templateUrl: './tpage-avatar-facebook.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TDSDestroyService]
 })
 
-export class TpageAvatarFacebookComponent implements OnInit, OnDestroy {
+export class TpageAvatarFacebookComponent implements OnInit {
 
   @Input() fbid!: TDSSafeAny;
   @Input() psid!: TDSSafeAny;
@@ -22,10 +24,10 @@ export class TpageAvatarFacebookComponent implements OnInit, OnDestroy {
   url!: string;
   nativeElement: HTMLElement;
   id: any;
-  private destroy$ = new Subject<void>();
 
   constructor(element: ElementRef,
     private cdRef : ChangeDetectorRef,
+    private destroy$: TDSDestroyService,
     private imageFacade: ImageFacade) {
     this.nativeElement = element.nativeElement;
   }
@@ -56,18 +58,16 @@ export class TpageAvatarFacebookComponent implements OnInit, OnDestroy {
     if(TDSHelperString.hasValueString(id) && TDSHelperString.hasValueString(token)){
         let url = `https://graph.facebook.com/${id}/picture?type=large&access_token=${token}`;
 
-        this.imageFacade.getImage(url).pipe(takeUntil(this.destroy$)).subscribe(res => {
-            this.url = res;
-            this.cdRef.markForCheck();
-        }, error => {
-            this.cdRef.markForCheck();
+        this.imageFacade.getImage(url).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.url = res;
+              this.cdRef.markForCheck();
+          },
+          error: (err: any) => {
+              this.cdRef.markForCheck();
+          }
         })
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
 }

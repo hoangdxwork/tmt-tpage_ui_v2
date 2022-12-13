@@ -28,7 +28,7 @@ export class ImageFacade {
   }
 
   getBase64ImageFromURL(url: string): Observable<any> {
-      return Observable.create((observer: Observer<string>) => {
+      return new Observable((observer: Observer<string>) => {
           // create an image object
           let img = new Image();
           img.crossOrigin = 'Anonymous';

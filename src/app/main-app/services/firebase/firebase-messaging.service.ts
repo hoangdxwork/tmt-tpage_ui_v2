@@ -1,11 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, take, mergeMap, Observable } from "rxjs";
 import { TDSMessageService } from "tds-ui/message";
-import { FirebaseRegisterService } from "./firebase-register.service";
 import { FireBaseTopicDto } from "@app/dto/firebase/topics.dto";
-import { AngularFireDatabase } from "@angular/fire/compat/database";
 import { AngularFireMessaging } from "@angular/fire/compat/messaging";
-import { AngularFireAuth } from "@angular/fire/compat/auth";
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +18,7 @@ export class FirebaseMessagingService  {
   _firebaseDeviceToken: string = "_firebaseDeviceToken";
 
   constructor(private message: TDSMessageService,
-      private angularFireMessaging: AngularFireMessaging,
-      private firebaseRegisterService: FirebaseRegisterService,
-      private angularFireDatabase: AngularFireDatabase,
-      private angularFireAuth: AngularFireAuth) {
-
-      this.angularFireMessaging.messages.subscribe((payload) => {
-        // console.log("new message received. ", payload);
-      })
+      private angularFireMessaging: AngularFireMessaging) {
   }
 
   deleteToken() {

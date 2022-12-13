@@ -27,7 +27,7 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
       private sgRConnectionService: SignalRConnectionService) {
         super(apiService);
 
-        this.initialize();
+        // this.initialize();
   }
 
   initialize() {
