@@ -71,7 +71,7 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSave() {
+  onSave() {debugger
     let model = this.prepareModel();
     this.isLoading = true;
     this.applicationUserService.insert(model)
@@ -82,7 +82,7 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
       });
   }
 
-  prepareModel() {
+  prepareModel() {debugger
     let formValue = this._form.value;
 
     let model: AddApplicationUserDTO = {
