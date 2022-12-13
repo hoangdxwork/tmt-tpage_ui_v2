@@ -867,7 +867,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           this.isLoading = false;
           this.isSave = false;
           this.message.success('Cập nhật chiến dịch live thành công');
-          this.onCannel(true);
+          this.onCancel(true);
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -902,7 +902,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     return Number.isInteger(value);
   }
 
-  onCannel(data?: any) {
+  onCancel(data?: any) {
     if(Object.keys(this.isEditDetails).length > 0) {
       this.modal.info({
           title: 'Thao tác chưa được lưu',
