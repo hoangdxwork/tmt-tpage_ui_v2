@@ -919,10 +919,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     fs_model.FormAction = order.FormAction;
 
     // TODO check cấu hình ghi chú in
-    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
-    if(!printNote) {
-        fs_model.Comment = '';
-    }
+    fs_model.Comment = '';
+    // let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    // if(!printNote) {
+    //     fs_model.Comment = '';
+    // }
 
     return {...fs_model};
   }
