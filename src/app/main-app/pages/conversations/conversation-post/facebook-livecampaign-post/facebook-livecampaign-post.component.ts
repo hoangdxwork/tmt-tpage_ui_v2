@@ -77,7 +77,20 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
           delete res['@odata.context'];
           this.count = res['@odata.count'];
           this.lstOfData = [...res.value];
+          this.lstOfData.map(x => {
+            
+            if(x.DateCreated) {
+              x.DateCreated = new Date(x.DateCreated);
+            }
 
+            if(x.StartDate) {
+              x.StartDate = new Date(x.StartDate);
+            }
+
+            if(x.EndDate) {
+              x.EndDate = new Date(x.EndDate);
+            }
+          })
           this.isLoading = false;
           this.cdRef.detectChanges();
       },
@@ -147,6 +160,9 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
       viewContainerRef: this.viewContainerRef,
       componentParams:{
         id: id
+      },
+      onCancel: function(){
+        modal.componentInstance?.onCancel();
       }
     });
 
