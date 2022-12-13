@@ -440,10 +440,10 @@ export class DetailBillComponent implements OnInit{
     let warehouseId = this.dataModel.WarehouseId;
     this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
-          this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
+        this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
       },
       error:(error) => {
-          this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
+        this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
       }
     })
   }
