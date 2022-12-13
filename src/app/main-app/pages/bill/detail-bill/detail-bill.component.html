@@ -101,29 +101,22 @@
                 <!-- Thông tin đơn hàng -->
                 <div class="rounded-xl bg-white p-4 flex flex-col">
                     <div class="mb-7 text-header-1 font-semibold flex items-center">
-                        <!-- <h1 class="text-header-1 font-semibold flex items-center">
-                            <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng: {{ dataModel.Number || 'N/A' }}
-                        </h1> -->
                         <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng:
                         <div class="text-info-400 font-semibold ml-2">{{ dataModel.Number || 'N/A' }}</div>
                     </div>
                     <div class="grid grid-cols-2 gap-y-4 2xl:gap-x-8 xl:gap-x-6">
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-6 items-center max-w-full">
                             <div class="flex w-fit">
                                 <tds-avatar [size]="84" [tdsSrc]="dataModel.Partner.ImageUrl"></tds-avatar>
                             </div>
                             <div class="flex flex-auto flex-col gap-y-2">
                                 <div class="inline-flex">
-                                    <span class="text-header-2 font-semibold mr-2 h-full flex justify-start">
+                                    <span class="text-header-2 font-semibold mr-2 2xl:max-w-[250px] xl:max-w-[150px] truncate" 
+                                        tds-tooltip="{{ dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign }}">
                                         {{ dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign }}
                                     </span>
-                                    <!-- <tds-tag *ngIf="dataModel.Partner?.StatusText" status='primary' size="sm" rounded="rounded-full" class="flex items-center h-[28px]">
-                                        <span class="w-fit whitespace-nowrap">
-                                            {{dataModel.Partner.StatusText}}
-                                        </span>
-                                    </tds-tag> -->
                                     <tds-tag *ngIf="dataModel.Partner?.StatusText" class="cursor-pointer mr-1 mb-1 items-center" status='primary' rounded="rounded-full">
-                                        <div class="max-w-[100px] w-fit truncate">{{dataModel.Partner.StatusText}}</div>
+                                        <div class="2xl:max-w-[100px] xl:max-w-[50px] w-fit truncate">{{ dataModel.Partner.StatusText }}</div>
                                     </tds-tag>
                                 </div>
                                 <span class="text-neutral-1-600">
@@ -283,15 +276,14 @@
                                         <td>{{ i + 1 }}</td>
                                         <td>
                                             <div class="w-[300px] truncate" tds-tooltip="{{data.Product.NameGet}}">{{ data.Product.NameGet }}</div>
-                                            <p class="text-[13px] italic text-[#0184FF]" *ngIf="data.User && data.User.Name">Nhân viên: {{ data.User.Name || '---' }}</p>
+                                            <p class="text-caption-1 italic text-info-500" *ngIf="data.User && data.User.Name">Nhân viên: {{ data.User.Name || '---' }}</p>
                                         </td>
                                         <td>{{ data.ProductUOMName }}</td>
                                         <td>{{ data.ProductUOMQty | numberCustom }}</td>
                                         <td>{{ data.PriceUnit | numberCustom }} đ</td>
                                         <td>
-                                            <span *ngIf="data.Discount">{{ data.Discount }} %</span>
-                                            <span *ngIf="data.Discount_Fixed">{{ data.Discount_Fixed }} đ</span>
-                                            <span *ngIf="!data.Discount && !data.Discount_Fixed"> 0 %</span>
+                                            <span *ngIf="data.Type == 'percent'">{{ data.Discount }} %</span>
+                                            <span *ngIf="data.Type == 'fixed'">{{ data.Discount_Fixed }} đ</span>
                                         </td>
                                         <td>{{ data.PriceTotal | numberCustom }} đ</td>
                                     </tr>

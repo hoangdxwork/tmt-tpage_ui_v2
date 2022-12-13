@@ -102,10 +102,6 @@ export class DetailBillComponent implements OnInit{
             this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
           }
 
-          if(this.payments.length > 0){
-
-          }
-
           switch(res.State) {
             case 'draft':
                 this.indexStep = 1;
