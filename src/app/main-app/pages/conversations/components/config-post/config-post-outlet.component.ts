@@ -6,7 +6,7 @@ import { PostOrderInteractionConfigComponent } from './interaction-config/post-o
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { PostOrderConfigComponent } from './order-config/post-order-config.component';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
-import { Component, Input, ViewChild, ChangeDetectionStrategy } from "@angular/core";
+import { Component, Input, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from "@angular/core";
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
@@ -27,9 +27,9 @@ export class ConfigPostOutletComponent  {
   @Input() date!: string;
 
   selectedIndex: number = 0;
+  selectedIndexChanged: number = 0;
 
-  constructor(private modalRef: TDSModalRef,
-    private modalService: TDSModalService){ }
+  constructor(private modalRef: TDSModalRef){ }
 
   onSave(){
     switch(this.selectedIndex){
@@ -62,47 +62,11 @@ export class ConfigPostOutletComponent  {
     return
   }
 
-  onSelectChange(event: TDSTabChangeEvent) {debugger
-    // if(this.selectedIndex == 0) {
-    //   if(!this.postOrderConfig.prepareCheckDrity()) {
-    //     this.modalService.info({
-    //       title: 'Thông báo',
-    //       content: 'Cấu hình chốt đơn đã thay đổi nhưng chưa được lưu, bạn có muốn lưu không?',
-    //       onOk: () => {
-    //         this.postOrderConfig.onSave();
-    //       },
-    //       onCancel:()=>{
-    //         this.selectedIndex = Number(event?.index);
-    //       },
-    //       okText:"Lưu",
-    //       cancelText:"Bỏ qua",
-    //       confirmViewType: "compact",
-    //     });
-    //   } else {
-    //     this.selectedIndex = Number(event?.index);
-    //   }
-    // }
-  }
-
-  onTabClick() {debugger
-    if(this.selectedIndex == 0) {
-      if(!this.postOrderConfig.prepareCheckDrity()) {
-        this.modalService.info({
-          title: 'Thông báo',
-          content: 'Cấu hình chốt đơn đã thay đổi nhưng chưa được lưu, bạn có muốn lưu không?',
-          onOk: () => {
-            this.postOrderConfig.onSave();
-          },
-          onCancel:()=>{
-            this.selectedIndex = 0;
-          },
-          okText:"Lưu",
-          cancelText:"Bỏ qua",
-          confirmViewType: "compact",
-        });
-      } else {
-        this.selectedIndex = 1;
-      }
+  onSelectChange(event: TDSTabChangeEvent) {
+    if(this.selectedIndex != 0 && this.selectedIndexChanged == 0) {
+      this.postOrderConfig.onCheckSelectChange();
     }
+
+    this.selectedIndexChanged = Number(event.index);
   }
 }
