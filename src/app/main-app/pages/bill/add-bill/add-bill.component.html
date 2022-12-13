@@ -850,7 +850,7 @@
                     <td [tdsLeft]="true">{{ i + 1 }}</td>
                     <td [tdsLeft]="true">
                       <div class="flex flex-col">
-                        <span class="font-semibold">{{ data.ProductNameGet }}</span>
+                        <span class="font-semibold 2xl:max-w-[250px] xl:max-w-[200px] truncate" tds-tooltip="{{ data.ProductNameGet }}">{{ data.ProductNameGet }}</span>
                         <span class="text-neutral-1-400">Đơn vị: {{ data.ProductUOMName }}</span>
                         <span class="text-neutral-1-400 flex" tds-popover popoverTrigger="click"
                           [popoverContent]="popoverAddNote" [popoverAutoClose]="true" [popoverBackdrop]="true"
@@ -939,13 +939,15 @@
                               <button tds-button type="button" style="line-height: 19px;margin-right: 6px"
                                 [color]="data.Type == 'percent' ? 'primary' : 'secondary'"
                                 (click)="selectProductType(data, 'percent', i)"
-                                class="text-neutral-1-900 text-body-2 font-regular">
+                                [ngClass]="data.Type == 'percent' ? 'text-white' : 'text-neutral-1-900'"
+                                class="text-body-2 font-regular">
                                 <span class="flex items-center"> % </span>
                               </button>
                               <button tds-button type="button"
                                 [color]="data.Type == 'fixed' ? 'primary' : 'secondary'"
                                 (click)="selectProductType(data, 'fixed', i)"
-                                class="text-neutral-1-900 text-body-2 font-regular">
+                                [ngClass]="data.Type == 'fixed' ? 'text-white' : 'text-neutral-1-900'"
+                                class="text-body-2 font-regular">
                                 <span class="flex items-center"> VNĐ </span>
                               </button>
                             </div>
@@ -991,9 +993,8 @@
                             <div><span>{{totalAmountLines | numberCustom  }} đ</span></div>
 
                             <!-- Giảm giá -->
-                            <div>
-                              <button *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal"
-                                tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal">
+                              <button tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                                 (click)="openPopoverDiscount()" [(popoverVisible)]="visiblePopoverDiscount"
                                 [popoverContent]="popoverContentDiscount" [popoverFooter]="popoverFooterDiscount"
                                 [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
@@ -1008,9 +1009,8 @@
                             </div>
 
                             <!-- Thuế -->
-                            <div>
-                              <button *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax"
-                                tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
+                            <div *ngIf="saleConfig?.SaleSetting?.GroupFastSaleTax">
+                              <button tds-button color="secondary" type="button" tds-popover popoverTrigger="click"
                                 (click)="openPopoverTax()" [(popoverVisible)]="visiblePopoverTax"
                                 [popoverContent]="popoverContentTax" [popoverFooter]="popoverFooterTax"
                                 [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left">
