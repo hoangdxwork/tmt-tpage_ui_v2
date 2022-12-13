@@ -43,12 +43,12 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     private sgRConnectionService: SignalRConnectionService) {
       super(apiService);
 
-      this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
-        if(res && TDSHelperArray.isArray(res)){
-            this.lstTeam = res;
-        }
-      })
-      this.initialize();
+      // this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
+      //   if(res && TDSHelperArray.isArray(res)){
+      //       this.lstTeam = res;
+      //   }
+      // })
+      // this.initialize();
   }
 
   initialize() {
