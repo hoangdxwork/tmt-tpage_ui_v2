@@ -218,26 +218,26 @@ export class AddBillComponent implements OnInit {
     switch (this.path) {
         case 'copy':
           this.breadcrumb = 'Sao chép';
-            const key = this.fastSaleOrderService._keyCacheCopyInvoice;
-            let obs = localStorage.getItem(key) as string;
+          const key = this.fastSaleOrderService._keyCacheCopyInvoice;
+          let obs = localStorage.getItem(key) as string;
 
-            if(TDSHelperString.hasValueString(obs)) {
-                let data = JSON.parse(obs);
-                this.loadCopyData(data);
-            } else {
-                this.router.navigateByUrl('bill/create');
-            }
-        break;
+          if(TDSHelperString.hasValueString(obs)) {
+              let data = JSON.parse(obs);
+              this.loadCopyData(data);
+          } else {
+              this.router.navigateByUrl('bill/create');
+          }
+          break;
 
         case 'edit':
           this.breadcrumb = 'Chỉnh sửa';
-            this.loadBill(this.id);
-            this.removelocalStorage();
+          this.loadBill(this.id);
+          this.removelocalStorage();
         break;
 
         default:
           this.breadcrumb = 'Thêm mới';
-            this.loadDefault();
+          this.loadDefault();
         break;
     }
 

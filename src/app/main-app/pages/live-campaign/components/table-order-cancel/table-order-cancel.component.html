@@ -23,7 +23,10 @@
     <tbody>
       <tr *ngFor="let data of sortTable.data">
         <td>{{ data.OrderCode }}</td>
-        <td>{{ data.PartnerName }}</td>
+        <td>
+          <div>{{ data.PartnerName }}</div>
+          <div class="text-body-2 text-neutral-1-400">{{ data.Phone }}</div>
+        </td>
         <td class="text-center">{{ data.TotalQuantity }}</td>
         <td>{{ data.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</td>
         <td>
