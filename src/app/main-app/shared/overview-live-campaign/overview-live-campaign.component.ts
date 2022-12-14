@@ -50,9 +50,9 @@ export class OverviewLiveCampaignComponent implements OnInit {
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
-    private prepareUpdateFacebookByLiveCampaign: PrepareUpdateFacebookByLiveCampaign,
-    private prepareUpdateTShopByLiveCampaign: PrepareUpdateTShopByLiveCampaign
-    ) { }
+    private prepareFbLiveCampaign: PrepareUpdateFacebookByLiveCampaign,
+    private prepareChannelByLiveCampaign: PrepareUpdateTShopByLiveCampaign) {
+  }
 
   ngOnInit(): void {
     if(this.liveCampaignId) {
@@ -126,70 +126,51 @@ export class OverviewLiveCampaignComponent implements OnInit {
   removeLiveCampaign(){
     let id = this.liveCampaignId;
     let exist = this.data && id == this.data.LiveCampaignId;
-    if(!exist) {
-        return;
-    }
+    if(!exist) return;
 
     let currentLiveCampaign = {...this.dataLiveCampaign} as LiveCampaignModel
+    this.isLoading = true;
+    let model = {} as any;
 
     this.modalService.info({
       title: 'Xóa chiến dịch live',
       content: `Bạn có chắc muốn xóa chiến dịch <span class="text-info-500 font-semibold">${this.dataLiveCampaign.Name}</span>`,
       onOk: () => {
-        let model =  {} as any;
+
         switch(this.type) {
           case CRMTeamType._Facebook:
-            model = {...this.prepareUpdateFacebookByLiveCampaign.prepareUpdateFbLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
-            this.isLoading = true;
-
-            this.liveCampaignService.updateFacebookByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (res: any) => {
-                  this.data.LiveCampaignId = null as any;
-                  this.data.LiveCampaign = null as any;
-
-                  // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-                  this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
-
-                  this.isLoading = false;
-                  this.message.success('Bỏ chọn chiến dịch thành công');
-                  this.modelRef.destroy(null);
-
-                  this.cdr.detectChanges();
-              },
-              error: (error: any) => {
-                  this.isLoading = false;
-                  this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
-                  this.cdr.detectChanges();
-              }
-            });
+            model = {...this.prepareFbLiveCampaign.prepareUpdateFbLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
             break;
 
           case CRMTeamType._TShop:
-          model = {...this.prepareUpdateTShopByLiveCampaign.prepareUpdateTShopLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
+            model = {...this.prepareChannelByLiveCampaign.prepareUpdateTShopLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
+            break;
 
-          this.isLoading = true;
-          this.liveCampaignService.updateTShopByLiveCampaign(id, model).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-    
-                this.data.LiveCampaignId = null as any;
-                this.data.LiveCampaign = null as any;
-
-                // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
-                this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
-
-                this.isLoading = false;
-                this.message.success('Bỏ chọn chiến dịch thành công');
-                this.modelRef.destroy(null);
-
-                this.cdr.detectChanges();
-            },
-            error: (error: any) => {
-                this.isLoading = false;
-                this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
-            }
-          });
-          break;
+          case CRMTeamType._UnofficialTikTok:
+            model = {...this.prepareChannelByLiveCampaign.prepareUpdateTiktokLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
+            break;
         }
+
+        this.liveCampaignService.apiUpdateChannelLiveCampaign(id, model, this.type).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.data.LiveCampaignId = null as any;
+              this.data.LiveCampaign = null as any;
+
+              // TODO cập nhật ở conversation-post-v2, object-facebook-post, conversation-post-view
+              this.objectFacebookPostEvent.changeDeleteLiveCampaignFromObject$.emit(this.data);
+
+              this.isLoading = false;
+              this.message.success('Bỏ chọn chiến dịch thành công');
+
+              this.cdr.detectChanges();
+              this.modelRef.destroy(null);
+          },
+          error: (error: any) => {
+              this.isLoading = false;
+              this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+              this.cdr.detectChanges();
+          }
+        })
       },
       okText: "Xác nhận",
       cancelText: "Hủy bỏ"
