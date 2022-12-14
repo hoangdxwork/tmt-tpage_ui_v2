@@ -317,7 +317,7 @@ export class AddBillComponent implements OnInit {
           // TODO: change partner gán thêm các field
           let partnerId = obs.PartnerId || obs.Partner?.Id;
           if (partnerId) {
-              this.changePartner(partnerId);
+              this.changePartner(partnerId, '_LOADBILL');
           }
 
           this.isLoading = false;
@@ -569,7 +569,7 @@ export class AddBillComponent implements OnInit {
     }));
   }
 
-  changePartner(partnerId: any) {
+  changePartner(partnerId: any, type?: string) {
     this.isLoading = true;
 
     this.loadChangePartner(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -581,10 +581,9 @@ export class AddBillComponent implements OnInit {
             }
           }
 
-          let path = this.route.snapshot.url[0]?.path;
-          if(path != 'edit') {
-            this.calcTotal();
-            this.coDAmount();
+          if(type != '_LOADBILL') {
+              this.calcTotal();
+              this.coDAmount();
           }
 
           this.isLoading = false;
