@@ -197,7 +197,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
             if(!TDSHelperString.hasValueString(x.DeliveryTypeGet)) {
               x.DeliveryTypeGet = x.DeliveryType;
             }
-            data = [ ...data, ...[x]]; 
+            data = [ ...data, ...[x]];
           }
         });
 

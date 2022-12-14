@@ -4,8 +4,9 @@
       <div class="w-3/4 h-full flex flex-col gap-y-4">
         <div *ngFor="let team of data; let i = index" class="bg-white rounded-xl w-full border border-neutral-2-100">
           <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
-            <tds-collapse-panel [header]="header"
+            <tds-collapse-panel [header]="header" 
               [tdsClass]="'p-0'" 
+              [showArrow]="team.Childs && team.Childs?.length && team.Childs.length > 0 ? true : false"
               [active]="team.Childs && team.Childs?.length && team.Childs.length > 0 ? true : false">
   
               <!--TODO: Thông tin tài khoản -->
@@ -94,22 +95,22 @@
                     </div>
   
                     <!--TODO: button chưa kết nối -->
-                    <div *ngIf="!child.Active" class="flex items-center">
+                    <!-- <div *ngIf="!child.Active" class="flex items-center">
                       <button tds-button color="primary" (click)="showModalAddPage(child)">
                         <span class="flex items-center">
                           <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
                         </span>
                       </button>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
   
                 <!--TODO: Danh sách page rỗng (chưa có page kết nối) -->
-                <div *ngIf="!team.Childs || team.Childs.length == 0" class="w-full p-4">
+                <!-- <div *ngIf="!team.Childs || team.Childs.length == 0" class="w-full p-4">
                   <tds-empty notFoundImage="/assets/imagesv2/facebook/flag.png" [notFoundContent]="contentTpl">
                     <ng-template #contentTpl>
                       <div class="flex flex-col items-center justify-center gap-y-2">
-                        <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
+                        <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Tiktok nào</span>
                         <button tds-button color="primary" (click)="verifyConnect(team)">
                           <span class="flex items-center">
                             <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối trang
@@ -118,14 +119,14 @@
                       </div>
                     </ng-template>
                   </tds-empty>
-                </div>
+                </div> -->
               </div>
             </tds-collapse-panel>
           </tds-collapse>
           <!--TODO Page chưa kết nối -->
-          <div class="p-4 border-t border-neutral-2-100" *ngIf="team.Childs && team.Childs.length > 0">
+          <!-- <div class="p-4 border-t border-neutral-2-100" *ngIf="team.Childs && team.Childs.length > 0">
             <span class="cursor-pointer text-success-400 text-xs" (click)="verifyConnect(team)">Xem thêm Page chưa kết nối</span>
-          </div>
+          </div> -->
         </div>
       </div>
   
@@ -163,12 +164,6 @@
               </div>
               <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">Xin chào, {{ userTiktokLogin?.Name }}!</span>
               <span class="mt-2 text-body-2 text-neutral-1-400">{{ userTiktokLogin?.Email }}</span>
-              <div class="mt-6 text-title-1 font-semibold text-success-400" *ngIf="loginTeam?.Childs">Số trang Tiktok đang quản lí</div>
-              <tpage-avatar-group-facebook *ngIf="loginTeam?.Childs">
-                <tpage-avatar-facebook *ngFor="let child of loginTeam?.Childs || []; let i=index" 
-                  [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'sm'">
-                </tpage-avatar-facebook>
-              </tpage-avatar-group-facebook>
     
               <button tds-button color="secondary" class="w-full mt-6" (click)="tiktokSignOut()">
                 <span class="flex items-center">
@@ -179,9 +174,9 @@
           </ng-template>
     
           <!--TODO: thêm tài khoản vào danh sách -->
-          <div class="pt-4" *ngIf="loginTeam == null && userTiktokLogin != null" (click)="onTiktokConnected()">
+          <!-- <div class="pt-4" *ngIf="userTiktokLogin != null" (click)="onTiktokConnected()">
             <button tds-button class="w-full" color="primary">Thêm vào TPage</button>
-          </div>
+          </div> -->
         </div>
     </div>
   

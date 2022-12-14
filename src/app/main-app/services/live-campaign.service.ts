@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ODataLiveCampaignDTO } from "@app/dto/live-campaign/odata-live-campaign.dto";
+import { CRMTeamType } from "@app/dto/team/chatomni-channel.dto";
 import { BehaviorSubject, Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
@@ -384,13 +385,23 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  updateTShopByLiveCampaign(id: string, data: any): Observable<any> {
+  updateChannelByLiveCampaign(id: string, data: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/ODataService.UpdateChannel`,
       method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<any>(api, data);
+  }
+
+  apiUpdateChannelLiveCampaign(id: string, data: any, channelType: string) {
+    switch (channelType) {
+      case CRMTeamType._TShop:
+      case CRMTeamType._UnofficialTikTok:
+          return this.updateChannelByLiveCampaign(id, data)
+      default:
+          return this.updateFacebookByLiveCampaign(id, data);
+    }
   }
 
 }

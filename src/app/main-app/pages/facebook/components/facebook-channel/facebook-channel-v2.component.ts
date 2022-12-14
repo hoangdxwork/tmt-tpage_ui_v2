@@ -126,7 +126,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
               user: this.userFBLogin
             } as FacebookCacheDto;
 
-            this.facebookService.setCacheLoginUser(cacheData, CRMTeamType._Facebook);
+            this.facebookService.setCacheLoginUser(cacheData);
 
             if (this.data && this.data.length > 0) {
               this.sortByFbLogin(res.id);
@@ -147,7 +147,7 @@ export class FacebookChannelV2Component extends TpageBaseComponent implements On
         next: (res: CRMTeamDTO[]) => {
           if(!res) return;
 
-          this.data = res.filter((x: any) => x.Type != CRMTeamType._TUser);
+          this.data = res.filter((x: any) => x.Type == CRMTeamType._Facebook);
 
           if(this.userFBLogin) {
             this.sortByFbLogin(this.userFBLogin.id);

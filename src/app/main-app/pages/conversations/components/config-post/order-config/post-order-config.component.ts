@@ -92,11 +92,11 @@ export class PostOrderConfigComponent implements OnInit {
   ngOnInit(): void {
     if(this.data && this.data.ObjectId) {
         this.loadData(this.data.ObjectId);
-        this.loadUser();
-        this.loadPartnerStatus();
-
-        this.loadCurrentCompany();
     }
+
+    this.loadUser();
+    this.loadPartnerStatus();
+    this.loadCurrentCompany();
   }
 
   loadCurrentCompany() {

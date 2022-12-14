@@ -46,7 +46,7 @@
                 </button>
             </div>
         </div>
-        
+
         <!-- action button -->
         <div class="flex flex-row items-center justify-between px-4" [ngClass]="isOpenCollapCheck ? '' : 'hidden'">
             <div class="flex flex-auto gap-x-2">
@@ -121,8 +121,8 @@
                                 </tds-tag>
                             </div>
 
-                            <div class="w-1/5 flex justify-end gap-x-2 ">
-                                <tds-badge status="secondary" text="{{ order.StatusText }}"></tds-badge>
+                            <div class="w-1/5 flex justify-end gap-x-2">
+                                <tds-badge status="secondary" class="truncate" tds-tooltip="{{ order.StatusText }}" text="{{ order.StatusText }}"></tds-badge>
                             </div>
                         </div>
                         </ng-template>
