@@ -62,9 +62,9 @@ export class PrepareAddCampaignHandler {
       model.Users = formValue.Users || [];
       model.Note = formValue.Note;
       model.ResumeTime = formValue.ResumeTime;
-      model.DateCreated = new Date();
-      model.StartDate = formValue.StartDate ? new Date(formValue.StartDate + 'Z') : null;
-      model.EndDate = formValue.EndDate ? new Date(formValue.EndDate + 'Z') : null;
+      model.DateCreated = this.formatDateUTC(new Date());
+      model.StartDate = formValue.StartDate ? this.formatDateUTC(new Date(formValue.StartDate)) : null;
+      model.EndDate = formValue.EndDate ? this.formatDateUTC(new Date(formValue.EndDate)) : null;
       model.Preliminary_TemplateId = formValue.Preliminary_TemplateId || formValue.Preliminary_Template?.Id;
       model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_TemplateId || formValue.ConfirmedOrder_Template?.Id;
       model.MinAmountDeposit = Number(formValue.MinAmountDeposit);
@@ -79,5 +79,10 @@ export class PrepareAddCampaignHandler {
       model.Details = [];
 
       return {...model};
+  }
+
+  public formatDateUTC(date: Date) {
+    let UTCDate = date.getTime() - date.getTimezoneOffset()*60*1000;
+    return new Date(UTCDate);
   }
 }

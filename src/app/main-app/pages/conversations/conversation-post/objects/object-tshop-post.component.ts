@@ -1,7 +1,6 @@
 import { FacebookLiveCampaignPostComponent } from './../facebook-livecampaign-post/facebook-livecampaign-post.component';
 import { OverviewLiveCampaignComponent } from './../../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
-import { ListLiveCampaignComponent } from 'src/app/main-app/shared/list-live-campaign/list-live-campaign.component';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
@@ -55,7 +54,6 @@ export class ObjectTshopPostComponent  implements OnInit {
     this.indClickTag = item.Id;
     this.showModalLiveCampaign(this.item);
   }
-
 
   closeTag(): void {
     this.indClickTag = '';

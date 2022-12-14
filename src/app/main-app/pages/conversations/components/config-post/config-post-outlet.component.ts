@@ -1,11 +1,12 @@
+import { TDSTabChangeEvent } from 'tds-ui/tabs';
 import { AutoLabelConfigComponent } from './label-config/auto-label-config.component';
 import { AutoReplyConfigComponent } from './reply-config/auto-reply-config.component';
 import { PostHiddenCommentConfigComponent } from './hidden-comment-config/post-hidden-comment-config.component';
 import { PostOrderInteractionConfigComponent } from './interaction-config/post-order-interaction-config.component';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { PostOrderConfigComponent } from './order-config/post-order-config.component';
-import { TDSModalRef } from 'tds-ui/modal';
-import { Component, Input, ViewChild, ChangeDetectionStrategy } from "@angular/core";
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { Component, Input, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from "@angular/core";
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
@@ -23,8 +24,10 @@ export class ConfigPostOutletComponent  {
   @ViewChild(AutoLabelConfigComponent ) autoLabelConfig !: TDSSafeAny;
 
   @Input() data!: ChatomniObjectsItemDto;
+  @Input() date!: string;
 
   selectedIndex: number = 0;
+  selectedIndexChanged: number = 0;
 
   constructor(private modalRef: TDSModalRef){ }
 
@@ -44,6 +47,26 @@ export class ConfigPostOutletComponent  {
     return
   }
   onCannel(){
-    this.modalRef.destroy(null);
+    switch(this.selectedIndex){
+      case 0:
+        return this.postOrderConfig.onCannel();
+      case 1:
+        return this.postOrderInteractionConfig.onCannel();
+      case 2:
+        return this.postHiddenCommentConfig.onCannel();
+      case 3:
+        return this.autoReplyConfig.onCannel();
+      case 4:
+        return this.autoLabelConfig.onCannel();
+    }
+    return
+  }
+
+  onSelectChange(event: TDSTabChangeEvent) {
+    if(this.selectedIndex != 0 && this.selectedIndexChanged == 0) {
+      this.postOrderConfig.onCheckSelectChange();
+    }
+
+    this.selectedIndexChanged = Number(event.index);
   }
 }

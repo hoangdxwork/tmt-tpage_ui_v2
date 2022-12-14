@@ -259,6 +259,14 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
 
+  getOutstandingInfo(key: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/ODataService.GetOutstandingInfo?$expand=Content`,
+      method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
+  }
+
   getActionCancel(data: TDSSafeAny): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ActionCancel`,

@@ -14,6 +14,10 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { ModalGetNotificationComponent } from '../components/modal-get-notification/modal-get-notification.component';
+// socket noti
+import { SocketStorageNotificationService } from '@app/services/socket-io/socket-config-notification.service';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 
 @Component({
   selector: 'firebase-notification',
@@ -37,6 +41,11 @@ export class FirebaseNotificationComponent implements OnInit {
   deviceToken: any;
   idsRegister: any[] = [];
   idsTopic: any[] = [];
+  selectedIndex = 0;
+
+  // socket noti
+  socketData: {[key: string]: boolean} = {} as any
+  lstItems: Array<any> = [];
 
   constructor(private firebaseRegisterService: FirebaseRegisterService,
     private message: TDSMessageService,
@@ -47,7 +56,10 @@ export class FirebaseNotificationComponent implements OnInit {
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private render: Renderer2,
-    private firebaseMessagingService: FirebaseMessagingService) {
+    private firebaseMessagingService: FirebaseMessagingService,
+    //socket noti
+    private socketStorageNotificationService: SocketStorageNotificationService,
+    ) {
   }
 
   ngOnInit(): void {
@@ -67,6 +79,18 @@ export class FirebaseNotificationComponent implements OnInit {
     this.tdsConfigService.set('message', {
       maxStack: 3
     });
+
+    // socket noti
+    let exist = this.socketStorageNotificationService.getLocalStorage();
+    if(!exist) {
+      this.socketStorageNotificationService.setLocalStorage();
+      exist = this.socketStorageNotificationService.getLocalStorage();
+    }
+    for(let item in exist) {
+      this.lstItems.push(item);
+    }
+    this.socketData = exist
+    this.onEventEmitter();
   }
 
   loadTopics() {
@@ -182,7 +206,7 @@ export class FirebaseNotificationComponent implements OnInit {
     if (this.isLoadingProduct || this.isLoadingNextdata) {
       return;
     }
-    
+
     let exisData = this.data && this.data.length > 0 && event && event.scrollStartPosition > 0;
     if (exisData) {
       const vsEnd = Number(this.data.length - 1) == Number(event.endIndex);
@@ -216,11 +240,11 @@ export class FirebaseNotificationComponent implements OnInit {
       this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.data = [...(this.data || []), ...res.items];
-          // TODO: xử lý scroll viewport khi load dữ liệu 
+          // TODO: xử lý scroll viewport khi load dữ liệu
           if(scrollerHeight) {
             this.itemCount = this.data?.length || 0;
             this.viewPortHeight =  this.itemHeight * this.itemCount;
-            
+
             if(this.viewPortHeight < scrollerHeight) {
               this.nextData(scrollerHeight);
             } else {
@@ -325,6 +349,40 @@ export class FirebaseNotificationComponent implements OnInit {
         idsTopic: this.idsTopic
       }
     });
+  }
+
+  // socket noti
+  onEventEmitter() {
+    this.socketStorageNotificationService.socketAllEmitter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.socketData = this.socketStorageNotificationService.getLocalStorage();
+    });
+  }
+
+
+  change(item: any) {
+    if(item == "socket.all") {
+        let cur = this.socketData[item];
+
+        if(cur == false) {
+            for(let data in this.socketData) {
+              this.socketData[data] = false;
+            }
+        } else {
+            for(let data in this.socketData) {
+              this.socketData[data] = true;
+            }
+        }
+
+        this.socketStorageNotificationService.setLocalStorage(this.socketData);
+        this.socketStorageNotificationService.socketAllEmitter$.emit(this.socketData[item]);
+    } else {
+        if(item == ChatmoniSocketEventName.chatomniOnMessage) {
+          this.socketData[CRMTeamType._Facebook] = this.socketData[item];
+          this.socketData[CRMTeamType._TShop] = this.socketData[item];
+          this.socketData[CRMTeamType._TikTok] = this.socketData[item];
+        }
+      this.socketStorageNotificationService.setLocalStorage(this.socketData);
+    }
   }
 
 

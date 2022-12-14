@@ -34,7 +34,7 @@ export class PrepareCopyItemHandler {
         PriceSubTotal: x.PriceSubTotal,
         Weight: x.Weight,
         WeightTotal: x.WeightTotal,
-        AccountId: x.AccountId || dataModel.Account?.Id,
+        AccountId: x.AccountId || x.Account?.Id,
         IsName: false,
         OrderId: dataModel.Id,
         ProductName: x.ProductName,
@@ -44,7 +44,7 @@ export class PrepareCopyItemHandler {
         Type: x.Type,
         ProductBarcode: x.ProductBarcode,
         PriceSubTotalSigned: 0,
-        Account: x.Account || dataModel.Account,
+        Account: x.Account,
         User: dataModel.User
       }
 

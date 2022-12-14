@@ -42,7 +42,7 @@ export class FacebookComponent implements OnInit {
     }))
     .subscribe({
       next: (res: CRMTeamType | null) => {
-        if(!this.firstLoad) return;
+        if(!this.firstLoad || res == null) return;
         // TODO: load route của tab hiện tại
         switch(res) {
           case CRMTeamType._Facebook:
@@ -51,7 +51,7 @@ export class FacebookComponent implements OnInit {
           case CRMTeamType._TShop:
             this.currentTab = 1;
             break;
-          case CRMTeamType._TikTok:
+          case CRMTeamType._UnofficialTikTok:
             this.currentTab = 2;
           break;
         }

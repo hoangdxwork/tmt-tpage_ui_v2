@@ -131,15 +131,14 @@
                 </td>
               <!-- Kênh kết nối -->
               <td  class="border-r">
-                <div class="flex flex-col gap-y-2">
-                  <div class="w-full flex">
-                    <span *ngIf="order.CRMTeamName" [ngClass]="order.CRMTeamId | getTeamIcon:lstOfTeam"></span>
-                    <span class="ml-1 ">{{order.CRMTeamName}}</span>
-                  </div>
-                  <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>
-                    {{order.PriorityStatus | priorityStatusName}}
-                  </tds-tag>
+                <div class="w-full flex">
+                  <span *ngIf="order.CRMTeamName" [ngClass]="order.CRMTeamId | getTeamIcon:lstOfTeam"></span>
+                  <span class="ml-1 ">{{order.CRMTeamName}}</span>
                 </div>
+
+                <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>
+                  {{order.PriorityStatus | priorityStatusName}}
+                </tds-tag>
               </td>
 
               <!-- Tên khách hàng -->

@@ -317,15 +317,32 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   }
 
   openConfigPost() {
-    let date = formatDate(this.team!.Type == 'Facebook' ? (this.data.Data as MDB_Facebook_Mapping_PostDto).created_time : (this.data.Data as ChatomniDataTShopPostDto).CreationTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+    let date = ''
+    switch (this.team!.Type) {
+      case CRMTeamType._Facebook:
+        date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+        break;
+
+      case CRMTeamType._TShop:
+        date = formatDate((this.data.Data as ChatomniDataTShopPostDto).CreationTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+        break;
+
+      case CRMTeamType._UnofficialTikTok:
+        date = formatDate(this.data.CreatedTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+        break;
+
+      default:
+        break;
+    }
 
     this.modalService.create({
-      title: `Cấu hình bài viết - ${date}`,
       content: ConfigPostOutletComponent,
+      closable: false,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         data: this.data,
+        date: date
       }
     });
   }
@@ -381,7 +398,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       const modal = this.modalService.create({
         title: 'Chọn sản phẩm',
         content: ModalListProductComponent,
-        size: "xl",
+        size: "lg",
         bodyStyle: {
           padding: '0px'
         },

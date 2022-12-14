@@ -2,7 +2,7 @@ import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToO
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
@@ -55,6 +55,8 @@ export class PostOrderConfigComponent implements OnInit {
   lstPartnerStatus: any;
   lstUser$!: Observable<ConfigUserDTO[]>;
   currentTeam!: CRMTeamDTO | null;
+  dataDefault!: AutoOrderConfigDTO;
+  setOfCheckData= new Set<object>();
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -90,11 +92,11 @@ export class PostOrderConfigComponent implements OnInit {
   ngOnInit(): void {
     if(this.data && this.data.ObjectId) {
         this.loadData(this.data.ObjectId);
-        this.loadUser();
-        this.loadPartnerStatus();
-
-        this.loadCurrentCompany();
     }
+
+    this.loadUser();
+    this.loadPartnerStatus();
+    this.loadCurrentCompany();
   }
 
   loadCurrentCompany() {
@@ -151,6 +153,7 @@ export class PostOrderConfigComponent implements OnInit {
     this.facebookPostService.getOrderConfig(this.currentTeam?.Id, postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
           this.dataModel = {...res};
+          this.setDataDefault(res);
 
           this.dataModel.TextContentToOrders = [];
           if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
@@ -183,7 +186,9 @@ export class PostOrderConfigComponent implements OnInit {
       },
       error: (err: any) => {
           this.isLoading = false;
-          this.message.error('Đã xảy ra lỗi');
+          this.message.error( err?.error?.message || 'Đã xảy ra lỗi');
+
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -395,35 +400,88 @@ export class PostOrderConfigComponent implements OnInit {
     let fileName = target.files[0].name;
     let typeFile = this.isCheckFile(fileName);
 
-    if(typeFile) {
-      let result = [];
+    switch (typeFile) {
+      case 'txt':
+          reader.onload = (e: any) => {
+            const binaryStr: string = e.target.result;
 
-      reader.onload = (e: any) => {
-        const binaryStr: string = e.target.result;
-        const wb: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
+            if(!TDSHelperString.hasValueString(binaryStr)) {
+              this.message.error('Không tìm thấy dữ liệu trong file');
+              return;
+            }
 
-        for (var i = 0; i < wb.SheetNames.length; ++i) {
-          const wsName: string = wb.SheetNames[i];
-          const ws: XLSX.WorkSheet = wb.Sheets[wsName];
-          const data: any[] = XLSX.utils.sheet_to_json(ws, { raw: false });
+            let data = binaryStr?.split(',');
+            data = this.onCheckExcludedPhones(data);
 
-          var name_col = Object.keys(data[0]);
-          result = data.map((x: any) => {
-            return x[name_col[0]].toString();
-          });
+            let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
+            this.dataModel.ExcludedPhones = [...data, ...excludedPhonesValue];
+            event.target.value = null;
 
-          if (typeFile == 'txt' || typeFile == 'xlsx') {
-            result.unshift(name_col[0]).toString();
-          }
-
-          let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
-          result = [...result, ...excludedPhonesValue];
-
-          this.dataModel.ExcludedPhones = result;
-          break;
+            this.cdRef.detectChanges();
+            return;
         }
+        break;
+
+      case 'xlsx': 
+        let result = [];
+
+        reader.onload = (e: any) => {
+          const binaryStr: string = e.target.result;
+          const wb: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
+
+          for (var i = 0; i < wb.SheetNames.length; ++i) {
+            const wsName: string = wb.SheetNames[i];
+            const ws: XLSX.WorkSheet = wb.Sheets[wsName];
+            const data: any[] = XLSX.utils.sheet_to_json(ws, { raw: false });
+
+            var name_col = Object.keys(data[0]);
+            result = data.map((x: any) => {
+              return x[name_col[0]].toString();
+            });
+
+            if (typeFile == 'xlsx') {
+              result.unshift(name_col[0]).toString();
+            }
+
+            result = this.onCheckExcludedPhones(result);
+
+            let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
+            result = [...result, ...excludedPhonesValue];
+
+            this.dataModel.ExcludedPhones = result;
+            event.target.value = null;
+
+            break;
+          }
       };
+        break;
+
+      default:
+        break;
+    } 
+  }
+
+  onCheckExcludedPhones(data: string[]) {
+    let result: string[] = [];
+    data = data.filter(x=> TDSHelperString.hasValueString((x || '').trim()));
+    data = data.map(x=> { return x.trim() });
+
+    data.map(x=> {
+      if(!this.dataModel.ExcludedPhones || this.dataModel.ExcludedPhones?.length == 0) {
+        result = [...data];
+      } else {
+        let index = this.dataModel.ExcludedPhones.findIndex(y=> x == y);
+          if(Number(index) < 0) {
+            result = [...result, ...[x]];
+          }
+      }
+    })
+
+    if(result.length != data.length) {
+      this.message.info('Đã loại bỏ số điện thoại trùng vừa thêm vào trong danh sách');
     }
+
+    return result;
   }
 
   isCheckFile(fileName: string) {
@@ -555,6 +613,7 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadLiveCampaignById(id: string) {
+    this.isLoading = true;
     this.liveCampaignService.getById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
@@ -565,10 +624,12 @@ export class PostOrderConfigComponent implements OnInit {
             let id = this.currentLiveCampaign?.Id as string;
             this.loadConfigLiveCampaignV2(id);
           }
+          this.isLoading = false;
 
           this.cdRef.detectChanges();
       },
       error: (err: any) => {
+        this.isLoading = false;
         this.message.error(err?.error?.message);
       }
     })
@@ -739,6 +800,9 @@ export class PostOrderConfigComponent implements OnInit {
           } else {
               this.message.success('Cập nhật cấu hình thành công');
           }
+          let data = this.setData(this.dataModel);
+          this.setDataDefault(data);
+
           this.cdRef.detectChanges();
         },
         error:(error) => {
@@ -768,6 +832,95 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   onCannel() {
-    this.modalRef.destroy(null);
+    if(!this.prepareCheckDrity()) {
+      this.modalService.info({
+        title: 'Thông báo',
+        content: 'Cấu hình chốt đơn đã thay đổi nhưng chưa được lưu, bạn có muốn lưu không?',
+        onOk: () => {
+          this.onSave();
+        },
+        onCancel:()=>{
+          this.modalRef.destroy(null);
+        },
+        okText:"Lưu",
+        cancelText:"Đóng",
+        confirmViewType: "compact",
+      });
+    } else {
+      this.modalRef.destroy(null);
+    }
+  }
+
+  setData(data: AutoOrderConfigDTO) {
+    let model = {...data} as AutoOrderConfigDTO;
+    return model;
+  }
+
+  setDataDefault(data: AutoOrderConfigDTO) {
+    this.dataDefault = data;
+
+    if(data.TextContentToOrders && data.TextContentToOrders.length > 0) {
+      this.dataDefault.TextContentToOrders = data.TextContentToOrders;
+    }
+
+    this.setOfCheckData = new Set<object>();
+    this.dataDefault.TextContentToOrders.map(x=> {
+      this.setOfCheckData.add(x);
+    })
+  }
+
+  onCheckSelectChange(){
+    if(!this.prepareCheckDrity()) {
+      this.modalService.info({
+        title: 'Thông báo',
+        content: 'Cấu hình chốt đơn đã thay đổi nhưng chưa được lưu, bạn có muốn lưu không?',
+        onOk: () => {
+          this.onSave();
+        },
+        onCancel:()=>{
+          // this.dataModel = this.setData(this.dataDefault);
+        },
+        okText:"Lưu",
+        cancelText:"Bỏ qua",
+        confirmViewType: "compact",
+      });
+    }
+  }
+
+  prepareCheckDrity() { 
+    if(!this.dataDefault || !this.dataModel) return true;
+    if(this.dataDefault.IsEnableOrderAuto != this.dataModel.IsEnableOrderAuto) return false;
+    if(this.dataDefault.IsForceOrderWithAllMessage != this.dataModel.IsForceOrderWithAllMessage) return false;
+    if(this.dataDefault.IsOnlyOrderWithPartner != this.dataModel.IsOnlyOrderWithPartner) return false;
+    if(this.dataDefault.IsOnlyOrderWithPhone != this.dataModel.IsOnlyOrderWithPhone) return false;
+    if(this.dataDefault.IsForceOrderWithPhone != this.dataModel.IsForceOrderWithPhone) return false;
+    if(this.dataDefault.IsForcePrintWithPhone != this.dataModel.IsForcePrintWithPhone) return false;
+    if(this.dataDefault.MinLengthToOrder != this.dataModel.MinLengthToOrder) return false;
+    if(this.dataDefault.MaxCreateOrder != this.dataModel.MaxCreateOrder) return false;
+    if(this.dataDefault.TextContentToExcludeOrder != this.dataModel.TextContentToExcludeOrder) return false;
+    if(this.dataDefault.ExcludedPhones != this.dataModel.ExcludedPhones) return false;
+    if(this.dataDefault.IsEnableAutoAssignUser != this.dataModel.IsEnableAutoAssignUser) return false;
+    if(this.dataDefault.Users != this.dataModel.Users) return false;
+    if(this.dataDefault.IsEnableOrderReplyAuto != this.dataModel.IsEnableOrderReplyAuto) return false;
+    if(this.dataDefault.IsEnableOrderReplyAuto != this.dataModel.IsEnableOrderReplyAuto) return false;
+    if(this.dataDefault.OrderReplyTemplate != this.dataModel.OrderReplyTemplate) return false;
+    if(this.dataDefault.IsEnableShopLink != this.dataModel.IsEnableShopLink) return false;
+    if(this.dataDefault.IsOrderAutoReplyOnlyOnce != this.dataModel.IsOrderAutoReplyOnlyOnce) return false;
+    if(this.dataDefault.IsOrderCreateOnlyOnce != this.dataModel.IsOrderCreateOnlyOnce) return false;
+    if(this.dataDefault.TextContentToOrders?.length != this.dataModel.TextContentToOrders?.length) return false;
+    if(!this.checkTextContentToOrders()) return false;
+
+    return true;
+  }
+
+  checkTextContentToOrders() {
+    this.setOfCheckData
+    let exist = true;
+    this.dataModel.TextContentToOrders.map(x=> {
+      if(!this.setOfCheckData.has(x)) {
+        exist = false;
+      }
+    })
+    return exist;
   }
 }

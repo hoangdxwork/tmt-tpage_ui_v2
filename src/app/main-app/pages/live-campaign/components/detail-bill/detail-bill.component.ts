@@ -1,3 +1,4 @@
+import { CommonService } from './../../../../services/common.service';
 import { ModalMergeOrderComponent } from './modal-merge-order.component';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
@@ -107,6 +108,7 @@ export class DetailBillComponent implements OnInit {
     private destroy$: TDSDestroyService,
     private cacheApi: THelperCacheService,
     private crmTeamService: CRMTeamService,
+    private commonService: CommonService,
     private crmMatchingService: CRMMatchingService,
     private chatomniMessageFacade: ChatomniMessageFacade,
     private printerService: PrinterService,
@@ -519,6 +521,7 @@ export class DetailBillComponent implements OnInit {
               }
 
               this.loadData(this.pageSize, this.pageIndex);
+              this.loadInventoryIds();
               this.isLoading = false;
             },
             error:error => {
@@ -537,6 +540,44 @@ export class DetailBillComponent implements OnInit {
         cancelText: "Đóng",
       });
     }
+  }
+
+  loadInventoryIds(){
+    let ids: any = [];
+
+    this.lstOfData.map((data : FastSaleOrderModelDTO) => {
+      if(this.idsModel.includes(data.Id)) {
+
+        this.fastSaleOrderService.getById(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (order) => {
+            if(!order) return;
+
+            if(order.OrderLines) {
+              ids = [];
+    
+              order.OrderLines.forEach((x: any) => {
+                if (!ids.includes(x.ProductId)) {
+                    ids.push(x.ProductId);
+                }
+              });
+            }
+        
+            let warehouseId = order.WarehouseId;
+            this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe({
+              next:(res: any) => {
+                this.notification.success('Tồn kho', `Hóa đơn [<span class="text-info-500 font-semibold">${order.Number}</span>]<br/>Cập nhật tồn kho thành công`);
+              },
+              error:(error) => {
+                this.notification.warning('Tồn kho', `Hóa đơn [<span class="text-info-500 font-semibold">${order.Number}</span>]<br/>Cập nhật tồn kho thất bại`);
+              }
+            })
+          },
+          error: (err) => {
+            this.message.error(err.error?.message);
+          }
+        });
+      }
+    })
   }
 
   cancelDelivery() {

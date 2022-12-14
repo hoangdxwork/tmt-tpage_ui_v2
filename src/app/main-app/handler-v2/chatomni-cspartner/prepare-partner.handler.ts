@@ -57,6 +57,10 @@ export class CsPartner_PrepareModelHandler {
       } as any
     }
 
+    if(!TDSHelperString.hasValueString(partner.Street) && TDSHelperString.hasValueString(partner.FullAddress)){
+      partner.Street = partner.FullAddress;
+    }
+
     return {...partner};
   }
 

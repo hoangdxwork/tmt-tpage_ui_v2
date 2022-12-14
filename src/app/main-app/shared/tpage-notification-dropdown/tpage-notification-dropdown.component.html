@@ -7,7 +7,7 @@
   </button>
 </tds-badge>
 <ng-template #iconTemplate>
-  <div class="absolute top-2 left-5 flex items-center justify-center" *ngIf="getRead">
+  <div class="absolute top-0.5 left-3.5 flex justify-center" *ngIf="getRead">
     <div class="rounded-full border border-white">
       <span class="block bg-green-400 w-1 h-1 rounded-full "></span>
     </div>
@@ -50,9 +50,9 @@
 
               <span class="tdsi-radio-circle-fill text-info-400 absolute top-1 right-1 text-xs" *ngIf="!item?.dateRead"></span>
             </div>
-            <div class="pt-2 pr-2" [ngClass]="item?.dateRead ? 'hidden' : ''">
+            <!-- <div class="pt-2 pr-2" [ngClass]="item?.dateRead ? 'hidden' : ''">
               <span class="tdsi-radio-circle-fill text-info-400 text-xs"></span>
-            </div>
+            </div> -->
           </div>
           <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
             <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>

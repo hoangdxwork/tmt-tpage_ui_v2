@@ -1,381 +1,289 @@
+import { TDSNotificationService } from 'tds-ui/notification';
+import { TUserCacheDto } from '../../../../../lib/dto/tshop.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
-import { AddPageComponent } from './../add-page/add-page.component';
+import { AddPageComponent } from '../add-page/add-page.component';
 import { TDSModalService } from 'tds-ui/modal';
-import { ViewportScroller } from '@angular/common';
-import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookService } from 'src/app/main-app/services/facebook.service';
-import { Message } from './../../../../../lib/consts/message.const';
+import { Message } from '../../../../../lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Output, ViewContainerRef, EventEmitter, HostListener } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
-import { TDSSafeAny, TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TpageBaseComponent } from '@app/shared/tpage-base/tpage-base.component';
 import { TUserDto } from '@core/dto/tshop.dto';
 import { TShopService } from '@app/services/tshop-service/tshop.service';
 
-export interface PageNotConnectDTO {
-  [key: string]: Array<UserPageDTO>;
-}
-
 @Component({
   selector: 'tshop-channel',
   templateUrl: './tshop-channel.component.html',
-  animations: [eventFadeStateTrigger],
   providers: [TDSDestroyService]
 })
 export class TshopChannelComponent extends TpageBaseComponent implements OnInit {
-  @ViewChild('innerText') innerText!: ElementRef;
-
   data: CRMTeamDTO[] = [];
 
   userTShopLogin!: TUserDto | null;
   isUserTShopConnectChannel: boolean = false;
 
   isLoading: boolean = true;
-  isLoadChannel: boolean = false;
-  iconCollapse: TDSSafeAny = {};
-  fieldListFilter: any = {};
-  loginTeam!: CRMTeamDTO;
+  loginTShopOwner!: CRMTeamDTO | null;
+  access_token: string = '';
 
-  tShopAuthentication!: string;
-  lstPageNotConnect: PageNotConnectDTO = {};
-  lstData: TDSSafeAny = {};
-  lastScrollPosition: TDSSafeAny = null;
-
-  constructor(
-    private crmTeamService: CRMTeamService,
+  constructor(private crmTeamService: CRMTeamService,
     private cdRef: ChangeDetectorRef,
     private destroy$: TDSDestroyService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private tShopService: TShopService,
-    private facebookService: FacebookService,
-    private facebookGraphService: FacebookGraphService,
-    private viewportScroller: ViewportScroller,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
-    private message: TDSMessageService
-  ) {
-    super(crmTeamService, activatedRoute, router);
+    private notification: TDSNotificationService,
+    private message: TDSMessageService) {
+      super(crmTeamService, activatedRoute, router);
   }
 
   ngOnInit(): void {
-    this.loadListTeam();
-    // this.userTShopLogin = this.tShopService.getCacheTShopUser();
+    //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
+    let cacheData = this.tShopService.getCacheLoginUser() as any;
+    let exist = cacheData != null && cacheData?.data && cacheData?.data?.user && cacheData?.type == CRMTeamType._TUser;
 
-    if(this.userTShopLogin) {
-      this.sortByTShopLogin(this.userTShopLogin?.Id);
+    if(exist) {
+      this.userTShopLogin = cacheData.data.user;
+      this.access_token = cacheData.data.access_token;
     } else {
-      this.getTShopAuthentication();
+      this.userTShopLogin = null;
+      this.access_token = null as any;
+      this.loginTShopOwner = null;
     }
+
+    this.loadData();
+    this.eventEmitter();
   }
 
-  getTShopAuthentication() {
-    // this.tShopService.removeCacheTshopUser();
-    let fragment = 'connect-channel/tshop-login';
-    this.tShopAuthentication = this.tShopService.getAuthentication(fragment);
+  eventEmitter() {
+    this.tShopService.getTShopUser().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TUserCacheDto) => {
+        if(res) {
+          this.access_token = res.access_token;
+          this.userTShopLogin = res.user;
 
-    // this.tShopService.onChangeUser().pipe(takeUntil(this.destroy$)).subscribe({
-    //   next: (res) => {
-    //     if(res) {
-    //       this.userTShopLogin = {...res};
-    //       // this.tShopService.setCacheTShopUser(this.userTShopLogin);
-    //       this.message.success('Đăng nhập thành công');
-
-    //       this.sortByTShopLogin(res?.Id);
-    //     }
-    //   },
-    //   error: (err) => {
-    //     this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-    //   }
-    // });
+          if (this.userTShopLogin) {
+            this.sortByTShopLogin(this.userTShopLogin.Id);
+          }
+        }
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   tShopSignIn() {
-    this.getTShopAuthentication();
+    let fragment = 'connect-channel/tshop-login';
+    const auth = this.tShopService.getAuthentication(fragment);
 
     const width = 800;
     const height = 600;
     const y = (window.top?.outerHeight || 0) / 2 + (window.top?.screenY || 0) - (width / 2);
     const x = (window.top?.outerWidth || 0) / 2 + (window.top?.screenX || 0) - (height / 2);
-    let a = window.open(this.tShopAuthentication, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
-
+    window.open(auth, ``, `resizable=no, width=${width}, height=${height}, top=${y}, left=${x}`);
   }
 
   tShopSignOut() {
-    this.isLoading = true;
-    // this.tShopService.logout();
-    // this.tShopService.removeCacheTshopUser();
     this.userTShopLogin = null;
-    this.isLoading = false;
+    this.loginTShopOwner = null;
+    this.tShopService.removeCacheLoginUser();
   }
 
-  onTShopConnected() {
-    this.isLoading = true;
-    let channel = this.data.find((x) => x.OwnerId == this.userTShopLogin?.Id);
-
-    if (channel || !this.userTShopLogin) {
-      this.message.error(Message.ConnectionChannel.ChannelExist);
-    }
-
-    this.lastScrollPosition = this.viewportScroller.getScrollPosition();
-
-    // this.insertUserTShop(this.tShopService.getCurrentToken());
-  }
-
-  insertUserTShop(accessToken: string | null) {
-    let team = {
+  insertUserTShop() {
+    let item = {
       Id: 0,
       OwnerId: this.userTShopLogin?.Id,
       Name: this.userTShopLogin?.Name,
-      Type: "TUser",
+      Type: CRMTeamType._TUser,
       ChannelId: this.userTShopLogin?.Id,
-      OwnerToken: accessToken,
-      OwnerAvatar: this.userTShopLogin?.Address
+      OwnerToken: this.access_token,
+      OwnerAvatar: this.userTShopLogin?.Avatar
     };
 
-    this.crmTeamService.insert(team).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (obs) => {
-
-        this.message.success('Thêm page thành công');
-        this.loadListTeam(true);
+    this.crmTeamService.insert(item).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
         this.isLoading = false;
-        this.cdRef.detectChanges();
-
+        this.message.success('Thao tác thành công');
+        this.loadData();
       },
       error: (error) => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
+      }
+    })
+  }
+
+  loadData() {
+    this.isLoading = true;
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        if (res) {
+          this.data = res.filter((x: any) => x.Type == CRMTeamType._TUser);
+        }
+
+        if (this.userTShopLogin) {
+          this.sortByTShopLogin(this.userTShopLogin.Id);
+        }
+
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      },
+      error: (error) => {
         this.isLoading = false;
         this.cdRef.detectChanges();
       }
     })
   }
 
-  loadListTeam(isRefresh?: boolean) {
-    this.isLoading = true;
-    this.isLoadChannel = true;
-
-    // TODO load all data
-    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: (res: TDSSafeAny) => {
-          if (res) {
-            this.data = res.filter((x: any) => x.Type == CRMTeamType._TUser);
-          }
-
-          this.data.sort((a: any, b: any) => {
-            if (a.Active) return -1;
-            return 1;
-          });
-
-          this.data.forEach((item: any) => {
-              this.getListData(item.Id);
-
-              if(item.Childs.length > 0) {
-                this.onChangeCollapse(item.Id, true);
-              }
-          });
-
-          if (this.userTShopLogin) {
-            this.sortByTShopLogin(this.userTShopLogin.Id);
-          }
-
-          if(isRefresh){
-            this.crmTeamService.onRefreshListFacebook();
-            this.scrollToLastPosition();
-        }
-
-          this.isLoading = false;
-          this.isLoadChannel = false;
-          this.cdRef.detectChanges();
-        },
-        error: error => {
-          this.isLoading = false;
-          this.isLoadChannel = false
-          this.cdRef.detectChanges();
-        }
-      })
-  }
-
   sortByTShopLogin(ownerId: string | undefined) {
     let exist = this.data.find((x) => x.OwnerId && x.OwnerId == ownerId);
 
     if (exist) {
-      this.loginTeam = {...exist};
+      this.loginTShopOwner = { ...exist };
 
       this.data.splice(this.data.indexOf(exist), 1);
       this.data.unshift(exist);
-
-      // exist.OwnerToken = this.tShopService.getCurrentToken() || exist.OwnerToken;
-
-      this.onChangeCollapse(exist.Id, true);
-      this.isUserTShopConnectChannel = true;
-    }
-    else {
-      this.isUserTShopConnectChannel = false;
     }
   }
 
-  getIsIconCollapse(id: number) {
-    if (this.iconCollapse[id] && this.iconCollapse[id] === true)
-      return true;
-    return false;
-  }
+  getTShopPage(team: CRMTeamDTO) {
+    this.isLoading = true;
+    if(this.userTShopLogin && this.userTShopLogin.Id == team.OwnerId) {
+        team.OwnerToken = this.access_token;
+    }
 
-  onChangeCollapse(id: number, event: TDSSafeAny) {
-    this.iconCollapse[id] = event;
-  }
+    if(!TDSHelperString.hasValueString(team.OwnerToken)) {
+      this.notification.error(`Không thể kết nối trang`,
+      `<div class="whitespace-normal w-[300px]">Hãy đăng nhập đúng tài khoản TShop<br>
+        [<span class="text-error-400 font-semibold">${team.Name}</span>]</div>`, { duration: 5000 });
 
-  getTShopPages(team: CRMTeamDTO) {
-    let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
-
-    this.crmService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: (res) => {
-          if(TDSHelperArray.hasListValue(res))
-          {
-            this.lstPageNotConnect[team.Id] = res.map(x => {
-              return {
-                access_token: '',
-                id: x.Id,
-                name: x.Name,
-                picture: {
-                  data : {
-                    url: x.Avatar
-                  }
-                }
-              } as UserPageDTO;
-            });
-
-            this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
-          }
-
-          this.isLoading = false;
-        },
-        error: error => {
-          this.isLoading = false;
-
-          if(error?.error?.message) {
-            this.message.error(error?.error?.message);
-          } else {
-            this.message.error('Đã có lỗi xảy ra');
-          };
-        }
-      }
-    );
-  }
-
-  getFieldListFilter(teamId: number): number {
-    let id = this.fieldListFilter?.[teamId]?.id;
-    if (id) return id;
-    return 1;
-  }
-
-  getListData(teamId: number) {
-    let field = this.getFieldListFilter(teamId);
-    let channel = this.data.find((x) => x.Id == teamId);
-
-    if (!channel) {
-      this.message.error(Message.ConnectionChannel.NotFoundUserPage);
       return;
     }
 
-    let childIds = channel?.Childs!.map(x => x.ChannelId) || [];
+    this.tShopService.refreshUserToken(team.Id, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (token) => {
+        this.crmTeamService.getTShop(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
 
-    if (field == 1) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs || [];
-      this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
-    } else if (field == 2) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs!.filter((x) => x.Active);
-      this.lstData[teamId]['notConnected'] = [];
-    } else if (field == 3) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs!.filter((x) => !x.Active);
-      this.lstData[teamId]['notConnected'] = [];
-    } else if (field == 4) {
-      this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = [];
-      this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
-    }
-  }
+            next: (res: TUserDto[]) => {
+              let exist = res && res.length > 0;
 
-  loadPageNotConnect(team: CRMTeamDTO, ev: TDSSafeAny) {
-    ev.stopPropagation();
-    this.isLoading = true;
-    this.verifyConnect(team);
-  }
-
-  verifyConnect(team: CRMTeamDTO) {
-    let model = this.prepareModel(team);
-    let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
-
-    this.facebookService.verifyConect(model).pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: (res: any) => {
-          this.facebookGraphService.getUserPages(team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe(
-            {
-              next: (res) => {
-
-                if(TDSHelperArray.hasListValue(res?.data)) {
-
-                  this.lstPageNotConnect[team.Id] = res.data;
-                  this.lstData[team.Id]['notConnected'] = this.lstPageNotConnect[team.Id].filter((item) => !pageIdConnected.includes(item.id));
-
-                  if(this.lstData[team.Id]['notConnected']?.length > 0) {
-                    this.message.success(`Tìm thấy ${this.lstData[team.Id]['notConnected']?.length} kênh mới`);
-                  } else {
-                    this.message.info('Không tìm thấy kênh mới nào');
-                  }
-                } else {
-                  this.message.info('Không tìm thấy kênh mới nào');
-                }
-                this.isLoading = false;
-              },
-              error: error => {
-                this.message.error(Message.ConnectionChannel.TokenExpires);
-                this.isLoading = false;
+              if (!exist) {
+                this.message.info('Không tìm thấy kênh mới nào');
+                return;
               }
-            })
-        },
-        error: (error: any) => {
-          this.isLoading = false;
-        }
+
+              let ids = team?.Childs?.map(x => x.ChannelId) || [];
+              let childs: any = [];
+
+              res.map((x: TUserDto) => {
+                let exist1 = ids?.find(a => a == x.Id);
+                if (!exist1) {
+                  let item = this.prepareTeam(x, team);
+                  childs.push(item);
+                }
+              });
+
+              if (childs.length == 0) {
+                this.isLoading = false;
+                this.message.info('Không tìm thấy kênh mới nào');
+                return;
+              }
+
+              // TODO: map thêm kênh mới nếu có
+              let findIndex = this.data.findIndex(x => x.Id == team.Id);
+              if (findIndex > -1) {
+                this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...childs];
+                this.data[findIndex] = { ...this.data[findIndex] };
+                this.message.info(`Đã tìm thấy ${childs.length} kênh mới`);
+              }
+
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.isLoading = false;
+              console.error(error);
+
+              this.notification.error(`Không thể kết nối trang`,
+                `<div class="whitespace-normal w-[300px]">Hãy đăng nhập đúng tài khoản TShop<br>
+                  [<span class="text-error-400 font-semibold">${team.Name}</span>]</div>`, { duration: 5000 });
+            }
+          })
       }
-    )
+    })
   }
 
-  unConnected(id: number, name: TDSSafeAny, ev: TDSSafeAny): void {
-    ev.stopPropagation();
+  refreshUserToken(team: CRMTeamDTO) {
+    this.isLoading = true;
+    this.tShopService.refreshUserToken(team.Id, team.OwnerToken).subscribe({
+      next: (res) => {
+        this.message.success('Làm mới token thành công');
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+      }
+    })
+  }
 
-    this.lastScrollPosition = this.viewportScroller.getScrollPosition();
+  refreshChannelToken(child: CRMTeamDTO, team: CRMTeamDTO) {
+    this.isLoading = true;
+
+    this.tShopService.refreshChannelToken(team.Id, child.ChannelId, team.ChannelToken).subscribe({
+      next: (token: any) => {
+
+        if(!TDSHelperString.hasValueString(token)) {
+          this.isLoading = false;
+          this.message.error('Không thể lấy token của'+ ` ${child.Name}`);
+          return;
+        }
+
+        let index = this.data.findIndex(x=> x.Id == child.ParentId);
+
+        this.data[index].Childs?.map(f => {
+          if(f.ChannelId == child.ChannelId) {
+            f.ChannelToken = token;
+          }
+        })
+
+        this.isLoading = false;
+        this.message.success('Làm mới token thành công');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+      }
+    })
+  }
+
+  unConnected(team: CRMTeamDTO): void {
     this.modal.error({
       title: 'Hủy kết nối Facebook',
-      content: `Bạn có chắc muốn hủy kết nối với: ${name}.`,
+      content: `Bạn có chắc muốn hủy kết nối với: ${team.Name}.`,
       onOk: () => {
-        this.delete(id);
+        this.delete(team.Id);
       },
-      onCancel: () => {
-        this.lastScrollPosition = null;
-      },
+      onCancel: () => { },
       okText: 'Xác nhận',
       cancelText: 'Hủy bỏ',
     });
   }
 
   delete(id: number) {
-    this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
+          this.loadData();
           this.message.success('Hủy kết nối thành công');
-          this.loadListTeam(true);
+          this.crmService.loginOnChangeTeam$.emit(true);
         },
         error: (error) => {
           if (error?.error?.message) {
@@ -388,41 +296,77 @@ export class TshopChannelComponent extends TpageBaseComponent implements OnInit 
     );
   }
 
-  scrollToLastPosition(){
-    if(TDSHelperObject.hasValue(this.lastScrollPosition)) {
-      this.viewportScroller.scrollToPosition(this.lastScrollPosition);
+  showModalAddPage(child: CRMTeamDTO, team: CRMTeamDTO) {
+    if(!this.userTShopLogin) {
+      this.message.error('Vui lòng đăng nhập để thực hiện tính năng này');
+      return;
     }
+
+    this.isLoading = true;
+    this.tShopService.getlonglivetoken(child.ChannelId, team.OwnerToken).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (token: any) => {
+
+        if(!TDSHelperString.hasValueString(token)) {
+          this.isLoading = false;
+          this.message.error('Không thể lấy token của'+ ` ${child.Name}`);
+          return;
+        }
+
+        child.ChannelToken = token;
+
+        const modal = this.modal.create({
+          title: 'Thêm Page',
+          content: AddPageComponent,
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            data: child,
+            type: CRMTeamType._TShop
+          },
+        });
+
+        modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+            if(res) {
+              this.crmService.loginOnChangeTeam$.emit(true);
+              this.loadData();
+            } else {
+              this.isLoading = false;
+            }
+          },
+          error: (error: any) => {
+            this.isLoading = false;
+          }
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.message.error('Không thể lấy token của'+ ` ${child.Name}`);
+      }
+    })
   }
 
-  prepareModel(team: CRMTeamDTO) {
-    let model = {
-      FacebookAvatar: team.ChannelAvatar || team.Facebook_UserAvatar || team.OwnerAvatar,
-      FacebookId : team.ChannelId || team.Facebook_UserId || team.OwnerId,
-      FacebookName: team.Name || team.Facebook_UserName,
-      Token: team.OwnerToken || team.ChannelToken
-    } as any
+  prepareTeam(x: TUserDto, team?: CRMTeamDTO) {
+    let model = {} as CRMTeamDTO;
+
+    model.Name = x.Name;
+    model.ChannelId = x.Id;
+    model.ChannelAvatar = x.Avatar;
+    model.ChannelToken = '';//verify mới lấy dc token
+    model.Facebook_Link = '';
+    model.Facebook_TypeId = 'Page';
+    model.Facebook_ASUserId = team?.OwnerId;
+    model.Facebook_UserAvatar = x.Avatar;
+    model.Facebook_UserId = team?.Facebook_UserId;
+    model.Facebook_UserName = team?.Name;
+    model.Facebook_UserToken = team?.OwnerToken;
+    model.Facebook_PageId = x.Id;
+    model.Facebook_PageName = x.Name;
+    model.Facebook_PageLogo = x.Avatar;
+    model.Facebook_PageToken = '';
+    model.Active = false;
+    model.ParentId = team?.Id;
+    model.Type = CRMTeamType._TShop;
 
     return model;
-  }
-
-  showModalAddPage(data: CRMTeamDTO, user: CRMTeamDTO): void {
-    const modal = this.modal.create({
-      title: 'Thêm Page',
-      content: AddPageComponent,
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        data: data,
-        // user: user,
-      },
-    });
-
-    modal.afterClose.subscribe((result) => {
-      if (TDSHelperObject.hasValue(result)) {
-        this.loadListTeam(true);
-        // if (this.lstPageNotConnect[user.Id]) {
-        //   this.lstPageNotConnect[user.Id] = this.lstPageNotConnect[user.Id].filter((x) => x.id != data.id);
-        // }
-      }
-    });
   }
 }

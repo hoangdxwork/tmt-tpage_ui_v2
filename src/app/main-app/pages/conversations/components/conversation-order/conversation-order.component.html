@@ -10,7 +10,7 @@
                             <div class="tdsi-user-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
 
                             <div class="flex flex-auto items-center justify-between">
-                                <div class="flex gap-4 items-center w-[60%] justify-between">
+                                <div class="flex gap-4 items-center w-[70%] justify-between">
                                     <span *ngIf="!isEditPartner" class="max-w-[50%] truncate"
                                         tds-tooltip="{{quickOrderModel.PartnerName}}">{{ quickOrderModel.PartnerName }}</span>
                                     <tds-form-field *ngIf="isEditPartner">
@@ -163,13 +163,17 @@
                                                         <span class="text-body-2 w-full truncate" tds-tooltip tooltipTitle="{{ data.NameGet }}">
                                                             <span>{{ data.NameGet }}</span> - <span class="text-primary-1">{{ data.Price | numberCustom }} đ</span>
                                                         </span>
-                                                        <div class="w-full">
-                                                            <span class="text-neutral-1-400 font-regular text-[13px]"> Tồn kho:
-                                                                <span class="text-primary-1">{{ (lstInventory && lstInventory[data.Id]) ? lstInventory[data.Id].QtyAvailable : 0 }}</span>
+                                                        <div class="w-full flex gap-x-2">
+                                                            <span class="text-neutral-1-400 font-regular text-[13px] flex gap-x-2 items-center"> Tồn kho:
+                                                                <span class="text-primary-1" *ngIf="lstInventory">{{lstInventory[data.Id]? lstInventory[data.Id].QtyAvailable : 0}}</span>
+                                                                <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
+                                                                    *ngIf="!lstInventory"></tds-spinner>
                                                             </span>
                                                             <span class="ml-1 mr-1"> / </span>
-                                                            <span class="text-neutral-1-400 font-regular text-[13px]"> Tồn dự báo:
-                                                                <span class="text-primary-1">{{ (lstInventory && lstInventory[data.Id]) ? lstInventory[data.Id].VirtualAvailable : 0 }}</span>
+                                                            <span class="text-neutral-1-400 font-regular text-[13px] flex gap-x-2 items-center"> Tồn dự báo:
+                                                                <span class="text-primary-1" *ngIf="lstInventory">{{lstInventory[data.Id]? lstInventory[data.Id].VirtualAvailable : 0}}</span>
+                                                                <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
+                                                                    *ngIf="!lstInventory"></tds-spinner>
                                                             </span>
                                                         </div>
                                                     </td>

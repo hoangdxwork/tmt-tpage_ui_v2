@@ -1,11 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, take, mergeMap, Observable } from "rxjs";
 import { TDSMessageService } from "tds-ui/message";
-import { FirebaseRegisterService } from "./firebase-register.service";
 import { FireBaseTopicDto } from "@app/dto/firebase/topics.dto";
-import { AngularFireDatabase } from "@angular/fire/compat/database";
 import { AngularFireMessaging } from "@angular/fire/compat/messaging";
-import { AngularFireAuth } from "@angular/fire/compat/auth";
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +18,10 @@ export class FirebaseMessagingService  {
   _firebaseDeviceToken: string = "_firebaseDeviceToken";
 
   constructor(private message: TDSMessageService,
-      private angularFireMessaging: AngularFireMessaging,
-      private firebaseRegisterService: FirebaseRegisterService,
-      private angularFireDatabase: AngularFireDatabase,
-      private angularFireAuth: AngularFireAuth) {
+      private angularFireMessaging: AngularFireMessaging) {
   }
 
-  deleteToken1() {
+  deleteToken() {
     return this.angularFireMessaging.getToken
       .pipe(mergeMap((token: any) => this.angularFireMessaging.deleteToken(token)));
   }

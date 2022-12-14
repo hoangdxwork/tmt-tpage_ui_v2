@@ -21,10 +21,10 @@ export class PrepareCopyBill {
         delete model["Number"];
         delete model["MoveId"];
 
-        model.OrderLines.map((item:any) => {
-          delete item["Account"];
-          delete item["AccountId"];
-        });
+        // model.OrderLines.map((item:any) => {
+        //   delete item["Account"];
+        //   delete item["AccountId"];
+        // });
 
         if(fs_default?.WarehouseId) {
           model.WarehouseId = fs_default.WarehouseId;

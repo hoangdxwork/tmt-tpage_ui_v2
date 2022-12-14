@@ -22,9 +22,11 @@
                             </div>
 
                             <!-- truy cập bài viết -->
+                          <div [ngClass]="(data.Data | facebookType).permalink_url ? 'flex' : 'hidden' ">
                             <a href="{{(data.Data | facebookType).permalink_url}}" target="_blank" class="text-neutral-1-400">
                                 <i class="tdsi-expand-2-line leading-none text-xl"></i>
                             </a>
+                          </div>
                         </span>
                     </tds-tag>
 
@@ -69,6 +71,11 @@
                             </div>
                         </span>
                     </tds-tag>
+
+                    <div class="pl-4 flex gap-x-2 items-center" *ngIf="data.LiveCampaignId">
+                        <tds-switch size="md" [(ngModel)]="drawerEditLiveCampaign" (ngModelChange)="onChangeDrawerEditLive($event)"
+                        [ngModelOptions]="{standalone: true}"></tds-switch>
+                    </div>
                 </div>
 
                 <div class="post-option flex flex-row items-center gap-2 2xl:gap-3">
@@ -217,6 +224,29 @@
                             <p class="italic text-neutral-1-900 text-caption-1">
                                 {{ data.Description || '(Chưa có nội dung tiêu đề)' }}
                             </p>
+                        </div>
+
+                        <div *ngIf="data.LiveCampaign">
+                            <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
+                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
+                                    <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
+                                    <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                </span>
+                            </tds-tag>
+                        </div>
+
+                        <div *ngIf="!data.LiveCampaign">
+                            <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
+                                (click)="openTag(data, team.Type)"
+                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
+                                [popoverAutoClose]="false" [popoverBackdrop]="true"
+                                popoverPlacement="right"
+                                class="!bg-neutral-3-100 !text-neutral-1-600">
+                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                                    <span class="flex-auto truncate">Chọn chiến dịch</span>
+                                    <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                </span>
+                            </tds-tag>
                         </div>
                     </div>
 

@@ -358,6 +358,12 @@ export class EditOrderV2Component implements OnInit {
       return;
     }
 
+    this.isLoadingProduct = true;
+    setTimeout(() => {
+      this.isLoadingProduct = false;
+      this.cdRef.detectChanges();
+    }, 150);
+
     this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
   }
 
@@ -714,12 +720,6 @@ export class EditOrderV2Component implements OnInit {
         next: (res: any): any => {
 
           delete res['@odata.context'];
-          // this.quickOrderModel.Details.map(x => {
-          //     let item = res.Details?.find((a: any) => a.ProductId === x.ProductId && a.UOMId === x.UOMId) as any;
-          //     if(item && (item.Quantity < x.Quantity)) {
-
-          //     }
-          // })
           this.quickOrderModel = {...res};
 
           if(!this.isEnableCreateOrder && type) {
@@ -749,22 +749,22 @@ export class EditOrderV2Component implements OnInit {
 
         if(TDSHelperString.isString(error)){
           this.message.error(error);
-        }else{
+        } else {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
         }
       }
     });
-
   }
 
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
     let model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(fs_model, this.quickOrderModel)};
 
     // TODO check cấu hình ghi chú in
-    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
-    if(!printNote) {
-      model.Comment = '';
-    }
+    model.Comment = '';
+    // let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
+    // if(!printNote) {
+    //   model.Comment = '';
+    // }
 
     this.fastSaleOrderService.saveV2(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: CreateFastSaleOrderDTO) => {

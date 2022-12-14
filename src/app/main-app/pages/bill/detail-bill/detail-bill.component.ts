@@ -102,10 +102,6 @@ export class DetailBillComponent implements OnInit{
             this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
           }
 
-          if(this.payments.length > 0){
-
-          }
-
           switch(res.State) {
             case 'draft':
                 this.indexStep = 1;
@@ -440,10 +436,10 @@ export class DetailBillComponent implements OnInit{
     let warehouseId = this.dataModel.WarehouseId;
     this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
-          this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
+        this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
       },
       error:(error) => {
-          this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
+        this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
       }
     })
   }

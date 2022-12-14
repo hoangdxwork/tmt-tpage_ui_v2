@@ -1,3 +1,4 @@
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { FacebookCacheDto } from './../../lib/dto/facebook.dto';
 import { FacebookUser } from 'src/app/lib/dto/facebook.dto';
 import { FacebookVerifyResultDto } from './../dto/team/team.dto';
@@ -79,10 +80,10 @@ export class FacebookService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  setCacheLoginUser(user: FacebookCacheDto, type: string) {
+  setCacheLoginUser(user: FacebookCacheDto) {
     let model = {
       data: user,
-      type: type
+      type: CRMTeamType._Facebook
     }
 
     let data = JSON.stringify(model);

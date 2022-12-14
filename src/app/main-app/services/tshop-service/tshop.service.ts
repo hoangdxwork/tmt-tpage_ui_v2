@@ -41,6 +41,14 @@ export class TShopService extends BaseSevice {
       let exist = model && model.access_token && model.user;
 
       if(exist) {
+        let cacheObj =  {
+          access_token: model.access_token,
+          user: model.user,
+        } as TUserCacheDto;
+
+        //TODO: lưu cache tài khoản đăng nhập
+        this.setCacheLoginUser(cacheObj);
+        
         this.tshopUser$.next(model);
       }
     });
@@ -82,11 +90,11 @@ export class TShopService extends BaseSevice {
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
   }
 
-  setCacheLoginUser(user: TUserCacheDto, type: string) {
+  setCacheLoginUser(user: TUserCacheDto) {
 
     let model = {
       data: user,
-      type: type
+      type: CRMTeamType._TUser
     }
 
     let data = JSON.stringify(model);

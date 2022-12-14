@@ -121,7 +121,7 @@
             <th *ngIf="isHidden('UserName')" [width]="'180px'" class="border-r">Nhân viên</th>
             <th *ngIf="isHidden('DateInvoice')" [width]="'150px'" class="border-r" [align]="'center'">
               <div class="flex gap-x-1">
-                <span>Ngày bán</span>
+                <span>Ngày hóa đơn</span>
                 <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
                   <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
                 </span>
@@ -242,7 +242,7 @@
             </td>
             <!-- Thời gian -->
             <td *ngIf="isHidden('DateInvoice')" class="border-r" [align]="'center'">
-              {{bill.DateInvoice | date: 'dd/MM/yyyy HH:ss'}}
+              {{bill.DateInvoice | date: 'dd/MM/yyyy HH:mm:ss'}}
             </td>
             <!-- Thao tác -->
             <td [tdsRight]="true">

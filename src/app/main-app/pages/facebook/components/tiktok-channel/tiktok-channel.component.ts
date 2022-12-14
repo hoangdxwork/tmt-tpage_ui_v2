@@ -1,15 +1,16 @@
+import { Message } from '@core/consts/message.const';
+import { TDSModalService } from 'tds-ui/modal';
+import { TiktokUserDto } from './../../../../../lib/dto/tiktok.dto';
 import { TDSHelperString } from 'tds-ui/shared/utility';
-import { TUserDto } from '@core/dto/tshop.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
-import { FacebookService } from 'src/app/main-app/services/facebook.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { takeUntil, pipe } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { TiktokService } from './../../../../services/tiktok-service/tiktok.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
 
 @Component({
   selector: 'tiktok-channel',
@@ -23,31 +24,27 @@ export class TiktokChannelComponent implements OnInit {
 
   username!: string;
 
-  userTiktokLogin!: TUserDto | null;
+  userTiktokLogin!: TiktokUserDto | null;
   isUserTShopConnectChannel: boolean = false;
-
-  loginTeam!: CRMTeamDTO | null;
-
   tShopAuthentication!: string;
 
   constructor(private tiktokService: TiktokService,
-    private destroy$: TDSDestroyService,
-    private message: TDSMessageService,
-    private facebookService: FacebookService,
     private crmTeamService: CRMTeamService,
-    private cdRef: ChangeDetectorRef
-    ) { }
+    private destroy$: TDSDestroyService,
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
+    private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
-    let user = this.facebookService.getCacheLoginUser() as any;
-    let exist = user != null && user?.data && user?.type == CRMTeamType._TikTok;
+    //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản tiktok không?
+    let user = this.tiktokService.getCacheLoginUser() as any;
+    let exist = user != null && user.data && user?.type == CRMTeamType._UnofficialTikTok;
 
     if(exist) {
       this.userTiktokLogin = user.data;
     } else {
       this.userTiktokLogin = null;
-      this.tiktokSignOut();
     }
 
     this.loadData();
@@ -60,12 +57,8 @@ export class TiktokChannelComponent implements OnInit {
     this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
         if (res) {
-          this.data = res.filter((x: any) => x.Type != CRMTeamType._Facebook && x.Type != CRMTeamType._TUser);
+          this.data = res.filter((x: any) => x.Type == CRMTeamType._UnofficialTikTok);
         }
-
-        // if (this.userTShopLogin) {
-        //   this.sortByTShopLogin(this.userTShopLogin.Id);
-        // }
 
         this.isLoading = false;
         this.cdRef.detectChanges();
@@ -78,31 +71,70 @@ export class TiktokChannelComponent implements OnInit {
   }
 
   tiktokSignOut() {
-
+    this.userTiktokLogin = null;
+    this.tiktokService.removeCacheLoginUser();
   }
 
-  unconnectTeam(team: any){
-
+  unconnectTeam(team: CRMTeamDTO) {
+    this.modal.error({
+      title: 'Hủy kết nối kênh Tiktok',
+      content: `Bạn có chắc muốn hủy kết nối với: ${team.Name}.`,
+      onOk: () => {
+        this.delete(team.Id);
+      },
+      onCancel: () => { },
+      okText: 'Xác nhận',
+      cancelText: 'Hủy bỏ',
+    });
   }
 
-  showModalAddPage(child: any) {
-
-  }
-
-  verifyConnect(team: any) {
-    
+  delete(id: number) {
+    this.crmTeamService.delete(id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res) => {
+          this.loadData();
+          this.message.success('Hủy kết nối thành công');
+          this.crmTeamService.loginOnChangeTeam$.emit(true);
+        },
+        error: (error) => {
+          if (error?.error?.message) {
+            this.message.error(error?.error?.message);
+          } else {
+            this.message.error(Message.ErrorOccurred);
+          }
+        }
+      }
+    );
   }
 
   tiktokSignIn() {
-    if(!TDSHelperString.hasValueString((this.username || '').trim())){
+    if(!TDSHelperString.hasValueString((this.username || '').trim())) {
       this.message.error('Vui lòng nhập username');
       return;
     }
 
     this.isLoading = true;
     this.tiktokService.login(this.username).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-          
+        next: (res: TiktokUserDto) => {
+          if(!res.Id) {
+            this.isLoading = false;
+            this.message.error('Không tìm thấy tài khoản');
+            return;
+          }
+
+          this.userTiktokLogin = {...res};
+          // TODO: lưu cache tài khoản đăng nhập
+          this.tiktokService.setCacheLoginUser(<TiktokUserDto>this.userTiktokLogin);
+
+          let exist;
+          this.data.map(x => {
+            // TODO: kiểm tra tài khoản login có trong danh sách kênh 
+            exist = x.Childs && x.Childs.filter(f => f.ChannelId == this.userTiktokLogin?.Id)?.[0];
+            if(exist) return;
+          })
+
+          if(!exist) {
+            this.onTiktokConnected();
+          }
 
           this.isLoading = false;
         },
@@ -115,6 +147,23 @@ export class TiktokChannelComponent implements OnInit {
   }
 
   onTiktokConnected() {
+    let item = {
+      Id: 0,
+      Name: this.userTiktokLogin?.Name,
+      Type: CRMTeamType._UnofficialTikTok,
+      ChannelId: this.userTiktokLogin?.Id,
+      ChannelAvatar: this.userTiktokLogin?.Avatar
+    };
 
+    this.crmTeamService.insert(item).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.crmTeamService.loginOnChangeTeam$.emit(true);
+        this.message.success('Thao tác thành công');
+        this.loadData();
+      },
+      error: (error) => {
+        this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
+      }
+    })
   }
 }

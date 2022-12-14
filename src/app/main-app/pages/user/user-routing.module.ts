@@ -42,10 +42,10 @@ const routes: Routes = [
         path:'activities',
         component: ActivitiesComponent
       },
-      {
-        path:'socket-notification',
-        component: SocketNotificationComponent
-      },
+      // {
+      //   path:'socket-notification',
+      //   component: SocketNotificationComponent
+      // },
     ]
   },
 ];

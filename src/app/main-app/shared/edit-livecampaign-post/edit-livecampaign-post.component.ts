@@ -150,7 +150,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           next: (inventories: any) => {
               this.inventories = {};
               this.inventories = inventories;
-              
+
               if(this.response) {
                 this.mappingProductToLive(this.response);
               }
@@ -290,6 +290,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
           if(!res) return;
           delete res['@odata.context'];
 
+          if(res.DateCreated) {
+            res.DateCreated = new Date(res.DateCreated)
+          }
           if(res.StartDate) {
             res.StartDate = new Date(res.StartDate)
           }
@@ -592,6 +595,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
       return;
     };
 
+    this.isLoadingProduct = true;
+    setTimeout(() => {
+      this.isLoadingProduct = false;
+      this.cdRef.detectChanges();
+    }, 150);
+
+
     this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.innerText.toLocaleLowerCase().trim());
   }
 
@@ -860,7 +870,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           this.isLoading = false;
           this.isSave = false;
           this.message.success('Cập nhật chiến dịch live thành công');
-          this.onCannel(true);
+          this.onCancel(true);
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -895,7 +905,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     return Number.isInteger(value);
   }
 
-  onCannel(data?: any) {
+  onCancel(data?: any) {
     if(Object.keys(this.isEditDetails).length > 0) {
       this.modal.info({
           title: 'Thao tác chưa được lưu',

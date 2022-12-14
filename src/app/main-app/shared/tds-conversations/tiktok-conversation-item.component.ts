@@ -1,3 +1,4 @@
+import { ChatomniCommentModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
 import { ChatomniSendMessageModelDto } from '@app/dto/conversation-all/chatomni/chatomini-send-message.dto';
@@ -186,29 +187,26 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
     if(this.isLiking){
       return
     }
-
     this.isLiking = true;
+
     let model = {
-      TeamId: this.team.Id,
-      CommentId:  this.dataItem.Data?.id,
-      Content: this.dataItem.Data?.user_likes ? 'hủy thích' : 'thích',
-      Message: this.dataItem.Data?.message,
-      UserName: this.dataItem.Data?.from?.name,
-      fbid: this.dataItem.Data?.from?.id
-    }
+      CommentType: 3,
+      Recipients: [this.dataItem.Data?.Id as string]
+    } as ChatomniCommentModelDto;
 
-    this.activityMatchingService.addLikeComment(model)
-      .pipe(takeUntil(this.destroy$), finalize (()=>{this.isLiking = false})).subscribe({
-        next: (res: any) => {
-            this.tdsMessage.success('Thao tác thành công!');
-            this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
+    this.chatomniCommentService.commentHandle(this.team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.tdsMessage.success('Thao tác thành công!');
+          this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
+          this.isLiking = false;
 
-            this.cdRef.markForCheck();
+          this.cdRef.markForCheck();
         },
-        error: error => {
-            this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
-            this.cdRef.markForCheck();
-        }
+      error: error => {
+          this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
+          this.isLiking = false;
+          this.cdRef.markForCheck();
+      }
     });
   }
 
@@ -217,27 +215,27 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
       return
     }
     this.isHiding = true;
+
     let model = {
-      TeamId: this.team.Id,
-      CommentId: this.dataItem.Data?.id,
-      Content: this.dataItem.Data?.is_hidden ? 'hiện' : 'ẩn',
-      Message: this.dataItem.Data?.message,
-      UserName: this.dataItem.Data?.from?.name,
-      fbid: this.dataItem.Data?.from?.id
-    };
+      CommentType: this.dataItem.Data?.is_hidden ? 2: 1,
+      Recipients: [this.dataItem.Data?.Id as string]
+    } as ChatomniCommentModelDto
 
-    this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{this.isHiding = false})).subscribe({
+    this.chatomniCommentService.commentHandle(this.team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.tdsMessage.success('Thao tác thành công!');
-        this.dataItem.Data.is_hidden = !this.dataItem.Data?.is_hidden;
+          this.tdsMessage.success('Thao tác thành công!');
+          this.dataItem.Data.is_hidden = !this.dataItem.Data?.is_hidden;
+          this.isHiding = false;
 
-        this.cdRef.markForCheck();
-      },
+          this.cdRef.markForCheck();
+        },
       error: error => {
-        this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
-        this.cdRef.markForCheck();
+          this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
+          this.isHiding = false;
+          this.cdRef.markForCheck();
       }
     });
+    
   }
 
   isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
@@ -476,28 +474,23 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
     if(this.isPrivateReply) {
       this.addQuickReplyComment(message);
     }
-
     else {
-      switch (this.team.Type) {
-        case  CRMTeamType._Facebook:
-        const model = this.prepareModel(message);
-        model.post_id = this.dataItem.ObjectId || this.dataItem.Data?.object?.id || null;
-        model.parent_id = this.dataItem.ParentId || this.dataItem?.Data?.id || null;
+      let modelv2 = this.prepareModelV2(message);
+      modelv2.RecipientId = this.dataItem.Data?.Id as string;
+      modelv2.ObjectId = this.dataItem.Data?.ObjectId as string;
 
-        this.activityMatchingService.replyComment(this.team?.Id, model)
-          .pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: ResponseAddMessCommentDto) => {
-                res["status"] = ChatomniStatus.Done;
-                res.type =  this.team.Type == CRMTeamType._Facebook ? 12 :(this.team.Type == CRMTeamType._TShop ? 91 : 0);
-                res.name = this.team.Name;
+      this.chatomniCommentService.replyCommentTshop(this.team!.Id, this.dataItem.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+          next:(res: ChatomniDataItemDto[]) => {
+            res.map((x: ChatomniDataItemDto)=> {
+              x["Status"] = ChatomniStatus.Done;
+              x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
+              x.Data.Actor.Name = this.team.Name;
+              let data = { ...x};
 
-                let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
-                if(data){
-                  data.ParentId = model.parent_id;
-                  data.ObjectId = model.post_id;
-                  data.Data.id = this.dataItem.Data?.id;
-                }
+              let index = (this.children || []).findIndex(x=>x.Id == data.Id);
 
+              // TODO: Nếu socker trả về trước thì không add item, chưa trả về thì add item
+              if(Number(index) == -1) {
                 this.children = [ ...(this.children || []), data];
 
                 //TODO: Đẩy qua tds-conversation
@@ -505,74 +498,28 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
 
                 //TODO: Đẩy qua conversation-all
                 let itemLast = {...data}
-                let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, res.type);
+                let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.Type);
                 this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-
-                this.messageModel = null;
-                this.tdsMessage.success("Trả lời bình luận thành công");
-
-                this.isReply = false;
-                this.isReplyingComment = false;
-
-                this.cdRef.markForCheck();
-              },
-              error: error => {
-                this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-                this.isReplyingComment = false;
-
-                this.cdRef.markForCheck();
               }
-          });
-        break;
 
-        case CRMTeamType._TShop:
-          let modelv2 = this.prepareModelV2(message);
-          modelv2.RecipientId = this.dataItem.Data?.Id as string;
-          modelv2.ObjectId = this.dataItem.Data?.ObjectId as string;
+              this.messageModel = null;
 
-          this.chatomniCommentService.replyCommentTshop(this.team!.Id, this.dataItem.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
-              next:(res: ChatomniDataItemDto[]) => {
-                res.map((x: ChatomniDataItemDto)=> {
-                  x["Status"] = ChatomniStatus.Done;
-                  x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
-                  x.Data.Actor.Name = this.team.Name;
-                  let data = { ...x};
+              this.messageModel = null;
+              this.tdsMessage.success("Trả lời bình luận thành công");
 
-                  let index = (this.children || []).findIndex(x=>x.Id == data.Id);
-
-                  // TODO: Nếu socker trả về trước thì không add item, chưa trả về thì add item
-                  if(Number(index) == -1) {
-                    this.children = [ ...(this.children || []), data];
-
-                    //TODO: Đẩy qua tds-conversation
-                    this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
-
-                    //TODO: Đẩy qua conversation-all
-                    let itemLast = {...data}
-                    let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.Type);
-                    this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-                  }
-
-                  this.messageModel = null;
-
-                  this.messageModel = null;
-                  this.tdsMessage.success("Trả lời bình luận thành công");
-
-                  this.isReply = false;
-                  this.isReplyingComment = false;
-                })
-                  this.cdRef.detectChanges();
-              },
-              error: error => {
-
-                  this.isReply = false;
-                  this.isReplyingComment = false;
-                  this.tdsMessage.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
-                  this.cdRef.detectChanges();
-              }
+              this.isReply = false;
+              this.isReplyingComment = false;
             })
-        break;
-      }
+              this.cdRef.detectChanges();
+          },
+          error: error => {
+
+              this.isReply = false;
+              this.isReplyingComment = false;
+              this.tdsMessage.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
+              this.cdRef.detectChanges();
+          }
+        })
     }
   }
 

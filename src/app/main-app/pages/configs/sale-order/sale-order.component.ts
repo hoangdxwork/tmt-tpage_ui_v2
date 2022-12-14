@@ -169,6 +169,10 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     });
   }
 
+  onCancel() {
+    this.loadData();
+  }
+
   prepareModel() {
     let formModel = this._form.value;
 
