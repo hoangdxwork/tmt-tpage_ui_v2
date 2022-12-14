@@ -48,7 +48,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
   ngOnInit(): void {
     //TODO: kiểm tra cache xem tài khoản đang lưu cache có phải là tài khoản TShop không?
     let cacheData = this.tShopService.getCacheLoginUser() as any;
-    let exist = cacheData != null && cacheData?.data && cacheData?.data?.user && cacheData?.type == CRMTeamType._TShop;
+    let exist = cacheData != null && cacheData?.data && cacheData?.data?.user && cacheData?.type == CRMTeamType._TUser;
 
     if(exist) {
       this.userTShopLogin = cacheData.data.user;
@@ -118,7 +118,7 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
           user: this.userTShopLogin,
         } as TUserCacheDto;
 
-        this.tShopService.setCacheLoginUser(cacheObj, CRMTeamType._TShop);
+        this.tShopService.setCacheLoginUser(cacheObj);
         this.message.success('Thao tác thành công');
         this.loadData();
       },
@@ -189,17 +189,17 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
               }
 
               let ids = team?.Childs?.map(x => x.ChannelId) || [];
-              let newArray: any = [];
+              let childs: any = [];
 
               res.map((x: TUserDto) => {
                 let exist1 = ids?.find(a => a == x.Id);
                 if (!exist1) {
                   let item = this.prepareTeam(x, team);
-                  newArray.push(item);
+                  childs.push(item);
                 }
               });
 
-              if (newArray.length == 0) {
+              if (childs.length == 0) {
                 this.isLoading = false;
                 this.message.info('Không tìm thấy kênh mới nào');
                 return;
@@ -208,9 +208,9 @@ export class TshopChannelComponentV2 extends TpageBaseComponent implements OnIni
               // TODO: map thêm kênh mới nếu có
               let findIndex = this.data.findIndex(x => x.Id == team.Id);
               if (findIndex > -1) {
-                this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...newArray];
+                this.data[findIndex].Childs = [...(this.data[findIndex].Childs || []), ...childs];
                 this.data[findIndex] = { ...this.data[findIndex] };
-                this.message.info(`Đã tìm thấy ${newArray.length} kênh mới`);
+                this.message.info(`Đã tìm thấy ${childs.length} kênh mới`);
               }
 
               this.isLoading = false;
