@@ -28,6 +28,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { FastSaleOrderDTO } from '@app/dto/fastsaleorder/fastsaleorder.dto';
+import { CRMTeamService } from '@app/services/crm-team.service';
 
 @Component({
     selector: 'conversation-partner',
@@ -72,6 +73,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private conversationService: ConversationService,
     private fastSaleOrderService: FastSaleOrderService,
     private partnerService: PartnerService,
+    private crmTeamService: CRMTeamService,
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
@@ -90,8 +92,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   ngOnInit(): void  {
     if(this.conversationInfo) {
-      this.loadData(this.conversationInfo);
-      this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
+        this.loadData(this.conversationInfo);
+        this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
     }
 
     this.loadPartnerStatus();
