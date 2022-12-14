@@ -157,7 +157,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   lstInventory!: GetInventoryDTO;
   so_FacebookComments!: SaleOnline_Facebook_CommentDto[];
   saleOnlineSettings!: SaleOnlineSettingDTO;
-  insertFromPostModel!: InsertFromPostDto;
+  insertFromPostModel!: InsertFromPostDto | any;
   response: any;
   inventories: any;
 
@@ -285,33 +285,30 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           if(!res) return;
 
           this.validateData();
-          this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
-          let channelType = this.team?.Type;
+          if(!TDSHelperObject.hasValue(this.team)) {
+            this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+          }
 
+          let channelType = this.team?.Type;
           this.isEnableCreateOrder = false;
           this.commentPost = res;
 
           switch(channelType) {
             case CRMTeamType._Facebook:
                 this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromPost(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
-                this.insertFromPostModel.UserId = this.userInit?.Id;
-
-                this.onSavePost(null, 'print');
               break;
 
             case CRMTeamType._TShop:
                 this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromChannelComment(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
-                this.insertFromPostModel.UserId = this.userInit?.Id;
-
-                this.onSavePost(null, 'print');
               break;
+
             case CRMTeamType._UnofficialTikTok:
                 this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromTiktokComment(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
-                this.insertFromPostModel.UserId = this.userInit?.Id;
-
-                this.onSavePost(null, 'print');
               break;
           }
+
+          this.insertFromPostModel.UserId = this.userInit?.Id;
+          this.onSavePost(null, 'print');
           this.cdRef.detectChanges();
       }
     })
@@ -321,6 +318,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       next: (res: any) => {
         if(res.orderId && res.comment) {
             this.validateData();
+
+            if(!TDSHelperObject.hasValue(this.team)) {
+              this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+            }
 
             res.comment = res.comment as ChatomniDataItemDto;
             this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromPost(res.comment, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
@@ -384,7 +385,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
-  loadData(conversationInfo: ChatomniConversationInfoDto) {
+  loadData(conversationInfo: ChatomniConversationInfoDto) {debugger
     this.validateData();
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
@@ -849,7 +850,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   createFastSaleOrder(fs_model: FastSaleOrder_DefaultDTOV2, type?: string) {
     this.fastSaleOrderService.saveV2(fs_model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-
           // TODO: Tạo hóa đơn thành công
           if(res?.Success && res.Message) {
             this.notification.warning('Tạo hóa đơn thành công', res.Message);
@@ -1562,12 +1562,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     fs_model.SaleOnlineIds = [orderId];
     fs_model.PartnerId = order.PartnerId;
 
-    // TODO check cấu hình ghi chú in
-    let printNote = this.saleConfig && this.saleConfig.SaleSetting && this.saleConfig.SaleSetting.GroupSaleOnlineNote;
-    if(!printNote) {
-        fs_model.Comment = '';
-    }
-
     this.createFastSaleOrder(fs_model, type);
   }
 
@@ -1589,12 +1583,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     let message = this.type == 'post' ? this.commentPost?.Message : null;
 
     if(this.clickPrint == '_click_print') {
-
       this.orderPrintService.printId(id, this.quickOrderModel, message);
       this.clickPrint = '';
-
     } else {
-
       let print = type && !this.saleOnlineSettings?.isDisablePrint;
       if(!print) return;
 
@@ -1653,7 +1644,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onSyncConversationPartner(csid: any, type?: string) {
     setTimeout(() => {
-      this.chatomniConversationService.getInfo(this.team.Id, csid).subscribe({
+      this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$)).subscribe({
           next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
               this.chatomniConversationFacade.onSyncConversationPartner$.emit(info);

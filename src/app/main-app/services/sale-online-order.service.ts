@@ -142,6 +142,7 @@ export class SaleOnline_OrderService extends BaseSevice {
   apiInsertFromMessage(data: any, type: string) {
       switch(type) {
         case CRMTeamType._TShop:
+        case CRMTeamType._UnofficialTikTok:
           return this.insertFromChannelMessage(data);
         default:
           return this.insertFromMessage(data);
@@ -169,7 +170,8 @@ export class SaleOnline_OrderService extends BaseSevice {
   apiInsertFromComment(data: any, isIncrease: boolean = false, type: string) {
     switch(type) {
       case CRMTeamType._TShop:
-        return  this.insertFromChannelComment(data, isIncrease);
+      case CRMTeamType._UnofficialTikTok:
+        return this.insertFromChannelComment(data, isIncrease);
       default:
         return this.insertFromPost(data, isIncrease);
     }

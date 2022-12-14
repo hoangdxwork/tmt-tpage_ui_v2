@@ -168,13 +168,14 @@ export class CsOrder_PrepareModelHandler {
 
   public prepareInsertFromTiktokComment(comment: ChatomniDataItemDto, saleOnlineSetting: SaleOnlineSettingDTO, companyCurrents: CompanyCurrentDTO) {
     let x = {} as InsertFromPostDto;
+
     let team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
     let data = comment.Data as TikTokLiveItemDataDto;
 
     x.Name = data?.nickname;
     x.CRMTeamId = team.Id;
     x.Facebook_ASUserId = comment.UserId;
-    x.Facebook_CommentId = comment.Id;
+    x.Facebook_CommentId = data?.msgId;
     x.Facebook_PostId = comment.ObjectId;
     x.Facebook_UserName = data?.nickname;
     x.PartnerName = data?.nickname;
