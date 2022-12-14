@@ -46,7 +46,7 @@
               </tds-select>
             </tds-form-field>
             <tds-form-field>
-              <tds-select [disabled]="filterObj.carrierDeliveryType == ''" tds-tooltip="Chọn loại đối tác GH trước" 
+              <tds-select [disabled]="filterObj.carrierDeliveryType == ''" tds-tooltip="Chọn loại đối tác GH trước"
                 valueField="Id" textField="Name" class="xl:w-[100px] 2xl:w-[190px]"
                 placeholder="Chọn đối tác GH" [valuePrimitive]="false" (selectChange)="onChangeDeliveryId($event)" [(ngModel)]="deliveryId"
                 disabledField="isActive" [data]="lstDeliveryIdView" [allowClear]="true">
@@ -89,7 +89,7 @@
               <th width="120px" *ngIf="isHidden('PrintShipCount')" class="border-r" [align]="'center'">Số lần in ship</th>
               <th width="120px" *ngIf="isHidden('PrintDeliveryCount')" class="border-r" [align]="'center'">Số lần in HĐ</th>
               <th width="140px" *ngIf="isHidden('ShowShipStatus')" class="border-r">Đối soát GH</th>
-              <th width="140px" *ngIf="isHidden('DateCreated')" [align]="'center'" class="border-r" >
+              <th width="140px" *ngIf="isHidden('DateCreated')" [align]="'center'" class="border-r">
                 <div class="flex gap-x-1 items-center justify-center">
                   <span>Ngày tạo đơn</span>
                   <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
