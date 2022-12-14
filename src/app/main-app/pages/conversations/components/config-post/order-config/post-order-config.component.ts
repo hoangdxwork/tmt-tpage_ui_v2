@@ -186,7 +186,9 @@ export class PostOrderConfigComponent implements OnInit {
       },
       error: (err: any) => {
           this.isLoading = false;
-          this.message.error('Đã xảy ra lỗi');
+          this.message.error( err?.error?.message || 'Đã xảy ra lỗi');
+
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -398,35 +400,88 @@ export class PostOrderConfigComponent implements OnInit {
     let fileName = target.files[0].name;
     let typeFile = this.isCheckFile(fileName);
 
-    if(typeFile) {
-      let result = [];
+    switch (typeFile) {
+      case 'txt':
+          reader.onload = (e: any) => {
+            const binaryStr: string = e.target.result;
 
-      reader.onload = (e: any) => {
-        const binaryStr: string = e.target.result;
-        const wb: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
+            if(!TDSHelperString.hasValueString(binaryStr)) {
+              this.message.error('Không tìm thấy dữ liệu trong file');
+              return;
+            }
 
-        for (var i = 0; i < wb.SheetNames.length; ++i) {
-          const wsName: string = wb.SheetNames[i];
-          const ws: XLSX.WorkSheet = wb.Sheets[wsName];
-          const data: any[] = XLSX.utils.sheet_to_json(ws, { raw: false });
+            let data = binaryStr?.split(',');
+            data = this.onCheckExcludedPhones(data);
 
-          var name_col = Object.keys(data[0]);
-          result = data.map((x: any) => {
-            return x[name_col[0]].toString();
-          });
+            let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
+            this.dataModel.ExcludedPhones = [...data, ...excludedPhonesValue];
+            event.target.value = null;
 
-          if (typeFile == 'txt' || typeFile == 'xlsx') {
-            result.unshift(name_col[0]).toString();
-          }
-
-          let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
-          result = [...result, ...excludedPhonesValue];
-
-          this.dataModel.ExcludedPhones = result;
-          break;
+            this.cdRef.detectChanges();
+            return;
         }
+        break;
+
+      case 'xlsx': 
+        let result = [];
+
+        reader.onload = (e: any) => {
+          const binaryStr: string = e.target.result;
+          const wb: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
+
+          for (var i = 0; i < wb.SheetNames.length; ++i) {
+            const wsName: string = wb.SheetNames[i];
+            const ws: XLSX.WorkSheet = wb.Sheets[wsName];
+            const data: any[] = XLSX.utils.sheet_to_json(ws, { raw: false });
+
+            var name_col = Object.keys(data[0]);
+            result = data.map((x: any) => {
+              return x[name_col[0]].toString();
+            });
+
+            if (typeFile == 'xlsx') {
+              result.unshift(name_col[0]).toString();
+            }
+
+            result = this.onCheckExcludedPhones(result);
+
+            let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
+            result = [...result, ...excludedPhonesValue];
+
+            this.dataModel.ExcludedPhones = result;
+            event.target.value = null;
+
+            break;
+          }
       };
+        break;
+
+      default:
+        break;
+    } 
+  }
+
+  onCheckExcludedPhones(data: string[]) {
+    let result: string[] = [];
+    data = data.filter(x=> TDSHelperString.hasValueString((x || '').trim()));
+    data = data.map(x=> { return x.trim() });
+
+    data.map(x=> {
+      if(!this.dataModel.ExcludedPhones || this.dataModel.ExcludedPhones?.length == 0) {
+        result = [...data];
+      } else {
+        let index = this.dataModel.ExcludedPhones.findIndex(y=> x == y);
+          if(Number(index) < 0) {
+            result = [...result, ...[x]];
+          }
+      }
+    })
+
+    if(result.length != data.length) {
+      this.message.info('Đã loại bỏ số điện thoại trùng vừa thêm vào trong danh sách');
     }
+
+    return result;
   }
 
   isCheckFile(fileName: string) {
@@ -832,8 +887,8 @@ export class PostOrderConfigComponent implements OnInit {
     }
   }
 
-  prepareCheckDrity() {
-    if(!this.dataDefault || !this.dataModel) return false;
+  prepareCheckDrity() { 
+    if(!this.dataDefault || !this.dataModel) return true;
     if(this.dataDefault.IsEnableOrderAuto != this.dataModel.IsEnableOrderAuto) return false;
     if(this.dataDefault.IsForceOrderWithAllMessage != this.dataModel.IsForceOrderWithAllMessage) return false;
     if(this.dataDefault.IsOnlyOrderWithPartner != this.dataModel.IsOnlyOrderWithPartner) return false;
