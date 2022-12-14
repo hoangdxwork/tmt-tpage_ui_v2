@@ -317,7 +317,23 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   }
 
   openConfigPost() {
-    let date = formatDate(this.team!.Type == 'Facebook' ? (this.data.Data as MDB_Facebook_Mapping_PostDto).created_time : (this.data.Data as ChatomniDataTShopPostDto).CreationTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+    let date = ''
+    switch (this.team!.Type) {
+      case CRMTeamType._Facebook:
+        date = formatDate((this.data.Data as MDB_Facebook_Mapping_PostDto).created_time, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+        break;
+
+      case CRMTeamType._TShop:
+        date = formatDate((this.data.Data as ChatomniDataTShopPostDto).CreationTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+        break;
+
+      case CRMTeamType._UnofficialTikTok:
+        date = formatDate(this.data.CreatedTime, 'dd/MM/yyyy HH:mm:ss', 'en-US');
+        break;
+
+      default:
+        break;
+    }
 
     this.modalService.create({
       content: ConfigPostOutletComponent,
