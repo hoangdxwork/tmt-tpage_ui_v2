@@ -582,10 +582,10 @@ export class AddBillComponent implements OnInit {
           }
 
           let path = this.route.snapshot.url[0]?.path;
-          // if(path != 'edit') {
+          if(path != 'edit') {
             this.calcTotal();
             this.coDAmount();
-          // }
+          }
 
           this.isLoading = false;
       },

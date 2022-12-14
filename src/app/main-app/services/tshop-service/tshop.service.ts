@@ -82,11 +82,11 @@ export class TShopService extends BaseSevice {
     return `${environment.tShopUrl}?redirect_url=${hostname}&fragment=${fragment}`;
   }
 
-  setCacheLoginUser(user: TUserCacheDto, type: string) {
+  setCacheLoginUser(user: TUserCacheDto) {
 
     let model = {
       data: user,
-      type: type
+      type: CRMTeamType._TUser
     }
 
     let data = JSON.stringify(model);

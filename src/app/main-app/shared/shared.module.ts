@@ -30,7 +30,6 @@ import { UploadImageModule } from './upload-image/tpage-avatar-facebook/upload-i
 import { TpageConfigProductComponent } from './tpage-config-product/tpage-config-product.component';
 import { ProductPriceListService } from '../services/product-price-list.service';
 import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.component';
-import { ListLiveCampaignComponent } from './list-live-campaign/list-live-campaign.component';
 import { ODataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
 import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
 import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
@@ -87,7 +86,6 @@ const cmp =[
   TpageAvatarGroupFacebookComponent,
   TpageConfigProductComponent,
   UploadPicturesWallComponent,
-  ListLiveCampaignComponent,
   QuickReplyButtonComponent,
   OverviewLiveCampaignComponent,
   BillFilterOptionsComponent,

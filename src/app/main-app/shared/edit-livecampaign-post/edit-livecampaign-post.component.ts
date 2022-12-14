@@ -150,7 +150,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
           next: (inventories: any) => {
               this.inventories = {};
               this.inventories = inventories;
-              
+
               if(this.response) {
                 this.mappingProductToLive(this.response);
               }
@@ -290,6 +290,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
           if(!res) return;
           delete res['@odata.context'];
 
+          if(res.DateCreated) {
+            res.DateCreated = new Date(res.DateCreated)
+          }
           if(res.StartDate) {
             res.StartDate = new Date(res.StartDate)
           }
