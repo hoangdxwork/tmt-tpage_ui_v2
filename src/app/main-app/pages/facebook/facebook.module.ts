@@ -1,5 +1,3 @@
-import { TshopChannelComponentV2 } from './components/tshop-channel/tshop-channel-v2.component';
-import { FacebookChannelV2Component } from './components/facebook-channel/facebook-channel-v2.component';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -48,8 +46,6 @@ const SERVICES = [
     TShopLoginComponent,
     FacebookChannelComponent,
     TshopChannelComponent,
-    FacebookChannelV2Component,
-    TshopChannelComponentV2,
     ConvertPageComponent,
     TiktokChannelComponent
   ],

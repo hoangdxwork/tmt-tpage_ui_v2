@@ -41,6 +41,14 @@ export class TShopService extends BaseSevice {
       let exist = model && model.access_token && model.user;
 
       if(exist) {
+        let cacheObj =  {
+          access_token: model.access_token,
+          user: model.user,
+        } as TUserCacheDto;
+
+        //TODO: lưu cache tài khoản đăng nhập
+        this.setCacheLoginUser(cacheObj);
+        
         this.tshopUser$.next(model);
       }
     });
