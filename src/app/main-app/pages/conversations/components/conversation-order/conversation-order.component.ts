@@ -385,7 +385,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     })
   }
 
-  loadData(conversationInfo: ChatomniConversationInfoDto) {debugger
+  loadData(conversationInfo: ChatomniConversationInfoDto) {
     this.validateData();
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};

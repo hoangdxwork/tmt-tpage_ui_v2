@@ -92,11 +92,11 @@ export class PostOrderConfigComponent implements OnInit {
   ngOnInit(): void {
     if(this.data && this.data.ObjectId) {
         this.loadData(this.data.ObjectId);
-        this.loadUser();
-        this.loadPartnerStatus();
-
-        this.loadCurrentCompany();
     }
+
+    this.loadUser();
+    this.loadPartnerStatus();
+    this.loadCurrentCompany();
   }
 
   loadCurrentCompany() {
@@ -832,7 +832,7 @@ export class PostOrderConfigComponent implements OnInit {
     }
   }
 
-  prepareCheckDrity() { 
+  prepareCheckDrity() {
     if(!this.dataDefault || !this.dataModel) return false;
     if(this.dataDefault.IsEnableOrderAuto != this.dataModel.IsEnableOrderAuto) return false;
     if(this.dataDefault.IsForceOrderWithAllMessage != this.dataModel.IsForceOrderWithAllMessage) return false;
