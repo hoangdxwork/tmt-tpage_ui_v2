@@ -229,7 +229,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 let index = this.lstObjects.findIndex(x => x.ObjectId == res.Data.Data.ObjectId);
                 if(Number(index) >- 1) {
                     this.lstObjects[index].StatusLive = 0;
-  
+
                     this.lstObjects[index] = {...this.lstObjects[index]};
                     this.lstObjects = [...this.lstObjects];
 
