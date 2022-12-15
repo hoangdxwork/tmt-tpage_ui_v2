@@ -25,7 +25,6 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   @Input() item!: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
   @Input() postChilds!: any[];
-  @Input() lstOfLiveCampaign!: LiveCampaignModel[];
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
@@ -73,19 +72,17 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
           this.currentLiveCampaign = this.item.LiveCampaign as any;
         }
 
-      this.cdRef.detectChanges();
+        this.cdRef.detectChanges();
     }
 
     if(changes["currentPost"] && !changes["currentPost"].firstChange) {
-      this.currentPost = {...changes["currentPost"].currentValue};
-
-      this.cdRef.detectChanges();
+        this.currentPost = {...changes["currentPost"].currentValue};
+        this.cdRef.detectChanges();
     }
 
     if(changes["postChilds"] && !changes["postChilds"].firstChange) {
-      this.postChilds = [...changes["postChilds"].currentValue];
-
-      this.cdRef.detectChanges();
+        this.postChilds = [...changes["postChilds"].currentValue];
+        this.cdRef.detectChanges();
     }
   }
 

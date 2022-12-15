@@ -72,7 +72,7 @@
                         [ngClass]="(currentPost && currentPost.ObjectId == item.ObjectId) ? 'cursor-no-drop' : 'cursor-pointer'">
 
                         <div *ngIf="item && currentTeam!.Type == 'Facebook'">
-                            <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)"  [lstOfLiveCampaign]="lstOfLiveCampaign">
+                            <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
                             </object-facebook-post>
                         </div>
 

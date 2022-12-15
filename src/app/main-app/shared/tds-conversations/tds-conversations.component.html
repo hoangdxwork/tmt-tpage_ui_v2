@@ -240,7 +240,7 @@
                     </ng-container>
 
                     <!-- Tiktok -->
-                    <ng-container *ngIf="item && data.ConversationId && type && team && (team.Type != 'TShop' && team.Type != 'Facebook')">
+                    <ng-container *ngIf="item && data.ConversationId && type && team && team.Type == 'UnofficialTikTok'">
                         <tiktok-conversation-item
                             [team]="team" [csid]="data.ConversationId"
                             [name]="data.Name" [dataItem]="item"

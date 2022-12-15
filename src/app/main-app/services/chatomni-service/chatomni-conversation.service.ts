@@ -1,17 +1,13 @@
 import { THelperDataRequest } from './../../../lib/services/helper-data.service';
-import { SortEnum } from './../../../lib/enum/sort.enum';
-import { SortDataRequestDTO } from './../../../lib/dto/dataRequest.dto';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { Injectable } from "@angular/core";
-import { map, Observable, shareReplay, mergeMap } from "rxjs";
+import { map, Observable, shareReplay } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { ChatomniConversationFacade } from "../chatomni-facade/chatomni-conversation.facade";
 import { ChatomniConversationDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
-import { ChatomniConversationInfoDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
-import { CRMMatchingService } from "../crm-matching.service";
 
 @Injectable()
 
