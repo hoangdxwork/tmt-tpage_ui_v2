@@ -1,8 +1,8 @@
-import { ChatomniDataDto, ChatomniDataItemDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
-import { EventEmitter, Injectable } from "@angular/core";
-import { catchError, map, Observable, of, shareReplay } from "rxjs";
+import { ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { Injectable } from "@angular/core";
+import { map, Observable, shareReplay } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
@@ -59,7 +59,7 @@ export class ChatomniMessageService extends BaseSevice  {
       let id = `${teamId}_${psid}`;
 
       return this.get(teamId, psid, type, queryObj).pipe(map((res: ChatomniDataDto) => {
-     
+
           // TODO: load dữ liệu lần đầu tiên
           if(TDSHelperObject.hasValue(res)) {
               this.omniFacade.setData(id, res);
@@ -78,7 +78,7 @@ export class ChatomniMessageService extends BaseSevice  {
     let exist = this.omniFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
 
-        return Observable.create((obs :any) => {
+        return new Observable((obs :any) => {
             obs.next();
             obs.complete();
         })
@@ -86,7 +86,7 @@ export class ChatomniMessageService extends BaseSevice  {
     else {
       let url = this.urlNext  as string;
       return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
-     
+
           if(res.Extras) {
             exist.Extras = {
                 Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
