@@ -1,7 +1,7 @@
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { FormGroup } from '@angular/forms';
 import { Injectable } from "@angular/core";
-import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
+import { format } from "date-fns";
 import { LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
 
 @Injectable()
@@ -18,9 +18,11 @@ export class PrepareAddCampaignHandler {
         model.Users = formValue.Users || [];
         model.Note = formValue.Note;
         model.ResumeTime = formValue.ResumeTime;
-        model.DateCreated = new Date();
-        model.StartDate = new Date(formValue.StartDate);
-        model.EndDate = new Date(formValue.EndDate);
+
+        model.DateCreated = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss+07:00");
+        model.StartDate = format(formValue.StartDate, "yyyy-MM-dd'T'HH:mm:ss+07:00");
+        model.EndDate = format(formValue.EndDate, "yyyy-MM-dd'T'HH:mm:ss+07:00");
+
         model.Preliminary_TemplateId = formValue.Preliminary_TemplateId || formValue.Preliminary_Template?.Id;
         model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_TemplateId || formValue.ConfirmedOrder_Template?.Id;
         model.MinAmountDeposit = Number(formValue.MinAmountDeposit);
@@ -62,9 +64,21 @@ export class PrepareAddCampaignHandler {
       model.Users = formValue.Users || [];
       model.Note = formValue.Note;
       model.ResumeTime = formValue.ResumeTime;
-      model.DateCreated = this.formatDateUTC(new Date());
-      model.StartDate = formValue.StartDate ? this.formatDateUTC(new Date(formValue.StartDate)) : null;
-      model.EndDate = formValue.EndDate ? this.formatDateUTC(new Date(formValue.EndDate)) : null;
+
+      if(formValue.DateCreated) {
+        model.DateCreated = formValue.DateCreated;
+      } else {
+        model.DateCreated = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss+07:00");
+      }
+
+      if(formValue.StartDate) {
+        model.StartDate = format(formValue.StartDate, "yyyy-MM-dd'T'HH:mm:ss+07:00");
+      }
+
+      if(formValue.EndDate) {
+        model.EndDate = format(formValue.EndDate, "yyyy-MM-dd'T'HH:mm:ss+07:00");
+      }
+
       model.Preliminary_TemplateId = formValue.Preliminary_TemplateId || formValue.Preliminary_Template?.Id;
       model.ConfirmedOrder_TemplateId = formValue.ConfirmedOrder_TemplateId || formValue.ConfirmedOrder_Template?.Id;
       model.MinAmountDeposit = Number(formValue.MinAmountDeposit);
@@ -81,8 +95,4 @@ export class PrepareAddCampaignHandler {
       return {...model};
   }
 
-  public formatDateUTC(date: Date) {
-    let UTCDate = date.getTime() - date.getTimezoneOffset()*60*1000;
-    return new Date(UTCDate);
-  }
 }

@@ -94,7 +94,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    if(this.data && this.data.ObjectId) {
+    if(this.data && this.data?.ObjectId) {
       this.currentPost = this.data;
       this.loadData(this.pageSize, this.pageIndex);
     }
@@ -107,7 +107,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
       next: (res: SocketEventSubjectDto) => {
         if(!res) return;
 
-        if(res.Data?.Data?.Facebook_PostId != this.data.ObjectId) return;
+        if(res.Data?.Data?.Facebook_PostId != this.data?.ObjectId) return;
 
         switch(res.EventName) {
           // TODO: tạo đơn hàng bài viết
@@ -170,7 +170,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
-      .getOrdersChannelByPostId(team.Id, this.currentPost.ObjectId, params, this.filterObj)
+      .getOrdersChannelByPostId(team.Id, this.currentPost?.ObjectId, params, this.filterObj)
       .pipe(finalize(() => this.isLoading = false ));
   }
 
@@ -224,7 +224,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     let model : SaleOnlineOrderSummaryStatusDTO = {
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
-      PostId: this.currentPost.ObjectId
+      PostId: this.currentPost?.ObjectId
     }
 
     this.isLoading = true;

@@ -175,6 +175,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
       Name: [null, Validators.required],
       Note: [null],
       ResumeTime: [0],
+      DateCreated: [null],
       StartDate: [null],
       EndDate: [null],
       Users: [null],
@@ -290,9 +291,6 @@ export class EditLiveCampaignPostComponent implements OnInit {
           if(!res) return;
           delete res['@odata.context'];
 
-          if(res.DateCreated) {
-            res.DateCreated = new Date(res.DateCreated)
-          }
           if(res.StartDate) {
             res.StartDate = new Date(res.StartDate)
           }

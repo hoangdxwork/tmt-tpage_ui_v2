@@ -1,3 +1,4 @@
+import { TiktokService } from './../../../services/tiktok-service/tiktok.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
@@ -93,6 +94,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   partners$!: Observable<any>;
 
   widthConversation!: number;
+  clickReload: number = 0;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -102,18 +104,16 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     public crmService: CRMTeamService,
     private postEvent: ConversationPostEvent,
     public activatedRoute: ActivatedRoute,
-    private chatomniConversationFacade: ChatomniConversationFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private cdRef: ChangeDetectorRef,
-    private chatomniObjectFacade: ChatomniObjectFacade,
     private chatomniObjectService: ChatomniObjectService,
-    private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
     private socketOnEventService: SocketOnEventService,
     private resizeObserver: TDSResizeObserver,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
-    private notification: TDSNotificationService) {
+    private notification: TDSNotificationService,
+    private tiktokService: TiktokService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -209,7 +209,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         if(TDSHelperString.hasValueString(code)){
             this.codeOrder = code;
             this.isDisableTabOrder = false;
-        }else{
+        } else {
             this.codeOrder = '';
         }
 
@@ -229,17 +229,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 let index = this.lstObjects.findIndex(x => x.ObjectId == res.Data.Data.ObjectId);
                 if(Number(index) >- 1) {
                     this.lstObjects[index].StatusLive = 0;
-  
+
                     this.lstObjects[index] = {...this.lstObjects[index]};
                     this.lstObjects = [...this.lstObjects];
 
                     this.notification.info('Thông báo live','Live stream đã kết thúc',  { placement: 'bottomLeft' });
-
                     this.cdRef.detectChanges();
                 }
               }
-
             break;
+
+            default: break;
         }
       }
     })
@@ -324,6 +324,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onRefresh(event: any) {
+    this.clickReload += 1;
+    
     this.queryObj = { } as any;
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
@@ -334,14 +336,32 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.virtualScroller.scrollToPosition(0);
     }
 
-    this.loadFilterDataSource();
+    if (this.clickReload >= 5 && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok) {
+        this.message.info("Đã kích hoạt cập nhật hội thoại");
+        this.clickReload = 0;
+
+        if (this.currentTeam) {
+          this.tiktokService.refreshListen(this.currentTeam.OwnerId).subscribe({
+            next: res => {
+
+            },
+            error: error => {
+
+            }
+          })
+        }
+    } else {
+      this.loadFilterDataSource();
+    }
+
+  setTimeout(() => {
+    this.clickReload = 0;
+  }, 3 * 1000);
+
   }
 
   loadData(){
-    if(this.isLoading) {
-        return;
-    }
-
+    if(this.isLoading) return;
     this.isLoading = true;
     this.validateData();
 
@@ -349,14 +369,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if(this.dataSource$) {
         this.loadObjects(this.dataSource$);
     }
-
-    // TODO: check lại trường hợp tshop
-    this.facebookGraphService.getFeed(this.currentTeam!.ChannelToken).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {},
-      error: (error: any) => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      }
-    });
   }
 
   loadObjects(dataSource$: Observable<ChatomniObjectsDto>) {
@@ -370,6 +382,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           setTimeout(() => {
               this.isRefreshing = false;
           }, 300);
+
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -427,6 +441,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           this.selectPost(currentObject);
           this.isLoading = false;
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
@@ -436,7 +451,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.currentObject = currentObject;
 
           this.selectPost(currentObject);
-          this.isLoading = false;
+          this.cdRef.detectChanges();
       }
     })
   }

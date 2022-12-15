@@ -299,8 +299,8 @@
                 </td>
                 <td *ngIf="isHidden('CRMTeamName')" class="border-r">
                   <div class="w-full flex">
-                    <span *ngIf="data.CRMTeamName" class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
-                    <span class="ml-1 w-full">{{data.CRMTeamName}}</span>
+                    <span *ngIf="data.CRMTeamName" [ngClass]="data.CRMTeamId | getTeamIcon:lstOfTeam"></span>
+                    <span class="ml-1">{{data.CRMTeamName}}</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('IsRefund')" [align]="'center'" class="border-r">

@@ -60,7 +60,7 @@ export class AutoReplyConfigComponent implements OnInit {
       .subscribe({
         next:(res: AutoReplyConfigDTO) => {
           this.dataModel = {...res};
-          this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply?.split(",") || [];
+          this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply && res.ContentOfCommentForNotAutoReply !== '' ? res.ContentOfCommentForNotAutoReply?.split(",") : [];
 
           this.isLoading = false;
           this.cdRef.detectChanges();

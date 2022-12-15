@@ -131,6 +131,7 @@ export class BillFilterOptionsComponent implements OnInit {
         status: this.currentStatus == 'all' ? '' : this.currentStatus,
         bill: this.currentTracking,
         deliveryType:  this.modelCarrier ? this.modelCarrier.DeliveryType : '',
+        carrierDeliveryType:  this.modelCarrier ? this.modelCarrier.DeliveryType : '',
         searchText: '',
         dateRange: this.datePicker ? {
             startDate: this.datePicker[0],

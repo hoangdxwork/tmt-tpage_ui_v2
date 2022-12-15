@@ -1,233 +1,393 @@
 
-<tds-spin [spinning]="isLoading" class="h-full w-full">
-    <div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900 relative">
-        <!-- conversation list -->
-        <div class="2xl:w-1/5 w-1/4 h-full">
-            <div class="w-full flex flex-col gap-0.5 pl-1 h-full">
-                <div class="bg-white  flex flex-col gap-y-4 p-2.5 z-10">
-                    <div class="block items-center">
-                          <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isProcessing"></tpage-team-dropdown>
-                    </div>
-
-                    <div class="flex items-center gap-x-1">
-                        <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
-                            <input class="placeholder-neutral-1-400 truncate" autocomplete="off" #conversationSearchInput placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
-                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
-                        </tds-form-field>
-
-                        <div class="flex gap-0.5">
-                            <!-- button fillter -->
-                            <conversation-all-filter (onSubmitFilter)="onSubmitFilter($event)" [queryObj]="queryObj" [totalConversations]="totalConversations">
-                            </conversation-all-filter>
-
-                            <button (click)="setSort()" tds-tooltip [tooltipTitle]="isSort ? 'Hội thoại cũ nhất' : 'Hội thoại mới nhất'"
-                                class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"  [ngClass]="isSort ? 'bg-primary-3' : ''">
-                                <span>
-                                    <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill text-primary-1' : 'tdsi-sort-up-down-fill text-neutral-1-500'" class="text-xl leading-5"></i>
-                                </span>
-                            </button>
-
-                            <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
-                                [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
-                                <span class="flex items-center">
-                                    <i class="tdsi-success-line text-xl leading-5"></i>
-                                </span>
-                            </button>
-                        </div>
-                    </div>
+<div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900 relative">
+    <!-- conversation list -->
+    <div class="2xl:w-1/5 w-1/4 h-full">
+        <div class="w-full flex flex-col gap-0.5 pl-1 h-full">
+            <div class="bg-white  flex flex-col gap-y-4 p-2.5 z-10">
+                <div class="block items-center">
+                      <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isProcessing"></tpage-team-dropdown>
                 </div>
 
-                <!-- Xử lý click button checkbox -->
-                <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white">
-                    <div class="w-full flex justify-between items-center py-2 px-3.5">
-                        <div class="gap-x-2 xl:hidden 2xl:flex">
-                            <button tds-button color="primary" (click)="showModalSendMessage()">
-                                <span class="flex items-center">
-                                    <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
-                                </span>
+                <div class="flex items-center gap-x-1">
+                    <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
+                        <input class="placeholder-neutral-1-400 truncate" autocomplete="off" #conversationSearchInput placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
+                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                    </tds-form-field>
+
+                    <div class="flex gap-0.5">
+                        <conversation-all-filter (onSubmitFilter)="onSubmitFilter($event)" [queryObj]="queryObj" [totalConversations]="totalConversations">
+                        </conversation-all-filter>
+
+                        <button (click)="setSort()" tds-tooltip [tooltipTitle]="isSort ? 'Hội thoại cũ nhất' : 'Hội thoại mới nhất'"
+                            class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"  [ngClass]="isSort ? 'bg-primary-3' : ''">
+                            <span>
+                                <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill text-primary-1' : 'tdsi-sort-up-down-fill text-neutral-1-500'" class="text-xl leading-5"></i>
+                            </span>
+                        </button>
+
+                        <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
+                            [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
+                            <span class="flex items-center">
+                                <i class="tdsi-success-line text-xl leading-5"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Xử lý click button checkbox -->
+            <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white">
+                <div class="w-full flex justify-between items-center py-2 px-3.5">
+                    <div class="gap-x-2 xl:hidden 2xl:flex">
+                        <button tds-button color="primary" (click)="showModalSendMessage()">
+                            <span class="flex items-center">
+                                <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
+                            </span>
+                        </button>
+
+                        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                            <button (click)="printData()" tds-button color="custom"
+                              class="text-white  bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
+                              <span class="flex items-center">
+                                <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
+                              </span>
                             </button>
+                        </tds-spin>
 
-                            <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-                                <!-- <button tds-button color="info" (click)="printData()">
-                                    <span class="flex items-center">
-                                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
-                                    </span>
-                                </button> -->
-                                <button (click)="printData()" tds-button color="custom"
-                                  class="text-white  bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
-                                  <span class="flex items-center">
-                                    <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
-                                  </span>
-                                </button>
-                            </tds-spin>
+                        <ng-template #indicatorTemplate>
+                            <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+                        </ng-template>
+                    </div>
+                    <div class="gap-x-2 xl:flex 2xl:hidden">
+                      <button tds-button-icon color="primary" (click)="showModalSendMessage()" tds-tooltip="Gửi tin nhắn">
+                          <i class="tdsi-messenger-fill text-lg leading-none"></i>
+                      </button>
 
-                            <ng-template #indicatorTemplate>
-                                <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-                            </ng-template>
-                        </div>
-                        <div class="gap-x-2 xl:flex 2xl:hidden">
-                          <button tds-button-icon color="primary" (click)="showModalSendMessage()" tds-tooltip="Gửi tin nhắn">
-                              <i class="tdsi-messenger-fill text-lg leading-none"></i>
+                      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                          <button tds-button-icon color="info" (click)="printData()" tds-tooltip="In thông tin">
+                              <i class="tdsi-print-fill text-lg leading-none"></i>
                           </button>
+                      </tds-spin>
 
-                          <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-                              <button tds-button-icon color="info" (click)="printData()" tds-tooltip="In thông tin">
-                                  <i class="tdsi-print-fill text-lg leading-none"></i>
-                              </button>
-                          </tds-spin>
-
-                          <ng-template #indicatorTemplate>
-                              <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-                          </ng-template>
-                        </div>
-
-                        <tds-checkbox class="px-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
+                      <ng-template #indicatorTemplate>
+                          <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+                      </ng-template>
                     </div>
+
+                    <tds-checkbox class="px-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
                 </div>
+            </div>
 
-                <!-- List danh sách chat -->
-                <tds-spin [spinning]="isProcessing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full">
-                  <virtual-scroller *ngIf="lstConversation && lstConversation.length > 0"
-                      #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
-                      (vsEnd)="vsEnd($event)"
-                      (vsStart)="vsStart($event)"
-                      [childHeight]="100"
-                      [enableUnequalChildrenSizes]="true"
-                      [scrollAnimationTime]="750">
+            <!-- List danh sách chat -->
+            <tds-spin [spinning]="isProcessing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full bg-white">
+              <virtual-scroller *ngIf="lstConversation && lstConversation.length > 0"
+                  #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
+                  (vsEnd)="vsEnd($event)"
+                  (vsStart)="vsStart($event)"
+                  [childHeight]="100"
+                  [enableUnequalChildrenSizes]="true"
+                  [scrollAnimationTime]="750">
 
-                      <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
-                          <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                  <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
+                      <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                  </div>
+
+                  <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="border-b-4 border-neutral-3-200">
+                      <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 100px">
+                          <a (click)="changeCurrentConversationItem(item)" class="w-full h-full"
+                              [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
+                              <current-conversation-item-v3 class="min-h-[100px] h-full"
+                                  [item]="item" [csid]="item.ConversationId" [type]="type"
+                                  [conversationItem]="conversationItem"
+                                  [state]="item.State"
+                                  [team]="currentTeam" [isFastSend]="isFastSend"
+                                  [isOpenCollapCheck]="isOpenCollapCheck"
+                                  [checked]="setOfCheckedId.has(item.ConversationId)"
+                                  (checkedChange)="onItemChecked(item.ConversationId, $event)">
+                              </current-conversation-item-v3>
+                          </a>
                       </div>
+                  </div>
 
-                      <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1">
-                          <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 100px">
-                              <a (click)="changeCurrentConversationItem(item)" class="w-full h-full"
-                                  [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
-                                  <current-conversation-item-v2 class="min-h-[100px] h-full"
-                                      [item]="item" [csid]="item.ConversationId" [type]="type"
-                                      [conversationItem]="conversationItem"
-                                      [state]="item.State"
-                                      [team]="currentTeam" [isFastSend]="isFastSend"
-                                      [isOpenCollapCheck]="isOpenCollapCheck"
-                                      [checked]="setOfCheckedId.has(item.ConversationId)"
-                                      (checkedChange)="onItemChecked(item.ConversationId, $event)">
-                                  </current-conversation-item-v2>
-                              </a>
-                          </div>
-                      </div>
+                  <div *ngIf="isLoadingNextdata || isProcessing" class="p-4 bg-white">
+                      <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                      <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
+                  </div>
 
-                      <div *ngIf="isLoadingNextdata || isProcessing" class="p-4 bg-white">
-                          <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
-                          <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
-                      </div>
+                  <div class="!flex-auto bg-white !h-auto w-full !min-h-min"></div>
+              </virtual-scroller>
 
-                      <div class="!flex-auto bg-white !h-auto w-full !min-h-min"></div>
-                  </virtual-scroller>
-
-                  <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
-                      <tds-empty [notFoundContent]="contentTpl">
-                        <ng-template #contentTpl>
-                          <div class="flex flex-col justify-center items-center">
+              <div class="flex flex-auto items-center justify-center bg-white" *ngIf="lstConversation.length == 0 && isFilter && !isLoading">
+                  <tds-empty [notFoundContent]="contentTpl">
+                    <ng-template #contentTpl>
+                        <div class="flex flex-col justify-center items-center">
                             <div>Không tìm thấy hội thoại nào</div>
                             <div class="w-[300px] text-body-2 font-regular mt-3 text-center">Hãy thử với từ khóa khác: nhập tên khách hàng, nội dung tin nhắn, số điện thoại</div>
-                          </div>
-                        </ng-template>
-                      </tds-empty>
+                        </div>
+                    </ng-template>
+                  </tds-empty>
+                </div>
+
+                <div class="flex flex-auto justify-center bg-white" *ngIf="lstConversation.length == 0 && !isFilter && !isLoading">
+                    <div class="flex flex-col items-center pt-16">
+                        <img src="../../../assets/imagesv2/conversation/noDataConversation.svg" alt="">
+                        <span class="text-neutral-1-300">Chưa có hội thoại nào</span>
                     </div>
-
-                    <div class="flex flex-auto justify-center bg-white" *ngIf="lstConversation.length == 0 && !isFilter && !isLoading">
-                        <div class="flex flex-col items-center pt-16">
-                            <img src="../../../assets/imagesv2/conversation/noDataConversation.svg" alt="">
-                            <span class="text-neutral-1-300">Chưa có hội thoại nào</span>
-                        </div>
-                    </div>
-              </tds-spin>
-            </div>
-        </div>
-
-        <!--Nội dung cuộc hội thoại-->
-        <div class="flex 2xl:w-[48%] w-[45%]" *ngIf="conversationItem && currentTeam">
-          <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-              <div class="flex w-full flex-col h-full">
-                  <shared-tds-conversations
-                      class="flex w-full h-full"
-                      [data]="conversationItem"
-                      [partner]="conversationInfo?.Partner"
-                      [state]="conversationItem.State"
-                      [type]="type" [team]="currentTeam"
-                      [isLoadingAll]="isLoading">
-                  </shared-tds-conversations>
-              </div>
-          </div>
-        </div>
-
-        <!--Xử lí thông tin khách hàng & Đơn hàng-->
-        <div class="flex 2xl:w-[32%] w-[32%] h-full" *ngIf="conversationItem">
-            <div class="w-full h-full flex flex-col">
-                <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
-                    <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
-
-                        <ng-template #conversationPartner let-active="active">
-                            <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
-                                [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
-
-                                <span class="mr-2">Khách hàng</span>
-                                <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
-                                    class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
-                                </div>
-                            </div>
-                        </ng-template>
-
-                        <div *ngIf="currentTeam && type && conversationInfo">
-                            <conversation-partner [conversationInfo]="conversationInfo" [team]="currentTeam" [type]="type"
-                               (onTabOderOutput)="onTabOderOutput($event)"> </conversation-partner>
-                        </div>
-
-                        <div class="w-full h-[calc(100vh-109px)] flex justify-center items-center" *ngIf="!conversationItem">
-                            <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
-                        </div>
-                    </tds-tab>
-
-                    <tds-tab [title]="conversationOrder" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
-                        <ng-template #conversationOrder let-active="active">
-                            <div class="flex items-center font-semibold justify-center text-body-2 p-4 relative group cursor-pointer"
-                              [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
-
-                                <span class="mr-2 flex items-center"> Đơn hàng
-                                    <tds-tag status='primary' class="ml-3" *ngIf="orderCode"> #{{orderCode}} </tds-tag>
-                                </span>
-
-                                <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
-                                  class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
-                                </div>
-                            </div>
-                        </ng-template>
-
-                        <div *ngIf="currentTeam && type && conversationInfo">
-                            <conversation-order [conversationInfo]="conversationInfo" [team]="currentTeam"
-                              [type]="type" ></conversation-order>
-                        </div>
-
-                        <div class="w-full h-[calc(100vh-109px)]  flex justify-center items-center" *ngIf="!conversationItem">
-                            <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
-                        </div>
-                    </tds-tab>
-                </tds-tabset>
-            </div>
-        </div>
-
-        <!-- chưa có dữ liệu -->
-        <div class="flex-auto flex pl-1 " *ngIf="!conversationItem && !isLoading">
-            <div class="flex-auto flex flex-col justify-center items-center bg-white">
-                <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png" alt="">
-                <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp bán hàng toàn diện cho bán hàng đa kênh</span>
-                <span class="text-neutral-1-300 pt-2">Quản lý tập trung các bình luận, tin nhắn từ các kênh giúp bạn không bỏ sót bất kỳ đơn nào.</span>
-            </div>
+                </div>
+          </tds-spin>
         </div>
     </div>
-</tds-spin>
 
+    <!--Nội dung cuộc hội thoại-->
+    <div class="flex 2xl:w-[48%] w-[45%]" *ngIf="conversationItem && currentTeam" >
+      <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
+          <div class="flex w-full flex-col h-full">
+              <shared-tds-conversations
+                  class="flex w-full h-full"
+                  [data]="conversationItem"
+                  [partner]="conversationInfo?.Partner"
+                  [state]="conversationItem.State"
+                  [type]="type" [team]="currentTeam"
+                  [isLoadingAll]="isLoading">
+              </shared-tds-conversations>
+          </div>
+      </div>
+    </div>
 
+    <!--Xử lí thông tin khách hàng & Đơn hàng-->
+    <div class="flex 2xl:w-[32%] w-[32%] h-full" *ngIf="conversationItem">
+        <div class="w-full h-full flex flex-col">
+            <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
+                <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
+
+                    <ng-template #conversationPartner let-active="active">
+                        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
+                            [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+
+                            <span class="mr-2">Khách hàng</span>
+                            <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+                                class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+                            </div>
+                        </div>
+                    </ng-template>
+
+                    <div class="h-full w-full">
+                        <div *ngIf="currentTeam && type && conversationInfo; else noPartner">
+                            <conversation-partner
+                                [conversationInfo]="conversationInfo" [type]="type"
+                                [team]="currentTeam" [isLoading]="isLoading"
+                                (onTabOderOutput)="onTabOderOutput($event)">
+                            </conversation-partner>
+                        </div>
+
+                        <ng-template #noPartner>
+                            <div class="w-full h-[calc(100vh-109px)] flex flex-col bg-neutral-3-200">
+                                <div class="h-fit w-full bg-white p-4 mb-1">
+                                    <div class="flex flex-row items-center gap-x-4 mb-4">
+                                        <tds-skeleton-element tdsType="avatar" [tdsActive]="true"></tds-skeleton-element>
+                                        <div class="flex flex-col gap-y-2">
+                                            <tds-skeleton-element
+                                                tdsType="input" [tdsActive]="true"
+                                                [tdsSize]="'sm'" style="width:300px">
+                                            </tds-skeleton-element>
+                                            <tds-skeleton-element
+                                                tdsType="input" [tdsActive]="true"
+                                                [tdsSize]="'sm'" style="width:200px">
+                                            </tds-skeleton-element>
+                                        </div>
+                                    </div>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:300px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:350px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:400px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:500px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:500px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:500px">
+                                    </tds-skeleton-element>
+                                </div>
+
+                                <div class="h-fit w-full bg-white p-4 mb-1">
+                                    <div class="flex flex-row items-center gap-x-4 mb-4">
+                                        <tds-skeleton-element 
+                                            tdsType="button" [tdsActive]="true"
+                                            [tdsSize]="'lg'" [tdsShape]="'round'"></tds-skeleton-element>
+                                        <div class="flex flex-col gap-y-2">
+                                            <tds-skeleton-element
+                                                tdsType="input" [tdsActive]="true"
+                                                [tdsSize]="'sm'" style="width:300px">
+                                            </tds-skeleton-element>
+                                            <tds-skeleton-element
+                                                tdsType="input" [tdsActive]="true"
+                                                [tdsSize]="'sm'" style="width:350px">
+                                            </tds-skeleton-element>
+                                        </div>
+                                    </div>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:400px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:400px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:400px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:400px">
+                                    </tds-skeleton-element>
+                                </div>
+
+                                <div class="h-fit w-full bg-white p-4 mb-1">
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:300px">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:500px">
+                                    </tds-skeleton-element>
+                                </div>
+
+                                <div class="flex flex-auto bg-white p-4"></div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </tds-tab>
+
+                <tds-tab [title]="conversationOrder" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+                    <ng-template #conversationOrder let-active="active">
+                        <div class="flex items-center font-semibold justify-center text-body-2 p-4 relative group cursor-pointer"
+                          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+
+                            <span class="mr-2 flex items-center"> Đơn hàng
+                                <tds-tag status='primary' class="ml-3" *ngIf="orderCode"> #{{orderCode}} </tds-tag>
+                            </span>
+
+                            <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+                              class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+                            </div>
+                        </div>
+                    </ng-template>
+
+                    <div class="h-full w-full">
+                        <div *ngIf="currentTeam && type && conversationInfo; else noSaleOnline_Order">
+                            <conversation-order
+                                [conversationInfo]="conversationInfo"
+                                [team]="currentTeam" [type]="type">
+                            </conversation-order>
+                        </div>
+
+                        <ng-template #noSaleOnline_Order>
+                            <div class="w-full h-[calc(100vh-109px)] flex flex-col bg-neutral-3-200">
+                                <div class="h-fit w-full bg-white p-4 mb-1">
+                                    <div class="mb-4">
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'md'" style="width:300px">
+                                        </tds-skeleton-element>
+                                    </div>
+                                    <div class="mb-4">
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'sm'" style="width:400px">
+                                        </tds-skeleton-element>
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'sm'" style="width:300px">
+                                        </tds-skeleton-element>
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'sm'" style="width:300px">
+                                        </tds-skeleton-element>
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'sm'" style="width:400px">
+                                        </tds-skeleton-element>
+                                    </div>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'lg'" style="width:500px">
+                                    </tds-skeleton-element>
+                                </div>
+
+                                <div class="h-fit w-full bg-white p-4 mb-1">
+                                    <div class="mb-4">
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'md'" style="width:200px">
+                                        </tds-skeleton-element>
+                                    </div>
+                                    <div class="mb-4">
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'sm'" style="width:500px">
+                                        </tds-skeleton-element>
+                                        <tds-skeleton-element
+                                            tdsType="input" [tdsActive]="true"
+                                            [tdsSize]="'lg'" style="width:500px">
+                                        </tds-skeleton-element>
+                                    </div>
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'lg'" style="width:500px">
+                                    </tds-skeleton-element>
+                                </div>
+
+                                <div class="h-fit w-full bg-white p-4 mb-1">
+                                    <tds-skeleton-element
+                                        tdsType="input" [tdsActive]="true"
+                                        [tdsSize]="'sm'" style="width:500px">
+                                    </tds-skeleton-element>
+                                </div>
+
+                                <div class="h-fit w-full bg-white p-4 mb-1">
+                                    <tds-skeleton-element
+                                        tdsType="button" [tdsActive]="true"
+                                        [tdsSize]="'md'" class="mr-2">
+                                    </tds-skeleton-element>
+                                    <tds-skeleton-element
+                                        tdsType="button" [tdsActive]="true"
+                                        [tdsSize]="'md'">
+                                    </tds-skeleton-element>
+                                </div>
+
+                                <div class="flex flex-auto bg-white p-4"></div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </tds-tab>
+            </tds-tabset>
+        </div>
+    </div>
+
+    <!-- chưa có dữ liệu -->
+    <div class="flex-auto flex pl-1 " *ngIf="!conversationItem && !isLoading">
+        <div class="flex-auto flex flex-col justify-center items-center bg-white">
+            <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png" alt="">
+            <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp bán hàng toàn diện cho bán hàng đa kênh</span>
+            <span class="text-neutral-1-300 pt-2">Quản lý tập trung các bình luận, tin nhắn từ các kênh giúp bạn không bỏ sót bất kỳ đơn nào.</span>
+        </div>
+    </div>
+</div>
 
 <!-- Notification Admin Transfer ChatBot -->
 <ng-template #templateAdminTransferChatBot let-data="data" >
@@ -239,7 +399,7 @@
               <span class="text-caption-2 font-regular">{{!data.teamId? '':'(không tìm thấy trang)'}}</span>
           </span>
 
-          <span class="">{{data.message}}</span>
+          <span>{{data.message}}</span>
       </div>
     </div>
 </ng-template>
@@ -254,7 +414,7 @@
                 <span class="text-caption-2 font-regular">{{!data.teamId? '':'(không tìm thấy trang)'}}</span>
             </span>
 
-            <span class="">{{data.message}}</span>
+            <span >{{data.message}}</span>
         </div>
     </div>
 </ng-template>
