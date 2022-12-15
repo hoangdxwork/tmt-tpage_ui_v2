@@ -422,7 +422,7 @@ export interface FastSaleOrderDTO {
   CreateByName: string;
   DateCreated: Date;
   Reference?: any;
-  CRMTeamId?: number;
+  CRMTeamId: number;
   CRMTeamName: string;
   SaleOnlineIds: string[];
   Partner: PartnerDTO;

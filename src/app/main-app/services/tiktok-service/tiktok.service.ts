@@ -22,14 +22,23 @@ export class TiktokService extends BaseSevice {
         super(apiService)
     }
 
-    login(id: string) {
+    login(id: string, sessionId: string) {
         const api: CoreAPIDTO = {
-            url: `${this._BASE_URL}/rest/v2.0/chatomni/unofficialtiktok/${id}`,
+            url: `${this._BASE_URL}/rest/v2.0/chatomni/unofficialtiktokcheck/${id}?sessionid=${sessionId}`,
             method: CoreApiMethodType.get,
-          }
+        }
       
-          return this.apiService.getData<any>(api, null);
+        return this.apiService.getData<any>(api, null);
     }
+
+    fetchComments(id: string) {
+      const api: CoreAPIDTO = {
+          url: `${this._BASE_URL}/rest/v2.0/chatomni/unofficialtiktok/${id}`,
+          method: CoreApiMethodType.post,
+      }
+    
+      return this.apiService.getData<any>(api, null);
+  }
 
     refreshChannelToken(id: any, channelId: any, accessToken: any): Observable<any> {
       const api: CoreAPIDTO = {

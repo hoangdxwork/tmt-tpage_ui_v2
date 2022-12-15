@@ -43,11 +43,11 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-chat-fill",
         link: '/configs/auto-reply',
     },
-    {
-        name: "Tin nhắn SMS",
-        icon: "tdsi-email-fill",
-        link: '/configs/sms-messages',
-    },
+    // {
+    //     name: "Tin nhắn SMS",
+    //     icon: "tdsi-email-fill",
+    //     link: '/configs/sms-messages',
+    // },
     {
         name: "Biến thể sản phẩm",
         icon: "tdsi-variant-fill",
