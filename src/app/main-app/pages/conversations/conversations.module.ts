@@ -153,6 +153,7 @@ import { TShopCommentComponent } from './conversation-post/comments/tshop-commen
 import { TiktokCommentComponent } from './conversation-post/comments/tiktok-comment.component';
 import { ObjectTiktokPostComponent } from './conversation-post/objects/object-tiktok-post.component';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
+import { CurrentConversationItemV3Component } from './components/current-conversation-item/current-conversation-item-v3.component';
 
 const SERVICES = [
   ConversationFacebookState,
@@ -272,7 +273,8 @@ const FACADES = [
     DrawerAddProductComponent,
     TShopCommentComponent,
     TiktokCommentComponent,
-    ObjectTiktokPostComponent
+    ObjectTiktokPostComponent,
+    CurrentConversationItemV3Component,
   ],
 
   imports: [
