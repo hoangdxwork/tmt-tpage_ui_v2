@@ -172,7 +172,7 @@
                     </ng-template>
 
                     <tds-spin [spinning]="isLoading" class="h-full w-full">
-                        <div *ngIf="currentTeam && type && conversationInfo && conversationItem; else noPartner">
+                        <div *ngIf="currentTeam && type && conversationInfo; else noPartner">
                             <conversation-partner
                                 [conversationInfo]="conversationInfo" [type]="type"
                                 [team]="currentTeam" [isLoading]="isLoading"

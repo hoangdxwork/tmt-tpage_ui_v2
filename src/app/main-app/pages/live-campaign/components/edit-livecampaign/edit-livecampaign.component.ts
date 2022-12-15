@@ -109,8 +109,9 @@ export class EditLiveCampaignComponent implements OnInit {
       Note: [null],
       ResumeTime: [0],
       Users: [null],
-      StartDate: [Date()],
-      EndDate: [Date()],
+      DateCreated: [null],
+      StartDate: [null],
+      EndDate: [null],
       Preliminary_Template: [null],
       Preliminary_TemplateId: [null],
       ConfirmedOrder_Template: [null],
@@ -144,14 +145,11 @@ export class EditLiveCampaignComponent implements OnInit {
           if(!res) return;
           delete res['@odata.context'];
 
-          if(res.DateCreated) {
-              res.DateCreated = new Date(res.DateCreated)
-          }
           if(res.StartDate) {
-              res.StartDate = new Date(res.StartDate)
+              res.StartDate = new Date(res.StartDate);
           }
           if(res.EndDate) {
-              res.EndDate = new Date(res.EndDate)
+              res.EndDate = new Date(res.EndDate);
           }
 
           this.dataModel = res;
@@ -165,11 +163,10 @@ export class EditLiveCampaignComponent implements OnInit {
 
           this.updateForm(this.dataModel);
           this.isLoading = false;
-
       },
       error:(error) => {
           this.isLoading = false;
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          this.message.error(error?.error?.message);
       }
     })
   }
