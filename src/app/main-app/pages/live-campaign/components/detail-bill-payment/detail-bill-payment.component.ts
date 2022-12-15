@@ -48,6 +48,7 @@ export class DetailBillPaymentComponent implements OnInit {
     status: '',
     bill: null,
     deliveryType: '',
+    carrierDeliveryType: '',
     searchText: '',
     dateRange: {
       startDate: addDays(new Date(), -30),
@@ -163,6 +164,7 @@ export class DetailBillPaymentComponent implements OnInit {
       isWaitPayment: true,
       liveCampaignId: this.liveCampaignId,
       deliveryType: event.deliveryType,
+      carrierDeliveryType: event.carrierDeliveryType,
       searchText: event.searchText,
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
@@ -184,6 +186,7 @@ export class DetailBillPaymentComponent implements OnInit {
       bill: null,
       isWaitPayment: true,
       liveCampaignId: this.liveCampaignId,
+      carrierDeliveryType: '',
       deliveryType: '',
       searchText: '',
       dateRange: {
