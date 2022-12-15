@@ -160,18 +160,20 @@
                 <div class="flex justify-end flex-col gap-2"
                     [ngClass]="((item.Tags && item.Tags.length > 0) || item.HasPhone || item.HasAddress )? 'pt-3': ''">
                     <div class="flex gap-2 items-end">
-                        <div *ngIf="item.Tags"
-                            class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden" #currentWidthTag>
-                            <span *ngFor="let tag of item.Tags" #widthTag
-                                class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
-                                <span [ngStyle]="{'background-color': [tag.ColorClass+'30'] }" tds-tooltip
-                                    [tooltipTitle]="tag.Name"
-                                    class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
-                                    <span [ngStyle]="{'background-color': [tag.ColorClass] }"
-                                        class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
-                                    <span class="flex-auto truncate">{{tag.Name}}</span>
-                                </span>
-                            </span>
+                        <div class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden" #currentWidthTag>
+                            <div *ngIf="item.Tags" class="flex gap-x-1">
+                                <div *ngFor="let tag of item.Tags" #widthTag
+                                    class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                                    <span [ngStyle]="{'background-color': [tag.ColorClass+'30'] }" tds-tooltip [tooltipTitle]="tag.Name"
+                                        class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
+                                        <span class="flex items-center">
+                                            <span [ngStyle]="{'background-color': [tag.ColorClass] }"
+                                            class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                                        </span>
+                                        <span class="flex-auto truncate">{{tag.Name}}</span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="flex gap-1.5 items-center">

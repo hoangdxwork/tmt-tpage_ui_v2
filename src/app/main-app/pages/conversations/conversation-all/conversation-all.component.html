@@ -79,7 +79,7 @@
             </div>
 
             <!-- List danh sách chat -->
-            <tds-spin [spinning]="isProcessing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full">
+            <tds-spin [spinning]="isProcessing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full bg-white">
               <virtual-scroller *ngIf="lstConversation && lstConversation.length > 0"
                   #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
                   (vsEnd)="vsEnd($event)"
@@ -92,11 +92,11 @@
                       <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
                   </div>
 
-                  <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1">
+                  <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="border-b-4 border-neutral-3-200">
                       <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 100px">
                           <a (click)="changeCurrentConversationItem(item)" class="w-full h-full"
                               [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
-                              <current-conversation-item-v2 class="min-h-[100px] h-full"
+                              <current-conversation-item-v3 class="min-h-[100px] h-full"
                                   [item]="item" [csid]="item.ConversationId" [type]="type"
                                   [conversationItem]="conversationItem"
                                   [state]="item.State"
@@ -104,7 +104,7 @@
                                   [isOpenCollapCheck]="isOpenCollapCheck"
                                   [checked]="setOfCheckedId.has(item.ConversationId)"
                                   (checkedChange)="onItemChecked(item.ConversationId, $event)">
-                              </current-conversation-item-v2>
+                              </current-conversation-item-v3>
                           </a>
                       </div>
                   </div>
