@@ -27,22 +27,19 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenu
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
-import { FastSaleOrderDTO } from '@app/dto/fastsaleorder/fastsaleorder.dto';
-import { CRMTeamService } from '@app/services/crm-team.service';
 
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [ TDSDestroyService ]
+    providers: [TDSDestroyService]
 })
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
-  @Input() conversationInfo!: ChatomniConversationInfoDto | null;
-  @Input() isLoading!: boolean;
-
-  @Input() team!: CRMTeamDTO;
+  @Input() conversationInfo!: ChatomniConversationInfoDto | any;
+  @Input() isLoading: boolean = false;
+  @Input() team!: CRMTeamDTO | any;
   @Input() type!: string;
 
   @Output() onTabOderOutput = new EventEmitter<boolean>();
@@ -73,7 +70,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private conversationService: ConversationService,
     private fastSaleOrderService: FastSaleOrderService,
     private partnerService: PartnerService,
-    private crmTeamService: CRMTeamService,
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
@@ -106,7 +102,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       next: (res: ChatomniConversationInfoDto) => {
         if(res) {
             this.loadData(res);
-            this.loadNotes(this.team.ChannelId, res.Conversation.ConversationId);
+            this.loadNotes(this.team.ChannelId, res.Conversation?.ConversationId);
             this.postEvent.spinLoadingTab$.emit(false);
         }
       }
@@ -120,6 +116,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if(changes["isLoading"] && !changes["isLoading"].firstChange) {
+        this.isLoading = changes["isLoading"].currentValue;
+    }
+
     if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
         let x = {...changes["conversationInfo"].currentValue} as ChatomniConversationInfoDto;
         this.loadData(x);
@@ -128,10 +128,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
+    this.isLoading = true;
     this.validateData();
     this.conversationInfo = {...conversationInfo};
 
     this.prepareModelPartner(this.conversationInfo);
+    this.isLoading = false;
     this.cdRef.detectChanges();
   }
 
@@ -226,7 +228,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         },
         error: (error: any) => {
             this.isLoading = false;
-            this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+            this.message.error(error?.error?.message);
             this.cdRef.detectChanges();
         }
       });
