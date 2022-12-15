@@ -136,17 +136,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private chatomniConversationFacade: ChatomniConversationFacade,
     private quickReplyService: QuickReplyService,
     private chatomniCommentService: ChatomniCommentService) {
-
-      this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
-          next: (user: any) => {
-              this.userLogged = user;
-          }
-      })
   }
 
   ngOnInit() {
-    this.validateData();
+    this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (user: any) => {
+          this.userLogged = user;
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message);
+      }
+    })
 
+    this.validateData();
     if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
       this.pageId = this.team.ChannelId;
       this.loadData(this.data);
@@ -314,14 +316,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type, this.filterObj);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
-          if(res) {
-              this.dataSource = { ...res };
+          this.dataSource = {...res};
 
-              //TODO: truyền về conversation-all
-              setTimeout(() => {
-                  this.chatomniEventEmiter.countUnreadEmiter$.emit(this.data.ConversationId);
-              }, 300);
-          }
+          setTimeout(() => {
+              this.chatomniEventEmiter.countUnreadEmiter$.emit(this.data.ConversationId);
+          }, 300);
 
           this.isLoading = false;
           this.isLoadingSpin = false;
@@ -330,7 +329,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       error: (error: any) => {
           this.isLoading = false;
           this.isLoadingSpin = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.message.error(error?.error?.message);
           this.cdRef.detectChanges();
       }
     })
@@ -344,7 +343,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.lstUser = [...res];
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` || 'Load user đã xảy ra lỗi');
+          this.message.error(`${error?.error?.message}`);
       }
     })
   }
@@ -970,7 +969,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if(this.isLoadingSelectUser){
       return;
     }
-    
+
     this.isLoadingSelectUser = true;
     let id = `${this.team.Id}_${this.data.UserId}`;
 
