@@ -250,10 +250,12 @@
           <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
             <div class="chat-acts flex flex-row items-center" style="position: relative;">
 
-              <button class="link-act hover:underline" [disabled]="isReplyingComment"
-                  (click)="clickReply(dataItem.Message ? dataItem.Data?.can_remove : null)"> Phản hồi
-              </button>
-
+                <div tooltipTitle="Live Tiktok không có phản hồi bình luận" tooltipPlacement="top" tds-tooltip>
+                    <button class="link-act hover:underline" [disabled]="true" 
+                        (click)="clickReply(dataItem.Message ? dataItem.Data?.can_remove : null)"> Phản hồi
+                    </button>
+                </div>
+              
               <span *ngIf="isReplyingComment" class="ml-1">
                   <tds-spinner [color]="'primary'" class="w-2 h-2"></tds-spinner>
               </span>

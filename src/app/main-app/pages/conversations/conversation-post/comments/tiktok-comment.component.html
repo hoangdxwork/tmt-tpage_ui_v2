@@ -100,12 +100,6 @@
                                 </span>
                             </button>
 
-                            <button *ngIf="!item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip (click)="isReply(item)">
-                                <span class="flex items-center justify-center">
-                                    <i class="tdsi-reply-fill text-neutral-1-500"></i>
-                                </span>
-                            </button>
-
                             <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
                                 <span class="flex items-center justify-center">
                                     <i class="tdsi-messenger-fill text-neutral-1-500"></i>

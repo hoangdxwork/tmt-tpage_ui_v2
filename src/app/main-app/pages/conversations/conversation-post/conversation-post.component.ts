@@ -1,3 +1,4 @@
+import { TiktokService } from './../../../services/tiktok-service/tiktok.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
@@ -93,6 +94,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   partners$!: Observable<any>;
 
   widthConversation!: number;
+  clickReload: number = 0;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -110,7 +112,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private socketOnEventService: SocketOnEventService,
     private resizeObserver: TDSResizeObserver,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
-    private notification: TDSNotificationService) {
+    private notification: TDSNotificationService,
+    private tiktokService: TiktokService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -321,6 +324,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onRefresh(event: any) {
+    this.clickReload += 1;
+    
     this.queryObj = { } as any;
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
@@ -331,7 +336,28 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.virtualScroller.scrollToPosition(0);
     }
 
-    this.loadFilterDataSource();
+    if (this.clickReload >= 5 && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok) {
+        this.message.info("Đã kích hoạt cập nhật hội thoại");
+        this.clickReload = 0;
+
+        if (this.currentTeam) {
+          this.tiktokService.refreshListen(this.currentTeam.OwnerId).subscribe({
+            next: res => {
+
+            },
+            error: error => {
+
+            }
+          })
+        }
+    } else {
+      this.loadFilterDataSource();
+    }
+
+  setTimeout(() => {
+    this.clickReload = 0;
+  }, 3 * 1000);
+
   }
 
   loadData(){

@@ -139,9 +139,9 @@
     </div>
 
     <!--Nội dung cuộc hội thoại-->
-    <div class="flex 2xl:w-[48%] w-[45%]">
+    <div class="flex 2xl:w-[48%] w-[45%]" *ngIf="conversationItem && currentTeam" >
       <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-          <div *ngIf="conversationItem && currentTeam" class="flex w-full flex-col h-full">
+          <div class="flex w-full flex-col h-full">
               <shared-tds-conversations
                   class="flex w-full h-full"
                   [data]="conversationItem"
@@ -155,7 +155,7 @@
     </div>
 
     <!--Xử lí thông tin khách hàng & Đơn hàng-->
-    <div class="flex 2xl:w-[32%] w-[32%] h-full">
+    <div class="flex 2xl:w-[32%] w-[32%] h-full" *ngIf="conversationItem">
         <div class="w-full h-full flex flex-col">
             <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
                 <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
