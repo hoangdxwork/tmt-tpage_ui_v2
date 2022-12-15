@@ -22,11 +22,17 @@
                             </div>
 
                             <!-- truy cập bài viết -->
-                          <div [ngClass]="(data.Data | facebookType).permalink_url ? 'flex' : 'hidden' ">
+                          <div *ngIf="(data.Data | facebookType).permalink_url; else noPermalink_url">
                             <a href="{{(data.Data | facebookType).permalink_url}}" target="_blank" class="text-neutral-1-400">
                                 <i class="tdsi-expand-2-line leading-none text-xl"></i>
                             </a>
                           </div>
+
+                          <ng-template #noPermalink_url>
+                            <a href="{{linkFacebook + data.ObjectId}}" target="_blank" class="text-neutral-1-400">
+                                <i class="tdsi-expand-2-line leading-none text-xl"></i>
+                            </a>
+                          </ng-template>
                         </span>
                     </tds-tag>
 

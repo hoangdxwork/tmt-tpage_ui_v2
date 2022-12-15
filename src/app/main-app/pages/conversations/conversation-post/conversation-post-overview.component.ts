@@ -86,6 +86,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   drawerEditLiveCampaign: boolean = false;
   visibleDrawerEditLive: boolean = false;
+  linkFacebook = 'https://www.facebook.com/'
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,

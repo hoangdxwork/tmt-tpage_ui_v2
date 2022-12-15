@@ -31,13 +31,13 @@ export class TiktokService extends BaseSevice {
         return this.apiService.getData<any>(api, null);
     }
 
-    fetchComments(id: string) {
+    refreshListen(id: string) {
       const api: CoreAPIDTO = {
           url: `${this._BASE_URL}/rest/v2.0/chatomni/unofficialtiktok/${id}`,
           method: CoreApiMethodType.post,
-      }
+        }
     
-      return this.apiService.getData<any>(api, null);
+        return this.apiService.getData<any>(api, null);
   }
 
     refreshChannelToken(id: any, channelId: any, accessToken: any): Observable<any> {

@@ -31,7 +31,6 @@ import { CRMTeamDTO } from '@app/dto/team/team.dto';
 @Component({
   selector: 'post-order-config',
   templateUrl: './post-order-config.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TDSDestroyService]
 })
 
@@ -58,9 +57,8 @@ export class PostOrderConfigComponent implements OnInit {
   dataDefault!: AutoOrderConfigDTO;
   setOfCheckData= new Set<object>();
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+  numberWithCommas =(value:TDSSafeAny) => {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return value;
@@ -187,7 +185,6 @@ export class PostOrderConfigComponent implements OnInit {
       error: (err: any) => {
           this.isLoading = false;
           this.message.error( err?.error?.message || 'Đã xảy ra lỗi');
-
           this.cdRef.detectChanges();
       }
     });
@@ -422,7 +419,7 @@ export class PostOrderConfigComponent implements OnInit {
         }
         break;
 
-      case 'xlsx': 
+      case 'xlsx':
         let result = [];
 
         reader.onload = (e: any) => {
@@ -458,7 +455,7 @@ export class PostOrderConfigComponent implements OnInit {
 
       default:
         break;
-    } 
+    }
   }
 
   onCheckExcludedPhones(data: string[]) {
@@ -887,7 +884,7 @@ export class PostOrderConfigComponent implements OnInit {
     }
   }
 
-  prepareCheckDrity() { 
+  prepareCheckDrity() {
     if(!this.dataDefault || !this.dataModel) return true;
     if(this.dataDefault.IsEnableOrderAuto != this.dataModel.IsEnableOrderAuto) return false;
     if(this.dataDefault.IsForceOrderWithAllMessage != this.dataModel.IsForceOrderWithAllMessage) return false;
