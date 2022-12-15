@@ -360,7 +360,10 @@
             </div>
         </div>
         <!-- editer+toolbars -->
-        <tds-spin [spinning]="isLoadingImage">
+        
+        <tds-spin [spinning]="isLoadingImage" class="relative">
+            <div [ngClass]="team && team.Type == 'UnofficialTikTok' ? 'z-1000' :'hidden'" class="absolute bg-neutral-3-50 bg-opacity-50 inset-0 h-full">
+            </div>
 
             <div class="h-0 overflow-hidden flex">
                 <tds-form-field class="w-full">
