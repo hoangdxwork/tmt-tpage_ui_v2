@@ -5,23 +5,22 @@ import { PostHiddenCommentConfigComponent } from './hidden-comment-config/post-h
 import { PostOrderInteractionConfigComponent } from './interaction-config/post-order-interaction-config.component';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { PostOrderConfigComponent } from './order-config/post-order-config.component';
-import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
-import { Component, Input, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from "@angular/core";
+import { TDSModalRef } from 'tds-ui/modal';
+import { Component, Input, ViewChild} from "@angular/core";
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'config-post-outlet',
   templateUrl: './config-post-outlet.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ConfigPostOutletComponent  {
 
-  @ViewChild(PostOrderConfigComponent ) postOrderConfig !: TDSSafeAny;
-  @ViewChild(PostOrderInteractionConfigComponent ) postOrderInteractionConfig !: TDSSafeAny;
-  @ViewChild(PostHiddenCommentConfigComponent ) postHiddenCommentConfig !: TDSSafeAny;
-  @ViewChild(AutoReplyConfigComponent ) autoReplyConfig !: TDSSafeAny;
-  @ViewChild(AutoLabelConfigComponent ) autoLabelConfig !: TDSSafeAny;
+  @ViewChild(PostOrderConfigComponent) postOrderConfig!: TDSSafeAny;
+  @ViewChild(PostOrderInteractionConfigComponent) postOrderInteractionConfig!: TDSSafeAny;
+  @ViewChild(PostHiddenCommentConfigComponent) postHiddenCommentConfig!: TDSSafeAny;
+  @ViewChild(AutoReplyConfigComponent) autoReplyConfig!: TDSSafeAny;
+  @ViewChild(AutoLabelConfigComponent) autoLabelConfig!: TDSSafeAny;
 
   @Input() data!: ChatomniObjectsItemDto;
   @Input() date!: string;
@@ -46,6 +45,7 @@ export class ConfigPostOutletComponent  {
     }
     return
   }
+
   onCannel(){
     switch(this.selectedIndex){
       case 0:

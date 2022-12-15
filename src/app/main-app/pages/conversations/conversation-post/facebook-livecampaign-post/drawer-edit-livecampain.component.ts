@@ -25,7 +25,6 @@ import { SharedService } from "@app/services/shared.service";
 import { CompanyCurrentDTO } from "@app/dto/configs/company-current.dto";
 import { ProductService } from "@app/services/product.service";
 import { TDSNotificationService } from "tds-ui/notification";
-import { StringHelperV2 } from "@app/shared/helper/string.helper";
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { LiveCampaigntAvailableToBuyDto, LiveCampaigntPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
@@ -109,15 +108,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     private notificationService: TDSNotificationService,
     private viewContainerRef: ViewContainerRef,
     private socketOnEventService: SocketOnEventService,
-    private fb: FormBuilder,
     private productTemplateFacade: ProductTemplateFacade,
     private destroy$: TDSDestroyService) {
   }
 
   ngOnInit() {
-    if(!this.visibleDrawerEditLive) {
-      return;
-    }
+    if(!this.visibleDrawerEditLive) return;
 
     if(this.liveCampaignId) {
       this.loadOverviewDetails(this.pageSize, this.pageIndex); //TODO: load dữ liệu danh sách sản phẩm
