@@ -1,4 +1,3 @@
-import { User } from './../../../dto/saleonlineorder/quick-saleonline-order.dto';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
 import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
 import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
@@ -113,20 +112,26 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private chatomniEventEmiterService: ChatomniEventEmiterService,
     private socketOnEventService: SocketOnEventService) {
       super(crmService, activatedRoute, router);
-
-      this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
-        next: (user: any) => {
-            this.userLogged = user;
-        }
-      })
   }
 
   ngOnInit(): void {
+    this.sharedService.getUserLogged().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (user: any) => {
+            this.userLogged = user;
+        },
+        error: (err: any) => {
+            this.message.error(err?.error?.message);
+        }
+    })
+
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (team) => {
-          this.onClickTeam(team);
-      }
+        next: (team) => {
+            this.onClickTeam(team);
+        },
+        error: (err: any) => {
+            this.message.error(err?.error?.message);
+        }
     })
 
     // TODO: change team in component
@@ -158,8 +163,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
     })
 
-    this.hubEvents(); // các sự kiện realtime
-
+    this.hubEvents();
     this.eventEmitter();
     this.onEventSocket();
   }
@@ -410,11 +414,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
-    if(this.isLoading || this.isProcessing){
-      return;
-    }
-
+    if(this.isLoading || this.isProcessing) return;
     this.isLoading = true;
+
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationDto) => {
 
@@ -428,7 +430,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.message.error(error?.error?.message);
       }
     })
   }
@@ -468,7 +470,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           return;
       }
     }
-    
+
     let teamId = this.currentTeam?.Id as number;
     this.chatomniConversationService.getById(teamId, params_csid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {
@@ -535,7 +537,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   changeCurrentConversationItem(item: ChatomniConversationItemDto) {
     if(item && TDSHelperString.hasValueString(item.ConversationId) && item.ConversationId != this.conversationItem.ConversationId) {
-        if(this.isOpenCollapCheck){
+        if(this.isOpenCollapCheck) {
             this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
             this.refreshCheckedStatus();
             return;
@@ -570,6 +572,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       },
       error: (error) => {
           this.isLoadingNextdata = false;
+          this.message.error(error?.error?.message);
       }
     })
   }
@@ -675,16 +678,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     let lstCheck = [...this.setOfCheckedId]
     let that = this;
 
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if(lstCheck.length < 1){
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     }
 
-    this.isProcessing = true
+    this.isProcessing = true;
     let userIds = "";
 
     lstCheck.forEach((x,i) => {
@@ -731,7 +732,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onSentSucceed() {
-    //check lại hàm này
     this.conversationDataFacade.checkAllSendMessage(this.currentTeam!.ChannelId, this.type, this.isCheckedAll);
   }
 
@@ -797,7 +797,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           let index = this.lstConversation.findIndex(x => x.ConversationId == this.conversationItem?.ConversationId);
           if(Number(index) >= 0) {
             let currentOmni = this.lstConversation[index];
-      
+
             //TODO: item thứ 7 trở đi không hiện trên màn hình đổi lên đầu
             if(Number(index) >= 6) {
               this.lstConversation = this.lstConversation.filter(x => x.ConversationId != this.conversationItem?.ConversationId);
@@ -809,7 +809,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 next: (res: ChatomniConversationItemDto) => {
                     currentOmni = {...res};
                     this.lstConversation = [...[currentOmni], ...this.lstConversation];
-          
+
                     this.isLoading = false;
                 },
                 error: (error: any) => {
