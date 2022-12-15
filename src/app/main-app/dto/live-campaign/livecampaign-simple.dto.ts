@@ -81,7 +81,7 @@ export interface LiveCampaignSimpleDto {
   Facebook_LiveId?: any;
   Note?: any;
   IsActive: boolean;
-  DateCreated: Date;
+  DateCreated: Date | any;
   ResumeTime: number;
   StartDate: Date | any;
   EndDate: Date | any;
