@@ -1,3 +1,4 @@
+import { CRMTeamDTO } from './../../../dto/team/team.dto';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { Message } from './../../../../lib/consts/message.const';
 import { GenerateMessageTypeEnum } from './../../../dto/conversation/message.dto';
@@ -44,6 +45,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
 
   lstOfData: Array<FastSaleOrderDTO> = [];
+  lstOfTeam!: CRMTeamDTO[];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -171,6 +173,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.loadAllTeam();
     this.loadSummaryStatus();
     this.loadTags();
     this.loadGridConfig();
@@ -183,6 +186,19 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     })
     this.loadCarrier();
+  }
+
+  loadAllTeam() {
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res && TDSHelperArray.hasListValue(res)) {
+          this.lstOfTeam = [...res];
+        }
+      },
+      error: (err) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   loadCarrier() {

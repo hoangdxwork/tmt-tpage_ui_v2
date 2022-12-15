@@ -131,7 +131,7 @@
       </div>
   
       <div class="w-1/4 sticky">
-        <!--TODO Chưa đăng nhập tài khoản -->
+        <!--TODO Giao diện empty khi chưa đăng nhập -->
         <div class="bg-white rounded-xl p-4 flex flex-col" *ngIf="!userTiktokLogin || !userTiktokLogin.Id; else userLoggedTiktok">
             <span class="text-heading-3 font-semibold text-neutral-1-900">Kết nối với Tiktok Live</span>
             
@@ -143,10 +143,14 @@
 
             <span class="mt-4 text-body-2 font-regular text-neutral-1-900 text-center px-6 mb-4">Nhập <span class="font-semibold">@username</span> của tài khoản đang live để 
                 kết nối với bài live trên Tiktok</span>
-                <tds-form-field class="w-full">
-                    <input tdsInput autocomplete="off"  placeholder="@username" 
-                        [(ngModel)]="username"/>
+                <tds-form-field class="w-full mb-2">
+                  <input tdsInput autocomplete="off" placeholder="@uniqueId" [(ngModel)]="uniqueId"/>
                 </tds-form-field>
+
+                <tds-form-field class="w-full">
+                  <input tdsInput autocomplete="off" placeholder="@sessionId" [(ngModel)]="sessionId"/>
+                </tds-form-field>
+
                 <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-neutral-1-900
                     bg-neutral-1-900 hover:bg-neutral-1-800 focus:bg-neutral-1-900 focus:border-neutral-1-900 mt-3" 
                     (click)="tiktokSignIn()">
@@ -180,17 +184,20 @@
         </div>
     </div>
   
-    <!--TODO Empty -->
+    <!-- TODO: Giao diện empty khi danh sách kênh rỗng -->
     <div *ngIf="!data || data.length < 1" class="px-4 pt-4 w-full h-full">
-      <div class="h-full w-full bg-white rounded-xl pt-[64px] justify-center">
+      <div class="h-full w-full bg-white rounded-xl pt-16 justify-center">
         <tds-empty notFoundImage="/assets/imagesv2/facebook/synchronize.svg" [notFoundContent]="contentTpl" [notFoundFooter]="footerTpl">
           <ng-template #contentTpl>
             <div class="mt-3 flex flex-col items-center gap-y-2">
               <span class="text-body-2 font-regular text-neutral-1-300">Nhập @username của tài khoản đang live để kết nối với bài live trên Tiktok</span>
-                <tds-form-field class="w-[364px]">
-                    <input tdsInput autocomplete="off"  placeholder="@username" 
-                        [(ngModel)]="username"/>
-                </tds-form-field>
+              <tds-form-field class="w-[364px] mb-2">
+                <input tdsInput autocomplete="off" placeholder="@uniqueId" [(ngModel)]="uniqueId"/>
+              </tds-form-field>
+
+              <tds-form-field class="w-[364px]">
+                <input tdsInput autocomplete="off" placeholder="@sessionId" [(ngModel)]="sessionId"/>
+              </tds-form-field>
             </div>
           </ng-template>
   

@@ -22,7 +22,8 @@ export class TiktokChannelComponent implements OnInit {
   data: CRMTeamDTO[] = [];
   isLoading!: boolean;
 
-  username!: string;
+  uniqueId!: string;
+  sessionId!:string;
 
   userTiktokLogin!: TiktokUserDto | null;
   isUserTShopConnectChannel: boolean = false;
@@ -107,13 +108,18 @@ export class TiktokChannelComponent implements OnInit {
   }
 
   tiktokSignIn() {
-    if(!TDSHelperString.hasValueString((this.username || '').trim())) {
+    if(!TDSHelperString.hasValueString((this.uniqueId || '').trim())) {
       this.message.error('Vui lòng nhập username');
       return;
     }
 
+    if(!TDSHelperString.hasValueString((this.sessionId || '').trim())) {
+      this.message.error('Vui lòng nhập sessionId');
+      return;
+    }
+
     this.isLoading = true;
-    this.tiktokService.login(this.username).pipe(takeUntil(this.destroy$)).subscribe({
+    this.tiktokService.login(this.uniqueId, this.sessionId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: TiktokUserDto) => {
           if(!res.Id) {
             this.isLoading = false;
@@ -138,9 +144,9 @@ export class TiktokChannelComponent implements OnInit {
 
           this.isLoading = false;
         },
-        error: error => {
-          this.message.error(error?.error?.message || 'Đã có lỗi xảy ra');
+        error: (error) => {
           this.isLoading = false;
+          this.message.error('Thông tin đăng nhập không chính xác');
         }
       }
     )
@@ -151,8 +157,10 @@ export class TiktokChannelComponent implements OnInit {
       Id: 0,
       Name: this.userTiktokLogin?.Name,
       Type: CRMTeamType._UnofficialTikTok,
+      OwnerId: this.uniqueId,
       ChannelId: this.userTiktokLogin?.Id,
-      ChannelAvatar: this.userTiktokLogin?.Avatar
+      ChannelAvatar: this.userTiktokLogin?.Avatar,
+      ChannelToken: this.sessionId
     };
 
     this.crmTeamService.insert(item).pipe(takeUntil(this.destroy$)).subscribe({
