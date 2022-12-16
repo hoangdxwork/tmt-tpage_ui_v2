@@ -445,7 +445,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(error?.error?.message);
 
           currentObject = this.lstObjects[0];
           this.currentObject = currentObject;
