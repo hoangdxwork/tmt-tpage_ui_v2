@@ -482,7 +482,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(error?.error?.message);
 
           currentOmni = this.lstConversation[0];
           this.setCurrentConversationItem(currentOmni);
