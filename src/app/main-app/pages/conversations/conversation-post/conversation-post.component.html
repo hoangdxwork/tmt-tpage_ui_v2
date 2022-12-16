@@ -127,8 +127,8 @@
     </div>
 
     <!--Chọn bài viết để hiển thị chi tiết-->
-    <div class="w-[50%] flex flex-col h-full overflow-hidden">
-        <div class="h-full w-full" *ngIf="currentPost && currentTeam">
+    <div class="w-[50%] flex flex-col h-full overflow-hidden" *ngIf="currentPost && currentTeam">
+        <div class="h-full w-full">
             <conversation-post-overview [data]="currentPost" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
         </div>
         <div *ngIf="!currentPost" class="h-full w-full">
@@ -179,7 +179,7 @@
     </div>
 
     <!-- Danh sách khách hàng, đơn hàng -->
-    <tds-spin class="w-[30%] h-full flex flex-col" [spinning]="isLoadingTab" >
+    <tds-spin class="w-[30%] h-full flex flex-col" [spinning]="isLoadingTab" *ngIf="currentPost && currentTeam">
         <tds-tabset class="w-full h-full flex" [clsTab]="'flex-1'" [(selectedIndex)]="selectedIndex" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 
             <!-- tab Danh sách -->
