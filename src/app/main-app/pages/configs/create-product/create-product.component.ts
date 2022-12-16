@@ -363,7 +363,8 @@ export class ConfigAddProductComponent implements OnInit {
     if (data.DateCreated) {
       data.DateCreated = new Date(data.DateCreated);
     }
-
+    // TODO: chuyển đổi KL từ kg sang g
+    data.Weight = data.Weight*1000;
     this._form.patchValue(data);
   }
 
