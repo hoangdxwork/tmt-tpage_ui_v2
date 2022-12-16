@@ -111,13 +111,13 @@
                                                 </tpage-avatar-facebook>
                                             </div>
                                             <div *ngIf="item.Type == 'TShop'">
-                                                <tds-avatar [tdsSrc]="child.ChannelAvatar"
+                                                <tds-avatar [tdsSrc]="child | getChannelAvatar"
                                                     size="sm" [shape]="'circle'" [isAvatar]="true">
                                                 </tds-avatar>
                                             </div>
                                             <div *ngIf="item.Type == 'UnofficialTikTok'">
                                                 <tds-avatar
-                                                    [tdsSrc]="child.ChannelAvatar"
+                                                    [tdsSrc]="child | getChannelAvatar"
                                                     size="sm" [shape]="'circle'" [isAvatar]="true">
                                                 </tds-avatar>
                                             </div>

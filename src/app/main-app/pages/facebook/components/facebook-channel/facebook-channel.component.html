@@ -14,8 +14,8 @@
                 <div class="flex gap-4 items-center">
                   <div class="relative">
                     <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                      <tds-avatar *ngIf="team?.OwnerAvatar" [tdsSrc]="team.OwnerAvatar" [size]="64" class="fb-avatar"></tds-avatar>
-                      <tpage-avatar-facebook *ngIf="!team?.OwnerAvatar" [size]="'xl'" [fbid]="team?.ChannelId" [token]="team?.ChannelToken"></tpage-avatar-facebook>
+                      <tds-avatar *ngIf="team?.OwnerAvatar || team?.ChannelAvatar" [tdsSrc]="team | getChannelAvatar" [size]="64" class="fb-avatar"></tds-avatar>
+                      <tpage-avatar-facebook *ngIf="!(team?.OwnerAvatar || team?.ChannelAvatar)" [size]="'xl'" [fbid]="team?.ChannelId" [token]="team?.ChannelToken"></tpage-avatar-facebook>
                     </div>
                     <div class="absolute right-0 bottom-0" *ngIf="team.Active">
                       <!-- TODO: hiện icon dưới avatar -->
