@@ -53,8 +53,21 @@ export class TpageNotificationDropdownComponent implements OnInit {
 
   onDetail(item: any) {
     this.visible = false;
-    this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe();
+    if(item.dateRead == null) {
+      this.makeRead(item);
+    }
     this.router.navigateByUrl(`user/firebase-notification?id=${item?.id}`);
+  }
+
+  makeRead(item: any) {
+    this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        let index = this.data.findIndex(x => x.id === item.id);
+        if(index >= 0) {
+          this.data[index].dateRead = new Date()
+        }
+      }
+    });
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
