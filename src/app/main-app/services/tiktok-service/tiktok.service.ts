@@ -49,9 +49,9 @@ export class TiktokService extends BaseSevice {
       return this.apiService.getData<any>(api, null);
     }
 
-    setCacheLoginUser(user: TiktokUserDto) {
+    setCacheLoginUser(cacheData: TiktokUserDto) {
       let model = {
-        data: user,
+        data: cacheData,
         type: CRMTeamType._UnofficialTikTok
       }
   
