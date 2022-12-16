@@ -6,7 +6,7 @@
   <span *ngIf="isActive == true" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[4px]"></span>
 </button>
 <tds-dropdown-menu #menu="tdsDropdownMenu" >
-  <div class="w-full p-4 text-body-2 text-neutral-1-900">
+  <div class="w-[435px] p-4 text-body-2 text-neutral-1-900">
       <div class="mb-4">
           <p class="mb-2 font-semibold">TÌM THEO NGÀY</p>
           <div>
@@ -15,7 +15,7 @@
       </div>
       <div class="w-full mb-4">
           <p class="mb-2 font-semibold">TRẠNG THÁI</p>
-          <div class="flex flex-wrap gap-x-2">
+          <div class="flex flex-wrap gap-2">
             <div *ngFor="let item of status">
               <tds-tag mode="checkable" [checked]="item.value == currentStatus" (checkedChange)="selectState(item)">
                 {{item.text}}
@@ -37,7 +37,7 @@
           <p class="mb-2 font-semibold">LOẠI ĐỐI TÁC GH</p>
           <div class="w-full">
             <tds-form-field>
-              <tds-select valueField="Id" textField="DeliveryTypeGet" placeholder='Chọn loại đối tác'
+              <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác GH'
                     [(ngModel)]="modelCarrier" [allowClear]="true" [valuePrimitive]="false"
                     [data]="lstCarriers" (ngModelChange)="onChangeCarrier($event)" >
                 </tds-select>

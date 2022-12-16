@@ -1,3 +1,4 @@
+import { BillFilterOptionsComponent } from './../../../../shared/bill-filter-options/bill-filter-options.component';
 import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
@@ -7,7 +8,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { PartnerService } from './../../../../services/partner.service';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { addDays } from 'date-fns';
 import { finalize } from 'rxjs/operators';
@@ -43,6 +44,8 @@ export class DetailBillPaymentComponent implements OnInit {
 
   @Input() liveCampaignId!: string;
 
+  @ViewChild(BillFilterOptionsComponent) billFilterOptions!: TDSSafeAny;
+
   public filterObj: TDSSafeAny = {
     tags: [],
     status: '',
@@ -53,7 +56,8 @@ export class DetailBillPaymentComponent implements OnInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    carrierId: -1
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -189,11 +193,14 @@ export class DetailBillPaymentComponent implements OnInit {
       carrierDeliveryType: '',
       deliveryType: '',
       searchText: '',
+      carrierId: -1,
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
       }
     }
+
+    this.billFilterOptions.onCancel();
 
     this.loadData(this.pageSize, this.pageIndex);
   }
