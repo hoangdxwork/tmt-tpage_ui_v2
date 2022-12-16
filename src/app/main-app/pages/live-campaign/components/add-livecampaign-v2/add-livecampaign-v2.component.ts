@@ -102,7 +102,7 @@ export class AddLiveCampaignV2Component implements OnInit {
     private productService: ProductService,
     private notificationService: TDSNotificationService,
     private prepareHandler: PrepareAddCampaignHandler,
-    private cdRef: ChangeDetectorRef, 
+    private cdRef: ChangeDetectorRef,
     private odataLiveCampaignService: ODataLiveCampaignService) {
       this.createForm();
   }
@@ -162,7 +162,7 @@ export class AddLiveCampaignV2Component implements OnInit {
     this.odataLiveCampaignService.getView(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataLiveCampaignModelDTO) => {
           if(res.value && res.value.length >=0 && res.value[0]?.Id) {
-            
+
             let liveCampaignId = res.value[0]?.Id;
             this.liveCampaignService.getByLiveCampaignId(liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
               next: res => {

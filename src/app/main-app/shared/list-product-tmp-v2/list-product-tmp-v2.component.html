@@ -1,24 +1,24 @@
 <div class="rounded-xl pb-3 bg-white pt-2 flex h-full flex-col gap-y-2">
     <div class="flex xl:gap-x-1.5 2xl:gap-x-2 justify-between px-3 relative">
-        <tds-form-field class="min-w-[100px] xl:hidden 2xl:flex">
+        <tds-form-field class="min-w-[100px] flex">
             <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750"  [(ngModel)]="innerText"  [ngModelOptions]="{standalone: true}" (inputKeyup)="onInputKeyup()" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
 
-        <div class="inset-x-3 inset-t-0" [ngClass]="{'absolute 2xl:hidden': search == true, 'hidden' : search == false}">
+        <!-- <div class="inset-x-3 inset-t-0" [ngClass]="{'absolute 2xl:hidden': search == true, 'hidden' : search == false}">
             <tds-form-field>
                 <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750" [(ngModel)]="innerText"  [ngModelOptions]="{standalone: true}" (inputKeyup)="onInputKeyup()" />
                 <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
             </tds-form-field>
-        </div>
+        </div> -->
 
-        <button tds-button-icon color="custom" (click)="onSearch()"
+        <!-- <button tds-button-icon color="custom" (click)="onSearch()"
             [ngClass]="{'border-transparent bg-transparent text-transparent': search == true, 'flex' : search == false}"
             class="text-neutral-1-500 ring-0 ring-transparent border-neutral-2-200 2xl:hidden">
             <i class="tdsi-search-fill"></i>
-        </button>
+        </button> -->
 
-        <div class="xl:gap-x-1.5 2xl:gap-x-2" [ngClass]="{'hidden': search == true, 'flex' : search == false}">
+        <div class="gap-x-2 flex">
             <tds-button-group>
                 <button tds-button type="button" color="secondary" tds-dropdown trigger="click"
                     [tdsDropdownMenu]="menu1">
@@ -96,10 +96,10 @@
             [frontPagination]="false" [virtualItemSize]="20" [loading]="isLoading" [virtualForTrackBy]="trackByIndex">
             <thead>
                 <tr>
-                    <th width="20%">Ảnh</th>
-                    <th width="32%">Tên sản phẩm</th>
-                    <th width="20%">Đơn vị</th>
-                    <th width="28%" [align]="'right'">Giá</th>
+                    <th width="72px">Ảnh</th>
+                    <th width="">Tên sản phẩm</th>
+                    <th width="80px">Đơn vị</th>
+                    <th width="120px" [align]="'right'">Giá</th>
                 </tr>
             </thead>
             <tbody>
