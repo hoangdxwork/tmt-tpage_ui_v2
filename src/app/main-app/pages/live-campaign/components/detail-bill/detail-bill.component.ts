@@ -1,3 +1,5 @@
+import { BillFilterOptionsComponent } from './../../../../shared/bill-filter-options/bill-filter-options.component';
+import { ViewChild } from '@angular/core';
 import { CommonService } from './../../../../services/common.service';
 import { ModalMergeOrderComponent } from './modal-merge-order.component';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -38,6 +40,8 @@ export class DetailBillComponent implements OnInit {
 
   @Input() liveCampaignId!: string;
 
+  @ViewChild(BillFilterOptionsComponent) billFilterOptions!: TDSSafeAny;
+
   public filterObj: any = {
     tags: [],
     status: '',
@@ -49,7 +53,8 @@ export class DetailBillComponent implements OnInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    carrierId: -1
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -207,11 +212,13 @@ export class DetailBillComponent implements OnInit {
       liveCampaignId: this.liveCampaignId,
       deliveryType: '',
       searchText: '',
+      carrierId: -1,
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
       }
     }
+    this.billFilterOptions.onCancel();
 
     this.loadData(this.pageSize, this.pageIndex);
   }
