@@ -1,22 +1,9 @@
 <div class="rounded-xl pb-3 bg-white pt-2 flex h-full flex-col gap-y-2">
     <div class="flex xl:gap-x-1.5 2xl:gap-x-2 justify-between px-3 relative">
-        <tds-form-field class="min-w-[100px] flex">
+        <tds-form-field class="w-full flex">
             <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750"  [(ngModel)]="innerText"  [ngModelOptions]="{standalone: true}" (inputKeyup)="onInputKeyup()" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
-
-        <!-- <div class="inset-x-3 inset-t-0" [ngClass]="{'absolute 2xl:hidden': search == true, 'hidden' : search == false}">
-            <tds-form-field>
-                <input tdsInput placeholder="Nhập tên sản phẩm" autocomplete="off" [tdsInputDebounce]="750" [(ngModel)]="innerText"  [ngModelOptions]="{standalone: true}" (inputKeyup)="onInputKeyup()" />
-                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-            </tds-form-field>
-        </div> -->
-
-        <!-- <button tds-button-icon color="custom" (click)="onSearch()"
-            [ngClass]="{'border-transparent bg-transparent text-transparent': search == true, 'flex' : search == false}"
-            class="text-neutral-1-500 ring-0 ring-transparent border-neutral-2-200 2xl:hidden">
-            <i class="tdsi-search-fill"></i>
-        </button> -->
 
         <div class="gap-x-2 flex">
             <tds-button-group>
