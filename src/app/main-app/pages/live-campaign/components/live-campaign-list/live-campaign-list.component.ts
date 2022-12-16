@@ -1,3 +1,4 @@
+import { FilterOptionCampaignComponent } from './../filter-option-campaign/filter-option-campaign.component';
 import { addDays } from 'date-fns';
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
@@ -76,6 +77,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
 
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
+  @ViewChild(FilterOptionCampaignComponent) filterOptionCampaign!: TDSSafeAny;
 
   constructor(private message: TDSMessageService,
     private router: Router,
@@ -188,6 +190,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     this.filterObj.ids = [];
     this.filterObj.searchText = '';
     this.filterObj.isActive = null;
+    this.filterOptionCampaign.onCancel();
 
     this.loadData(this.pageSize, this.pageIndex);
   }

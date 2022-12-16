@@ -97,10 +97,10 @@ export class ODataLiveCampaignBillService extends BaseSevice {
     }
 
     
-    // if(filterObj.carrierId >= 0 ) {
-    //   dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
-    //     dataFilter.logic = "and";
-    // }
+    if(filterObj.carrierId >= 0 ) {
+      dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
+        dataFilter.logic = "and";
+    }
 
     // if(TDSHelperString.hasValueString(filterObj.carrierDeliveryType)) {
     //   dataFilter.filters.push({ field: "CarrierDeliveryType", operator: OperatorEnum.eq, value: filterObj.carrierDeliveryType })

@@ -184,6 +184,7 @@ export class DetailBillComponent implements OnInit {
       isWaitPayment: false,
       liveCampaignId: this.liveCampaignId,
       deliveryType: event.deliveryType,
+      carrierId: event.carrierId,
       searchText: event.searchText,
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
