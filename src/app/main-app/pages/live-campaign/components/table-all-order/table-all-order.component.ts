@@ -340,12 +340,18 @@ export class TableAllOrderComponent implements OnInit {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+    if(!TDSHelperString.hasValueString(data.CRMTeamId)) {
+      this.isLoading = false;
+      this.message.error(Message.PageNotExist);
+      return;
+    }
+
+    this.partnerService.getAllByPartnerId(data.CRMTeamId, partnerId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any): any => {
 
         let pageIds: any = [];
         res.map((x: any) => {
-          pageIds.push(x.page_id);
+          pageIds.push(x.ChannelId);
         });
 
         if (pageIds.length == 0) {
@@ -365,14 +371,14 @@ export class TableAllOrderComponent implements OnInit {
             let pageDic = {} as any;
 
             teams.map((x: any) => {
-              let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
+              let exist = res.filter((r: any) => r.ChannelId == x.ChannelId)[0];
 
-              if (exist && !pageDic[exist.page_id]) {
+              if (exist && !pageDic[exist.ChannelId]) {
 
-                pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+                pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vào
 
                 this.mappingTeams.push({
-                  psid: exist.psid,
+                  psid: exist.UserId,
                   team: x
                 })
               }
