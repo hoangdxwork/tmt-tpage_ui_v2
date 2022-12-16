@@ -7,7 +7,7 @@ import { FacebookService } from 'src/app/main-app/services/facebook.service';
 import { Message } from '../../../../../lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef, Component, OnInit, Output, ViewContainerRef, EventEmitter, HostListener } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Output, ViewContainerRef, EventEmitter, HostListener, ViewEncapsulation } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { TDSSafeAny, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
@@ -20,6 +20,8 @@ import { TShopService } from '@app/services/tshop-service/tshop.service';
 @Component({
   selector: 'tshop-channel',
   templateUrl: './tshop-channel.component.html',
+  styleUrls: ['./tshop-channel.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   providers: [TDSDestroyService]
 })
 export class TshopChannelComponent extends TpageBaseComponent implements OnInit {

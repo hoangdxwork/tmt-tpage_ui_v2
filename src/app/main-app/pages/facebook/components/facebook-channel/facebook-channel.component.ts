@@ -6,7 +6,7 @@ import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { TDSModalService } from 'tds-ui/modal';
 import { AddPageComponent } from '../add-page/add-page.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef, Output, EventEmitter} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef, Output, EventEmitter, ViewEncapsulation} from '@angular/core';
 import { FacebookAuth, FacebookAuthResponse, FacebookUser } from 'src/app/lib/dto/facebook.dto';
 import { FBUserPageRequestDTO, UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -22,6 +22,8 @@ import { FacebookService } from '@app/services/facebook.service';
 @Component({
   selector: 'facebook-channel',
   templateUrl: './facebook-channel.component.html',
+  styleUrls: ['./facebook-channel.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   providers: [TDSDestroyService]
 })
 export class FacebookChannelComponent extends TpageBaseComponent implements OnInit  {

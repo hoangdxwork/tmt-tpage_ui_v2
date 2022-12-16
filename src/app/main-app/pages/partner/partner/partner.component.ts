@@ -1,3 +1,4 @@
+import { ChatomniConversationService } from './../../../services/chatomni-service/chatomni-conversation.service';
 import { ChatomniMessageFacade } from './../../../services/chatomni-facade/chatomni-message.facade';
 import { Message } from 'src/app/lib/consts/message.const';
 import { finalize, switchMap } from 'rxjs/operators';
@@ -122,7 +123,8 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private configService: TDSConfigService,
     private destroy$: TDSDestroyService,
-    private chatomniMessageFacade: ChatomniMessageFacade) {
+    private chatomniMessageFacade: ChatomniMessageFacade,
+    private chatomniConversationService: ChatomniConversationService) {
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -660,18 +662,17 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  loadMDBByPSId(pageId: string, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
+          this.currentConversation = { ...res };
 
-          this.psid = res.psid;
+          this.psid = psid;
           this.isOpenDrawer = true;
           this.isLoading = false;
         }
