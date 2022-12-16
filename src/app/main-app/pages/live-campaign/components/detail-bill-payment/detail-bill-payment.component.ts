@@ -1,3 +1,4 @@
+import { BillFilterOptionsComponent } from './../../../../shared/bill-filter-options/bill-filter-options.component';
 import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
@@ -7,7 +8,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { PartnerService } from './../../../../services/partner.service';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { addDays } from 'date-fns';
 import { finalize } from 'rxjs/operators';
@@ -22,7 +23,7 @@ import { TagService } from 'src/app/main-app/services/tag.service';
 import { ModalConfirmedDepositComponent } from '../modal-confirmed-deposit/modal-confirmed-deposit.component';
 import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
 import { Message } from 'src/app/lib/consts/message.const';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
@@ -43,6 +44,8 @@ export class DetailBillPaymentComponent implements OnInit {
 
   @Input() liveCampaignId!: string;
 
+  @ViewChild(BillFilterOptionsComponent) billFilterOptions!: TDSSafeAny;
+
   public filterObj: TDSSafeAny = {
     tags: [],
     status: '',
@@ -53,7 +56,8 @@ export class DetailBillPaymentComponent implements OnInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    carrierId: -1
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -189,11 +193,14 @@ export class DetailBillPaymentComponent implements OnInit {
       carrierDeliveryType: '',
       deliveryType: '',
       searchText: '',
+      carrierId: -1,
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
       }
     }
+
+    this.billFilterOptions.onCancel();
 
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -297,53 +304,62 @@ export class DetailBillPaymentComponent implements OnInit {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
-
-      let pageIds: any = [];
-      res.map((x: any) => {
-        pageIds.push(x.page_id);
-      });
-
-      if (pageIds.length == 0) {
-        this.isLoading = false;
-        return this.message.error('Không có kênh kết nối với khách hàng này.');
-      }
-
-      this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
-
-          if (teams.length == 0) {
-            this.isLoading = false;
-            return this.message.error('Không có kênh kết nối với khách hàng này.');
-          }
-
-          this.mappingTeams = [];
-          let pageDic = {} as any;
-
-          teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
-
-            if (exist && !pageDic[exist.page_id]) {
-
-              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
-
-              this.mappingTeams.push({
-                psid: exist.psid,
-                team: x
-              })
-            }
-          })
-
-          if (this.mappingTeams.length > 0) {
-            this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
-          } else {
-            this.isLoading = false;
-          }
-        });
-    }, error => {
+    if(!TDSHelperString.hasValueString(data.TeamId || data.CRMTeamId)) {
       this.isLoading = false;
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+      this.message.error(Message.PageNotExist);
+      return;
+    }
+
+    this.partnerService.getAllByPartnerId((data.TeamId || data.CRMTeamId), partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any): any => {
+
+        let pageIds: any = [];
+        res.map((x: any) => {
+          pageIds.push(x.ChannelId);
+        });
+  
+        if (pageIds.length == 0) {
+          this.isLoading = false;
+          return this.message.error('Không có kênh kết nối với khách hàng này.');
+        }
+  
+        this.crmTeamService.getActiveByPageIds$(pageIds)
+          .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
+  
+            if (teams.length == 0) {
+              this.isLoading = false;
+              return this.message.error('Không có kênh kết nối với khách hàng này.');
+            }
+  
+            this.mappingTeams = [];
+            let pageDic = {} as any;
+  
+            teams.map((x: any) => {
+              let exist = res.filter((r: any) => r.ChannelId == x.ChannelId)[0];
+  
+              if (exist && !pageDic[exist.ChannelId]) {
+  
+                pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vào
+  
+                this.mappingTeams.push({
+                  psid: exist.UserId,
+                  team: x
+                })
+              }
+            })
+  
+            if (this.mappingTeams.length > 0) {
+              this.currentMappingTeam = this.mappingTeams[0];
+              this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+            } else {
+              this.isLoading = false;
+            }
+          });
+      }, 
+      error: error => {
+        this.isLoading = false;
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+      }
     })
   }
 

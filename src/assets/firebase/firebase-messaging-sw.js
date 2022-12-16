@@ -19,25 +19,26 @@ self.addEventListener('notificationclick', function(event) {
   if (event && event.notification && event.notification.data && event.notification.data.FCM_MSG && event.notification.data.FCM_MSG.notification) {
 
       const data = event.notification.data.FCM_MSG;
-      const url = `https://${data.data.TenantId}/tpagev2/#/user/firebase-notification?id=${data.data.NotificationId}`;
+      if(data && data.data && data.data.TenantId && data.data.NotificationId) {
+        const url = `https://${data.data.TenantId}/tpagev2/#/user/firebase-notification?id=${data.data.NotificationId}`;
 
-      event.waitUntil(
-          self.clients.matchAll({type: 'window'}).then( windowClients => {
-              // Check if there is already a window/tab open with the target URL
-              for (var i = 0; i < windowClients.length; i++) {
-                  var client = windowClients[i];
-                  // If so, just focus it.
-                  if (client.url === url && 'focus' in client) {
-                      return client.focus();
-                  }
-              }
-              // If not, then open the target URL in a new window/tab.
-              if (self.clients.openWindow) {
-                  console.log("open window")
-                  return self.clients.openWindow(url);
-              }
-          })
-      )
+        event.waitUntil(
+            self.clients.matchAll({type: 'window'}).then( windowClients => {
+                // Check if there is already a window/tab open with the target URL
+                for (var i = 0; i < windowClients.length; i++) {
+                    var client = windowClients[i];
+                    // If so, just focus it.
+                    if (client.url === url && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // If not, then open the target URL in a new window/tab.
+                if (self.clients.openWindow) {
+                    console.log("open window")
+                    return self.clients.openWindow(url);
+                }
+            })
+        )}
   }
 }, false);
 

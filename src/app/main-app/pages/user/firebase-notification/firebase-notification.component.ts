@@ -173,7 +173,7 @@ export class FirebaseNotificationComponent implements OnInit {
           }
 
           if (id != this.id) {
-            this.dataDetail = item;
+            this.onDetail(item)
           }
 
           if (id && paramsNoti) {
@@ -185,15 +185,26 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   onDetail(item: any) {
-    if(item.dateRead == null) {
-      this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-          item.dateRead = Date.now();
+    this.firebaseRegisterService.notificationDetail(item?.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.dataDetail = res
+        if(item.dateRead == null) {
+          this.makeRead(item);
         }
-      });
-    }
-    this.dataDetail = item;
+      }
+    })
     this.setCurrentConversationItem(item);
+  }
+
+  makeRead(item: any) {
+    this.firebaseRegisterService.makeRead(item?.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        let index = this.data.findIndex(x => x.id === item.id);
+        if(index >= 0) {
+          this.data[index].dateRead = new Date()
+        }
+      }
+    });
   }
 
   setCurrentConversationItem(item: any) {

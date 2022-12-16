@@ -184,7 +184,7 @@
 
             <div *ngIf="dataSource && dataSource?.Items" >
                 <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
-                  <div *ngIf="item" @eventFadeState>
+                  <div *ngIf="item">
 
                     <!-- TODO: user đã đọc -->
                     <div class="w-full block" *ngIf="item.Type == 0 && item.Message">
@@ -198,7 +198,7 @@
                     <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
                         <div class="w-full relative">
                             <div class="date-v3">
-                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.ChannelCreatedTime | yiDateTimeV3"></span>
+                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.ChannelCreatedTime | yiDateTimeV3 | safeHtml"></span>
                                 <span class="hr"></span>
                             </div>
                         </div>

@@ -6,4 +6,6 @@ export interface TiktokUserDto {
     Address?: any;
     OwnerId?: any;
     Avatar: string;
+    sessionId?: string;
+    uniqueId?: string;
 }

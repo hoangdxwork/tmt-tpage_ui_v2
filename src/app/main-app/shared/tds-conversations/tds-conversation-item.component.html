@@ -85,7 +85,7 @@
 
           <!-- Tin nhắn văn bản -->
           <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
-            <div class="text-left hidden" [innerHtml]="dataItem.Message | jsonPayload | formatIconLike | bbcodeConvert | highlightSearch : searchText" #contentMessage></div>
+            <div class="text-left hidden" [innerHtml]="dataItem.Message | jsonPayload | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
             <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.Message" [searchText]="searchText" class="text-left" ></div>
           </div>
 
@@ -241,7 +241,7 @@
                           <div *ngIf="dataItem.Message">
                             <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
                             <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
-                            <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert" #contentMessage></div>
+                            <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert | safeHtml" #contentMessage></div>
                           </div>
                       </div>
                   </div>
@@ -377,7 +377,7 @@
                                         </div>
 
                                       <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
-                                      <div class="hidden" [innerHtml]="child.Message | bbcodeConvert" #contentMessageChild></div>
+                                      <div class="hidden" [innerHtml]="child.Message | bbcodeConvert | safeHtml" #contentMessageChild></div>
                                   </div>
                               </div>
                           </div>

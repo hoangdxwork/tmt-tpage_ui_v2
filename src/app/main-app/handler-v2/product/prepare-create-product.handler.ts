@@ -41,6 +41,8 @@ export class AddProductHandler {
          })
          dataModel.UOMLines = lstUOM;
       }
+      // TODO: chuyển đổi từ g sang kg
+      dataModel.Weight = Number(dataModel.Weight/1000);
 
       dataModel.Images = images || [];
       dataModel.ProductVariants.map(

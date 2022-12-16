@@ -154,13 +154,13 @@
                                                 <div class="w-full flex gap-x-2">
                                                   <span class="text-neutral-1-400 font-regular text-[13px] flex gap-x-2 items-center"> Tồn kho:
                                                       <span class="text-primary-1" *ngIf="lstInventory">{{lstInventory[data.Id]? lstInventory[data.Id].QtyAvailable : 0}}</span>
-                                                      <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                                      <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
                                                         *ngIf="!lstInventory"></tds-spinner>
                                                   </span>
                                                   <span class="ml-1 mr-1"> / </span>
                                                   <span class="text-neutral-1-400 font-regular text-[13px] flex gap-x-2 items-center"> Tồn dự báo:
                                                       <span class="text-primary-1" *ngIf="lstInventory">{{lstInventory[data.Id]? lstInventory[data.Id].VirtualAvailable : 0}}</span>
-                                                      <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                                      <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
                                                         *ngIf="!lstInventory"></tds-spinner>
                                                   </span>
                                               </div>
@@ -216,7 +216,7 @@
 
                                         <span class="w-1/4 py-2"> Sản phẩm </span>
                                           <div class="flex-auto flex justify-end">
-                                            <button *ngIf="!visible; else menu" style="width: 30%; text-align: end;" (click)="onOpenSearchvalue()">
+                                            <button type="button" *ngIf="!visible; else menu" style="width: 30%; text-align: end;" (click)="onOpenSearchvalue()">
                                               <span class="tdsi-search-fill p-1 rounded text-neutral-1-500 text-xl leading-none relative"
                                                 tds-tooltip tooltipTitle="Tìm kiếm sản phẩm trong danh sách">
                                               </span>

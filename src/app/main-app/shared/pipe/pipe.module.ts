@@ -1,3 +1,4 @@
+import { GetChannelAvatarPipe } from './get-channel-avatar.pipe';
 import { GetTeamIconPipe } from './get-team-icon.pipe';
 import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
@@ -118,7 +119,8 @@ const cmp =[
   ChatomniTiktokData,
   GetTeamIconPipe,
   ImageLazyLoadPipe,
-  CheckSocketTeamTypePipe
+  CheckSocketTeamTypePipe,
+  GetChannelAvatarPipe
 ]
 
 @NgModule({

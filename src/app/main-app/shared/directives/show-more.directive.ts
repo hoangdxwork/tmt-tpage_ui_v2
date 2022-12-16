@@ -5,7 +5,7 @@ import { Input, Component, Output, EventEmitter, ViewChild, ElementRef, OnInit }
 @Component({
   selector: '[showMore]',
   template: `<div [ngClass]="isMessageItem? '': 'whitespace-normal'">
-                <span class="mr-1" [ngClass]="this.isShowmore ? '' : 'see-more'" [innerHTML]="this.isShowmore ? (text | formatIconLike | bbcodeConvert | highlightSearch : searchText) : (text | formatIconLike | bbcodeConvert | slice:0:length | highlightSearch : searchText)"></span>
+                <span class="mr-1" [ngClass]="this.isShowmore ? '' : 'see-more'" [innerHTML]="this.isShowmore ? (text | formatIconLike | bbcodeConvert ) : (text | formatIconLike | bbcodeConvert | slice:0:length )"></span>
                 <a class="text-accent-9 cursor-pointer cs-more" *ngIf="!isShowmore && text && text.length > length" (click)="showContent($event)">Xem thêm</a>
                 <a *ngIf="isShowmore" class="text-accent-9 cursor-pointer" (click)="showContent($event)">Thu gọn</a>
             </div>`,

@@ -646,7 +646,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
         let pageIds: any = [];
         obs?.map((x: any) => {
-          pageIds.push(x.page_id);
+          pageIds.push(x.ChannelId);
         });
 
         if (pageIds.length == 0) {
@@ -656,6 +656,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
           next: (teams: any): any => {
+
             if (teams?.length == 0) {
               this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
@@ -665,13 +666,13 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
             let pageDic = {} as any;
 
             teams.map((x: any) => {
-              let exist = obs?.filter((r: any) => r.page_id == x.ChannelId)[0];
+              let exist = obs?.filter((r: any) => r.ChannelId == x.ChannelId)[0];
 
-              if (exist && !pageDic[exist.page_id]) {
-                pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+              if (exist && !pageDic[exist.ChannelId]) {
+                pageDic[exist.paChannelIdge_id] = true; // Cờ này để không thêm trùng page vào
 
                 this.mappingTeams.push({
-                  psid: exist.psid,
+                  psid: exist.UserId,
                   team: x
                 })
               }
@@ -679,7 +680,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
             if (this.mappingTeams.length > 0) {
               this.currentMappingTeam = this.mappingTeams[0];
-              this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
+              this.loadMDBByPSId(this.currentMappingTeam.team?.Id, this.currentMappingTeam.psid);
             }
           }
         })
@@ -691,22 +692,24 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
-  loadMDBByPSId(pageId: number, psid: string) {
+  loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
-    this.crmMatchingService.getMDBByPSId(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: MDBByPSIdDTO) => {
+    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationItemDto) => {
         if (res) {
-          let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-          this.currentConversation = { ...model };
+          // let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
+          this.currentConversation = { ...res };
 
-          this.psid = res.psid;
+          this.psid = psid;
           this.isOpenDrawer = true;
+          this.isLoading = false;
         }
       },
       error: (error: any) => {
+        this.isLoading = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
       }
     })

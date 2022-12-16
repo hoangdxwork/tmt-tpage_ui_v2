@@ -10,11 +10,13 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { TiktokService } from './../../../../services/tiktok-service/tiktok.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
-import { ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'tiktok-channel',
   templateUrl: './tiktok-channel.component.html',
+  styleUrls: ['./tiktok-channel.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   providers: [TDSDestroyService]
 
 })

@@ -1,3 +1,6 @@
+import { BillFilterOptionsComponent } from './../../../../shared/bill-filter-options/bill-filter-options.component';
+import { ViewChild } from '@angular/core';
+import { Message } from 'src/app/lib/consts/message.const';
 import { CommonService } from './../../../../services/common.service';
 import { ModalMergeOrderComponent } from './modal-merge-order.component';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -38,6 +41,8 @@ export class DetailBillComponent implements OnInit {
 
   @Input() liveCampaignId!: string;
 
+  @ViewChild(BillFilterOptionsComponent) billFilterOptions!: TDSSafeAny;
+
   public filterObj: any = {
     tags: [],
     status: '',
@@ -49,7 +54,8 @@ export class DetailBillComponent implements OnInit {
     dateRange: {
       startDate: addDays(new Date(), -30),
       endDate: new Date(),
-    }
+    },
+    carrierId: -1
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -184,6 +190,7 @@ export class DetailBillComponent implements OnInit {
       isWaitPayment: false,
       liveCampaignId: this.liveCampaignId,
       deliveryType: event.deliveryType,
+      carrierId: event.carrierId,
       searchText: event.searchText,
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
@@ -206,11 +213,13 @@ export class DetailBillComponent implements OnInit {
       liveCampaignId: this.liveCampaignId,
       deliveryType: '',
       searchText: '',
+      carrierId: -1,
       dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
       }
     }
+    this.billFilterOptions.onCancel();
 
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -317,75 +326,66 @@ export class DetailBillComponent implements OnInit {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
-    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
-
-      let pageIds: any = [];
-      res.map((x: any) => {
-        pageIds.push(x.page_id);
-      });
-
-      if (pageIds.length == 0) {
-        this.isLoading = false;
-        return this.message.error('Không có kênh kết nối với khách hàng này.');
-      }
-
-      this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (teams: any): any => {
-
-          if (teams.length == 0) {
-            this.isLoading = false;
-            return this.message.error('Không có kênh kết nối với khách hàng này.');
-          }
-
-          this.mappingTeams = [];
-          let pageDic = {} as any;
-
-          teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
-
-            if (exist && !pageDic[exist.page_id]) {
-
-              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
-
-              this.mappingTeams.push({
-                psid: exist.psid,
-                team: x
-              })
-            }
-          })
-
-          if (this.mappingTeams.length > 0) {
-            this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
-          } else {
-            this.isLoading = false;
-          }
-        }
-      });
-    }, error => {
+    if(!TDSHelperString.hasValueString(data.TeamId)) {
       this.isLoading = false;
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
-    })
+      this.message.error(Message.PageNotExist);
+      return;
+    }
+
+    this.partnerService.getAllByPartnerId(data.TeamId, partnerId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any): any => {
+
+        let pageIds: any = [];
+        res.map((x: any) => {
+          pageIds.push(x.ChannelId);
+        });
+  
+        if (pageIds.length == 0) {
+          this.isLoading = false;
+          return this.message.error('Không có kênh kết nối với khách hàng này.');
+        }
+  
+        this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (teams: any): any => {
+  
+            if (teams.length == 0) {
+              this.isLoading = false;
+              return this.message.error('Không có kênh kết nối với khách hàng này.');
+            }
+  
+            this.mappingTeams = [];
+            let pageDic = {} as any;
+  
+            teams.map((x: any) => {
+              let exist = res.filter((r: any) => r.ChannelId == x.ChannelId)[0];
+  
+              if (exist && !pageDic[exist.ChannelId]) {
+  
+                pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vào
+  
+                this.mappingTeams.push({
+                  psid: exist.UserId,
+                  team: x
+                })
+              }
+            })
+  
+            if (this.mappingTeams.length > 0) {
+              this.currentMappingTeam = this.mappingTeams[0];
+              this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
+            } else {
+              this.isLoading = false;
+            }
+          }
+        });
+      },
+      error: error => {
+        this.isLoading = false;
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+      }
+    }
+      )
   }
-
-  // loadMDBByPSId(pageId: string, psid: string) {
-  //   // Xoá hội thoại hiện tại
-  //   (this.currentConversation as any) = null;
-
-  //   // get data currentConversation
-  //   this.crmMatchingService.getMDBByPSId(pageId, psid)
-  //     .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
-  //       if (res) {
-  //         let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
-  //         this.currentConversation = { ...model };
-
-  //         this.psid = res.psid;
-  //         this.isOpenDrawer = true;
-  //       }
-  //     }, error => {
-  //       this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
-  //     })
-  // }
 
   loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại

@@ -63,18 +63,18 @@ export class BillFilterOptionsComponent implements OnInit {
     this.carrierService.get().subscribe((res: TDSSafeAny) => {
         this.lstCarriers = res.value;
 
-        let data: DeliveryCarrierDTOV2[] = [];
-        this.lstCarriers.map(x=>{
-          let exist = data.find(y => y.DeliveryType == x.DeliveryType);
-          if(!exist) {
-            if(!TDSHelperString.hasValueString(x.DeliveryTypeGet)) {
-              x.DeliveryTypeGet = x.DeliveryType;
-            }
-            data = [ ...data, ...[x]]; 
-          }
-        });
+        // let data: DeliveryCarrierDTOV2[] = [];
+        // this.lstCarriers.map(x=>{
+        //   let exist = data.find(y => y.DeliveryType == x.DeliveryType);
+        //   if(!exist) {
+        //     if(!TDSHelperString.hasValueString(x.DeliveryTypeGet)) {
+        //       x.DeliveryTypeGet = x.DeliveryType;
+        //     }
+        //     data = [ ...data, ...[x]]; 
+        //   }
+        // });
 
-        this.lstCarriers = [...data];
+        // this.lstCarriers = [...data];
     });
   }
 
@@ -137,7 +137,7 @@ export class BillFilterOptionsComponent implements OnInit {
             startDate: this.datePicker[0],
             endDate: this.datePicker[1]
         } : null,
-        carrierId: this.modelCarrier ? this.modelCarrier.Id : ''
+        carrierId: this.modelCarrier ? this.modelCarrier.Id : -1
     }
 
     this.onLoadOption.emit(this.filterObj);

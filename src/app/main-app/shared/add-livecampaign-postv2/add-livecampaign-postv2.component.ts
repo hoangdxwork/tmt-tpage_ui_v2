@@ -180,7 +180,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
     this.odataLiveCampaignService.getView(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ODataLiveCampaignModelDTO) => {
           if(res.value && res.value.length >=0 && res.value[0]?.Id) {
-            
+
             let liveCampaignId = res.value[0]?.Id;
             this.liveCampaignService.getByLiveCampaignId(liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
               next: res => {
@@ -926,7 +926,6 @@ export class AddLivecampaignPostV2Component implements OnInit {
     if(Number(index) >= 0) {
       let details = this.detailsForm.at(index).value;
       details.Tags = strs?.join(',');
-      console.log(details.Tags)
 
        //TODO: cập nhật vào formArray
       this.detailsForm.at(index).patchValue(details);

@@ -10,7 +10,8 @@
                 <div class="flex gap-4 items-center">
                   <div class="relative">
                     <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                      <tpage-avatar-facebook [size]="'xl'" [fbid]="team?.ChannelId" [token]="team?.ChannelToken">
+                      <tds-avatar *ngIf="team?.OwnerAvatar || team?.ChannelAvatar" [tdsSrc]="team | getChannelAvatar" [size]="64" class="tshop-avatar"></tds-avatar>
+                      <tpage-avatar-facebook *ngIf="!(team?.OwnerAvatar || team?.ChannelAvatar)" [size]="'xl'" [fbid]="team?.ChannelId" [token]="team?.ChannelToken">
                       </tpage-avatar-facebook>
                     </div>
                     <span class="absolute right-0 bottom-0">
@@ -65,7 +66,8 @@
                   <div *ngFor="let child of team.Childs" class="flex justify-between items-center px-10 py-4">
                     <div class="flex gap-4 items-center">
                       <div class="relative">
-                        <tpage-avatar-facebook [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'lg'">
+                        <tds-avatar *ngIf="child?.ChannelAvatar || child?.OwnerAvatar" [tdsSrc]="child | getChannelAvatar" [size]="48" class="tshop-child-avatar"></tds-avatar>
+                        <tpage-avatar-facebook *ngIf="!(child?.ChannelAvatar || child?.OwnerAvatar)" [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'lg'">
                         </tpage-avatar-facebook>
                         <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
                           <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
