@@ -15,8 +15,8 @@
                   <div class="flex gap-4 items-center">
                     <div class="relative">
                       <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
-                        <tds-avatar *ngIf="team?.OwnerAvatar" [tdsSrc]="team.OwnerAvatar" [size]="64" class="tiktok-avatar"></tds-avatar>
-                        <tpage-avatar-facebook *ngIf="!team?.OwnerAvatar" [size]="'xl'" [fbid]="team?.OwnerId" [token]="team?.OwnerToken"></tpage-avatar-facebook>
+                        <tds-avatar *ngIf="team?.OwnerAvatar || team?.ChannelAvatar" [tdsSrc]="team | getChannelAvatar" [size]="64" class="tiktok-avatar"></tds-avatar>
+                        <tpage-avatar-facebook *ngIf="!(team?.OwnerAvatar || team.ChannelAvatar)" [size]="'xl'" [fbid]="team?.OwnerId" [token]="team?.OwnerToken"></tpage-avatar-facebook>
                       </div>
                       <div class="absolute right-0 bottom-0" *ngIf="team.Active">
                         <!-- TODO: hiện icon dưới avatar -->
@@ -61,8 +61,8 @@
                   <div *ngFor="let child of team.Childs" class="flex justify-between items-center px-10 py-4">
                     <div class="flex gap-4 items-center">
                       <div class="relative">
-                        <tds-avatar *ngIf="child?.ChannelAvatar" [tdsSrc]="child.ChannelAvatar" [size]="48" class="tiktok-child-avatar"></tds-avatar>
-                        <tpage-avatar-facebook *ngIf="!child?.ChannelAvatar" [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'lg'"></tpage-avatar-facebook>
+                        <tds-avatar *ngIf="child?.ChannelAvatar || child.OwnerAvatar" [tdsSrc]="child | getChannelAvatar" [size]="48" class="tiktok-child-avatar"></tds-avatar>
+                        <tpage-avatar-facebook *ngIf="!(child?.ChannelAvatar || child.OwnerAvatar)" [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'lg'"></tpage-avatar-facebook>
                         <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center border-[1.5px] border-white">
                           <span><img [width]="16" [height]="16" src="../../../assets/imagesv2/tiktok/tiktok.svg"></span>
                         </div>
