@@ -325,7 +325,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onRefresh(event: any) {
     this.clickReload += 1;
-    
+
     this.queryObj = { } as any;
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
@@ -402,7 +402,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         params_postid = this.getStoragePostId();
     }
 
-    if(params_postid == null) {
+    if(params_postid == null || params_postid == undefined) {
       currentObject = this.lstObjects[0];
       this.currentObject = currentObject;
 
@@ -432,6 +432,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
 
     let teamId = this.currentTeam?.Id as number;
+    if(!TDSHelperString.hasValueString(params_postid)) {
+      this.message.error('Không tìm thấy ObjectId');
+      return;
+    }
+
     this.chatomniObjectService.getById(params_postid, teamId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
           currentObject = {...res};
@@ -526,7 +531,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
       this.disableNextUrl = false;
-      this.removeStoragePostId();
 
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
@@ -593,9 +597,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               this.lstObjects = this.lstObjects.filter(x => x.ObjectId != this.currentPost?.ObjectId);
               this.lstObjects = [...[currentObject], ...this.lstObjects];
             }
+
           } else if(!this.isFilter) {
             let teamId = this.currentTeam?.Id as number;
-            this.chatomniObjectService.getById(this.currentPost?.ObjectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+            let objectId = this.currentPost?.ObjectI;
+
+            if(!TDSHelperString.hasValueString(objectId)) {
+              this.message.error('Không tìm thấy ObjectId');
+              return;
+            }
+
+            this.chatomniObjectService.getById(objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: ChatomniObjectsItemDto) => {
                   currentObject = {...res};
                   this.lstObjects = [...[currentObject], ...this.lstObjects];

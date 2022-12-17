@@ -339,37 +339,37 @@ export class DetailBillComponent implements OnInit {
         res.map((x: any) => {
           pageIds.push(x.ChannelId);
         });
-  
+
         if (pageIds.length == 0) {
           this.isLoading = false;
           return this.message.error('Không có kênh kết nối với khách hàng này.');
         }
-  
+
         this.crmTeamService.getActiveByPageIds$(pageIds).pipe(takeUntil(this.destroy$)).subscribe({
             next: (teams: any): any => {
-  
+
             if (teams.length == 0) {
               this.isLoading = false;
               return this.message.error('Không có kênh kết nối với khách hàng này.');
             }
-  
+
             this.mappingTeams = [];
             let pageDic = {} as any;
-  
+
             teams.map((x: any) => {
               let exist = res.filter((r: any) => r.ChannelId == x.ChannelId)[0];
-  
+
               if (exist && !pageDic[exist.ChannelId]) {
-  
+
                 pageDic[exist.ChannelId] = true; // Cờ này để không thêm trùng page vào
-  
+
                 this.mappingTeams.push({
                   psid: exist.UserId,
                   team: x
                 })
               }
             })
-  
+
             if (this.mappingTeams.length > 0) {
               this.currentMappingTeam = this.mappingTeams[0];
               this.loadMDBByPSId(this.currentMappingTeam.team.Id, this.currentMappingTeam.psid);
@@ -390,7 +390,10 @@ export class DetailBillComponent implements OnInit {
   loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
-
+    if(!TDSHelperString.hasValueString(psid)) {
+      this.message.error('Không tìm thấy ConversationId');
+      return;
+    }
     // get data currentConversation
     this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {
@@ -554,14 +557,14 @@ export class DetailBillComponent implements OnInit {
 
             if(order.OrderLines) {
               ids = [];
-    
+
               order.OrderLines.forEach((x: any) => {
                 if (!ids.includes(x.ProductId)) {
                     ids.push(x.ProductId);
                 }
               });
             }
-        
+
             let warehouseId = order.WarehouseId;
             this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe({
               next:(res: any) => {

@@ -1,3 +1,7 @@
+import { CompanyCurrentDTO } from './../../../dto/configs/company-current.dto';
+import { ProductService } from '@app/services/product.service';
+import { SharedService } from './../../../services/shared.service';
+import { ProductTemplateFacade } from './../../../services/facades/product-template.facade';
 import { CreateUnitComponent } from './../components/create-unit/create-unit.component';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { UpdateInitInventoryComponent } from './../components/update-init-inventory/update-init-inventory.component';
@@ -69,6 +73,8 @@ export class ConfigAddProductComponent implements OnInit {
   count: number = 1;
   indexPush: number = -1;
 
+  companyCurrents!: CompanyCurrentDTO;
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -99,7 +105,10 @@ export class ConfigAddProductComponent implements OnInit {
     private productTemplateService: ProductTemplateService,
     private stockChangeProductQtyService: StockChangeProductQtyService,
     private productTemplateUOMLine: ProductTemplateUOMLineService,
-    private productIndexDBService: ProductIndexDBService) {
+    private productIndexDBService: ProductIndexDBService,
+    private sharedService: SharedService,
+    private productService: ProductService,
+    private productTemplateFacade: ProductTemplateFacade) {
     this.createForm();
   }
 
@@ -127,8 +136,46 @@ export class ConfigAddProductComponent implements OnInit {
     this.loadTrackingList();
     this.loadUOMAddType();
     this.loadOriginCountry();
+
+    this.onEventEmitter();
+    this.loadCurrentCompany()
   }
   //#endregion Initialization
+
+  onEventEmitter() {
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (obs: any) => {
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+     
+        if(warehouseId > 0) {
+            this.productService.lstInventory = null;
+            this.loadInventoryWarehouseId(warehouseId);
+            this.isLoading = false;
+            this.router.navigateByUrl('/configs/products');
+        }
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
+    })
+  }
+
+  loadInventoryWarehouseId(warehouseId: number){
+    this.productService.setInventoryWarehouseId(warehouseId);
+    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe();
+  }
+
+  loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res || {};
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
+    });
+  }
 
   //#region Api-request
   loadData(id: TDSSafeAny) {
@@ -461,9 +508,11 @@ export class ConfigAddProductComponent implements OnInit {
             next: (res: TDSSafeAny) => {
               this.message.success(Message.InsertSuccess);
               this.loadDataIndexDBCache();
-              this.isLoading = false;
 
-              this.router.navigateByUrl('/configs/products');
+              let id = res.Id;
+              let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
+              this.productTemplateFacade.stockChangeProductQty(id, mapping, '');
+  
             },
             error: err => {
               this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);

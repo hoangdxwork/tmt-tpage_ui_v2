@@ -71,6 +71,9 @@ import { FirebaseRegisterService } from '@app/services/firebase/firebase-registe
 import { AccountJournalService } from '@app/services/account-journal.service';
 import { TagService } from '@app/services/tag.service';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -111,7 +114,10 @@ const SERVICES = [
   TDSMessageService,
   FirebaseRegisterService,
   AccountJournalService,
-  TagService
+  TagService,
+  ChatomniObjectService,
+  ChatomniConversationService,
+  ChatomniObjectFacade
 ]
 
 const FACADES = [

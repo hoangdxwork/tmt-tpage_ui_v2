@@ -40,13 +40,12 @@ import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conve
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  animations: [eventFadeStateTrigger, eventCollapTrigger],
-  providers: [ TDSDestroyService ]
+  animations: [eventCollapTrigger],
+  providers: [TDSDestroyService]
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
-  @HostBinding("@eventFadeState") eventAnimation = true;
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
   @ViewChild('templateAdminTransferChatBot') templateAdminTransferChatBot!: TemplateRef<{}>;
@@ -445,7 +444,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         params_csid = this.getStorageConversationId();
     }
 
-    if(params_csid == null) {
+    if(params_csid == null || params_csid == undefined) {
       currentOmni = this.lstConversation[0];
       this.setCurrentConversationItem(currentOmni);
 
@@ -472,6 +471,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
 
     let teamId = this.currentTeam?.Id as number;
+    if(!TDSHelperString.hasValueString(params_csid)) {
+      this.message.error('Không tìm thấy ConversationId');
+      return;
+    }
+
     this.chatomniConversationService.getById(teamId, params_csid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {
           currentOmni = {...res};
@@ -490,7 +494,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   // TODO: matching đang chọn active
-  // TODO: xử lý lấy thông tin partner + đơn hàng từ GetInfo()
   setCurrentConversationItem(item: ChatomniConversationItemDto) {
     if (TDSHelperObject.hasValue(item)) {
 
@@ -579,7 +582,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
       this.disableNextUrl = false;
-      this.removeStorageConversationId();
 
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
@@ -802,21 +804,29 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               this.lstConversation = this.lstConversation.filter(x => x.ConversationId != this.conversationItem?.ConversationId);
               this.lstConversation = [...[currentOmni], ...this.lstConversation];
             }
-            } else if(!this.isFilter) {
-              let teamId = this.currentTeam?.Id as number;
-              this.chatomniConversationService.getById(teamId, this.conversationItem?.ConversationId).pipe(takeUntil(this.destroy$)).subscribe({
-                next: (res: ChatomniConversationItemDto) => {
-                    currentOmni = {...res};
-                    this.lstConversation = [...[currentOmni], ...this.lstConversation];
 
-                    this.isLoading = false;
-                },
-                error: (error: any) => {
-                    this.isLoading = false;
-                    this.message.error(error?.error?.message);
-                }
-              })
+          } else if(!this.isFilter) {
+
+            let teamId = this.currentTeam?.Id as number;
+            let csid = this.conversationItem?.ConversationId;
+            if(!TDSHelperString.hasValueString(csid)) {
+              this.message.error('Không tìm thấy ConversationId');
+              return;
             }
+
+            this.chatomniConversationService.getById(teamId, csid).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: ChatomniConversationItemDto) => {
+                  currentOmni = {...res};
+                  this.lstConversation = [...[currentOmni], ...this.lstConversation];
+
+                  this.isLoading = false;
+              },
+              error: (error: any) => {
+                  this.isLoading = false;
+                  this.message.error(error?.error?.message);
+              }
+            })
+          }
 
           this.isProcessing = false;
           this.cdRef.detectChanges();

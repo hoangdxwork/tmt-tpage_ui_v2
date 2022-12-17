@@ -61,6 +61,10 @@ export class TiktokChannelComponent implements OnInit {
       next: (res: TDSSafeAny) => {
         if (res) {
           this.data = res.filter((x: any) => x.Type == CRMTeamType._UnofficialTikTok);
+
+          if(this.userTiktokLogin) {
+            this.sortByTikTok(this.userTiktokLogin.Id);
+          }
         }
 
         this.isLoading = false;
@@ -73,8 +77,19 @@ export class TiktokChannelComponent implements OnInit {
     })
   }
 
+  sortByTikTok(channelId: string) {
+    let exist = this.data.find((x) => x.ChannelId && x.ChannelId == channelId);
+
+    if (exist) {
+      this.data.splice(this.data.indexOf(exist), 1);
+      this.data.unshift(exist);
+    }
+  }
+
   tiktokSignOut() {
     this.userTiktokLogin = null;
+    this.uniqueId = '';
+    this.sessionId = '';
     this.tiktokService.removeCacheLoginUser();
   }
 
@@ -133,15 +148,13 @@ export class TiktokChannelComponent implements OnInit {
           // TODO: lưu cache tài khoản đăng nhập
           this.tiktokService.setCacheLoginUser(<TiktokUserDto>this.userTiktokLogin);
 
-          let exist;
-          this.data.map(x => {
-            // TODO: kiểm tra tài khoản login có trong danh sách kênh 
-            exist = x.Childs && x.Childs.filter(f => f.ChannelId == this.userTiktokLogin?.Id)?.[0];
-            if(exist) return;
-          })
+          if(this.userTiktokLogin) {
+            this.sortByTikTok(this.userTiktokLogin.Id);
+            let exist = this.data.find(x => x.ChannelId == this.userTiktokLogin?.Id);
 
-          if(!exist) {
-            this.onTiktokConnected();
+            if(!exist) {
+              this.onTiktokConnected();
+            }
           }
 
           this.isLoading = false;
@@ -168,11 +181,11 @@ export class TiktokChannelComponent implements OnInit {
     this.crmTeamService.insert(item).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         this.crmTeamService.loginOnChangeTeam$.emit(true);
-        this.message.success('Thao tác thành công');
+        this.message.success('Tài khoản đã được kết nối');
         this.loadData();
       },
       error: (error) => {
-        this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` || 'Kết nối tài khoản xảy ra lỗi');
       }
     })
   }

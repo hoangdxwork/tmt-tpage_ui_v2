@@ -5,7 +5,7 @@ import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ProductTemplateUOMLineService } from './../../../../services/product-template-uom-line.service';
-import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { takeUntil } from 'rxjs';
@@ -79,7 +79,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent implements OnInit, OnChanges {
+export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
@@ -164,6 +164,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   disableSyncOrder: boolean = false; //dùng cho bài viết
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
   indexDbStorage!: DataPouchDBDTO[];
+
+  timerApiLastv2: any;
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -366,21 +368,28 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(obs !== InventoryChangeType._TAB_ORDER) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (inventories: any) => {
+
+        if(warehouseId > 0) {
+          this.productService.lstInventory = null;
+
+          this.productService.setInventoryWarehouseId(warehouseId);
+          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
               this.inventories = {};
-              this.inventories = inventories;
+              this.inventories = res;
+
               if(this.response) {
                 this.mappingProduct(this.response);
               }
-          },
-          error: (err: any) => {
+            },
+            error: (err: any) => {
               this.message.error(err?.error?.message);
               if(this.response) {
                 this.mappingProduct(this.response);
               }
-          }
-        });
+            }
+          });
+        }
       }
     })
   }
@@ -1047,7 +1056,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         title: 'Chọn sản phẩm',
         content: ModalListProductComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'xl',
+        size: 'lg',
         bodyStyle: {
           padding: '0px'
         },
@@ -1515,23 +1524,28 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   productIndexDB() {
+    this.destroyTimer();
     this.isLoadingProduct = true;
     this.indexDbStorage = [];
-    this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: KeyCacheIndexDBDTO) => {
-            if(!res) return;
-            this.indexDbStorage = [...res?.cacheDbStorage];
 
-            this.isLoadingProduct = false;
-            this.cdRef.detectChanges();
-        },
-        error:(err) => {
-            this.isLoadingProduct = false;
-            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-            this.cdRef.detectChanges();
-        }
-    })
+    this.timerApiLastv2 = setTimeout(() => {
+
+      this.productIndexDBService.setCacheDBRequest();
+      this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+          next:(res: KeyCacheIndexDBDTO) => {
+              if(!res) return;
+              this.indexDbStorage = [...res?.cacheDbStorage];
+
+              this.isLoadingProduct = false;
+              this.cdRef.detectChanges();
+          },
+          error:(err) => {
+              this.isLoadingProduct = false;
+              this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+              this.cdRef.detectChanges();
+          }
+      })
+    }, 3 * 1000);
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -1658,6 +1672,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           }
       })
     }, 350);
+  }
+
+  destroyTimer() {
+    if (this.timerApiLastv2) {
+      clearTimeout(this.timerApiLastv2);
+    }
+  }
+
+  ngOnDestroy() {
+    this.destroyTimer();
   }
 
 }

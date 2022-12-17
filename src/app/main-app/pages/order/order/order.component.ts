@@ -903,6 +903,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
+    if(!TDSHelperString.hasValueString(psid)) {
+      this.message.error('Không tìm thấy ConversationId');
+      return;
+    }
+
     // get data currentConversation
     this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {

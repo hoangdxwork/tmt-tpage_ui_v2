@@ -1,6 +1,6 @@
-
 <tds-spin [spinning]="isLoading" class="flex w-full h-[calc(100vh-109px)] overflow-hidden">
-  <div *ngIf="partner && team && conversationItem; else noData">
+    
+  <div *ngIf="partner && conversationItem; else noData">
       <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-hidden overflow-y-auto tds-custom-scroll flex-col flex">
           <!-- Thông tin khách hàng -->
           <div class="bg-white px-4 py-4">
@@ -174,7 +174,7 @@
                           (Chưa có đối tác)</div>
 
                         <div class="text-body-2 font-regular font-sans text-neutral-1-900">
-                          [ {{ lastInvoice.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastInvoice.TrackingRef"> - {{ lastInvoice.TrackingRef }}</span>]
+                          [{{ lastInvoice.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastInvoice.TrackingRef"> - {{ lastInvoice.TrackingRef }}</span>]
                         </div>
 
                     </div>

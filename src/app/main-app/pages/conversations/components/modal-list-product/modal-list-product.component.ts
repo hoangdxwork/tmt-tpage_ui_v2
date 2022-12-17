@@ -77,21 +77,27 @@ export class ModalListProductComponent implements OnInit {
         if(obs !== InventoryChangeType._DEFAULT_PRODUCT) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (inventories: any) => {
+        if(warehouseId > 0) {
+          this.productService.lstInventory = null;
+
+          this.productService.setInventoryWarehouseId(warehouseId);
+          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
               this.inventories = {};
-              this.inventories = inventories;
+              this.inventories = res;
+
               if(this.response) {
                 this.mappingProduct(this.response);
               }
-          },
-          error: (err: any) => {
+            },
+            error: (err: any) => {
               this.message.error(err?.error?.message);
               if(this.response) {
                 this.mappingProduct(this.response);
               }
-          }
-        });
+            }
+          });
+        }
       }
     })
   }

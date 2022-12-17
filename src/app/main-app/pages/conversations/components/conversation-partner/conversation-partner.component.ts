@@ -38,9 +38,9 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | any;
-  @Input() isLoading: boolean = false;
   @Input() team!: CRMTeamDTO | any;
   @Input() type!: string;
+  @Input() isLoading: boolean = false;
 
   @Output() onTabOderOutput = new EventEmitter<boolean>();
 
@@ -116,10 +116,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes["isLoading"] && !changes["isLoading"].firstChange) {
-        this.isLoading = changes["isLoading"].currentValue;
-    }
-
     if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
         let x = {...changes["conversationInfo"].currentValue} as ChatomniConversationInfoDto;
         this.loadData(x);
@@ -128,8 +124,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
-    this.isLoading = true;
+    
     this.validateData();
+    this.isLoading = true;
     this.conversationInfo = {...conversationInfo};
 
     this.prepareModelPartner(this.conversationInfo);
