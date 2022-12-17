@@ -70,39 +70,39 @@ export class TpageNotificationDropdownComponent implements OnInit {
     });
   }
 
-  vsEnd(event: NgxVirtualScrollerDto) {
-    if (this.isLoadingProduct || this.isLoadingNextdata) {
-      return;
-    }
+  // vsEnd(event: NgxVirtualScrollerDto) {
+  //   if (this.isLoadingProduct || this.isLoadingNextdata) {
+  //     return;
+  //   }
 
-    let exisData = this.data && this.data.length > 0 && event && event.scrollStartPosition > 0;
-    if (exisData) {
-      const vsEnd = Number(this.data.length - 1) == Number(event.endIndex);
-      if (vsEnd) {
-        this.isLoadingNextdata = true;
-        setTimeout(() => {
-          this.nextData();
-          this.isLoadingNextdata = false;
-        }, 350)
-      }
-    }
-  }
+  //   let exisData = this.data && this.data.length > 0 && event && event.scrollStartPosition > 0;
+  //   if (exisData) {
+  //     const vsEnd = Number(this.data.length - 1) == Number(event.endIndex);
+  //     if (vsEnd) {
+  //       this.isLoadingNextdata = true;
+  //       setTimeout(() => {
+  //         this.nextData();
+  //         this.isLoadingNextdata = false;
+  //       }, 350)
+  //     }
+  //   }
+  // }
 
-  nextData() {
-    if (this.cursor) {
-      this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-          this.data = [...(this.data || []), ...res.items];
-          this.cursor = res.cursor;
-          this.isLoadingNextdata = false;
-        },
-        error: (err: any) => {
-          this.isLoadingNextdata = false;
-          this.message.error(`${err?.error?.message}`);
-        }
-      })
-    }
-  }
+  // nextData() {
+  //   if (this.cursor) {
+  //     this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
+  //       next: (res: any) => {
+  //         this.data = [...(this.data || []), ...res.items];
+  //         this.cursor = res.cursor;
+  //         this.isLoadingNextdata = false;
+  //       },
+  //       error: (err: any) => {
+  //         this.isLoadingNextdata = false;
+  //         this.message.error(`${err?.error?.message}`);
+  //       }
+  //     })
+  //   }
+  // }
 
   onAll() {
     this.visible = false;
