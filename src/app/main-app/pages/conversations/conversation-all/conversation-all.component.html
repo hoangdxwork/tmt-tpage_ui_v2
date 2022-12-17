@@ -178,12 +178,16 @@
                     </ng-template>
 
                     <div class="h-full w-full">
-                        <div *ngIf="currentTeam && conversationItem && type && conversationInfo" class="h-full w-full">
-                            <conversation-partner
-                                [conversationInfo]="conversationInfo"
+                        <div *ngIf="(currentTeam && conversationItem && type && conversationInfo)" class="h-full w-full">
+                            <conversation-partner class="h-full w-full"
+                                [conversationInfo]="conversationInfo" [isLoading]="isLoading"
                                 [team]="currentTeam" [type]="type"
                                 (onTabOderOutput)="onTabOderOutput($event)">
                             </conversation-partner>
+                        </div>
+
+                        <div *ngIf="!(currentTeam && conversationItem && type && conversationInfo)" class="w-full h-full flex">
+                            <div csLoadingPartner class="w-full h-full flex"></div>
                         </div>
                     </div>
                 </tds-tab>
