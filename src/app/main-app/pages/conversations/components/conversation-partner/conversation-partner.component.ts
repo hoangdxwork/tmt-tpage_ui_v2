@@ -40,10 +40,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   @Input() conversationInfo!: ChatomniConversationInfoDto | any;
   @Input() team!: CRMTeamDTO | any;
   @Input() type!: string;
+  @Input() isLoading: boolean = false;
 
   @Output() onTabOderOutput = new EventEmitter<boolean>();
 
-  isLoading: boolean = false;
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
@@ -124,8 +124,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
-    this.isLoading = true;
+    
     this.validateData();
+    this.isLoading = true;
     this.conversationInfo = {...conversationInfo};
 
     this.prepareModelPartner(this.conversationInfo);

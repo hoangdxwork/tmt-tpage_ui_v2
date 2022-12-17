@@ -8,13 +8,15 @@ import { PipeModule } from "../pipe/pipe.module";
 import { ShowMoreDirective } from "./show-more.directive";
 import { YiAutoScrollDirective } from "./yi-auto-scroll.directive";
 import { YuriAvatarDirective } from "./yuri-avatar.directive";
+import { CsLoadingPartnerDirective } from './cs-loading-partner.directive';
 
 const DIRECTIVES = [
   YiAutoScrollDirective,
   YuriAvatarDirective,
   ShowMoreDirective,
   CsLoadingObjectDirective,
-  CsLoadingPostDirective
+  CsLoadingPostDirective,
+  CsLoadingPartnerDirective
 ]
 
 @NgModule({
