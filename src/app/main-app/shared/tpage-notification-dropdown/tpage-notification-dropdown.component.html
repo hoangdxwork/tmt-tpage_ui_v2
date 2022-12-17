@@ -26,9 +26,10 @@
       </div>
 
       <div class="w-full">
-        <virtual-scroller #scroll [items]="data" (vsEnd)="vsEnd($event)" [enableUnequalChildrenSizes]="true" [scrollAnimationTime]="750"
-        class="w-[336px] h-[500px] overflow-hidden overflow-y-auto tds-custom-scroll">
-          <div *ngFor="let item of scroll.viewPortItems" (click)="onDetail(item)"
+        <!-- <virtual-scroller #scroll [items]="data" (vsEnd)="vsEnd($event)" [enableUnequalChildrenSizes]="true" [scrollAnimationTime]="750"
+        class="w-[336px] h-[500px] overflow-hidden overflow-y-auto tds-custom-scroll"> -->
+        <div class="w-[336px] h-[500px] overflow-hidden overflow-y-auto tds-custom-scroll">
+          <div *ngFor="let item of data" (click)="onDetail(item)"
             class="flex gap-x-4 py-2.5 px-4 relative w-full cursor-pointer hover:bg-neutral-3-200">
             <div class="w-full flex gap-x-4" [ngClass]="item?.dateRead ? 'text-neutral-1-400' : ''">
               <tds-avatar [shape]="'square'" [size]="63" tdsSrc="{{ item?.notification?.thumbnail }}" [isAvatar]="false" class="rounded min-w-[63px]"></tds-avatar>
@@ -57,7 +58,8 @@
           <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
             <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
           </div>
-        </virtual-scroller>
+        </div>
+        <!-- </virtual-scroller> -->
       </div>
     </div>
   </ng-container>
