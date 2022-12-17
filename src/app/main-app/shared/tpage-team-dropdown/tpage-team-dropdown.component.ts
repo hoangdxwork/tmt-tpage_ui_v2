@@ -6,6 +6,8 @@ import { TDSHeaderComponent } from 'tds-ui/header';
 import { TDSHelperObject } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../../services/crm-team.service';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'tpage-team-dropdown',
@@ -26,6 +28,8 @@ export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
   constructor(private crmTeamService: CRMTeamService,
     @Optional() @Host() public headerCmp: TDSHeaderComponent,
     private destroy$: TDSDestroyService,
+    private chatomniObjectService: ChatomniObjectService,
+    private chatomniConversationService: ChatomniConversationService,
     private cdr: ChangeDetectorRef,
     private liveCampaignService: LiveCampaignService) {
   }
@@ -56,15 +60,24 @@ export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopImmediatePropagation();
 
-    if (data.Id == this.currentTeam?.Id) {
-      return
-    } else {
-      this.visible = false;
-      this.tdsClickItem.emit(data);
+    if (data.Id == this.currentTeam?.Id) return;
 
-      // TODO: Xóa local chiến dịch live của bài viết
-      this.liveCampaignService.removeLocalStorageDrawer();
-    }
+    this.visible = false;
+    this.removeStoragePostId();
+    this.removeStorageConversationId();
+    this.liveCampaignService.removeLocalStorageDrawer();
+
+    this.tdsClickItem.emit(data);
+  }
+
+  removeStoragePostId() {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    localStorage.removeItem(_keyCache);
+  }
+
+  removeStorageConversationId() {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    localStorage.removeItem(_keyCache);
   }
 
   get parentIsHeaderCpm() {

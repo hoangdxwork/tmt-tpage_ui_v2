@@ -21,7 +21,7 @@ import { ODataPartnerDTO, PartnerDTO, } from 'src/app/main-app/dto/partner/partn
 import { ODataTagsPartnerDTO, TagsPartnerDTO } from 'src/app/main-app/dto/partner/partner-tags.dto';
 import { PartnerStatusReport, PartnerStatusReportDTO } from 'src/app/main-app/dto/partner/partner-status-report.dto';
 import { PartnerBirthdayDTO } from 'src/app/main-app/dto/partner/partner-birthday.dto';
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSConfigService } from 'tds-ui/core/config';
@@ -662,12 +662,17 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  loadMDBByPSId(channelId: number, psid: string) {
+  loadMDBByPSId(teamId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
+    if(!TDSHelperString.hasValueString(psid)) {
+        this.message.error('Không tìm thấy ConversationId');
+        return;
+    }
+
     // get data currentConversation
-    this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
+    this.chatomniConversationService.getById(teamId, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {
         if (res) {
           this.currentConversation = { ...res };

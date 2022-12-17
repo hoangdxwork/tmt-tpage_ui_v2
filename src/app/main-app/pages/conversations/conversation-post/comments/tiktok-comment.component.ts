@@ -240,7 +240,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
     if(TDSHelperString.isString(this.innerText) && TDSHelperString.hasValueString(this.innerText)) {
       return;
     }
-      
+
     // TODO: nếu res phản hồi bình luận tra về trước, không add comment con vào danh sách
     if(Number(index) >= 0) {
       return;
@@ -739,7 +739,10 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     delete this.currentConversation;
-
+    if(!TDSHelperString.hasValueString(psid)) {
+      this.message.error('Không tìm thấy ConversationId');
+      return;
+    }
     // get data currentConversation
     this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {
