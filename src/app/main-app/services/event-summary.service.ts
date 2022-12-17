@@ -4,6 +4,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
+import { format } from 'date-fns';
 
 @Injectable()
 export class EventSummaryService extends BaseSevice {
@@ -49,5 +50,17 @@ export class EventSummaryService extends BaseSevice {
     }
 
     return this.apiService.getData<SummaryTagDTO[]>(api, null);
+  }
+
+  getSummaryOrderByPeriod(since: any, until: any): Observable<any> {
+    since = format(since, 'yyyy-MM-dd+00:00:00');
+    until= format(until, 'yyyy-MM-dd+00:00:00');
+
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/order/byperiod?since=${since}&until=${until}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
   }
 }
