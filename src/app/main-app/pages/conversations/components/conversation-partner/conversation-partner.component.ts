@@ -31,6 +31,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TDSDestroyService]
 })
 
