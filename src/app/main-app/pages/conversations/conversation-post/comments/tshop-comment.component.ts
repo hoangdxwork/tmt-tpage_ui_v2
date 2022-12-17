@@ -741,7 +741,10 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     delete this.currentConversation;
-
+    if(!TDSHelperString.hasValueString(psid)) {
+      this.message.error('Không tìm thấy ConversationId');
+      return;
+    }
     // get data currentConversation
     this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationItemDto) => {

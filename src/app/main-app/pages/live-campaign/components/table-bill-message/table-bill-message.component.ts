@@ -11,7 +11,7 @@ import { CommonService } from 'src/app/main-app/services/common.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 
@@ -137,6 +137,10 @@ export class TableBillMessageComponent implements OnInit {
   loadMDBByPSId(channelId: number, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
+    if(!TDSHelperString.hasValueString(psid)) {
+      this.message.error('Không tìm thấy ConversationId');
+      return;
+    }
 
     // get data currentConversation
     this.chatomniConversationService.getById(channelId, psid).pipe(takeUntil(this.destroy$)).subscribe({

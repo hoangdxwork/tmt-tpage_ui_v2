@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { SocketEventSubjectDto } from './../../services/socket-io/socket-onevent.service';
 import { Component, Input, OnInit, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 
 @Component({
   selector: 'notification-event-socket',
@@ -21,6 +23,8 @@ export class NotificationEventSocketComponent implements OnInit {
 
   constructor(private router: Router,
     private crmTeamService: CRMTeamService,
+    private chatomniConversationService: ChatomniConversationService,
+    private chatomniObjectService: ChatomniObjectService,
     private message: TDSMessageService) {
   }
 
@@ -30,8 +34,15 @@ export class NotificationEventSocketComponent implements OnInit {
   getLink(data: SocketEventSubjectDto) {
     let exist = data && data.Notification && data.Notification?.Url && (data.EventName != ChatmoniSocketEventName.chatomniMarkseen);
     if (exist && data.Team && data.Team?.Id) {
-        this.router.navigateByUrl(data.Notification.Url);
+
+        let currentTeam = this.crmTeamService.getCurrentTeam() as any;
+        if(currentTeam && currentTeam.Id != data.Team.Id) {
+            this.removeStorageConversationId();
+            this.removeStoragePostId();
+        }
+
         this.crmTeamService.onUpdateTeam(data.Team);
+        this.router.navigateByUrl(data.Notification.Url);
     }
   }
 
@@ -46,6 +57,16 @@ export class NotificationEventSocketComponent implements OnInit {
     } else {
         this.message.error("Không tìm thấy đơn hàng");
     }
-
   }
+
+  removeStoragePostId() {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    localStorage.removeItem(_keyCache);
+  }
+
+  removeStorageConversationId() {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    localStorage.removeItem(_keyCache);
+  }
+
 }
