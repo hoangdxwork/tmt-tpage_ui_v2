@@ -66,7 +66,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @HostBinding("@eventFadeState") eventAnimation = true;
   @Input() partner?: any;
 
-  @Input() isLoadingAll: boolean = false;
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ChatomniConversationItemDto;
   @Input() type!: string;
@@ -306,12 +305,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadMessages(data: ChatomniConversationItemDto): any {
-    if(this.isLoadingAll) {
-        this.isLoading = true;
-    } else {
-        this.isLoadingSpin = true;
-        this.isLoading = true;
-    }
+    this.isLoadingSpin = true;
+    this.isLoading = true;
 
     this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type, this.filterObj);
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
@@ -579,10 +574,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes['isLoadingAll'] && !changes['isLoadingAll'].firstChange) {
-        this.isLoadingAll = changes['isLoadingAll'].currentValue;
-    }
-
     if (changes["data"] && !changes["data"].firstChange) {
       this.validateData();
       (this.data as any) = null;

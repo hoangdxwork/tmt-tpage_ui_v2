@@ -40,13 +40,12 @@ import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conve
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  animations: [eventFadeStateTrigger, eventCollapTrigger],
-  providers: [ TDSDestroyService ]
+  animations: [eventCollapTrigger],
+  providers: [TDSDestroyService]
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
 
-  @HostBinding("@eventFadeState") eventAnimation = true;
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
   @ViewChild('templateAdminTransferChatBot') templateAdminTransferChatBot!: TemplateRef<{}>;

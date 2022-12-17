@@ -31,19 +31,18 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TDSDestroyService]
 })
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | any;
-  @Input() isLoading: boolean = false;
   @Input() team!: CRMTeamDTO | any;
   @Input() type!: string;
 
   @Output() onTabOderOutput = new EventEmitter<boolean>();
 
+  isLoading: boolean = false;
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
@@ -116,10 +115,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes["isLoading"] && !changes["isLoading"].firstChange) {
-        this.isLoading = changes["isLoading"].currentValue;
-    }
-
     if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
         let x = {...changes["conversationInfo"].currentValue} as ChatomniConversationInfoDto;
         this.loadData(x);
