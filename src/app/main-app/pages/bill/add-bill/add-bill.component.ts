@@ -1290,6 +1290,15 @@ export class AddBillComponent implements OnInit {
                 delete res['@odata.context'];
                 this.id = res.Id;
 
+                if(model && model.FormAction == 'SaveAndOpen' || model.FormAction == 'SaveAndPrint') {
+                  let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+                  if(warehouseId > 0) {
+                      this.productService.lstInventory = null;
+                      this.loadInventoryWarehouseId(warehouseId);
+                      console.log('a')
+                  }
+                }
+
                 if(res?.Error && res?.Error.Message) {
                     this.notification.error(res.Error.Message, res.Error?.Errors[0]?.Message);
                 }
@@ -1303,8 +1312,6 @@ export class AddBillComponent implements OnInit {
                     this.loadOpenAndPrint(res);
                 }
 
-                let warehouseId = res.WarehouseId;
-                this.loadInventoryByIds(warehouseId, [res.Id]);
                 this.removelocalStorage();
             },
             error:(error) => {

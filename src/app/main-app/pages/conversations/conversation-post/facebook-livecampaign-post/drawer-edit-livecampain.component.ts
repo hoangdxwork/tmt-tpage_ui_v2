@@ -195,18 +195,27 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (inventories: any) => {
-              this.inventories = {};
-              this.inventories = inventories;
+        if(warehouseId > 0) {
+          this.productService.lstInventory = null;
 
-              this.mappingProductToLive(this.response);
-          },
-          error: (err: any) => {
+          this.productService.setInventoryWarehouseId(warehouseId);
+          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+              this.inventories = {};
+              this.inventories = res;
+
+              if(this.response) {
+                this.mappingProductToLive(this.response);
+              }
+            },
+            error: (err: any) => {
               this.message.error(err?.error?.message);
-              this.mappingProductToLive(this.response);
-          }
-        });
+              if(this.response) {
+                this.mappingProductToLive(this.response);
+              }
+            }
+          });
+        }
       }
     })
   }
