@@ -137,7 +137,7 @@
     <!-- Thông tin bài viết -->
     <div *ngIf="currentPost && currentTeam" class="w-[80%] h-full flex">
         <!--Chọn bài viết để hiển thị chi tiết-->
-        <div class="w-[62.5%] flex flex-col h-full overflow-hidden" >
+        <div class="w-[62.5%] flex flex-col h-full overflow-hidden">
             <conversation-post-overview class="w-full h-full" [data]="currentPost" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
         </div>
 
