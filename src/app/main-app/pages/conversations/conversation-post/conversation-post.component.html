@@ -61,7 +61,8 @@
             </div>
         </div>
 
-        <tds-spin [spinning]="isProcessing || isRefreshing || isLoading" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full pt-1">
+        <tds-spin [spinning]="isProcessing || isRefreshing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full pt-1">
+            <!-- Danh sách bài viết -->
             <virtual-scroller #scroll *ngIf="lstObjects && lstObjects.length > 0;"
                 [items]="lstObjects" class="tds-custom-scroll w-full h-full"
                 (vsEnd)="vsEnd($event)"
@@ -102,6 +103,7 @@
 
             </virtual-scroller>
 
+            <!-- Không có dữ liệu object -->
             <div class="flex flex-auto justify-center" *ngIf="(!lstObjects || lstObjects.length == 0) && !isFilter && !isLoading">
                 <div class="flex flex-auto justify-center bg-white">
                     <div class="flex flex-col items-center pt-16">
@@ -110,7 +112,13 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Đang load dữ liệu object -->
+            <div class="w-full flex-auto flex flex-col bg-neutral-3-200" *ngIf="!currentObject && isLoading">
+                <div csObjectPartner class="w-full flex flex-col flex-auto"></div>
+            </div>
 
+            <!-- Filter không tìm thấy bài viết -->
             <div class="flex flex-auto items-center justify-center bg-white" *ngIf="(!lstObjects || lstObjects.length == 0) && isFilter">
                 <tds-empty [notFoundContent]="contentTpl">
                   <ng-template #contentTpl>
@@ -126,56 +134,11 @@
         </tds-spin>
     </div>
 
+    <!-- Thông tin bài viết -->
     <div *ngIf="currentPost && currentTeam" class="w-[80%] h-full flex">
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[62.5%] flex flex-col h-full overflow-hidden" >
-            <div class="h-full w-full">
-                <conversation-post-overview [data]="currentPost" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
-            </div>
-            <div *ngIf="!currentPost" class="h-full w-full">
-                <div class="w-full h-full flex flex-col bg-neutral-3-200 pr-1">
-                    <div class="h-fit w-full flex flex-row items-center gap-x-3 bg-white p-4 mb-1">
-                        <tds-skeleton-element
-                            tdsType="button" [tdsActive]="true"
-                            [tdsSize]="'md'">
-                        </tds-skeleton-element>
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'sm'" style="width:500px;padding-bottom: 6px;">
-                        </tds-skeleton-element>
-                    </div>
-
-                    <div class="h-fit w-full flex flex-row justify-between bg-white p-4">
-                        <div class="flex flex-col justify-between h-full">
-                            <tds-skeleton-element
-                                tdsType="input" [tdsActive]="true"
-                                [tdsSize]="'sm'" style="width:400px">
-                            </tds-skeleton-element>
-                            <tds-skeleton-element
-                                tdsType="input" [tdsActive]="true"
-                                [tdsSize]="'sm'" style="width:500px">
-                            </tds-skeleton-element>
-                        </div>
-                        <tds-skeleton-element tdsType="image" [tdsActive]="true"></tds-skeleton-element>
-                    </div>
-
-                    <div class="h-fit w-full flex flex-row justify-between px-4 pb-4 bg-white mb-1">
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'md'" style="width:1000px">
-                        </tds-skeleton-element>
-                    </div>
-
-                    <div class="flex flex-auto flex-col w-full bg-white p-4 mb-1">
-                        <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                        <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                        <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                        <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                        <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                        <tds-skeleton [tdsActive]="true"></tds-skeleton>
-                    </div>
-                </div>
-            </div>
+            <conversation-post-overview [data]="currentPost" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
         </div>
 
         <!-- Danh sách khách hàng, đơn hàng -->
@@ -225,163 +188,13 @@
         </div>
     </div>
 
-    <!-- Trường hợp loading -->
-    <!-- <ng-template #noObject>
-        <div class="w-full h-[calc(100vh-109px)] flex flex-col bg-neutral-3-200" *ngIf="!currentObject && isLoading">
-            <div class="h-fit w-full bg-white p-4 mb-1">
-                <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                <tds-skeleton-element
-                    tdsType="input" [tdsActive]="true"
-                    [tdsSize]="'md'" style="width:100%">
-                </tds-skeleton-element>
-            </div>
-
-            <div class="h-fit w-full bg-white p-4 mb-1">
-                <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                <tds-skeleton-element
-                    tdsType="input" [tdsActive]="true"
-                    [tdsSize]="'md'" style="width:100%">
-                </tds-skeleton-element>
-            </div>
-
-            <div class="flex flex-auto bg-white p-4"></div>
-        </div>
-    </ng-template> -->
-
-    <div class="flex flex-auto flex-row h-full" *ngIf="(!currentPost || !currentObject) && isLoading">
-        <tds-spin class="h-full w-[62.5%] flex flex-col bg-neutral-3-200 pr-1">
-            <div class="h-fit w-full flex flex-row items-center gap-x-3 bg-white p-4 mb-1">
-                <tds-skeleton-element
-                    tdsType="button" [tdsActive]="true"
-                    [tdsSize]="'md'">
-                </tds-skeleton-element>
-                <tds-skeleton-element
-                    tdsType="input" [tdsActive]="true"
-                    [tdsSize]="'sm'" style="display: flex; flex: 1 1 0%;">
-                </tds-skeleton-element>
-            </div>
-
-            <div class="h-fit w-full flex flex-row justify-between bg-white p-4">
-                <div class="flex flex-col justify-between h-full w-[60%]">
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'sm'" style="width:40%">
-                    </tds-skeleton-element>
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'sm'" style="width:60%">
-                    </tds-skeleton-element>
-                </div>
-                <tds-skeleton-element tdsType="image" [tdsActive]="true"></tds-skeleton-element>
-            </div>
-
-            <div class="h-fit w-full flex flex-row justify-between px-4 pb-4 bg-white mb-1">
-                <tds-skeleton-element
-                    tdsType="input" [tdsActive]="true"
-                    [tdsSize]="'md'" style="width:100%">
-                </tds-skeleton-element>
-            </div>
-
-            <div class="flex flex-auto flex-col w-full bg-white p-4 mb-1">
-                <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-                <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
-            </div>
-        </tds-spin>
-        <div class="h-full w-[37.5%] flex flex-col flex-auto bg-neutral-3-200">
-                <div class="h-fit w-full flex flex-row bg-white gap-x-4 p-4 mb-1">
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'md'" style="width:30%">
-                    </tds-skeleton-element>
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'md'" style="width:30%">
-                    </tds-skeleton-element>
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'md'" style="width:30%">
-                    </tds-skeleton-element>
-                </div>
-
-                <div class="h-fit w-full bg-white p-4 mb-1">
-                    <div class="mb-4">
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'md'" style="width:40%">
-                        </tds-skeleton-element>
-                    </div>
-                    <div class="mb-4">
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'sm'" style="width:40%">
-                        </tds-skeleton-element>
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'sm'" style="width:40%">
-                        </tds-skeleton-element>
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'sm'" style="width:40%">
-                        </tds-skeleton-element>
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'sm'" style="width:60%">
-                        </tds-skeleton-element>
-                    </div>
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'lg'" style="width:40%">
-                    </tds-skeleton-element>
-                </div>
-
-                <div class="h-fit w-full bg-white p-4 mb-1">
-                    <div class="mb-4">
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'md'" style="width:60%">
-                        </tds-skeleton-element>
-                    </div>
-                    <div class="mb-4">
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'sm'" style="width:70%">
-                        </tds-skeleton-element>
-                        <tds-skeleton-element
-                            tdsType="input" [tdsActive]="true"
-                            [tdsSize]="'lg'" style="width:70%">
-                        </tds-skeleton-element>
-                    </div>
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'lg'" style="width:70%">
-                    </tds-skeleton-element>
-                </div>
-
-                <div class="h-fit w-full bg-white p-4 mb-1">
-                    <tds-skeleton-element
-                        tdsType="input" [tdsActive]="true"
-                        [tdsSize]="'sm'" style="width:70%">
-                    </tds-skeleton-element>
-                </div>
-
-                <div class="h-fit w-full bg-white p-4 mb-1">
-                    <tds-skeleton-element
-                        tdsType="button" [tdsActive]="true"
-                        [tdsSize]="'md'" class="mr-2">
-                    </tds-skeleton-element>
-                    <tds-skeleton-element
-                        tdsType="button" [tdsActive]="true"
-                        [tdsSize]="'md'">
-                    </tds-skeleton-element>
-                </div>
-
-                <div class="flex flex-auto bg-white p-4"></div>
-        </div>
+    <!-- Đang load dữ liệu bài viết -->
+    <div class="w-[80%] h-full flex" *ngIf="(!currentPost || !currentObject) && isLoading">
+        <div csLoadingPost class="h-full w-full"></div>
     </div>
 
-    <!-- Trường hợp chưa có dữ liệu -->
-    <div class="flex-auto flex " *ngIf="!currentPost && !currentObject && !isLoading">
+    <!-- Không có dữ liệu bài viết -->
+    <div class="flex-auto flex" *ngIf="!currentPost && !currentObject && !isLoading">
         <div class="flex-auto flex flex-col justify-center items-center bg-white">
             <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png">
             <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp bán hàng toàn diện cho bán hàng đa kênh</span>
