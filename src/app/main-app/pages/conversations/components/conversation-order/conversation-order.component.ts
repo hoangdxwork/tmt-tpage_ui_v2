@@ -75,7 +75,6 @@ import { ActivatedRoute, Router } from '@angular/router';
   selector: 'conversation-order',
   templateUrl: './conversation-order.component.html',
   styleUrls: ['./conversation-order.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
