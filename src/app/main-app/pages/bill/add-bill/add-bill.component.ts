@@ -1293,9 +1293,10 @@ export class AddBillComponent implements OnInit {
                 if(model && model.FormAction == 'SaveAndOpen' || model.FormAction == 'SaveAndPrint') {
                   let warehouseId = this.companyCurrents?.DefaultWarehouseId;
                   if(warehouseId > 0) {
+                    setTimeout(() => {
                       this.productService.lstInventory = null;
                       this.loadInventoryWarehouseId(warehouseId);
-                      console.log('a')
+                    }, 2 * 1000);
                   }
                 }
 
@@ -1840,7 +1841,7 @@ export class AddBillComponent implements OnInit {
 
   loadInventoryWarehouseId(warehouseId: number) {
     this.productService.setInventoryWarehouseId(warehouseId);
-    this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe();
+    this.productService.getInventoryWarehouseId().subscribe();
   }
 
 }
