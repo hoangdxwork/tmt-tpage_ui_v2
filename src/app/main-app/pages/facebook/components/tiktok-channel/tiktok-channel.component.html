@@ -27,7 +27,10 @@
                       </div>
                     </div>
                     <div class="flex flex-col gap-1">
-                      <div class="text-title-1 font-sans font-semibold"> {{ team.Name }} </div>
+                      <div *ngIf="!team?.OwnerId" class="text-title-1 font-sans font-semibold"> {{ team.Name }} </div>
+                      <a *ngIf="team?.OwnerId" class="text-title-1 font-sans font-semibold hover:text-info-500 hover:underline" tds-tooltip="Xem kênh của {{team.Name}}" 
+                        href="https://www.tiktok.com/@{{team.OwnerId}}" target="_blank"> 
+                        {{ team.Name }} </a>
   
                       <!--TODO: Kết nối trang -->
                       <div>
