@@ -42,7 +42,7 @@ import { Component, OnInit } from '@angular/core';
                         <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
                     </div>
                 </tds-spin>
-                <tds-spin class="h-full w-[37.5%] flex flex-col flex-auto bg-neutral-3-200">
+                <div class="h-full w-[37.5%] flex flex-col flex-auto bg-neutral-3-200">
                     <div class="h-fit w-full flex flex-row bg-white gap-x-4 p-4 mb-1">
                         <tds-skeleton-element
                             tdsType="input" [tdsActive]="true"
@@ -131,7 +131,7 @@ import { Component, OnInit } from '@angular/core';
                     </div>
 
                     <div class="flex flex-auto bg-white p-4"></div>
-                </tds-spin>
+                </div>
             </div>`,
 })
 export class CsLoadingPostDirective implements OnInit {
