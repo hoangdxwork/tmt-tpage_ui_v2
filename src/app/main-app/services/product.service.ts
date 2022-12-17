@@ -42,7 +42,7 @@ export class ProductService extends BaseSevice {
         this.apiInventoryWarehouseId(warehouseId).subscribe({
           next: (res: any) => {
             if(res) {
-                this.lstInventory = res;
+                this.lstInventory = {...res};
                 this._inventorySubject$.next(this.lstInventory);
             }
           }

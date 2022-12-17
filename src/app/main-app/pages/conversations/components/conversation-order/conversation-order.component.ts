@@ -365,21 +365,28 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         if(obs !== InventoryChangeType._TAB_ORDER) return;
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (inventories: any) => {
+        
+        if(warehouseId > 0) {
+          this.productService.lstInventory = null;
+
+          this.productService.setInventoryWarehouseId(warehouseId);
+          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
               this.inventories = {};
-              this.inventories = inventories;
+              this.inventories = res;
+
               if(this.response) {
                 this.mappingProduct(this.response);
               }
-          },
-          error: (err: any) => {
+            },
+            error: (err: any) => {
               this.message.error(err?.error?.message);
               if(this.response) {
                 this.mappingProduct(this.response);
               }
-          }
-        });
+            }
+          });
+        }
       }
     })
   }
@@ -1046,7 +1053,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         title: 'Chọn sản phẩm',
         content: ModalListProductComponent,
         viewContainerRef: this.viewContainerRef,
-        size: 'xl',
+        size: 'lg',
         bodyStyle: {
           padding: '0px'
         },

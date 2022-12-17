@@ -129,15 +129,11 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.productTemplateFacade.onStockChangeProductQty$.subscribe({
       next: (obs: any) => {
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (inventories: any) => {
-              this.inventories = {};
-              this.inventories = inventories;
-          },
-          error: (err: any) => {
-              this.message.error(err?.error?.message);
-          }
-        });
+        
+        if(warehouseId > 0) {
+          this.productService.lstInventory = null;
+          this.loadInventoryWarehouseId(warehouseId);
+        }
       }
     })
   }

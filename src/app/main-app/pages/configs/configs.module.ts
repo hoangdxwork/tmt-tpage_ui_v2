@@ -130,7 +130,6 @@ const SERVICES = [
     QuickReplyService,
     RestSMSService,
     OdataProductService,
-    ProductService,
     OdataTPosLoggingService,
     OdataSaleCouponProgramService,
     SaleCouponProgramService,
