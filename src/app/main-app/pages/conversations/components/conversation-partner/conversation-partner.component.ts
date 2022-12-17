@@ -31,10 +31,8 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
-    providers: [TDSDestroyService],
-    host: {
-      class: 'w-full h-full flex'
-    },
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [TDSDestroyService]
 })
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {

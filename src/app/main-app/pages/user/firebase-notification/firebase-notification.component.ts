@@ -18,13 +18,15 @@ import { ModalGetNotificationComponent } from '../components/modal-get-notificat
 import { SocketStorageNotificationService } from '@app/services/socket-io/socket-config-notification.service';
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 
 @Component({
   selector: 'firebase-notification',
   templateUrl: './firebase-notification.component.html'
 })
 export class FirebaseNotificationComponent implements OnInit {
-
+  @ViewChild(VirtualScrollerComponent)
+    private virtualScroller!: VirtualScrollerComponent;
   data!: NotificationItemDto[];
   topicData: FireBaseTopicDto[] = [];
   dataDetail!: any;
@@ -69,7 +71,10 @@ export class FirebaseNotificationComponent implements OnInit {
     if (id && paramsNoti) {
       this.id = id;
     }
-
+  //   this.route.params.subscribe(params => {
+  //     this.id = params['id'];
+  //     console.log('firebase-notification',id)
+  // });
     this.loadData();
     this.loadUrl();
 
@@ -163,9 +168,11 @@ export class FirebaseNotificationComponent implements OnInit {
           let item: NotificationItemDto = null as any;
           if (TDSHelperString.hasValueString(id) && this.data) {
             let exist = this.data?.filter(x => x && x.id == id)[0];
+            // let itemIdex = this.data?.findIndex(x => x && x.id == id) || 0;
             if (exist) {
               item = exist;
             }
+            // this.virtualScroller.scrollToIndex(itemIdex)
           }
 
           if (item == null && this.data) {
